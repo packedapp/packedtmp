@@ -28,7 +28,7 @@ import packed.internal.lifecycle.old.LifecycleDefinition;
 // Jamen saa skal vi jo bruge generiske typer... Optional<String> er forskellige for Optional<Long>
 // Selvom method typerne ender ens...
 /** A model of {@link OldMethodSidecar}. */
-public final class MethodSidecarModel extends SidecarModel {
+public final class OldMethodSidecarModel extends OldSidecarModel {
 
     /** Meta data about the extension sidecar. */
     private static final SidecarTypeMeta STM = new SidecarTypeMeta(OldMethodSidecar.class, LifecycleDefinition.of(OldMethodSidecar.INSTANTIATION));
@@ -44,13 +44,13 @@ public final class MethodSidecarModel extends SidecarModel {
      * @param builder
      *            the builder used to construct the model
      */
-    protected MethodSidecarModel(Builder builder) {
+    protected OldMethodSidecarModel(Builder builder) {
         super(builder);
         this.instanceId = builder.instanceId;
         // MethodHandles.insertArguments(target, pos, values)
     }
 
-    public static class Builder extends SidecarModel.Builder {
+    public static class Builder extends OldSidecarModel.Builder {
 
         int instanceId;
 

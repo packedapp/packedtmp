@@ -57,7 +57,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         if (regionIndex == -1) {
-            return new PrototypeInjectorEntry<>(this, context.region, toMethodHandle());
+            return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
         } else {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         }
@@ -69,7 +69,7 @@ public class AtProvideBuildEntry<T> extends BuildtimeService<T> {
     }
 
     @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle dependencyAccessor() {
         return injectable.buildMethodHandle();
     }
 

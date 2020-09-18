@@ -30,7 +30,6 @@ public final class FactorySupport<T> {
 
     public MethodType methodType() {
         return handle.methodType();
-
     }
 
     /**

@@ -76,23 +76,23 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /* *************** ASSEMBLIES **************** */
 
-    /** Any container this component is part of. A container is part of it self */
+    /** The region this component is a part of. */
+    public final RegionAssembly region;
+
+    /** The realm this component is a part of. */
+    public final RealmAssembly realm;
+
+    /** The container, if source Any container this component is part of. A container is part of it self. */
     @Nullable
     public final ContainerAssembly container;
 
-    /** Any container this component is part of. A container is part of it self */
+    /** Any container this component is part of. A container is part of it self. */
     @Nullable
     public final ContainerAssembly memberOfContainer;
 
     /** Any extension that is attached to this component. */
     @Nullable
     public final ExtensionAssembly extension;
-
-    /** The region this component is a part of. */
-    public final RegionAssembly region;
-
-    /** The realm this component is a member of. */
-    public final RealmAssembly realm;
 
     /** Any source that is attached to this component. */
     @Nullable
@@ -127,7 +127,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
-        this.extension = null; // Extensions uses another constructor
+        this.extension = null; // Extensions use another constructor
 
         this.wirelets = wirelets;
         int mod = driver.modifiers;

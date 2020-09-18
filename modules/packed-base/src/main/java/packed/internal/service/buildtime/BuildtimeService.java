@@ -17,15 +17,13 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.service.Service;
-import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
+import packed.internal.inject.spi.DependencyProvider;
 import packed.internal.service.InjectionManager;
 import packed.internal.service.runtime.PackedService;
 import packed.internal.service.runtime.RuntimeService;
@@ -102,11 +100,6 @@ public abstract class BuildtimeService<T> implements DependencyProvider {
 
     public final Service toDescriptor() {
         return new PackedService(key, configSite);
-    }
-
-    @Override
-    public MethodHandle toMethodHandle() {
-        throw new UnsupportedOperationException();
     }
 
     // cacher runtime noden...

@@ -17,6 +17,7 @@ package packed.internal.service.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
@@ -49,4 +50,10 @@ final class MappingBuildEntry<F, T> extends BuildtimeService<T> {
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
     }
+
+    @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
+    }
+
 }

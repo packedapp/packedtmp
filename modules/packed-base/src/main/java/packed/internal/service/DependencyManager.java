@@ -34,9 +34,9 @@ import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.RegionAssembly;
-import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.ServiceDependency;
+import packed.internal.inject.spi.DependencyProvider;
 import packed.internal.service.buildtime.BuildtimeService;
 
 /**

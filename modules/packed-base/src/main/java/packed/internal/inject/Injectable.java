@@ -27,9 +27,12 @@ import app.packed.base.Nullable;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
+import packed.internal.component.SourceModelMember;
+import packed.internal.component.SourceModelMethod;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.sidecar.AtProvides;
+import packed.internal.inject.spi.DependencyProvider;
 import packed.internal.service.InjectionManager;
 import packed.internal.service.buildtime.BuildtimeService;
 
@@ -69,6 +72,9 @@ public final class Injectable {
 
     public final InjectionManager im;
 
+    @Nullable
+    public final SourceModelMember sourceMember;
+
     public Injectable(BuildtimeService<?> buildEntry, SourceAssembly source, AtProvides ap) {
         this.source = requireNonNull(source);
         this.dependencies = ap.dependencies;
@@ -81,6 +87,10 @@ public final class Injectable {
         }
         // Vi detecter altid circle lige nu. Fordi circle detectionen.
         // ogsaa gemmer service instantierings raekkefoelgen
+
+        // Det er jo faktisk helt ned til en sidecar vi skal instantiere det foer
+        // selve servicen...
+
         this.detectForCycles = resolved.length > 0;// dependencies.size() > 0;
 
         // We have moved all the logic for adding some to various list.
@@ -96,6 +106,18 @@ public final class Injectable {
                 source.injectable().detectForCycles = true;
             }
         }
+        this.sourceMember = null;
+    }
+
+    public Injectable(SourceAssembly source, SourceModelMethod smm) {
+        this.source = requireNonNull(source);
+        this.im = source.compConf.injectionManager();
+        this.sourceMember = requireNonNull(smm);
+
+        buildEntry = null;
+        dependencies = null;
+        directMethodHandle = null;
+        resolved = null;
     }
 
     public Injectable(SourceAssembly source, BaseFactory<?> factory) {
@@ -112,6 +134,7 @@ public final class Injectable {
             im.dependencies().detectCyclesFor.add(this);
         }
         buildEntry = null; // Any build entry is stored in SourceAssembly#service
+        this.sourceMember = null;
     }
 
     public final MethodHandle buildMethodHandle() {
@@ -120,14 +143,14 @@ public final class Injectable {
         }
         // Does not have have dependencies.
         if (resolved.length == 0) {
-            buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
-            return buildMethodHandle;
+            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
         }
+
         MethodHandle mh = directMethodHandle;
         for (int i = 0; i < resolved.length; i++) {
             DependencyProvider dp = resolved[i];
             requireNonNull(dp);
-            MethodHandle dep = dp.toMethodHandle();
+            MethodHandle dep = dp.dependencyAccessor();
 
             mh = MethodHandles.collectArguments(mh, i, dep);
         }
@@ -183,6 +206,8 @@ public final class Injectable {
                 e = im.resolvedServices.get(sd.key());
             }
             im.dependencies().recordResolvedDependency(im, this, sd, e, false);
+            // may be null, in which case it is a required service that must be provided.
+            // By the user
             resolved[i + startIndex] = e;
         }
     }

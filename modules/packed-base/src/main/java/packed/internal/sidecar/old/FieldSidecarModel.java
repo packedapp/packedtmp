@@ -18,7 +18,7 @@ package packed.internal.sidecar.old;
 import packed.internal.lifecycle.old.LifecycleDefinition;
 
 /** A model of {@link OldFieldSidecar}. */
-public final class FieldSidecarModel extends SidecarModel {
+public final class FieldSidecarModel extends OldSidecarModel {
 
     /** Meta data about the extension sidecar. */
     private static final SidecarTypeMeta STM = new SidecarTypeMeta(OldFieldSidecar.class, LifecycleDefinition.of(OldFieldSidecar.INSTANTIATION));
@@ -39,7 +39,7 @@ public final class FieldSidecarModel extends SidecarModel {
         this.instanceId = builder.instanceId;
     }
 
-    public static class Builder extends SidecarModel.Builder {
+    public static class Builder extends OldSidecarModel.Builder {
 
         int instanceId;
 

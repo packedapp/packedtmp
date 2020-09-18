@@ -37,7 +37,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  * A model of a sidecar.
  */
-public abstract class SidecarModel extends Model {
+public abstract class OldSidecarModel extends Model {
 
     /** A method handle for creating a new sidecar instance. */
     protected final MethodHandle constructor;
@@ -60,7 +60,7 @@ public abstract class SidecarModel extends Model {
      * @param builder
      *            the builder
      */
-    protected SidecarModel(Builder builder) {
+    protected OldSidecarModel(Builder builder) {
         super(builder.sidecarType);
         this.constructor = builder.constructor;
         this.contracts = Map.copyOf(builder.contracts);

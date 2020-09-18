@@ -17,7 +17,7 @@ package app.packed.sidecar;
 
 import app.packed.base.Nullable;
 import packed.internal.sidecar.MethodSidecarModel.MethodSidecarConfiguration;
-import packed.internal.sidecar.old.SidecarModel;
+import packed.internal.sidecar.old.OldSidecarModel;
 
 /**
  * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
@@ -27,7 +27,7 @@ public abstract class MethodSidecar {
     // Hver sidecar har sit eget context object...
     // Eneste maade at subclasses ikke kan faa fat it
 
-    /** A sidecar configurations object. Updated by {@link SidecarModel}. */
+    /** A sidecar configurations object. Updated by {@link OldSidecarModel}. */
     @Nullable
     private MethodSidecarConfiguration configuration;
 

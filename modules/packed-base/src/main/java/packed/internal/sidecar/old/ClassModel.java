@@ -22,11 +22,11 @@ public class ClassModel {
 
     Object[] data; // <--- ClassModels (Consts such as MethodDescriptors)
 
-    MethodSidecarModel[] models; // just methods for now....
+    OldMethodSidecarModel[] models; // just methods for now....
 
-    MethodSidecarModel[] instantiations; // Models that needs to be instantiated (and written into ClassHolder instances
+    OldMethodSidecarModel[] instantiations; // Models that needs to be instantiated (and written into ClassHolder instances
 
-    MethodSidecarModel[] assemble; // sidecar that need to be invoked assemble
+    OldMethodSidecarModel[] assemble; // sidecar that need to be invoked assemble
 
     // Their indexes into ClassHolder.instances() that must be invoked
     int[] assembleIndex;

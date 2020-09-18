@@ -13,37 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
-
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
+package packed.internal.component;
 
 /**
- * Something that
+ *
  */
-// Typer
+// SourceModel...
+// Maa have en liste af regions slots den skal bruge
+public class SourceModelMember {
 
-// En service
-// En Declaring Class
-// Specials.. fx dependency...
-public interface DependencyProvider {
+    // Jeg tror man loeber alle parameterene igennem og ser om der
+    // er en sidecar provide der passer dem
+    // Saa man sidecar providen dertil.
 
-    @Nullable
-    Injectable injectable();
-
-    // Used for cycle tracking
-    MethodHandle toMethodHandle();
+    // Sidecar provideren tager i oevrigt RegionAssembly
 }
-
-// Requirements
-
-// NodeStore, Components
-
-// Er der forskellige MH TYper??
-// Needs WebRequest
-// Needs Caller
-
-// Resolve -> Finds stuff, makes room in Region
-
-// validate, checks for circles 

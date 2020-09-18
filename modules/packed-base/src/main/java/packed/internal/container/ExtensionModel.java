@@ -47,13 +47,13 @@ import packed.internal.hook.OnHookModel;
 import packed.internal.invoke.MethodHandleBuilder;
 import packed.internal.invoke.OpenClass;
 import packed.internal.lifecycle.old.LifecycleDefinition;
-import packed.internal.sidecar.old.SidecarModel;
+import packed.internal.sidecar.old.OldSidecarModel;
 import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
-public final class ExtensionModel extends SidecarModel implements ExtensionDescriptor {
+public final class ExtensionModel extends OldSidecarModel implements ExtensionDescriptor {
 
     /** A cache of extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
@@ -291,7 +291,7 @@ public final class ExtensionModel extends SidecarModel implements ExtensionDescr
     }
 
     /** A builder of {@link ExtensionModel}. */
-    static final class Builder extends SidecarModel.Builder {
+    static final class Builder extends OldSidecarModel.Builder {
 
         /**  */
         private static ClassValue<?> OPTIONALS = new ClassValue<>() {

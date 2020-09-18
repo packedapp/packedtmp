@@ -22,9 +22,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.Injectable;
 import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.spi.DependencyProvider;
 import packed.internal.service.buildtime.BuildtimeService;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
@@ -114,14 +114,12 @@ public final class SourceAssembly implements DependencyProvider {
     }
 
     @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle dependencyAccessor() {
         if (instance != null) {
             MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
             return MethodHandles.dropArguments(mh, 0, RuntimeRegion.class); // MethodHandle()T -> MethodHandle(Region)T
         } else if (isPrototype()) { // injectable != null
-            MethodHandle mh = injectable.buildMethodHandle();
-            return mh;
-            // Taenker vi kun bruger den her... Hvis vi har lyst til genbrug
+            return injectable.buildMethodHandle();
         } else {
             return RuntimeRegion.readSingletonAs(regionIndex, injectable.rawType());
         }

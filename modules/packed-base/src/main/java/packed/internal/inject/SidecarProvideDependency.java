@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
+import packed.internal.inject.spi.DependencyProvider;
 
 /**
  *
@@ -41,7 +42,7 @@ public class SidecarProvideDependency implements DependencyProvider {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle dependencyAccessor() {
         return mh;
     }
 }

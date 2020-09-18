@@ -15,6 +15,8 @@
  */
 package packed.internal.service.buildtime;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.component.Wirelet;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
@@ -42,4 +44,10 @@ final class FromOtherInjectorBuildEntry<T> extends BuildtimeService<T> {
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<T>(this, entry);
     }
+
+    @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
+    }
+
 }

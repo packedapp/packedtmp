@@ -17,6 +17,8 @@ package packed.internal.service.buildtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
@@ -77,5 +79,10 @@ public final class ExportedBuildEntry<T> extends BuildtimeService<T> {
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
+    }
+
+    @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -13,25 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package packed.internal.component;
 
-import java.time.LocalDateTime;
-
-import app.packed.inject.Provide;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.base.Nullable;
+import packed.internal.inject.spi.DependencyProvider;
+import packed.internal.sidecar.MethodSidecarModel;
 
 /**
  *
  */
-public class TestIt extends MethodSidecar {
+// run on initialize
+// run on start
+// run on stop
 
-    @Override
-    protected void configure() {
-        debug();
-    }
+// En per annotering
 
-    @Provide
-    public static LocalDateTime now() {
-        return LocalDateTime.now();
+// Altsaa alle source metoder skal jo resolves paa assembly time
+
+public class SourceModelMethod extends SourceModelMember {
+
+    // Dependencies that have already been resolved
+
+    DependencyProvider[] resolved;
+
+    MethodSidecarModel msm;
+
+    @Nullable
+    RunAt runAt;
+
+    enum RunAt {
+        INITIALIZATION;
     }
 }
