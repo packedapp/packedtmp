@@ -20,10 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
-import app.packed.service.ServiceRegistry;
-import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.Injectable;
-import packed.internal.service.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -34,10 +31,8 @@ import packed.internal.util.ThrowableUtil;
 // Idet de kan dependende paa hinanden
 public final class RegionAssembly {
 
-    /** Components that contains constants that should be stored in a region. */
+    /** Components that contains constants that should be stored in a region. Is only written by {@link SourceAssembly}. */
     final ArrayList<SourceAssembly> runtimeInstances = new ArrayList<>();
-
-    final ComponentNodeConfiguration compConf; // do we need this??
 
     int nextIndex;
 
@@ -54,16 +49,12 @@ public final class RegionAssembly {
     // Taenker den her er paa injection manager
     public final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
-    RegionAssembly(ComponentNodeConfiguration compConf) {
-        this.compConf = requireNonNull(compConf);
-    }
-
     // Vi bliver noedt til at kalde ned recursivt saa vi kan finde raekkefolgen af service inst
 
     RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
 
-        // I don't now if we create the guest here??? We do for now though
+        // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().isGuest()) {
             region.store(0, new PackedGuest(null));
         }
@@ -74,6 +65,8 @@ public final class RegionAssembly {
         }
 
         // All constants that must be instantiated and stored
+        // Order here is very important. As for every constant.
+        // Its dependencies are guaranteed to have been already stored
         for (Injectable injectable : constants) {
             MethodHandle mh = injectable.buildMethodHandle();
 
@@ -93,6 +86,7 @@ public final class RegionAssembly {
         }
 
         // Last all source singletons that have not already been used as services
+        // These can really invoked in any order
         for (SourceAssembly i : sourceInjectables) {
             if (i.regionIndex > -1 && !region.isSet(i.regionIndex)) {
                 Injectable injectable = i.injectable;
@@ -107,18 +101,6 @@ public final class RegionAssembly {
                 requireNonNull(instance);
                 region.store(i.regionIndex, instance);
             }
-        }
-
-        ContainerAssembly container = compConf.memberOfContainer;
-
-        int registryIndex = root.modifiers().isGuest() ? 1 : 0;
-        InjectionManager node = container.im;
-        // Move this to lazy create via PIC
-        // And no need to store this is the region
-        if (node != null) {
-            region.store(registryIndex, node.newServiceRegistry(root, region, pic.wirelets()));
-        } else {
-            region.store(registryIndex, ServiceRegistry.empty());
         }
 
         return region;

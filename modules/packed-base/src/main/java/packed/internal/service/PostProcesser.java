@@ -33,7 +33,7 @@ import packed.internal.inject.spi.DependencyProvider;
 
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
-final class DependencyCycleDetector {
+final class PostProcesser {
 
     /**
      * Tries to find a dependency cycle.
@@ -60,7 +60,7 @@ final class DependencyCycleDetector {
         for (Injectable node : detectCyclesFor) {
             // System.out.println("Detect for " + node.directMethodHandle + " " + node.detectForCycles);
             if (node.detectForCycles) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = DependencyCycleDetector.detectCycle(resolver, node, stack, dependencies);
+                DependencyCycle dc = PostProcesser.detectCycle(resolver, node, stack, dependencies);
                 if (dc != null) {
                     return dc;
                 }

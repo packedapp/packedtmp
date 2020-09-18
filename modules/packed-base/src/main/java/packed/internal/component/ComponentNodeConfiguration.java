@@ -132,7 +132,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.wirelets = wirelets;
         int mod = driver.modifiers;
         if (parent == null) {
-            this.region = new RegionAssembly(this); // Root always needs a nodestore
+            this.region = new RegionAssembly(); // Root always needs a nodestore
 
             mod = mod | realm.pac.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
@@ -141,7 +141,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
         } else {
-            this.region = driver.modifiers().isGuest() ? new RegionAssembly(this) : parent.region;
+            this.region = driver.modifiers().isGuest() ? new RegionAssembly() : parent.region;
         }
         this.modifiers = mod;
 
@@ -153,7 +153,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Container
         if (modifiers().isContainer()) {
-            region.reserve();
             this.memberOfContainer = this.container = new ContainerAssembly(this);
         } else {
             this.container = null;

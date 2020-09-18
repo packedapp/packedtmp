@@ -34,8 +34,8 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.RuntimeRegion;
 import packed.internal.component.RegionAssembly;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
@@ -99,6 +99,7 @@ public final class InjectionManager {
     }
 
     public <T> BuildtimeService<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+
         BuildtimeService<T> e = new ComponentSourceBuildEntry<>(this, compConf, key);
         buildEntries.add(e);
         return e;
@@ -107,7 +108,7 @@ public final class InjectionManager {
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
         BuildtimeService<?> e = new AtProvideBuildEntry<>(this, compConf, atProvides);
         buildEntries.add(e);
-        compConf.region.allInjectables.add(e.injectable());
+        container.compConf.region.allInjectables.add(e.injectable());
     }
 
     public void buildTree(RegionAssembly resolver) {

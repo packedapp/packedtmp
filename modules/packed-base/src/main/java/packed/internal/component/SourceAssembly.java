@@ -83,8 +83,7 @@ public final class SourceAssembly implements DependencyProvider {
             this.instance = source;
             this.injectable = null;
             this.factory = null;
-            // All instances are stored in its region at runtime.
-            region.runtimeInstances.add(this);
+            region.runtimeInstances.add(this); // All instances are always stored in its region at runtime.
         }
     }
 

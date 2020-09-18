@@ -23,6 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.service.InjectionManager;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -51,8 +52,10 @@ public final class PackedInitializationContext {
     ComponentNode component;
 
     private final WireletPack wirelets;
+    final ComponentNodeConfiguration root;
 
-    private PackedInitializationContext(WireletPack wirelets) {
+    private PackedInitializationContext(ComponentNodeConfiguration root, WireletPack wirelets) {
+        this.root = root;
         this.wirelets = wirelets;
     }
 
@@ -90,6 +93,24 @@ public final class PackedInitializationContext {
     }
 
     public ServiceRegistry services() {
+        InjectionManager im = root.injectionManager();
+        return im.newServiceRegistry(component, component.region, wirelets);
+//                
+//        /// Create a service registry...
+//        // We do not stored this in the region but outside...
+//        ContainerAssembly container = compConf.memberOfContainer;
+//        int registryIndex = root.modifiers().isGuest() ? 1 : 0;
+//        InjectionManager node = container.im;
+//        // Move this to lazy create via PIC
+//        // And no need to store this is the region
+//        if (node != null) {
+//            region.store(registryIndex, ));
+//        } else {
+//            region.store(registryIndex, ServiceRegistry.empty());
+//        }
+//
+//        
+
         // TODO fix ServiceRegistry saa det er visibility fra Bundle/lookup klasse.
         // Som afgoer om en service er med...
         // Naahh er det ikke bare alt der bliver explicit exporteret????
@@ -97,7 +118,7 @@ public final class PackedInitializationContext {
         // TODO lav det lazy, hvis det bliver efterspurgt...
         // Ingen grund til det er i en regions node...
         // if !container return empty registry...
-        return component.region.serviceRegistry(component);
+        // return component.region.serviceRegistry(component);
     }
 
     /**
@@ -111,7 +132,7 @@ public final class PackedInitializationContext {
     }
 
     public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
-        PackedInitializationContext pic = new PackedInitializationContext(root.wirelets);
+        PackedInitializationContext pic = new PackedInitializationContext(root, root.wirelets);
         // Hmmm Packed Guest bliver jo lavet der...
         // Maaske laver vi en PackedGuest og smider i PIC. som man saa kan steale...
         if (root.modifiers().isGuest()) {
@@ -123,7 +144,7 @@ public final class PackedInitializationContext {
     }
 
     public static PackedInitializationContext initializeFromImage(ComponentNodeConfiguration root, WireletPack wirelets) {
-        PackedInitializationContext pic = new PackedInitializationContext(wirelets);
+        PackedInitializationContext pic = new PackedInitializationContext(root, wirelets);
         if (root.modifiers().isGuest()) {
             PackedGuest.initializeAndStart(root, pic);
         } else {

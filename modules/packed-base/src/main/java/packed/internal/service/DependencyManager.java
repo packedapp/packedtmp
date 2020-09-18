@@ -82,7 +82,7 @@ public final class DependencyManager {
     /** Also used for descriptors. */
     public void analyze(RegionAssembly resolver, InjectionManager node) {
         checkForMissingDependencies(node);
-        DependencyCycleDetector.dependencyCyclesDetect(resolver, detectCyclesFor);
+        PostProcesser.dependencyCyclesDetect(resolver, detectCyclesFor);
     }
 
     /**
