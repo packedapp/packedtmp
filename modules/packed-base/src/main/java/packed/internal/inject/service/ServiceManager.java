@@ -55,6 +55,11 @@ public class ServiceManager {
         return e;
     }
 
+    public void checkExportConfigurable() {
+        // when processing wirelets
+        // We should make sure some stuff is no longer configurable...
+    }
+
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();

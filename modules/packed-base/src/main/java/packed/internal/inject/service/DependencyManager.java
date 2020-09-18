@@ -49,9 +49,6 @@ import packed.internal.inject.service.assembly.ServiceAssembly;
  */
 public final class DependencyManager {
 
-    /** A list of nodes to use when detecting dependency cycles. */
-    public final ArrayList<Injectable> detectCyclesFor = new ArrayList<>();
-
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
      * {@link ServiceExtension#requireOptionally(Key...)}.
@@ -84,7 +81,7 @@ public final class DependencyManager {
     /** Also used for descriptors. */
     public void analyze(RegionAssembly resolver, InjectionManager node) {
         checkForMissingDependencies(node);
-        PostProcesser.dependencyCyclesDetect(resolver, detectCyclesFor);
+        PostProcesser.dependencyCyclesDetect(resolver, node.postProcessingInjectables);
     }
 
     /**

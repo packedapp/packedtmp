@@ -96,10 +96,10 @@ public class Injectable {
         // Down into the dependency cycle check.
         detectForCycles = true;
         if (detectForCycles) {
-            im.dependencies().detectCyclesFor.add(this);
+            im.postProcessingInjectables.add(this);
         }
         if (!ap.isStaticMember && source.injectable() != null) {
-            ArrayList<Injectable> al = im.dependencies().detectCyclesFor;
+            ArrayList<Injectable> al = im.postProcessingInjectables;
             if (!al.contains(source.injectable())) {
                 al.add(source.injectable());
                 source.injectable().detectForCycles = true;
@@ -130,7 +130,7 @@ public class Injectable {
         this.resolved = new DependencyProvider[dependencies.size()];
         this.detectForCycles = true;// resolved.length > 0;
         if (detectForCycles) {
-            im.dependencies().detectCyclesFor.add(this);
+            im.postProcessingInjectables.add(this);
         }
         buildEntry = null; // Any build entry is stored in SourceAssembly#service
         this.sourceMember = null;

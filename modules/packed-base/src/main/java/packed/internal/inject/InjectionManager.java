@@ -89,6 +89,9 @@ public final class InjectionManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
+    /** A list of nodes to use when detecting dependency cycles. */
+    public final ArrayList<Injectable> postProcessingInjectables = new ArrayList<>();
+
     /**
      * Creates a new injection manager.
      * 
@@ -125,11 +128,6 @@ public final class InjectionManager {
         }
 
         dependencies().analyze(resolver, this);
-    }
-
-    public void checkExportConfigurable() {
-        // when processing wirelets
-        // We should make sure some stuff is no longer configurable...
     }
 
     /**
