@@ -28,7 +28,6 @@ import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.hook.OnHook;
@@ -38,8 +37,9 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ExtensionAssembly;
-import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.ServiceDependency;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.sidecar.AtProvides;
@@ -78,7 +78,9 @@ import packed.internal.inject.sidecar.AtProvidesHook;
 public final class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
-    private final ContainerInjectionManager im;
+    private final InjectionManager im;
+
+    private final ServiceManager sm;
 
     /**
      * Should never be initialized by users.
@@ -88,6 +90,7 @@ public final class ServiceExtension extends Extension {
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
         this.im = ((ExtensionAssembly) extension).container().im;
+        this.sm = im.services();
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
@@ -129,8 +132,8 @@ public final class ServiceExtension extends Extension {
     @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceMap attributesExports() {
-        if (im.hasExports()) {
-            return im.exports().exports();
+        if (im.services().hasExports()) {
+            return im.services().exports().exports();
         }
         return null;
     }
@@ -269,7 +272,7 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return im.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return sm.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -286,14 +289,7 @@ public final class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        im.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
-    }
-
-    @ComponentLinked(onlyDirectLink = true)
-    private void linkChild(ServiceExtension childExtension /* , @WireletSupply Optional<ServiceWireletPipeline> wirelets */) {
-        childExtension.configuration();
-        // if(configuration.isStronglyAttachedTo(childExtension.configuation())
-        im.link(childExtension.im);
+        sm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**

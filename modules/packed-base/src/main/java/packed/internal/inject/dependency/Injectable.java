@@ -29,7 +29,7 @@ import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
-import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.InjectionManager;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.service.assembly.ServiceAssembly;
@@ -69,7 +69,7 @@ public class Injectable {
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
 
-    public final ContainerInjectionManager im;
+    public final InjectionManager im;
 
     @Nullable
     public final SourceModelMember sourceMember;

@@ -58,7 +58,7 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.container.ExtensionModel;
-import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
@@ -339,7 +339,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             container.finish();
         }
         if (getParent() == null) {
-            ContainerInjectionManager im = injectionManager();
+            InjectionManager im = injectionManager();
             im.buildTree(region);
         }
         finalState = true;
@@ -369,7 +369,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         return name;
     }
 
-    public ContainerInjectionManager injectionManager() {
+    public InjectionManager injectionManager() {
         return memberOfContainer.im;
     }
 
@@ -636,7 +636,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) injectionManager().exports().export(source.service,
+        return (ExportedServiceConfiguration<T>) injectionManager().services().exports().export(source.service,
                 captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 

@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.InjectionManager;
 
 /** Contains data and logic relevant for containers. */
 public final class ContainerAssembly {
@@ -44,7 +44,7 @@ public final class ContainerAssembly {
 
     boolean hasRunPreContainerChildren;
 
-    public final ContainerInjectionManager im;
+    public final InjectionManager im;
 
     /** Any parent container this container might have */
     @Nullable
@@ -70,7 +70,7 @@ public final class ContainerAssembly {
             }
             c.add(this);
         }
-        this.im = new ContainerInjectionManager(this);
+        this.im = new InjectionManager(this);
     }
 
     public void checkNoChildContainers() {

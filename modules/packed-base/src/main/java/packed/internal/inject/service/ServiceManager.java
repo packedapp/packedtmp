@@ -15,11 +15,51 @@
  */
 package packed.internal.inject.service;
 
+import static java.util.Objects.requireNonNull;
+
+import app.packed.base.Nullable;
+import packed.internal.inject.InjectionManager;
+
 /**
  *
  */
 public class ServiceManager {
 
+    /** A service exporter handles everything to do with exports of services. */
+    @Nullable
+    private ServiceExportManager exporter;
+
+    public final InjectionManager im;
+
+    /**
+     * @param injectionManager
+     */
+    public ServiceManager(InjectionManager injectionManager) {
+        this.im = requireNonNull(injectionManager);
+    }
+
+    public boolean hasExports() {
+        return exporter != null;
+    }
+
+    /**
+     * Returns the {@link ServiceExportManager} for this builder.
+     * 
+     * @return the service exporter for this builder
+     */
+    public ServiceExportManager exports() {
+        ServiceExportManager e = exporter;
+        if (e == null) {
+            e = exporter = new ServiceExportManager(this);
+        }
+        return e;
+    }
+
+    public void resolveExports() {
+        if (exporter != null) {
+            exporter.resolve();
+        }
+    }
     // En InjectionManager kan have en service manager...
 
     // Vi smide alt omkring services der...

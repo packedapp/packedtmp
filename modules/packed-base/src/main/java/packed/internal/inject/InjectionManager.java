@@ -41,7 +41,7 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.DependencyManager;
-import packed.internal.inject.service.ServiceExportManager;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
@@ -58,19 +58,19 @@ import packed.internal.util.LookupUtil;
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
  * over multiple classes. With this class being the main one.
  */
-public final class ContainerInjectionManager {
+public final class InjectionManager {
 
     /** A VarHandle that can access ServiceExtension#im. */
     private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "im",
-            ContainerInjectionManager.class);
+            InjectionManager.class);
+
+    /** All injectables that needs to be resolved. */
+    final ArrayList<Injectable> allInjectables = new ArrayList<>();
 
     /** All explicit added build entries. */
     public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
 
-    /** Any children of the extension. */
-    @Nullable
-    ArrayList<ContainerInjectionManager> children;
-
+    /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
@@ -81,7 +81,7 @@ public final class ContainerInjectionManager {
 
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
-    private ServiceExportManager exporter;
+    private ServiceManager services;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
@@ -89,17 +89,24 @@ public final class ContainerInjectionManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
-    // Taenker den her er paa injection manager
-    final ArrayList<Injectable> allInjectables = new ArrayList<>();
-
     /**
      * Creates a new injection manager.
      * 
      * @param container
      *            the container this manager belongs to
      */
-    public ContainerInjectionManager(ContainerAssembly container) {
+    public InjectionManager(ContainerAssembly container) {
         this.container = requireNonNull(container);
+    }
+
+    /**
+     * Adds the specified injectable to list of injectables that needs to be resolved.
+     * 
+     * @param injectable
+     *            the injectable to add
+     */
+    public void addInjectable(Injectable injectable) {
+        allInjectables.add(injectable);
     }
 
     public void buildTree(RegionAssembly resolver) {
@@ -109,8 +116,8 @@ public final class ContainerInjectionManager {
             InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
         }
 
-        if (exporter != null) {
-            exporter.resolve();
+        if (services != null) {
+            services.resolveExports();
         }
 
         for (Injectable i : allInjectables) {
@@ -152,33 +159,22 @@ public final class ContainerInjectionManager {
     }
 
     /**
-     * Returns the {@link ServiceExportManager} for this builder.
+     * Returns the {@link ServiceManager} for this builder.
      * 
      * @return the service exporter for this builder
      */
-    public ServiceExportManager exports() {
-        ServiceExportManager e = exporter;
+    public ServiceManager services() {
+        ServiceManager e = services;
         if (e == null) {
-            e = exporter = new ServiceExportManager(this);
+            e = services = new ServiceManager(this);
         }
         return e;
     }
 
-    public boolean hasExports() {
-        return exporter != null;
-    }
-
-    public void link(ContainerInjectionManager child) {
-        if (children == null) {
-            children = new ArrayList<>(5);
-        }
-        children.add(child);
-    }
-
     public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
-            if (exporter != null) {
-                for (ExportedServiceAssembly<?> n : exporter) {
+            if (services().hasExports()) {
+                for (ExportedServiceAssembly<?> n : services().exports()) {
                     c.provides(n.key());
                 }
             }
@@ -189,14 +185,10 @@ public final class ContainerInjectionManager {
     public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region, WireletPack wc) {
         LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (var e : exports()) {
+        for (var e : services().exports()) {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
         return new PackedInjector(comp.configSite(), runtimeEntries);
-    }
-
-    public void addInjectable(Injectable injectable) {
-        allInjectables.add(injectable);
     }
 
     public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
@@ -221,7 +213,7 @@ public final class ContainerInjectionManager {
         return e;
     }
 
-    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve(ContainerInjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices) {
+    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices) {
 
         // First process provided entries, then any entries added via provideAll
         resolve0(im, resolvedServices, buildEntries);
@@ -240,7 +232,7 @@ public final class ContainerInjectionManager {
         return resolvedServices;
     }
 
-    private void resolve0(ContainerInjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
+    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
             Collection<? extends ServiceAssembly<?>> buildEntries) {
         for (ServiceAssembly<?> entry : buildEntries) {
             ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
@@ -259,7 +251,7 @@ public final class ContainerInjectionManager {
      *            the extension to extract from
      * @return the service node
      */
-    public static ContainerInjectionManager fromExtension(ServiceExtension extension) {
-        return (ContainerInjectionManager) VH_SERVICE_EXTENSION_NODE.get(extension);
+    public static InjectionManager fromExtension(ServiceExtension extension) {
+        return (InjectionManager) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 }

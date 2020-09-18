@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceExtension;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
@@ -35,7 +35,7 @@ import packed.internal.util.KeyBuilder;
 public final class ProvideAllFromOtherInjector {
 
     /** The injector builder from where the service will be provided. */
-    public final ContainerInjectionManager node;
+    public final InjectionManager node;
 
     /** The configuration site of the provide all statement. */
     public final ConfigSite configSite;
@@ -60,7 +60,7 @@ public final class ProvideAllFromOtherInjector {
      *            any wirelets used when importing the injector
      */
     @SuppressWarnings("unchecked")
-    public ProvideAllFromOtherInjector(ContainerInjectionManager node, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+    public ProvideAllFromOtherInjector(InjectionManager node, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);

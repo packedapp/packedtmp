@@ -31,7 +31,7 @@ import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceMap;
 import packed.internal.inject.InjectionErrorManagerMessages;
-import packed.internal.inject.ContainerInjectionManager;
+import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.PackedExportedServiceConfiguration;
 import packed.internal.inject.service.assembly.ServiceAssembly;
@@ -59,7 +59,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     private ArrayList<ExportedServiceAssembly<?>> exportedEntries;
 
     /** The extension node this exporter is a part of. */
-    private final ContainerInjectionManager im;
+    private final InjectionManager im;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
@@ -71,8 +71,8 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
      * @param im
      *            the extension node this export manager belongs to
      */
-    public ServiceExportManager(ContainerInjectionManager im) {
-        this.im = requireNonNull(im);
+    public ServiceExportManager(ServiceManager im) {
+        this.im = requireNonNull(im.im);
     }
 
     /**
