@@ -127,7 +127,8 @@ public final class InjectionManager {
             i.resolve();
         }
 
-        dependencies().analyze(resolver, this);
+        dependencies().checkForMissingDependencies(this);
+        PostProcesser.dependencyCyclesDetect(resolver, postProcessingInjectables);
     }
 
     /**
