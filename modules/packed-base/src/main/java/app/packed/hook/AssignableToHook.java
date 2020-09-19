@@ -68,15 +68,6 @@ public final class AssignableToHook<T> implements Hook {
     }
 
     /**
-     * Returns the instance.
-     *
-     * @return the instance
-     */
-    public HookApplicator<T> applicator() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Returns the actual type (assignable to T).
      * 
      * @return the actual type

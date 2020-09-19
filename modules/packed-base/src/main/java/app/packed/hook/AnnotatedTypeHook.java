@@ -60,10 +60,6 @@ public final class AnnotatedTypeHook<T extends Annotation> implements Hook {
         return annotation;
     }
 
-    public HookApplicator<Object> applicator() {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns the type that was annotated.
      * 

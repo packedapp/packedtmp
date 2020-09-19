@@ -28,8 +28,6 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.hook.MemberUnreflector;
-import packed.internal.hook.applicator.MethodOperator;
-import packed.internal.hook.applicator.PackedMethodHookApplicator;
 import packed.internal.util.StringFormatter;
 
 /** A hook representing a method annotated with a specific type. */
@@ -71,11 +69,6 @@ public final class AnnotatedMethodHook<A extends Annotation> implements Hook {
      */
     public A annotation() {
         return annotation;
-    }
-
-    public <E> HookApplicator<E> applicator(MethodOperator<E> operator) {
-        processor.checkOpen();
-        return new PackedMethodHookApplicator<E>(this, operator, method);
     }
 
     // /**
