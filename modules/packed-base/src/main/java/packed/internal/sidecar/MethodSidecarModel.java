@@ -82,11 +82,11 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
                 if (ap != null) {
+                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     if (!Modifier.isStatic(m.getModifiers())) {
-                        throw new IllegalStateException("Methods annotated with @Provide must be static, method = " + m);
+                        mh = mh.bindTo(instance);
                     }
                     Key<?> k = Key.fromMethodReturnType(m);
-                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     map.put(k, mh);
                 }
 
@@ -95,10 +95,11 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                     if (onInitialize != null) {
                         throw new IllegalStateException(oc.type() + " defines more than one method with " + OnInitialize.class.getSimpleName());
                     }
-                    if (!Modifier.isStatic(m.getModifiers())) {
-                        throw new IllegalStateException("Methods annotated with @Provide must be static, method = " + m);
-                    }
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    if (!Modifier.isStatic(m.getModifiers())) {
+                        mh = mh.bindTo(instance);
+                    }
+
                     onInitialize = mh;
                 }
             });

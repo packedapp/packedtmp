@@ -38,6 +38,7 @@ public final class RuntimeRegionInvoker implements Invoker {
     /** The method handle to invoke */
     private final MethodHandle mh;
 
+    /** The region that stores needed data. */
     private final RuntimeRegion region;
 
     private RuntimeRegionInvoker(MethodHandle mh, RuntimeRegion region) {

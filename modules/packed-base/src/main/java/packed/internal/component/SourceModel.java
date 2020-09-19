@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
+import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
 import packed.internal.container.RealmModel;
@@ -40,8 +42,10 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
+import packed.internal.inject.dependency.Injectable;
 import packed.internal.invoke.OpenClass;
 import packed.internal.sidecar.MethodSidecarModel;
+import packed.internal.sidecar.RuntimeRegionInvoker;
 import packed.internal.sidecar.model.MethodSidecarHelper;
 import packed.internal.sidecar.model.Model;
 import packed.internal.util.ThrowableUtil;
@@ -112,7 +116,39 @@ public final class SourceModel extends Model {
         return s;
     }
 
-    public <T> ComponentNodeConfiguration invokeOnHookOnInstall(ComponentNodeConfiguration acc) {
+    public <T> void register(ComponentNodeConfiguration compConf) {
+        SourceAssembly source = compConf.source;
+        for (SourceModelMethod smm : methods) {
+
+            // Den kan faktisk godt have flere sidecars... en enkelt metode!!!!
+            // F.eks. flere der provider...
+
+            Injectable i = new Injectable(compConf.source, smm);
+            compConf.injectionManager().addInjectable(i);
+            if (compConf.source.regionIndex > -1) {
+                // Maybe shared with SourceAssembly
+                if (smm.runAt == RunAt.INITIALIZATION) {
+
+                }
+                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
+
+                MethodHandle mh1 = MethodHandles.filterArguments(smm.directMethodHandle, 0, source.dependencyAccessor());
+
+                //
+                MethodHandle mh2 = MethodHandles.collectArguments(smm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                mh2 = mh2.bindTo(mh1);
+
+                compConf.region.initializers.add(mh2);
+
+                System.out.println(mh2);
+            }
+        }
+
+        // Tmp
+        invokeOnHookOnInstall(compConf);
+    }
+
+    public <T> void invokeOnHookOnInstall(ComponentNodeConfiguration compConf) {
         try {
             // First invoke any OnHook methods on the container source (bundle)
             if (sourceHook != null) {
@@ -123,15 +159,14 @@ public final class SourceModel extends Model {
             for (ExtensionRequestPair he : extensionHooks) {
                 // Finds (possible installing) the extension with @OnHook methods
                 // Maybe null, but this code will be refactored out.
-                Extension extension = acc.memberOfContainer.useExtension(he.extensionType);
+                Extension extension = compConf.memberOfContainer.useExtension(he.extensionType);
 
                 // Invoke each method annotated with @OnHook on the extension instance
-                he.request.invoke(extension, acc);
+                he.request.invoke(extension, compConf);
             }
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-        return acc;
     }
 
     /**

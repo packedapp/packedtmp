@@ -93,6 +93,8 @@ public abstract class SidecarModel<T> {
         /** A var handle */
         private final VarHandle vhConfiguration;
 
+        protected Object instance;
+
         // If we get a shared Sidecar we can have a single MethodHandle configure
         Builder(VarHandle vh, MethodHandle configure, Class<?> implementation, C context) {
             this.vhConfiguration = requireNonNull(vh);
@@ -119,27 +121,26 @@ public abstract class SidecarModel<T> {
             // Don't think it makes sense to register
 
             MethodHandle constructor = ib.build();
-            Object o;
             try {
-                o = constructor.invoke();
+                instance = constructor.invoke();
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
 
-            Object existing = vhConfiguration.compareAndExchange(o, null, configuration);
+            Object existing = vhConfiguration.compareAndExchange(instance, null, configuration);
             if (existing == null) {
                 try {
                     // Invokes app.packed.component.Bundle#configure()
-                    mhConfigure.invoke(o);
+                    mhConfigure.invoke(instance);
                 } catch (Throwable e) {
                     throw ThrowableUtil.orUndeclared(e);
                 } finally {
                     // sets Bundle.configuration to a marker that indicates the bundle has been consumed
-                    vhConfiguration.setVolatile(o, null);
+                    vhConfiguration.setVolatile(instance, null);
                 }
             } else {
                 // Can be this thread or another thread that is already using the bundle.
-                throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + o.getClass());
+                throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + instance.getClass());
             }
         }
     }

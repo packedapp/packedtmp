@@ -20,10 +20,15 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.sidecar.ActivateSidecar;
+import app.packed.sidecar.Invoker;
+import app.packed.sidecar.MethodSidecar;
+import app.packed.statemachine.OnInitialize;
 
 /**
  *
@@ -33,16 +38,19 @@ public class Foo extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        provideInstance("asdasdasd");
         provide(MyComp.class);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         App.of(new Foo());
     }
 
     public static class MyComp {
 
-        public MyComp() {}
+        public MyComp(String s) {
+            System.out.println(s);
+        }
 
         @Hej
         public void foo() {
@@ -56,4 +64,34 @@ public class Foo extends BaseBundle {
     public @interface Hej {
 
     }
+}
+
+class TestIt extends MethodSidecar {
+//
+//    @Override
+//    protected void configure() {
+//    provideInvoker(); <--- we must explicitly enable it...
+//        debug();
+//    }
+    static final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+
+    @OnInitialize
+    public void foo(Invoker i) throws Throwable {
+
+        i.invoke();
+
+//        ses.scheduleAtFixedRate(() -> {
+//            try {
+//                i.invoke();
+//            } catch (Throwable e) {
+//                throw ThrowableUtil.orUndeclared(e);
+//            }
+//        }, 1, 1, TimeUnit.SECONDS);
+
+    }
+//
+//    @Provide
+//    public static LocalDateTime now() {
+//        return LocalDateTime.now();
+//    }
 }

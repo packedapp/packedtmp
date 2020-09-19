@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -52,7 +51,6 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
-import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
@@ -61,8 +59,6 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.container.ExtensionModel;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.dependency.Injectable;
-import packed.internal.sidecar.RuntimeRegionInvoker;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
@@ -177,42 +173,13 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             this.source = new SourceAssembly(this, regionIndex, driver.data);
 
             if (source.instance != null) {
-                // Add the source to the regions constant lists
                 region.constants.add(source);
             } else if (source.injectable != null) {
                 injectionManager().addInjectable(source.injectable);
             }
 
-            for (SourceModelMethod smm : source.model.methods) {
-                Injectable i = new Injectable(source, smm);
-                injectionManager().addInjectable(i);
-                if (regionIndex > -1) {
-                    // Maybe shared with SourceAssembly
-                    if (smm.runAt == RunAt.INITIALIZATION) {
+            source.model.register(this);
 
-                    }
-                    System.out.println(smm.directMethodHandle);
-
-                    MethodHandle mh1 = MethodHandles.filterArguments(smm.directMethodHandle, 0, source.dependencyAccessor());
-
-                    System.out.println(mh1);
-                    System.out.println("-----");
-                    System.out.println(RuntimeRegionInvoker.MH_INVOKER);
-                    System.out.println(smm.model.onInitialize);
-                    System.out.println();
-                    MethodHandle mh2 = MethodHandles.collectArguments(smm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
-                    System.out.println(mh2);
-                    System.out.println("----------");
-                    mh2 = mh2.bindTo(mh1);
-                    region.initializers.add(mh2);
-
-                    System.out.println(mh2);
-                }
-
-            }
-
-            // Tmp
-            this.source.model.invokeOnHookOnInstall(this);
         } else {
             this.source = null;
         }
