@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.util;
+package packed.internal.methodhandle;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 /**
  *
@@ -24,5 +25,9 @@ public class MethodHandleUtil {
 
     public static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {
         return target.asType(target.type().changeReturnType(newReturnType));
+    }
+
+    public static MethodHandle replaceParameter(MethodHandle target, int position, MethodHandle replaceWith) {
+        return MethodHandles.filterArguments(target, position, replaceWith);
     }
 }

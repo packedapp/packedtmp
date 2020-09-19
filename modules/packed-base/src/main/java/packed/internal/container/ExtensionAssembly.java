@@ -44,23 +44,23 @@ import packed.internal.util.ThrowableUtil;
 public final class ExtensionAssembly implements ExtensionConfiguration, Comparable<ExtensionAssembly> {
 
     /** A MethodHandle for invoking {@link Extension#add()}. */
-    private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
+    private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
 
     /** A MethodHandle for invoking {@link Extension#add()}. */
-    static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "preChildContainers",
+    static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "preChildContainers",
             void.class);
 
     /** A MethodHandle for invoking {@link Extension#add()}. */
-    static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Extension.class, "complete", void.class);
+    static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "complete", void.class);
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
-    static final MethodHandle MH_FIND_WIRELET = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
+    static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
     /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
-    static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
+    static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
     /** A VarHandle used by {@link #of(ContainerAssembly, Class)} to access the field Extension#configuration. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivate(MethodHandles.lookup(), Extension.class, "configuration",
+    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** This extension's component configuration. */

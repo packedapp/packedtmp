@@ -28,9 +28,9 @@ import packed.internal.methodhandle.LookupUtil;
  *
  */
 public class MH1 {
-    static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.mhStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
+    static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.lookupStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
 
-    static final MethodHandle OPTIONAL_OF = LookupUtil.mhStaticPublic(Optional.class, "of", Optional.class, Object.class);
+    static final MethodHandle OPTIONAL_OF = LookupUtil.lookupStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
     public static final MethodHandle UPPER_CASE = mhOf(MH1.class, "uppercase", String.class);
 

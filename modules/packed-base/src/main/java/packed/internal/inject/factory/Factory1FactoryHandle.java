@@ -33,7 +33,7 @@ import packed.internal.methodhandle.LookupUtil;
 public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
+    private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
     private static final ClassValue<Entry<TypeLiteral<?>, List<DependencyDescriptor>>> CACHE = new ClassValue<>() {

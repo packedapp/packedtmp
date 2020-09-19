@@ -29,7 +29,7 @@ import packed.internal.methodhandle.LookupUtil;
 public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
-    private static final MethodHandle APPLY = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
+    private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
 
     /** The function we map the result from. */
     final FactoryHandle<T> mapFrom;
@@ -48,7 +48,7 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
         Function<Integer, Integer> ff = i -> i + 1;
 
-        MethodHandle apply = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
+        MethodHandle apply = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
         MethodHandle fu = apply.bindTo(ff);
 
         c = c.asType(c.type().changeReturnType(Object.class));

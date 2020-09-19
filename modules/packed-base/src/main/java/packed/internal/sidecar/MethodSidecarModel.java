@@ -35,11 +35,11 @@ import packed.internal.methodhandle.LookupUtil;
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.vhPrivate(MethodHandles.lookup(), MethodSidecar.class, "configuration",
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class, "configuration",
             MethodSidecarConfiguration.class);
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
+    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
             void.class);
 
     public final Map<Key<?>, MethodHandle> keys;

@@ -35,7 +35,7 @@ import app.packed.inject.ProvisionException;
 
 // checker aldrig for null.
 // Men checker den korrekte type???
-public abstract class FactoryHandle<T> extends Object {
+public abstract class FactoryHandle<T> {
 
     //////// TYPES (Raw)
     // ExactType... -> Instance, Constructor

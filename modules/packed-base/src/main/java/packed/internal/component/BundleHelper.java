@@ -31,13 +31,13 @@ public final class BundleHelper {
     public static final BundleHelper BUNDLE_CONSUMED = new BundleHelper();
 
     /** A VarHandle that can access Bundle#configuration. */
-    private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.vhPrivate(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
+    private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Bundle.class, "configuration", Object.class);
 
     /** A VarHandle used from {@link #getDriver(Bundle)} to access the driver field from a {@link Bundle}. */
-    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.vhPrivate(MethodHandles.lookup(), Bundle.class, "driver", PackedComponentDriver.class);
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Bundle.class, "driver", PackedComponentDriver.class);
 
     /** A MethodHandle that can invoke Bundle#configure. */
-    private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
+    private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Bundle.class, "configure", void.class);
 
     /** No instances for you. */
     private BundleHelper() {}

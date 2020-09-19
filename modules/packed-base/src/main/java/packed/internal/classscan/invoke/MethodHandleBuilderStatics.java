@@ -30,14 +30,14 @@ import packed.internal.methodhandle.LookupUtil;
  */
 final class MethodHandleBuilderStatics {
 
-    static final MethodHandle WRAP_OPTIONAL = LookupUtil.mhVirtualPrivate(MethodHandles.lookup(), DependencyDescriptor.class, "wrapIfOptional", Object.class,
+    static final MethodHandle WRAP_OPTIONAL = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), DependencyDescriptor.class, "wrapIfOptional", Object.class,
             Object.class);
 
-    static final MethodHandle OPTIONAL_EMPTY = LookupUtil.mhStaticPublic(Optional.class, "empty", Optional.class);
+    static final MethodHandle OPTIONAL_EMPTY = LookupUtil.lookupStaticPublic(Optional.class, "empty", Optional.class);
 
-    static final MethodHandle OPTIONAL_OF = LookupUtil.mhStaticPublic(Optional.class, "of", Optional.class, Object.class);
+    static final MethodHandle OPTIONAL_OF = LookupUtil.lookupStaticPublic(Optional.class, "of", Optional.class, Object.class);
 
-    static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.mhStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
+    static final MethodHandle OPTIONAL_OF_NULLABLE = LookupUtil.lookupStaticPublic(Optional.class, "ofNullable", Optional.class, Object.class);
 
     static final MethodHandle optionalOfTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(MethodHandleBuilderStatics.OPTIONAL_OF, MethodType.methodType(Optional.class, type));

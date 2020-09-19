@@ -37,7 +37,7 @@ import packed.internal.classscan.invoke.MethodHandleBuilder.Entry;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.context.PackedInjectionContext;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.methodhandle.MethodHandleUtil;
 
 /**
  *
@@ -152,7 +152,7 @@ class MethodHandleBuilderHelper {
                             // } // else should fail...
                         }
                         if (sd.isOptional()) {
-                            mh = MethodHandles.filterArguments(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
+                            mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
                         }
                     }
                     is.push(entry.indexes);
@@ -177,7 +177,7 @@ class MethodHandleBuilderHelper {
                     tmp = MethodHandles.filterReturnValue(tmp, MethodHandleBuilderStatics.optionalOfNullableTo(askingForType));
                 }
 
-                mh = MethodHandles.filterArguments(mh, is.size() + add, tmp);
+                mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, tmp);
                 is.push(anno.index);
             }
         }

@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.sidecar.Invoker;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.methodhandle.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.methodhandle.MethodHandleUtil;
 
 /**
  *
@@ -33,7 +33,7 @@ public final class RuntimeRegionInvoker<T> implements Invoker<T> {
 
     /** A method handle for creating new Invoker instance. We explicitly cast return type from PackedInvoker->Invoker. */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
-            .castReturnType(LookupUtil.mhConstructorSelf(MethodHandles.lookup(), MethodHandle.class, RuntimeRegion.class), Invoker.class);
+            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, RuntimeRegion.class), Invoker.class);
 
     /** The method handle to invoke */
     private final MethodHandle mh;

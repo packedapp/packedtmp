@@ -47,7 +47,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     };
 
     /** A method handle for {@link Supplier#get()}. */
-    private static final MethodHandle GET = LookupUtil.mhVirtualPublic(Supplier.class, "get", Object.class);
+    private static final MethodHandle GET = LookupUtil.lookupVirtualPublic(Supplier.class, "get", Object.class);
 
     /** The supplier that creates the actual objects. */
     private final Supplier<? extends T> supplier;
@@ -94,17 +94,3 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
         return MethodType.methodType(returnTypeRaw());
     }
 }
-
-// /** {@inheritDoc} */
-// @Override
-// @Nullable
-// public T invoke(Object[] ignore) {
-// T instance = supplier.get();
-// if (!returnTypeRaw().isInstance(instance)) {
-// throw new InjectionException(
-// "The Supplier '" + format(supplier.getClass()) + "' used when creating a Factory0 instance was expected to produce
-// instances of '"
-// + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-// }
-// return instance;
-// }

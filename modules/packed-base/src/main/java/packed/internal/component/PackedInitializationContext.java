@@ -40,13 +40,13 @@ import packed.internal.methodhandle.LookupUtil;
 public final class PackedInitializationContext {
 
     /** A MethodHandle for invoking {@link #component()}. */
-    public static final MethodHandle MH_COMPONENT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "component", Component.class);
+    public static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "component", Component.class);
 
     /** A MethodHandle for invoking {@link #guest()}. */
-    public static final MethodHandle MH_GUEST = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "guest", Guest.class);
+    public static final MethodHandle MH_GUEST = LookupUtil.lookupVirtual(MethodHandles.lookup(), "guest", Guest.class);
 
     /** A MethodHandle for invoking {@link #services()}. */
-    public static final MethodHandle MH_SERVICES = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "services", ServiceRegistry.class);
+    public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceRegistry.class);
 
     /** The component node we are building. */
     ComponentNode component;

@@ -44,6 +44,7 @@ import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.inject.dependency.Injectable;
+import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 import packed.internal.sidecar.model.MethodSidecarHelper;
@@ -131,7 +132,7 @@ public final class SourceModel extends Model {
 
                 }
 
-                MethodHandle mh1 = MethodHandles.filterArguments(smm.directMethodHandle, 0, source.dependencyAccessor());
+                MethodHandle mh1 = MethodHandleUtil.replaceParameter(smm.directMethodHandle, 0, source.dependencyAccessor());
                 System.out.println("----");
                 // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
                 System.out.println(smm.model.onInitialize);

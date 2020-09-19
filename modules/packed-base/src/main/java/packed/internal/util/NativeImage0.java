@@ -46,8 +46,8 @@ class NativeImage0 {
             }
 
             try {
-                MH_REGISTER_EXECUTABLES = LookupUtil.mhStaticPublic(rr, "register", void.class, Executable[].class);
-                MH_REGISTER_FIELDS = LookupUtil.mhStaticPublic(rr, "register", void.class, Field[].class);
+                MH_REGISTER_EXECUTABLES = LookupUtil.lookupStaticPublic(rr, "register", void.class, Executable[].class);
+                MH_REGISTER_FIELDS = LookupUtil.lookupStaticPublic(rr, "register", void.class, Field[].class);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new ExceptionInInitializerError(e);

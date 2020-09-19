@@ -25,23 +25,7 @@ import app.packed.inject.Factory;
 /**
  *
  */
-
-//Ideen er vi dropper disse. Fordi all metoder virker...
-//Men instanse metoder skal man binde...
-//Factory.findMethod(Doo.class, "dooo").bind(new Doo());
-
-//static <T> Factory<T> fromMethodHandle(MethodHandle mh) {
-//// We don't support this because annotations and generic information are stripped from MethodHandles.
-//throw new UnsupportedOperationException();
-//}
-//Virker kun med noget der
-//final MethodHandle toMethodHandle() {
-////How does this method handle prime annotations????
-////It does not, so maybe just jinx it...
-//throw new UnsupportedOperationException();
-//}
-
-public class DeprecatedFactory {
+public class NewFactoryMethods2Deprecated {
 
     static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
         throw new UnsupportedOperationException();

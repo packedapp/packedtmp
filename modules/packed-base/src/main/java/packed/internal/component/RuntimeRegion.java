@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.service.ServiceRegistry;
 import packed.internal.methodhandle.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
+import packed.internal.methodhandle.MethodHandleUtil;
 
 /**
  * All strongly connected components relate to the same pod.
@@ -33,7 +33,7 @@ import packed.internal.util.MethodHandleUtil;
 public final class RuntimeRegion {
 
     /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */
-    static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
+    static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.lookupVirtual(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
     public final Object[] store;
 
@@ -79,7 +79,6 @@ public final class RuntimeRegion {
 
     public static MethodHandle readSingletonAs(int index, Class<?> type) {
         MethodHandle mh = MethodHandles.insertArguments(MH_GET_SINGLETON_INSTANCE, 1, index);
-        mh = MethodHandleUtil.castReturnType(mh, type);
-        return mh;
+        return MethodHandleUtil.castReturnType(mh, type);
     }
 }
