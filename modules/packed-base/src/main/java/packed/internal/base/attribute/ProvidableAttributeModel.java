@@ -23,8 +23,8 @@ import java.util.Map;
 
 import app.packed.base.AttributeProvide;
 import app.packed.base.Nullable;
+import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.OpenClass;
 
 /**
  *

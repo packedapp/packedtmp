@@ -27,8 +27,8 @@ import app.packed.inject.Provide;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
+import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.OpenClass;
 import packed.internal.util.LookupUtil;
 
 /** A model of a {@link MethodSidecar}. */

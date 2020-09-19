@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.util;
+package packed.internal.classscan.util;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,8 +23,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 import app.packed.base.Key;
-import packed.internal.invoke.MethodHandleBuilder;
-import packed.internal.invoke.OpenClass;
+import packed.internal.classscan.invoke.MethodHandleBuilder;
+import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -77,7 +77,7 @@ public final class InstantiatorBuilder {
         TypeUtil.checkClassIsInstantiable(implementation);
         OpenClass oc = new OpenClass(lookup, implementation, true);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-        Constructor<?> constructor = implementation.getDeclaredConstructors()[0];
+        Constructor<?> constructor = ConstructorUtil.findInjectableISE(implementation);
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
 

@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.classscan.invoke;
 
 /**
  *
  */
-@SuppressWarnings("serial")
-public class PackedIllegalAccessException extends RuntimeException {
-    public PackedIllegalAccessException(IllegalAccessException e) {
-        super(e);
-    }
+// IDeen er at man kan specificere den til OpenClass...
+public enum SourceModelX {
+    INJECT_ONLY, FULL;
 }

@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 import app.packed.component.Component;
 import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
+import packed.internal.classscan.util.InstantiatorBuilder;
 import packed.internal.component.PackedInitializationContext;
-import packed.internal.inject.util.InstantiatorBuilder;
 
 /**
  *

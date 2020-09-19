@@ -17,9 +17,9 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
+import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.component.SourceModel;
 import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.invoke.OpenClass;
 
 /**
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}

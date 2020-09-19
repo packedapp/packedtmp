@@ -12,9 +12,8 @@ module app.packed.base {
     exports app.packed.sidecar;
     exports app.packed.statemachine;
 
-    exports packed.internal.invoke to app.packed.sidecar2;
+    exports packed.internal.classscan.invoke to app.packed.sidecar2;
     exports packed.internal.util to app.packed.sidecar2;
-    exports packed.internal.inject.util to app.packed.sidecar2;
 
     // Temporary...
 //    exports packed.internal.invoke to app.packed.banana, app.packed.function, app.packed.conta;

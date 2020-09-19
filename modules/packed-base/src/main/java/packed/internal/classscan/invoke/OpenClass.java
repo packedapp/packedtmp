@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.invoke;
+package packed.internal.classscan.invoke;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,8 +28,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
+import packed.internal.classscan.util.ConstructorUtil;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.util.FindInjectableConstructor;
 import packed.internal.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableConsumer;
@@ -82,7 +82,7 @@ public final class OpenClass {
     }
 
     public MethodHandle findConstructor(MethodHandleBuilder dim) {
-        Constructor<?> constructor = FindInjectableConstructor.find(type);
+        Constructor<?> constructor = ConstructorUtil.findInjectableISE(type);
         return new MethodHandleBuilderHelper(this, constructor, dim).find();
     }
 

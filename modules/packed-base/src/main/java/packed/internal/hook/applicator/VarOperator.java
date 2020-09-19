@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
 import app.packed.hook.AnnotatedFieldHook;
-import packed.internal.invoke.PackedIllegalAccessException;
+import packed.internal.classscan.invoke.PackedIllegalAccessException;
 import packed.internal.util.ThrowableUtil;
 
 /**

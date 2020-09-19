@@ -15,9 +15,12 @@
  */
 package packed.internal.component;
 
+import java.util.Map;
+
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
+import app.packed.inject.Inject;
 
 /**
  *
@@ -30,6 +33,7 @@ public class Zzz extends BaseBundle {
         // service();
         provideInstance("sdasd");
         install(Foo.class);
+        install(Map.class);
         use(MyEx.class);
     }
 
@@ -43,9 +47,13 @@ public class Zzz extends BaseBundle {
     static class MyEx extends Extension {}
 
     public static class Foo {
+        @Inject
         public Foo(String s1, String s2, String s3) {
             System.out.println("OK " + s1);
         }
 
+        public Foo(String s1) {
+            System.out.println("OK " + s1);
+        }
     }
 }

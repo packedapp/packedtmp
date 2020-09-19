@@ -27,8 +27,8 @@ import app.packed.base.Nullable;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
+import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.OpenClass;
 import packed.internal.util.Tiny;
 import packed.internal.util.TinyPair;
 
