@@ -47,5 +47,6 @@ final class SidecarModelMethods {
         }
 
         SidecarAssemble sa = m.getAnnotation(SidecarAssemble.class);
+        System.out.println(sa);
     }
 }

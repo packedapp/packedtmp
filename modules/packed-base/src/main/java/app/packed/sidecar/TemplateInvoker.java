@@ -68,7 +68,7 @@ public interface TemplateInvoker<T> {
      * @throws ClassCastException
      *             if the specified template is not an instance of T
      */
-    Invoker toInvoker(T template);
+    Invoker<?> toInvoker(T template);
 
     MethodHandle toMethodHandle();
 
