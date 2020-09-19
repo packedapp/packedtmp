@@ -53,12 +53,19 @@ public final class LookupUtil {
         return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && (PREVIOUS_LOOKUP_CLASS == null || previousLookupClass(lookup) == null);
     }
 
-    // finds a method in a class that is different form lookup.lookupClass
-    public static MethodHandle mhVirtualPrivate(MethodHandles.Lookup lookup, Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    public static MethodHandle mhConstructorSelf(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
+        MethodType mt = MethodType.methodType(void.class, parameterTypes);
+        try {
+            return caller.findConstructor(caller.lookupClass(), mt);
+        } catch (ReflectiveOperationException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
+
+    public static MethodHandle mhStaticPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
-            MethodHandles.Lookup l = MethodHandles.privateLookupIn(refc, lookup);
-            return l.findVirtual(refc, name, mt);
+            return MethodHandles.publicLookup().findStatic(refc, name, mt);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -73,19 +80,12 @@ public final class LookupUtil {
         }
     }
 
-    public static MethodHandle mhConstructorSelf(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
-        MethodType mt = MethodType.methodType(void.class, parameterTypes);
-        try {
-            return caller.findConstructor(caller.lookupClass(), mt);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    public static MethodHandle mhStaticPublic(Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
+    // finds a method in a class that is different form lookup.lookupClass
+    public static MethodHandle mhVirtualPrivate(MethodHandles.Lookup lookup, Class<?> refc, String name, Class<?> returnType, Class<?>... parameterTypes) {
         MethodType mt = MethodType.methodType(returnType, parameterTypes);
         try {
-            return MethodHandles.publicLookup().findStatic(refc, name, mt);
+            MethodHandles.Lookup l = MethodHandles.privateLookupIn(refc, lookup);
+            return l.findVirtual(refc, name, mt);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -135,7 +135,7 @@ public final class LookupUtil {
         }
     }
 
-    public static VarHandle vhPrivateOther(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
+    public static VarHandle vhPrivate(MethodHandles.Lookup lookup, Class<?> recv, String name, Class<?> type) {
         try {
             MethodHandles.Lookup l = MethodHandles.privateLookupIn(recv, lookup);
             return l.findVarHandle(recv, name, type);

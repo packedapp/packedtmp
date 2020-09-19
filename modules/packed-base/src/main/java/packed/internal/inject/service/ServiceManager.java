@@ -57,7 +57,7 @@ import packed.internal.methodhandle.LookupUtil;
 public final class ServiceManager {
 
     /** A VarHandle that can access ServiceExtension#sm. */
-    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivateOther(MethodHandles.lookup(), ServiceExtension.class, "sm",
+    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.vhPrivate(MethodHandles.lookup(), ServiceExtension.class, "sm",
             ServiceManager.class);
 
     /** All explicit added build entries. */

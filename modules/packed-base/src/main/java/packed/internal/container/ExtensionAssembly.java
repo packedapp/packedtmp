@@ -60,7 +60,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.mhVirtualSelf(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
     /** A VarHandle used by {@link #of(ContainerAssembly, Class)} to access the field Extension#configuration. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivateOther(MethodHandles.lookup(), Extension.class, "configuration",
+    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.vhPrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** This extension's component configuration. */
