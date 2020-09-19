@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import java.util.Map;
-
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
@@ -33,8 +31,8 @@ public class Zzz extends BaseBundle {
         // service();
         provideInstance("sdasd");
         install(Foo.class);
-        install(Map.class);
         use(MyEx.class);
+        use(MyExtension.class);
     }
 
     public static void main(String[] args) {
@@ -55,5 +53,9 @@ public class Zzz extends BaseBundle {
         public Foo(String s1) {
             System.out.println("OK " + s1);
         }
+    }
+
+    static abstract class MyExtension extends Extension {
+
     }
 }

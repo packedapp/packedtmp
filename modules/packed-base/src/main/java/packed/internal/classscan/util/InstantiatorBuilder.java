@@ -77,7 +77,7 @@ public final class InstantiatorBuilder {
         TypeUtil.checkClassIsInstantiable(implementation);
         OpenClass oc = new OpenClass(lookup, implementation, true);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-        Constructor<?> constructor = ConstructorUtil.findInjectableISE(implementation);
+        Constructor<?> constructor = ConstructorUtil.findInjectableIAE(implementation);
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
 

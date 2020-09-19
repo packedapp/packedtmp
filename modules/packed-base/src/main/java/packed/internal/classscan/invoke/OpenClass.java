@@ -82,7 +82,7 @@ public final class OpenClass {
     }
 
     public MethodHandle findConstructor(MethodHandleBuilder dim) {
-        Constructor<?> constructor = ConstructorUtil.findInjectableISE(type);
+        Constructor<?> constructor = ConstructorUtil.findInjectableIAE(type);
         return new MethodHandleBuilderHelper(this, constructor, dim).find();
     }
 

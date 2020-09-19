@@ -28,8 +28,8 @@ import app.packed.inject.Inject;
  */
 public final class ConstructorUtil {
 
-    public static Constructor<?> findInjectableISE(Class<?> type) {
-        return findInjectable(type, s -> new IllegalStateException(s));
+    public static Constructor<?> findInjectableIAE(Class<?> type) {
+        return findInjectable(type, s -> new IllegalArgumentException(s));
     }
 
     public static Constructor<?> findInjectable(Class<?> type, Function<String, RuntimeException> errorMaker) {

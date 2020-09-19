@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar.packlet;
+package packed.internal.sidecar.old;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Map;
-
-import app.packed.base.Nullable;
 
 /**
  * A packlet support model can be added to container configurations (via an annotation on a bundle) or component
@@ -37,16 +33,6 @@ class PackletSupportModel {
 
     PackletSupportModel(Builder builder) {
 
-    }
-
-    @Nullable
-    AnnoExecutable forMethodAnnotation(Method method, Annotation annotation) {
-        return null;
-    }
-
-    @Nullable
-    AnnoClass forClassAnnotation(Class<?> declaringClass, Annotation annotation) {
-        return null;
     }
 
     // En annoteringer kan pege på flere packlets og/eller sidecars

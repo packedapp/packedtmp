@@ -28,6 +28,16 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
+/// Taget fra noget gammel kode
+// 1. Look for class annotations, that changes the packlet system model
+
+// 2. Look for packlet class annotations... Can change the "model"
+
+// 3. Constructor needs to take 1+2 into consideration
+
+// 3. Look for field and member annotations taking 1+2 into consideration
+
+//
 public abstract class SidecarModel<T> {
 
     /** A cache of models. */

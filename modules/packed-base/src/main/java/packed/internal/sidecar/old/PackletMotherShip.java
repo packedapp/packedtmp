@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar.packlet;
+package packed.internal.sidecar.old;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
@@ -40,7 +40,7 @@ public class PackletMotherShip {
     PackletSupportModel psm;
 
     // clazz itself can contain annotations...
-    public PackletMethod scanFunction(Function<?, ?> f) {
+    public void scanFunction(Function<?, ?> f) {
         // Hvis vi registrere en function i en container...
         // Skal vi ogsaa understoette f.eks. Logger injection
         // Hvis containeren har specializeret sig i det...

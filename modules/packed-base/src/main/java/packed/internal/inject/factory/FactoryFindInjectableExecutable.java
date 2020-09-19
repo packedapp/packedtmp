@@ -28,6 +28,6 @@ public class FactoryFindInjectableExecutable {
     // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
     // MyExtension.class create()
     private static ExecutableDescriptor findExecutable(Class<?> type) {
-        return ExecutableDescriptor.from(ConstructorUtil.findInjectableISE(type));
+        return ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(type));
     }
 }

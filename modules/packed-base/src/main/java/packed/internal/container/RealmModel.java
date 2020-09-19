@@ -32,7 +32,7 @@ import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.sidecar.model.Model;
-import packed.internal.sidecar.packlet.PackletMotherShip;
+import packed.internal.sidecar.old.PackletMotherShip;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 
