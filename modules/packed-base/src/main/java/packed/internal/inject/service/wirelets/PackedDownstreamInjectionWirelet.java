@@ -105,9 +105,7 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void process(ServiceExtension p) {
-            System.out.println("Nice builder " + p);
-        }
+        protected void process(ServiceExtension p) {}
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })

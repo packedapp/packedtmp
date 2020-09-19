@@ -77,7 +77,6 @@ public final class PackedInjector extends AbstractInjector {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
         // for (ServiceNode<?> n : services) {
-        // System.out.println("Failed Get " + n);
         // if (n instanceof RuntimeNode<T>)
         // }
         super.failedGet(key);

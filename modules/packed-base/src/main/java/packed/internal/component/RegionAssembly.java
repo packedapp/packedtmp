@@ -83,7 +83,6 @@ public final class RegionAssembly {
                 throw ThrowableUtil.orUndeclared(e);
             }
         }
-        System.out.println(initializers);
         return region;
     }
 

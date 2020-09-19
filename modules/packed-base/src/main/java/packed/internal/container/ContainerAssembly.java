@@ -154,11 +154,11 @@ public final class ContainerAssembly {
      */
     ExtensionAssembly useExtension(Class<? extends Extension> extensionType, @Nullable ExtensionAssembly caller) {
         requireNonNull(extensionType, "extensionType is null");
-        ExtensionAssembly pec = extensions.get(extensionType);
+        ExtensionAssembly extension = extensions.get(extensionType);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
-        if (pec == null) {
+        if (extension == null) {
             if (children != null) {
                 throw new IllegalStateException(
                         "Cannot install new extensions after child containers have been added to this container, extensionType = " + extensionType);
@@ -170,19 +170,21 @@ public final class ContainerAssembly {
             } else {
                 caller.checkConfigurable();
             }
-            // Tror lige vi skal have gennemtaenkt den lifecycle...
-            // Taenker om vi
-            extensions.put(extensionType, pec = ExtensionAssembly.of(this, extensionType));
+            // Create the new extension
+            extension = ExtensionAssembly.of(this, extensionType);
+
+            // Add the extension to the extension map
+            extensions.put(extensionType, extension);
 
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionAssembly> l = tmpExtension;
                 if (l == null) {
                     l = tmpExtension = new ArrayList<>();
                 }
-                l.add(pec);
+                l.add(extension);
             }
         }
-        return pec;
+        return extension;
     }
 
     @SuppressWarnings("unchecked")

@@ -147,10 +147,8 @@ class MethodHandleBuilderHelper {
                         // Upcast if needed, I don't think we need to do this if we create an optional
                         if (actual != expected) {
                             // if (actual.isAssignableFrom(expected)) {
-                            // System.out.println("Before " + mh);
                             MethodType newType = mh.type().changeParameterType(is.size() + add, expected);
                             mh = mh.asType(newType);
-                            // System.out.println("After " + mh);
                             // } // else should fail...
                         }
                         if (sd.isOptional()) {
@@ -174,7 +172,6 @@ class MethodHandleBuilderHelper {
 
                 MethodHandle tmp = MethodHandles.insertArguments(anno.mh, 1, askingForType);
                 tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
-                // System.out.println(mh.type());
                 if (sd.isOptional()) {
                     // We need to the return value of transformer to an optional, may be null
                     tmp = MethodHandles.filterReturnValue(tmp, MethodHandleBuilderStatics.optionalOfNullableTo(askingForType));
@@ -206,10 +203,7 @@ class MethodHandleBuilderHelper {
             // USed for example, for constructors to change the actually type being made
             // F.x Extension instead of ServiceExtension (so we can use invokeExact
             if (input.returnType() != mh.type().returnType()) {
-                // System.out.println("---");
-                // System.out.println(input.returnType() + " - " + mh.type().returnType());
                 mh = MethodHandleUtil.castReturnType(mh, input.returnType()); // need to upcast to extension to invokeExact
-                // System.out.println(input.returnType() + " - " + mh.type().returnType());
             }
             mh = MethodHandles.permuteArguments(mh, input, is.toArray());
         }

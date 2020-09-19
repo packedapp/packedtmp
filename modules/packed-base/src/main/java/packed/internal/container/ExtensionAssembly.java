@@ -265,15 +265,9 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     }
 
     /** Invoked by the container configuration, whenever the extension is configured. */
-    void onChildrenConfigured() {
-        checkState(ExtensionSetup.CHILD_LINKING);
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_2_CHILDREN_DONE, instance, this);
-    }
-
-    /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
         checkState(ExtensionSetup.NORMAL_USAGE);
-        model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
+        // model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
         checkState(ExtensionSetup.CHILD_LINKING);
     }

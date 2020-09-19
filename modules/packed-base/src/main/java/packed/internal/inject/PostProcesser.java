@@ -59,7 +59,6 @@ final class PostProcesser {
         ArrayDeque<Injectable> dependencies = new ArrayDeque<>();
 
         for (Injectable node : detectCyclesFor) {
-            // System.out.println("Detect for " + node.directMethodHandle + " " + node.detectForCycles);
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = PostProcesser.detectCycle(region, node, stack, dependencies);
                 if (dc != null) {

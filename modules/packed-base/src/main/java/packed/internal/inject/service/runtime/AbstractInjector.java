@@ -129,19 +129,6 @@ public abstract class AbstractInjector implements Injector {
     // }
     // }
     //
-    // // Inject methods
-    // if (!descriptor.methods.isEmpty()) {
-    // for (OldAtInject method : descriptor.methods) {
-    // Object[] arguments = new Object[method.dependencies.size()];
-    // System.out.println(Arrays.toString(arguments));
-    // for (Dependency dependency : method.dependencies) {
-    // InjectorEntry<?> node = findNode(dependency.key());
-    // System.out.println(node);
-    // }
-    // System.out.println("Should have injected " + method);
-    // }
-    // }
-    // }
 }
 /// ** {@inheritDoc} */
 // @Override

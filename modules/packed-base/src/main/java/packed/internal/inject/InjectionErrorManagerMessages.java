@@ -47,9 +47,7 @@ public final class InjectionErrorManagerMessages {
             // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
 
             csj.addAll(e.getValue().stream().map(ServiceAssembly::configSite).collect(Collectors.toList()));
-            System.out.println(csj.toString());
         }
-        System.out.println("------");
         StringBuilder sb = new StringBuilder();
 
         // create an instance sounds like something that should not be used in the build phase...
@@ -75,7 +73,6 @@ public final class InjectionErrorManagerMessages {
 
     public static void addUnresolvedExports(InjectionManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceAssembly<?>>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
-        // System.out.println(abc);
     }
 
     static String format(ServiceAssembly<?> e) {
