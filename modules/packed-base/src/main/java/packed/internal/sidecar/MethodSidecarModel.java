@@ -29,7 +29,7 @@ import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /** A model of a {@link MethodSidecar}. */
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {

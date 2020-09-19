@@ -23,16 +23,21 @@ import java.util.function.Function;
 
 import app.packed.inject.Inject;
 
-/**
- * A utility class for finding an injectable constructor
- */
+/** A utility class for finding an injectable constructor. */
 public final class ConstructorUtil {
 
+    /**
+     * @param type
+     *            the type to find an injectable constructor on
+     * @return an injectable constructor
+     * @throws IllegalArgumentException
+     *             if a valid injectable constructor could not be found
+     */
     public static Constructor<?> findInjectableIAE(Class<?> type) {
         return findInjectable(type, s -> new IllegalArgumentException(s));
     }
 
-    public static Constructor<?> findInjectable(Class<?> type, Function<String, RuntimeException> errorMaker) {
+    private static Constructor<?> findInjectable(Class<?> type, Function<String, RuntimeException> errorMaker) {
         if (type.isAnnotation()) {
             String errorMsg = format(type) + " is an annotation and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
@@ -45,14 +50,12 @@ public final class ConstructorUtil {
         } else if (type.isPrimitive()) {
             String errorMsg = format(type) + " is a primitive class and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
-        } else {
-            int modifiers = type.getModifiers();
-            if (Modifier.isAbstract(modifiers)) {
-                String errorMsg = format(type) + " is an abstract class and cannot be instantiated";
-                throw errorMaker.apply(errorMsg);
-            }
+        } else if (Modifier.isAbstract(type.getModifiers())) {
+            String errorMsg = format(type) + " is an abstract class and cannot be instantiated";
+            throw errorMaker.apply(errorMsg);
         }
 
+        // Get all declared constructors
         Constructor<?>[] constructors = type.getDeclaredConstructors();
 
         // If we only have 1 constructor, return it.

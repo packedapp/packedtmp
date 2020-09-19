@@ -96,6 +96,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         // Or we fx support @AttributeProvide... This makes no sense..
         // AttributeProvide could make sense... And then some way to say retain this info at runtime...
         // But maybe this is sidecars instead???
+
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentNodeConfiguration.class);
         ib.addKey(ComponentConfigurationContext.class, 0);
         MethodHandle mh = ib.build();

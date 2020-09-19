@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.component.Bundle;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Helper class to access non-public members in {@link Bundle}. */

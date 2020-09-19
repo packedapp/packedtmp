@@ -17,9 +17,8 @@ package zamples;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  *
@@ -30,7 +29,6 @@ public class MHTest {
 
     static final MethodHandle MHI = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "aint", int.class, String.class);
     static final MethodHandle MHS = LookupUtil.mhStaticSelf(MethodHandles.lookup(), "astr", String.class, String.class);
-    static final MethodHandle MHC = mhConstructorPrivate(MethodHandles.lookup(), Foo.class, int.class, String.class);
     // .mhStaticSelf(MethodHandles.lookup(), "aint", int.class, String.class);
 
     public static void main(String[] args) throws Throwable {
@@ -58,17 +56,11 @@ public class MHTest {
     }
 
     public static class Foo {
+        static final MethodHandle MHC = LookupUtil.mhConstructorSelf(MethodHandles.lookup(), int.class, String.class);
+
         Foo(int i, String s) {
             System.out.println("Success");
         }
     }
 
-    public static MethodHandle mhConstructorPrivate(MethodHandles.Lookup caller, Class<?> constructorType, Class<?>... parameterTypes) {
-        MethodType mt = MethodType.methodType(void.class, parameterTypes);
-        try {
-            return caller.findConstructor(constructorType, mt);
-        } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
-        }
-    }
 }

@@ -31,9 +31,9 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModel;
 import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
 import packed.internal.sidecar.old.PackletMotherShip;
-import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */

@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory0;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  * An function handle that wraps a {@link Supplier}. Is used, for example, from {@link Factory0}.

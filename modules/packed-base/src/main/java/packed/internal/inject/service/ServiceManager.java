@@ -49,7 +49,7 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  *

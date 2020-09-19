@@ -27,7 +27,7 @@ import java.util.function.BiFunction;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory2;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /** An internal factory for {@link Factory2}. */
 public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {

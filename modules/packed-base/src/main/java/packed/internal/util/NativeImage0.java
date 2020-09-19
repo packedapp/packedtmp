@@ -16,10 +16,10 @@
 package packed.internal.util;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  *
@@ -46,8 +46,8 @@ class NativeImage0 {
             }
 
             try {
-                MH_REGISTER_EXECUTABLES = MethodHandles.lookup().findStatic(rr, "register", MethodType.methodType(void.class, Executable[].class));
-                MH_REGISTER_FIELDS = MethodHandles.lookup().findStatic(rr, "register", MethodType.methodType(void.class, Field[].class));
+                MH_REGISTER_EXECUTABLES = LookupUtil.mhStaticPublic(rr, "register", void.class, Executable[].class);
+                MH_REGISTER_FIELDS = LookupUtil.mhStaticPublic(rr, "register", void.class, Field[].class);
             } catch (Exception e) {
                 e.printStackTrace();
                 throw new ExceptionInInitializerError(e);

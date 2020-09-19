@@ -23,7 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /** A function that maps the result of another function. */
 public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
@@ -48,7 +48,7 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
         Function<Integer, Integer> ff = i -> i + 1;
 
-        MethodHandle apply = MethodHandles.lookup().findVirtual(Function.class, "apply", MethodType.methodType(Object.class, Object.class));
+        MethodHandle apply = LookupUtil.mhVirtualPublic(Function.class, "apply", Object.class, Object.class);
         MethodHandle fu = apply.bindTo(ff);
 
         c = c.asType(c.type().changeReturnType(Object.class));

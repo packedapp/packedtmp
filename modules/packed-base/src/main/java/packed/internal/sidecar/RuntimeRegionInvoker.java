@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import app.packed.sidecar.Invoker;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**

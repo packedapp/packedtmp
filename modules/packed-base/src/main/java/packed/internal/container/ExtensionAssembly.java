@@ -37,7 +37,7 @@ import app.packed.inject.Factory;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.lifecycle.old.LifecycleContextHelper;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ExtensionConfiguration}. */

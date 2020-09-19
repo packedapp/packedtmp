@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.service.ServiceRegistry;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**

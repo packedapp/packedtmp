@@ -21,7 +21,7 @@ import java.lang.invoke.MethodType;
 import java.util.Optional;
 
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  *

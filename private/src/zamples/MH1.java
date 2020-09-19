@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  *

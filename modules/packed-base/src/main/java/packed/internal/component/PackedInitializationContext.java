@@ -24,7 +24,7 @@ import app.packed.guest.Guest;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.service.ServiceManager;
-import packed.internal.util.LookupUtil;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  * An instantiation context is created every time an artifact is being instantiated.
