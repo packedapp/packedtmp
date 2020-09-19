@@ -24,7 +24,6 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.sidecar.MethodSidecarModel;
 
 /**
@@ -41,8 +40,6 @@ import packed.internal.sidecar.MethodSidecarModel;
 public class SourceModelMethod extends SourceModelMember {
 
     // Dependencies that have already been resolved
-
-    public DependencyProvider[] resolved;
 
     public final MethodHandle directMethodHandle;
 

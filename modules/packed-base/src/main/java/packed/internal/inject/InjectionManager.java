@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
+import app.packed.service.ServiceExtension;
 import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
@@ -108,15 +109,21 @@ public final class InjectionManager {
     }
 
     /**
-     * Returns the {@link ServiceManager} for this builder.
+     * Returns the {@link ServiceManager}, creating it lazily if it does not already exist.
+     * 
+     * @param registerServiceExtension
+     *            whether or not we should register the {@link ServiceExtension}. Should always be true, unless the service
+     *            manager is installed from the ServiceExtension itself
      * 
      * @return the service exporter for this builder
      */
-    public ServiceManager services() {
+    public ServiceManager services(boolean registerServiceExtension) {
         ServiceManager e = services;
         if (e == null) {
-            // Vi skal faktisk aktivere ServiceExtension her...
             e = services = new ServiceManager(this);
+            if (registerServiceExtension) {
+                container.useExtension(ServiceExtension.class);
+            }
         }
         return e;
     }

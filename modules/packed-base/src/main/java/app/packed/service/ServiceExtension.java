@@ -90,7 +90,7 @@ public final class ServiceExtension extends Extension {
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
         this.im = ((ExtensionAssembly) extension).container().im;
-        this.sm = im.services();
+        this.sm = im.services(false);
     }
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???

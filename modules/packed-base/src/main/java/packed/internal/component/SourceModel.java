@@ -118,24 +118,27 @@ public final class SourceModel extends Model {
 
     public <T> void register(ComponentNodeConfiguration compConf) {
         SourceAssembly source = compConf.source;
+
+        // Iterate through all "interesting" methods on the source.
         for (SourceModelMethod smm : methods) {
 
-            // Den kan faktisk godt have flere sidecars... en enkelt metode!!!!
-            // F.eks. flere der provider...
-
-            Injectable i = new Injectable(compConf.source, smm);
+            Injectable i = new Injectable(source, smm);
             compConf.injectionManager().addInjectable(i);
-            if (compConf.source.regionIndex > -1) {
+
+            if (source.regionIndex > -1) {
                 // Maybe shared with SourceAssembly
                 if (smm.runAt == RunAt.INITIALIZATION) {
 
                 }
-                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
 
                 MethodHandle mh1 = MethodHandles.filterArguments(smm.directMethodHandle, 0, source.dependencyAccessor());
-
-                //
+                System.out.println("----");
+                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
+                System.out.println(smm.model.onInitialize);
                 MethodHandle mh2 = MethodHandles.collectArguments(smm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                System.out.println(mh2);
+
+                System.out.println("----");
                 mh2 = mh2.bindTo(mh1);
 
                 compConf.region.initializers.add(mh2);

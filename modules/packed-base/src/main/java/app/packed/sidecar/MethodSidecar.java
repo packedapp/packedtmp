@@ -41,4 +41,7 @@ public abstract class MethodSidecar {
         configuration().debug();
     }
 
+    protected final void provideInvoker() {
+        configuration().provideInvoker();
+    }
 }

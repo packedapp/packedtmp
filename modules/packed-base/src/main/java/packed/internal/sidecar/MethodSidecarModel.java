@@ -24,6 +24,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.inject.Provide;
+import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -56,12 +57,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         super(builder);
         this.keys = builder.map.size() == 0 ? null : Map.copyOf(builder.map);
         this.onInitialize = builder.onInitialize;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public SidecarType type() {
-        return SidecarType.METHOD;
     }
 
     /** A builder for method sidecar. */
@@ -112,6 +107,15 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     public final static class MethodSidecarConfiguration {
 
         boolean debug;
+
+        Class<?> invoker;
+
+        public void provideInvoker() {
+            if (invoker != null) {
+                throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
+            }
+            invoker = Object.class;
+        }
 
         public void debug() {
             System.out.println("DEBUG DU ER SEJ");

@@ -47,9 +47,7 @@ public abstract class SidecarModel<T> {
                 throw new IllegalArgumentException("" + implementation);
             }
 
-            /// calls sidecar.configure()
             b.configure();
-
             return b.build();
         }
     };
@@ -61,8 +59,6 @@ public abstract class SidecarModel<T> {
      *            the builder.
      */
     protected SidecarModel(Builder<T, ?> builder) {}
-
-    public abstract SidecarType type();
 
     public static SidecarModel<?> of(Class<?> implementation) {
         return CACHE.get(implementation);
@@ -142,6 +138,10 @@ public abstract class SidecarModel<T> {
                 // Can be this thread or another thread that is already using the bundle.
                 throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + instance.getClass());
             }
+        }
+
+        private void scan() {
+
         }
     }
 

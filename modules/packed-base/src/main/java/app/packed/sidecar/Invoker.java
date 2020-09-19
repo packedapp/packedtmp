@@ -29,6 +29,8 @@ import app.packed.base.Nullable;
 // Vi bliver noedt til at have denne fordi vi ikke kan lave method handles paa runtime...
 public interface Invoker {
 
+    void call() throws Throwable;
+
     /**
      * Invokes the underlying executable.
      * 

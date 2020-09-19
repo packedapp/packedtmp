@@ -20,8 +20,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
@@ -67,27 +65,15 @@ public class Foo extends BaseBundle {
 }
 
 class TestIt extends MethodSidecar {
-//
-//    @Override
-//    protected void configure() {
-//    provideInvoker(); <--- we must explicitly enable it...
-//        debug();
-//    }
-    static final ScheduledExecutorService ses = Executors.newScheduledThreadPool(1);
+
+    @Override
+    protected void configure() {
+        provideInvoker();
+    }
 
     @OnInitialize
     public void foo(Invoker i) throws Throwable {
-
-        i.invoke();
-
-//        ses.scheduleAtFixedRate(() -> {
-//            try {
-//                i.invoke();
-//            } catch (Throwable e) {
-//                throw ThrowableUtil.orUndeclared(e);
-//            }
-//        }, 1, 1, TimeUnit.SECONDS);
-
+        i.call();
     }
 //
 //    @Provide

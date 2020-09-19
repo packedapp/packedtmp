@@ -166,9 +166,9 @@ public class Injectable {
                     }
                 }
                 if (e == null) {
-                    e = im.services().resolvedServices.get(sd.key());
+                    e = im.services(true).resolvedServices.get(sd.key());
                 }
-                im.services().dependencies().recordResolvedDependency(im, this, sd, e, false);
+                im.services(true).dependencies().recordResolvedDependency(im, this, sd, e, false);
                 // may be null, in which case it is a required service that must be provided.
                 // By the user
                 resolved[i + startIndex] = e;

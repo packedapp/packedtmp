@@ -178,8 +178,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
                 injectionManager().addInjectable(source.injectable);
             }
 
+            // Apply any sidecars
             source.model.register(this);
-
         } else {
             this.source = null;
         }
@@ -635,7 +635,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) injectionManager().services().exports().export(source.service,
+        return (ExportedServiceConfiguration<T>) injectionManager().services(true).exports().export(source.service,
                 captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 

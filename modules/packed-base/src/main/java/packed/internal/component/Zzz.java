@@ -16,9 +16,9 @@
 package packed.internal.component;
 
 import app.packed.component.App;
-import app.packed.component.ComponentAnalyzer;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
+import app.packed.inject.Provide;
 
 /**
  *
@@ -28,24 +28,29 @@ public class Zzz extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        service();
-        provideInstance("sdasd");
+        // service();
+        // provideInstance("sdasd");
         install(Foo.class);
         use(MyEx.class);
     }
 
     public static void main(String[] args) {
         App.of(new Zzz());
-        ComponentAnalyzer.stream(new Zzz()).forEach(c -> {
-            System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
-        });
+//        ComponentAnalyzer.stream(new Zzz()).forEach(c -> {
+//            System.out.println(c.path() + "  " + c.modifiers() + "  " + c.attributes());
+//        });
     }
 
     static class MyEx extends Extension {}
 
     public static class Foo {
         public Foo(String s1, String s2, String s3) {
-            System.out.println("OK");
+            System.out.println("OK " + s1);
+        }
+
+        @Provide
+        public static String foo() {
+            return "asdasd";
         }
     }
 }

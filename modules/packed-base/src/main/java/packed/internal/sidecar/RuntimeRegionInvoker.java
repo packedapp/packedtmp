@@ -64,4 +64,10 @@ public final class RuntimeRegionInvoker implements Invoker {
     public Class<?> returnType() {
         return mh.type().returnType();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public void call() throws Throwable {
+        mh.invoke(region);
+    }
 }
