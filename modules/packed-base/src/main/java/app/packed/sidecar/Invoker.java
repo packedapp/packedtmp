@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 // Og har en bootstrap metode der bruger noget thread local..
 
 // Vi bliver noedt til at have denne fordi vi ikke kan lave method handles paa runtime...
-public interface Invoker {
+public interface Invoker<T> {
 
     void call() throws Throwable;
 
@@ -39,9 +39,9 @@ public interface Invoker {
      *             anything thrown by the underlying executable propagates unchanged through the method handle call
      */
     @Nullable
-    Object invokeNullable() throws Throwable;
+    T invokeNullable() throws Throwable;
 
-    Object invoke() throws Throwable;
+    T invoke() throws Throwable;
 
     Class<?> returnType();
 

@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 
 import app.packed.base.AttributeProvide;
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentFactoryDriver;
@@ -32,6 +31,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.hook.OnHook;
 import app.packed.inject.Factory;
+import app.packed.inject.InjectionContext;
 import app.packed.inject.Provide;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
@@ -42,7 +42,6 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
-import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
 
 /**
@@ -88,7 +87,7 @@ public final class ServiceExtension extends Extension {
      * @param extension
      *            the configuration of the extension
      */
-    /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
+    /* package-private */ ServiceExtension(ExtensionConfiguration extension, InjectionContext ic) {
         this.im = ((ExtensionAssembly) extension).container().im;
         this.sm = im.services(false);
     }
@@ -302,13 +301,7 @@ public final class ServiceExtension extends Extension {
      */
     @OnHook
     void onHook(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
-        if (hook.hasInstanceMembers && compConf.source.regionIndex == -1) {
-            throw new InvalidDeclarationException("Not okay)");
-        }
-        // Add each @Provide as children of the parent node
-        for (AtProvides atProvides : hook.members) {
-            sm.provideFromAtProvides(compConf, atProvides);
-        }
+        sm.provideAtProvides(hook, compConf);
     }
 
     /**

@@ -140,9 +140,6 @@ public abstract class SidecarModel<T> {
             }
         }
 
-        private void scan() {
-
-        }
     }
 
     // InjectableFunctionSidecar??

@@ -18,7 +18,6 @@ package packed.internal.component;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.inject.Provide;
 
 /**
  *
@@ -29,7 +28,7 @@ public class Zzz extends BaseBundle {
     @Override
     protected void configure() {
         // service();
-        // provideInstance("sdasd");
+        provideInstance("sdasd");
         install(Foo.class);
         use(MyEx.class);
     }
@@ -48,9 +47,5 @@ public class Zzz extends BaseBundle {
             System.out.println("OK " + s1);
         }
 
-        @Provide
-        public static String foo() {
-            return "asdasd";
-        }
     }
 }

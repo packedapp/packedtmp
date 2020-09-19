@@ -112,7 +112,7 @@ public final class SourceAssembly implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = compConf.injectionManager().services(true).provideFromSource(compConf, key);
+            s = service = compConf.injectionManager().services(true).provideSource(compConf, key);
         }
         return s;
     }

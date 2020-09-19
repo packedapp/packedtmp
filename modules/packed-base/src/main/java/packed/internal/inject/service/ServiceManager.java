@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
+import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -47,6 +48,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.sidecar.AtProvides;
+import packed.internal.inject.sidecar.AtProvidesHook;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -59,7 +61,7 @@ public final class ServiceManager {
             ServiceManager.class);
 
     /** All explicit added build entries. */
-    public final ArrayList<ServiceAssembly<?>> buildEntries = new ArrayList<>();
+    private final ArrayList<ServiceAssembly<?>> assemblies = new ArrayList<>();
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceDependencyManager dependencies;
@@ -146,10 +148,17 @@ public final class ServiceManager {
         return new PackedInjector(comp.configSite(), runtimeEntries);
     }
 
-    public void provideFromAtProvides(ComponentNodeConfiguration compConf, AtProvides atProvides) {
-        ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
-        buildEntries.add(e);
-        im.addInjectable(e.getInjectable());
+    public void provideAtProvides(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
+        if (hook.hasInstanceMembers && compConf.source.regionIndex == -1) {
+            throw new InvalidDeclarationException("Not okay)");
+        }
+
+        // Add each @Provide as children of the parent node
+        for (AtProvides atProvides : hook.members) {
+            ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
+            assemblies.add(e);
+            im.addInjectable(e.getInjectable());
+        }
     }
 
     public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
@@ -161,16 +170,16 @@ public final class ServiceManager {
         p.add(pi);
     }
 
-    public <T> ServiceAssembly<T> provideFromSource(ComponentNodeConfiguration compConf, Key<T> key) {
+    public <T> ServiceAssembly<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
         ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
-        buildEntries.add(e);
+        assemblies.add(e);
         return e;
     }
 
     public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve() {
 
         // First process provided entries, then any entries added via provideAll
-        resolve0(im, resolvedServices, buildEntries);
+        resolve0(im, resolvedServices, assemblies);
 
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
@@ -186,6 +195,18 @@ public final class ServiceManager {
         return resolvedServices;
     }
 
+    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
+            Collection<? extends ServiceAssembly<?>> buildEntries) {
+        for (ServiceAssembly<?> entry : buildEntries) {
+            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
+            if (existing != null) {
+                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                hs.add(entry);
+            }
+        }
+    }
+
     // Vi smide alt omkring services der...
 
     // Lazy laver den...
@@ -193,7 +214,6 @@ public final class ServiceManager {
     // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
     // Saa det der med at resolve. Det er ikke services...
     // men injection...
-
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();
@@ -210,17 +230,5 @@ public final class ServiceManager {
      */
     public static ServiceManager fromExtension(ServiceExtension extension) {
         return (ServiceManager) VH_SERVICE_EXTENSION_NODE.get(extension);
-    }
-
-    private static void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
-            Collection<? extends ServiceAssembly<?>> buildEntries) {
-        for (ServiceAssembly<?> entry : buildEntries) {
-            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
-            if (existing != null) {
-                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                hs.add(entry);
-            }
-        }
     }
 }

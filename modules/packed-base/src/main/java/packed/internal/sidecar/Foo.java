@@ -72,7 +72,7 @@ class TestIt extends MethodSidecar {
     }
 
     @OnInitialize
-    public void foo(Invoker i) throws Throwable {
+    public void foo(Invoker<?> i) throws Throwable {
         i.call();
     }
 //

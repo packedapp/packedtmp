@@ -38,7 +38,7 @@ import java.lang.annotation.Target;
 // Skal den virkelig invokes alligevel???
 
 // @WireletLink...  Nah @WireletLink Optional<>
-public @interface WireletHandler {}
+public @interface WireletConsumer {}
 
 // Grunden til jeg ikke kan WireletInject er den kan puttes paa en parameter...
 // Men det kan @Inject ikke.

@@ -105,7 +105,7 @@ public abstract class Wirelet {
 
     /**
      * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually receive it
-     * using {@link WireletHandler}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
+     * using {@link WireletConsumer}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
      * However, by wrapping the wire
      * 
      * @param wirelet

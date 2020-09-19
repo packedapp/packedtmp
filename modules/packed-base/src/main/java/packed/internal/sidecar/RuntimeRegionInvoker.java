@@ -29,7 +29,7 @@ import packed.internal.util.MethodHandleUtil;
 /**
  *
  */
-public final class RuntimeRegionInvoker implements Invoker {
+public final class RuntimeRegionInvoker<T> implements Invoker<T> {
 
     /** A method handle for creating new Invoker instance. We explicitly cast return type from PackedInvoker->Invoker. */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
@@ -48,15 +48,15 @@ public final class RuntimeRegionInvoker implements Invoker {
 
     /** {@inheritDoc} */
     @Override
-    public Object invoke() throws Throwable {
-        return mh.invoke(region);
+    public T invoke() throws Throwable {
+        return (T) mh.invoke(region);
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Object invokeNullable() throws Throwable {
-        return mh.invoke(region);
+    public T invokeNullable() throws Throwable {
+        return (T) mh.invoke(region);
     }
 
     /** {@inheritDoc} */
