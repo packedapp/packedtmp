@@ -353,7 +353,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder optional(Class<?>... keys) {
-            return optional(Key.ofAll(keys));
+            return optional(Key.of(keys));
         }
 
         /**
@@ -374,7 +374,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder provides(Class<?>... keys) {
-            return provides(Key.ofAll(keys));
+            return provides(Key.of(keys));
         }
 
         public ServiceContract.Builder provides(Key<?>... keys) {
@@ -401,7 +401,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder removeOptional(Class<?>... keys) {
-            return removeOptional(Key.ofAll(keys));
+            return removeOptional(Key.of(keys));
         }
 
         /**
@@ -418,7 +418,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder removeProvides(Class<?>... keys) {
-            return removeProvides(Key.ofAll(keys));
+            return removeProvides(Key.of(keys));
         }
 
         /**
@@ -435,7 +435,7 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder removeRequires(Class<?>... keys) {
-            return removeRequires(Key.ofAll(keys));
+            return removeRequires(Key.of(keys));
         }
 
         /**
@@ -460,7 +460,7 @@ public final class ServiceContract {
          * @return this builder
          */
         public ServiceContract.Builder requires(Class<?>... keys) {
-            return requires(Key.ofAll(keys));
+            return requires(Key.of(keys));
         }
 
         // return a view, the mutable set, or an immutable copy????

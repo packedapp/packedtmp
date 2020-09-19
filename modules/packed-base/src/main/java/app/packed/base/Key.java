@@ -452,7 +452,7 @@ public abstract class Key<T> {
         return (Key<T>) CLASS_CACHE.get(key);
     }
 
-    public static Key<?>[] ofAll(Class<?>... keys) {
+    public static Key<?>[] of(Class<?>... keys) {
         requireNonNull(keys, "keys is null");
         Key<?>[] result = new Key<?>[keys.length];
         for (int i = 0; i < result.length; i++) {
