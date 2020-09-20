@@ -60,36 +60,11 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     public boolean hasMethodHandle() {
         return methodHandle != null;
     }
-    //
-    // @SuppressWarnings("unchecked")
-    // @Override
-    // @Nullable
-    // public T invoke(Object[] params) {
-    // requireNonNull(methodHandle, "internal error");
-    // try {
-    // MethodHandle mh = toMethodHandle();
-    // return (T) mh.invokeWithArguments(params);
-    // } catch (Throwable e) {
-    // ThrowableUtil.rethrowErrorOrRuntimeException(e);
-    // throw new InjectionException("Failed to inject " + executable.descriptorTypeName(), e);
-    // }
-    // }
-    //
-    // @Override
-    // public boolean isMissingInstance() {
-    // return executable instanceof MethodDescriptor && !((MethodDescriptor) executable).isStatic() && instance == null;
-    // }
 
     @Override
     public String toString() {
         return executable.toString();
     }
-
-    // /** {@inheritDoc} */
-    // @Override
-    // public ExecutableFactoryHandle<T> withInstance(Object instance) {
-    // return new ExecutableFactoryHandle<>(returnType(), executable, methodHandle, instance);
-    // }
 
     /**
      * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
@@ -117,9 +92,6 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     @Override
     public MethodHandle toMethodHandle() {
         MethodHandle mh = methodHandle;
-        // if (instance != null) {
-        // mh = methodHandle.bindTo(instance);
-        // }
         if (executable.isVarArgs()) {
             mh = mh.asFixedArity();
         }

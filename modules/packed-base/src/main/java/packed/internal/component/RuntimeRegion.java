@@ -78,7 +78,7 @@ public final class RuntimeRegion {
     }
 
     public static MethodHandle readSingletonAs(int index, Class<?> type) {
-        MethodHandle mh = MethodHandles.insertArguments(MH_GET_SINGLETON_INSTANCE, 1, index);
+        MethodHandle mh = MethodHandleUtil.bind(MH_GET_SINGLETON_INSTANCE, 1, index);
         return MethodHandleUtil.castReturnType(mh, type);
     }
 }

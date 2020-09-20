@@ -16,7 +16,6 @@
 package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -26,6 +25,7 @@ import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.factory.BaseFactory;
 import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.methodhandle.MethodHandleUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {
@@ -86,8 +86,7 @@ public final class SourceAssembly implements DependencyProvider {
     @Override
     public MethodHandle dependencyAccessor() {
         if (instance != null) {
-            MethodHandle mh = MethodHandles.constant(instance.getClass(), instance);
-            return MethodHandles.dropArguments(mh, 0, RuntimeRegion.class); // MethodHandle()T -> MethodHandle(Region)T
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(instance), RuntimeRegion.class); // MethodHandle()T -> MethodHandle(Region)T
         } else if (regionIndex > -1) {
             return RuntimeRegion.readSingletonAs(regionIndex, model.modelType());
         } else {

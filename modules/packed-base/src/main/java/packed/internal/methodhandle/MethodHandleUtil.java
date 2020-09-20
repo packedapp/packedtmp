@@ -23,8 +23,31 @@ import java.lang.invoke.MethodHandles;
  */
 public class MethodHandleUtil {
 
+    public static MethodHandle bind(MethodHandle target, int position, Object... arguments) {
+        return MethodHandles.insertArguments(target, 1, arguments);
+    }
+
     public static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {
         return target.asType(target.type().changeReturnType(newReturnType));
+    }
+
+    public static MethodHandle castReturnTypeIfNeeded(MethodHandle target, Class<?> returnType) {
+        if (returnType != target.type().returnType()) {
+            return castReturnType(target, returnType);
+        }
+        return target;
+    }
+
+    public static MethodHandle constant(Object constant) {
+        return MethodHandles.constant(constant.getClass(), constant);
+    }
+
+    public static MethodHandle insertFakeParameter(MethodHandle target, Class<?> type) {
+        return insertFakeParameter(target, 0, type);
+    }
+
+    public static MethodHandle insertFakeParameter(MethodHandle target, int position, Class<?> type) {
+        return MethodHandles.dropArguments(target, position, type);
     }
 
     public static MethodHandle replaceParameter(MethodHandle target, int position, MethodHandle replaceWith) {

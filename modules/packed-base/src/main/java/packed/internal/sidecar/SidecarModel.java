@@ -151,7 +151,4 @@ public abstract class SidecarModel<T> {
         }
 
     }
-
-    // InjectableFunctionSidecar??
-    // Naah, why? tanker bare at FunctionSidecar()
 }
