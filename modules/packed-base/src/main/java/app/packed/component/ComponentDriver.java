@@ -21,9 +21,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeLiteral;
+import app.packed.container.BaseBundle;
 import packed.internal.component.PackedComponentDriver;
 
 /**
+ * Component drivers are responsible for configuring and creating new components. Every time you, for example, call
+ * {@link BaseBundle#install(Class)} it actually dela
+ * 
+ * install a
  * 
  * @param <C>
  *            the type of configuration the driver expose to users for configuring the underlying component
@@ -35,25 +40,44 @@ import packed.internal.component.PackedComponentDriver;
 // And just retain implementations for internal usage...
 public interface ComponentDriver<C> {
 
-    // boolean isBound() <--- bound to a source
+    /**
+     * Returns the set of modifiers that will be applied to the component.
+     * <p>
+     * The runtime may add additional modifiers once the component is wired.
+     * 
+     * @return the set of modifiers that will be applied to the component
+     */
+    ComponentModifierSet modifiers();
 
     default Optional<Class<?>> source() {
         return Optional.empty();
     }
 
-    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
-        return PackedComponentDriver.of(lookup, driverType, options);
-    }
-
-    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeLiteral<? extends C> driverType, Option... options) {
+    // Ideen er at man kan putte wirelets paa der vil blive applied.
+    // Hver gang man bruger driveren
+    default ComponentDriver<C> withWirelet(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
 
-    // The runtime may add further attributes when applying this driver.
-    // For example, the root component of a system always has the SYSTEM property.
-    // Irrecspectively of the component driver that was used
-    // Hmm ved ikke om vi vil have den..
-    ComponentModifierSet modifiers();
+    /**
+     * @param <C>
+     *            the type of configuration that is returned to the user when the driver is wired
+     * @param lookup
+     *            a lookup object that must have access to invoke the constructor of the specified configuration type
+     * @param configurationType
+     *            the type of configuration that should be returned to the user when the component is wired
+     * @param options
+     *            optional options
+     * @return a component driver
+     * @see ComponentInstanceDriver#of(MethodHandles.Lookup, Class, Option...)
+     */
+    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, Option... options) {
+        return PackedComponentDriver.of(lookup, configurationType, options);
+    }
+
+    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeLiteral<? extends C> configurationType, Option... options) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      *
@@ -61,22 +85,6 @@ public interface ComponentDriver<C> {
      *          which would prohibit subclassing except by explicitly permitted types.
      */
     public interface Option {
-
-        static Option sourceAssignableTo(Class<?> rawType) {
-            throw new UnsupportedOperationException();
-        }
-
-        /**
-         * The component the driver will be a container.
-         * <p>
-         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
-         * 
-         * @return stuff
-         * @see ComponentModifier#CONTAINER
-         */
-        static Option container() {
-            return PackedComponentDriver.OptionImpl.CONTAINER;
-        }
 
         /**
          * The component the driver will be a container.
@@ -91,18 +99,24 @@ public interface ComponentDriver<C> {
             return PackedComponentDriver.OptionImpl.CONSTANT;
         }
 
-        static Option statelessSource() {
-            return PackedComponentDriver.OptionImpl.STATELESS;
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         * @see ComponentModifier#CONTAINER
+         */
+        static Option container() {
+            return PackedComponentDriver.OptionImpl.CONTAINER;
         }
 
-        // The parent + the driver
-        //
-        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
+        static Option sourceAssignableTo(Class<?> rawType) {
             throw new UnsupportedOperationException();
         }
 
-        static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
+        static Option statelessSource() {
+            return PackedComponentDriver.OptionImpl.STATELESS;
         }
 
         static Option validateParent(Predicate<? super Component> validator, String msg) {
@@ -111,6 +125,24 @@ public interface ComponentDriver<C> {
                     throw new IllegalArgumentException(msg);
                 }
             });
+        }
+
+        static Option validateParentIsContainer() {
+            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
+        }
+
+        // The parent + the driver
+        //
+
+        /**
+         * Returns an option that
+         * 
+         * @param validator
+         * @return the option
+         */
+        // Hmm integration with vaildation
+        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
+            throw new UnsupportedOperationException();
         }
 
         // Option serviceable()

@@ -32,7 +32,6 @@ public final class ShellDriverScan {
     public static MethodHandle of(MethodHandles.Lookup caller, Class<?> implementation, boolean isGuest) {
 
         // We currently do not support @Provide ect... Don't know if we ever will
-
         // Create a new MethodHandle that can create shell instances.
 
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);

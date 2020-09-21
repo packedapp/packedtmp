@@ -20,7 +20,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.time.LocalDateTime;
 
 import app.packed.base.OpenMode;
 import app.packed.base.Opens;
@@ -73,22 +72,6 @@ import app.packed.service.ServiceExtension;
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-// @Provides(description = "Current time) final Provider<LocalDate> p = ....
-
-// @Provides final Factory<Long> p = .... <-------------- COOL, havde helt glemt...
-
-// @Component(name, description, children, ....)
-// Taenker @Provides @Install(asChild=true)
-// Taenker vi maaske venter med at implementere paa Type
-// Men ville saa vaere rart at kunne sige @Provides(exportAs = MyInterface.class)
-
-// Okay shutdown/cleanup ikke supportered paa many som er eksporteret som services...
-// Maaske hvis man eksplicit, siger its managed....
-// Maaske @Provide og @ProvidePrototype... @ProvideTemplate
-// Det ville ogsaa hjaelpe paa sidecars maaske?? Eller de ignore den vel bare...
-
-// Er ret sikker paa vi ikke kan smide det paa en type..???? IDK
-
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -96,18 +79,6 @@ import app.packed.service.ServiceExtension;
 @ExtensionMember(ServiceExtension.class)
 @Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
 public @interface Provide {
-
-//    /**
-//     * Returns a description of the service provided by the providing method, field or type.
-//     * <p>
-//     * The default value is the empty string, indicating that there is no description for the provided service
-//     * 
-//     * @return a description of the service provided by the providing method, field or type
-//     */
-//    // how does this relate to description on component??? description on component???
-//    // Same on both ->
-//    // Service 1, Component another -> each have different
-//    String description() default "";
 
     /**
      * Indicates whether or not the provided value is a constant.
@@ -126,12 +97,4 @@ public @interface Provide {
      * @return whether or not the provided value is a constant
      */
     boolean constant() default false;
-}
-
-class Us {
-
-    // It is a bit of a wart with FactoryX. But very managable. We don't expect to many of them
-    // Its an extract X<> + {}
-    @Provide
-    static final Factory<LocalDateTime> now = new Factory0<>(LocalDateTime::now) {};
 }

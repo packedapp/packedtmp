@@ -34,7 +34,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.Service;
-import app.packed.service.ServiceProvider;
+import app.packed.service.Provider;
 import app.packed.service.ServiceRegistry;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
@@ -92,7 +92,7 @@ public final class PackedInjector extends AbstractInjector {
 
     /** {@inheritDoc} */
     @Override
-    public <T> Optional<ServiceProvider<T>> findProvider(Key<T> key) {
+    public <T> Optional<Provider<T>> findProvider(Key<T> key) {
         throw new UnsupportedOperationException();
     }
 

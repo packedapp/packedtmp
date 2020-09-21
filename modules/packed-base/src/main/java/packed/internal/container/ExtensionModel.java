@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.component.WireletConsumer;
+import app.packed.component.WireletConsume;
 import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -384,7 +384,7 @@ public final class ExtensionModel extends OldSidecarModel implements ExtensionDe
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
             builder.addKey(LifecycleContext.class, ExtensionAssembly.MH_LIFECYCLE_CONTEXT, index);
-            builder.addAnnoClassMapper(WireletConsumer.class, ExtensionAssembly.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(WireletConsume.class, ExtensionAssembly.MH_FIND_WIRELET, index);
         }
 
         /**

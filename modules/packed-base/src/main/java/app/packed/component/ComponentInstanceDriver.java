@@ -35,7 +35,7 @@ public interface ComponentInstanceDriver<C, I> extends ComponentFactoryDriver<C,
 
     // Altsaa vi vil have folk til at kalde den her
 
-    static <C, I> ComponentInstanceDriver<C, I> of(Object stuff) {
-        throw new UnsupportedOperationException();
-    }
+//    static <C, I> ComponentInstanceDriver<C, I> of(Object stuff) {
+//        throw new UnsupportedOperationException();
+//    }
 }

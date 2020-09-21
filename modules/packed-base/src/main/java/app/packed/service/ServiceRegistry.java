@@ -55,11 +55,11 @@ public interface ServiceRegistry extends ServiceMap {
      */
     <T> Optional<T> find(Key<T> key);
 
-    default <T> Optional<ServiceProvider<T>> findProvider(Class<T> key) {
+    default <T> Optional<Provider<T>> findProvider(Class<T> key) {
         return findProvider(Key.of(key));
     }
 
-    <T> Optional<ServiceProvider<T>> findProvider(Key<T> key);
+    <T> Optional<Provider<T>> findProvider(Key<T> key);
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide

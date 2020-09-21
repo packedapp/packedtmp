@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package zamples;
+package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.stream.Stream;
 
 import packed.internal.util.ThrowableUtil;
 
 /**
  * A provider of object instances.
  */
-//Is this in app.packed.service??? No its in the dependency model.
 @FunctionalInterface
+
+// En gang inkludere dette interface ogsaa informationen om hvor T kom fra.
+// Det er nu blevet flyttet til InjectionContext, da der er ingen grund
+// til at have den information 2 steder...
+
+// isConstant??? Saa er vi ikke laengere et function interface though
 public interface Provider<T> {
 
     /**
@@ -36,6 +42,10 @@ public interface Provider<T> {
      *             if an exception is encountered while providing an instance
      */
     T provide();
+
+    default Stream<T> stream() {
+        return Stream.generate(() -> provide());
+    }
 
     static <T> Provider<T> of(T t) {
         return new ConstantProvider<>(t);
