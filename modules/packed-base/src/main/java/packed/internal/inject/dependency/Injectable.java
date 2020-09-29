@@ -111,7 +111,7 @@ public class Injectable {
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
 
-        this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        this.resolved = smm.createProviders();
     }
 
     public final MethodHandle buildMethodHandle() {

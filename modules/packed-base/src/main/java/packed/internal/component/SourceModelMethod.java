@@ -24,6 +24,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.sidecar.MethodSidecarModel;
 
 /**
@@ -39,14 +40,17 @@ import packed.internal.sidecar.MethodSidecarModel;
 
 public class SourceModelMethod extends SourceModelMember {
 
+    public final List<DependencyDescriptor> dependencies;
+
     /** A direct method handle to the method. */
     public final MethodHandle directMethodHandle;
 
-    public final List<DependencyDescriptor> dependencies;
+    public final Method method;
 
     public final MethodSidecarModel model;
 
-    public final Method method;
+    @Nullable
+    RunAt runAt = RunAt.INITIALIZATION;
 
     SourceModelMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
         this.method = requireNonNull(method);
@@ -56,10 +60,11 @@ public class SourceModelMethod extends SourceModelMember {
         this.directMethodHandle = requireNonNull(mh);
     }
 
-    @Nullable
-    RunAt runAt = RunAt.INITIALIZATION;
-
     enum RunAt {
         INITIALIZATION;
+    }
+
+    public DependencyProvider[] createProviders() {
+        return new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 }
