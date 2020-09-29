@@ -31,6 +31,7 @@ import packed.internal.component.SourceModelMethod;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
+import packed.internal.sidecar.SidecarDependencyProvider;
 
 /**
  *
@@ -159,9 +160,9 @@ public class Injectable {
                 if (source != null) {
                     SourceModel sm = source.model;
                     if (sm.sourceServices != null) {
-                        MethodHandle mh = sm.sourceServices.get(sd.key());
+                        SidecarDependencyProvider mh = sm.sourceServices.get(sd.key());
                         if (mh != null) {
-                            e = new SidecarProvideDependency(mh);
+                            e = new SidecarProvideDependency(mh.dependencyAccessor());
                         }
                     }
                 }

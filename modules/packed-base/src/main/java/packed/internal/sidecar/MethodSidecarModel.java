@@ -42,7 +42,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
             void.class);
 
-    public final Map<Key<?>, MethodHandle> keys;
+    public final Map<Key<?>, SidecarDependencyProvider> keys;
 
     // Must take an invoker...
     public final MethodHandle onInitialize;
@@ -55,14 +55,16 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
      */
     private MethodSidecarModel(Builder builder) {
         super(builder);
-        this.keys = builder.map.size() == 0 ? null : Map.copyOf(builder.map);
+        Map<Key<?>, SidecarDependencyProvider> m = new HashMap<>();
+        builder.providing.forEach((k, v) -> m.put(k, v.build(this)));
+        this.keys = builder.providing.size() == 0 ? null : Map.copyOf(m);
         this.onInitialize = builder.onInitialize;
     }
 
     /** A builder for method sidecar. */
     final static class Builder extends SidecarModel.Builder<MethodSidecar, MethodSidecarConfiguration> {
 
-        private final HashMap<Key<?>, MethodHandle> map = new HashMap<>();
+        private final HashMap<Key<?>, SidecarDependencyProvider.Builder> providing = new HashMap<>();
 
         private MethodHandle onInitialize;
 
@@ -82,7 +84,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                         mh = mh.bindTo(instance);
                     }
                     Key<?> k = Key.fromMethodReturnType(m);
-                    map.put(k, mh);
+                    providing.put(k, new SidecarDependencyProvider.Builder(k, mh));
                 }
 
                 OnInitialize oi = m.getAnnotation(OnInitialize.class);
@@ -106,8 +108,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     /** A configuration object we provide to MethodSidecar. */
     public final static class MethodSidecarConfiguration {
 
-        boolean debug;
-
         Class<?> invoker;
 
         public void provideInvoker() {
@@ -115,11 +115,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                 throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
             }
             invoker = Object.class;
-        }
-
-        public void debug() {
-            System.out.println("DEBUG DU ER SEJ");
-            this.debug = true;
         }
     }
 }

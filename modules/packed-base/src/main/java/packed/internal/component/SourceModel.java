@@ -47,6 +47,7 @@ import packed.internal.inject.dependency.Injectable;
 import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.RuntimeRegionInvoker;
+import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.sidecar.model.MethodSidecarHelper;
 import packed.internal.sidecar.model.Model;
 import packed.internal.util.ThrowableUtil;
@@ -69,7 +70,7 @@ public final class SourceModel extends Model {
 
     public final List<SourceModelMethod> methods;
 
-    public final Map<Key<?>, MethodHandle> sourceServices;
+    public final Map<Key<?>, SidecarDependencyProvider> sourceServices;
 
     /**
      * Creates a new descriptor.
@@ -200,7 +201,7 @@ public final class SourceModel extends Model {
 
         private final ArrayList<SourceModelMethod> methods = new ArrayList<>();
 
-        private final HashMap<Key<?>, MethodHandle> globalServices = new HashMap<>();
+        private final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
 
         /**
          * Creates a new component model builder
@@ -310,7 +311,7 @@ public final class SourceModel extends Model {
                     SourceModelMethod smm = new SourceModelMethod(method, model, mh);
                     methods.add(smm);
 
-                    Map<Key<?>, MethodHandle> keys = model.keys;
+                    Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
                     if (keys != null) {
                         globalServices.putAll(keys);
                     }

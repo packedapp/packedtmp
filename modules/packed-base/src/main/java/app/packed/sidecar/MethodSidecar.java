@@ -39,10 +39,6 @@ public abstract class MethodSidecar {
 
     protected void configure() {}
 
-    protected final void debug() {
-        configuration().debug();
-    }
-
     protected final void disableServiceInjection() {
         // syntes den er enabled by default
     }
