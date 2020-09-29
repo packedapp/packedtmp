@@ -20,9 +20,11 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import java.time.LocalDateTime;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
+import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
@@ -52,7 +54,7 @@ public class Foo extends BaseBundle {
 
         @Hej
         public void foo() {
-            System.out.println("Invoking because of @HEJ");
+            System.out.println("Invoking because of @HEJ " + "");
         }
     }
 
@@ -75,9 +77,9 @@ class TestIt extends MethodSidecar {
     public void foo(Invoker<?> i) throws Throwable {
         i.call();
     }
-//
-//    @Provide
-//    public static LocalDateTime now() {
-//        return LocalDateTime.now();
-//    }
+
+    @Provide
+    public static LocalDateTime now() {
+        return LocalDateTime.now();
+    }
 }

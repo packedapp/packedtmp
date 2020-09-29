@@ -18,9 +18,11 @@ package packed.internal.sidecar;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 
@@ -44,7 +46,9 @@ public final class SidecarDependencyProvider implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return methodHandle;
+        MethodHandle mh = MethodHandles.dropArguments(methodHandle, 0, RuntimeRegion.class);
+
+        return mh;
     }
 
     /** {@inheritDoc} */

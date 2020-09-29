@@ -177,6 +177,8 @@ public class Injectable {
                 // may be null, in which case it is a required service that must be provided.
                 // By the user
                 resolved[i + startIndex] = e;
+            } else {
+                // System.out.println("Already resolved " + resolved[i + startIndex]);
             }
         }
     }

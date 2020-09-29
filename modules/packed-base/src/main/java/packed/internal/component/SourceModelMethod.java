@@ -26,6 +26,7 @@ import app.packed.introspection.MethodDescriptor;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.sidecar.MethodSidecarModel;
+import packed.internal.sidecar.SidecarDependencyProvider;
 
 /**
  *
@@ -65,6 +66,19 @@ public class SourceModelMethod extends SourceModelMember {
     }
 
     public DependencyProvider[] createProviders() {
-        return new DependencyProvider[directMethodHandle.type().parameterCount()];
+        DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        System.out.println("RESOLVING " + directMethodHandle);
+        for (int i = 0; i < dependencies.size(); i++) {
+            DependencyDescriptor d = dependencies.get(i);
+            SidecarDependencyProvider dp = model.keys.get(d.key());
+            if (dp != null) {
+                System.out.println("MAtches for " + d.key());
+                int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;
+                providers[index] = dp;
+                System.out.println("SEtting provider " + dp.dependencyAccessor());
+            }
+        }
+
+        return providers;
     }
 }
