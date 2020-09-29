@@ -51,7 +51,7 @@ public class SourceModelMethod extends SourceModelMember {
     public final MethodSidecarModel model;
 
     @Nullable
-    RunAt runAt = RunAt.INITIALIZATION;
+    public RunAt runAt = RunAt.INITIALIZATION;
 
     SourceModelMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
         this.method = requireNonNull(method);
@@ -61,7 +61,7 @@ public class SourceModelMethod extends SourceModelMember {
         this.directMethodHandle = requireNonNull(mh);
     }
 
-    enum RunAt {
+    public enum RunAt {
         INITIALIZATION;
     }
 

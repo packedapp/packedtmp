@@ -27,11 +27,13 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
-import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
+import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
+import packed.internal.methodhandle.MethodHandleUtil;
+import packed.internal.sidecar.RuntimeRegionInvoker;
 import packed.internal.sidecar.SidecarDependencyProvider;
 
 /**
@@ -76,7 +78,7 @@ public class Injectable {
     public final SourceAssembly source;
 
     @Nullable
-    public final SourceModelMember sourceMember;
+    public final SourceModelMethod sourceMember;
 
     public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
@@ -156,10 +158,38 @@ public class Injectable {
     }
 
     public void onResolveSuccess(RegionAssembly region) {
+        // If the injectable is a constant we need should to store an instance of it in the runtime region.
+        // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
+        // we add each node on exit when all of its dependency have already been added. In this way
+        // guarantee that all dependencies have already been visited
+
         if (regionIndex() > -1) {
             region.regionStores.add(this);
         }
         needsPostProcessing = false;
+
+        if (sourceMember != null) {
+            if (source.regionIndex > -1) {
+                // Maybe shared with SourceAssembly
+                if (sourceMember.runAt == RunAt.INITIALIZATION) {
+
+                }
+
+                MethodHandle mh1 = MethodHandleUtil.replaceParameter(sourceMember.directMethodHandle, 0, source.dependencyAccessor());
+                System.out.println("----");
+                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
+                System.out.println(sourceMember.model.onInitialize);
+                MethodHandle mh2 = MethodHandles.collectArguments(sourceMember.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                System.out.println(mh2);
+
+                System.out.println("----");
+                mh2 = mh2.bindTo(mh1);
+
+                region.initializers.add(mh2);
+
+                System.out.println(mh2);
+            }
+        }
     }
 
     public void resolve() {

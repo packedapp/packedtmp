@@ -82,7 +82,6 @@ final class PostProcesser {
      * @throws CyclicDependencyGraphException
      *             if there is a cycle in the graph
      */
-    // We could move this to Injectable...
     @Nullable
     private static DependencyCycle detectCycle(RegionAssembly region, Injectable injectable, ArrayDeque<Injectable> stack,
             ArrayDeque<Injectable> dependencies) {
@@ -118,11 +117,6 @@ final class PostProcesser {
 
             stack.pop();
         }
-
-        // If the injectable is a constant we need should to store an instance of it in the runtime region.
-        // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
-        // we add each node on exit when all of its dependency have already been added. In this way
-        // guarantee that all dependencies have already been visited
         injectable.onResolveSuccess(region);
         return null;
     }
