@@ -112,6 +112,10 @@ public class Injectable {
         this.directMethodHandle = smm.directMethodHandle;
 
         this.resolved = smm.createProviders();
+
+        if (resolved.length != dependencies.size()) {
+            resolved[0] = source;
+        }
     }
 
     public final MethodHandle buildMethodHandle() {
