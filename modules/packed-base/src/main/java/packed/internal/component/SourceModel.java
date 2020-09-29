@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -35,7 +34,6 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hook.OnHook;
 import packed.internal.classscan.invoke.OpenClass;
-import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.LazyExtensionActivationMap;
 import packed.internal.container.RealmModel;
@@ -44,9 +42,7 @@ import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.MethodSidecarModel;
-import packed.internal.sidecar.RuntimeRegionInvoker;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.sidecar.model.MethodSidecarHelper;
 import packed.internal.sidecar.model.Model;
@@ -127,26 +123,26 @@ public final class SourceModel extends Model {
             Injectable i = new Injectable(source, smm);
             compConf.injectionManager().addInjectable(i);
 
-            if (source.regionIndex > -1) {
-                // Maybe shared with SourceAssembly
-                if (smm.runAt == RunAt.INITIALIZATION) {
-
-                }
-
-                MethodHandle mh1 = MethodHandleUtil.replaceParameter(smm.directMethodHandle, 0, source.dependencyAccessor());
-                System.out.println("----");
-                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
-                System.out.println(smm.model.onInitialize);
-                MethodHandle mh2 = MethodHandles.collectArguments(smm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
-                System.out.println(mh2);
-
-                System.out.println("----");
-                mh2 = mh2.bindTo(mh1);
-
-                compConf.region.initializers.add(mh2);
-
-                System.out.println(mh2);
-            }
+//            if (source.regionIndex > -1) {
+//                // Maybe shared with SourceAssembly
+//                if (smm.runAt == RunAt.INITIALIZATION) {
+//
+//                }
+//
+//                MethodHandle mh1 = MethodHandleUtil.replaceParameter(smm.directMethodHandle, 0, source.dependencyAccessor());
+//                System.out.println("----");
+//                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
+//                System.out.println(smm.model.onInitialize);
+//                MethodHandle mh2 = MethodHandles.collectArguments(smm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+//                System.out.println(mh2);
+//
+//                System.out.println("----");
+//                mh2 = mh2.bindTo(mh1);
+//
+//                compConf.region.initializers.add(mh2);
+//
+//                System.out.println(mh2);
+//            }
         }
 
         // Tmp

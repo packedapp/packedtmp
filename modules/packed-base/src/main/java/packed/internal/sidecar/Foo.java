@@ -21,6 +21,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.time.LocalDateTime;
+import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
@@ -53,8 +54,8 @@ public class Foo extends BaseBundle {
         }
 
         @Hej
-        public void foo() {
-            System.out.println("Invoking because of @HEJ " + "");
+        public void foo(Long ldt, Long ldt2, Long ldt3, String sss) {
+            System.out.println("Invoking because of @HEJ " + ldt + "   " + ldt2 + "  " + ldt3);
         }
     }
 
@@ -76,6 +77,13 @@ class TestIt extends MethodSidecar {
     @OnInitialize
     public void foo(Invoker<?> i) throws Throwable {
         i.call();
+    }
+
+    static final AtomicLong al = new AtomicLong();
+
+    @Provide
+    public static Long l() {
+        return al.incrementAndGet();
     }
 
     @Provide

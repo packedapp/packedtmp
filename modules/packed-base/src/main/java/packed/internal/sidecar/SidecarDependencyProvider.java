@@ -31,24 +31,26 @@ import packed.internal.inject.dependency.Injectable;
  */
 public final class SidecarDependencyProvider implements DependencyProvider {
 
+    /** The key under which the dependency is provided. */
     public final Key<?> key;
 
     private final MethodHandle methodHandle;
 
-    final SidecarModel<?> sidecarModel;
+    /** The sidecar that provides the instance. */
+    public final SidecarModel<?> sidecarModel;
 
     private SidecarDependencyProvider(SidecarModel<?> sidecarModel, Builder builder) {
         this.key = builder.key;
         this.sidecarModel = sidecarModel;
-        this.methodHandle = builder.methodHandle;
+        MethodHandle mh = builder.methodHandle;
+
+        this.methodHandle = MethodHandles.dropArguments(mh, 0, RuntimeRegion.class);
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        MethodHandle mh = MethodHandles.dropArguments(methodHandle, 0, RuntimeRegion.class);
-
-        return mh;
+        return methodHandle;
     }
 
     /** {@inheritDoc} */

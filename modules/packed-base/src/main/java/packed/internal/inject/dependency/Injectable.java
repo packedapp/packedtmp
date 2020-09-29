@@ -32,9 +32,7 @@ import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
-import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.RuntimeRegionInvoker;
-import packed.internal.sidecar.SidecarDependencyProvider;
 
 /**
  *
@@ -80,6 +78,7 @@ public class Injectable {
     @Nullable
     public final SourceModelMethod sourceMember;
 
+    // Creates the Source...
     public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
@@ -174,20 +173,18 @@ public class Injectable {
                 if (sourceMember.runAt == RunAt.INITIALIZATION) {
 
                 }
+                MethodHandle mh1 = buildMethodHandle();
 
-                MethodHandle mh1 = MethodHandleUtil.replaceParameter(sourceMember.directMethodHandle, 0, source.dependencyAccessor());
-                System.out.println("----");
-                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
-                System.out.println(sourceMember.model.onInitialize);
+                // RuntimeRegionInvoker
+                // the method on the sidecar: sourceMember.model.onInitialize
+
+                // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
                 MethodHandle mh2 = MethodHandles.collectArguments(sourceMember.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
-                System.out.println(mh2);
 
-                System.out.println("----");
+                System.out.println(mh2);
                 mh2 = mh2.bindTo(mh1);
 
                 region.initializers.add(mh2);
-
-                System.out.println(mh2);
             }
         }
     }
@@ -202,10 +199,7 @@ public class Injectable {
                 if (source != null) {
                     SourceModel sm = source.model;
                     if (sm.sourceServices != null) {
-                        SidecarDependencyProvider mh = sm.sourceServices.get(sd.key());
-                        if (mh != null) {
-                            e = new SidecarProvideDependency(mh.dependencyAccessor());
-                        }
+                        e = sm.sourceServices.get(sd.key());
                     }
                 }
                 if (e == null) {

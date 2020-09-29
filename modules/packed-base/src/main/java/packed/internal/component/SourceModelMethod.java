@@ -59,6 +59,7 @@ public class SourceModelMethod extends SourceModelMember {
         MethodDescriptor m = MethodDescriptor.from(method);
         this.dependencies = DependencyDescriptor.fromExecutable(m);
         this.directMethodHandle = requireNonNull(mh);
+        // System.out.println("NEW SOURCE METHOD " + mh);
     }
 
     public enum RunAt {
@@ -71,15 +72,15 @@ public class SourceModelMethod extends SourceModelMember {
 
     public DependencyProvider[] createProviders() {
         DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
-        System.out.println("RESOLVING " + directMethodHandle);
+        // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
             SidecarDependencyProvider dp = model.keys.get(d.key());
             if (dp != null) {
-                System.out.println("MAtches for " + d.key());
+                // System.out.println("MAtches for " + d.key());
                 int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;
                 providers[index] = dp;
-                System.out.println("SEtting provider " + dp.dependencyAccessor());
+                // System.out.println("SEtting provider " + dp.dependencyAccessor());
             }
         }
 
