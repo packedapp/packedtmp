@@ -23,6 +23,7 @@ import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Nullable;
+import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
@@ -152,6 +153,13 @@ public class Injectable {
             return source.regionIndex;
         }
         return service.regionIndex;
+    }
+
+    public void onResolveSuccess(RegionAssembly region) {
+        if (regionIndex() > -1) {
+            region.regionStores.add(this);
+        }
+        needsPostProcessing = false;
     }
 
     public void resolve() {

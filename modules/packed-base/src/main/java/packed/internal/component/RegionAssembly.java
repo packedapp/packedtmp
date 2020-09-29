@@ -35,7 +35,7 @@ public final class RegionAssembly {
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
     // For now written by DependencyCycleDetector via BFS
-    public final ArrayList<Injectable> injectables = new ArrayList<>();
+    public final ArrayList<Injectable> regionStores = new ArrayList<>();
 
     private int nextIndex;
 
@@ -57,7 +57,7 @@ public final class RegionAssembly {
         // All constants that must be instantiated and stored
         // Order here is very important. As for every constant.
         // Its dependencies are guaranteed to have been already stored
-        for (Injectable injectable : injectables) {
+        for (Injectable injectable : regionStores) {
             MethodHandle mh = injectable.buildMethodHandle();
 
             Object instance;

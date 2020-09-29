@@ -65,6 +65,10 @@ public class SourceModelMethod extends SourceModelMember {
         INITIALIZATION;
     }
 
+    public void resolved() {
+
+    }
+
     public DependencyProvider[] createProviders() {
         DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
         System.out.println("RESOLVING " + directMethodHandle);

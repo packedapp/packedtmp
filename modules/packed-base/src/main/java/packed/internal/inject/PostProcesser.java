@@ -123,10 +123,7 @@ final class PostProcesser {
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
-        if (injectable.regionIndex() > -1) {
-            region.injectables.add(injectable);
-        }
-        injectable.needsPostProcessing = false;
+        injectable.onResolveSuccess(region);
         return null;
     }
 
