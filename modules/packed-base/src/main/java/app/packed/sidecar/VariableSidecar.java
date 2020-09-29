@@ -16,38 +16,29 @@
 package app.packed.sidecar;
 
 import app.packed.base.Nullable;
-import packed.internal.sidecar.MethodSidecarModel.MethodSidecarConfiguration;
 import packed.internal.sidecar.SidecarModel;
+import packed.internal.sidecar.VariableSidecarModel.VariableSidecarConfiguration;
 
 /**
- * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
+ *
  */
-public abstract class MethodSidecar {
-
-    // Hver sidecar har sit eget context object...
-    // Eneste maade at subclasses ikke kan faa fat it
-    // Med mindre selvfoelgelig at vi laver den package private..
-    // Men kan sagtens se vi faar sidecars udenfor denne pakke.
+public abstract class VariableSidecar {
 
     /** A sidecar configurations object. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private MethodSidecarConfiguration configuration;
+    private VariableSidecarConfiguration configuration;
 
-    private MethodSidecarConfiguration configuration() {
+    private VariableSidecarConfiguration configuration() {
         return configuration;
+    }
+
+    protected final void requireAssignableTo(Class<?> type) {
+
     }
 
     protected void configure() {}
 
     protected final void debug() {
         configuration().debug();
-    }
-
-    protected final void disableServiceInjection() {
-        // syntes den er enabled by default
-    }
-
-    protected final void provideInvoker() {
-        configuration().provideInvoker();
     }
 }

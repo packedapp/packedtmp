@@ -17,7 +17,7 @@ package app.packed.inject;
 
 /**
  * A make exception is thrown if a valid constructor or method could not be found according to the rules laid out in
- * {@link Inject}. If valid arguments for the executable could not be found, an {@link FactoryDefinitionException} is
+ * {@link Inject}. If valid arguments for the executable could not be found, an {@link FactoryCreationException} is
  * typically thrown instead.
  */
 //Hoerer den ikke sammen med @Provide...idk

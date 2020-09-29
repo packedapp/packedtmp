@@ -20,16 +20,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.base.Key.Qualifier;
+
 /**
- *
+ * A {@link Qualifier} that holds a single generic string.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Key.Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface Named {
+
+    /**
+     * Returns the name.
+     * 
+     * @return the name
+     */
     String value();
 }
-
-// Jaja, vi laver den....
-
-//Key.withName(String name)

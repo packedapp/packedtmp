@@ -50,7 +50,7 @@ public abstract class Factory0<R> extends BaseFactory<R> {
      * @param supplier
      *            the supplier that provide instances. The supplier should never return null, but should instead throw an
      *            exception if unable to provide a value
-     * @throws FactoryDefinitionException
+     * @throws FactoryCreationException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */

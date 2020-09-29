@@ -52,7 +52,7 @@ public class Foo extends BaseBundle {
 
         @Hej
         public void foo() {
-            System.out.println("HEJHEJ");
+            System.out.println("Invoking because of @HEJ");
         }
     }
 

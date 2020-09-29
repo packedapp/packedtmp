@@ -18,7 +18,7 @@ package packed.internal.base.attribute;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.packed.base.AttributeProvide;
+import app.packed.base.ExposeAttribute;
 
 /**
  *
@@ -47,8 +47,8 @@ public class ClassAttributes {
         return null;
     }
 
-    public static PackedAttribute<?> find(AttributeProvide ap) {
-        return find(ap.by(), ap.name());
+    public static PackedAttribute<?> find(ExposeAttribute ap) {
+        return find(ap.from(), ap.name());
     }
 
     public static void register(PackedAttribute<?> pa) {

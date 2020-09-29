@@ -37,7 +37,14 @@ import app.packed.component.ComponentDriver.Option;
 // Vi instantiere den ikke
 public interface ComponentFunctionDriver<C, F> {
 
-    ComponentDriver<C> bindFunction(F function);
+    /**
+     * Binds the specified function and returns a final component driver.
+     * 
+     * @param function
+     *            the function to bind
+     * @return a new component driver
+     */
+    ComponentDriver<C> bind(F function);
 
     static <C, F> ComponentFunctionDriver<C, F> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, TypeLiteral<? extends F> driverType,
             Option... options) {

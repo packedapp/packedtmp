@@ -28,13 +28,15 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_SET })
+@Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_GET })
 // Giver det mening at kunne injecte attributer??? Not sure
 
-public @interface AttributeProvide {
+// AttributeExpose syntes jeg... Vi har nok provide
+// ExposeAttribuet
+public @interface ExposeAttribute {
 
     /** The class that declares the attribute. */
-    Class<?> by();
+    Class<?> from();
 
     /**
      * The name of the attribute that the annotated member provides a value for.
@@ -60,7 +62,7 @@ public @interface AttributeProvide {
     // Men maaske hellere field name en attribute name...
     // maaske begge dele og saa kan man vaelge
     // Eller leder man efter 1 match...
-    String name();
+    String name(); // named()???
 }
 
 //declared by extension, vi kan vel bare tage @ExtensionMember value??

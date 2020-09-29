@@ -56,9 +56,11 @@ public interface Component extends AttributedElement, ComponentSystem {
     }
 
     /**
-     * Returns an immutable set containing all the modifiers of this component.
+     * Returns the modifiers of this component.
      * 
-     * @return an immutable set containing all the modifiers of this component
+     * @return the modifiers of this component
+     * 
+     * @see #hasModifier(ComponentModifier)
      */
     ComponentModifierSet modifiers();
 

@@ -187,6 +187,7 @@ public interface ProvideContext {
     // Hvad hvis det ikke er en direkte extension der forsporger???
     // Men f.eks. et eller andet inde i en Bundle som er installeret
     // som en extension...
+    // I sidste ende er det jo hvor den ender op der er vigtigt (target class)
     default Optional<Class<? extends Extension>> extension() {
         return Optional.empty();
     }

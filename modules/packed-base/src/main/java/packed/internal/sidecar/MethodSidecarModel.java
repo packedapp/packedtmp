@@ -35,8 +35,8 @@ import packed.internal.methodhandle.LookupUtil;
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class, "configuration",
-            MethodSidecarConfiguration.class);
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
+            "configuration", MethodSidecarConfiguration.class);
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
     private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
@@ -88,7 +88,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                 OnInitialize oi = m.getAnnotation(OnInitialize.class);
                 if (oi != null) {
                     if (onInitialize != null) {
-                        throw new IllegalStateException(oc.type() + " defines more than one method with " + OnInitialize.class.getSimpleName());
+                        throw new IllegalStateException(oc.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                     }
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     if (!Modifier.isStatic(m.getModifiers())) {

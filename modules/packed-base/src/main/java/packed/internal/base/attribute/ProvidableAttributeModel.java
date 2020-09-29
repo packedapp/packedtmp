@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.packed.base.AttributeProvide;
+import app.packed.base.ExposeAttribute;
 import app.packed.base.Nullable;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -41,7 +41,7 @@ public class ProvidableAttributeModel {
         // OpenClass oc = new OpenClass(MethodHandles.lookup(), c, true);
         HashMap<PackedAttribute<?>, Attt> types = new HashMap<>();
         oc.findMethods(m -> {
-            AttributeProvide ap = m.getAnnotation(AttributeProvide.class);
+            ExposeAttribute ap = m.getAnnotation(ExposeAttribute.class);
             if (ap != null) {
                 PackedAttribute<?> pa = ClassAttributes.find(ap);
                 requireNonNull(pa, "Unknown Attribute " + ap + " on " + oc.type());

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 
-import app.packed.base.AttributeProvide;
+import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentFactoryDriver;
@@ -124,11 +124,11 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Returns a set of all exported services from this extension. Or null if there are no exports.
+     * Returns any exported services. Or null if there are no exports.
      * 
-     * @return a set of all exported services from this extension. Or null if there are no exports
+     * @return any exported services. Or null if there are no exports
      */
-    @AttributeProvide(by = ServiceAttributes.class, name = "exported-services")
+    @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceMap attributesExports() {
         if (sm.hasExports()) {
@@ -142,7 +142,7 @@ public final class ServiceExtension extends Extension {
      * 
      * @return a service contract for this extension
      */
-    @AttributeProvide(by = ServiceAttributes.class, name = "contract")
+    @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract attributesContract() {
         return sm.newServiceContract();
     }

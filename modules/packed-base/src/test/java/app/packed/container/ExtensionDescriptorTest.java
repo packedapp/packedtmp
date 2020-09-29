@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Attribute;
-import app.packed.base.AttributeProvide;
+import app.packed.base.ExposeAttribute;
 import app.packed.base.Contract;
 
 /** Tests {@link ExtensionDescriptor}. */
@@ -47,7 +47,7 @@ public class ExtensionDescriptorTest {
     @ExtensionSetup(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
 
-        @AttributeProvide(by = ExtensionDescriptorTest.class, name = "description")
+        @ExposeAttribute(from = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
             return new SomeContract();
         }

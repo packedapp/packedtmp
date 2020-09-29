@@ -29,7 +29,14 @@ import app.packed.base.Nullable;
 // Vi bliver noedt til at have denne fordi vi ikke kan lave method handles paa runtime...
 public interface Invoker<T> {
 
+    /**
+     * Invokes the underlying method handle discards any result.
+     * 
+     * @throws Throwable
+     */
     void call() throws Throwable;
+
+    T invoke() throws Throwable;
 
     /**
      * Invokes the underlying executable.
@@ -41,10 +48,7 @@ public interface Invoker<T> {
     @Nullable
     T invokeNullable() throws Throwable;
 
-    T invoke() throws Throwable;
-
     Class<?> returnType();
-
 }
 
 ///**

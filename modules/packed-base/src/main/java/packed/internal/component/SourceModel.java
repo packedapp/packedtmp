@@ -198,8 +198,6 @@ public final class SourceModel extends Model {
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
 
-        private final ArrayList<MethodSidecarModel> oldMethodModels = new ArrayList<>();
-
         private final ArrayList<SourceModelMethod> methods = new ArrayList<>();
 
         private final HashMap<Key<?>, MethodHandle> globalServices = new HashMap<>();
@@ -304,6 +302,8 @@ public final class SourceModel extends Model {
                     csb.onAnnotatedMethod(method, a);
                 }
 
+                // With sidecars....
+
                 MethodSidecarModel model = MethodSidecarHelper.getModel(a.annotationType());
                 if (model != null) {
                     MethodHandle mh = htp.unreflect(method);
@@ -314,7 +314,6 @@ public final class SourceModel extends Model {
                     if (keys != null) {
                         globalServices.putAll(keys);
                     }
-                    oldMethodModels.add(model);
                 }
             }
         }

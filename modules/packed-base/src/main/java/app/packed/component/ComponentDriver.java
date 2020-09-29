@@ -79,6 +79,15 @@ public interface ComponentDriver<C> {
         throw new UnsupportedOperationException();
     }
 
+    // Tror jeg er mere til et builder approach her..
+    // Hvis det begynder at blive komplekts er det altsaa lidt lettere at overskue...
+    // Saa Builder er driver type...
+    // Og saa maa vi leve med lidt redundency
+    // Eller ogsaa maa vi bide the bullet og faa en ComponentSourceDriver
+    class Builder {
+
+    }
+
     /**
      *
      * @apiNote In the future, if the Java language permits, {@link ShellDriver} may become a {@code sealed} interface,

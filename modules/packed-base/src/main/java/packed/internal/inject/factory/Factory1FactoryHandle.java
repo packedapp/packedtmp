@@ -82,18 +82,3 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
         return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
     }
 }
-//
-// @SuppressWarnings("unchecked")
-// @Override
-// @Nullable
-// public R invoke(Object[] params) {
-// T t = (T) params[0];
-// R instance = function.apply(t);
-// if (!returnTypeRaw().isInstance(instance)) {
-// throw new InjectionException(
-// "The Function '" + format(function.getClass()) + "' used when creating a Factory1 instance was expected to produce
-// instances of '"
-// + format(returnTypeRaw()) + "', but it created an instance of '" + format(instance.getClass()) + "'");
-// }
-// return instance;
-// }

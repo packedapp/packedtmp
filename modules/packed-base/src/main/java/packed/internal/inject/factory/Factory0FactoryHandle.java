@@ -69,8 +69,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     @Override
     public MethodHandle toMethodHandle() {
         MethodHandle mh = GET.bindTo(supplier);
-        mh = MethodHandles.explicitCastArguments(mh, methodType());
-        return mh;
+        return MethodHandles.explicitCastArguments(mh, methodType());
     }
 
     /**

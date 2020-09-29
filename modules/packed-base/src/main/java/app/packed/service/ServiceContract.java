@@ -108,6 +108,7 @@ public final class ServiceContract {
      * 
      * @return the new builder
      */
+    // copy, change, ...
     public ServiceContract.Builder builder() {
         return new ServiceContract.Builder(this);
     }
@@ -215,7 +216,7 @@ public final class ServiceContract {
      * 
      * @return a new service contract builder
      */
-    // or just builder();
+    // or just builder(); Ja det syntes jeg
     public static ServiceContract.Builder newContract() {
         return new ServiceContract.Builder();
     }
@@ -230,6 +231,7 @@ public final class ServiceContract {
      *            the build action to perform
      * @return the new contract
      */
+    // rename til build????
     public static ServiceContract newContract(Consumer<? super ServiceContract.Builder> action) {
         requireNonNull(action, "action is null");
         ServiceContract.Builder b = new ServiceContract.Builder();

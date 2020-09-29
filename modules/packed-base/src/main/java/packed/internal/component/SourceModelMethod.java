@@ -39,8 +39,7 @@ import packed.internal.sidecar.MethodSidecarModel;
 
 public class SourceModelMethod extends SourceModelMember {
 
-    // Dependencies that have already been resolved
-
+    /** A direct method handle to the method. */
     public final MethodHandle directMethodHandle;
 
     public final List<DependencyDescriptor> dependencies;

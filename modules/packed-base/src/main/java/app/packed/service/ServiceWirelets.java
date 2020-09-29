@@ -41,6 +41,11 @@ import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
 //Eller evt mapTo, og mapFrom.... ddd.mapTo og ma
 
 //peekTo.. peekFrom, /// link(new SomeBundle()
+
+// This wirelet can only be used at assembly time...
+// Skal vi have en protected verify();
+// som saa kan kalde checkAssemblyTime()?
+
 public final class ServiceWirelets {
 
     /** No instantiation. */
@@ -81,6 +86,9 @@ public final class ServiceWirelets {
     }
 
     /**
+     * <p>
+     * Wirelets returned by this method can only be used at assembly time.
+     * 
      * @param factory
      *            a factory taking at least one argument (well
      * @return stuff

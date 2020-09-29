@@ -83,7 +83,7 @@ public @interface Provide {
     /**
      * Indicates whether or not the provided value is a constant.
      * <p>
-     * Constant values are always eagerly constructed.
+     * Constant values are always eagerly constructed. For example, as part of the initialization of a container.
      * 
      * Constants may be cached by the runtime... I think we need to make some strong guarantees.
      * 

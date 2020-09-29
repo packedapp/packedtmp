@@ -17,6 +17,7 @@ package app.packed.config;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
 
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MethodDescriptor;
@@ -80,6 +81,13 @@ public interface ConfigSiteVisitor {
      *            the configuration site
      */
     default void visitUnknown(ConfigSite configSite) {}
+
+    // Tror maaske vi har en actual class istedet for column/row
+    default void visitFile(Path path, int column, int row) {
+        // visitURI(path.toUri());
+    }
+
+    // default void visitURI(Path path, );
 }
 // Tilfoeje nogle default formatting config sites
 

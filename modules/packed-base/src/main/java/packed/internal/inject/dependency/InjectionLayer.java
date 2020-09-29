@@ -13,22 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
-
-import app.packed.container.Extension;
+package packed.internal.inject.dependency;
 
 /**
  *
  */
-// AccessibleByExtension?
-public @interface OpensToExtension {
+/// Hmm, nah
+public class InjectionLayer {
 
-    Class<? extends Extension> extension();
-
-    OpenMode[] mode();
 }
-
-// @SourceExtension(....)
-// @ExtensionMember -> Extension will be able to use sources
-
-// Kun med OpensForExtension ->

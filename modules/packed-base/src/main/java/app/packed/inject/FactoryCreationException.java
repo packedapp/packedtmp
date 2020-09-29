@@ -16,10 +16,13 @@
 package app.packed.inject;
 
 /**
- * This exception is typically thrown when a factory could not be created. For example, because a valid constructor or
- * method could not be found.
+ * This exception is thrown when a factory could not be created. For example, because a valid constructor or method
+ * could not be found.
  */
-public class FactoryDefinitionException extends RuntimeException {
+// Nej er det ikke mere noget med TypeVariable exception...
+// UnspecifiedTypeVariableException
+// MissingTypeVariable
+public class FactoryCreationException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -32,7 +35,7 @@ public class FactoryDefinitionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public FactoryDefinitionException(String message) {
+    public FactoryCreationException(String message) {
         super(message);
     }
 
@@ -46,7 +49,7 @@ public class FactoryDefinitionException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public FactoryDefinitionException(String message, Throwable cause) {
+    public FactoryCreationException(String message, Throwable cause) {
         super(message, cause);
     }
 }

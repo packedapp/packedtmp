@@ -12,6 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// Altsaa taenker vi laver det her som en sidecar alligevel...
 public @interface DynamicVariable {}
 
 // Dynamic variables are dependencies that cannot statically be expressed as a key..

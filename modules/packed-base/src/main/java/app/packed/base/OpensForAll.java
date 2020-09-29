@@ -24,3 +24,29 @@ import app.packed.container.Extension;
 @interface OpensForAll {
 
 }
+
+@interface OpensFor {
+
+    boolean all() default false;
+
+    Class<? extends Extension>[] extension() default {};
+
+    String[] modules() default {};
+
+    boolean thisModule() default false;
+
+    OpenMode[] mode();
+}
+
+//AccessibleByExtension?
+@interface OpensToExtension {
+
+    Class<? extends Extension> extension();
+
+    OpenMode[] mode();
+}
+
+//@SourceExtension(....)
+//@ExtensionMember -> Extension will be able to use sources
+
+//Kun med OpensForExtension ->

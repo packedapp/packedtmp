@@ -19,10 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.inject.FactoryDefinitionException;
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link FactoryDefinitionException}. */
+/** Tests {@link InvalidDeclarationException}. */
 public class InvalidDeclarationExceptionTest {
 
     /** Tests the various constructors. */
