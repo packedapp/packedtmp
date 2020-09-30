@@ -1,4 +1,4 @@
-package app.packed.inject;
+package app.packed.sidecar;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

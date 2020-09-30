@@ -54,8 +54,8 @@ public interface ComponentFunctionDriver<C, F> {
     public static void main(String[] args) {
         of(null, MyWebConf.class, new TypeLiteral<Supplier<String>>() {});
     }
+}
 
-    class MyWebConf {
+class MyWebConf {
 
-    }
 }

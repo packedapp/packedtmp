@@ -23,31 +23,23 @@ import app.packed.service.Injector;
 import packed.internal.classscan.ShellDriverScan;
 
 /**
- * Shell drivers are responsible for creating new shells by instantiating stuff.
+ * Shell drivers are responsible for creating new shell instances, for example, instances of {@link App}.
  * <p>
  * This class can be extended to create custom shell types if the built-in shell types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
  * are just thin facade that delegates all calls to an stuff instance.
  * <p>
- * Normally, you should never instantiate more then a single instance of driver for any shell implementation.
+ * Normally, you would never create more than a single instance of a shell driver.
  * <p>
  * Iff a driver creates shells with an execution phase. The shell must implement {@link AutoCloseable}.
  * 
  * @param <S>
- *            The type of shell this driver creates.
+ *            The type of shell instances this driver create.
  * @see App#driver()
  * 
  * @apiNote In the future, if the Java language permits, {@link ShellDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-// Tror ikke shells kan bruge annoteringer??? Altsaa maaske paa surragates???
-// Ville maaske vaere fedt nok bare at kunne sige
-// @OnShutdown()
-// sysout "FooBar was removed"
-
-// Support of injection of the shell into the Container...
-// We do not generally support this, as people are free to any shell they may like.
-// Which would break encapsulation
 public interface ShellDriver<S> {
 
     <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets);
@@ -69,6 +61,8 @@ public interface ShellDriver<S> {
      * @param wirelets
      *            optional wirelets
      * @return a new image
+     * @throws AssemblyException
+     *             if the system could not assembled properly
      */
     Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets);
 
@@ -80,14 +74,14 @@ public interface ShellDriver<S> {
      * @param wirelets
      *            optional wirelets
      * @return the new shell
-     * @throws RuntimeException
-     *             if the system could not be properly created
+     * @throws AssemblyException
+     *             if the system could not assembled properly
      */
     // Maaske kan vi laver en function der smider Throwable...
     S newShell(Bundle<?> bundle, Wirelet... wirelets);
 
     // The type of shell we produce?? or the implementation?
-    Class<?> rawType();
+    Class<?> shellRawType();
 
     /**
      * Creates a new shell driver.
@@ -112,3 +106,11 @@ public interface ShellDriver<S> {
         return PackedShellDriver.of(caller, shellType, mh);
     }
 }
+//Tror ikke shells kan bruge annoteringer??? Altsaa maaske paa surragates???
+//Ville maaske vaere fedt nok bare at kunne sige
+//@OnShutdown()
+//sysout "FooBar was removed"
+
+//Support of injection of the shell into the Container...
+//We do not generally support this, as people are free to any shell they may like.
+//Which would break encapsulation

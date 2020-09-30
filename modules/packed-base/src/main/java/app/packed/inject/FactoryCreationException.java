@@ -22,6 +22,8 @@ package app.packed.inject;
 // Nej er det ikke mere noget med TypeVariable exception...
 // UnspecifiedTypeVariableException
 // MissingTypeVariable
+// FactoryDefinitionException
+// ComponentDefinitionException
 public class FactoryCreationException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

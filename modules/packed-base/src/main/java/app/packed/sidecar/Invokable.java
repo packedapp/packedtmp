@@ -1,7 +1,5 @@
 package app.packed.sidecar;
 
-import app.packed.inject.DynamicVariable;
-
 @DynamicVariable
 @interface Invokable {}
 

@@ -80,8 +80,8 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
     }
 
     /**
-     * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of shell
-     * being created by this driver has an execution phase. This is determined by whether or not the shell implements
+     * Returns a set of the various modifiers that will by set on the root component. whether or not the type of shell being
+     * created by this driver has an execution phase. This is determined by whether or not the shell implements
      * {@link AutoCloseable}.
      * 
      * @return whether or not the shell being produced by this driver has an execution phase
@@ -116,7 +116,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> rawType() {
+    public Class<?> shellRawType() {
         return newShellMH.type().returnType();
     }
 
@@ -130,6 +130,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
         return new PackedShellDriver<>(isGuest, mh);
     }
 
+    /** Options that can be applied when creating a shell driver. */
     interface Option {
 
         // If not autoclosable
@@ -226,7 +227,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
          *            the assembled component
          */
         private ShellImage(ComponentNodeConfiguration compConf) {
-            this.compConf = compConf;
+            this.compConf = requireNonNull(compConf);
         }
 
         /** {@inheritDoc} */
@@ -241,24 +242,23 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
             // Initialize a new system using the previously assembled node
             PackedInitializationContext pic = PackedInitializationContext.initializeFromImage(compConf, WireletPack.forImage(compConf, wirelets));
 
-            // Returns the system wrapped in a shell
+            // Wrap the system in a shell and return it
             return newShell(pic);
         }
     }
-
-    // Ideen er lidt at vi har en OptionList som aggregere alle options
-    // Det er en public klasse i packedapp.internal.shell.OptionAggregate
-    // Den har en PackedContainerConfiguration saa adgang til. og f.eks. kalder
-    // aggregate.addExtension(Class<? extends Extension>) <- may throw....
-//    static class ArtifactOptionAggregate {
-//        ArtifactOptionAggregate(Option[] options) {}
-//
-//        ArtifactOptionAggregate with(Option[] options) {
-//            throw new UnsupportedOperationException();
-//        }
-//    }
 }
 
+// Ideen er lidt at vi har en OptionList som aggregere alle options
+// Det er en public klasse i packedapp.internal.shell.OptionAggregate
+// Den har en PackedContainerConfiguration saa adgang til. og f.eks. kalder
+// aggregate.addExtension(Class<? extends Extension>) <- may throw....
+//static class ArtifactOptionAggregate {
+//    ArtifactOptionAggregate(Option[] options) {}
+//
+//    ArtifactOptionAggregate with(Option[] options) {
+//        throw new UnsupportedOperationException();
+//    }
+//}
 //public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
 //  throw new UnsupportedOperationException();
 //}

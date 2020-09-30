@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvideContext;
-import app.packed.inject.ProvisionException;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.util.ThrowableUtil;
@@ -49,8 +48,7 @@ public class PrototypeInjectorEntry<T> extends RuntimeService<T> {
         try {
             return (T) mh.invoke(region);
         } catch (Throwable e) {
-            ThrowableUtil.throwIfUnchecked(e);
-            throw new ProvisionException("Failed to inject ", e);
+            throw ThrowableUtil.orUndeclared(e);
         }
     }
 

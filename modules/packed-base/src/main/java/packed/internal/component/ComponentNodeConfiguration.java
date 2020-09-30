@@ -286,7 +286,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            dam.addValue(ComponentAttributes.SHELL_TYPE, realm.pac.shellDriver().rawType());
+            dam.addValue(ComponentAttributes.SHELL_TYPE, realm.pac.shellDriver().shellRawType());
         }
         return dam;
     }
