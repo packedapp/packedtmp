@@ -43,6 +43,7 @@ public class Foo extends BaseBundle {
     protected void configure() {
         provideInstance("asdasdasd");
         provide(MyComp.class);
+        System.out.println(base().extensions());
     }
 
     public static void main(String[] args) throws InterruptedException {
@@ -76,6 +77,14 @@ class TestIt extends MethodSidecar {
     @Override
     protected void configure() {
         provideInvoker();
+    }
+
+    @Override
+    protected void bootstrap(BootstrapContext context) {
+        if (context.method().isDefault()) {
+            context.disable();
+        }
+        context.attach(context.method().getName());
     }
 
     @OnInitialize

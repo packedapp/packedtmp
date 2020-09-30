@@ -17,47 +17,45 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collections;
+import java.util.Set;
+
 import packed.internal.container.ContainerAssembly;
+import packed.internal.container.ExtensionAssembly;
 
 /**
  * An extension that is always available from any container. Even while the Every other extension implicitly has this
  * extension as a mandatory dependency.
- * 
  * <p>
- * 
- * <p>
- * Other extensions should never depend on this extension via {@link ExtensionSetup#dependencies()}. Doing so will
- * fail with a runtime exception.
+ * Other extensions should never depend on this extension via {@link ExtensionSetup#dependencies()}. Doing so will fail
+ * with a runtime exception.
  */
-// If it proves strange that it is not in the component tree.
-// We can always say Container is a member of BaseExtensions... Nahh
 public final class BaseExtension extends Extension {
 
-    /** The container configuration. This extension is the only extension that can use it. */
+    /** The container this extension is part of. */
     private final ContainerAssembly container;
 
     /**
      * Creates a new base extension.
      * 
-     * @param container
-     *            the configuration of the container.
+     * @param configuration
+     *            the configuration of this extension
      */
-    /* package-private */ BaseExtension(ContainerAssembly container) {
-        this.container = requireNonNull(container, "container is null");
+    /* package-private */ BaseExtension(ExtensionConfiguration configuration) {
+        this.container = ((ExtensionAssembly) configuration).container();
     }
 
     /**
-     * Returns all the extensions that are currently in use. This (BaseExtension) extension is never included.
+     * Returns a view of all the extensions that are currently in use. This (BaseExtension) extension is not included.
      * 
      * @return all the extensions that are currently in use
      */
-    // ExtensionSet is never a view???
-    public ExtensionSet extensions() {
-        return ExtensionSet.of(container.extensionView()); // view/not-view?
+    public Set<Class<? extends Extension>> extensions() {
+        return Collections.unmodifiableSet(container.extensionView());
     }
 
     /**
-     * Returns whether or not the specified extension type is in use
+     * Returns whether or not the specified extension type is in use.
      * 
      * @param extensionType
      *            the extension type to test
@@ -68,12 +66,15 @@ public final class BaseExtension extends Extension {
     public boolean isUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         if (extensionType == Extension.class) {
-            throw new IllegalArgumentException("Extension is never used");
+            throw new IllegalArgumentException("Cannot specify Extension.class");
+        } else if (extensionType == BaseExtension.class) {
+            return true;
         }
         return container.extensions.keySet().contains(extensionType);
     }
 }
-
+//If it proves strange that it is not in the component tree.
+//We can always say Container is a member of BaseExtensions... Nahh
 // Hmm vi har ikke
 // public static final BaseExtension defaultOrder = new BaseExtension();
 // onExtensionAdded()// printStackTrace()

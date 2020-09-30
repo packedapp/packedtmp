@@ -30,7 +30,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.InjectionContext;
 import app.packed.inject.Provide;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
@@ -87,7 +86,7 @@ public final class ServiceExtension extends Extension {
      * @param extension
      *            the configuration of the extension
      */
-    /* package-private */ ServiceExtension(ExtensionConfiguration extension, InjectionContext ic) {
+    /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
         this.im = ((ExtensionAssembly) extension).container().im;
         this.sm = im.services(false);
     }

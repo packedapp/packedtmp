@@ -18,6 +18,6 @@ package app.packed.sidecar;
 /**
  *
  */
-public interface InvokableDescriptor {
+public abstract class FieldSidecar {
 
 }

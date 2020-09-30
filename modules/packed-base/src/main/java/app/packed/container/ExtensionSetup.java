@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import app.packed.statemachine.Leaving;
 
 /**
- * An annotation that can be used on subclasses of {@link Extension}. Classes that extend {@link Extension} are implicit
+ * An annotation that can be used on {@link Extension} subclasses. Classes that extend {@link Extension} are implicit
  * sidecars even without the use of this annotation. However, if the extension uses any other extensions this annotation
  * must be used to indicate which extensions it may use.
  */
