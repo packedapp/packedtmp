@@ -23,12 +23,14 @@ import java.lang.annotation.Target;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
+import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.SidecarActivationType;
 import app.packed.statemachine.OnInitialize;
 
 /**
@@ -47,6 +49,13 @@ public class Foo extends BaseBundle {
         App.of(new Foo());
     }
 
+    @Target(ElementType.METHOD)
+    @Retention(RUNTIME)
+    @ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, sidecar = TestIt.class)
+    public @interface Hej {
+
+    }
+
     public static class MyComp {
 
         public MyComp(String s) {
@@ -54,20 +63,15 @@ public class Foo extends BaseBundle {
         }
 
         @Hej
-        public void foo(Long ldt, Long ldt2, Long ldt3, String sss) {
+        public void foo(@Named("A") Long ldt, @Named("B") Long ldt2, @Named("A") Long ldt3, String sss) {
             System.out.println("Invoking because of @HEJ " + ldt + "   " + ldt2 + "  " + ldt3);
         }
-    }
-
-    @Target(ElementType.METHOD)
-    @Retention(RUNTIME)
-    @ActivateSidecar(TestIt.class)
-    public @interface Hej {
-
     }
 }
 
 class TestIt extends MethodSidecar {
+
+    static final AtomicLong al = new AtomicLong();
 
     @Override
     protected void configure() {
@@ -79,11 +83,16 @@ class TestIt extends MethodSidecar {
         i.call();
     }
 
-    static final AtomicLong al = new AtomicLong();
-
     @Provide
+    @Named("A")
     public static Long l() {
         return al.incrementAndGet();
+    }
+
+    @Provide
+    @Named("B")
+    public static Long ld() {
+        return al.decrementAndGet();
     }
 
     @Provide

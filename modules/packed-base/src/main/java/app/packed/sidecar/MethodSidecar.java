@@ -15,6 +15,11 @@
  */
 package app.packed.sidecar;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.reflect.Method;
+
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.sidecar.MethodSidecarModel.MethodSidecarConfiguration;
 import packed.internal.sidecar.SidecarModel;
@@ -33,8 +38,19 @@ public abstract class MethodSidecar {
     @Nullable
     private MethodSidecarConfiguration configuration;
 
+    protected void bootstrap(BootstrapContext context) {}
+
+    /**
+     * Returns this sidecar's configuration object.
+     * 
+     * @return this sidecar's configuration object
+     */
     private MethodSidecarConfiguration configuration() {
-        return configuration;
+        MethodSidecarConfiguration c = configuration;
+        if (c == null) {
+            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
+        }
+        return c;
     }
 
     protected void configure() {}
@@ -43,7 +59,32 @@ public abstract class MethodSidecar {
         // syntes den er enabled by default
     }
 
+    /**
+     * 
+     * @throws IllegalStateException
+     *             if called from outside of {@link #configure()}
+     */
     protected final void provideInvoker() {
         configuration().provideInvoker();
+    }
+
+    public interface BootstrapContext {
+
+        default <T> void attach(Class<T> key, T instance) {
+            attach(Key.of(key), instance);
+        }
+
+        <T> void attach(Key<T> key, T instance);
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        default void attach(Object instance) {
+            requireNonNull(instance, "instance is null");
+            attach((Class) instance.getClass(), instance);
+        }
+
+        /** Disables the sidecar for the particular method. No further processing will be done. */
+        void disable();
+
+        Method method();
     }
 }

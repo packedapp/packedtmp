@@ -15,6 +15,7 @@
  */
 package packed.internal.sidecar;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -23,7 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
+import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
@@ -55,11 +59,27 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
      */
     private MethodSidecarModel(Builder builder) {
         super(builder);
-        Map<Key<?>, SidecarDependencyProvider> m = new HashMap<>();
-        builder.providing.forEach((k, v) -> m.put(k, v.build(this)));
-        this.keys = builder.providing.size() == 0 ? null : Map.copyOf(m);
         this.onInitialize = builder.onInitialize;
+
+        Map<Key<?>, SidecarDependencyProvider> tmp = new HashMap<>();
+        builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
+        this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
+
+    @Nullable
+    public static MethodSidecarModel getModel(Class<? extends Annotation> c) {
+        return METHOD_SIDECARS.get(c);
+    }
+
+    /** A cache of any extensions a particular annotation activates. */
+    static final ClassValue<MethodSidecarModel> METHOD_SIDECARS = new ClassValue<>() {
+
+        @Override
+        protected MethodSidecarModel computeValue(Class<?> type) {
+            ActivateSidecar ae = type.getAnnotation(ActivateSidecar.class);
+            return ae == null ? null : SidecarModel.ofMethod(ae.sidecar()[0]);
+        }
+    };
 
     /** A builder for method sidecar. */
     final static class Builder extends SidecarModel.Builder<MethodSidecar, MethodSidecarConfiguration> {
@@ -83,8 +103,10 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                     if (!Modifier.isStatic(m.getModifiers())) {
                         mh = mh.bindTo(instance);
                     }
-                    Key<?> k = Key.fromMethodReturnType(m);
-                    providing.put(k, new SidecarDependencyProvider.Builder(k, mh));
+                    SidecarDependencyProvider.Builder b = new SidecarDependencyProvider.Builder(m, mh);
+                    if (providing.putIfAbsent(b.key, b) != null) {
+                        throw new InternalExtensionException("Multiple methods on " + instance.getClass() + " that provide " + b.key);
+                    }
                 }
 
                 OnInitialize oi = m.getAnnotation(OnInitialize.class);

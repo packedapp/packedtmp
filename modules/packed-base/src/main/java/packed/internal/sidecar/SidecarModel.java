@@ -41,7 +41,7 @@ import packed.internal.util.ThrowableUtil;
 public abstract class SidecarModel<T> {
 
     /** A cache of models. */
-    private static final ClassValue<SidecarModel<?>> CACHE = new ClassValue<>() {
+    static final ClassValue<SidecarModel<?>> CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
@@ -74,8 +74,10 @@ public abstract class SidecarModel<T> {
         return CACHE.get(implementation);
     }
 
-    static <T extends SidecarModel<T>> T of(Class<T> sidecarType, Class<?> implementation) {
+    static <T extends SidecarModel<T>> T ofd(Class<T> sidecarType, Class<?> implementation) {
 
+        @SuppressWarnings("unused")
+        Runnable eclipseBug = () -> {};
         // Er der nogengang vi ved
         // hellere Maaske hellere <T extends SidecarModel> of (Class<T> sidecarType, Class<?> implementation)
         throw new UnsupportedOperationException();
@@ -96,9 +98,10 @@ public abstract class SidecarModel<T> {
         /** A method handle that can call the sidecar's configure method. */
         private final MethodHandle mhConfigure;
 
-        /** A var handle */
+        /** A var handle for setting the configuration's object */
         private final VarHandle vhConfiguration;
 
+        /** The sidecar instance. */
         protected Object instance;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
@@ -133,22 +136,14 @@ public abstract class SidecarModel<T> {
                 throw ThrowableUtil.orUndeclared(e);
             }
 
-            Object existing = vhConfiguration.compareAndExchange(instance, null, configuration);
-            if (existing == null) {
-                try {
-                    // Invokes app.packed.component.Bundle#configure()
-                    mhConfigure.invoke(instance);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                } finally {
-                    // sets Bundle.configuration to a marker that indicates the bundle has been consumed
-                    vhConfiguration.setVolatile(instance, null);
-                }
-            } else {
-                // Can be this thread or another thread that is already using the bundle.
-                throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + instance.getClass());
+            vhConfiguration.set(instance, configuration);
+            try {
+                mhConfigure.invoke(instance); // Invokes sidecar#configure()
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            } finally {
+                vhConfiguration.set(instance, null); // clears the configuration
             }
         }
-
     }
 }

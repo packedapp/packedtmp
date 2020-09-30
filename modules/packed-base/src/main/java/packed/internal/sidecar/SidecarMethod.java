@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar.model;
+package packed.internal.sidecar;
 
 /**
  *
  */
-public class ClassModel {
+public class SidecarMethod {
 
 }

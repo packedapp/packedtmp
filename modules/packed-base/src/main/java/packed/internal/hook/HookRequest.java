@@ -115,7 +115,8 @@ public final class HookRequest {
             } else if (member instanceof Method) {
                 return ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) member, annotation);
             } else {
-                return ModuleAccess.hook().newAnnotatedTypeHook(hp, (Class<?>) member, annotation);
+                throw new UnsupportedOperationException();
+                // return ModuleAccess.hook().newAnnotatedTypeHook(hp, (Class<?>) member, annotation);
             }
         }
     }

@@ -32,13 +32,13 @@ public abstract class VariableSidecar {
         return configuration;
     }
 
-    protected final void requireAssignableTo(Class<?> type) {
-
-    }
-
     protected void configure() {}
 
     protected final void debug() {
         configuration().debug();
+    }
+
+    protected final void requireAssignableTo(Class<?> type) {
+
     }
 }

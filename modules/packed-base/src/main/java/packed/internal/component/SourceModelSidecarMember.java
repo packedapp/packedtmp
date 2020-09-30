@@ -20,7 +20,7 @@ package packed.internal.component;
  */
 // SourceModel...
 // Maa have en liste af regions slots den skal bruge
-public abstract class SourceModelMember {
+public abstract class SourceModelSidecarMember {
 
     // Jeg tror man loeber alle parameterene igennem og ser om der
     // er en sidecar provide der passer dem

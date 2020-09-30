@@ -91,8 +91,8 @@ public final class LazyExtensionActivationMap {
 
     @Nullable
     public static BaseHookQualifierList findNonExtending(OnHookModel hooks) {
-        return BaseHookQualifierList.ofOrNull(findNonAutoExtending(hooks.annotatedFieldHooks()), findNonAutoExtending(hooks.annotatedMethodHooks()),
-                findNonAutoExtending(hooks.annotatedTypeHooks()), findNonAutoExtending(hooks.assignableTos()));
+        return BaseHookQualifierList.ofOrNull(findNonAutoExtending(hooks.annotatedFieldHooks()), findNonAutoExtending(hooks.annotatedMethodHooks()), Set.of(),
+                findNonAutoExtending(hooks.assignableTos()));
     }
 
     @Nullable

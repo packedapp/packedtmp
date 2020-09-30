@@ -27,8 +27,8 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
-import packed.internal.component.SourceModelMethod;
-import packed.internal.component.SourceModelMethod.RunAt;
+import packed.internal.component.SourceModelSidecarMethod;
+import packed.internal.component.SourceModelSidecarMethod.RunAt;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
@@ -76,7 +76,7 @@ public class Injectable {
     public final SourceAssembly source;
 
     @Nullable
-    public final SourceModelMethod sourceMember;
+    public final SourceModelSidecarMethod sourceMember;
 
     // Creates the Source...
     public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
@@ -105,7 +105,7 @@ public class Injectable {
         }
     }
 
-    public Injectable(SourceAssembly source, SourceModelMethod smm) {
+    public Injectable(SourceAssembly source, SourceModelSidecarMethod smm) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 

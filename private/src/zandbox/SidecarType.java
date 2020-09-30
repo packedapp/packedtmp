@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar;
+package zandbox;
 
 import app.packed.base.Nullable;
-import app.packed.sidecar.MethodSidecar;
 
 /**
  *
@@ -33,7 +32,7 @@ public enum SidecarType {
 //    /** A {@link ConstructorSidecar constructor sidecar} represented by {@link ConstructorSidecarModel}. */
 //    CONSTRUCTOR,
 
-    /** A {@link MethodSidecar method sidecar} represented by {@link MethodSidecarModel}. */
+    /// ** A {@link MethodSidecar method sidecar} represented by {@link MethodSidecarModel}. */
     METHOD;
 
     @Nullable

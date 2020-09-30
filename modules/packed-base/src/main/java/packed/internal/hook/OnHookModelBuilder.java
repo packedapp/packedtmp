@@ -38,7 +38,6 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
@@ -59,9 +58,6 @@ final class OnHookModelBuilder {
 
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
     IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethods;
-
-    /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedTypeHook} as a parameter. */
-    IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedTypes;
 
     /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
     IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTos;
@@ -95,7 +91,7 @@ final class OnHookModelBuilder {
             bb.cp.findMethods(m -> onMethod(bb, m));
         }
 
-        if (annotatedFields == null && annotatedMethods == null && annotatedTypes == null && assignableTos == null && customHooks == null) {
+        if (annotatedFields == null && annotatedMethods == null && assignableTos == null && customHooks == null) {
             return null;
         }
 
@@ -201,13 +197,13 @@ final class OnHookModelBuilder {
                 mm = annotatedMethods = new IdentityHashMap<>(1);
             }
             onMethodBaseHook(node, hookT, hookType, method, mm);
-        } else if (hookType == AnnotatedTypeHook.class) {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = annotatedTypes;
-            if (mm == null) {
-                mm = annotatedTypes = new IdentityHashMap<>(1);
-            }
-            onMethodBaseHook(node, hookT, hookType, method, mm);
-        } else if (hookType == AssignableToHook.class) {
+        }
+        /*
+         * else if (hookType == AnnotatedTypeHook.class) { IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm =
+         * annotatedTypes; if (mm == null) { mm = annotatedTypes = new IdentityHashMap<>(1); } onMethodBaseHook(node, hookT,
+         * hookType, method, mm); }
+         */
+        else if (hookType == AssignableToHook.class) {
             IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = assignableTos;
             if (mm == null) {
                 mm = assignableTos = new IdentityHashMap<>(1);

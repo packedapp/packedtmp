@@ -19,15 +19,17 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.inject.Provide;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 
 /**
- *
+ * Represents a method on a sidecar annotated with {@link Provide}.
  */
 public final class SidecarDependencyProvider implements DependencyProvider {
 
@@ -62,12 +64,12 @@ public final class SidecarDependencyProvider implements DependencyProvider {
 
     public static class Builder {
 
-        private final Key<?> key;
+        public final Key<?> key;
 
         private final MethodHandle methodHandle;
 
-        Builder(Key<?> key, MethodHandle methodHandle) {
-            this.key = requireNonNull(key);
+        Builder(Method method, MethodHandle methodHandle) {
+            this.key = Key.fromMethodReturnType(method);
             this.methodHandle = requireNonNull(methodHandle);
         }
 

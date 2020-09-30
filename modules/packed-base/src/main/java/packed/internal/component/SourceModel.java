@@ -44,7 +44,6 @@ import packed.internal.hook.MemberUnreflector;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
-import packed.internal.sidecar.model.MethodSidecarHelper;
 import packed.internal.sidecar.model.Model;
 import packed.internal.util.ThrowableUtil;
 
@@ -64,7 +63,7 @@ public final class SourceModel extends Model {
     @Nullable
     private final HookRequest sourceHook;
 
-    public final List<SourceModelMethod> methods;
+    public final List<SourceModelSidecarMethod> methods;
 
     public final Map<Key<?>, SidecarDependencyProvider> sourceServices;
 
@@ -118,7 +117,7 @@ public final class SourceModel extends Model {
         SourceAssembly source = compConf.source;
 
         // Iterate through all "interesting" methods on the source.
-        for (SourceModelMethod smm : methods) {
+        for (SourceModelSidecarMethod smm : methods) {
 
             Injectable i = new Injectable(source, smm);
             compConf.injectionManager().addInjectable(i);
@@ -195,7 +194,7 @@ public final class SourceModel extends Model {
         /** A map of builders for every activated extension. */
         private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
 
-        private final ArrayList<SourceModelMethod> methods = new ArrayList<>();
+        private final ArrayList<SourceModelSidecarMethod> methods = new ArrayList<>();
 
         private final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
 
@@ -290,6 +289,8 @@ public final class SourceModel extends Model {
         }
 
         private void findAnnotatedMethods(MemberUnreflector htp, LazyExtensionActivationMap activatorMap, Method method) throws Throwable {
+            MethodHandle directMethodHandle = null;
+
             for (Annotation a : method.getAnnotations()) {
                 findAnnotatedMethods0(htp, a, method, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                 if (activatorMap != null) {
@@ -299,12 +300,15 @@ public final class SourceModel extends Model {
                     csb.onAnnotatedMethod(method, a);
                 }
 
-                // With sidecars....
-
-                MethodSidecarModel model = MethodSidecarHelper.getModel(a.annotationType());
+                MethodSidecarModel model = MethodSidecarModel.getModel(a.annotationType());
                 if (model != null) {
-                    MethodHandle mh = htp.unreflect(method);
-                    SourceModelMethod smm = new SourceModelMethod(method, model, mh);
+
+                    // We can have more than 1 sidecar attached to a method
+                    if (directMethodHandle == null) {
+                        directMethodHandle = htp.unreflect(method);
+                    }
+
+                    SourceModelSidecarMethod smm = new SourceModelSidecarMethod(method, model, directMethodHandle);
                     methods.add(smm);
 
                     Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
@@ -331,20 +335,20 @@ public final class SourceModel extends Model {
                 if (activatorMap != null) {
                     findAnnotatedTypes0(htp, componentType, a, activatorMap.onAnnotatedType(a.annotationType()));
                 }
-                if (csb != null) {
-                    csb.onAnnotatedType(componentType, a);
-                }
+//                if (csb != null) {
+//                    csb.onAnnotatedType(componentType, a);
+//                }
             }
         }
 
         private void findAnnotatedTypes0(MemberUnreflector hookProcessor, Class<?> componentType, Annotation a, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
-            if (extensionTypes != null) {
-                for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
-                            .onAnnotatedType(componentType, a);
-                }
-            }
+//            if (extensionTypes != null) {
+//                for (Class<? extends Extension> eType : extensionTypes) {
+//                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
+//                            .onAnnotatedType(componentType, a);
+//                }
+//            }
         }
     }
 

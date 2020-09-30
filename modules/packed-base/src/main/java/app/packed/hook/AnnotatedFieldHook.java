@@ -63,12 +63,6 @@ public final class AnnotatedFieldHook<T extends Annotation> implements Hook {
 
             /** {@inheritDoc} */
             @Override
-            public <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(MemberUnreflector gate, Class<?> type, T annotation) {
-                return new AnnotatedTypeHook<>(gate, type, annotation);
-            }
-
-            /** {@inheritDoc} */
-            @Override
             public <T> AssignableToHook<T> newAssignableToHook(MemberUnreflector gate, Class<T> type) {
                 return new AssignableToHook<>(gate, type);
             }

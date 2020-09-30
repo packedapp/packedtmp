@@ -31,6 +31,13 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 public @interface ActivateSidecar {
 
+    /**
+     * Indicates for which use cases the sidecar will be activated
+     * 
+     * @return stuff
+     */
+    SidecarActivationType[] activation();
+
     // Tmp MethodSidecar
-    Class<? extends MethodSidecar> value();
+    Class<? extends MethodSidecar>[] sidecar();
 }

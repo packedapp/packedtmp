@@ -25,7 +25,6 @@ import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import packed.internal.classscan.invoke.OpenClass;
@@ -132,20 +131,20 @@ public final class HookRequestBuilder {
         }
     }
 
-    public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
-        Map<Class<?>, Link> annotatedTypes = onHookModel.annotatedTypes;
-        if (annotatedTypes != null) {
-            for (Link link = annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
-                if (link.index == 0 && mode != Mode.TEST_CLASS) {
-                    baseHooksCallback = new Tiny<>(new BaseHookCallback(clazz, annotation, link.mh), baseHooksCallback);
-                } else {
-                    Hook.Builder<?> builder = builderOf(array, link.index);
-                    AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(hookProcessor, clazz, annotation);
-                    link.mh.invoke(builder, hook);
-                }
-            }
-        }
-    }
+//    public void onAnnotatedType(Class<?> clazz, Annotation annotation) throws Throwable {
+//        Map<Class<?>, Link> annotatedTypes = onHookModel.annotatedTypes;
+//        if (annotatedTypes != null) {
+//            for (Link link = annotatedTypes.get(annotation.annotationType()); link != null; link = link.next) {
+//                if (link.index == 0 && mode != Mode.TEST_CLASS) {
+//                    baseHooksCallback = new Tiny<>(new BaseHookCallback(clazz, annotation, link.mh), baseHooksCallback);
+//                } else {
+//                    Hook.Builder<?> builder = builderOf(array, link.index);
+//                    AnnotatedTypeHook<Annotation> hook = ModuleAccess.hook().newAnnotatedTypeHook(hookProcessor, clazz, annotation);
+//                    link.mh.invoke(builder, hook);
+//                }
+//            }
+//        }
+//    }
 
     public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
         Map<Class<?>, Link> assignableTos = onHookModel.assignableTos;

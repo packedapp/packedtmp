@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar.old;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,12 +32,13 @@ import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.lifecycle.old.DefaultLifecycleTransition;
 import packed.internal.sidecar.model.Model;
+import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * A model of a sidecar.
  */
-public abstract class OldSidecarModel extends Model {
+public abstract class AbstractExtensionModel extends Model {
 
     /** A method handle for creating a new sidecar instance. */
     protected final MethodHandle constructor;
@@ -60,7 +61,7 @@ public abstract class OldSidecarModel extends Model {
      * @param builder
      *            the builder
      */
-    protected OldSidecarModel(Builder builder) {
+    protected AbstractExtensionModel(Builder builder) {
         super(builder.sidecarType);
         this.constructor = builder.constructor;
         this.contracts = Map.copyOf(builder.contracts);

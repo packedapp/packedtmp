@@ -39,7 +39,7 @@ import packed.internal.sidecar.SidecarDependencyProvider;
 
 // Altsaa alle source metoder skal jo resolves paa assembly time
 
-public class SourceModelMethod extends SourceModelMember {
+public class SourceModelSidecarMethod extends SourceModelSidecarMember {
 
     public final List<DependencyDescriptor> dependencies;
 
@@ -53,13 +53,12 @@ public class SourceModelMethod extends SourceModelMember {
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
-    SourceModelMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
+    SourceModelSidecarMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
         this.method = requireNonNull(method);
         this.model = requireNonNull(model);
         MethodDescriptor m = MethodDescriptor.from(method);
         this.dependencies = DependencyDescriptor.fromExecutable(m);
         this.directMethodHandle = requireNonNull(mh);
-        // System.out.println("NEW SOURCE METHOD " + mh);
     }
 
     public enum RunAt {

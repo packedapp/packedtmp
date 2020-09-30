@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AnnotatedTypeHook;
 import app.packed.hook.AssignableToHook;
 
 /** An access class for accessing package private members in app.packed.hook. */
@@ -56,21 +55,6 @@ public interface AppPackedHookAccess {
      * @return the new annotated field hook
      */
     <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(MemberUnreflector controller, Method method, T annotation);
-
-    /**
-     * Creates a new instance of {@link AnnotatedTypeHook}.
-     * 
-     * @param <T>
-     *            the type of annotation
-     * @param controller
-     *            the component model builder
-     * @param type
-     *            the annotated type
-     * @param annotation
-     *            the annotation value
-     * @return the new annotated type hook
-     */
-    <T extends Annotation> AnnotatedTypeHook<T> newAnnotatedTypeHook(MemberUnreflector controller, Class<?> type, T annotation);
 
     <T> AssignableToHook<T> newAssignableToHook(MemberUnreflector processor, Class<T> type);
 }

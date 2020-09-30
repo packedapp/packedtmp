@@ -27,7 +27,8 @@ import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
 
 /**
- *
+ * A implementation of {@link Invoker} that takes a method handle that needs a single {@link RuntimeRegion} to be
+ * invoked.
  */
 public final class RuntimeRegionInvoker<T> implements Invoker<T> {
 
