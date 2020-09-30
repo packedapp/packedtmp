@@ -15,25 +15,37 @@
  */
 package app.packed.inject;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandle;
 import java.util.stream.Stream;
 
-import packed.internal.util.ThrowableUtil;
+import packed.internal.inject.ConstantProvider;
 
 /**
  * A provider of instances.
  * 
  * @param <T>
  *            the type of instances that are provided
- * @apiNote In the future, if the Java language permits, {@link Provider} may become a {@code sealed} interface, which
- *          would prohibit subclassing except by explicitly permitted types.
  */
 // Previously this interface also contained information about where
 // the instances came from. However, this information is now only
 // available from InjectionContext
+
+// We let people implement this in order to help with testing.
+// For example, 
+@FunctionalInterface // I don't know if we want this...
 public interface Provider<T> {
+
+    /**
+     * Returns whether or not this provider is guaranteed to return the same instance on every invocation.
+     * <p>
+     * This method is always allowed to return false.
+     * <p>
+     * The default value is false.
+     * 
+     * @return true if this provider is guaranteed to return the same instance on every invocation. Otherwise false.
+     */
+    default boolean isConstant() {
+        return false;
+    }
 
     /**
      * Provides an instance of type {@code T}.
@@ -60,46 +72,15 @@ public interface Provider<T> {
      *            the constant
      * @return a new provider that provides the specified constant everytime
      */
-    static <T> Provider<T> of(T constant) {
+    static <T> Provider<T> ofConstant(T constant) {
         return new ConstantProvider<>(constant);
     }
 }
 
-//En gang inkludere dette interface ogsaa informationen om hvor T kom fra.
-//Det er nu blevet flyttet til InjectionContext, da der er ingen grund
-//til at have den information 2 steder...
-
-//isConstant??? Saa er vi ikke laengere et function interface though
-class InvokeExactProvider<T> implements Provider<T> {
-
-    private final MethodHandle mh;
-
-    InvokeExactProvider(MethodHandle mh) {
-        this.mh = requireNonNull(mh);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T provide() {
-        try {
-            return (T) mh.invokeExact();
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-}
-
-class ConstantProvider<T> implements Provider<T> {
-
-    private final T t;
-
-    public ConstantProvider(T t) {
-        this.t = requireNonNull(t);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T provide() {
-        return t;
-    }
-}
+// default Provider<T> lazyConstant() {
+//    if (isConstant()) {
+//        return this;
+//    }
+//    // Create lazy sync provider...
+//    throw new UnsupportedOperationException();
+//}
