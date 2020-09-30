@@ -24,12 +24,12 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 
 /**
- * An extension that is always available from any container. Even while the Every other extension implicitly has this
- * extension as a mandatory dependency.
+ * An extension that automatically installed into any container.
  * <p>
- * Other extensions should never depend on this extension via {@link ExtensionSetup#dependencies()}. Doing so will fail
- * with a runtime exception.
+ * Base extensions are never shown in a component tree.
  */
+// Maaske er det simpelthen bare ExtensionManager?? IDK
+// Kommer an paa om vi inkludere flere ting...
 public final class BaseExtension extends Extension {
 
     /** The container this extension is part of. */
@@ -51,6 +51,7 @@ public final class BaseExtension extends Extension {
      * @return all the extensions that are currently in use
      */
     public Set<Class<? extends Extension>> extensions() {
+        // TODO fix base extension is included...
         return Collections.unmodifiableSet(container.extensionView());
     }
 
@@ -73,9 +74,6 @@ public final class BaseExtension extends Extension {
         return container.extensions.keySet().contains(extensionType);
     }
 }
-//If it proves strange that it is not in the component tree.
-//We can always say Container is a member of BaseExtensions... Nahh
-// Hmm vi har ikke
 // public static final BaseExtension defaultOrder = new BaseExtension();
 // onExtensionAdded()// printStackTrace()
 // introduce order between(e1, e2)
