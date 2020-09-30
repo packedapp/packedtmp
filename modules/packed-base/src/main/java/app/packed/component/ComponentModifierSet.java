@@ -22,7 +22,7 @@ import packed.internal.component.PackedComponentModifierSet;
 /**
  * An immutable set of component modifiers.
  */
-// Skal vi ikke bare extende AbstractSet??? Nah.. saa meget fluff
+// Skal vi ikke bare extende AbstractSet??? Nah.. saa meget fluff.. maybe just a toSet??
 public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     /**

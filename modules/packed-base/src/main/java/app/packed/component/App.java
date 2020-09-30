@@ -24,6 +24,7 @@ import app.packed.guest.Guest;
 import app.packed.guest.GuestState;
 import app.packed.guest.GuestWirelets;
 import app.packed.service.ServiceLocator;
+import packed.internal.component.PackedApp;
 
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.

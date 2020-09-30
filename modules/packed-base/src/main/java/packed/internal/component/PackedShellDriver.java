@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 import static packed.internal.component.PackedComponentModifierSet.I_IMAGE;
@@ -22,17 +22,20 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.component.Bundle;
+import app.packed.component.Component;
+import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentModifierSet;
+import app.packed.component.CustomConfigurator;
+import app.packed.component.Image;
+import app.packed.component.ShellDriver;
+import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedAssemblyContext;
-import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ShellDriver}. */
-final class PackedShellDriver<S> implements ShellDriver<S> {
+public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** The initial set of modifiers for any system that uses this driver. */
     private final int modifiers;
@@ -48,7 +51,7 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
      * @param newShellMH
      *            a method handle that can create new shell instances
      */
-    PackedShellDriver(boolean isGuest, MethodHandle newShellMH) {
+    public PackedShellDriver(boolean isGuest, MethodHandle newShellMH) {
         this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
         this.newShellMH = requireNonNull(newShellMH);
     }
@@ -114,14 +117,17 @@ final class PackedShellDriver<S> implements ShellDriver<S> {
         return newShell(pic);
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the raw type of the shell instances that this driver creates.
+     * 
+     * @return the raw type of the shell instances that this driver creates
+     */
     public Class<?> shellRawType() {
         return newShellMH.type().returnType();
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
-    static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {
+    public static <A> ShellDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, MethodHandle mh) {
         // TODO validate type
         // shellType must match MH
         boolean isGuest = AutoCloseable.class.isAssignableFrom(shellType);

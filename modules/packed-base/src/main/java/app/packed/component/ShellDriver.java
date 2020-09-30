@@ -19,8 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.guest.Guest;
 import app.packed.service.Injector;
 import packed.internal.classscan.ShellDriverScan;
+import packed.internal.component.PackedShellDriver;
 
 /**
  * Shell drivers are responsible for creating new shell instances, for example, instances of {@link App}.
@@ -80,11 +82,12 @@ public interface ShellDriver<S> {
     // Maaske kan vi laver en function der smider Throwable...
     S newShell(Bundle<?> bundle, Wirelet... wirelets);
 
-    // The type of shell we produce?? or the implementation?
-    Class<?> shellRawType();
-
     /**
      * Creates a new shell driver.
+     * <p>
+     * The specified implementation can have the following types injected.
+     * 
+     * If the specified implementation implements {@link AutoCloseable} a {@link Guest} can also be injected.
      * 
      * @param <S>
      *            the type of shells the driver creates

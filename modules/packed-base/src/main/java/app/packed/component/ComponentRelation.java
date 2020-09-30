@@ -18,51 +18,9 @@ package app.packed.component;
 import java.util.Optional;
 
 /**
- * 
- * 
- * A component relation is a snapshot of how things are.
- * 
- * C
- * 
+ * A component relation is an immutable representation of a relationship between two components. It is typically created
+ * via {@link Component#relationTo(Component)}.
  */
-
-// Problemet er at vi vil have en snapshot...
-// Tager vi snapshot af attributer??? Nej det goer vi altsaa ikke...
-// Rimlig meget overhead
-
-// Tror topol
-
-// Vi skal ikke have noget live...
-// Maaske af det derfor
-
-// Special cases
-
-// Not In same system
-// -> distance = -1, inSameContainer=false, isStronglyBound=false, isWeaklyBound=false
-
-// Same component
-// -> distance = 0, inSameContainer=true, isStrongBound=?, isWeaklyBound=false
-
-// Teanker vi flytter den et andet sted end attributer...
-
-// Altsaa den walk man kan lave via Iterable... ville det vaere rart at kunne beskrive relationsship
-// for den.. Altsaa cr[4] er foraeldre til cr[3] og saa 
-
-// A component in a runtime system is not the same as in the build time system.
-
-// I would say the restartable image of one system is not in the same system as
-// the same restartable image when we have restarted.
-
-// https://en.wikipedia.org/wiki/Path_(graph_theory)
-// ComponentConnection
-
-// A ComponentRelation is directed
-// Can we have attributes??
-// if (rel.inSameContainer()) 
-
-// En relation er jo mere end topology... Syntes
-
-// walkFromSource(); Syntes maaske ikke den skal extende Iteralble...
 public interface ComponentRelation extends Iterable<Component> {
 
     /**
@@ -71,6 +29,14 @@ public interface ComponentRelation extends Iterable<Component> {
      * @return the distance between the two components
      */
     int distance();
+
+    /**
+     * Finds the lowest common ancestor for the two components if they are in the same system. Or {@link Optional#empty()}
+     * if not in the same system.
+     * 
+     * @return lowest common ancestor for the two components. Or empty if not in the same system
+     */
+    Optional<Component> findLowestCommonAncestor();
 
     /**
      * Returns whether or not the two components are in the same container.
@@ -109,13 +75,6 @@ public interface ComponentRelation extends Iterable<Component> {
     }
 
     /**
-     * The lowest common ancestor for the two components. Or {@link Optional#empty()} if not in the same system.
-     * 
-     * @return lowest common ancestor for the two components
-     */
-    Optional<Component> lowestCommonAncestor();
-
-    /**
      * The source of the relation.
      * 
      * @return the source of the relation
@@ -128,10 +87,50 @@ public interface ComponentRelation extends Iterable<Component> {
      * @return the target of the relation
      */
     Component target();
-
-    // https://en.wikipedia.org/wiki/Tree_structure
-    // description()? -> Same, parent, child, descendend, ancestor,
 }
+
+//Taenker den er immutable...
+
+//Problemet er at vi vil have en snapshot...
+//Tager vi snapshot af attributer??? Nej det goer vi altsaa ikke...
+//Rimlig meget overhead
+
+//Tror topol
+
+//Vi skal ikke have noget live...
+//Maaske af det derfor
+
+//Special cases
+
+//Not In same system
+//-> distance = -1, inSameContainer=false, isStronglyBound=false, isWeaklyBound=false
+
+//Same component
+//-> distance = 0, inSameContainer=true, isStrongBound=?, isWeaklyBound=false
+
+//Teanker vi flytter den et andet sted end attributer...
+
+//Altsaa den walk man kan lave via Iterable... ville det vaere rart at kunne beskrive relationsship
+//for den.. Altsaa cr[4] er foraeldre til cr[3] og saa 
+
+//A component in a runtime system is not the same as in the build time system.
+
+//I would say the restartable image of one system is not in the same system as
+//the same restartable image when we have restarted.
+
+//https://en.wikipedia.org/wiki/Path_(graph_theory)
+//ComponentConnection
+
+//A ComponentRelation is directed
+//Can we have attributes??
+//if (rel.inSameContainer()) 
+
+//En relation er jo mere end topology... Syntes
+
+//walkFromSource(); Syntes maaske ikke den skal extende Iteralble...
+//Maaske fromSourceIterator
+// https://en.wikipedia.org/wiki/Tree_structure
+// description()? -> Same, parent, child, descendend, ancestor,
 
 //default WiringStrength wiringStrength() {
 //    return hasSameGuest() ? WiringStrength.STRONG : WiringStrength.WEAK;

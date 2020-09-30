@@ -95,7 +95,7 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> lowestCommonAncestor() {
+    public Optional<Component> findLowestCommonAncestor() {
         return Optional.ofNullable(lcd);
     }
 
