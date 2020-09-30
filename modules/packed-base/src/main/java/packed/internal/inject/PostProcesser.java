@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.service.CyclicDependencyGraphException;
+import app.packed.component.AssemblyException;
 import packed.internal.component.RegionAssembly;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
@@ -39,7 +39,7 @@ final class PostProcesser {
     /**
      * Tries to find a dependency cycle.
      *
-     * @throws CyclicDependencyGraphException
+     * @throws AssemblyException
      *             if a dependency cycle was detected
      */
 
@@ -47,7 +47,7 @@ final class PostProcesser {
     static void dependencyCyclesDetect(RegionAssembly region, InjectionManager im) {
         DependencyCycle c = dependencyCyclesFind(region, im.allInjectables);
         if (c != null) {
-            throw new CyclicDependencyGraphException("Dependency cycle detected: " + c);
+            throw new AssemblyException("Dependency cycle detected: " + c);
         }
     }
 
@@ -79,7 +79,7 @@ final class PostProcesser {
      * @param injectable
      *            the node to visit
      * @return stuff
-     * @throws CyclicDependencyGraphException
+     * @throws AssemblyException
      *             if there is a cycle in the graph
      */
     @Nullable

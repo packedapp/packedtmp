@@ -25,17 +25,17 @@ import java.util.StringJoiner;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.AssemblyException;
 import app.packed.config.ConfigSite;
-import app.packed.inject.UnsatisfiableDependencyException;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.ServiceExtension;
 import packed.internal.inject.InjectionManager;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /**
@@ -122,7 +122,7 @@ public final class ServiceDependencyManager {
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                     // UnresolvedVariableException
-                    throw new UnsatisfiableDependencyException(sb.toString());
+                    throw new AssemblyException(sb.toString());
                 }
             }
         }

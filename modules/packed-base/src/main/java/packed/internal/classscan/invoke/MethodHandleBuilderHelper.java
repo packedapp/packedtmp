@@ -31,7 +31,6 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
-import app.packed.inject.UnsatisfiableDependencyException;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.classscan.invoke.MethodHandleBuilder.Entry;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -162,7 +161,7 @@ class MethodHandleBuilderHelper {
                         mh = MethodHandles.insertArguments(mh, is.size() + add, Optional.empty());
                     } else {
                         // Could be inner class
-                        throw new UnsatisfiableDependencyException("Could not inject " + kk + " Available keys = " + aa.keys.keySet());
+                        throw new IllegalArgumentException("Could not inject " + kk + " Available keys = " + aa.keys.keySet());
                     }
                 }
             } else {
