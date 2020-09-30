@@ -26,10 +26,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.OnHookModelBuilder.Node;

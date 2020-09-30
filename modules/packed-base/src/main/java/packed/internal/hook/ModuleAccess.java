@@ -18,7 +18,6 @@ package packed.internal.hook;
 import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.base.TypeLiteral;
-import app.packed.hook.AnnotatedFieldHook;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
 // Rename to ModuleAccess.

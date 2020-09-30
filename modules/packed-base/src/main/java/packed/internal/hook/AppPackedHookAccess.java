@@ -19,9 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess {
 

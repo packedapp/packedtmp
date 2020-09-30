@@ -6,7 +6,6 @@ module app.packed.base {
     exports app.packed.config;
     exports app.packed.container;
     exports app.packed.guest;
-    exports app.packed.hook;
     exports app.packed.inject;
     exports app.packed.service;
     exports app.packed.sidecar;

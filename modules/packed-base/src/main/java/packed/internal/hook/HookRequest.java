@@ -24,8 +24,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.Tiny;

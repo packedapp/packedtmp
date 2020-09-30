@@ -17,9 +17,9 @@ package packed.internal.lifecycle.old;
 
 import java.util.List;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
 import app.packed.statemachine.OnStart;
+import packed.internal.hook.AnnotatedFieldHook;
+import packed.internal.hook.AnnotatedMethodHook;
 
 /**
  * Information about methods annotated with {@link OnStart} or friends, typically on a single class. Used mainly for

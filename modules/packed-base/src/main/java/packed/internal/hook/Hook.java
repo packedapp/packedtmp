@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,9 +22,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory.AssertionErrorRuntimeException;
-import packed.internal.hook.HookRequestBuilder;
-import packed.internal.hook.MemberUnreflector;
-import packed.internal.hook.OnHookModel;
 import packed.internal.util.ThrowableUtil;
 
 /**

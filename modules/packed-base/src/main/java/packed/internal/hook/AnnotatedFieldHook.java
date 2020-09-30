@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,9 +29,6 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.introspection.FieldDescriptor;
-import packed.internal.hook.AppPackedHookAccess;
-import packed.internal.hook.MemberUnreflector;
-import packed.internal.hook.ModuleAccess;
 import packed.internal.util.StringFormatter;
 
 /**

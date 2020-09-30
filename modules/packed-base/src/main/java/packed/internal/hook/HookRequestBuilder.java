@@ -23,9 +23,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.hook.HookRequest.BaseHookCallback;
 import packed.internal.hook.OnHookModel.Link;
@@ -44,7 +41,6 @@ public final class HookRequestBuilder {
     final MemberUnreflector hookProcessor;
 
     /** Whether or not we are called from {@link Hook.Builder#test(java.lang.invoke.MethodHandles.Lookup, Class, Class)} */
-    @SuppressWarnings("javadoc") // eclipse...TODO raise bug
     private final Mode mode;
 
     private final OnHookModel onHookModel;

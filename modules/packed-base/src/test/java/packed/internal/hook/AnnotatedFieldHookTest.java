@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hook;
+package packed.internal.hook;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -32,7 +32,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.introspection.FieldDescriptor;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hook.MemberUnreflector;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.Left;
 

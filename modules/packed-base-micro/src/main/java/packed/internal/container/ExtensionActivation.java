@@ -36,9 +36,6 @@ import app.packed.component.Image;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.Packlet;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 
 /**
  *
@@ -122,27 +119,6 @@ public class ExtensionActivation {
     @Packlet(extension = MyExtension.class)
     public @interface ActivateMyExtension {
         String value();
-    }
-
-    static class Foo implements Hook {
-        Foo(String s) {
-
-        }
-
-        static class Builder implements Hook.Builder<Foo> {
-            ActivateMyExtension e;
-
-            @OnHook
-            public void anno(AnnotatedMethodHook<ActivateMyExtension> h) {
-                e = h.annotation();
-            }
-
-            /** {@inheritDoc} */
-            @Override
-            public Foo build() {
-                return new Foo(e.toString());
-            }
-        }
     }
 
 }

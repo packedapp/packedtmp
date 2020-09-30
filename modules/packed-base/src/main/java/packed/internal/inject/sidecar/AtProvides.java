@@ -46,7 +46,7 @@ public final class AtProvides {
     /** The dependencies (parameters) of the member. */
     public final List<DependencyDescriptor> dependencies;
 
-    /** An unbound method handle to the underlying field or method. */
+    /** A direct method handle to the underlying field or method. */
     public final MethodHandle methodHandle;
 
     AtProvides(MethodHandle mh, MemberDescriptor member, Key<?> key, Provide provides, List<DependencyDescriptor> dependencies) {

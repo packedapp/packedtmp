@@ -21,15 +21,15 @@ import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 import app.packed.inject.Provide;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
+import packed.internal.hook.AnnotatedFieldHook;
+import packed.internal.hook.AnnotatedMethodHook;
+import packed.internal.hook.Hook;
+import packed.internal.hook.OnHook;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** Information about fields and methods annotated with {@link Provide}. */

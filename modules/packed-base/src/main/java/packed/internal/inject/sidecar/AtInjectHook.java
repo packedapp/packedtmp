@@ -18,13 +18,13 @@ package packed.internal.inject.sidecar;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 import app.packed.inject.Inject;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MethodDescriptor;
+import packed.internal.hook.AnnotatedFieldHook;
+import packed.internal.hook.AnnotatedMethodHook;
+import packed.internal.hook.Hook;
+import packed.internal.hook.OnHook;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**

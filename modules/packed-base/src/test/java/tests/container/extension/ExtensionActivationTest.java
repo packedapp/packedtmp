@@ -28,11 +28,11 @@ import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.container.Packlet;
-import app.packed.hook.AnnotatedFieldHook;
-import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.hook.AnnotatedFieldHook;
+import packed.internal.hook.AnnotatedMethodHook;
+import packed.internal.hook.Hook;
+import packed.internal.hook.OnHook;
 import testutil.util.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
