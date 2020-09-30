@@ -30,8 +30,9 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public interface ServiceLocator extends ServiceSet {
 
     /**
-     * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
-     * know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
+     * Returns a service instance for the given key if available, otherwise an empty optional.
+     * <p>
+     * If you know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
      *
      * @param <T>
      *            the type of service that this method returns
@@ -45,8 +46,9 @@ public interface ServiceLocator extends ServiceSet {
     }
 
     /**
-     * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
-     * know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
+     * Returns a service instance for the given key if available, otherwise an empty optional.
+     * <p>
+     * If you know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
      *
      * @param <T>
      *            the type of service that this method returns
