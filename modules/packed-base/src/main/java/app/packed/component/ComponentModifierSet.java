@@ -15,12 +15,14 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * An immutable set of component modifiers.
- * 
  */
+// Skal vi ikke bare extende AbstractSet??? Nah.. saa meget fluff
 public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     /**
@@ -42,15 +44,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
-     * 
-     * @return true if this set contains the container modifier, otherwise false
-     */
-    default boolean isStateless() {
-        return contains(ComponentModifier.STATELESS);
-    }
-
-    /**
      * Returns whether or not this set contains any modifiers.
      * 
      * @return true if this set contains any modifiers, otherwise false
@@ -66,15 +59,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
         return contains(ComponentModifier.EXTENSION);
     }
 
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#SOURCED} modifier.
-     * 
-     * @return true if this set contains the source modifier, otherwise false
-     */
-    default boolean isSource() {
-        return contains(ComponentModifier.SOURCED);
-    }
-
     // boolean containsAll(Collection<ComponentModifier> c);
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
@@ -83,15 +67,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     default boolean isGuest() {
         return contains(ComponentModifier.GUEST);
-    }
-
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
-     * 
-     * @return true if this set contains the guest modifier, otherwise false
-     */
-    default boolean isSingleton() {
-        return contains(ComponentModifier.CONSTANT);
     }
 
     /**
@@ -104,6 +79,33 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
+     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
+     * 
+     * @return true if this set contains the guest modifier, otherwise false
+     */
+    default boolean isSingleton() {
+        return contains(ComponentModifier.CONSTANT);
+    }
+
+    /**
+     * Returns whether or not this set contains the {@link ComponentModifier#SOURCED} modifier.
+     * 
+     * @return true if this set contains the source modifier, otherwise false
+     */
+    default boolean isSource() {
+        return contains(ComponentModifier.SOURCED);
+    }
+
+    /**
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
+     * 
+     * @return true if this set contains the container modifier, otherwise false
+     */
+    default boolean isStateless() {
+        return contains(ComponentModifier.STATELESS);
+    }
+
+    /**
      * Returns the number of modifiers in this set.
      * 
      * @return the number of modifiers in this set
@@ -111,34 +113,35 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     int size();
 
     /**
-     * Returns an array containing all of the modifiers in this set.
+     * Returns a new array containing all of the modifiers in this set.
      * <p>
      * The returned array will be "safe" in that no references to it are maintained by this set. The caller is thus free to
      * modify the returned array.
      *
      * @return an array containing all the modifiers in this set
      */
+    // toModifierArray? if we want to implement Set
     ComponentModifier[] toArray();
 
     /**
-     * Returns a set that includes both the specified modifier and all modifiers in this set. Implementations should return
-     * this set if the specified modifier is already included in this set.
+     * Returns a set that includes both the specified modifier and all modifiers in this set.
      * 
      * @param modifier
-     *            the modifier to include in the returned set
+     *            the modifier to include in the new set
      * @return a modifier set with all modifiers in this set as well as the specified modifier
+     * @implNote implementations should return this set if the specified modifier is already included in this set.
      */
     ComponentModifierSet with(ComponentModifier modifier);
 
     ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier);
 
     /**
-     * Returns a set that include all modifiers in this set except for the specified modifier. Implementations should return
-     * this set if the specified modifier is not in this set.
+     * Returns a set that include all modifiers in this set except for the specified modifier.
      * 
      * @param modifier
-     *            the modifier to remove in the returned set
+     *            the modifier to exclude in the returned set
      * @return a modifier set with all modifiers in this set except for the specified modifier
+     * @implNote implementations should return this set if the specified modifier is not in this set.
      */
     ComponentModifierSet without(ComponentModifier modifier);
 
@@ -162,6 +165,18 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     static ComponentModifierSet of(ComponentModifier m) {
         return new PackedComponentModifierSet(m.bits());
+    }
+
+    static ComponentModifierSet of(ComponentModifier... modifiers) {
+        requireNonNull(modifiers, "modifiers is null");
+        if (modifiers.length == 0) {
+            return of();
+        }
+        int b = 0;
+        for (int i = 0; i < modifiers.length; i++) {
+            b |= modifiers[i].bits();
+        }
+        return new PackedComponentModifierSet(b);
     }
 
     static ComponentModifierSet of(ComponentModifier m1, ComponentModifier m2) {

@@ -253,6 +253,11 @@ public enum ComponentModifier {
 
     UNSCOPED; // Det er her hvor den kan vaere managed eller unmanaged..
 
+    /**
+     * Returns a component modifier set containing only this modifier.
+     * 
+     * @return a component modifier set containing only this modifier
+     */
     public ComponentModifierSet toSet() {
         return ComponentModifierSet.of(this);
     }
