@@ -24,7 +24,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
-import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.classscan.invoke.OpenClass;
@@ -92,7 +91,6 @@ public final class HookRequest {
     /// This is necessary because we can only fields and methods once. Without scanning everything again
     static class BaseHookCallback {
 
-        /** Is null for {@link AssignableToHook}. */
         @Nullable
         private final Annotation annotation;
 
@@ -108,9 +106,11 @@ public final class HookRequest {
         }
 
         private Hook toHook(MemberUnreflector hp) {
-            if (annotation == null) {
-                return ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) member);
-            } else if (member instanceof Field) {
+//            if (annotation == null) {
+//                return ModuleAccess.hook().newAssignableToHook(hp, (Class<?>) member);
+//            } else 
+
+            if (member instanceof Field) {
                 return ModuleAccess.hook().newAnnotatedFieldHook(hp, (Field) member, annotation);
             } else if (member instanceof Method) {
                 return ModuleAccess.hook().newAnnotatedMethodHook(hp, (Method) member, annotation);

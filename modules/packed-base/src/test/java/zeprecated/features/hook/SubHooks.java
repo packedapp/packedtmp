@@ -18,13 +18,10 @@ package zeprecated.features.hook;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
-import app.packed.hook.OnHook;
 import testutil.stubs.annotation.Left;
 import zeprecated.features.hook.HookStubs.Aggregate;
 
@@ -52,8 +49,4 @@ public class SubHooks {
         assertThat(a.laf.fields.stream().mapToInt(e -> e.field().getName().length()).sum()).isSameAs(7);
     }
 
-    @OnHook
-    void food(AssignableToHook<? extends List<?>> hook) {
-
-    }
 }

@@ -249,21 +249,21 @@ public final class SourceModel extends Model {
                 if (activatorMap != null) {
                     findAssinableTo0(htp, cl, actualType, activatorMap.onAssignableTo(cl));
                 }
-                if (csb != null) {
-                    csb.onAssignableTo(cl, actualType);
-                }
+//                if (csb != null) {
+//                    csb.onAssignableTo(cl, actualType);
+//                }
                 putInto(htp, activatorMap, seen, actualType, cl);
             }
         }
 
         private void findAssinableTo0(MemberUnreflector hookProcessor, Class<?> hookType, Class<?> actualType, Set<Class<? extends Extension>> extensionTypes)
                 throws Throwable {
-            if (extensionTypes != null) {
-                for (Class<? extends Extension> eType : extensionTypes) {
-                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
-                            .onAssignableTo(hookType, actualType);
-                }
-            }
+//            if (extensionTypes != null) {
+//                for (Class<? extends Extension> eType : extensionTypes) {
+//                    extensionBuilders.computeIfAbsent(eType, etype -> new HookRequestBuilder(ExtensionModel.onHookModelOf(etype), hookProcessor))
+//                            .onAssignableTo(hookType, actualType);
+//                }
+//            }
         }
 
         private void findAnnotatedFields(MemberUnreflector htp, LazyExtensionActivationMap activatorMap, Field field) throws Throwable {

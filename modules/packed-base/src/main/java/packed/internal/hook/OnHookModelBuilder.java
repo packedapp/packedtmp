@@ -38,7 +38,6 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.classscan.invoke.OpenClass;
@@ -59,7 +58,6 @@ final class OnHookModelBuilder {
     /** Methods annotated with {@link OnHook} that takes a {@link AnnotatedMethodHook} as a parameter. */
     IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> annotatedMethods;
 
-    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
     IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> assignableTos;
 
     /** Methods annotated with {@link OnHook} that takes a non-base {@link Hook}. */
@@ -203,13 +201,15 @@ final class OnHookModelBuilder {
          * annotatedTypes; if (mm == null) { mm = annotatedTypes = new IdentityHashMap<>(1); } onMethodBaseHook(node, hookT,
          * hookType, method, mm); }
          */
-        else if (hookType == AssignableToHook.class) {
-            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = assignableTos;
-            if (mm == null) {
-                mm = assignableTos = new IdentityHashMap<>(1);
-            }
-            onMethodBaseHook(node, hookT, hookType, method, mm);
-        } else {
+//        else if (hookType == AssignableToHook.class) {
+//            IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> mm = assignableTos;
+//            if (mm == null) {
+//                mm = assignableTos = new IdentityHashMap<>(1);
+//            }
+//            onMethodBaseHook(node, hookT, hookType, method, mm);
+//        }
+
+        else {
             onMethodCustomHook(node, hookType, method);
         }
     }
@@ -229,7 +229,7 @@ final class OnHookModelBuilder {
         }
         Class<?> qualifierType = (Class<?>) type;
 
-        if (hookType != AssignableToHook.class && !AnnotationUtil.hasRuntimeRetentionPolicy((Class<? extends Annotation>) qualifierType)) {
+        if (!AnnotationUtil.hasRuntimeRetentionPolicy((Class<? extends Annotation>) qualifierType)) {
             throw tf.newThrowable(hookType + " must be qualified with an annotation that has runtime retention policy");
         }
 

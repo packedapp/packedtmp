@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AssignableToHook;
 
 /** An access class for accessing package private members in app.packed.hook. */
 public interface AppPackedHookAccess {
@@ -55,6 +54,4 @@ public interface AppPackedHookAccess {
      * @return the new annotated field hook
      */
     <T extends Annotation> AnnotatedMethodHook<T> newAnnotatedMethodHook(MemberUnreflector controller, Method method, T annotation);
-
-    <T> AssignableToHook<T> newAssignableToHook(MemberUnreflector processor, Class<T> type);
 }

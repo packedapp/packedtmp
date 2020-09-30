@@ -25,7 +25,6 @@ import java.util.Map;
 
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.hook.HookRequest.BaseHookCallback;
@@ -146,24 +145,25 @@ public final class HookRequestBuilder {
 //        }
 //    }
 
-    public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
-        Map<Class<?>, Link> assignableTos = onHookModel.assignableTos;
-        if (assignableTos != null) {
-            for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
-                if (link.index == 0 && mode != Mode.TEST_CLASS) {
-                    baseHooksCallback = new Tiny<>(new BaseHookCallback(actualType, null, link.mh), baseHooksCallback);
-                } else {
-                    Hook.Builder<?> builder = builderOf(array, link.index);
-                    AssignableToHook<?> hook = ModuleAccess.hook().newAssignableToHook(hookProcessor, actualType);
-                    if (link.mh.type().parameterCount() == 1) {
-                        link.mh.invoke(hook);
-                    } else {
-                        link.mh.invoke(builder, hook);
-                    }
-                }
-            }
-        }
-    }
+//    public void onAssignableTo(Class<?> hookType, Class<?> actualType) throws Throwable {
+//        Map<Class<?>, Link> assignableTos = onHookModel.assignableTos;
+//        if (assignableTos != null) {
+//            for (Link link = assignableTos.get(hookType); link != null; link = link.next) {
+//                if (link.index == 0 && mode != Mode.TEST_CLASS) {
+//                    baseHooksCallback = new Tiny<>(new BaseHookCallback(actualType, null, link.mh), baseHooksCallback);
+//                } 
+////                else {
+////                    Hook.Builder<?> builder = builderOf(array, link.index);
+////                    AssignableToHook<?> hook = ModuleAccess.hook().newAssignableToHook(hookProcessor, actualType);
+////                    if (link.mh.type().parameterCount() == 1) {
+////                        link.mh.invoke(hook);
+////                    } else {
+////                        link.mh.invoke(builder, hook);
+////                    }
+////                }
+//            }
+//        }
+//    }
 
     public static Object testContainer(OnHookModel model, MemberUnreflector hookProcessor, OpenClass cp, Object container) throws Throwable {
         HookRequestBuilder hb = new HookRequestBuilder(model, hookProcessor, container == null ? Mode.TEST_CLASS : Mode.TEST_INSTANCE);

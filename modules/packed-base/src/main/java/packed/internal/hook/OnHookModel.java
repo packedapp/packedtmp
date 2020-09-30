@@ -28,7 +28,6 @@ import java.util.function.Function;
 import app.packed.base.Nullable;
 import app.packed.hook.AnnotatedFieldHook;
 import app.packed.hook.AnnotatedMethodHook;
-import app.packed.hook.AssignableToHook;
 import app.packed.hook.Hook;
 import app.packed.hook.OnHook;
 import packed.internal.classscan.invoke.OpenClass;
@@ -49,10 +48,6 @@ public final class OnHookModel {
     @Nullable
     final Map<Class<?>, Link> annotatedMethods;
 
-    /** Methods annotated with {@link OnHook} that takes a {@link AssignableToHook} as a parameter. */
-    @Nullable
-    final Map<Class<?>, Link> assignableTos;
-
     /** Constructors for each builder. */
     final MethodHandle[] builderConstructors;
 
@@ -69,7 +64,6 @@ public final class OnHookModel {
         };
         annotatedFields = toImmutable0(b.annotatedFields, ff);
         annotatedMethods = toImmutable0(b.annotatedMethods, ff);
-        assignableTos = toImmutable0(b.assignableTos, ff);
 
         this.customHooks = new Link[b.stack.size()];
         this.builderConstructors = new MethodHandle[b.stack.size()];
@@ -88,7 +82,6 @@ public final class OnHookModel {
             System.out.println("An Methods " + annotatedMethods);
 
             System.out.println("An Fields " + annotatedFields);
-            System.out.println("Types " + assignableTos);
             System.out.println("------");
             // System.out.println("Methods " + allLinks.annotatedMethods);
 
@@ -124,12 +117,6 @@ public final class OnHookModel {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Nullable
-    public Set<Class<?>> assignableTos() {
-        return assignableTos == null ? null : (Set) assignableTos.keySet();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private Map<Class<?>, Link> toImmutable0(IdentityHashMap<Class<?>, TinyPair<Node, MethodHandle>> map, Function<TinyPair<Node, MethodHandle>, Link> f) {
         if (map == null) {
             return null;
@@ -144,8 +131,7 @@ public final class OnHookModel {
 
     @Override
     public String toString() {
-        return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods) + ", " + "annotatedTypes: "
-                + "assignableTos: " + toString(assignableTos) + ", ";
+        return "AnnotatedFields: " + toString(annotatedFields) + ", " + "annotatedMethods: " + toString(annotatedMethods);
     }
 
     private String toString(Map<?, ?> m) {
