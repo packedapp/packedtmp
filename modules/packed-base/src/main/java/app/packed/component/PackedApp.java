@@ -8,7 +8,7 @@ import app.packed.guest.Guest;
 import app.packed.service.ServiceLocator;
 
 /** The default implementation of {@link App}. */
-// Er bare en inline record...Vi kan ignore nulls, da Packed instantiere den
+// Could be a really nice little record this one.
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
@@ -21,7 +21,7 @@ final class PackedApp implements App {
     private final Guest guest;
 
     /** All services that are available for the user. */
-    private final ServiceLocator serviceRegistry;
+    private final ServiceLocator services;
 
     /**
      * Creates a new app.
@@ -29,14 +29,14 @@ final class PackedApp implements App {
      * @param component
      *            the service component
      * @param services
-     *            the available services
+     *            the exported services
      * @param guest
      *            the guest
      */
     private PackedApp(Component component, ServiceLocator services, Guest guest) {
         this.component = requireNonNull(component);
         this.guest = requireNonNull(guest);
-        this.serviceRegistry = requireNonNull(services);
+        this.services = requireNonNull(services);
     }
 
     /** {@inheritDoc} */
@@ -54,7 +54,7 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public ServiceLocator services() {
-        return serviceRegistry;
+        return services;
     }
 
     @Override
