@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import app.packed.service.Service;
-import app.packed.service.ServiceMap;
+import app.packed.service.ServiceSet;
 
 /**
  *
  */
-public class SimpleServiceSet implements ServiceMap {
+public class SimpleServiceSet implements ServiceSet {
 
     final List<Service> services;
 

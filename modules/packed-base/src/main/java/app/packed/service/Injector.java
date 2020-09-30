@@ -90,10 +90,6 @@ import packed.internal.methodhandle.LookupUtil;
  * Injectors are always immutable, however, extensions of this interface might provide mutable operations for methods
  * unrelated to injection.
  */
-// getProvider(Class|Key|InjectionSite)
-// get(InjectionSite)
-// getService(Class|Key) .get(InjectionSite)<---Nah
-// hasService -> contains
 // Description... hmm its just super helpful...
 // Injector does not have a name. In many cases there are a container behind an Injector.
 // But if, for example, a component has its own injector. That injector does not have a container behind it.

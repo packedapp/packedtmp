@@ -27,7 +27,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 /**
  * A service locator interface that can be used to manually lookup service instances.
  */
-public interface ServiceLocator extends ServiceMap {
+public interface ServiceLocator extends ServiceSet {
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
@@ -111,7 +111,7 @@ public interface ServiceLocator extends ServiceMap {
      *             example, if injecting an injector into a constructor of a service and then using the injector to try and
      *             access other service that have not been properly initialized yet. For example, a service that depends on
      *             the service being constructed
-     * @see #contains(Class)
+     * @see #isPresent(Class)
      */
     default <T> T use(Class<T> key) {
         return use(Key.of(key));

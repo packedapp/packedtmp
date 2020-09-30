@@ -23,15 +23,12 @@ import java.util.stream.Stream;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * A provider of object instances.
+ * A provider of instances.
+ * 
+ * @param <T>
+ *            the type of instances that are provided
  */
-@FunctionalInterface
-
-// En gang inkludere dette interface ogsaa informationen om hvor T kom fra.
-// Det er nu blevet flyttet til InjectionContext, da der er ingen grund
-// til at have den information 2 steder...
-
-// isConstant??? Saa er vi ikke laengere et function interface though
+@FunctionalInterface // I don't know if we want this...
 public interface Provider<T> {
 
     /**
@@ -43,15 +40,32 @@ public interface Provider<T> {
      */
     T provide();
 
+    /**
+     * Returns an infinite stream of instances.
+     * 
+     * @return an infinite stream of instances
+     */
     default Stream<T> stream() {
         return Stream.generate(() -> provide());
     }
 
-    static <T> Provider<T> of(T t) {
-        return new ConstantProvider<>(t);
+    /**
+     * @param <T>
+     *            the type of the specified instance
+     * @param constant
+     *            the constant
+     * @return a new provider that provides the specified constant everytime
+     */
+    static <T> Provider<T> of(T constant) {
+        return new ConstantProvider<>(constant);
     }
 }
 
+//En gang inkludere dette interface ogsaa informationen om hvor T kom fra.
+//Det er nu blevet flyttet til InjectionContext, da der er ingen grund
+//til at have den information 2 steder...
+
+//isConstant??? Saa er vi ikke laengere et function interface though
 class InvokeExactProvider<T> implements Provider<T> {
 
     private final MethodHandle mh;

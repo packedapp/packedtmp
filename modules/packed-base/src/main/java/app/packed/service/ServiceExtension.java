@@ -129,7 +129,7 @@ public final class ServiceExtension extends Extension {
      */
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
-    /* package-private */ ServiceMap attributesExports() {
+    /* package-private */ ServiceSet attributesExports() {
         if (sm.hasExports()) {
             return sm.exports().exports();
         }

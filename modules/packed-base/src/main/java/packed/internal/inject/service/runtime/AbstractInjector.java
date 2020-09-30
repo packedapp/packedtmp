@@ -28,13 +28,13 @@ public abstract class AbstractInjector implements Injector {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean contains(Class<?> key) {
+    public final boolean isPresent(Class<?> key) {
         return findNode(key) != null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean contains(Key<?> key) {
+    public final boolean isPresent(Key<?> key) {
         return findNode(key) != null;
     }
 
