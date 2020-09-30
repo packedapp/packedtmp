@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 import packed.internal.inject.factory.BaseFactory;
 
 /**
- * A {@link Factory} type that uses a {@link Supplier} to provide factory instances.
+ * A {@link Factory} type that uses a {@link Supplier} to provide instances.
  * <p>
  * This class is typically used like this:
  * 
@@ -45,12 +45,12 @@ import packed.internal.inject.factory.BaseFactory;
 public abstract class Factory0<R> extends BaseFactory<R> {
 
     /**
-     * Creates a new factory, that uses the specified supplier to create provide instances.
+     * Creates a new factory, that uses the specified supplier to provide instances.
      *
      * @param supplier
-     *            the supplier that provide instances. The supplier should never return null, but should instead throw an
-     *            exception if unable to provide a value
-     * @throws FactoryCreationException
+     *            the supplier that provide instances. The supplier should never return null, but should instead throw a
+     *            relevant exception if unable to provide a value
+     * @throws FactoryDefinitionException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */

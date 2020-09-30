@@ -15,9 +15,9 @@
  */
 package app.packed.inject;
 
+import java.util.Optional;
 import java.util.function.BiFunction;
 
-import app.packed.base.InvalidDeclarationException;
 import packed.internal.inject.factory.BaseFactory;
 
 /**
@@ -30,13 +30,14 @@ import packed.internal.inject.factory.BaseFactory;
 public abstract class Factory2<T, U, R> extends BaseFactory<R> {
 
     /**
-     * Creates a new factory.
+     * Creates a new factory, that uses the specified function to provide instances.
      *
      * @param function
-     *            the function to use for creating new instances
-     * @throws InvalidDeclarationException
-     *             if the type variable T, U or R could not be determined. Or if T or U does not represent a proper
-     *             dependency, or R does not represent a proper key
+     *            the function that provide instances. The function should never return null, but should instead throw a
+     *            relevant exception if unable to provide a value
+     * @throws FactoryDefinitionException
+     *             if any of type variables could not be determined. Or if R does not represent a valid key, for example,
+     *             {@link Optional}
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         super(function);

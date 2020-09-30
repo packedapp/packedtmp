@@ -59,6 +59,9 @@ import app.packed.service.Injector;
  *    c -> c.component().isPresent() ? Logger.getLogger(request.component().get().getPath().toString()) : Logger.getAnonymousLogger()) {};
  * }
  * </pre>
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ProvisionContext} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 
 // Taenker den 
@@ -182,7 +185,7 @@ import app.packed.service.Injector;
 
 // Altsaa taenker vi ogsaa kan bruge den til constanter...
 // Saa er der bare tom for alt..
-public interface ProvideContext {
+public interface ProvisionContext {
 
     // Hvad hvis det ikke er en direkte extension der forsporger???
     // Men f.eks. et eller andet inde i en Bundle som er installeret

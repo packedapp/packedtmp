@@ -24,7 +24,7 @@ package app.packed.inject;
 // MissingTypeVariable
 // FactoryDefinitionException
 // ComponentDefinitionException
-public class FactoryCreationException extends RuntimeException {
+public class FactoryDefinitionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -37,7 +37,7 @@ public class FactoryCreationException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public FactoryCreationException(String message) {
+    public FactoryDefinitionException(String message) {
         super(message);
     }
 
@@ -51,7 +51,7 @@ public class FactoryCreationException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public FactoryCreationException(String message, Throwable cause) {
+    public FactoryDefinitionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

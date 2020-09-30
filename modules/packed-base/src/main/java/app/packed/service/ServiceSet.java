@@ -26,7 +26,12 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 
-/** An immutable set of services with unique {@link Service#key() keys}. */
+/**
+ * An immutable set of services with unique {@link Service#key() keys}.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ServiceSet} may become a {@code sealed} interface, which
+ *          would prohibit subclassing except by explicitly permitted types.
+ */
 //Keys are unique because findService can only return 1 service.
 public interface ServiceSet extends Iterable<Service> {
 

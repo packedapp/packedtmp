@@ -36,6 +36,9 @@ import packed.internal.inject.factory.BaseFactory;
  * <p>
  * This class does not expose any methods that actually create new objects, this is all hidden in the internals of
  * Packed. This might change in the future, but for now users can only create factories, and not consume their output.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link Factory} may become a {@code sealed} interface, which
+ *          would prohibit subclassing except by explicitly permitted types.
  */
 // TODO Qualifiers on Methods, Types together with findInjectable????
 // Yes need to pick those up!!!!

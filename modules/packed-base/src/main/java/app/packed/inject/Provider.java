@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,8 +27,12 @@ import packed.internal.util.ThrowableUtil;
  * 
  * @param <T>
  *            the type of instances that are provided
+ * @apiNote In the future, if the Java language permits, {@link Provider} may become a {@code sealed} interface, which
+ *          would prohibit subclassing except by explicitly permitted types.
  */
-@FunctionalInterface // I don't know if we want this...
+// Previously this interface also contained information about where
+// the instances came from. However, this information is now only
+// available from InjectionContext
 public interface Provider<T> {
 
     /**

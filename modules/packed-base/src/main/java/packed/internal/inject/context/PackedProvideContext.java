@@ -22,14 +22,14 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvisionContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
-/** Implementation of {@link ProvideContext}. */
-public final class PackedProvideContext implements ProvideContext {
+/** Implementation of {@link ProvisionContext}. */
+public final class PackedProvideContext implements ProvisionContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -71,11 +71,11 @@ public final class PackedProvideContext implements ProvideContext {
         return dependency.isOptional();
     }
 
-    static ProvideContext of(DependencyDescriptor dependency) {
+    static ProvisionContext of(DependencyDescriptor dependency) {
         return new PackedProvideContext(dependency, null);
     }
 
-    static ProvideContext of(DependencyDescriptor dependency, Component componenent) {
+    static ProvisionContext of(DependencyDescriptor dependency, Component componenent) {
         return new PackedProvideContext(dependency, requireNonNull(componenent, "component is null"));
     }
 
@@ -88,7 +88,7 @@ public final class PackedProvideContext implements ProvideContext {
      *            the for which injection is requested
      * @return an injection site for the specified injector and key.
      */
-    public static ProvideContext of(Key<?> key) {
+    public static ProvisionContext of(Key<?> key) {
         return new PackedProvideContext(DependencyDescriptor.of(key), null);
     }
 
@@ -101,7 +101,7 @@ public final class PackedProvideContext implements ProvideContext {
      *            the component to which the injector belongs
      * @return an injection site for the specified injector and key and component.
      */
-    static ProvideContext of(Key<?> key, Component component) {
+    static ProvisionContext of(Key<?> key, Component component) {
         return new PackedProvideContext(DependencyDescriptor.of(key), requireNonNull(component, "component is null"));
     }
 }

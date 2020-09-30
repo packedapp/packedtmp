@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvisionContext;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
@@ -45,7 +45,7 @@ public final class MappingInjectorEntry<F, T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideContext site) {
+    public T getInstance(ProvisionContext site) {
         F f = delegate.getInstance(site);
         T t = function.apply(f);
         // TODO Check Type, and not null

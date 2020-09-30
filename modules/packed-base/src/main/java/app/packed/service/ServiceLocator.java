@@ -22,10 +22,14 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
+import app.packed.inject.Provider;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
  * A service locator interface that can be used to manually lookup service instances.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link ServiceLocator} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 public interface ServiceLocator extends ServiceSet {
 

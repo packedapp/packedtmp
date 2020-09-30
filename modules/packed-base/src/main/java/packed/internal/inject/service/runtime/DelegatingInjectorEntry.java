@@ -17,7 +17,7 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.ProvideContext;
+import app.packed.inject.ProvisionContext;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /**
@@ -49,7 +49,7 @@ public final class DelegatingInjectorEntry<T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvideContext site) {
+    public T getInstance(ProvisionContext site) {
         return delegate.getInstance(site);
     }
 

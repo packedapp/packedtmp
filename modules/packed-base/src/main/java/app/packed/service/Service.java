@@ -4,7 +4,12 @@ import app.packed.base.AttributedElement;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 
-/** An immutable description of a service provided by an injector or similar entity. */
+/**
+ * An immutable description of a service provided by an injector or similar entity.
+ * 
+ * @apiNote In the future, if the Java language permits, {@link Service} may become a {@code sealed} interface, which
+ *          would prohibit subclassing except by explicitly permitted types.
+ */
 public interface Service extends AttributedElement {
 
     /**
