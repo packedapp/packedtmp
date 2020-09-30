@@ -35,7 +35,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.Service;
 import app.packed.service.Provider;
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.context.PackedProvideContext;
@@ -45,7 +45,7 @@ import packed.internal.util.KeyBuilder;
 /** The default implementation of {@link Injector}. */
 public final class PackedInjector extends AbstractInjector {
 
-    public static final ServiceRegistry EMPTY_SERVICE_REGISTRY = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
+    public static final ServiceLocator EMPTY_SERVICE_REGISTRY = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
 
     /** A stack walker used from {@link #spawn(Wirelet...)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);

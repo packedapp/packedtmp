@@ -15,17 +15,19 @@
  */
 package app.packed.service;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- *
+ * A service locator interface that can be used to manually lookup service instances.
  */
-// Maybe also have ifPresent
-public interface ServiceRegistry extends ServiceMap {
+public interface ServiceLocator extends ServiceMap {
 
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional. As an alternative, if you
@@ -60,6 +62,37 @@ public interface ServiceRegistry extends ServiceMap {
     }
 
     <T> Optional<Provider<T>> findProvider(Key<T> key);
+
+    /**
+     * If a service with the specified key is present, performs the given action with a service instance, otherwise does
+     * nothing.
+     *
+     * @param key
+     *            the key to test
+     * @param action
+     *            the action to be performed, if a service with the specified key is present
+     */
+    default <T> void ifPresent(Class<T> key, Consumer<? super T> action) {
+        ifPresent(Key.of(key), action);
+    }
+
+    /**
+     * If a service with the specified key is present, performs the given action with a service instance, otherwise does
+     * nothing.
+     *
+     * @param key
+     *            the key to test
+     * @param action
+     *            the action to be performed, if a service with the specified key is present
+     */
+    default <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
+        Optional<T> t = find(key);
+        requireNonNull(action, "action is null");
+        if (t.isPresent()) {
+            T tt = t.get();
+            action.accept(tt);
+        }
+    }
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
@@ -124,7 +157,12 @@ public interface ServiceRegistry extends ServiceMap {
         return t.get();
     }
 
-    static ServiceRegistry empty() {
+    /**
+     * Returns an empty service locator.
+     * 
+     * @return an empty service locator
+     */
+    static ServiceLocator empty() {
         return PackedInjector.EMPTY_SERVICE_REGISTRY;
     }
 }

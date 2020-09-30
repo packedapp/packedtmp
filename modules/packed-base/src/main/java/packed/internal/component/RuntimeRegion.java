@@ -18,7 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
 
@@ -66,8 +66,8 @@ public final class RuntimeRegion {
         return (PackedGuest) store[0];
     }
 
-    ServiceRegistry serviceRegistry(ComponentNode node) {
-        return (ServiceRegistry) store[node.modifiers().isGuest() ? 1 : 0];
+    ServiceLocator serviceRegistry(ComponentNode node) {
+        return (ServiceLocator) store[node.modifiers().isGuest() ? 1 : 0];
     }
 
     public void store(int index, Object instance) {

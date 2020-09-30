@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.component.Component;
 import app.packed.guest.Guest;
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 import packed.internal.classscan.util.InstantiatorBuilder;
 import packed.internal.component.PackedInitializationContext;
 
@@ -36,7 +36,7 @@ public final class ShellDriverScan {
 
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);
         ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
-        ib.addKey(ServiceRegistry.class, PackedInitializationContext.MH_SERVICES, 0);
+        ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
         if (isGuest) {
             ib.addKey(Guest.class, PackedInitializationContext.MH_GUEST, 0);
         }

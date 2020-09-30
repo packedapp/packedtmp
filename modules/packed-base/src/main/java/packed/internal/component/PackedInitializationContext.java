@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.guest.Guest;
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.methodhandle.LookupUtil;
@@ -46,7 +46,7 @@ public final class PackedInitializationContext {
     public static final MethodHandle MH_GUEST = LookupUtil.lookupVirtual(MethodHandles.lookup(), "guest", Guest.class);
 
     /** A MethodHandle for invoking {@link #services()}. */
-    public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceRegistry.class);
+    public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
 
     /** The component node we are building. */
     ComponentNode component;
@@ -92,9 +92,9 @@ public final class PackedInitializationContext {
         return n;
     }
 
-    public ServiceRegistry services() {
+    public ServiceLocator services() {
         ServiceManager sm = root.injectionManager().getServiceManager();
-        return sm == null ? ServiceRegistry.empty() : sm.newServiceRegistry(component, component.region);
+        return sm == null ? ServiceLocator.empty() : sm.newServiceRegistry(component, component.region);
 //                
 //        /// Create a service registry...
 //        // We do not stored this in the region but outside...

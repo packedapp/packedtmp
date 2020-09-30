@@ -111,7 +111,7 @@ import packed.internal.methodhandle.LookupUtil;
 
 // Noget der kan injecte ting... Men ikke har en system component... 
 
-public interface Injector extends ServiceRegistry {
+public interface Injector extends ServiceLocator {
 
     /**
      * Returns the configuration site of this injector.

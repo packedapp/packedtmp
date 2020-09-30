@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.guest.Guest;
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 
 /** The default implementation of {@link App}. */
 // Er bare en inline record...Vi kan ignore nulls, da Packed instantiere den
@@ -21,7 +21,7 @@ final class PackedApp implements App {
     private final Guest guest;
 
     /** All services that are available for the user. */
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceLocator serviceRegistry;
 
     /**
      * Creates a new app.
@@ -33,7 +33,7 @@ final class PackedApp implements App {
      * @param guest
      *            the guest
      */
-    private PackedApp(Component component, ServiceRegistry services, Guest guest) {
+    private PackedApp(Component component, ServiceLocator services, Guest guest) {
         this.component = requireNonNull(component);
         this.guest = requireNonNull(guest);
         this.serviceRegistry = requireNonNull(services);
@@ -53,7 +53,7 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceRegistry service() {
+    public ServiceLocator services() {
         return serviceRegistry;
     }
 

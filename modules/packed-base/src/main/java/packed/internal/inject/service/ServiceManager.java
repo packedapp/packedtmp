@@ -32,7 +32,7 @@ import app.packed.config.ConfigSite;
 import app.packed.service.Injector;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RuntimeRegion;
@@ -139,7 +139,7 @@ public final class ServiceManager {
         });
     }
 
-    public ServiceRegistry newServiceRegistry(ComponentNode comp, RuntimeRegion region) {
+    public ServiceLocator newServiceRegistry(ComponentNode comp, RuntimeRegion region) {
         LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (var e : exports()) {

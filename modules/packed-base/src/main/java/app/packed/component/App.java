@@ -23,7 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.guest.Guest;
 import app.packed.guest.GuestState;
 import app.packed.guest.GuestWirelets;
-import app.packed.service.ServiceRegistry;
+import app.packed.service.ServiceLocator;
 
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.
@@ -87,11 +87,11 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Return the service registry for this app.
+     * Returns the service locator for this app.
      * 
-     * @return the service registry for this app
+     * @return the service locator for this app
      */
-    ServiceRegistry service();
+    ServiceLocator services();
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
@@ -107,7 +107,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if a service with the specified key exist.
      */
     default <T> T use(Class<T> key) {
-        return service().use(key);
+        return services().use(key);
     }
 
     /**
@@ -124,7 +124,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if a service with the specified key exist.
      */
     default <T> T use(Key<T> key) {
-        return service().use(key);
+        return services().use(key);
     }
 
     /**

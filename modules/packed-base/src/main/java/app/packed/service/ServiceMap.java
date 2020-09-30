@@ -26,17 +26,18 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 
-/** An immutable set of services. Where each service has an unique {@link Service#key()}. */
+/** An immutable set of services with unique {@link Service#key() keys}. */
 public interface ServiceMap extends Iterable<Service> {
 
     /**
-     * Returns true if the system contains a service with the specified key.
+     * Returns true if the map contains a service with the specified key. Otherwise false.
      *
      * @param key
-     *            the key of the service
-     * @return true if a service with the specified key exists.
+     *            the key to this
+     * @return true if this map contains a service with the specified key. Otherwise false
      * @see #contains(Key)
      */
+    // rename to isPresent????
     default boolean contains(Class<?> key) {
         return contains(Key.of(key));
     }
@@ -67,10 +68,6 @@ public interface ServiceMap extends Iterable<Service> {
         return findService(Key.of(key));
     }
 
-    // Problemet er her navngivning
-    // Vi vil gerne have service(descriptor), instance, og provider
-    // So findService, findProvider, find
-
     default Optional<Service> findService(Key<?> key) {
         requireNonNull(key, "key is null");
         return stream().filter(d -> d.key().equals(key)).findFirst();
@@ -83,9 +80,9 @@ public interface ServiceMap extends Iterable<Service> {
     }
 
     /**
-     * Returns a set of all unique keys in this system
+     * Returns a set containing the keys of every service in this map.
      * 
-     * @return a set of all unique keys in this system
+     * @return a set containing the keys of every service in this map
      */
     default Set<Key<?>> keys() {
         return stream().map(e -> e.key()).collect(Collectors.toSet());
@@ -99,6 +96,9 @@ public interface ServiceMap extends Iterable<Service> {
     Stream<Service> stream();
 }
 
+// Problemet er her navngivning
+// Vi vil gerne have service(descriptor), instance, og provider
+// So findService, findProvider, find
 // Map<Key<?>, Service> services()
 
 ////IDK
