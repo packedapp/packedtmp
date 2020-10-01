@@ -29,6 +29,8 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -178,11 +180,11 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns whether or not this key has a qualifier.
+     * Returns whether or not this key has any qualifiers.
      * 
-     * @return whether or not this key has a qualifier
+     * @return whether or not this key has any qualifiers
      */
-    public final boolean isQualified() {
+    public final boolean hasQualifier() {
         return qualifier != null;
     }
 
@@ -194,7 +196,7 @@ public abstract class Key<T> {
      * @return whether or not this key has a qualifier of the specified type
      * @implNote this method does not test whether or not the specified annotation is annotated with {@link Qualifier}
      */
-    public final boolean isQualifiedWith(Class<? extends Annotation> qualifierType) {
+    public final boolean hasQualifier(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
         return qualifier != null && qualifier.annotationType() == qualifierType;
     }
@@ -204,8 +206,13 @@ public abstract class Key<T> {
      *
      * @return any qualifier this key might have, or an empty optional if this key has no qualifier
      */
+    @Deprecated
     public final Optional<Annotation> qualifier() {
         return Optional.ofNullable(qualifier);
+    }
+
+    public final Collection<Annotation> qualifiers() {
+        return qualifier == null ? List.of() : List.of(qualifier);
     }
 
     /** {@inheritDoc} */

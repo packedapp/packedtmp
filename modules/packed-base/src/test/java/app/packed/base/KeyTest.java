@@ -120,23 +120,23 @@ public class KeyTest {
 
         Field f = findField(Tmpx.class, "ok");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromField(f).isQualified()).isFalse();
-        assertThat(Key.fromField(f).qualifier().isPresent()).isFalse();
+        assertThat(Key.fromField(f).hasQualifier()).isFalse();
+        assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromField(f).isQualified()).isTrue();
-        assertThat(Key.fromField(f).qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromField(f).hasQualifier()).isTrue();
+        assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromField(f).isQualified()).isFalse();
-        assertThat(Key.fromField(f).qualifier().isPresent()).isFalse();
+        assertThat(Key.fromField(f).hasQualifier()).isFalse();
+        assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
         assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromField(f).isQualified()).isTrue();
-        assertThat(Key.fromField(f).qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromField(f).hasQualifier()).isTrue();
+        assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "notTypeParameterFree")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -201,23 +201,23 @@ public class KeyTest {
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
         assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromMethodReturnType(m).isQualified()).isFalse();
-        assertThat(Key.fromMethodReturnType(m).qualifier().isPresent()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
         assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromMethodReturnType(m).isQualified()).isTrue();
-        assertThat(Key.fromMethodReturnType(m).qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
         assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromMethodReturnType(m).isQualified()).isFalse();
-        assertThat(Key.fromMethodReturnType(m).qualifier().isPresent()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
         assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromMethodReturnType(m).isQualified()).isTrue();
-        assertThat(Key.fromMethodReturnType(m).qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
+        assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
@@ -237,8 +237,8 @@ public class KeyTest {
 
     @Test
     public void getQualifier() {
-        assertThat(KEY_INTEGER.qualifier()).isEmpty();
-        assertThat(KEY_INTEGER_X.qualifier().get()).isEqualTo(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(KEY_INTEGER.qualifiers()).isEmpty();
+        assertThat(KEY_INTEGER_X.qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
     }
 
     /** Tests {@link Key#typeLiteral()}. */
@@ -252,9 +252,9 @@ public class KeyTest {
     }
 
     @Test
-    public void isQualified() {
-        assertThat(KEY_INTEGER.isQualified()).isFalse();
-        assertThat(KEY_INTEGER_X.isQualified()).isTrue();
+    public void hasQualifier() {
+        assertThat(KEY_INTEGER.hasQualifier()).isFalse();
+        assertThat(KEY_INTEGER_X.hasQualifier()).isTrue();
     }
 
     @Test
@@ -268,8 +268,8 @@ public class KeyTest {
         assertThat(k2.typeLiteral()).isEqualTo(TL_INTEGER);
         assertThat(k2.typeLiteral()).isNotSameAs(TL_INTEGER);
 
-        assertThat(k1.isQualified()).isFalse();
-        assertThat(k2.isQualified()).isFalse();
+        assertThat(k1.hasQualifier()).isFalse();
+        assertThat(k2.hasQualifier()).isFalse();
 
         // Optional
         assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<Optional<Integer>>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
@@ -290,14 +290,14 @@ public class KeyTest {
         }
     }
 
-    /** Tests {@link Key#isQualifiedWith(Class)}. */
+    /** Tests {@link Key#hasQualifier(Class)}. */
     @Test
-    public void isQualifiedWith() {
-        npe(() -> KEY_INTEGER.isQualifiedWith(null), "qualifierType");
+    public void hasQualifierWith() {
+        npe(() -> KEY_INTEGER.hasQualifier(null), "qualifierType");
 
-        assertThat(KEY_INTEGER.isQualifiedWith(CharQualifier.class)).isFalse();
-        assertThat(KEY_INTEGER_X.isQualifiedWith(CharQualifier.class)).isTrue();
-        assertThat(KEY_INTEGER_X.isQualifiedWith(IntQualifier.class)).isFalse();
+        assertThat(KEY_INTEGER.hasQualifier(CharQualifier.class)).isFalse();
+        assertThat(KEY_INTEGER_X.hasQualifier(CharQualifier.class)).isTrue();
+        assertThat(KEY_INTEGER_X.hasQualifier(IntQualifier.class)).isFalse();
     }
 
     @Test

@@ -31,14 +31,19 @@ import app.packed.inject.ServiceRegistry;
 // Tror altsaa bedre jeg kan lide den end wirelets...
 
 // ServiceComputer... nah
-public interface ServiceTransformer {
+public interface ServiceTransformer extends ServiceRegistry {
 
-    Service map(Class<?> from, Class<?> to);  //Make returned Service Configurable???
+    // The name of the container...
+    //
+    // String containerName();
 
-    /**
-     * Returns all services that can be transformed.
-     * 
-     * @return all services that can be transformed
-     */
-    ServiceRegistry services();
+    Service map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+
+//    /**
+//     * Returns all services that can be transformed.
+//     * 
+//     * @return all services that can be transformed
+//     */
+    // Vi extender ServiceRegistry istedet for
+//    ServiceRegistry services();
 }

@@ -399,7 +399,7 @@ public class TypeLiteralTest {
 
         Key<Integer> key = Key.fromTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
         assertThat(key.typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(key.qualifier()).hasValue(AnnotationInstances.NO_VALUE_QUALIFIER);
+        assertThat(key.qualifiers()).containsExactly(AnnotationInstances.NO_VALUE_QUALIFIER);
     }
 
     @SuppressWarnings("rawtypes")
