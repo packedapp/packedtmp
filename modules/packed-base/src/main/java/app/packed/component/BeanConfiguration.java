@@ -52,6 +52,8 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         return as(Key.of(key));
     }
 
+    // addQualififer();
+
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.

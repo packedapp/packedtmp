@@ -36,7 +36,11 @@ import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 // insert -> insert new service possible with transformation
 // remove -> removes by key
 // peek
-// compute ->
+// compute -> [I think we replace it with ServiceTransformer... looks so much better]
+
+// ---- Others
+// bind <-- som default bliver kun services der bliver consumet somewhere binded naar man linker
+// ------- Bind kunne force de her ting...
 
 // contractUse, contractForce
 
@@ -46,40 +50,6 @@ public final class ServiceWirelets {
 
     /** No instantiation. */
     private ServiceWirelets() {}
-
-    public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
-        // Must only provide ServiceWirelets...
-        compute(e -> {
-            if (e.isPresent(String.class)) {
-                return Optional.of(map(String.class, CharSequence.class));
-            }
-            return Optional.empty();
-        });
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet compute(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
-        // Must only provide ServiceWirelets...
-        compute(f -> f.isPresent(String.class), e -> map(String.class, CharSequence.class));
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet computeFrom(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
-        // Must only provide ServiceWirelets...
-        compute(e -> {
-            if (e.isPresent(String.class)) {
-                return Optional.of(map(String.class, CharSequence.class));
-            }
-            return Optional.empty();
-        });
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet computeFrom(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
-        // Must only provide ServiceWirelets...
-        compute(f -> f.isPresent(String.class), e -> map(String.class, CharSequence.class));
-        throw new UnsupportedOperationException();
-    }
 
     public static <T> Wirelet map(Class<T> from, Class<? super T> to) {
         return map(Key.of(from), Key.of(to));
@@ -159,6 +129,42 @@ public final class ServiceWirelets {
 }
 
 class ServiceWireletsSandbox {
+
+    // Service transformere er saa meget lettere....
+
+    public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
+        // Must only provide ServiceWirelets...
+        compute(e -> {
+            if (e.isPresent(String.class)) {
+                return Optional.of(ServiceWirelets.map(String.class, CharSequence.class));
+            }
+            return Optional.empty();
+        });
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet compute(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
+        // Must only provide ServiceWirelets...
+        compute(f -> f.isPresent(String.class), e -> ServiceWirelets.map(String.class, CharSequence.class));
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet computeFrom(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
+        // Must only provide ServiceWirelets...
+        compute(e -> {
+            if (e.isPresent(String.class)) {
+                return Optional.of(ServiceWirelets.map(String.class, CharSequence.class));
+            }
+            return Optional.empty();
+        });
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet computeFrom(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
+        // Must only provide ServiceWirelets...
+        compute(f -> f.isPresent(String.class), e -> ServiceWirelets.map(String.class, CharSequence.class));
+        throw new UnsupportedOperationException();
+    }
 
     // Ideen er at vi kan aendre om ting er constants...
     // F.eks. hvis vi gerne vil cache noget??

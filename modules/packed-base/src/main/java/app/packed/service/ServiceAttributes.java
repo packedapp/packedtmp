@@ -25,10 +25,9 @@ import app.packed.inject.ServiceRegistry;
 /**
  *
  */
-
 // Attributes that are available on a Service, on a ServiceExtension, at Build time, atRuntime...
-
 public final class ServiceAttributes {
+
     private ServiceAttributes() {}
 
     /** An attribute that is present on {@link ServiceExtension} components that have at least 1 exported service. */
