@@ -32,6 +32,8 @@ public final class PackedService implements Service {
     /** The key of the service. */
     private final Key<?> key;
 
+    private final boolean isConstant;
+
     /**
      * Creates a new descriptor.
      * 
@@ -40,9 +42,10 @@ public final class PackedService implements Service {
      * @param configSite
      *            the config site of the service
      */
-    public PackedService(Key<?> key, ConfigSite configSite) {
+    public PackedService(Key<?> key, ConfigSite configSite, boolean isConstant) {
         this.key = requireNonNull(key);
         this.configSite = requireNonNull(configSite);
+        this.isConstant = isConstant;
     }
 
     @Override
@@ -66,5 +69,11 @@ public final class PackedService implements Service {
     @Override
     public String toString() {
         return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + "]";
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return isConstant;
     }
 }

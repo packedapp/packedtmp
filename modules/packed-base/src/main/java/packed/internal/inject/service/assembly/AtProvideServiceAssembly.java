@@ -57,7 +57,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        if (regionIndex > -1) {
+        if (isConstant()) {
             return new ConstantInjectorEntry<>(this, context.region, regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
@@ -72,5 +72,11 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     @Override
     public String toString() {
         return "@Provide " + injectable.directMethodHandle;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return regionIndex > -1;
     }
 }

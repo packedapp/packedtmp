@@ -64,4 +64,9 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return entryToMap.isConstant();
+    }
 }

@@ -13,17 +13,6 @@ import app.packed.config.ConfigSite;
 public interface Service extends AttributedElement {
 
     /**
-     * Returns whether or not the service being provided is a constant.
-     * <p>
-     * Constant services can always be cached.
-     * 
-     * @return whether or not the service being provided is a constant
-     */
-    default boolean isConstant() {
-        return false;
-    }
-
-    /**
      * Returns the configuration site of this service.
      * 
      * @return the configuration site of this service
@@ -32,12 +21,18 @@ public interface Service extends AttributedElement {
     ConfigSite configSite();
 
     /**
+     * Returns whether or not the service being provided is a constant.
+     * <p>
+     * Constant services can always be cached.
+     * 
+     * @return whether or not the service being provided is a constant
+     */
+    boolean isConstant();
+
+    /**
      * Returns the key that the service is registered with.
      *
      * @return the key that the service is registered with
      */
     Key<?> key();
 }
-//Skal omnavngives til service hvis vi får en context...
-//Vi kalder den service ligesom component...
-// Component component(); <-- the component the service belongs to..

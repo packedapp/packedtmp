@@ -78,6 +78,8 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
         return key;
     }
 
+    public abstract boolean isConstant();
+
     /**
      * Creates a new runtime node from this node.
      *
@@ -86,7 +88,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
     protected abstract RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context);
 
     public final Service toDescriptor() {
-        return new PackedService(key, configSite);
+        return new PackedService(key, configSite, isConstant());
     }
 
     // cacher runtime noden...

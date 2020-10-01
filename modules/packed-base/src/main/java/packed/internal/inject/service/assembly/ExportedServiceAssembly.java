@@ -92,4 +92,10 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return exportedEntry.isConstant();
+    }
 }

@@ -57,7 +57,7 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        if (source.regionIndex > -1) {
+        if (isConstant()) {
             return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
@@ -74,5 +74,11 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
     @Override
     public String toString() {
         return "Singleton " + source;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return source.regionIndex > -1;
     }
 }

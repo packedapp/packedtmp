@@ -58,4 +58,10 @@ final class FromOtherInjectorServiceAssembly<T> extends ServiceAssembly<T> {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return false;
+    }
+
 }
