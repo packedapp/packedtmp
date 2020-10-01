@@ -29,9 +29,9 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -106,7 +106,7 @@ public abstract class Key<T> {
 
     /** An (optional) qualifier for this key. */
     @Nullable
-    private final Annotation qualifier;
+    private final Annotation[] qualifiers;
 
     /** The (canonicalized) type literal for this key. */
     private final CanonicalizedTypeLiteral<T> typeLiteral;
@@ -115,7 +115,7 @@ public abstract class Key<T> {
     @SuppressWarnings("unchecked")
     protected Key() {
         Key<?> key = TYPE_VARIABLE_CACHE.get(getClass());
-        this.qualifier = key.qualifier;
+        this.qualifiers = key.qualifiers;
         this.typeLiteral = (CanonicalizedTypeLiteral<T>) key.typeLiteral;
         this.hash = key.hash;
         assert (!typeLiteral.rawType().isPrimitive());
@@ -126,15 +126,15 @@ public abstract class Key<T> {
      * 
      * @param typeLiteral
      *            the checked type literal
-     * @param qualifier
+     * @param qualifiers
      *            the (optional) qualifier
      */
-    Key(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
+    Key(CanonicalizedTypeLiteral<T> typeLiteral, Annotation[] qualifiers) {
         this.typeLiteral = typeLiteral;
-        this.qualifier = qualifier;
+        this.qualifiers = qualifiers;
         // Would be nice to have Key.of(X.class).hashCode() == X.class.hashCode();
         // Could search for
-        this.hash = typeLiteral.hashCode() ^ Objects.hashCode(qualifier);
+        this.hash = typeLiteral.hashCode() ^ Arrays.hashCode(qualifiers);
         assert (!typeLiteral.rawType().isPrimitive());
     }
 
@@ -148,7 +148,7 @@ public abstract class Key<T> {
         if (getClass() == CanonicalizedKey.class) {
             return (CanonicalizedKey<T>) this;
         }
-        return new CanonicalizedKey<>(typeLiteral, qualifier);
+        return new CanonicalizedKey<>(typeLiteral, qualifiers);
     }
 
     // @Override
@@ -166,7 +166,7 @@ public abstract class Key<T> {
             return false;
         }
         Key<?> other = (Key<?>) obj;
-        return Objects.equals(qualifier, other.qualifier) && typeLiteral.equals(other.typeLiteral);
+        return Arrays.equals(qualifiers, other.qualifiers) && typeLiteral.equals(other.typeLiteral);
     }
 
     /** {@inheritDoc} */
@@ -176,7 +176,7 @@ public abstract class Key<T> {
     }
 
     public final boolean isClassKey(Class<?> c) {
-        return qualifier == null && typeLiteral.type() == c;
+        return qualifiers == null && typeLiteral.type() == c;
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class Key<T> {
      * @return whether or not this key has any qualifiers
      */
     public final boolean hasQualifier() {
-        return qualifier != null;
+        return qualifiers != null;
     }
 
     /**
@@ -198,30 +198,29 @@ public abstract class Key<T> {
      */
     public final boolean hasQualifier(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
-        return qualifier != null && qualifier.annotationType() == qualifierType;
-    }
-
-    /**
-     * Returns any qualifier this key might have, or an empty optional if this key has no qualifier.
-     *
-     * @return any qualifier this key might have, or an empty optional if this key has no qualifier
-     */
-    @Deprecated
-    public final Optional<Annotation> qualifier() {
-        return Optional.ofNullable(qualifier);
+        if (qualifiers == null) {
+            return false;
+        }
+        for (int i = 0; i < qualifiers.length; i++) {
+            if (qualifiers[i].annotationType() == qualifierType) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public final Collection<Annotation> qualifiers() {
-        return qualifier == null ? List.of() : List.of(qualifier);
+        return qualifiers == null ? List.of() : List.of(qualifiers);
     }
 
     /** {@inheritDoc} */
     @Override
     public final String toString() {
-        if (qualifier == null) {
+        if (qualifiers == null) {
             return typeLiteral.toString();
         }
-        return format(qualifier) + " " + typeLiteral.toString();
+        // TODO fix formatting
+        return format(qualifiers[0]) + " " + typeLiteral.toString();
     }
 
     /**
@@ -231,10 +230,11 @@ public abstract class Key<T> {
      * @return a simple string
      */
     public final String toStringSimple() {
-        if (qualifier == null) {
+        if (qualifiers == null) {
             return typeLiteral.toStringSimple();
         }
-        return formatSimple(qualifier) + " " + typeLiteral.toStringSimple();
+        // TODO fix
+        return formatSimple(qualifiers[0]) + " " + typeLiteral.toStringSimple();
     }
 
     /**
@@ -269,7 +269,7 @@ public abstract class Key<T> {
      * @return this key with no qualifier
      */
     public final Key<T> withoutQualifier() {
-        return qualifier == null ? this : new CanonicalizedKey<>(typeLiteral, null);
+        return qualifiers == null ? this : new CanonicalizedKey<>(typeLiteral, (Annotation[]) null);
     }
 
     /**
@@ -283,8 +283,24 @@ public abstract class Key<T> {
      */
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        QualifierHelper.checkQualifierAnnotationPresent(qualifier);// qualifierType instead??
-        return new CanonicalizedKey<>(typeLiteral, qualifier);
+        QualifierHelper.checkQualifierAnnotationPresent(qualifier);
+        if (qualifiers == null) {
+            return new CanonicalizedKey<>(typeLiteral, qualifier);
+        }
+        for (int i = 0; i < qualifiers.length; i++) {
+            if (qualifiers[i].annotationType() == qualifier.annotationType()) {
+                if (qualifiers[i].equals(qualifier)) {
+                    return this;
+                } else {
+                    Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length);
+                    an[i] = qualifier;
+                    return new CanonicalizedKey<>(typeLiteral, an);
+                }
+            }
+        }
+        Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length + 1);
+        an[an.length - 1] = qualifier;
+        return new CanonicalizedKey<>(typeLiteral, an);
     }
 
     /**
@@ -325,13 +341,13 @@ public abstract class Key<T> {
         throw new UnsupportedOperationException();
     }
 
-    public final <S> Key<S> withType(Class<S> type) {
-        return of(type).withQualifier(qualifier);
-    }
-
-    public final <S> Key<S> withType(TypeLiteral<S> typeLiteral) {
-        return fromTypeLiteral(typeLiteral, qualifier);
-    }
+//    public final <S> Key<S> withType(Class<S> type) {
+//        return of(type).withQualifier(qualifier);
+//    }
+//
+//    public final <S> Key<S> withType(TypeLiteral<S> typeLiteral) {
+//        return fromTypeLiteral(typeLiteral, qualifier);
+//    }
 
     /**
      * Returns a key matching the type of the specified field and any qualifier that may be present on the field.
@@ -348,13 +364,13 @@ public abstract class Key<T> {
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     public static Key<?> fromField(Field field) {
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
-        Annotation annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
     public static Key<?> fromField(FieldDescriptor field) {
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
-        Annotation annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
@@ -376,7 +392,7 @@ public abstract class Key<T> {
             throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
         TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
-        Annotation annotation = QualifierHelper.findQualifier(method, method.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(method, method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
@@ -388,7 +404,7 @@ public abstract class Key<T> {
     public static Key<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
         TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
-        Annotation annotation = QualifierHelper.findQualifier(parameter, parameter.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(parameter, parameter.getAnnotations());
         return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
 
@@ -405,7 +421,7 @@ public abstract class Key<T> {
      *             specified type literal it not free from type parameters
      */
     public static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {
-        return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, null);
+        return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, (Annotation[]) null);
     }
 
     /**
@@ -428,7 +444,7 @@ public abstract class Key<T> {
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
-    public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
+    public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
         assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof FieldDescriptor
@@ -451,7 +467,7 @@ public abstract class Key<T> {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
-        Annotation qa = QualifierHelper.findQualifier(pta, annotations);
+        Annotation[] qa = QualifierHelper.findQualifier(pta, annotations);
         return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
@@ -502,11 +518,11 @@ public abstract class Key<T> {
          * 
          * @param typeLiteral
          *            the type literal
-         * @param qualifier
+         * @param qualifiers
          *            a nullable qualifier annotation
          */
-        CanonicalizedKey(CanonicalizedTypeLiteral<T> typeLiteral, @Nullable Annotation qualifier) {
-            super(typeLiteral, qualifier);
+        CanonicalizedKey(CanonicalizedTypeLiteral<T> typeLiteral, Annotation... qualifiers) {
+            super(typeLiteral, qualifiers);
         }
     }
 

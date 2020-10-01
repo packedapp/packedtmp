@@ -19,8 +19,6 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
@@ -41,19 +39,24 @@ public final class QualifierHelper {
     }
 
     @Nullable
-    public static Annotation findQualifier(AnnotatedElement element, Annotation[] annotations) {
-        Annotation qualifier = null;
+    public static Annotation[] findQualifier(AnnotatedElement element, Annotation[] annotations) {
+        Annotation[] qualifiers = null;
         for (Annotation a : annotations) {
             Class<? extends Annotation> annotationType = a.annotationType();
             if (annotationType.isAnnotationPresent(Key.Qualifier.class)) {
-                if (qualifier != null) {
-                    List<Class<? extends Annotation>> all = List.of(annotations).stream().map(Annotation::annotationType)
-                            .filter(e -> e.isAnnotationPresent(Key.Qualifier.class)).collect(Collectors.toList());
-                    throw new InvalidDeclarationException("Multiple qualifiers found on element '" + element + "', qualifiers = " + all);
+                if (qualifiers == null) {
+                    qualifiers = new Annotation[1];
+                    qualifiers[0] = a;
+                } else {
+                    Annotation[] q = new Annotation[qualifiers.length + 1];
+                    for (int i = 0; i < qualifiers.length; i++) {
+                        q[i] = qualifiers[i];
+                    }
+                    q[qualifiers.length] = a;
+                    qualifiers = q;
                 }
-                qualifier = a;
             }
         }
-        return qualifier;
+        return qualifiers;
     }
 }

@@ -27,7 +27,7 @@ public interface AppPackedBaseAccess {
 
     boolean isCanonicalized(TypeLiteral<?> typeLiteral);
 
-    Key<?> toKeyNullableQualifier(Type type, @Nullable Annotation qualifier);
+    Key<?> toKeyNullableQualifier(Type type, @Nullable Annotation[] qualifier);
 
     /**
      * Converts the type to a type literal.
