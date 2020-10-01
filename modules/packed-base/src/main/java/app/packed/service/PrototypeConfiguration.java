@@ -20,6 +20,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceExtension;
 
 /**
  * A prototype service configuration represents an entity that is both a {@link ExportedServiceConfiguration

@@ -25,7 +25,6 @@ import app.packed.base.OpenMode;
 import app.packed.base.Opens;
 import app.packed.container.ExtensionMember;
 import app.packed.container.Packlet;
-import app.packed.service.ServiceExtension;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

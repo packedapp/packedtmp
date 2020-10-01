@@ -23,8 +23,8 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
-import app.packed.service.Service;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.Service;
+import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 

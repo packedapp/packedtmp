@@ -26,10 +26,10 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
+import app.packed.inject.Service;
+import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceRegistry;
 import app.packed.service.ExportedServiceConfiguration;
-import app.packed.service.Service;
-import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceSet;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
@@ -148,7 +148,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     }
 
     @Nullable
-    public ServiceSet exports() {
+    public ServiceRegistry exports() {
         if (resolvedExports == null) {
             return null;
         }

@@ -21,11 +21,11 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
+import app.packed.inject.ServiceExtension;
 import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import app.packed.service.PrototypeConfiguration;
-import app.packed.service.ServiceExtension;
 import app.packed.statemachine.OnStart;
 
 /**

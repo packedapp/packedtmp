@@ -56,6 +56,9 @@ public final class AnnotationUtil {
         return r != null && r.value() == RetentionPolicy.RUNTIME;
     }
 
+    /// Arghhh mother fucker vi bliver noedt til at kunne se den annotering...
+    /// Syntes bare vi skal require open...
+
     // Annotation instances returned by the function is not serializable...
     public static <A extends Annotation, T extends Record> Function<T, A> annotationFactory(MethodHandles.Lookup lookup, Class<A> annotationType,
             Class<T> annotationDataType) {

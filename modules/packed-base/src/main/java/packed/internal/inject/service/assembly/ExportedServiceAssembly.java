@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.ServiceExtension;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;

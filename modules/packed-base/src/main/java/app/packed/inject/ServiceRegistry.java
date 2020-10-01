@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,11 +30,11 @@ import app.packed.base.Key;
  * An immutable set of services with unique {@link Service#key() keys}. Unlike {@link ServiceLocator} this interface
  * does not contain any methods to acquire actual service instances.
  * 
- * @apiNote In the future, if the Java language permits, {@link ServiceSet} may become a {@code sealed} interface, which
+ * @apiNote In the future, if the Java language permits, {@link ServiceRegistry} may become a {@code sealed} interface, which
  *          would prohibit subclassing except by explicitly permitted types.
  */
 //Keys are unique because findService can only return 1 service.
-public interface ServiceSet extends Iterable<Service> {
+public interface ServiceRegistry extends Iterable<Service> {
 
     /**
      * Returns a service contract for this set. The returned service contract will contain all the keys of this set via

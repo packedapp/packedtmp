@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
-import app.packed.service.Service;
+import app.packed.inject.Service;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** An implementation of {@link Service} because {@link ServiceAssembly} is not immutable. */

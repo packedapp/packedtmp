@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -271,7 +271,7 @@ public final class ServiceContract {
      *            the injector to return a contract for
      * @return the service contract for an injector
      */
-    public static ServiceContract of(ServiceSet serviceSet) {
+    public static ServiceContract of(ServiceRegistry serviceSet) {
         return newContract(c -> serviceSet.keys().forEach(s -> c.provides(s)));
     }
 

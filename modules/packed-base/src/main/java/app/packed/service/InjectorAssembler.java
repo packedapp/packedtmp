@@ -29,6 +29,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
 
 /**

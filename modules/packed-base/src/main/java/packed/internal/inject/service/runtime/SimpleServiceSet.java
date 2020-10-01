@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.List;
 import java.util.stream.Stream;
 
-import app.packed.service.Service;
-import app.packed.service.ServiceSet;
+import app.packed.inject.Service;
+import app.packed.inject.ServiceRegistry;
 
 /**
  *
  */
-public class SimpleServiceSet implements ServiceSet {
+public class SimpleServiceSet implements ServiceRegistry {
 
     final List<Service> services;
 

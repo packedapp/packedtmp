@@ -26,6 +26,7 @@ import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
+import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.methodhandle.LookupUtil;
 

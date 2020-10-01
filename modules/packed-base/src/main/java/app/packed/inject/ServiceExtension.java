@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,8 +29,10 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.inject.Factory;
-import app.packed.inject.Provide;
+import app.packed.service.ExportedServiceConfiguration;
+import app.packed.service.Injector;
+import app.packed.service.PrototypeConfiguration;
+import app.packed.service.ServiceAttributes;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
@@ -130,7 +132,7 @@ public final class ServiceExtension extends Extension {
      */
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
-    /* package-private */ ServiceSet attributesExports() {
+    /* package-private */ ServiceRegistry attributesExports() {
         if (sm.hasExports()) {
             return sm.exports().exports();
         }

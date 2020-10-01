@@ -18,6 +18,7 @@ package app.packed.service;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
+import app.packed.inject.ServiceExtension;
 
 /**
  * A configuration object for an exported service. An instance of this interface is usually obtained by calling the

@@ -26,7 +26,6 @@ import java.lang.annotation.Target;
 
 import app.packed.base.Opens;
 import app.packed.container.Packlet;
-import app.packed.service.ServiceExtension;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

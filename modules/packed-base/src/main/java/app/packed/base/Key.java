@@ -60,8 +60,8 @@ import packed.internal.util.TypeUtil;
  *    String value() default "noname";
  * }}
  * </pre> Some examples of qualified keys: <pre> {@code
- * Key<List<String>> list = new Key<@Name("foo") List<String>>() {};
- * Key<List<String>> list = new Key<@Name List<String>>() {}; //uses default value}
+ * Key<List<String>> list = new Key<@Named("foo") List<String>>() {};
+ * Key<List<String>> list = new Key<@Named List<String>>() {}; //uses default value}
  * </pre>
  * 
  * In order for a key to be valid, it must:
@@ -299,6 +299,16 @@ public abstract class Key<T> {
             throw new IllegalArgumentException(
                     "@" + qualifierType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
         }
+        throw new UnsupportedOperationException();
+    }
+
+    public final Key<T> addQualifier(Class<? extends Annotation> qualifierType, Object value) {
+        // if (qualifier type not readable) {
+        // In order to dynamically add an annotation 'qualifierType' must be readable to Packed
+        // add exports
+        // }
+
+        // addQualifier(PluginName.class,/* name = "value", */ "foo");
         throw new UnsupportedOperationException();
     }
 

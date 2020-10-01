@@ -23,7 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.guest.Guest;
 import app.packed.guest.GuestState;
 import app.packed.guest.GuestWirelets;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedApp;
 
 /**

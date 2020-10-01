@@ -18,6 +18,9 @@ package app.packed.service;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Attribute;
+import app.packed.inject.ServiceContract;
+import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceRegistry;
 
 /**
  *
@@ -29,7 +32,7 @@ public final class ServiceAttributes {
     private ServiceAttributes() {}
 
     /** An attribute that is present on {@link ServiceExtension} components that have at least 1 exported service. */
-    public static final Attribute<ServiceSet> EXPORTED_SERVICES = Attribute.of(MethodHandles.lookup(), "exported-services", ServiceSet.class);
+    public static final Attribute<ServiceRegistry> EXPORTED_SERVICES = Attribute.of(MethodHandles.lookup(), "exported-services", ServiceRegistry.class);
 
     // I think we use the exported service
 

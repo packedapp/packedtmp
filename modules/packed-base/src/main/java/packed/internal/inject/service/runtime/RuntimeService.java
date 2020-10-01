@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvisionContext;
-import app.packed.service.Service;
+import app.packed.inject.Service;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** An entry that represents a service at runtime. */

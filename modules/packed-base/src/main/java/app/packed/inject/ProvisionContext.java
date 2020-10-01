@@ -26,7 +26,6 @@ import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
-import app.packed.service.ServiceLocator;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.

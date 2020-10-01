@@ -18,7 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.service.ServiceLocator;
+import app.packed.inject.ServiceLocator;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
 

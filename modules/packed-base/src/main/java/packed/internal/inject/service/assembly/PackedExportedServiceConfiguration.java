@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
+import app.packed.inject.ServiceExtension;
 import app.packed.service.ExportedServiceConfiguration;
-import app.packed.service.ServiceExtension;
 
 /**
  * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service

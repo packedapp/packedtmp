@@ -1,4 +1,4 @@
-package app.packed.service;
+package app.packed.inject;
 
 import app.packed.base.AttributedElement;
 import app.packed.base.Key;

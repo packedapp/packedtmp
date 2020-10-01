@@ -16,7 +16,7 @@
 package packed.internal.inject.service.wirelets;
 
 import app.packed.component.Wirelet;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.ServiceExtension;
 
 /**
  *

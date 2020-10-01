@@ -8,7 +8,7 @@ import app.packed.component.App;
 import app.packed.component.Component;
 import app.packed.component.ShellDriver;
 import app.packed.guest.Guest;
-import app.packed.service.ServiceLocator;
+import app.packed.inject.ServiceLocator;
 
 /** The default implementation of {@link App}. */
 // Could be a really nice little record this one.

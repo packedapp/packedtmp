@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.service.ServiceExtension;
+import app.packed.inject.ServiceExtension;
 import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;

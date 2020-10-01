@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
 import app.packed.container.BaseBundle;
+import app.packed.inject.Service;
 import app.packed.service.Injector;
-import app.packed.service.Service;
 
 /**
  *

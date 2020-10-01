@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -39,12 +39,15 @@ import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 // compute ->
 
 // contractUse, contractForce
+
+// It is illegal to have multiple services with the same key at any part
+// of the pipeline.
 public final class ServiceWirelets {
 
     /** No instantiation. */
     private ServiceWirelets() {}
 
-    public static Wirelet compute(Function<? super ServiceSet, ? extends Optional<? extends Wirelet>> function) {
+    public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
         // Must only provide ServiceWirelets...
         compute(e -> {
             if (e.isPresent(String.class)) {
@@ -55,13 +58,13 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet compute(Predicate<? super ServiceSet> filter, Function<? super ServiceSet, Wirelet> function) {
+    public static Wirelet compute(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
         // Must only provide ServiceWirelets...
         compute(f -> f.isPresent(String.class), e -> map(String.class, CharSequence.class));
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet computeFrom(Function<? super ServiceSet, ? extends Optional<? extends Wirelet>> function) {
+    public static Wirelet computeFrom(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
         // Must only provide ServiceWirelets...
         compute(e -> {
             if (e.isPresent(String.class)) {
@@ -72,7 +75,7 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet computeFrom(Predicate<? super ServiceSet> filter, Function<? super ServiceSet, Wirelet> function) {
+    public static Wirelet computeFrom(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
         // Must only provide ServiceWirelets...
         compute(f -> f.isPresent(String.class), e -> map(String.class, CharSequence.class));
         throw new UnsupportedOperationException();
@@ -105,7 +108,7 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet peek(Consumer<? super ServiceSet> action) {
+    public static Wirelet peek(Consumer<? super ServiceRegistry> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -126,7 +129,7 @@ public final class ServiceWirelets {
      *            the action to perform for each service descriptor
      * @return a peeking wirelet
      */
-    public static Wirelet peekFrom(Consumer<? super ServiceSet> action) {
+    public static Wirelet peekFrom(Consumer<? super ServiceRegistry> action) {
         throw new UnsupportedOperationException();
     }
 
