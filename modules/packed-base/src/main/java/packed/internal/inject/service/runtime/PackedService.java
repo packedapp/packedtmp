@@ -55,12 +55,6 @@ public final class PackedService implements Service {
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configSite() {
-        return configSite;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Key<?> key() {
         return key;
     }

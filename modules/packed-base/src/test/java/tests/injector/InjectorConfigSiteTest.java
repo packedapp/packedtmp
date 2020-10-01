@@ -75,7 +75,7 @@ public class InjectorConfigSiteTest {
 //            binding0(conf.provideConstant(TypeLiteral.of(J.class)).prototype());
         });
         for (Entry<Class<?>, ConfigSite> e : sites.entrySet()) {
-            ConfigSite cs = inj.findService(e.getKey()).get().configSite();
+            ConfigSite cs = inj.findService(e.getKey()).get().attribute(ConfigSite.ATTRIBUTE);
             assertThat(cs).isSameAs(e.getValue());
             assertThat(cs.parent().get()).isSameAs(inj.configSite());
         }
@@ -109,12 +109,12 @@ public class InjectorConfigSiteTest {
             c.provideAll(i);
         });
 
-        ConfigSite cs = i2.findService(Integer.class).get().configSite();
+        ConfigSite cs = i2.findService(Integer.class).get().attribute(ConfigSite.ATTRIBUTE);
         // First site is "c.importServicesFrom(i);"
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i.findService(Integer.class).get().configSite());
+        assertThat(cs.parent().get()).isSameAs(i.findService(Integer.class).get().attribute(ConfigSite.ATTRIBUTE));
 
         // Lets make another injector and import the service yet again
         Injector i3 = Injector.configure(c -> {
@@ -122,12 +122,12 @@ public class InjectorConfigSiteTest {
             c.provideAll(i2);
         });
 
-        cs = i3.findService(Integer.class).get().configSite();
+        cs = i3.findService(Integer.class).get().attribute(ConfigSite.ATTRIBUTE);
         // First site is "c.importServicesFrom(i);"
         line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + 1)));
         // Parent site is "c.bind(123);"
-        assertThat(cs.parent().get()).isSameAs(i2.findService(Integer.class).get().configSite());
+        assertThat(cs.parent().get()).isSameAs(i2.findService(Integer.class).get().attribute(ConfigSite.ATTRIBUTE));
     }
 
     @Test

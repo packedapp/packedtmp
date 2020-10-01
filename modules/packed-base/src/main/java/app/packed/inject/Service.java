@@ -2,7 +2,6 @@ package app.packed.inject;
 
 import app.packed.base.AttributedElement;
 import app.packed.base.Key;
-import app.packed.config.ConfigSite;
 
 /**
  * An immutable description of a service provided by an injector or similar entity.
@@ -11,14 +10,6 @@ import app.packed.config.ConfigSite;
  *          would prohibit subclassing except by explicitly permitted types.
  */
 public interface Service extends AttributedElement {
-
-    /**
-     * Returns the configuration site of this service.
-     * 
-     * @return the configuration site of this service
-     */
-    // I think this is an attribute...
-    ConfigSite configSite();
 
     /**
      * Returns whether or not the service being provided is a constant.

@@ -48,8 +48,6 @@ public abstract class RuntimeService<T> implements Service {
         this.key = requireNonNull(key);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final ConfigSite configSite() {
         return configSite;
     }

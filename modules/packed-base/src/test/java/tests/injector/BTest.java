@@ -18,6 +18,7 @@ package tests.injector;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
+import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Service;
 import app.packed.service.Injector;
@@ -30,7 +31,7 @@ public class BTest {
     public static void main(String[] args) {
         Injector i = Injector.create(new MyBundle());
 
-        i.findService(PrivateImplementation.class).get().configSite().print();
+        i.findService(PrivateImplementation.class).get().attribute(ConfigSite.ATTRIBUTE).print();
 
         System.out.println(String.class.getModule().getDescriptor());
 
