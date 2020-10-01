@@ -41,6 +41,7 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.inject.service.wirelets.OldServiceWirelets;
 import packed.internal.inject.sidecar.AtProvidesHook;
 
 /**
@@ -314,7 +315,7 @@ public final class ServiceExtension extends Extension {
      * @param wirelets
      *            any wirelets used to filter and transform the provided services
      * @throws IllegalArgumentException
-     *             if specifying wirelets that are not defined via {@link ServiceWirelets}
+     *             if specifying wirelets that are not defined via {@link OldServiceWirelets}
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
         requireNonNull(injector, "injector is null");

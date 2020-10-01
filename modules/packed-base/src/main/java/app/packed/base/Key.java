@@ -167,14 +167,14 @@ public abstract class Key<T> {
         return Objects.equals(qualifier, other.qualifier) && typeLiteral.equals(other.typeLiteral);
     }
 
-    public final boolean isClassKey(Class<?> c) {
-        return qualifier == null && typeLiteral.type() == c;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
         return hash;
+    }
+
+    public final boolean isClassKey(Class<?> c) {
+        return qualifier == null && typeLiteral.type() == c;
     }
 
     /**
@@ -182,7 +182,7 @@ public abstract class Key<T> {
      * 
      * @return whether or not this key has a qualifier
      */
-    public final boolean hasQualifier() {
+    public final boolean isQualified() {
         return qualifier != null;
     }
 
@@ -192,6 +192,7 @@ public abstract class Key<T> {
      * @param qualifierType
      *            the type of qualifier
      * @return whether or not this key has a qualifier of the specified type
+     * @implNote this method does not test whether or not the specified annotation is annotated with {@link Qualifier}
      */
     public final boolean isQualifiedWith(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
@@ -239,39 +240,6 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
-     * ({@code hasQualifier() == false}), returns this key.
-     * 
-     * @return this key with no qualifier
-     */
-    public final Key<T> withNoQualifier() {
-        return qualifier == null ? this : new CanonicalizedKey<>(typeLiteral, null);
-    }
-
-    public final <S> Key<S> withType(Class<S> type) {
-        return of(type).withQualifier(qualifier);
-    }
-
-    public final <S> Key<S> withType(TypeLiteral<S> typeLiteral) {
-        return fromTypeLiteral(typeLiteral, qualifier);
-    }
-
-    /**
-     * Returns a new key retaining its original type but with the specified qualifier.
-     * 
-     * @param qualifier
-     *            the new key's qualifier
-     * @return the new key
-     * @throws InvalidDeclarationException
-     *             if the specified annotation is not annotated with {@link Qualifier}.
-     */
-    public final Key<T> withQualifier(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        QualifierHelper.checkQualifierAnnotationPresent(qualifier);// qualifierType instead??
-        return new CanonicalizedKey<>(typeLiteral, qualifier);
-    }
-
-    /**
      * Calling this method will replace any existing qualifier.
      * 
      * @param name
@@ -287,10 +255,29 @@ public abstract class Key<T> {
         throw new UnsupportedOperationException();
     }
 
-    // Takes any qualifier annotation on the typeLiteral
-    // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
-    public final Key<T> withQualifier(TypeLiteral<Void> typeLiteral) {
-        throw new UnsupportedOperationException();
+    /**
+     * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
+     * ({@code hasQualifier() == false}), returns this key.
+     * 
+     * @return this key with no qualifier
+     */
+    public final Key<T> withoutQualifier() {
+        return qualifier == null ? this : new CanonicalizedKey<>(typeLiteral, null);
+    }
+
+    /**
+     * Returns a new key retaining its original type but with the specified qualifier.
+     * 
+     * @param qualifier
+     *            the new key's qualifier
+     * @return the new key
+     * @throws InvalidDeclarationException
+     *             if the specified annotation is not annotated with {@link Qualifier}.
+     */
+    public final Key<T> withQualifier(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        QualifierHelper.checkQualifierAnnotationPresent(qualifier);// qualifierType instead??
+        return new CanonicalizedKey<>(typeLiteral, qualifier);
     }
 
     /**
@@ -313,6 +300,20 @@ public abstract class Key<T> {
                     "@" + qualifierType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
         }
         throw new UnsupportedOperationException();
+    }
+
+    // Takes any qualifier annotation on the typeLiteral
+    // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
+    public final Key<T> withQualifier(TypeLiteral<Void> typeLiteral) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final <S> Key<S> withType(Class<S> type) {
+        return of(type).withQualifier(qualifier);
+    }
+
+    public final <S> Key<S> withType(TypeLiteral<S> typeLiteral) {
+        return fromTypeLiteral(typeLiteral, qualifier);
     }
 
     /**
@@ -437,6 +438,15 @@ public abstract class Key<T> {
         return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
+    public static Key<?>[] of(Class<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        Key<?>[] result = new Key<?>[keys.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = of(keys[i]);
+        }
+        return result;
+    }
+
     /**
      * Returns a key with no qualifiers matching the specified class key.
      *
@@ -450,15 +460,6 @@ public abstract class Key<T> {
     public static <T> Key<T> of(Class<T> key) {
         requireNonNull(key, "key is null");
         return (Key<T>) CLASS_CACHE.get(key);
-    }
-
-    public static Key<?>[] of(Class<?>... keys) {
-        requireNonNull(keys, "keys is null");
-        Key<?>[] result = new Key<?>[keys.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = of(keys[i]);
-        }
-        return result;
     }
 
     /**

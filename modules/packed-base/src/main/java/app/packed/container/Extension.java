@@ -123,6 +123,7 @@ public abstract class Extension {
 
     // Maaske skal vi hellere have en isImage()....
     // og saa kan folk selv trimme ting i en onFinish() callback metode
+    // Eller hvornaar de nu vil..
     void imageTrim() {}
 
     /**

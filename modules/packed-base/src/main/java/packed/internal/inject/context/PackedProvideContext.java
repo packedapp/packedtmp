@@ -22,6 +22,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.container.Extension;
 import app.packed.inject.ProvisionContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
@@ -49,26 +50,44 @@ public final class PackedProvideContext implements ProvisionContext {
         return Optional.ofNullable(component);
     }
 
-    public Key<?> key() {
-        return dependency.key();
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        return Optional.empty();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<MemberDescriptor> originMember() {
-        return dependency.member();
+    public boolean isInjection() {
+        return false;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> originVariable() {
-        return dependency.variable();
+    public boolean isLookup() {
+        return false;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isOptional() {
         return dependency.isOptional();
+    }
+
+    public Key<?> key() {
+        return dependency.key();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<MemberDescriptor> requestingMember() {
+        return dependency.member();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<VariableDescriptor> requestingVariable() {
+        return dependency.variable();
     }
 
     static ProvisionContext of(DependencyDescriptor dependency) {

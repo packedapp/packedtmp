@@ -26,17 +26,16 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionMember;
 import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceWirelets;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.runtime.ConstantInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
+public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
 
     @ExtensionMember(ServiceExtension.class)
-    public static class FilterOnKey extends PackedDownstreamInjectionWirelet {
+    public static class FilterOnKey extends PackedDownstreamServiceWirelet {
 
         final Set<Key<?>> set;
 
@@ -57,9 +56,9 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    /** A wirelet for {@link ServiceWirelets#peekFrom(Consumer)}. */
+    /** A wirelet for {@link OldServiceWirelets#peekFrom(Consumer)}. */
     @ExtensionMember(ServiceExtension.class)
-    public static class PeekDownstreamWirelet extends PackedDownstreamInjectionWirelet {
+    public static class PeekDownstreamWirelet extends PackedDownstreamServiceWirelet {
 
         /** The peek action to execute. */
         private final Consumer<? super Service> action;
@@ -92,13 +91,15 @@ public abstract class PackedDownstreamInjectionWirelet extends ServiceWirelet {
     }
 
     @ExtensionMember(ServiceExtension.class)
-    public static class ProvideConstantDownstream extends PackedDownstreamInjectionWirelet {
+    public static class ProvideInstance extends PackedDownstreamServiceWirelet {
 
+        /** The instance to provide. */
         final Object instance;
 
+        /** The key. */
         final Key<?> key;
 
-        public ProvideConstantDownstream(Key<?> key, Object instance) {
+        public ProvideInstance(Key<?> key, Object instance) {
             this.key = requireNonNull(key, "key is null");
             this.instance = requireNonNull(instance, "instance is null");
         }

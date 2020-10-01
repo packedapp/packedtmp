@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package packed.internal.container;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -24,13 +24,15 @@ import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
 import packed.internal.component.ComponentNodeConfiguration;
 
 /** Implementation of {@link ContainerConfiguration}. */
-final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
 
     /** A component driver that create instances of this configuration class. */
-    static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
+    public static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
             Option.container());
 
     /**

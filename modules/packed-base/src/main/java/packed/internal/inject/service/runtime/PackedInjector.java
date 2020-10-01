@@ -39,7 +39,7 @@ import app.packed.service.ServiceLocator;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.context.PackedProvideContext;
-import packed.internal.inject.service.wirelets.PackedDownstreamInjectionWirelet;
+import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 import packed.internal.util.KeyBuilder;
 
 /** The default implementation of {@link Injector}. */
@@ -140,7 +140,7 @@ public final class PackedInjector extends AbstractInjector {
         LinkedHashMap<Key<?>, RuntimeService<?>> newServices = new LinkedHashMap<>(entries);
         WireletList wl = WireletList.ofAll(wirelets);
         ConfigSite ccs = cs;
-        wl.forEach(PackedDownstreamInjectionWirelet.class, w -> w.process(ccs, newServices));
+        wl.forEach(PackedDownstreamServiceWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub
         return new PackedInjector(cs, newServices);
     }

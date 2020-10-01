@@ -29,6 +29,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
+import packed.internal.inject.service.wirelets.OldServiceWirelets;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -207,7 +208,7 @@ public final class InjectorAssembler extends Assembler {
      * @param wirelets
      *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
-     *             if the specified wirelet are not all wirelets from {@link ServiceWirelets} or combinations (via
+     *             if the specified wirelet are not all wirelets from {@link OldServiceWirelets} or combinations (via
      *             {@link Wirelet#combine(Wirelet, Wirelet) combinations} thereof
      */
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()

@@ -421,7 +421,7 @@ public final class DependencyDescriptor {
 
     public static DependencyDescriptor of(Key<?> key) {
         requireNonNull(key, "key is null");
-        if (!key.hasQualifier()) {
+        if (!key.isQualified()) {
             TypeLiteral<?> tl = key.typeLiteral();
             if (tl.type() == tl.rawType()) {
                 return CLASS_CACHE.get(tl.rawType());
@@ -432,7 +432,7 @@ public final class DependencyDescriptor {
 
     public static DependencyDescriptor ofOptional(Key<?> key) {
         requireNonNull(key, "key is null");
-        if (!key.hasQualifier()) {
+        if (!key.isQualified()) {
             TypeLiteral<?> tl = key.typeLiteral();
             if (tl.type() == tl.rawType()) {
                 return CLASS_CACHE.get(tl.rawType());

@@ -30,6 +30,9 @@ import packed.internal.container.ExtensionAssembly;
  */
 // Maaske er det simpelthen bare ExtensionManager?? IDK
 // Kommer an paa om vi inkludere flere ting...
+// Altsaa maaske skal vi bare finde paa et andet navn...
+// Ideen er jo lidt at den er tilgaengelig fra alle componenter...
+// Og ikke bare containeren.
 public final class BaseExtension extends Extension {
 
     /** The container this extension is part of. */

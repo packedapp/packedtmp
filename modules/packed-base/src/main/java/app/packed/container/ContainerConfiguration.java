@@ -26,6 +26,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
+import packed.internal.container.PackedContainerConfiguration;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by

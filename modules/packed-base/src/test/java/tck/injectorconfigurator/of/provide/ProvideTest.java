@@ -67,7 +67,7 @@ public class ProvideTest {
     static <T> void testSingleton(Injector i, Key<T> key, T instance) {
         assertThat(i.find(key)).containsSame(instance);
         assertThat(i.use(key)).isSameAs(instance);
-        if (!key.hasQualifier()) {
+        if (!key.isQualified()) {
             @SuppressWarnings("unchecked")
             Class<T> rawType = (Class<T>) key.typeLiteral().rawType();
             assertThat(i.find(rawType)).containsSame(instance);

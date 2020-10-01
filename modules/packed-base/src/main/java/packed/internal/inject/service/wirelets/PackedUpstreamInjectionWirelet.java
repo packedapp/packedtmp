@@ -25,7 +25,6 @@ import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
 import app.packed.service.Service;
 import app.packed.service.ServiceExtension;
-import app.packed.service.ServiceWirelets;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
@@ -107,7 +106,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         }
     }
 
-    /** A wirelet for {@link ServiceWirelets#peekFrom(Consumer)}. */
+    /** A wirelet for {@link OldServiceWirelets#peekFrom(Consumer)}. */
     @ExtensionMember(ServiceExtension.class)
     public static class PeekFrom extends PackedUpstreamInjectionWirelet {
 

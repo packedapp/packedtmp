@@ -17,83 +17,95 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.time.ZoneId;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.component.Wirelet;
-import app.packed.inject.Factory;
-import app.packed.inject.Factory0;
-import app.packed.inject.Factory1;
-import packed.internal.inject.service.wirelets.PackedDownstreamInjectionWirelet;
-import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
+import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
  * containers.
  */
 
-//Syntes det giver mening kun at prefixe have upstream....
-//Eller evt mapTo, og mapFrom.... ddd.mapTo og ma
+// provide -> Never removes, Never uses dependencies
+// map -> removes existing
+// insert -> insert new service possible with transformation
+// remove -> removes by key
+// peek
+// compute ->
 
-//peekTo.. peekFrom, /// link(new SomeBundle()
-
-// This wirelet can only be used at assembly time...
-// Skal vi have en protected verify();
-// som saa kan kalde checkAssemblyTime()?
-
+// contractUse, contractForce
 public final class ServiceWirelets {
 
     /** No instantiation. */
     private ServiceWirelets() {}
 
-    // restrict optional services going in (some contract????) Bare besvaereligt at lave negative contracter.
-    // Med mindre vi arbejder med commotative, associative osv. kontrakter...
-
-    public static <F, T> Wirelet extractUpstream(Class<F> fromKey, Class<T> toKey, Function<? super F, ? extends T> mapper) {
-        return extractUpstream(Key.of(fromKey), Key.of(toKey), mapper);
-    }
-
-    public static <F, T> Wirelet extractUpstream(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
-        return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper, true);
-    }
-
-    public static void main(String[] args) {
-        provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
-
-        mapTo(new Factory1<TimeZone, ZoneId>(TimeZone::toZoneId) {});
-
-        provideMapped(Long.class, Integer.class, e -> e.intValue());
-
-        provideMapped(Key.of(Long.class), Key.of(Integer.class), e -> e.intValue());
-        mapTo(new Factory1<Long, Integer>(Long::intValue) {});
-    }
-
-    public static <F, T> Wirelet mapUpstream(Class<F> fromKey, Class<T> toKey, Function<? super F, ? extends T> mapper) {
-        return mapUpstream(Key.of(fromKey), Key.of(toKey), mapper);
-    }
-
-    public static <F, T> Wirelet mapUpstream(Key<F> fromKey, Key<T> toKey, Function<? super F, ? extends T> mapper) {
-        return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper, false);
-    }
-
-    public static Wirelet mapUpstream(Mapper<?, ?> mapper) {
+    public static Wirelet compute(Function<? super ServiceSet, ? extends Optional<? extends Wirelet>> function) {
+        // Must only provide ServiceWirelets...
+        compute(e -> {
+            if (e.isPresent(String.class)) {
+                return Optional.of(map(String.class, CharSequence.class));
+            }
+            return Optional.empty();
+        });
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * <p>
-     * Wirelets returned by this method can only be used at assembly time.
-     * 
-     * @param factory
-     *            a factory taking at least one argument (well
-     * @return stuff
-     */
-    public static Wirelet mapTo(Factory<?> factory) {
+    public static Wirelet compute(Predicate<? super ServiceSet> filter, Function<? super ServiceSet, Wirelet> function) {
+        // Must only provide ServiceWirelets...
+        compute(f -> f.isPresent(String.class), e -> map(String.class, CharSequence.class));
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet computeFrom(Function<? super ServiceSet, ? extends Optional<? extends Wirelet>> function) {
+        // Must only provide ServiceWirelets...
+        compute(e -> {
+            if (e.isPresent(String.class)) {
+                return Optional.of(map(String.class, CharSequence.class));
+            }
+            return Optional.empty();
+        });
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet computeFrom(Predicate<? super ServiceSet> filter, Function<? super ServiceSet, Wirelet> function) {
+        // Must only provide ServiceWirelets...
+        compute(f -> f.isPresent(String.class), e -> map(String.class, CharSequence.class));
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet map(Class<T> from, Class<? super T> to) {
+        return map(Key.of(from), Key.of(to));
+    }
+
+    public static <T> Wirelet map(Key<T> from, Key<? super T> to) {
+        // Changes the key of an entry (String -> @Left String
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet mapAll(Function<Service, ? super Key<?>> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet mapAllFrom(Function<Service, ? super Key<?>> mapper) {
+        mapAll(s -> s.key().withName("foo"));
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet mapFrom(Class<T> from, Class<? super T> to) {
+        return mapFrom(Key.of(from), Key.of(to));
+    }
+
+    public static <T> Wirelet mapFrom(Key<T> from, Key<? super T> to) {
+        // Changes the key of an entry (String -> @Left String
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet peek(Consumer<? super ServiceSet> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -114,35 +126,16 @@ public final class ServiceWirelets {
      *            the action to perform for each service descriptor
      * @return a peeking wirelet
      */
-    // I think it should be a set or some kind instead of a consumer
-
-    // An immutable thingy of some kind...
-    // Taenker vi godt vil foresporge om nogle ting
-    public static Wirelet peekFrom(Consumer<? super Service> action) {
-        return new PackedUpstreamInjectionWirelet.PeekFrom(action);
-    }
-
-    public static Wirelet peekTo(Consumer<? super Service> action) {
-        return new PackedDownstreamInjectionWirelet.PeekDownstreamWirelet(action);
-    }
-
-    // provideTo? to be consistant...
-    public static <T> Wirelet provide(Class<T> key, T service) {
-        return provide(Key.of(key), service);
-    }
-
-    // public static <T> Wirelet provideMapped(Factory<T> Key<T> type, T service) {
-    // throw new UnsupportedOperationException();
-    // }
-
-    // Hmmm, syntes egentlig ikke man kan bruge den her...
-    // IDK
-    public static <T> Wirelet provide(Factory0<T> factory) {
+    public static Wirelet peekFrom(Consumer<? super ServiceSet> action) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Wirelet provide(Key<T> key, T constant) {
-        return new PackedDownstreamInjectionWirelet.ProvideConstantDownstream(key, constant);
+    public static <T> Wirelet provide(Class<T> key, T instance) {
+        return provide(Key.of(key), instance);
+    }
+
+    public static <T> Wirelet provide(Key<T> key, T instance) {
+        return new PackedDownstreamServiceWirelet.ProvideInstance(key, instance);
     }
 
     /**
@@ -151,100 +144,36 @@ public final class ServiceWirelets {
      * <p>
      * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
      * 
-     * @param constant
+     * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Wirelet provide(Object constant) {
-        requireNonNull(constant, "service is null");
-        return provide((Class) constant.getClass(), constant);
-    }
-
-    /**
-     * Returns a wirelet that will provide all services that the specified injector provides
-     * 
-     * @param injector
-     *            the injector to provide services from
-     * @param wirelets
-     *            for transforming and or restricting services
-     * @return stuff
-     */
-    public static Wirelet provideAll(Injector injector, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Do
-    public Wirelet rekey(Class<?> from, Class<?> to) {
-        // Changes the key of an entry (String -> @Left String
-        throw new UnsupportedOperationException();
-    }
-
-    // reject(Key... key)
-    // reject(Class<?>... key)
-    // reject(Predicate<? super Key|ServiceDescriptor>)
-
-    public static <F, T> Wirelet provideMapped(Class<F> form, Class<T> to, Function<F, T> r) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <F, T> Wirelet provideMapped(Key<F> form, Key<T> to, Function<F, T> r) {
-        throw new UnsupportedOperationException();
-    }
-    // Maaske bare tag et factory?????
-    //// Multiplicity many or singleton???
-    // Saa kan vi have vilkaerlige
-
-    // Problemet er at vi skal angive 2 noegler
-    static Wirelet provideMapped(Mapper<?, ?> r) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet provideOnly(Class<?>... keys) {
-        // Retain
-        // Only
-        // Predicate
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet removeUpstream(Class<?>... keys) {
-        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys).stream().map(e -> Key.of(e)).collect(Collectors.toSet()));
-    }
-
-    public static Wirelet removeUpstream(Key<?>... keys) {
-        return new PackedUpstreamInjectionWirelet.FilterOnKey(Set.of(keys));
-    }
-
-    // Maybe have a generic mapper, not only for injection...
-    // Transformer, maaske i .function package
-    static abstract class Mapper<T, R> {
-        protected Mapper(Function<? super T, ? extends R> function) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    static class Transformer<F, T> {
-        Key<F> from() {
-            throw new UnsupportedOperationException();
-        }
-
-        Key<F> to() {
-            throw new UnsupportedOperationException();
-        }
+    public static Wirelet provide(Object instance) {
+        requireNonNull(instance, "instance is null");
+        return provide((Class) instance.getClass(), instance);
     }
 }
 
-/// into
-//// Provide
-//// Transformation
-//// Removal
+class ServiceWireletsSandbox {
 
-/// outfrom
-//// Transformation
-//// Removal (contract??)
+    // Ideen er at vi kan aendre om ting er constants...
+    // F.eks. hvis vi gerne vil cache noget??
+    // Maaske have en map(dddd, boolean isConstant) istedet for
+    // Er ikke super vild med dem...
+    public static Wirelet constanfy(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
 
-// Can we have dependencies.... Det kan vi vel godt...
-// public static Wirelet provideAll(Consumer<InjectorConfigurator> c) {
-// return provideAll(Injector.of(configurator, wirelets));
-// throw new UnsupportedOperationException();
-// }
+    public static Wirelet constanfyTo(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet unconstanfy(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet unconstanfyTo(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+}
