@@ -80,7 +80,7 @@ import packed.internal.util.TypeUtil;
  */
 public abstract class Key<T> {
 
-    /** A cache of factories used by {@link #of(Class)}. */
+    /** A cache of keys used by {@link #of(Class)}. */
     private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -90,7 +90,7 @@ public abstract class Key<T> {
         }
     };
 
-    /** A cache of keys used by {@link Key#Key()}. */
+    /** A cache of keys computed from type variables. */
     private static final ClassValue<Key<?>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -101,11 +101,13 @@ public abstract class Key<T> {
         }
     };
 
-    /** The eagerly computed hash code, as we assume almost all keys are going to be used with some kind of hash table. */
+    /** We eagerly compute the hash code, as we assume most keys are going to be used in some kind of hash table. */
     private final int hash;
 
     /** An (optional) qualifier for this key. */
+
     @Nullable
+    // Object, null->no annotation, Annotation ->1, Annotation[] -> multiple annotations...
     private final Annotation[] qualifiers;
 
     /** The (canonicalized) type literal for this key. */
@@ -114,10 +116,10 @@ public abstract class Key<T> {
     /** Constructs a new key. Derives the type from this class's type parameter. */
     @SuppressWarnings("unchecked")
     protected Key() {
-        Key<?> key = TYPE_VARIABLE_CACHE.get(getClass());
-        this.qualifiers = key.qualifiers;
-        this.typeLiteral = (CanonicalizedTypeLiteral<T>) key.typeLiteral;
-        this.hash = key.hash;
+        Key<?> cached = TYPE_VARIABLE_CACHE.get(getClass());
+        this.qualifiers = cached.qualifiers;
+        this.typeLiteral = (CanonicalizedTypeLiteral<T>) cached.typeLiteral;
+        this.hash = cached.hash;
         assert (!typeLiteral.rawType().isPrimitive());
     }
 
@@ -138,6 +140,16 @@ public abstract class Key<T> {
         assert (!typeLiteral.rawType().isPrimitive());
     }
 
+    public final Key<T> addQualifier(Class<? extends Annotation> qualifierType, Object value) {
+        // if (qualifier type not readable) {
+        // In order to dynamically add an annotation 'qualifierType' must be readable to Packed
+        // add exports
+        // }
+
+        // addQualifier(PluginName.class,/* name = "value", */ "foo");
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * To avoid accidentally holding on to any instance that defines this key as an anonymous class. This method creates a
      * new key instance without any reference to the instance that defined the anonymous class.
@@ -150,12 +162,6 @@ public abstract class Key<T> {
         }
         return new CanonicalizedKey<>(typeLiteral, qualifiers);
     }
-
-    // @Override
-    // public final int compareTo(Key<?> o) {
-    // // TODO create one, TypeLiteral should probably also be comparable
-    // return hash;
-    // }
 
     /** {@inheritDoc} */
     @Override
@@ -173,10 +179,6 @@ public abstract class Key<T> {
     @Override
     public final int hashCode() {
         return hash;
-    }
-
-    public final boolean isClassKey(Class<?> c) {
-        return qualifiers == null && typeLiteral.type() == c;
     }
 
     /**
@@ -207,6 +209,10 @@ public abstract class Key<T> {
             }
         }
         return false;
+    }
+
+    public final boolean isClassKey(Class<?> c) {
+        return qualifiers == null && typeLiteral.type() == c;
     }
 
     public final Collection<Annotation> qualifiers() {
@@ -322,16 +328,6 @@ public abstract class Key<T> {
             throw new IllegalArgumentException(
                     "@" + qualifierType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
         }
-        throw new UnsupportedOperationException();
-    }
-
-    public final Key<T> addQualifier(Class<? extends Annotation> qualifierType, Object value) {
-        // if (qualifier type not readable) {
-        // In order to dynamically add an annotation 'qualifierType' must be readable to Packed
-        // add exports
-        // }
-
-        // addQualifier(PluginName.class,/* name = "value", */ "foo");
         throw new UnsupportedOperationException();
     }
 
