@@ -32,7 +32,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.container.ExtensionSetup;
 import app.packed.inject.Factory;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -266,10 +265,10 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
-        checkState(ExtensionSetup.NORMAL_USAGE);
+        checkState(ExtensionModel.NORMAL_USAGE);
         // model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
-        checkState(ExtensionSetup.CHILD_LINKING);
+        checkState(ExtensionModel.CHILD_LINKING);
     }
 
     /** {@inheritDoc} */
@@ -339,9 +338,9 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(container.compConf, model);
         ExtensionAssembly ea = compConf.extension;
 
-        ea.checkState(ExtensionSetup.INSTANTIATING);
+        ea.checkState(ExtensionModel.INSTANTIATING);
         Extension e = ea.instance = model.newInstance(ea); // Creates a new instance of the extension
-        ea.checkState(ExtensionSetup.NORMAL_USAGE);
+        ea.checkState(ExtensionModel.NORMAL_USAGE);
 
         // Set app.packed.container.Extension.configuration = ea
         VH_EXTENSION_CONFIGURATION.set(e, ea); // field is package-private in a public package

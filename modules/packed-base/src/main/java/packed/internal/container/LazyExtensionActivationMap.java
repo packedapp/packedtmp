@@ -27,7 +27,7 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.Packlet;
+import app.packed.sidecar.Packlet;
 import packed.internal.hook.BaseHookQualifierList;
 import packed.internal.hook.OnHookModel;
 import packed.internal.util.Tiny;

@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 import app.packed.base.OpenMode;
 import app.packed.base.Opens;
 import app.packed.container.ExtensionMember;
-import app.packed.container.Packlet;
+import app.packed.sidecar.Packlet;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

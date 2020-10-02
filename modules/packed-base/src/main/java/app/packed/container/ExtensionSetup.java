@@ -20,8 +20,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.statemachine.Leaving;
-
 /**
  * An annotation that can be used on {@link Extension} subclasses. Classes that extend {@link Extension} are implicit
  * sidecars even without the use of this annotation. However, if the extension uses any other extensions this annotation
@@ -40,33 +38,6 @@ import app.packed.statemachine.Leaving;
 // transitive... Altsaa kan vi forstille os at extensions of extension skal bruge dem...
 // Was ExtensionSettings
 public @interface ExtensionSetup {
-
-    /**
-     * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
-     * soon as the extension has been successfully instantiated and before it is returned to the user.
-     * <p>
-     * 
-     * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
-     * not yet been returned to the user. The next event will be {@link #NORMAL_USAGE}.
-     */
-    String INSTANTIATING = "Instantiating";
-
-    /**
-     * All components and extensions have been added and configured. The next event will be {@link #CHILD_LINKING}
-     */
-    String NORMAL_USAGE = "NormalUsage";
-
-    /**
-     * Any child containers located in the same artifact will be has been defined. Typically using . The next event will be
-     * {@link #GUESTS_DEFINITIONS}.
-     */
-    String CHILD_LINKING = "ChildLinking";
-
-    /** This is the final event. This event will be invoked even if no guests are defined. */
-    String GUESTS_DEFINITIONS = "GuestsDefinitions";
-
-    /** The end state of the extension. */
-    String ASSEMBLED = "Assembled";
 
     /**
      * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies

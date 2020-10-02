@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.container.Packlet;
+import app.packed.sidecar.Packlet;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.hook.AnnotatedFieldHook;
 import packed.internal.hook.AnnotatedMethodHook;

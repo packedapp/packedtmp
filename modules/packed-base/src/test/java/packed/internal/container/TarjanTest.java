@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import app.packed.container.Packlet;
+import app.packed.sidecar.Packlet;
 
 /**
  *

@@ -24,18 +24,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.container.Extension;
-import app.packed.container.ExtensionSet;
+import app.packed.container.OrderedExtensionSet;
 
-/**
- *
- */
-public final class PackedExtensionSet implements ExtensionSet {
+/** Immutable implementation of {@link OrderedExtensionSet}. */
+public final class PackedOrderedExtensionSet implements OrderedExtensionSet {
 
-    public static final PackedExtensionSet EMPTY = new PackedExtensionSet(List.of());
+    /** An empty set. */
+    public static final PackedOrderedExtensionSet EMPTY = new PackedOrderedExtensionSet(List.of());
 
+    /** The extension types this set contains */
     private final List<Class<? extends Extension>> extensions;
 
-    public PackedExtensionSet(List<Class<? extends Extension>> extensions) {
+    public PackedOrderedExtensionSet(List<Class<? extends Extension>> extensions) {
         this.extensions = requireNonNull(extensions);
     }
 
@@ -43,6 +43,23 @@ public final class PackedExtensionSet implements ExtensionSet {
     @Override
     public boolean contains(Class<? extends Extension> extensionType) {
         return extensions.contains(extensionType);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (!(obj instanceof PackedOrderedExtensionSet)) {
+            return false; // we should seal the set
+        }
+        return ((PackedOrderedExtensionSet) obj).extensions.equals(extensions);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return extensions.hashCode();
     }
 
     /** {@inheritDoc} */
@@ -81,8 +98,8 @@ public final class PackedExtensionSet implements ExtensionSet {
      *             if trying to add BaseExtension
      */
     @SuppressWarnings("unchecked")
-    public static PackedExtensionSet of(Collection<Class<? extends Extension>> extensions) {
+    public static PackedOrderedExtensionSet of(Collection<Class<? extends Extension>> extensions) {
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.modelType()).collect(Collectors.toList());
-        return new PackedExtensionSet((List<Class<? extends Extension>>) l);
+        return new PackedOrderedExtensionSet((List<Class<? extends Extension>>) l);
     }
 }

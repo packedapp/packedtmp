@@ -49,22 +49,14 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     int compareTo(ExtensionDescriptor descriptor);
 
     /**
-     * Returns all the different types of contracts the extension exposes.
-     * 
-     * @return all the different types of contracts the extension exposes
-     */
-    // Set<Class<? extends Contract>> contracts();
-
-    /**
-     * Returns an immutable set of other extensions this extension depends on. The returned set does not include transitive
-     * dependencies.
+     * Returns an immutable set of the direct dependencies of this extension.
      * <p>
      * The returned set includes all optional dependencies specified via {@link ExtensionSetup#optionalDependencies()} that
      * could be successfully resolved.
      * 
      * @return any other extensions this extension depends on
      */
-    ExtensionSet dependencies();
+    OrderedExtensionSet dependencies();
 
     /**
      * Returns the extension's depth.
@@ -78,12 +70,12 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     int depth();
 
     /**
-     * Returns the full name of the extension.
+     * Returns the full name of the extension. The full name is always the canonical name of the {@link #type() extension
+     * type} as returned by {@link Class#getSimpleName()}.
      * 
      * @return the full name of the extension
      * @see Class#getCanonicalName()
      */
-    // Skal vi have noget med at det er det vi sortere efter
     String fullName();
 
     /**
@@ -104,9 +96,14 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      */
     String name();
 
-    default Optional<Class<? extends Subtension>> subtensionType() {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * If the extension can be used from other extensions return the subtension type. Otherwise empty.
+     * 
+     * @return the subtension type if any
+     * 
+     * @See {@link Subtension}
+     */
+    Optional<Class<? extends Subtension>> subtensionType();
 
     /**
      * Returns the type of extension this descriptor describes.
@@ -116,10 +113,10 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     Class<? extends Extension> type();
 
     /**
-     * Returns a set of all dependencies defined in {@link ExtensionSetup#optionalDependencies()} that could not be
-     * resolved.
+     * Returns a set of all the optional dependencies defined in {@link ExtensionSetup#optionalDependencies()} that could
+     * not be successfully resolved.
      * 
-     * @return a set of all unresolved dependencies
+     * @return a set of all optional dependencies that could not be successfully resolved
      * @see ExtensionSetup#optionalDependencies()
      */
     Set<String> unresolvedDependencies();
@@ -138,6 +135,13 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
         return ExtensionModel.of(extensionType);
     }
 }
+
+/**
+ * Returns all the different types of contracts the extension exposes.
+ * 
+ * @return all the different types of contracts the extension exposes
+ */
+// Set<Class<? extends Contract>> contracts();
 // 
 // requiresExecution() // usesResources // ResourceUser
 //

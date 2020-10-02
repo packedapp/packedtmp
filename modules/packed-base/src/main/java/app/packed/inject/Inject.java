@@ -25,7 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.base.Opens;
-import app.packed.container.Packlet;
+import app.packed.sidecar.Packlet;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use

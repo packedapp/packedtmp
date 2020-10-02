@@ -19,11 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import packed.internal.container.PackedExtensionSet;
-
-/**
- *
- */
+import packed.internal.container.PackedOrderedExtensionSet;
 
 //Class vs Descriptor
 // toClassList();, toDescriptorList();c
@@ -37,16 +33,18 @@ import packed.internal.container.PackedExtensionSet;
 // Altsaa hvad hvis vi explicit laver en order fx via BaeExtension???
 
 /**
- * An immutable ordered set of extensions that are deterministic ordering of a set of extension types.
- * <p>
- * This set never includes BaseExtension.
+ * An set of extensions ordered by {@link ExtensionDescriptor#depth()} and {@link ExtensionDescriptor#fullName()}.
  * 
  * <p>
  * An extension ordering will not accept extension types that identical names but different identities. This can happen
  * fx if they the same extension is loaded with multiple different class loaders.
+ * 
+ * 
+ * @apiNote In the future, if the Java language permits, {@link OrderedExtensionSet} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// ExtensionSet or ExtensionList
-public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
+// SortedExtensionSet
+public interface OrderedExtensionSet extends Iterable<Class<? extends Extension>> {
 
     /**
      * Returns whether or not this ordering contains the specified extension type.
@@ -92,31 +90,34 @@ public interface ExtensionSet extends Iterable<Class<? extends Extension>> {
      * 
      * @return an ordering that contains no extensions
      */
-    static ExtensionSet empty() {
-        return PackedExtensionSet.EMPTY;
+    static OrderedExtensionSet of() {
+        return PackedOrderedExtensionSet.EMPTY;
     }
 
     /**
      * Returns an ordered extension set containing an arbitrary number of extension types.
      * 
      * @param extensions
-     *            the extension types to include
-     * @return a new set
+     *            the extension types to include in the new set
+     * @return a new ordered extension set
      * @throws IllegalArgumentException
-     *             if trying to add BaseExtension
+     *             if the specified multiple extensions with the same {@link ExtensionDescriptor#fullName()} but from
+     *             different class loaders
      */
     @SafeVarargs
-    static ExtensionSet of(Class<? extends Extension>... extensions) {
+    static OrderedExtensionSet of(Class<? extends Extension>... extensions) {
         return of(List.of(extensions));
     }
 
     /**
      * @param extensions
+     *            the extension types to include in the new set
      * @return a new ordered extension set
      * @throws IllegalArgumentException
-     *             if trying to add BaseExtension
+     *             if the specified multiple extensions with the same {@link ExtensionDescriptor#fullName()} but from
+     *             different class loaders
      */
-    static ExtensionSet of(Collection<Class<? extends Extension>> extensions) {
-        return PackedExtensionSet.of(extensions);
+    static OrderedExtensionSet of(Collection<Class<? extends Extension>> extensions) {
+        return PackedOrderedExtensionSet.of(extensions);
     }
 }

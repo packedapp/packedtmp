@@ -23,6 +23,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -32,12 +33,14 @@ import app.packed.base.Nullable;
 import app.packed.component.WireletConsume;
 import app.packed.container.ComponentLinked;
 import app.packed.container.Extension;
+import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.ExtensionMember;
-import app.packed.container.ExtensionSet;
 import app.packed.container.ExtensionSetup;
 import app.packed.container.InternalExtensionException;
+import app.packed.container.OrderedExtensionSet;
+import app.packed.statemachine.Leaving;
 import app.packed.statemachine.LifecycleContext;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
@@ -53,6 +56,32 @@ import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
 public final class ExtensionModel extends AbstractExtensionModel implements ExtensionDescriptor {
+    /**
+     * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
+     * soon as the extension has been successfully instantiated and before it is returned to the user.
+     * <p>
+     * 
+     * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
+     * not yet been returned to the user. The next event will be {@link #NORMAL_USAGE}.
+     */
+    public static final String INSTANTIATING = "Instantiating";
+
+    /**
+     * All components and extensions have been added and configured. The next event will be {@link #CHILD_LINKING}
+     */
+    public static final String NORMAL_USAGE = "NormalUsage";
+
+    /**
+     * Any child containers located in the same artifact will be has been defined. Typically using . The next event will be
+     * {@link #GUESTS_DEFINITIONS}.
+     */
+    public static final String CHILD_LINKING = "ChildLinking";
+
+    /** This is the final event. This event will be invoked even if no guests are defined. */
+    public static final String GUESTS_DEFINITIONS = "GuestsDefinitions";
+
+    /** The end state of the extension. */
+    public static final String ASSEMBLED = "Assembled";
 
     /** A cache of extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
@@ -88,7 +117,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
     final MethodHandle bundleBuilderMethod;
 
     /** The direct dependencies of this extension. */
-    private final PackedExtensionSet dependencies;
+    private final PackedOrderedExtensionSet dependencies;
 
     /**
      * The depth of this extension in a global . Defined as 0 if no dependencies otherwise max(all dependencies depth) + 1.
@@ -138,7 +167,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         this.depth = builder.depth;
 
         // All direct dependencies of this extension
-        this.dependencies = PackedExtensionSet.of(builder.dependencies);
+        this.dependencies = PackedOrderedExtensionSet.of(builder.dependencies);
 
         // Cache some frequently used strings.
         this.nameFull = type.getCanonicalName();
@@ -158,22 +187,30 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
     @Override
     public int compareTo(ExtensionDescriptor descriptor) {
         ExtensionModel m = (ExtensionModel) descriptor;
-        // id < #baseExtension return id-id;
-        // otherwise non base extension
+
+        // First we compare the depth of each extension
         int d = depth - m.depth;
-        if (d == 0) {
-            int c = nameFull.compareTo(m.nameFull);
-            if (c == 0) {
-                // Cannot use two extension with the same name. But loaded via two different
-                // classloaders
-                /// Hmmmm har nogen gange hvor dette er
-                // throw new IllegalStateException();
-            }
-            return c;
-        } else {
+        if (d != 0) {
             return d;
         }
-//        return d == 0 ? nameUsedForSorting.compareTo(m.nameUsedForSorting) : d;
+
+        // Then we compare the full name (class.getCanonicalName());
+        int c = nameFull.compareTo(m.nameFull);
+        if (c != 0) {
+            return c;
+        }
+
+        // Okay same depth and name, is the same extension
+        if (m.type == type) {
+            return 0;
+        }
+
+        // Same fullname and but loaded with two different classloaders.
+        // We don't allow this
+        throw new IllegalArgumentException(
+                "Cannot compare two extensions with the same depth '" + depth + "' and fullname '" + nameFull + "' but loaded by different classloaders. "
+                        + "ClassLoader(this) = " + type.getClassLoader() + ", ClassLoader(other) = " + m.type.getClassLoader());
+
     }
 
     /**
@@ -182,7 +219,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
      * @return a set of all the direct dependencies of this extension
      */
     @Override
-    public ExtensionSet dependencies() {
+    public OrderedExtensionSet dependencies() {
         return dependencies;
     }
 
@@ -333,8 +370,8 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         };
 
         /** Meta data about the extension sidecar. */
-        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSetup.class, LifecycleDefinition.of(ExtensionSetup.INSTANTIATING,
-                ExtensionSetup.NORMAL_USAGE, ExtensionSetup.CHILD_LINKING, ExtensionSetup.GUESTS_DEFINITIONS));
+        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSetup.class, LifecycleDefinition.of(ExtensionModel.INSTANTIATING,
+                ExtensionModel.NORMAL_USAGE, ExtensionModel.CHILD_LINKING, ExtensionModel.GUESTS_DEFINITIONS));
 
         // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;
@@ -534,5 +571,11 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
                 GLOBAL_LOCK.unlock();
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<? extends Subtension>> subtensionType() {
+        return null;
     }
 }
