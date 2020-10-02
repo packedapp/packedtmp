@@ -22,7 +22,7 @@ import packed.internal.component.PackedComponentDriver;
 /**
  *
  */
-public final class StatelessConfiguration extends AbstractComponentConfiguration {
+public final class StatelessConfiguration extends ComponentConfiguration {
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")

@@ -22,7 +22,7 @@ import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -35,7 +35,7 @@ import packed.internal.component.ComponentNodeConfiguration;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link ContainerBundle} or {@link BaseBundle}.
  */
-public final class ContainerConfiguration extends AbstractComponentConfiguration {
+public final class ContainerConfiguration extends ComponentConfiguration {
 
     /** A driver that create container components. */
     private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,

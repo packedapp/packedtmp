@@ -15,14 +15,113 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
+import java.lang.reflect.Modifier;
+import java.util.Optional;
+
 import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
+import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.config.ConfigSiteSupport;
 
-/**
- *
- */
-public interface ComponentConfiguration {
+/** An abstract implementation of ComponentConfiguration that can be extended by extensions. */
+
+// Vil ikke afvise at vi dropper interface ComponentConfiguration...
+// Og omdoeber denne til ComponentConfiguration
+
+// Tror det vil vaere rart i forbindelse f.eks. med at StackWalker...
+// At vi altid ved den er ComponentConfiguration...
+
+// Grunde til vi ikke har lyst til det....
+
+// F.eks. hvis vi gerne vil lave en immutable version...
+// Kunne have en clone()... som returnere en ny instans med en ny context...
+// Som fejler ved checkConfigurable....
+
+// Saa vi kun har en type...
+
+// Lad mig spoerge paa en anden maade.. Kan vi paa nogen maade forstille os at der kommer til at 
+// vaere flere implementation af en specific component configuration type...??? 
+// Det tror jeg ikke...
+
+// Men det er jo det samme med image... Det der er rart er jo at vi kan gemme implementeringen vaek
+// Men taenker dem der laver noget har den knyttet til en Extension??? som kan kalde en package
+// private constructor... Kan ikke forstille mig folk laver typer udenom en Extension
+// Eller vi har jo nok ComponentModel<Factory> -> ComponentModel<SingletonConfiguration>x
+
+// model.newConfiguration(ComponentContainerContext ccc) -> return new SingletonCC(ccc);
+public abstract class ComponentConfiguration {
+
+    /** A stack walker used from {@link #captureStackFrame(String)}. */
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+
+    /** The component's configuration context. */
+    protected final ComponentConfigurationContext context;
+
+    /**
+     * Creates a new component configuration.
+     * 
+     * @param context
+     *            the component's configuration context
+     */
+    protected ComponentConfiguration(ComponentConfigurationContext context) {
+        this.context = requireNonNull(context, "context is null");
+    }
+
+    /**
+     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+     * not located on any subclasses of {@link Extension} or any class that implements
+     * <p>
+     * Invoking this method typically takes in the order of 1-2 microseconds.
+     * <p>
+     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+     * {@link ConfigSite#UNKNOWN}.
+     * 
+     * @param operation
+     *            the operation
+     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+     * @see StackWalker
+     */
+    // TODO add stuff about we also ignore non-concrete container sources...
+    protected final ConfigSite captureStackFrame(String operation) {
+        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+        // to the extension class in order to simplify the filtering mechanism.
+
+        // Vi kan spoerge "if context.captureStackFrame() ...."
+
+        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+            return ConfigSite.UNKNOWN;
+        }
+        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+    }
+
+    /**
+     * @param frame
+     *            the frame to filter
+     * @return whether or not to filter the frame
+     */
+    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+
+        Class<?> c = frame.getDeclaringClass();
+        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+        // Syntes bare vi filtrer app.packed.base modulet fra...
+        // Kan vi ikke checke om imod vores container source.
+
+        // ((PackedExtensionContext) context()).container().source
+        // Nah hvis man koere fra config er det jo fint....
+        // Fra config() paa en bundle er det fint...
+        // Fra alt andet ikke...
+
+        // Dvs ourContainerSource
+        return Extension.class.isAssignableFrom(c)
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
+    }
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
@@ -32,14 +131,18 @@ public interface ComponentConfiguration {
      * @throws IllegalStateException
      *             if the component is no long configurable.
      */
-    void checkConfigurable();
+    public final void checkConfigurable() {
+        context.checkConfigurable();
+    }
 
     /**
      * Returns the configuration site that created this configuration.
      * 
      * @return the configuration site that created this configuration
      */
-    ConfigSite configSite();
+    public final ConfigSite configSite() {
+        return context.configSite();
+    }
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is
@@ -51,7 +154,22 @@ public interface ComponentConfiguration {
      * @return the name of the component
      * @see #setName(String)
      */
-    String getName();
+
+    public final String getName() {
+        return context.getName();
+    }
+
+    /**
+     * Creates a new container with this container as its parent by linking the specified bundle.
+     * 
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            any wirelets
+     */
+    public final void link(Bundle<?> bundle, Wirelet... wirelets) {
+        ((ComponentNodeConfiguration) context).link(bundle, wirelets);
+    }
 
     /**
      * Returns the full path of the component.
@@ -66,7 +184,9 @@ public interface ComponentConfiguration {
      * 
      * @return the path of this configuration.
      */
-    TreePath path();
+    public final TreePath path() {
+        return context.path();
+    }
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -84,17 +204,16 @@ public interface ComponentConfiguration {
      * @see #getName()
      * @see Component#name()
      */
-    ComponentConfiguration setName(String name);
+    public ComponentConfiguration setName(String name) {
+        context.setName(name);
+        return this;
+    }
 
-    /**
-     * Creates a new container with this container as its parent by linking the specified bundle.
-     * 
-     * @param bundle
-     *            the bundle to link
-     * @param wirelets
-     *            any wirelets
-     */
-    void link(Bundle<?> bundle, Wirelet... wirelets);
+    /** {@inheritDoc} */
+    @Override
+    public final String toString() {
+        return context.toString();
+    }
 
     /**
      * Wires a new child component using the specified driver
@@ -107,19 +226,21 @@ public interface ComponentConfiguration {
      *            any wirelets that should be used when creating the component
      * @return a configuration for the component
      */
-    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+    public final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return context.wire(driver, wirelets);
+    }
 
-    default <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    public final <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+    public final <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    public final <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bindInstance(instance);
         return wire(cd, wirelets);
     }

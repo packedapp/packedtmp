@@ -27,7 +27,7 @@ import app.packed.inject.Factory;
 import app.packed.service.ExportedServiceConfiguration;
 
 /**
- * Component configuration context objects used by {@link AbstractComponentConfiguration}.
+ * Component configuration context objects used by {@link ComponentConfiguration}.
  * <p>
  * This class mainly exists to allow people to create their own configuration classes.
  * 
