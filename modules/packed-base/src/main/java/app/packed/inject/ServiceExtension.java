@@ -24,7 +24,6 @@ import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentFactoryDriver;
-import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
@@ -40,59 +39,13 @@ import packed.internal.container.ExtensionAssembly;
 import packed.internal.hook.OnHook;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
 import packed.internal.inject.sidecar.AtProvidesHook;
 
-/**
- * This extension provides functionality for service management and dependency injection.
- * 
- * 
- */
-// Functionality for
-// * Explicitly requiring services: require, requiOpt & Manual Requirements Management
-// * Exporting services: export, exportAll
-// * Providing components or injectors (provideAll)
-// * Manual Injection
-
-// Future potential functionality
-/// Contracts
-/// Security for public injector.... Maaske skal man explicit lave en public injector???
-/// Transient requirements Management (automatic require unresolved services from children)
-/// Integration pits
-// MHT til Manuel Requirements Management
-// (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseBundle og vaelge det..
-// Hmm saa auto instantiere vi jo injector extensionen
-//// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
-// altid bruge Manual Requirements
-// contracts bliver installeret direkte paa ContainerConfiguration
-
-// Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
-// Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
-// Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
-
-// Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
-// D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
-// Ellers selvfoelgelig hvis man bruger provide/@Provides\
-public final class ServiceExtension extends Extension {
-
-    /** The containers injection manager which controls all service functionality. */
-    private final InjectionManager im;
-
-    private final ServiceManager sm;
-
-    /**
-     * Should never be initialized by users.
-     * 
-     * @param extension
-     *            the configuration of the extension
-     */
-    /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.im = ((ExtensionAssembly) extension).container().im;
-        this.sm = im.services(false);
-    }
+class ExtraFunc {
 
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
     // Det er vel en slags Wirelet
@@ -125,30 +78,6 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns any exported services. Or null if there are no exports.
-     * 
-     * @return any exported services. Or null if there are no exports
-     */
-    @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
-    @Nullable
-    /* package-private */ ServiceRegistry attributesExports() {
-        if (sm.hasExports()) {
-            return sm.exports().exports();
-        }
-        return null;
-    }
-
-    /**
-     * Creates a service contract for this extension.
-     * 
-     * @return a service contract for this extension
-     */
-    @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
-    /* package-private */ ServiceContract attributesContract() {
-        return sm.newServiceContract();
-    }
-
     <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
         // cycleBreaker
         throw new UnsupportedOperationException();
@@ -173,8 +102,6 @@ public final class ServiceExtension extends Extension {
         // Den er meget mere explicit.
         // Den her skal jo pakke initialisering af U ind i en consumer
     }
-
-    // autoExport
 
     <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
 
@@ -226,6 +153,94 @@ public final class ServiceExtension extends Extension {
         throw new UnsupportedOperationException();
     }
 
+    // autoExport
+
+    /**
+     * 
+     * <p>
+     * Contracts should be set before exports
+     * 
+     * @param contract
+     * 
+     * @throws IllegalStateException
+     *             if any services have already been exported
+     */
+    public void useContract(ServiceContract contract) {
+
+    }
+
+}
+
+/**
+ * This extension provides functionality for exposing and consuming services.
+ * 
+ * 
+ */
+// Functionality for
+// * Explicitly requiring services: require, requiOpt & Manual Requirements Management
+// * Exporting services: export, exportAll
+// * Providing components or injectors (provideAll)
+// * Manual Injection
+
+// Future potential functionality
+/// Contracts
+/// Security for public injector.... Maaske skal man explicit lave en public injector???
+/// Transient requirements Management (automatic require unresolved services from children)
+/// Integration pits
+// MHT til Manuel Requirements Management
+// (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseBundle og vaelge det..
+// Hmm saa auto instantiere vi jo injector extensionen
+//// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
+// altid bruge Manual Requirements
+// contracts bliver installeret direkte paa ContainerConfiguration
+
+// Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
+// Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
+// Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
+
+// Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
+// D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
+// Ellers selvfoelgelig hvis man bruger provide/@Provides\
+public final class ServiceExtension extends Extension {
+
+    /** The containers injection manager which controls all service functionality. */
+    private final InjectionManager im;
+
+    /** The service build manager. */
+    private final ServiceBuildManager sbm;
+
+    /**
+     * Should never be initialized by users.
+     * 
+     * @param extension
+     *            the configuration of the extension
+     */
+    /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
+        this.im = ((ExtensionAssembly) extension).container().im;
+        this.sbm = im.services(false);
+    }
+
+    /**
+     * Creates a service contract for this extension.
+     * 
+     * @return a service contract for this extension
+     */
+    @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
+    /* package-private */ ServiceContract attributesContract() {
+        return sbm.newServiceContract();
+    }
+
+    /**
+     * Returns any exported services. Or null if there are no exports.
+     * 
+     * @return any exported services. Or null if there are no exports
+     */
+    @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
+    @Nullable
+    /* package-private */ ServiceRegistry attributesExports() {
+        return sbm.hasExports() ? sbm.exports().exports() : null;
+    }
+
     /**
      * Exports a service of the specified type. See {@link #export(Key)} for details.
      * 
@@ -235,10 +250,32 @@ public final class ServiceExtension extends Extension {
      *            the key of the service to export
      * @return a configuration for the exported service
      * @see #export(Key)
+     * @see #exportAll()
      */
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
     }
+
+    public <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
+        // Exports a service by mapping an existing service
+        // Eneste problem er nu har vi exported services som ikke er services...
+        // Men det er vel ikke anderledes end install(X).provide();
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * 
+     * 
+     * <ul>
+     * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
+     * ignored.</li>
+     * <li><b>Key already exported.</b>A service has already been exported under the specified key.
+     * <li><b>Are requirements.</b> Services that come from parent containers are always ignored.</li>
+     * <li><b>Not part of service contract.</b> If a service contract has set. Only services for whose key is part of the
+     * contract is exported.</li>
+     * </ul>
+     * <p>
+     */
 
     /**
      * Exports an internal service outside of this bundle.
@@ -262,6 +299,9 @@ public final class ServiceExtension extends Extension {
      * {@link Provide} except for this method. There are no plan to add an Export annotation that can be used in connection
      * with {@link Provide}.
      * 
+     * <p>
+     * A service can be exported multiple times
+     * 
      * @param <T>
      *            the type of the service to export
      * @param key
@@ -273,24 +313,35 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return sm.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return sbm.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    /**
-     * 
-     */
-    // Will never export services that are requirements...
+    // Alternativ this export all er noget med services()..
+
+    // is exportAll applied immediately or at the end???
+
+    // Maaske er den mest brugbart hvis den bliver applied nu!
+    // Fordi saa kan man styre ting...
+    // F.eks. definere alt der skal exportes foerst
+    // Den er isaer god inde man begynder at linke andre containere
 
     // One of 3 models...
     // Fails on other exports
     // Ignores other exports
     // interacts with other exports in some way
 
+    // Altsaa skal vi hellere have noget services().filter().exportall();
+    /**
+     * 
+     * 
+     * <p>
+     * This method can be invoked more than once. But use cases for this are limited.
+     */
     public void exportAll() {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        sm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        sbm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     /**
@@ -303,7 +354,7 @@ public final class ServiceExtension extends Extension {
      */
     @OnHook
     void onHook(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
-        sm.provideAtProvides(hook, compConf);
+        sbm.provideAtProvides(hook, compConf);
     }
 
     /**
@@ -326,7 +377,7 @@ public final class ServiceExtension extends Extension {
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        sm.provideFromInjector((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
+        sbm.provideFromInjector((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...
@@ -336,17 +387,11 @@ public final class ServiceExtension extends Extension {
         return im.container.compConf.wire(prototype(), factory);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    // javac wants the cast
-    public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
-        return (ComponentFactoryDriver) ComponentInstanceDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
-    }
-
     public void require(Class<?>... keys) {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            sm.dependencies().require(DependencyDescriptor.of(key), cs);
+            sbm.dependencies().require(DependencyDescriptor.of(key), cs);
         }
     }
 
@@ -371,7 +416,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            sm.dependencies().require(DependencyDescriptor.of(key), cs);
+            sbm.dependencies().require(DependencyDescriptor.of(key), cs);
         }
     }
 
@@ -393,18 +438,43 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            sm.dependencies().require(DependencyDescriptor.ofOptional(key), cs);
+            sbm.dependencies().require(DependencyDescriptor.ofOptional(key), cs);
         }
     }
 
-    /** A subtension useable from other extensions. */
+    /**
+     * Returns a view of the services that are currently available within the container.
+     * 
+     * @return a view of the services that are currently available within the container
+     */
+    // Do we need a separate one for exports?
+    // And what about requirements?
+
+    public ServiceRegistry services() {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
+    public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
+        return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
+    }
+
+    /**
+     * A subtension useable from other extensions.
+     * <p>
+     * There is no support for exporting services. The user is always in full control of what is being exported out from the
+     * container via the various export methods on {@link ServiceExtension}.
+     * 
+     **/
     public final class Sub extends Subtension {
 
         // Require???
-        // export???
+        // This is very limited as we can only require services from other
+        // extensions that we depend on...
 
-        // I don't think extensions should be able to export things.
-        // So export annotation should not work on extension services
+        // SetContract
+        /// This would apply locally to the extension...
+        /// limited usefullness
 
         /** The other extension type. */
         final Class<? extends Extension> extensionType;
@@ -419,10 +489,5 @@ public final class ServiceExtension extends Extension {
             this.extensionType = requireNonNull(extensionType, "extensionType is null");
         }
 
-        // I don't think extensions can export...
-        // Except if maybe
-//        public void exportd() {
-//            export(extensionType);
-//        }
     }
 }

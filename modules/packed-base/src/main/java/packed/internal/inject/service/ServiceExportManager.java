@@ -59,7 +59,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     private ArrayList<ExportedServiceAssembly<?>> exportedEntries;
 
     /** The extension node this exporter is a part of. */
-    private final ServiceManager sm;
+    private final ServiceBuildManager sm;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
@@ -71,7 +71,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
      * @param sm
      *            the extension node this export manager belongs to
      */
-    public ServiceExportManager(ServiceManager sm) {
+    public ServiceExportManager(ServiceBuildManager sm) {
         this.sm = requireNonNull(sm);
     }
 

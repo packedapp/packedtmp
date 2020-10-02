@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -53,7 +53,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedServiceAssembly(ServiceManager builder, Key<T> exportAsKey, ConfigSite configSite) {
+    public ExportedServiceAssembly(ServiceBuildManager builder, Key<T> exportAsKey, ConfigSite configSite) {
         super(builder, configSite, exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
@@ -67,7 +67,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedServiceAssembly(ServiceManager builder, ServiceAssembly<T> entryToExport, ConfigSite configSite) {
+    public ExportedServiceAssembly(ServiceBuildManager builder, ServiceAssembly<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite, entryToExport.key());
         this.exportedEntry = entryToExport;
         this.exportAsKey = null;

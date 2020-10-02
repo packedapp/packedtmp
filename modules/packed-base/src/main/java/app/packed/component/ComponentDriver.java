@@ -38,6 +38,10 @@ import packed.internal.component.PackedComponentDriver;
  */
 // TODO maybe remove all methods... And have attributes???
 // And just retain implementations for internal usage...
+
+// TODO vi kunne expose noget om hvad den laver den her driver...
+// Saa kan man lave checks via ContainerConfigurationContext
+// sourceModel.doo().hasAnnotation(Actor.class);
 public interface ComponentDriver<C> {
 
     /**

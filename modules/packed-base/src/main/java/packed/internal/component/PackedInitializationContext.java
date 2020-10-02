@@ -23,7 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.guest.Guest;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.methodhandle.LookupUtil;
 
 /**
@@ -93,7 +93,7 @@ public final class PackedInitializationContext {
     }
 
     public ServiceLocator services() {
-        ServiceManager sm = root.injectionManager().getServiceManager();
+        ServiceBuildManager sm = root.injectionManager().getServiceManager();
         return sm == null ? ServiceLocator.empty() : sm.newServiceRegistry(component, component.region);
 //                
 //        /// Create a service registry...

@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.ExportedServiceConfiguration;
 
@@ -57,14 +56,8 @@ public final class PackedExportedServiceConfiguration<T> implements ExportedServ
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite configSite() {
-        return entry.configSite();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     @Nullable
-    public Key<?> getKey() {
+    public Key<?> key() {
         return entry.key();
     }
 }

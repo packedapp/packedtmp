@@ -22,7 +22,6 @@ import app.packed.base.Key;
 import app.packed.component.ComponentDriver.Option;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
-import app.packed.service.ExportedServiceConfiguration;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -68,6 +67,22 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
         return this;
     }
 
+    // Once a bean has been exported, its key cannot be changed...
+    public BeanConfiguration<T> export() {
+        context.sourceExport();
+        return this;
+    }
+
+    public BeanConfiguration<T> exportAs(Class<? super T> key) {
+        export().as(key);
+        return this;
+    }
+
+    public BeanConfiguration<T> exportAs(Key<? super T> key) {
+        export().as(key);
+        return this;
+    }
+
     public Optional<Key<?>> key() {
         return context.sourceProvideAsKey();
     }
@@ -82,15 +97,6 @@ public class BeanConfiguration<T> extends AbstractComponentConfiguration {
     public BeanConfiguration<T> setName(String name) {
         context.setName(name);
         return this;
-    }
-
-    public ExportedServiceConfiguration<T> exportAs(Class<? super T> key) {
-        return export().as(key);
-    }
-
-    // Once a bean has been exported, its key cannot be changed...
-    public ExportedServiceConfiguration<T> export() {
-        return context.sourceExport();
     }
 
     @SuppressWarnings("unchecked")

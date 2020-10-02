@@ -22,7 +22,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -48,9 +48,9 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
     private Key<T> key;
 
     /** The service manager that this service belongs to. */
-    public final ServiceManager sm;
+    public final ServiceBuildManager sm;
 
-    public ServiceAssembly(ServiceManager sm, ConfigSite configSite, Key<T> key) {
+    public ServiceAssembly(ServiceBuildManager sm, ConfigSite configSite, Key<T> key) {
         this.sm = requireNonNull(sm);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);

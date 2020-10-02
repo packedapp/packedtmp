@@ -16,7 +16,6 @@
 package app.packed.service;
 
 import app.packed.base.Key;
-import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.inject.ServiceExtension;
 
@@ -33,7 +32,7 @@ public interface ExportedServiceConfiguration<T> {
      * @param key
      *            the key for which to register the service under
      * @return this configuration
-     * @see #getKey()
+     * @see #key()
      */
     default ExportedServiceConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
@@ -45,16 +44,9 @@ public interface ExportedServiceConfiguration<T> {
      * @param key
      *            the key for which to register the service under
      * @return this configuration
-     * @see #getKey()
+     * @see #key()
      */
     ExportedServiceConfiguration<T> as(Key<? super T> key);
-
-    /**
-     * Returns the configuration site where this configuration was created.
-     * 
-     * @return the configuration site where this configuration was created
-     */
-    ConfigSite configSite();
 
     /**
      * Returns the key that the service is registered under.
@@ -63,5 +55,5 @@ public interface ExportedServiceConfiguration<T> {
      * @see #as(Key)
      * @see #as(Class)
      */
-    Key<?> getKey();
+    Key<?> key();
 }

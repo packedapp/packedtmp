@@ -117,6 +117,13 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         return new PackedClassComponentDriver<>(meta);
     }
 
+    public static <C, I> PackedFactoryComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        Meta meta = newMeta(caller, true, driverType, options);
+        return new PackedFactoryComponentDriver<>(meta);
+    }
+
     public static <C, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 

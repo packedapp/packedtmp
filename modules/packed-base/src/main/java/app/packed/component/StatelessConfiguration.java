@@ -18,24 +18,27 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.PackedStatelessComponentConfiguration;
 
 /**
  *
  */
-// I don't like the name...
-public interface StatelessConfiguration extends ComponentConfiguration {
+public final class StatelessConfiguration extends AbstractComponentConfiguration {
 
-//    /**
-//     * Yup
-//     * 
-//     * @return yup
-//     */
-//    Class<?> definition();
+    /** A driver for this configuration. */
+    @SuppressWarnings("rawtypes")
+    private static final ComponentClassDriver DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), StatelessConfiguration.class,
+            ComponentDriver.Option.statelessSource());
+
+    private StatelessConfiguration(ComponentConfigurationContext context) {
+        super(context);
+    }
 
     /** {@inheritDoc} */
     @Override
-    StatelessConfiguration setName(String name);
+    public StatelessConfiguration setName(String name) {
+        context.setName(name);
+        return this;
+    }
 
     /**
      * Returns a driver that can be used to create stateless components.
@@ -44,7 +47,8 @@ public interface StatelessConfiguration extends ComponentConfiguration {
      *            the type
      * @return a driver
      */
-    static <T> ComponentClassDriver<StatelessConfiguration, T> driver() {
-        return PackedComponentDriver.ofClass(MethodHandles.lookup(), PackedStatelessComponentConfiguration.class, ComponentDriver.Option.statelessSource());
+    @SuppressWarnings("unchecked")
+    public static <T> ComponentClassDriver<StatelessConfiguration, T> driver() {
+        return DRIVER;
     }
 }

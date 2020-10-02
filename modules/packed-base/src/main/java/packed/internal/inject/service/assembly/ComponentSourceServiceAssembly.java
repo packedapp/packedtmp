@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantInjectorEntry;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -42,7 +42,7 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
      * @param compConf
      *            the component we provide for
      */
-    public ComponentSourceServiceAssembly(ServiceManager im, ComponentNodeConfiguration compConf, Key<T> key) {
+    public ComponentSourceServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<T> key) {
         super(im, compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }

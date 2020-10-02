@@ -130,8 +130,24 @@ public final class ServiceWirelets {
 
 class ServiceWireletsSandbox {
 
-    // Service transformere er saa meget lettere....
+    public static Wirelet disable() {
+        // ServiceContract.EMPTY
+        throw new UnsupportedOperationException();
+    }
 
+    public static Wirelet disableImports() {
+        // Hmm hvorfor
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet disableExports() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Service transformere er saa meget lettere....
+    // at bruge...
+    // Det store problem er incoming hvor hvis vi laver bulk operations.
+    // Saa bliver vi noedt til at tracke alle
     public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
         // Must only provide ServiceWirelets...
         compute(e -> {

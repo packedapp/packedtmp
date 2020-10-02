@@ -24,7 +24,7 @@ import app.packed.inject.ServiceExtension;
 import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -44,7 +44,7 @@ public final class InjectionManager {
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private ServiceManager services;
+    private ServiceBuildManager services;
 
     /**
      * Creates a new injection manager.
@@ -104,12 +104,12 @@ public final class InjectionManager {
     }
 
     @Nullable
-    public ServiceManager getServiceManager() {
+    public ServiceBuildManager getServiceManager() {
         return services;
     }
 
     /**
-     * Returns the {@link ServiceManager}, creating it lazily if it does not already exist.
+     * Returns the {@link ServiceBuildManager}, creating it lazily if it does not already exist.
      * 
      * @param registerServiceExtension
      *            whether or not we should register the {@link ServiceExtension}. Should always be true, unless the service
@@ -117,10 +117,10 @@ public final class InjectionManager {
      * 
      * @return the service exporter for this builder
      */
-    public ServiceManager services(boolean registerServiceExtension) {
-        ServiceManager e = services;
+    public ServiceBuildManager services(boolean registerServiceExtension) {
+        ServiceBuildManager e = services;
         if (e == null) {
-            e = services = new ServiceManager(this);
+            e = services = new ServiceBuildManager(this);
             if (registerServiceExtension) {
                 container.useExtension(ServiceExtension.class);
             }

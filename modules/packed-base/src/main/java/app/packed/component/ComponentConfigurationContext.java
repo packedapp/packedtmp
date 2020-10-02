@@ -83,7 +83,13 @@ public interface ComponentConfigurationContext {
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> containerExtensions();
 
-    // IDK hvorfor har en driver adgang til alm extensions????
+    /**
+     * @param <T>
+     * @param extensionType
+     * @return the extension
+     * @throws UnsupportedOperationException
+     *             if the component does not have the {@link ComponentModifier#CONTAINER} modifier
+     */
     <T extends Extension> T containerUse(Class<T> extensionType);
 
     /**

@@ -54,11 +54,11 @@ import packed.internal.methodhandle.LookupUtil;
 /**
  *
  */
-public final class ServiceManager {
+public final class ServiceBuildManager {
 
     /** A VarHandle that can access ServiceExtension#sm. */
-    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ServiceExtension.class, "sm",
-            ServiceManager.class);
+    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ServiceExtension.class, "sbm",
+            ServiceBuildManager.class);
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceAssembly<?>> assemblies = new ArrayList<>();
@@ -82,7 +82,7 @@ public final class ServiceManager {
     /**
      * @param im
      */
-    public ServiceManager(InjectionManager im) {
+    public ServiceBuildManager(InjectionManager im) {
         this.im = requireNonNull(im);
     }
 
@@ -228,7 +228,7 @@ public final class ServiceManager {
      *            the extension to extract from
      * @return the service node
      */
-    public static ServiceManager fromExtension(ServiceExtension extension) {
-        return (ServiceManager) VH_SERVICE_EXTENSION_NODE.get(extension);
+    public static ServiceBuildManager fromExtension(ServiceExtension extension) {
+        return (ServiceBuildManager) VH_SERVICE_EXTENSION_NODE.get(extension);
     }
 }

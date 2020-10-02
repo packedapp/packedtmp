@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.MappingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -41,7 +41,7 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
     /** The function to apply on the */
     private final Function<? super F, T> function;
 
-    MappingServiceAssembly(ServiceManager node, ConfigSite configSite, ServiceAssembly<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingServiceAssembly(ServiceBuildManager node, ConfigSite configSite, ServiceAssembly<F> entryToMap, Key<T> toKey, Function<F, T> function) {
         super(node, configSite, toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");

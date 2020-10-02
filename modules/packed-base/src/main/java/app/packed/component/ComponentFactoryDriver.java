@@ -15,7 +15,11 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
+
+import app.packed.component.ComponentDriver.Option;
 import app.packed.inject.Factory;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  *
@@ -28,4 +32,8 @@ public interface ComponentFactoryDriver<C, I> extends ComponentClassDriver<C, I>
     }
 
     ComponentDriver<C> bind(Factory<? extends I> factory);
+
+    static <C, I> ComponentFactoryDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
+        return PackedComponentDriver.ofFactory(lookup, driverType, options);
+    }
 }

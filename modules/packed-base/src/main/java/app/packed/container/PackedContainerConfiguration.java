@@ -1,0 +1,120 @@
+/*
+ * Copyright (c) 2008 Kasper Nielsen.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package app.packed.container;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
+import java.util.Set;
+
+import app.packed.base.Nullable;
+import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentDriver.Option;
+import packed.internal.component.ComponentNodeConfiguration;
+
+/** Implementation of {@link ContainerConfiguration}. */
+public final class PackedContainerConfiguration extends AbstractComponentConfiguration implements ContainerConfiguration {
+
+    /** A driver that create container components. */
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), PackedContainerConfiguration.class,
+            Option.container());
+
+    /**
+     * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.
+     *
+     * @param context
+     *            the component configuration context
+     */
+    private PackedContainerConfiguration(ComponentConfigurationContext context) {
+        super(context);
+    }
+
+    /**
+     * Returns an unmodifiable view of the extensions that are currently used.
+     * 
+     * @return an unmodifiable view of the extensions that are currently used
+     * 
+     * @see #use(Class)
+     * @see ContainerBundle#extensions()
+     */
+    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
+    @Override
+    public Set<Class<? extends Extension>> extensions() {
+        return context.containerExtensions();
+    }
+
+    /**
+     * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the
+     * container.
+     * <p>
+     * Lookup objects passed to this method are never made directly available to extensions. Instead the lookup is used to
+     * create {@link MethodHandle} and {@link VarHandle} that are passed along to extensions.
+     * <p>
+     * This method allows passing null, which clears any lookup object that has previously been set. This is useful if allow
+     * 
+     * 
+     * @param lookup
+     *            the lookup object
+     */
+    // If you are creating resulable stuff, you should remember to null the lookup object out.
+    // So child modules do not have the power of the lookup object.
+    @Override
+    public void lookup(@Nullable Lookup lookup) {
+        ((ComponentNodeConfiguration) super.context).realm.lookup(lookup);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedContainerConfiguration setName(String name) {
+        super.setName(name);
+        return this;
+    }
+
+    /**
+     * Returns an extension of the specified type. If this is the first time an extension of the specified type is
+     * requested. This method will create a new instance of the extension and return it for all subsequent calls to this
+     * method with the same extension type.
+     * 
+     * @param <T>
+     *            the type of extension to return
+     * @param extensionType
+     *            the type of extension to return
+     * @return an extension of the specified type
+     * @throws IllegalStateException
+     *             if this configuration is no longer configurable and an extension of the specified type has not already
+     *             been installed
+     * @see #extensions()
+     */
+    // extension() // extendWith(ServiceExtension.class).
+    // Mest taenkt hvis vi faa hurtig metoder for attributes.
+    // a.la. cc.with(
+    @Override
+    public <T extends Extension> T use(Class<T> extensionType) {
+        return context.containerUse(extensionType);
+    }
+
+    /**
+     * Returns the default driver for containers.
+     * 
+     * @return the default driver for containers
+     */
+    public static ComponentDriver<ContainerConfiguration> driver() {
+        return DRIVER;
+    }
+}
