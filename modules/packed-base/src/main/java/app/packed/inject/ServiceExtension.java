@@ -448,7 +448,6 @@ public final class ServiceExtension extends Extension {
      */
     // Do we need a separate one for exports?
     // And what about requirements?
-
     public ServiceRegistry services() {
         throw new UnsupportedOperationException();
     }

@@ -43,7 +43,7 @@ public class Foo extends BaseBundle {
     protected void configure() {
         provideInstance("asdasdasd");
         provide(MyComp.class);
-        System.out.println(base().extensions());
+        System.out.println(extensions());
     }
 
     public static void main(String[] args) throws InterruptedException {

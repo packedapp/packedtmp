@@ -15,6 +15,8 @@
  */
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.BeanConfiguration;
@@ -72,12 +74,21 @@ public abstract class BaseBundle extends ContainerBundle {
     }
 
     /**
-     * Returns a {@link BaseExtension}.
+     * Returns whether or not the specified extension type is in use.
      * 
-     * @return a base extension
+     * @param extensionType
+     *            the extension type to test
+     * @return whether or not the specified extension is in use
+     * @throws IllegalArgumentException
+     *             if the specified extension type is {@link Extension}
      */
-    protected final BaseExtension base() {
-        return use(BaseExtension.class);
+    public boolean isUsed(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        if (extensionType == Extension.class) {
+            throw new IllegalArgumentException("Cannot specify Extension.class");
+        }
+        throw new UnsupportedOperationException();
+        // return container.extensions.keySet().contains(extensionType);
     }
 
     /**

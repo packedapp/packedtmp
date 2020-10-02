@@ -67,11 +67,11 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     ExtensionSet dependencies();
 
     /**
-     * Returns the depth of the extension. The depth of an extension is defined as 0 for {@link BaseExtension}. Or for all
-     * other extensions as the maximum depth of of any of its direct dependencies plus one.
+     * Returns the extension's depth.
      * <p>
-     * This has the nice property, that any dependency (including transitive extensions) of an extension will always have a
-     * depth that is less than the depth of the extension itself.
+     * The depth of an extension with no dependencies is 0. Otherwise it is the maximum depth of any of its direct
+     * dependencies plus 1. This has the nice property, that any dependency (including transitive extensions) of an
+     * extension will always have a depth that is less than the depth of the extension itself.
      * 
      * @return the depth of the extension
      */

@@ -22,8 +22,8 @@ import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
@@ -59,8 +59,6 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @see #use(Class)
      * @see ContainerBundle#extensions()
      */
-    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
-
     public Set<Class<? extends Extension>> extensions() {
         return context.containerExtensions();
     }
