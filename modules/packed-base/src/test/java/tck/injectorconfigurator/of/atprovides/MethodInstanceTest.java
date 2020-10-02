@@ -40,8 +40,8 @@ public class MethodInstanceTest {
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
-        MixedMethods.test(c -> c.provide(Factory.find(MixedMethods.class)));
-        MixedMethods.test(c -> c.provide(Factory.find(new TypeLiteral<MixedMethods>() {})));
+        MixedMethods.test(c -> c.provide(Factory.of(MixedMethods.class)));
+        MixedMethods.test(c -> c.provide(Factory.of(new TypeLiteral<MixedMethods>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance methods. */

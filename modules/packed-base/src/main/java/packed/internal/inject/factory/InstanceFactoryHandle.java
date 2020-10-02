@@ -49,7 +49,7 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
      * @param instance
      *            the instance
      * @return a new instance function handle
-     * @see Factory#fromInstance(Object)
+     * @see Factory#ofInstance(Object)
      */
     @SuppressWarnings("unchecked")
     public static <T> FactoryHandle<T> of(T instance) {

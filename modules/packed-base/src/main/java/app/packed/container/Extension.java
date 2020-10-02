@@ -226,7 +226,7 @@ public abstract class Extension {
     // annoteringer fra andre extensions...
     // Saa bliver noedt til at holde
     protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return install(Factory.find(implementation));
+        return install(Factory.of(implementation));
     }
 
     protected final <T> BeanConfiguration<T> install(Factory<T> factory) {

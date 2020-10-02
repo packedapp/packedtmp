@@ -37,7 +37,7 @@ public class FactoryTest {
 
         @Test
         public void testNpe() {
-            npe(Factory::fromInstance, "instance");
+            npe(Factory::ofInstance, "instance");
 
             // assertThatFactory(Factory.ofInstance(1)).is(Key.of(Integer.class));
         }

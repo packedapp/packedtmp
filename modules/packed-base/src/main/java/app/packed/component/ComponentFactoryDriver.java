@@ -28,7 +28,7 @@ public interface ComponentFactoryDriver<C, I> extends ComponentClassDriver<C, I>
 
     @Override
     default ComponentDriver<C> bind(Class<? extends I> implementation) {
-        return bind(Factory.find(implementation));
+        return bind(Factory.of(implementation));
     }
 
     ComponentDriver<C> bind(Factory<? extends I> factory);

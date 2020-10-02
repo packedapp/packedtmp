@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,7 +40,6 @@ import packed.internal.invoke.typevariable.TypeVariableExtractor;
 /**
  *
  */
-//FunctionFactory????
 public class BaseFactory<T> implements Factory<T> {
 
     /** A cache of factories used by {@link #find(Class)}. */
@@ -74,7 +72,7 @@ public class BaseFactory<T> implements Factory<T> {
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
     /** The internal instance that all calls delegate to. */
-    public final FactorySupport<T> factory;
+    final FactorySupport<T> factory;
 
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot refer to an instance method {@link Object#getClass()}
@@ -213,22 +211,15 @@ public class BaseFactory<T> implements Factory<T> {
         // Factory<T> narrow() <- removes bound dependencies/parameters()...
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action) {
-        return inject(Key.of(key), action);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Factory<T> inject(Consumer<? super T> action) {
+    /**
+     * Returns a new factory that will perform the specified action after the factory has produced an object.
+     * 
+     * @param action
+     *            the injection action
+     * @return the new factory
+     */
+    public final Factory<T> postConstruction(Consumer<? super T> action) {
         // Bare u
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <K> Factory<T> inject(Key<K> key, BiConsumer<? super T, ? super K> action) {
         throw new UnsupportedOperationException();
     }
 
@@ -393,7 +384,7 @@ public class BaseFactory<T> implements Factory<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final Factory<T> withVariable(int index, @Nullable Object argument) {
+    public final Factory<T> bind(int index, @Nullable Object argument) {
         // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
         // F.eks. for dooo(String x, String y)
         // Og det gider vi ikke....
@@ -412,7 +403,7 @@ public class BaseFactory<T> implements Factory<T> {
 
     /** {@inheritDoc} */
     @Override
-    public final Factory<T> withVariableSupplier(int index, Supplier<?> supplier) {
+    public final Factory<T> bind(int index, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
     }
 

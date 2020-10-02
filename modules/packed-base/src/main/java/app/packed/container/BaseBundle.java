@@ -164,7 +164,7 @@ public abstract class BaseBundle extends ContainerBundle {
     }
 
     /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#find(Class)} to find a valid
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
      * constructor or method to instantiate the service instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
@@ -197,7 +197,7 @@ public abstract class BaseBundle extends ContainerBundle {
     }
 
     protected final <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
-        return providePrototype(Factory.find(implementation));
+        return providePrototype(Factory.of(implementation));
     }
 
     protected final <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {

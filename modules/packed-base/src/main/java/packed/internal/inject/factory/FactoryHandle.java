@@ -21,9 +21,11 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.util.List;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  * The internal version of the {@link Factory} class.
@@ -112,6 +114,14 @@ public abstract class FactoryHandle<T> {
     }
 
     public abstract MethodType methodType();
+
+    public static <T> FactoryHandle<T> of(BaseFactory<T> factory) {
+        return factory.factory.handle;
+    }
+
+    public static List<DependencyDescriptor> dependencies(BaseFactory<?> factory) {
+        return factory.factory.dependencies;
+    }
 }
 // public abstract class PFunction<T> {
 //

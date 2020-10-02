@@ -11,10 +11,7 @@ import app.packed.statemachine.OnStart;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** An factory support class. */
-public final class FactorySupport<T> {
-
-    /** The key that this factory will be registered under by default with an injector. */
-    public final Key<T> key;
+final class FactorySupport<T> {
 
     /** A list of all of this factory's dependencies. */
     public final List<DependencyDescriptor> dependencies;
@@ -22,14 +19,13 @@ public final class FactorySupport<T> {
     /** The function used to create a new instance. */
     public final FactoryHandle<T> handle;
 
+    /** The key that this factory will be registered under by default with an injector. */
+    public final Key<T> key;
+
     public FactorySupport(FactoryHandle<T> function, List<DependencyDescriptor> dependencies) {
         this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.handle = requireNonNull(function);
         this.key = Key.fromTypeLiteral(function.typeLiteral);
-    }
-
-    public MethodType methodType() {
-        return handle.methodType();
     }
 
     /**
@@ -40,5 +36,14 @@ public final class FactorySupport<T> {
      */
     public Class<? super T> getScannableType() {
         return handle.returnTypeRaw();
+    }
+
+    /**
+     * Returns the method type of the factory.
+     * 
+     * @return the method type of the factory
+     */
+    public MethodType methodType() {
+        return handle.methodType();
     }
 }

@@ -114,8 +114,8 @@ public final class InjectorAssembler extends Assembler {
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
-     * together with the injector. The runtime will use {@link Factory#find(Class)} to find the constructor or method used
-     * for instantiation.
+     * together with the injector. The runtime will use {@link Factory#of(Class)} to find the constructor or method used for
+     * instantiation.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the
      * {@code implementation.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will
@@ -166,7 +166,7 @@ public final class InjectorAssembler extends Assembler {
 
     public <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
         extension(); // call exportAll
-        return providePrototype(Factory.find(implementation));
+        return providePrototype(Factory.of(implementation));
     }
 
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {

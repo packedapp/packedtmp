@@ -18,8 +18,6 @@ package app.packed.inject;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.base.InaccessibleMemberException;
@@ -30,7 +28,8 @@ import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.factory.BaseFactory;
 
 /**
- * An object that creates other objects. factory is an immutable that creates this
+ * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
+ * immutable that creates this
  * 
  * Factories are used for creating new instances of a particular type.
  * <p>
@@ -67,63 +66,26 @@ import packed.internal.inject.factory.BaseFactory;
 // see what was what...
 public interface Factory<T> {
 
-//    /**
-//     * Returns a list of all of the dependencies that needs to be fulfilled in order for this factory to successfully create
-//     * an instance. Returns an empty list if this factory does not have any dependencies.
-//     * <p>
-//     * 
-//     * @apiNote The list does not include dependencies that may be needed to do field or instance method injection. As these
-//     *          are the responsibility of the injector in which they are registered.
-//     * 
-//     * @return a list of all of the dependencies of this factory
-//     */
-//    // Required/Optional - Key - Variable?
-//    // Requirement
-//
-//    // FactoryDescriptor.of(Factory f) <--- in devtools???
-//    <S> Factory<T> bind(Class<S> key, @Nullable S instance);
-//
-//    <S> Factory<T> bind(Key<S> key, @Nullable S instance);
-//
-//    /**
-//     * @param instance
-//     *            the instance to bind
-//     * @return a new factory
-//     */
-//    Factory<T> bind(Object instance);
-//
-//    <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier);
-//
-//    <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier);
-
-    // List<?> dependencies();
-
-    // afterInstantiation
-    <K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action);
-
     /**
-     * Returns a new factory that will perform the specified action after the factory has produced an object.
+     * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method
+     * is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
+     * sufficient. A typical example is a constructor with two parameters of the same type.
      * 
-     * @param action
-     *            the injection action
-     * @return the new factory
+     * @param index
+     *            the index of the variable to bind
+     * @param argument
+     *            the (nullable) argument to bind
+     * @return a new factory
+     * @throws IndexOutOfBoundsException
+     *             if the specified index does not represent a valid variable in {@link #variables()}
+     * @throws ClassCastException
+     *             if the specified argument is not compatible with the actual type of the variable
+     * @throws NullPointerException
+     *             if the specified argument is null and the variable does not represent a reference type
      */
-    Factory<T> inject(Consumer<? super T> action); // pre post field/method injection???
+    Factory<T> bind(int index, @Nullable Object argument);
 
-    /**
-     * Returns a new factory that will perform the specified injection action after a factory has produced an object.
-     * 
-     * @param <K>
-     *            the type of service to inject
-     * @param key
-     *            the key of the dependency to inject
-     * @param action
-     *            the manual injection action
-     * @return the new factory to return
-     */
-    // AddDependency.... OnX, looking for a better name...
-    // Flyt den til SingletonConfiguration...
-    <K> Factory<T> inject(Key<K> key, BiConsumer<? super T, ? super K> action);
+    Factory<T> bind(int index, Supplier<?> supplier);
 
     /**
      * The key under which If this factory is registered as a service. This method returns the (default) key that will be
@@ -135,6 +97,8 @@ public interface Factory<T> {
      */
     // defaultKey() ??????
     Key<T> key();
+
+    MethodType methodType();
 
     /**
      * Returns the raw type of the type of objects this factory provide. This is also the type that is used for annotation
@@ -153,6 +117,8 @@ public interface Factory<T> {
      */
     TypeLiteral<T> typeLiteral();
 
+    // bindRaw(Class<?> dd, ...);
+
     Factory<T> useExactType(Class<? extends T> type);// overrideRawType
 
     /**
@@ -160,16 +126,14 @@ public interface Factory<T> {
      * order for the factory to provide a new value.
      * <p>
      * The list returned by this method is unaffected by any previous bindings to specific variables. For example, via
-     * {@link #withVariable(int, Object)}.
+     * {@link #bind(int, Object)}.
      * <p>
-     * Any factory created via {@link #fromInstance(Object)} will return an empty list.
+     * Any factory created via {@link #ofInstance(Object)} will return an empty list.
      * 
      * @return any variables that was used to construct the factory
      */
     // input, output...
     List<VariableDescriptor> variables();
-
-    MethodType methodType();
 
     /**
      * Returns a new factory retaining all of the existing properties of this factory. Except that the key returned by
@@ -219,39 +183,6 @@ public interface Factory<T> {
     // Giver ikke mening andet...
     Factory<T> withLookup(MethodHandles.Lookup lookup);
 
-    // bindRaw(Class<?> dd, ...);
-
-    /**
-     * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method
-     * is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
-     * sufficient. A typical example is a constructor with two parameters of the same type.
-     * 
-     * @param index
-     *            the index of the variable to bind
-     * @param argument
-     *            the (nullable) argument to bind
-     * @return a new factory
-     * @throws IndexOutOfBoundsException
-     *             if the specified index does not represent a valid variable in {@link #variables()}
-     * @throws ClassCastException
-     *             if the specified argument is not compatible with the actual type of the variable
-     * @throws NullPointerException
-     *             if the specified argument is null and the variable does not represent a reference type
-     */
-    Factory<T> withVariable(int index, @Nullable Object argument);
-
-    default Factory<T> withVariable(VariableDescriptor variable, @Nullable Object argument) {
-        // variable must be in variable()
-        // IAE the specified variable is not a valid variable
-        return this;
-    }
-
-    Factory<T> withVariableSupplier(int index, Supplier<?> supplier);
-
-    default Factory<T> withVariableSupplier(VariableDescriptor variable, Supplier<?> supplier) {
-        return this;
-    }
-
     /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
      * <ul>
@@ -280,12 +211,14 @@ public interface Factory<T> {
      */
     // Todo rename to make (or just of....) Nej, syntes maaske den er find med find()...
     // Rename of()... syntes det er fint den hedder of()... og saa er det en fejl situation
-    public static <T> Factory<T> find(Class<T> implementation) {
+    // Eneste er vi generalt returnere en optional for find metoder...
+    // Har droppet at kalde den find... Fordi find generelt returnere en Optional...
+    public static <T> Factory<T> of(Class<T> implementation) {
         return BaseFactory.find(implementation);
     }
 
     /**
-     * This method is equivalent to {@link #find(Class)} except taking a type literal.
+     * This method is equivalent to {@link #of(Class)} except taking a type literal.
      *
      * @param <T>
      *            the implementation type
@@ -293,7 +226,7 @@ public interface Factory<T> {
      *            the implementation type
      * @return a factory for the specified implementation type
      */
-    public static <T> Factory<T> find(TypeLiteral<T> implementation) {
+    public static <T> Factory<T> of(TypeLiteral<T> implementation) {
         return BaseFactory.find(implementation);
     }
 
@@ -310,7 +243,67 @@ public interface Factory<T> {
      *            the instance to return every time
      * @return the factory
      */
-    public static <T> Factory<T> fromInstance(T instance) {
+    public static <T> Factory<T> ofInstance(T instance) {
         return BaseFactory.fromInstance(instance);
     }
 }
+//
+//// afterInstantiation
+//<K> Factory<T> inject(Class<K> key, BiConsumer<? super T, ? super K> action);
+//
+///**
+// * Returns a new factory that will perform the specified injection action after a factory has produced an object.
+// * 
+// * @param <K>
+// *            the type of service to inject
+// * @param key
+// *            the key of the dependency to inject
+// * @param action
+// *            the manual injection action
+// * @return the new factory to return
+// */
+//// AddDependency.... OnX, looking for a better name...
+//// Flyt den til SingletonConfiguration...
+//<K> Factory<T> inject(Key<K> key, BiConsumer<? super T, ? super K> action);
+//
+
+///**
+//* Returns a list of all of the dependencies that needs to be fulfilled in order for this factory to successfully create
+//* an instance. Returns an empty list if this factory does not have any dependencies.
+//* <p>
+//* 
+//* @apiNote The list does not include dependencies that may be needed to do field or instance method injection. As these
+//*          are the responsibility of the injector in which they are registered.
+//* 
+//* @return a list of all of the dependencies of this factory
+//*/
+//// Required/Optional - Key - Variable?
+//// Requirement
+//
+//// FactoryDescriptor.of(Factory f) <--- in devtools???
+//<S> Factory<T> bind(Class<S> key, @Nullable S instance);
+//
+//<S> Factory<T> bind(Key<S> key, @Nullable S instance);
+//
+///**
+//* @param instance
+//*            the instance to bind
+//* @return a new factory
+//*/
+//Factory<T> bind(Object instance);
+//
+//<S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier);
+//
+//<S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier);
+
+// List<?> dependencies();
+
+//default Factory<T> bind(VariableDescriptor variable, @Nullable Object argument) {
+//// variable must be in variable()
+//// IAE the specified variable is not a valid variable
+//return this;
+//}
+//
+//default Factory<T> bind(VariableDescriptor variable, Supplier<?> supplier) {
+//return this;
+//}

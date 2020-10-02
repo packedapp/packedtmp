@@ -21,26 +21,21 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be used on {@link Extension} subclasses. Classes that extend {@link Extension} are implicit
- * sidecars even without the use of this annotation. However, if the extension uses any other extensions this annotation
- * must be used to indicate which extensions it may use.
+ * An annotation that can be used on {@link Extension} subclasses. However, if the extension uses any other extensions
+ * this annotation must be used to indicate which extensions it may use.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-//app.packed.state.... Also ExtensionSidecar.STATE2_MAIN, ExtensionSidecar.STATE3_LINKING, ExtensionSidecar.STATE4_HOSTING
-// dependencies = Class<? extends SubExtension>...
-// implementation default Extension.class <-- must be fillout if extension is interface (extends Extension)...
-// Skal vi dele dem op i mandatory og optional og optionalNamed
-// Er mest taenkt for descriptors. F.eks. kan man se om en given extension er optional
-// TODO we need a new name now that sidecars are no longer annotations
-// Alternativ Settings
 // ExtensionDependencies er vi vel tilbage i....
 // transitive... Altsaa kan vi forstille os at extensions of extension skal bruge dem...
 // Was ExtensionSettings
+//SubtensionUse
+
+// Altsaa kommer vi til at have mere her???
 public @interface ExtensionSetup {
 
     /**
-     * Other extensions that an extension may use (but do not have to). This need not include transitive dependencies
+     * Other extensions that the annotation extension may make use of. This need not include transitive dependencies
      * (dependencies of dependencies). Only extensions that are directly used, for example, via
      * {@link ExtensionConfiguration#use(Class)}.
      * 

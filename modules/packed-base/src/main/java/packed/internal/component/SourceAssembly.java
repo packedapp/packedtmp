@@ -24,6 +24,7 @@ import app.packed.inject.Factory;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.methodhandle.MethodHandleUtil;
 
@@ -62,7 +63,7 @@ public final class SourceAssembly implements DependencyProvider {
         if (source instanceof Class) {
             Class<?> c = (Class<?>) source;
             this.instance = null;
-            this.factory = compConf.modifiers().isStateless() ? null : (BaseFactory<?>) Factory.find(c);
+            this.factory = compConf.modifiers().isStateless() ? null : (BaseFactory<?>) Factory.of(c);
             this.model = compConf.realm.componentModelOf(c);
         } else if (source instanceof Factory) {
             this.instance = null;
@@ -77,8 +78,8 @@ public final class SourceAssembly implements DependencyProvider {
         if (factory == null) {
             this.injectable = null;
         } else {
-            MethodHandle mh = compConf.realm.fromFactoryHandle(factory.factory.handle);
-            this.injectable = new Injectable(this, factory.factory.dependencies, mh);
+            MethodHandle mh = compConf.realm.fromFactoryHandle(FactoryHandle.of(factory));
+            this.injectable = new Injectable(this, FactoryHandle.dependencies(factory), mh);
         }
     }
 

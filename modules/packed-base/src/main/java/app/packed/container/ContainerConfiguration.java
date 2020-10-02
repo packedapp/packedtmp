@@ -75,7 +75,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      */
     public <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return wire(BeanConfiguration.driver(), Factory.find(implementation));
+        return wire(BeanConfiguration.driver(), Factory.of(implementation));
     }
 
     /**
