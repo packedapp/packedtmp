@@ -16,22 +16,40 @@
 package app.packed.container;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.Nullable;
+import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentDriver.Option;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
+import packed.internal.component.ComponentNodeConfiguration;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link ContainerBundle} or {@link BaseBundle}.
  */
-public interface ContainerConfiguration extends ComponentConfiguration {
+public final class ContainerConfiguration extends AbstractComponentConfiguration {
+
+    /** A driver that create container components. */
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
+            Option.container());
+
+    /**
+     * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.
+     *
+     * @param context
+     *            the component configuration context
+     */
+    private ContainerConfiguration(ComponentConfigurationContext context) {
+        super(context);
+    }
 
     /**
      * Returns an unmodifiable view of the extensions that are currently used.
@@ -42,7 +60,10 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @see ContainerBundle#extensions()
      */
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
-    Set<Class<? extends Extension>> extensions();
+
+    public Set<Class<? extends Extension>> extensions() {
+        return context.containerExtensions();
+    }
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
@@ -55,7 +76,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    default <T> BeanConfiguration<T> install(Class<T> implementation) {
+    public <T> BeanConfiguration<T> install(Class<T> implementation) {
         return wire(BeanConfiguration.driver(), Factory.find(implementation));
     }
 
@@ -69,7 +90,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      * @see ContainerBundle#install(Factory)
      */
-    default <T> BeanConfiguration<T> install(Factory<T> factory) {
+    public <T> BeanConfiguration<T> install(Factory<T> factory) {
         return wire(BeanConfiguration.driver(), factory);
     }
 
@@ -81,7 +102,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      * @return the configuration of the component
      * @see ContainerBundle#installInstance(Object)
      */
-    default <T> BeanConfiguration<T> installInstance(T instance) {
+    public <T> BeanConfiguration<T> installInstance(T instance) {
         return wireInstance(BeanConfiguration.driver(), instance);
     }
 
@@ -95,7 +116,7 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    default StatelessConfiguration installStateless(Class<?> implementation) {
+    public StatelessConfiguration installStateless(Class<?> implementation) {
         return wire(StatelessConfiguration.driver(), implementation);
     }
 
@@ -114,11 +135,17 @@ public interface ContainerConfiguration extends ComponentConfiguration {
      */
     // If you are creating resulable stuff, you should remember to null the lookup object out.
     // So child modules do not have the power of the lookup object.
-    void lookup(@Nullable Lookup lookup);
+
+    public void lookup(@Nullable Lookup lookup) {
+        ((ComponentNodeConfiguration) super.context).realm.lookup(lookup);
+    }
 
     /** {@inheritDoc} */
     @Override
-    ContainerConfiguration setName(String name);
+    public ContainerConfiguration setName(String name) {
+        super.setName(name);
+        return this;
+    }
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type is
@@ -138,15 +165,16 @@ public interface ContainerConfiguration extends ComponentConfiguration {
     // extension() // extendWith(ServiceExtension.class).
     // Mest taenkt hvis vi faa hurtig metoder for attributes.
     // a.la. cc.with(
-    <T extends Extension> T use(Class<T> extensionType);
+    public <T extends Extension> T use(Class<T> extensionType) {
+        return context.containerUse(extensionType);
+    }
 
     /**
      * Returns the default driver for containers.
      * 
      * @return the default driver for containers
      */
-    // Men hvad hvis det ogsaa er en gaest...
-    static ComponentDriver<ContainerConfiguration> driver() {
-        return PackedContainerConfiguration.driver();
+    public static ComponentDriver<ContainerConfiguration> driver() {
+        return DRIVER;
     }
 }
