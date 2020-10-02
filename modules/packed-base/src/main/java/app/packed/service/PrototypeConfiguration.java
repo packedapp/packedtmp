@@ -16,8 +16,9 @@
 package app.packed.service;
 
 import app.packed.base.Key;
+import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
@@ -35,7 +36,15 @@ import app.packed.inject.ServiceExtension;
  */
 //PrototypeServiceConfiguration??
 // Extends Stateless???
-public interface PrototypeConfiguration<T> extends ComponentConfiguration {
+public final class PrototypeConfiguration<T> extends AbstractComponentConfiguration {
+
+    /**
+     * Creates a new configuration object
+     */
+    public PrototypeConfiguration(ComponentConfigurationContext component) {
+        super(component);
+        context.sourceProvide();
+    }
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
@@ -46,7 +55,7 @@ public interface PrototypeConfiguration<T> extends ComponentConfiguration {
      * @return this configuration
      * @see #as(Key)
      */
-    default PrototypeConfiguration<T> as(Class<? super T> key) {
+    public PrototypeConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -59,7 +68,10 @@ public interface PrototypeConfiguration<T> extends ComponentConfiguration {
      * @return this configuration
      * @see #as(Class)
      */
-    PrototypeConfiguration<T> as(Key<? super T> key);
+    public PrototypeConfiguration<T> as(Key<? super T> key) {
+        context.sourceProvideAs(key);
+        return this;
+    }
 
     /**
      * Returns the key that the service is registered under.
@@ -68,7 +80,9 @@ public interface PrototypeConfiguration<T> extends ComponentConfiguration {
      * @see #as(Key)
      * @see #as(Class)
      */
-    Key<?> getKey();
+    public Key<?> getKey() {
+        return context.sourceProvideAsKey().get();
+    }
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -87,7 +101,12 @@ public interface PrototypeConfiguration<T> extends ComponentConfiguration {
      * @see Component#name()
      */
     @Override
-    PrototypeConfiguration<T> setName(String name);
+    public PrototypeConfiguration<T> setName(String name) {
+        context.setName(name);
+        return this;
+    }
 
-    ExportedServiceConfiguration<T> export();
+    public ExportedServiceConfiguration<T> export() {
+        return context.sourceExport();
+    }
 }

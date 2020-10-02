@@ -40,7 +40,6 @@ import packed.internal.hook.OnHook;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.PackedPrototypeConfiguration;
 import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
 import packed.internal.inject.sidecar.AtProvidesHook;
@@ -456,7 +455,7 @@ public final class ServiceExtension extends Extension {
 
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
     public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
-        return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PackedPrototypeConfiguration.class);
+        return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PrototypeConfiguration.class);
     }
 
     /**
