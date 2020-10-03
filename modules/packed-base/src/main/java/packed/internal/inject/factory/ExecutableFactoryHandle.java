@@ -15,6 +15,8 @@
  */
 package packed.internal.inject.factory;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
@@ -26,6 +28,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
+import packed.internal.classscan.util.ConstructorUtil;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** The backing class of {@link Factory}. */
@@ -104,5 +107,24 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     @Override
     public MethodType methodType() {
         return methodHandle.type();
+    }
+
+    static <T> FactorySupport<T> find(Class<T> implementation) {
+        ExecutableDescriptor executable = findExecutable(implementation);
+        return new FactorySupport<>(
+                new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable)));
+    }
+
+    static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        ExecutableDescriptor executable = findExecutable(implementation.rawType());
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable)));
+    }
+
+    // Should we have a strict type? For example, a static method on MyExtension.class
+    // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
+    // MyExtension.class create()
+    static ExecutableDescriptor findExecutable(Class<?> type) {
+        return ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(type));
     }
 }

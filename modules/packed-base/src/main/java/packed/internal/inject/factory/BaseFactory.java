@@ -49,7 +49,7 @@ public class BaseFactory<T> implements Factory<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
-            return new BaseFactory(FactorySupport.find(implementation));
+            return new BaseFactory(ExecutableFactoryHandle.find(implementation));
         }
     };
 
@@ -64,7 +64,7 @@ public class BaseFactory<T> implements Factory<T> {
         @Override
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            return new BaseFactory(FactorySupport.find(ModuleAccess.base().toTypeLiteral(t)));
+            return new BaseFactory(ExecutableFactoryHandle.find(ModuleAccess.base().toTypeLiteral(t)));
         }
     };
 
@@ -226,7 +226,7 @@ public class BaseFactory<T> implements Factory<T> {
     /** {@inheritDoc} */
     @Override
     public final Key<T> key() {
-        return factory.key;
+        return factory.handle.key;
     }
 
     final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
@@ -434,7 +434,7 @@ public class BaseFactory<T> implements Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) find((Class<?>) t);
         } else {
-            return new BaseFactory<>(FactorySupport.find(implementation));
+            return new BaseFactory<>(ExecutableFactoryHandle.find(implementation));
         }
     }
 

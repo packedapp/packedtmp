@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.List;
 
+import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -71,6 +72,8 @@ public abstract class FactoryHandle<T> {
 
     public final List<DependencyDescriptor> dependencies;
 
+    public final Key<T> key;
+
     public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, List<DependencyDescriptor> dependencies) {
         this(typeLiteralOrKey, typeLiteralOrKey.rawType(), dependencies);
     }
@@ -78,6 +81,7 @@ public abstract class FactoryHandle<T> {
     public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType, List<DependencyDescriptor> dependencies) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
+        this.key = Key.fromTypeLiteral(typeLiteral);
         this.type = typeLiteral.rawType();
         this.actualType = requireNonNull(actualType);
         this.dependencies = requireNonNull(dependencies);
