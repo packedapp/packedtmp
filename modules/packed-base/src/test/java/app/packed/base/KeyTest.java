@@ -336,12 +336,12 @@ public class KeyTest {
         // TODO check message
     }
 
-    /** Tests {@link Key#withoutQualifier()}. */
+    /** Tests {@link Key#withoutQualifiers()}. */
     @Test
     public void withNoQualifier() {
         npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
-        assertThat(KEY_INTEGER.withoutQualifier()).isSameAs(KEY_INTEGER);
-        assertThat(KEY_INTEGER_X.withoutQualifier()).isEqualTo(KEY_INTEGER);
+        assertThat(KEY_INTEGER.withoutQualifiers()).isSameAs(KEY_INTEGER);
+        assertThat(KEY_INTEGER_X.withoutQualifiers()).isEqualTo(KEY_INTEGER);
     }
 
     @Test

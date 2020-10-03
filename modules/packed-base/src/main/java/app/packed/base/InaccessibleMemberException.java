@@ -18,6 +18,8 @@ package app.packed.base;
 /** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
 
 // UncheckedIllegalAccessException...
+// RuntimeIllegalAccessException
+
 // AccessRestrictedException <- General one, could sound really securish, maybe have a name
 // which makes it clear it is relevant to reflection/method handlers
 // NotOpenedException

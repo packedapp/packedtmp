@@ -26,7 +26,13 @@ import java.lang.invoke.MethodHandles;
 // Den anden annotering er sgu for forvirrende...
 
 // Cross module extension hirakies
-public class LookupSupport {
+
+// Maaske er det snare i .component
+////
+
+//ComponentSupport
+
+class LookupSupport {
 
     public static void openForSubclasses(MethodHandles.Lookup lookup, Class<?> superClass) {
         // allows subclasses...

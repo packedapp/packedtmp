@@ -25,6 +25,8 @@ package app.packed.base;
 
 // ClassDefinitionException...
 // ConstCreateException.. <- Det er en exception der bliver lavet naar man bruger const api'en...
+
+// SourceException??
 public class InvalidDeclarationException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

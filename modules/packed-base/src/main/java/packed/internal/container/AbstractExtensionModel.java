@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import app.packed.base.Contract;
 import app.packed.container.InternalExtensionException;
 import app.packed.statemachine.Leaving;
 import app.packed.statemachine.StateTransition;

@@ -30,11 +30,7 @@ import app.packed.base.Key;
 /**
  * An immutable set of services with unique {@link Service#key() keys}. Unlike {@link ServiceLocator} this interface
  * does not contain any methods to acquire actual service instances.
- * 
- * @apiNote In the future, if the Java language permits, {@link ServiceRegistry} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
  */
-//Keys are unique because findService can only return 1 service.
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
@@ -52,7 +48,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      * 
      * @param key
      *            the key to find a service for
-     * @return the service that was found, or empty if no service with the specified key was found
+     * @return the service, or empty if no service with the specified key exist
      * @see #findService(Key)
      */
     default Optional<Service> findService(Class<?> key) {
@@ -64,7 +60,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      * 
      * @param key
      *            the key to find a service for
-     * @return the service that was found, or empty if no service with the specified key was found
+     * @return the service, or empty if no service with the specified key exist
      * @see #findService(Class)
      */
     default Optional<Service> findService(Key<?> key) {
@@ -73,11 +69,11 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns whether or not a service with the specified key is present in this set.
+     * Returns whether or not a service with the specified key is present in this registry.
      *
      * @param key
-     *            key whose presence in set is to be tested
-     * @return {@code true} if a service with the specified key is present in this set. Otherwise {@code false}
+     *            key whose presence in this registry is to be tested
+     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
      * @see #isPresent(Key)
      */
     // was contains, but if we extend Set at some point.
@@ -86,11 +82,11 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns whether or not a service with the specified key is present in this set.
+     * Returns whether or not a service with the specified key is present in this registry.
      *
      * @param key
-     *            key whose presence in set is to be tested
-     * @return {@code true} if a service with the specified key is present in this set. Otherwise {@code false}
+     *            key whose presence in this registry is to be tested
+     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
      * @see #isPresent(Class)
      */
     default boolean isPresent(Key<?> key) {
@@ -104,18 +100,18 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns a unordered set containing the keys of every service in this set.
+     * Returns a set containing the keys of every service in this registry.
      * 
-     * @return a unordered set containing the keys of every service in this set
+     * @return a set containing the keys of every service in this registry
      */
     default Set<Key<?>> keys() {
         return stream().map(e -> e.key()).collect(Collectors.toSet());
     }
 
     /**
-     * Returns a unordered {@code Stream} of all services in this set.
+     * Returns a unordered {@code Stream} of all services in this registry.
      *
-     * @return a unordered {@code Stream} of all services in this set
+     * @return a unordered {@code Stream} of all services in this registry
      */
     // Rename to services????
     AttributedElementStream<Service> stream();

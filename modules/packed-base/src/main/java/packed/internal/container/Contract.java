@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.base.Nullable;
 import app.packed.container.ContainerBundle;
 
 /**

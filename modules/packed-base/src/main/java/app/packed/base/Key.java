@@ -274,7 +274,7 @@ public abstract class Key<T> {
      * 
      * @return this key with no qualifier
      */
-    public final Key<T> withoutQualifier() {
+    public final Key<T> withoutQualifiers() {
         return qualifiers == null ? this : new CanonicalizedKey<>(typeLiteral, (Annotation[]) null);
     }
 
