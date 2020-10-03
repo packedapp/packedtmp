@@ -45,7 +45,7 @@ import app.packed.introspection.MethodDescriptor;
 //Finde metoder paa statisk vs instance....
 //Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
 
-public class NewFactoryMethods {
+class NewFactoryMethods {
 
     // either one annotated with inject, or just one method, for example lambda..
 

@@ -29,7 +29,7 @@ import app.packed.inject.Factory1;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.methodhandle.LookupUtil;
 
-/** An internal factory for {@link Factory1}. */
+/** A factory handle for {@link Factory1}. */
 public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */

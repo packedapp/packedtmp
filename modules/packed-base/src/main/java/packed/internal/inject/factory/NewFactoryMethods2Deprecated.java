@@ -25,7 +25,7 @@ import app.packed.inject.Factory;
 /**
  *
  */
-public class NewFactoryMethods2Deprecated {
+class NewFactoryMethods2Deprecated {
 
     static <T> Factory<T> findInstanceMethod(Object onInstance, Class<T> returnType) {
         throw new UnsupportedOperationException();

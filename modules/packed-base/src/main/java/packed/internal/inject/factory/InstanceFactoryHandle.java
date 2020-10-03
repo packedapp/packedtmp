@@ -24,7 +24,7 @@ import java.lang.invoke.MethodType;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 
-/** A function handle that takes no arguments and returns the same instance every time. */
+/** A function handle for instances, usually created with {@link Factory#ofInstance(Object)}. */
 public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
 
     /** The instance that is returned every time. */
@@ -33,6 +33,12 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
     private InstanceFactoryHandle(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
         super(typeLiteralOrKey, actualType);
         this.instance = instance;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return MethodType.methodType(instance.getClass());
     }
 
     /** {@inheritDoc} */
@@ -56,11 +62,5 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
         return new InstanceFactoryHandle<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return MethodType.methodType(instance.getClass());
     }
 }

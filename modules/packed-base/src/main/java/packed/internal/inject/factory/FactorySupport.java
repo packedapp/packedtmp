@@ -2,12 +2,12 @@ package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.inject.Provide;
-import app.packed.statemachine.OnStart;
+import app.packed.base.TypeLiteral;
+import app.packed.introspection.ExecutableDescriptor;
+import packed.internal.classscan.util.ConstructorUtil;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** An factory support class. */
@@ -28,22 +28,22 @@ final class FactorySupport<T> {
         this.key = Key.fromTypeLiteral(function.typeLiteral);
     }
 
-    /**
-     * Returns the scannable type of this factory. This is the type that will be used for scanning for annotations such as
-     * {@link OnStart} and {@link Provide}.
-     *
-     * @return the scannable type of this factory
-     */
-    public Class<? super T> getScannableType() {
-        return handle.returnTypeRaw();
+    static <T> FactorySupport<T> find(Class<T> implementation) {
+        ExecutableDescriptor executable = findExecutable(implementation);
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
+                DependencyDescriptor.fromExecutable(executable));
     }
 
-    /**
-     * Returns the method type of the factory.
-     * 
-     * @return the method type of the factory
-     */
-    public MethodType methodType() {
-        return handle.methodType();
+    static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
+        requireNonNull(implementation, "implementation is null");
+        ExecutableDescriptor executable = findExecutable(implementation.rawType());
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), DependencyDescriptor.fromExecutable(executable));
+    }
+
+    // Should we have a strict type? For example, a static method on MyExtension.class
+    // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
+    // MyExtension.class create()
+    static ExecutableDescriptor findExecutable(Class<?> type) {
+        return ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(type));
     }
 }

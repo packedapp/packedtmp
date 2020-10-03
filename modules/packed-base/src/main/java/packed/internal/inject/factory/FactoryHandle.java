@@ -110,7 +110,8 @@ public abstract class FactoryHandle<T> {
     public abstract MethodHandle toMethodHandle();
 
     public FactoryHandle<T> withLookup(Lookup lookup) {
-        throw new UnsupportedOperationException("This method is only supported by factories that were created from a field, constructor or method");
+        throw new UnsupportedOperationException(
+                "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
     public abstract MethodType methodType();
