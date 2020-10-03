@@ -24,6 +24,7 @@ import java.util.List;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** A function handle for instances, usually created with {@link Factory#ofInstance(Object)}. */
 final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
@@ -32,7 +33,7 @@ final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
     private final T instance;
 
     private InstanceFactoryHandle(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
-        super(typeLiteralOrKey, actualType, List.of());
+        super(typeLiteralOrKey, actualType);
         this.instance = instance;
     }
 
@@ -46,6 +47,11 @@ final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
     @Override
     public MethodHandle toMethodHandle() {
         return MethodHandles.constant(instance.getClass(), instance);
+    }
+
+    @Override
+    public List<DependencyDescriptor> dependencies() {
+        return List.of();
     }
 
     /**

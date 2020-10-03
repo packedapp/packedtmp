@@ -61,34 +61,27 @@ public abstract class FactoryHandle<T> {
     // }
 
     // Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
+
     final Class<?> actualType;
 
-    /** The dependencies for this factory. */
+    public final Key<T> key;
 
+    /** The dependencies for this factory. */
     private final Class<? super T> type;
 
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    public final List<DependencyDescriptor> dependencies;
-
-    public final Key<T> key;
-
-    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, List<DependencyDescriptor> dependencies) {
-        this(typeLiteralOrKey, typeLiteralOrKey.rawType(), dependencies);
-    }
-
-    public final Class<? super T> rawType() {
-        return returnTypeRaw();
-    }
-
-    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType, List<DependencyDescriptor> dependencies) {
+    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.key = Key.fromTypeLiteral(typeLiteral);
         this.type = typeLiteral.rawType();
         this.actualType = requireNonNull(actualType);
-        this.dependencies = requireNonNull(dependencies);
+    }
+
+    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey) {
+        this(typeLiteralOrKey, typeLiteralOrKey.rawType());
     }
 
     protected T checkLowerbound(T instance) {
@@ -100,6 +93,12 @@ public abstract class FactoryHandle<T> {
         return instance;
     }
 
+    public abstract MethodType methodType();
+
+    public final Class<? super T> rawType() {
+        return returnTypeRaw();
+    }
+
     /**
      * Returns the type of objects this operation returns on invocation.
      *
@@ -108,6 +107,8 @@ public abstract class FactoryHandle<T> {
     public final TypeLiteral<T> returnType() {
         return typeLiteral;
     }
+
+    public abstract List<DependencyDescriptor> dependencies();
 
     /**
      * Returns the raw type of objects this operation returns on invocation.
@@ -125,64 +126,16 @@ public abstract class FactoryHandle<T> {
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
-    public abstract MethodType methodType();
-
-    @SuppressWarnings("unchecked")
-    public static <T> FactoryHandle<T> of(Class<T> implementation) {
-        return (FactoryHandle<T>) FactoryHandle.of((BaseFactory<?>) Factory.of(implementation));
+    public static List<DependencyDescriptor> dependencies(BaseFactory<?> factory) {
+        return factory.handle.dependencies();
     }
 
     public static <T> FactoryHandle<T> of(BaseFactory<T> factory) {
         return factory.handle;
     }
 
-    public static List<DependencyDescriptor> dependencies(BaseFactory<?> factory) {
-        return factory.handle.dependencies;
+    @SuppressWarnings("unchecked")
+    public static <T> FactoryHandle<T> of(Class<T> implementation) {
+        return (FactoryHandle<T>) FactoryHandle.of((BaseFactory<?>) Factory.of(implementation));
     }
 }
-// public abstract class PFunction<T> {
-//
-// /**
-// * Instantiates a new object using the specified parameters
-// *
-// * @param params
-// * the parameters to use
-// * @return the new instance
-// */
-// @Nullable
-// public abstract T invoke(WhatAreYouDoing spec, Object[] params);
-//
-// // Ideen er at vi kan tage den med som parameter...
-// // For eksempel om vi skal smide en exception
-// public enum WhatAreYouDoing {}
-// }
-// Input/Output
-
-/// Input OutPout
-
-// return type -> void type.... void is valid
-// Parameters... might be dependencies if used for this, but does not have to
-
-// expected
-
-// Parameter count
-
-// isExactType
-// isAnyType();
-// boolean isNullable
-
-// Type
-// IsNullable
-// HasExactType
-
-// Bundle ting,
-// registrering required optionally, exposed... -> exposes the following features
-// Nogle runtimeklasser...
-
-// requires, exposes, ... -> Key-> Service
-
-// Et eller andet slags registrerings object
-/// Baade scanning af klasserne.... (Med annotering...)
-/// Og reject af prototype...
-
-// Supportere ogsaa manuel registrering af objekter

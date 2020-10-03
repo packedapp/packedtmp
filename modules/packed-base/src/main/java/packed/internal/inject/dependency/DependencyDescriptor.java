@@ -19,7 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.hook.ModuleAccess;
+import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
@@ -297,6 +300,24 @@ public final class DependencyDescriptor {
         }
     }
 
+    public static List<DependencyDescriptor> fromExecutable(Executable executable) {
+        Parameter[] parameters = executable.getParameters();
+        switch (parameters.length) {
+        case 0:
+            return List.of();
+        case 1:
+            return List.of(fromVariable(parameters[0]));
+        case 2:
+            return List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
+        default:
+            DependencyDescriptor[] sd = new DependencyDescriptor[parameters.length];
+            for (int i = 0; i < sd.length; i++) {
+                sd[i] = fromVariable(parameters[i]);
+            }
+            return List.of(sd);
+        }
+    }
+
     /**
      * Returns the type of the specified field as a key.
      * 
@@ -348,6 +369,10 @@ public final class DependencyDescriptor {
             result.add(fromTypeVariable(actualClass, baseClass, baseClassTypeVariableIndexes[i]));
         }
         return List.copyOf(result);
+    }
+
+    public static <T> DependencyDescriptor fromVariable(Parameter desc) {
+        return fromVariable(PackedParameterDescriptor.from(desc));
     }
 
     public static <T> DependencyDescriptor fromVariable(VariableDescriptor desc) {

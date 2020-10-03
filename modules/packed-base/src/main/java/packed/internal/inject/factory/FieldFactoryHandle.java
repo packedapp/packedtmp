@@ -37,31 +37,31 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
     /** The field we invoke. */
     final FieldDescriptor field;
 
-    /** Whether or not the field is static. */
-    final boolean isStatic;
-
-    /** Whether or not the field is volatile. */
-    final boolean isVolatile;
-
     /** A var handle that can be used to read the field. */
     @Nullable
     final VarHandle varHandle;
+    private final List<DependencyDescriptor> dependencies;
 
     @SuppressWarnings("unchecked")
     FieldFactoryHandle(FieldDescriptor field, List<DependencyDescriptor> dependencies) {
-        super((TypeLiteral<T>) field.getTypeLiteral(), dependencies);
+        super((TypeLiteral<T>) field.getTypeLiteral());
         this.field = field;
         this.varHandle = null;
-        this.isVolatile = Modifier.isVolatile(field.getModifiers());
-        this.isStatic = Modifier.isStatic(field.getModifiers());
+        this.dependencies = dependencies;
+
     }
 
     FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, List<DependencyDescriptor> dependencies) {
-        super(typeLiteralOrKey, dependencies);
+        super(typeLiteralOrKey);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
-        this.isVolatile = Modifier.isVolatile(field.getModifiers());
-        this.isStatic = Modifier.isStatic(field.getModifiers());
+        this.dependencies = dependencies;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return MethodType.methodType(varHandle.varType());
     }
 
     /**
@@ -76,28 +76,6 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         // mh = mh.bindTo(instance);
         // }
         return mh;
-    }
-
-    /**
-     * Sets the value of the field
-     * 
-     * @param instance
-     *            the instance for which to set the value
-     * @param value
-     *            the value to set
-     * @see VarHandle#set(Object...)
-     * @throws UnsupportedOperationException
-     *             if the underlying method is a static method
-     */
-    public void setOnInstance(Object instance, Object value) {
-        if (isStatic) {
-            throw new UnsupportedOperationException("Underlying field " + field + " is static");
-        }
-        if (isVolatile) {
-            varHandle.setVolatile(instance, value);
-        } else {
-            varHandle.set(instance, value);
-        }
     }
 
     /**
@@ -118,12 +96,12 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldFactoryHandle<>(returnType(), field, handle, dependencies);
+        return new FieldFactoryHandle<>(returnType(), field, handle, dependencies());
     }
 
     /** {@inheritDoc} */
     @Override
-    public MethodType methodType() {
-        return MethodType.methodType(varHandle.varType());
+    public List<DependencyDescriptor> dependencies() {
+        return dependencies;
     }
 }

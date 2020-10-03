@@ -46,13 +46,21 @@ final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
                     DependencyDescriptor.fromTypeVariables((Class) type, Factory1.class, 0));
         }
     };
+    private final List<DependencyDescriptor> dependencies;
 
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
     private Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function, List<DependencyDescriptor> dependencies) {
-        super(type, dependencies);
+        super(type);
         this.function = requireNonNull(function, "function is null");
+        this.dependencies = dependencies;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<DependencyDescriptor> dependencies() {
+        return dependencies;
     }
 
     /** {@inheritDoc} */

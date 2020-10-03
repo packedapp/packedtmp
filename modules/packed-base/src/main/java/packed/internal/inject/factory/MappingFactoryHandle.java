@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.methodhandle.LookupUtil;
 
 /** A function that maps the result of another function. */
@@ -39,7 +40,7 @@ final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
     final Function<? super T, ? extends R> mapper;
 
     MappingFactoryHandle(TypeLiteral<R> typeLiteral, FactoryHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
-        super(typeLiteral, List.of());
+        super(typeLiteral);
         this.mapFrom = requireNonNull(mapFrom, "mapFrom is null");
         this.mapper = requireNonNull(mapper, "mapper is null");
     }
@@ -73,5 +74,11 @@ final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
     @Override
     public MethodType methodType() {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<DependencyDescriptor> dependencies() {
+        return List.of();
     }
 }

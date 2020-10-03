@@ -25,6 +25,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory0;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.methodhandle.LookupUtil;
 
 /**
@@ -61,7 +62,7 @@ final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
      *            the supplier that creates the actual values
      */
     private Factory0FactoryHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
-        super(type, List.of());
+        super(type);
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
@@ -69,6 +70,11 @@ final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     @Override
     public MethodType methodType() {
         return MethodType.methodType(returnTypeRaw());
+    }
+
+    @Override
+    public List<DependencyDescriptor> dependencies() {
+        return List.of();
     }
 
     /** {@inheritDoc} */

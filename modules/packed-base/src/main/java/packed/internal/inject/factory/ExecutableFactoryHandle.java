@@ -41,6 +41,8 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
      */
     final boolean checkLowerBound;
 
+    private final List<DependencyDescriptor> dependencies;
+
     /** A factory with an executable as a target. */
     public final ExecutableDescriptor executable;
 
@@ -49,21 +51,44 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
 
     @SuppressWarnings("unchecked")
     public ExecutableFactoryHandle(MethodDescriptor methodDescriptor, List<DependencyDescriptor> dependencies) {
-        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), dependencies);
+        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral());
         this.executable = methodDescriptor;
         this.methodHandle = null;
         this.checkLowerBound = false;
+        this.dependencies = dependencies;
     }
 
     public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, List<DependencyDescriptor> dependencies) {
-        super(key, dependencies);
+        super(key);
         this.executable = executable;
         this.methodHandle = methodHandle;
         this.checkLowerBound = false;
+        this.dependencies = dependencies;
+    }
+
+    @Override
+    public List<DependencyDescriptor> dependencies() {
+        return dependencies;
     }
 
     public boolean hasMethodHandle() {
         return methodHandle != null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodType methodType() {
+        return methodHandle.type();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle toMethodHandle() {
+        MethodHandle mh = methodHandle;
+        if (executable.isVarArgs()) {
+            mh = mh.asFixedArity();
+        }
+        return mh;
     }
 
     @Override
@@ -90,23 +115,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
             throw new InaccessibleMemberException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableFactoryHandle<>(returnType(), executable, handle, dependencies);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
-        MethodHandle mh = methodHandle;
-        if (executable.isVarArgs()) {
-            mh = mh.asFixedArity();
-        }
-        return mh;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return methodHandle.type();
+        return new ExecutableFactoryHandle<>(returnType(), executable, handle, dependencies());
     }
 
     static <T> FactoryHandle<T> find(Class<T> implementation) {
