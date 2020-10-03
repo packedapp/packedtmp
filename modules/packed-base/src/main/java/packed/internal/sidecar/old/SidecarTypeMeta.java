@@ -34,21 +34,4 @@ public final class SidecarTypeMeta {
         this.sidecarAnnotation = requireNonNull(sidecarAnnotation);
         this.ld = requireNonNull(ld);
     }
-
-//    int indexOfState(String state) {
-//        for (int i = 0; i < lifecycleStates.length; i++) {
-//            if (lifecycleStates[i].equals(state)) {
-//                return i;
-//            }
-//        }
-//        return -1;
-//    }
-//
-//    int numberOfLifecycleStates() {
-//        return lifecycleStates.length;
-//    }
-//
-//    public String[] toArray() {
-//        return lifecycleStates.clone();
-//    }
 }

@@ -33,7 +33,6 @@ import packed.internal.hook.OnHook;
 import packed.internal.hook.OnHookModel;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
-import packed.internal.sidecar.old.PackletMotherShip;
 import packed.internal.util.LookupValue;
 import packed.internal.util.ThrowableUtil;
 
@@ -84,8 +83,6 @@ public final class RealmModel extends Model implements SourceModelLookup {
     @Nullable
     private final OnHookModel onHookModel;
 
-    final PackletMotherShip psm;
-
     /**
      * Creates a new container source model.
      * 
@@ -97,8 +94,6 @@ public final class RealmModel extends Model implements SourceModelLookup {
         if (Hook.class.isAssignableFrom(realmType)) {
             throw new InvalidDeclarationException(realmType + " must not implement/extend " + Hook.class);
         }
-
-        psm = PackletMotherShip.of(realmType);
 
         this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), realmType, true), false,
                 UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
