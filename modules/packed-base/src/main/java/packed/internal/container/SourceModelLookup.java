@@ -15,6 +15,7 @@
  */
 package packed.internal.container;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import packed.internal.classscan.invoke.OpenClass;
@@ -32,5 +33,5 @@ public interface SourceModelLookup {
     OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
 
     // Just return MethodHandle directly???
-    <T> FactoryHandle<T> readable(FactoryHandle<T> factory);
+    MethodHandle readable(FactoryHandle<?> factory);
 }

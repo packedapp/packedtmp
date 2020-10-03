@@ -78,6 +78,10 @@ public abstract class FactoryHandle<T> {
         this(typeLiteralOrKey, typeLiteralOrKey.rawType(), dependencies);
     }
 
+    public final Class<? super T> rawType() {
+        return returnTypeRaw();
+    }
+
     public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType, List<DependencyDescriptor> dependencies) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
@@ -122,6 +126,11 @@ public abstract class FactoryHandle<T> {
     }
 
     public abstract MethodType methodType();
+
+    @SuppressWarnings("unchecked")
+    public static <T> FactoryHandle<T> of(Class<T> implementation) {
+        return (FactoryHandle<T>) FactoryHandle.of((BaseFactory<?>) Factory.of(implementation));
+    }
 
     public static <T> FactoryHandle<T> of(BaseFactory<T> factory) {
         return factory.handle;

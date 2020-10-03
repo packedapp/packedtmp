@@ -17,6 +17,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
@@ -125,16 +126,16 @@ public final class RealmModel extends Model implements SourceModelLookup {
     }
 
     @Override
-    public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+    public MethodHandle readable(FactoryHandle<?> factory) {
         // TODO needs to cached
         // TODO add field...
         if (factory instanceof ExecutableFactoryHandle) {
-            ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
+            ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
             if (!e.hasMethodHandle()) {
-                return e.withLookup(MethodHandles.lookup());
+                return e.withLookup(MethodHandles.lookup()).toMethodHandle();
             }
         }
-        return factory;
+        return factory.toMethodHandle();
     }
 
     public SourceModelLookup withLookup(Lookup lookup) {
@@ -202,16 +203,16 @@ public final class RealmModel extends Model implements SourceModelLookup {
         }
 
         @Override
-        public <T> FactoryHandle<T> readable(FactoryHandle<T> factory) {
+        public MethodHandle readable(FactoryHandle<?> factory) {
             // TODO needs to cached
             // TODO add field...
             if (factory instanceof ExecutableFactoryHandle) {
-                ExecutableFactoryHandle<T> e = (ExecutableFactoryHandle<T>) factory;
+                ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
                 if (!e.hasMethodHandle()) {
-                    return e.withLookup(lookup);
+                    return e.withLookup(lookup).toMethodHandle();
                 }
             }
-            return factory;
+            return factory.toMethodHandle();
         }
     }
 }

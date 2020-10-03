@@ -33,7 +33,7 @@ import packed.internal.inject.factory.FactoryHandle;
  */
 public final class RealmAssembly {
 
-    private final Class<?> type;
+    ComponentNodeConfiguration compConf;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     // useFor future components...
@@ -44,28 +44,12 @@ public final class RealmAssembly {
     private final RealmModel model;
 
     final PackedAssemblyContext pac;
-    ComponentNodeConfiguration compConf;
+    private final Class<?> type;
 
     private RealmAssembly(PackedAssemblyContext pac, Class<?> type) {
         this.type = requireNonNull(type);
         this.lookup = this.model = RealmModel.of(type);
         this.pac = requireNonNull(pac);
-    }
-
-    public Class<?> type() {
-        return type;
-    }
-
-    public void lookup(@Nullable Lookup lookup) {
-        // If user specifies null, we use whatever
-        // Actually I think null might be okay, then its standard module-info.java
-        // Component X has access to G, but Packed does not have access
-        this.lookup = lookup == null ? model : model.withLookup(lookup);
-    }
-
-    public MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
-        MethodHandle mh = lookup.readable(handle).toMethodHandle();
-        return mh;
     }
 
     public void close() {
@@ -74,6 +58,14 @@ public final class RealmAssembly {
 
     public SourceModel componentModelOf(Class<?> componentType) {
         return lookup.modelOf(componentType);
+    }
+
+    MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
+        return lookup.readable(handle);
+    }
+
+    public RealmAssembly linkBundle(Bundle<?> bundle) {
+        return new RealmAssembly(pac, bundle.getClass());
     }
 
     /**
@@ -89,8 +81,15 @@ public final class RealmAssembly {
         return realm;
     }
 
-    public RealmAssembly linkBundle(Bundle<?> bundle) {
-        return new RealmAssembly(pac, bundle.getClass());
+    public void lookup(@Nullable Lookup lookup) {
+        // If user specifies null, we use whatever
+        // Actually I think null might be okay, then its standard module-info.java
+        // Component X has access to G, but Packed does not have access
+        this.lookup = lookup == null ? model : model.withLookup(lookup);
+    }
+
+    public Class<?> type() {
+        return type;
     }
 
     public static RealmAssembly fromBundle(PackedAssemblyContext pac, Bundle<?> bundle) {
