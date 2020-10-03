@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -51,6 +52,14 @@ public final class ServiceWirelets {
     /** No instantiation. */
     private ServiceWirelets() {}
 
+    public static Wirelet restrict(ServiceContract contract) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet addQualifierFrom(Class<? extends Annotation> qualifier, Object value) {
+        throw new UnsupportedOperationException();
+    }
+
     public static <T> Wirelet map(Class<T> from, Class<? super T> to) {
         return map(Key.of(from), Key.of(to));
     }
@@ -65,7 +74,7 @@ public final class ServiceWirelets {
     }
 
     public static <T> Wirelet mapAllFrom(Function<Service, ? super Key<?>> mapper) {
-        mapAll(s -> s.key().withName("foo"));
+        mapAll(s -> s.key().withNameQualifier("foo"));
         throw new UnsupportedOperationException();
     }
 

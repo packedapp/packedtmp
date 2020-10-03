@@ -69,6 +69,15 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
+     * Returns whether or this registry contains any services.
+     * 
+     * @return true if this registry contains at least 1 service, otherwise false
+     */
+    default boolean isEmpty() {
+        return keys().isEmpty();
+    }
+
+    /**
      * Returns whether or not a service with the specified key is present in this registry.
      *
      * @param key
@@ -76,7 +85,6 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
      * @see #isPresent(Key)
      */
-    // was contains, but if we extend Set at some point.
     default boolean isPresent(Class<?> key) {
         return isPresent(Key.of(key));
     }
@@ -109,12 +117,20 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
+     * Returns the number of services in this registry.
+     * 
+     * @return the number of services in this registry
+     */
+    default int size() {
+        return keys().size();
+    }
+
+    /**
      * Returns a unordered {@code Stream} of all services in this registry.
      *
      * @return a unordered {@code Stream} of all services in this registry
      */
-    // Rename to services????
-    AttributedElementStream<Service> stream();
+    AttributedElementStream<Service> stream(); // Rename to services????
 
     /**
      * Returns a list of every service in this registry.

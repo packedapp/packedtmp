@@ -18,7 +18,14 @@ package app.packed.service;
 /**
  *
  */
-public interface ServiceSelector<T> {
+
+// Alternativ drop den...
+
+// Tilfoej bindUnusedSelection()....
+
+// ServiceLocator -> Er en "lazy" activating service
+
+interface ServiceSelector<T> {
 
     // will ignore qualifiers....
     default <S extends T> ServiceSelector<S> assignableTo(Class<S> type) {

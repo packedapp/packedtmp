@@ -114,6 +114,10 @@ public final class ServiceExtension extends Extension {
         return sbm.hasExports() ? sbm.exports().exports() : null;
     }
 
+    public void bindAllChildServices() {
+
+    }
+
     /**
      * Exports a service of the specified type. See {@link #export(Key)} for details.
      * 

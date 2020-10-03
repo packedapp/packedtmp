@@ -19,6 +19,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key.Qualifier;
 
@@ -29,6 +30,9 @@ import app.packed.base.Key.Qualifier;
 @Key.Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface Named {
+
+    /** An annotation maker that can create {@link Named} instances. */
+    static final AnnotationMaker<Named> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Named.class);
 
     /**
      * Returns the name.

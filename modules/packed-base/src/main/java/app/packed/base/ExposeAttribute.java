@@ -21,6 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.sidecar.OpenMode;
+import app.packed.sidecar.Opens;
+
 /**
  * The type of the field or the return type of the method must match the type of attribute. Packed makes no check if any
  * of the types are generic.

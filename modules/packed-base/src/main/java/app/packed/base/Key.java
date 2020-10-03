@@ -140,16 +140,6 @@ public abstract class Key<T> {
         assert (!typeLiteral.rawType().isPrimitive());
     }
 
-    public final Key<T> addQualifier(Class<? extends Annotation> qualifierType, Object value) {
-        // if (qualifier type not readable) {
-        // In order to dynamically add an annotation 'qualifierType' must be readable to Packed
-        // add exports
-        // }
-
-        // addQualifier(PluginName.class,/* name = "value", */ "foo");
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * To avoid accidentally holding on to any instance that defines this key as an anonymous class. This method creates a
      * new key instance without any reference to the instance that defined the anonymous class.
@@ -259,13 +249,9 @@ public abstract class Key<T> {
      *            the qualifier name
      * @return the new key
      */
-    // rename to named();
-    // If we support Multi qualifiers. The multiplicity of the annotation
-    // Will support whether or not we fx can have multiple names
-    // If its list. We can just keep on adding them
-    public final Key<T> withName(String name) {
+    public final Key<T> withNameQualifier(String name) {
         requireNonNull(name, "name is null");
-        throw new UnsupportedOperationException();
+        return withQualifier(Named.MAKER.make(name));
     }
 
     /**
@@ -278,6 +264,10 @@ public abstract class Key<T> {
         return qualifiers == null ? this : new CanonicalizedKey<>(typeLiteral, (Annotation[]) null);
     }
 
+    public final Key<T> withoutNameQualifier() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a new key retaining its original type but with the specified qualifier.
      * 
@@ -287,6 +277,9 @@ public abstract class Key<T> {
      * @throws InvalidDeclarationException
      *             if the specified annotation is not annotated with {@link Qualifier}.
      */
+    // repeatable annotations??? forbidden? or overwrite.
+    // We are not going to multiple qualifiers of the same type
+    // Taenker det er er fint man ikke kan tilfoeje repeatable annoteringer...
     public final Key<T> withQualifier(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierHelper.checkQualifierAnnotationPresent(qualifier);
@@ -321,19 +314,22 @@ public abstract class Key<T> {
      * @throws InvalidDeclarationException
      *             if the specified qualifier type is not annotated with {@link Qualifier}.
      */
-    public final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
+    final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
         AnnotationUtil.validateRuntimeRetentionPolicy(qualifierType);
         if (!qualifierType.isAnnotationPresent(Qualifier.class)) {
             throw new IllegalArgumentException(
                     "@" + qualifierType.getSimpleName() + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
         }
+        // Problemet er hvordan vi instantiere den...
+        // Hvis Packed nu ikke kan laese annoteringen...
+        //
         throw new UnsupportedOperationException();
     }
 
     // Takes any qualifier annotation on the typeLiteral
     // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
-    public final Key<T> withQualifier(TypeLiteral<Void> typeLiteral) {
+    final Key<T> withQualifier(TypeLiteral<Void> typeLiteral) {
         throw new UnsupportedOperationException();
     }
 

@@ -21,9 +21,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.OpenMode;
-import app.packed.base.Opens;
 import app.packed.container.ExtensionMember;
+import app.packed.sidecar.OpenMode;
+import app.packed.sidecar.Opens;
 import app.packed.sidecar.Packlet;
 
 /**

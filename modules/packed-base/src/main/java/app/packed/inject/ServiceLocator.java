@@ -99,6 +99,19 @@ public interface ServiceLocator extends ServiceRegistry {
         }
     }
 
+    default <T> ServiceSelection<T> select(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a service selection with of the services in this locator.
+     * 
+     * @return a service selection with of the services in this locator
+     */
+    default ServiceSelection<Object> selectAll() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
      * a service with the specified key. The semantics method is identical to {@link #find(Class)} except that an exception
