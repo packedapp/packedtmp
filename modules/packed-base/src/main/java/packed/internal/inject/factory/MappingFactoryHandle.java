@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.List;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
@@ -38,7 +39,7 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
     final Function<? super T, ? extends R> mapper;
 
     public MappingFactoryHandle(TypeLiteral<R> typeLiteral, FactoryHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
-        super(typeLiteral);
+        super(typeLiteral, List.of());
         this.mapFrom = requireNonNull(mapFrom, "mapFrom is null");
         this.mapper = requireNonNull(mapper, "mapper is null");
     }

@@ -61,7 +61,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
      *            the supplier that creates the actual values
      */
     private Factory0FactoryHandle(TypeLiteral<T> type, Supplier<? extends T> supplier) {
-        super(type);
+        super(type, List.of());
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 

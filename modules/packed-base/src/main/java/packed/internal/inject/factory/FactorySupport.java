@@ -13,9 +13,6 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 /** An factory support class. */
 final class FactorySupport<T> {
 
-    /** A list of all of this factory's dependencies. */
-    public final List<DependencyDescriptor> dependencies;
-
     /** The function used to create a new instance. */
     public final FactoryHandle<T> handle;
 
@@ -23,21 +20,22 @@ final class FactorySupport<T> {
     public final Key<T> key;
 
     public FactorySupport(FactoryHandle<T> function, List<DependencyDescriptor> dependencies) {
-        this.dependencies = requireNonNull(dependencies, "dependencies is null");
         this.handle = requireNonNull(function);
         this.key = Key.fromTypeLiteral(function.typeLiteral);
     }
 
     static <T> FactorySupport<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null),
+        return new FactorySupport<>(
+                new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable)),
                 DependencyDescriptor.fromExecutable(executable));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null), DependencyDescriptor.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable)),
+                DependencyDescriptor.fromExecutable(executable));
     }
 
     // Should we have a strict type? For example, a static method on MyExtension.class

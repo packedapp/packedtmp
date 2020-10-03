@@ -379,7 +379,7 @@ public class BaseFactory<T> implements Factory<T> {
     @Override
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new BaseFactory<>(new FactorySupport<T>(factory.handle.withLookup(lookup), factory.dependencies));
+        return new BaseFactory<>(new FactorySupport<T>(factory.handle.withLookup(lookup), factory.handle.dependencies));
     }
 
     /** {@inheritDoc} */

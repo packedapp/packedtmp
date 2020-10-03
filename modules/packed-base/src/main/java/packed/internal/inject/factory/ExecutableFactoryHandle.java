@@ -19,12 +19,14 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** The backing class of {@link Factory}. */
 public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
@@ -43,15 +45,15 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     final MethodHandle methodHandle;
 
     @SuppressWarnings("unchecked")
-    public ExecutableFactoryHandle(MethodDescriptor methodDescriptor) {
-        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral());
+    public ExecutableFactoryHandle(MethodDescriptor methodDescriptor, List<DependencyDescriptor> dependencies) {
+        super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral(), dependencies);
         this.executable = methodDescriptor;
         this.methodHandle = null;
         this.checkLowerBound = false;
     }
 
-    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle) {
-        super(key);
+    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, List<DependencyDescriptor> dependencies) {
+        super(key, dependencies);
         this.executable = executable;
         this.methodHandle = methodHandle;
         this.checkLowerBound = false;
@@ -85,7 +87,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
             throw new InaccessibleMemberException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableFactoryHandle<>(returnType(), executable, handle);
+        return new ExecutableFactoryHandle<>(returnType(), executable, handle, dependencies);
     }
 
     /** {@inheritDoc} */

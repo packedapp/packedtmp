@@ -23,11 +23,13 @@ import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.FieldDescriptor;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** An invoker that can read and write fields. */
 public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
@@ -46,16 +48,16 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
     public final VarHandle varHandle;
 
     @SuppressWarnings("unchecked")
-    public FieldFactoryHandle(FieldDescriptor field) {
-        super((TypeLiteral<T>) field.getTypeLiteral());
+    public FieldFactoryHandle(FieldDescriptor field, List<DependencyDescriptor> dependencies) {
+        super((TypeLiteral<T>) field.getTypeLiteral(), dependencies);
         this.field = field;
         this.varHandle = null;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    public FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle) {
-        super(typeLiteralOrKey);
+    public FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, List<DependencyDescriptor> dependencies) {
+        super(typeLiteralOrKey, dependencies);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;
         this.isVolatile = Modifier.isVolatile(field.getModifiers());
@@ -116,7 +118,7 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldFactoryHandle<>(returnType(), field, handle);
+        return new FieldFactoryHandle<>(returnType(), field, handle, dependencies);
     }
 
     /** {@inheritDoc} */

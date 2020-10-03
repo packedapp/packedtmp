@@ -50,8 +50,8 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
     /** The function that creates the actual objects. */
     private final Function<? super T, ? extends R> function;
 
-    private Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function) {
-        super(type);
+    private Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function, List<DependencyDescriptor> dependencies) {
+        super(type, dependencies);
         this.function = requireNonNull(function, "function is null");
     }
 
@@ -79,6 +79,7 @@ public final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
     @SuppressWarnings("unchecked")
     public static <T, R> FactorySupport<R> create(Class<?> implementation, Function<?, ? extends T> function) {
         Entry<TypeLiteral<?>, List<DependencyDescriptor>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function), fs.getValue());
+        return new FactorySupport<>(new Factory1FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (Function<? super T, ? extends R>) function, fs.getValue()),
+                fs.getValue());
     }
 }

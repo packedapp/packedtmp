@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.List;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
@@ -31,7 +32,7 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
     private final T instance;
 
     private InstanceFactoryHandle(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
-        super(typeLiteralOrKey, actualType);
+        super(typeLiteralOrKey, actualType, List.of());
         this.instance = instance;
     }
 

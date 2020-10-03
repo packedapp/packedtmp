@@ -69,15 +69,18 @@ public abstract class FactoryHandle<T> {
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey) {
-        this(typeLiteralOrKey, typeLiteralOrKey.rawType());
+    public final List<DependencyDescriptor> dependencies;
+
+    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, List<DependencyDescriptor> dependencies) {
+        this(typeLiteralOrKey, typeLiteralOrKey.rawType(), dependencies);
     }
 
-    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
+    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType, List<DependencyDescriptor> dependencies) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.type = typeLiteral.rawType();
         this.actualType = requireNonNull(actualType);
+        this.dependencies = requireNonNull(dependencies);
     }
 
     protected T checkLowerbound(T instance) {
@@ -121,7 +124,7 @@ public abstract class FactoryHandle<T> {
     }
 
     public static List<DependencyDescriptor> dependencies(BaseFactory<?> factory) {
-        return factory.factory.dependencies;
+        return factory.factory.handle.dependencies;
     }
 }
 // public abstract class PFunction<T> {

@@ -50,8 +50,8 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
     /** The function responsible for creating the actual objects. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
-    private Factory2FactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function) {
-        super(typeLiteral);
+    private Factory2FactoryHandle(TypeLiteral<R> typeLiteral, BiFunction<? super T, ? super U, ? extends R> function, List<DependencyDescriptor> dependencies) {
+        super(typeLiteral, dependencies);
         this.function = requireNonNull(function);
     }
 
@@ -79,7 +79,8 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
     @SuppressWarnings("unchecked")
     public static <T, U, R> FactorySupport<R> create(Class<?> implementation, BiFunction<?, ?, ? extends R> function) {
         Entry<TypeLiteral<?>, List<DependencyDescriptor>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function),
+        return new FactorySupport<>(
+                new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function, fs.getValue()),
                 fs.getValue());
     }
 }
