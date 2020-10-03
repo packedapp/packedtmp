@@ -27,6 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.RegionAssembly;
 import packed.internal.inject.InjectionManager;
 
 /** Contains data and logic relevant for containers. */
@@ -88,13 +89,18 @@ public final class ContainerAssembly {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    public void finish() {
+    public void finish(RegionAssembly region) {
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }
         TreeSet<ExtensionAssembly> extensionsOrdered = new TreeSet<>(extensions.values());
         for (ExtensionAssembly pec : extensionsOrdered) {
             pec.completed();
+        }
+
+        if (compConf.getParent() == null) {
+            InjectionManager im = compConf.injectionManager();
+            im.build(region);
         }
     }
 
