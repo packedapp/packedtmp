@@ -93,27 +93,6 @@ public final class ServiceExtension extends Extension {
         this.sbm = im.services(false);
     }
 
-    /**
-     * Creates a service contract for this extension.
-     * 
-     * @return a service contract for this extension
-     */
-    @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
-    /* package-private */ ServiceContract attributesContract() {
-        return sbm.newServiceContract();
-    }
-
-    /**
-     * Returns any exported services. Or null if there are no exports.
-     * 
-     * @return any exported services. Or null if there are no exports
-     */
-    @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
-    @Nullable
-    /* package-private */ ServiceRegistry attributesExports() {
-        return sbm.hasExports() ? sbm.exports().exports() : null;
-    }
-
     public void bindAllChildServices() {
 
     }
@@ -142,20 +121,6 @@ public final class ServiceExtension extends Extension {
         // Men det er vel ikke anderledes end install(X).provide();
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * 
-     * 
-     * <ul>
-     * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
-     * ignored.</li>
-     * <li><b>Key already exported.</b>A service has already been exported under the specified key.
-     * <li><b>Are requirements.</b> Services that come from parent containers are always ignored.</li>
-     * <li><b>Not part of service contract.</b> If a service contract has set. Only services for whose key is part of the
-     * contract is exported.</li>
-     * </ul>
-     * <p>
-     */
 
     /**
      * Exports an internal service outside of this bundle.
@@ -196,6 +161,44 @@ public final class ServiceExtension extends Extension {
         return sbm.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
+    // Altsaa skal vi hellere have noget services().filter().exportall();
+    /**
+     * 
+     * 
+     * <p>
+     * This method can be invoked more than once. But use cases for this are limited.
+     */
+    public void exportAll() {
+        // export all _services_.. Also those that are already exported as something else???
+        // I should think not... Det er er en service vel... SelectedAll.keys().export()...
+        checkConfigurable();
+        sbm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+    }
+
+    /**
+     * 
+     * 
+     * <ul>
+     * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
+     * ignored.</li>
+     * <li><b>Key already exported.</b>A service has already been exported under the specified key.
+     * <li><b>Are requirements.</b> Services that come from parent containers are always ignored.</li>
+     * <li><b>Not part of service contract.</b> If a service contract has set. Only services for whose key is part of the
+     * contract is exported.</li>
+     * </ul>
+     * <p>
+     */
+
+    /**
+     * Creates a service contract for this extension.
+     * 
+     * @return a service contract for this extension
+     */
+    @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
+    /* package-private */ ServiceContract exposeContract() {
+        return sbm.newServiceContract();
+    }
+
     // Alternativ this export all er noget med services()..
 
     // is exportAll applied immediately or at the end???
@@ -210,18 +213,15 @@ public final class ServiceExtension extends Extension {
     // Ignores other exports
     // interacts with other exports in some way
 
-    // Altsaa skal vi hellere have noget services().filter().exportall();
     /**
+     * Returns any exported services. Or null if there are no exports.
      * 
-     * 
-     * <p>
-     * This method can be invoked more than once. But use cases for this are limited.
+     * @return any exported services. Or null if there are no exports
      */
-    public void exportAll() {
-        // export all _services_.. Also those that are already exported as something else???
-        // I should think not... Det er er en service vel... SelectedAll.keys().export()...
-        checkConfigurable();
-        sbm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+    @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
+    @Nullable
+    /* package-private */ ServiceRegistry exposeExportedServices() {
+        return sbm.hasExports() ? sbm.exports().exportsAsServiceRegistry() : null;
     }
 
     /**

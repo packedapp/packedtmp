@@ -127,7 +127,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         @Override
         public void process(ProvideAllFromOtherInjector ii) {
             for (ServiceAssembly<?> e : ii.entries.values()) {
-                action.accept(e.toDescriptor());
+                action.accept(e.toService());
             }
         }
 

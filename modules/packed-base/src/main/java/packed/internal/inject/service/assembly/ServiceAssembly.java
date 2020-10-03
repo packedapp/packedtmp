@@ -87,7 +87,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
      */
     protected abstract RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context);
 
-    public final Service toDescriptor() {
+    public final Service toService() {
         return new PackedService(key, configSite, isConstant());
     }
 

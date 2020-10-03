@@ -77,7 +77,7 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         @Override
         protected void process(ServiceExtension extension) {
             for (ExportedServiceAssembly<?> e : ServiceBuildManager.fromExtension(extension).exports()) {
-                action.accept(e.toDescriptor());
+                action.accept(e.toService());
             }
         }
 

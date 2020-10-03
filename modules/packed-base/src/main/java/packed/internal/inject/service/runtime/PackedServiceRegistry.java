@@ -17,20 +17,25 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import app.packed.base.Key;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceRegistry;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
  *
  */
-public class SimpleServiceSet implements ServiceRegistry {
+public final class PackedServiceRegistry implements ServiceRegistry {
 
-    final List<Service> services;
+    /** The services that are wrapped */
+    private final List<Service> services;
 
-    public SimpleServiceSet(List<Service> services) {
+    public PackedServiceRegistry(List<Service> services) {
         this.services = requireNonNull(services);
     }
 
@@ -43,5 +48,13 @@ public class SimpleServiceSet implements ServiceRegistry {
     @Override
     public String toString() {
         return services.toString();
+    }
+
+    public static PackedServiceRegistry of(Map<Key<?>, ? extends ServiceAssembly<?>> map) {
+        List<Service> l = new ArrayList<>();
+        for (ServiceAssembly<?> e : map.values()) {
+            l.add(e.toService());
+        }
+        return new PackedServiceRegistry(l);
     }
 }

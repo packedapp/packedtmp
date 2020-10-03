@@ -26,16 +26,14 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceRegistry;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.PackedExportedServiceConfiguration;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.SimpleServiceSet;
+import packed.internal.inject.service.runtime.PackedServiceRegistry;
 import packed.internal.util.KeyBuilder;
 
 /**
@@ -58,12 +56,12 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
     @Nullable
     private ArrayList<ExportedServiceAssembly<?>> exportedEntries;
 
-    /** The extension node this exporter is a part of. */
-    private final ServiceBuildManager sm;
-
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
     private LinkedHashMap<Key<?>, ExportedServiceAssembly<?>> resolvedExports;
+
+    /** The extension node this exporter is a part of. */
+    private final ServiceBuildManager sm;
 
     /**
      * Creates a new export manager.
@@ -73,6 +71,23 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
      */
     public ServiceExportManager(ServiceBuildManager sm) {
         this.sm = requireNonNull(sm);
+    }
+
+    /**
+     * Registers the specified key to be exported.
+     * 
+     * @param <T>
+     *            the type of service
+     * @param key
+     *            the key of the service to export
+     * @param configSite
+     *            the config site of the export
+     * @return a service configuration that can be returned to the user
+     * @see ServiceExtension#export(Class)
+     * @see ServiceExtension#export(Key)
+     */
+    public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
+        return export0(new ExportedServiceAssembly<>(sm, key, configSite));
     }
 
     /**
@@ -95,23 +110,6 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
         return export0(new ExportedServiceAssembly<>(sm, entryToExport, configSite));
-    }
-
-    /**
-     * Registers the specified key to be exported.
-     * 
-     * @param <T>
-     *            the type of service
-     * @param key
-     *            the key of the service to export
-     * @param configSite
-     *            the config site of the export
-     * @return a service configuration that can be returned to the user
-     * @see ServiceExtension#export(Class)
-     * @see ServiceExtension#export(Key)
-     */
-    public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedServiceAssembly<>(sm, key, configSite));
     }
 
     /**
@@ -147,16 +145,14 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
         // exportAll(Predicate) <- takes key or service configuration???
     }
 
+    /**
+     * Returns all exported services in a service registry. Or null if there are no exported services.
+     * 
+     * @return all exported services in a service registry. Or null if there are no exported services
+     */
     @Nullable
-    public ServiceRegistry exports() {
-        if (resolvedExports == null) {
-            return null;
-        }
-        List<Service> l = new ArrayList<>();
-        for (ExportedServiceAssembly<?> e : this) {
-            l.add(e.toDescriptor());
-        }
-        return new SimpleServiceSet(l);
+    public PackedServiceRegistry exportsAsServiceRegistry() {
+        return resolvedExports == null ? null : PackedServiceRegistry.of(resolvedExports);
     }
 
     /** {@inheritDoc} */
