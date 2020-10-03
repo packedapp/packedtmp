@@ -27,7 +27,7 @@ import app.packed.base.TreePath;
 /**
  *
  */
-public class PackedComponentPathTest {
+public class PackedTreePathTest {
 
     @Test
     public void root() {

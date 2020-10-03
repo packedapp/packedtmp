@@ -15,6 +15,21 @@
  */
 package app.packed.inject;
 
-public class InternalFactory0Test {
+import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Test;
+
+import testutil.stubs.Throwables.Exception1;
+
+/** Tests {@link FactoryException}. */
+public class FactoryExceptionTest {
+
+    /** Tests the various constructors.  */
+    @Test
+    public void test() {
+        assertThat(new FactoryException("foo")).hasNoCause();
+        assertThat(new FactoryException("foo")).hasMessage("foo");
+        assertThat(new FactoryException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new FactoryException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+    }
 }

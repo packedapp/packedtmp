@@ -16,6 +16,7 @@
 package app.packed.inject;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static testutil.assertj.Assertions.checkThat;
 import static testutil.assertj.Assertions.npe;
 
 import java.lang.annotation.Retention;
@@ -29,7 +30,10 @@ import app.packed.base.Key;
 public class FactoryTest {
 
     @Test
-    public void rre() {
+    public void ofInstance() {
+        Factory<String> f = Factory.ofInstance("foo");
+        checkThat(f).is(new Key<String>() {});
+        // checkThat(f).hasBound(String.class, String.class);
 
     }
 
