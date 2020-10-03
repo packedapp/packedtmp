@@ -45,6 +45,8 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     /** A factory with an executable as a target. */
     public final ExecutableDescriptor executable;
 
+    private final Object instance = null;
+
     @SuppressWarnings("unchecked")
     public ExecutableFactoryHandle(MethodDescriptor methodDescriptor, List<DependencyDescriptor> dependencies) {
         super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral());
@@ -83,34 +85,15 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
         if (executable.isVarArgs()) {
             mh = mh.asFixedArity();
         }
+        if (instance != null) {
+            return mh.bindTo(instance);
+        }
         return mh;
     }
 
     @Override
     public String toString() {
         return executable.toString();
-    }
-
-    /**
-     * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
-     * 
-     * @param lookup
-     *            the lookup object to use
-     * @return a new internal factory that uses the specified lookup object
-     */
-    @Override
-    public FactoryHandle<T> withLookup(Lookup lookup) {
-        MethodHandle handle;
-        try {
-            if (Modifier.isPrivate(executable.getModifiers())) {
-                lookup = lookup.in(executable.getDeclaringClass());
-            }
-            handle = executable.unreflect(lookup);
-        } catch (IllegalAccessException e) {
-            throw new InaccessibleMemberException(
-                    "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
-        }
-        return new ResolvedFactoryHandle<>(this, handle);
     }
 
     static <T> FactoryHandle<T> find(Class<T> implementation) {

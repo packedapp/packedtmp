@@ -298,15 +298,11 @@ public class BaseFactory<T> implements Factory<T> {
     @Override
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new BaseFactory<>(handle.withLookup(lookup));
-//        
-//        if (handle instanceof ExecutableFactoryHandle<?>) {
-//            return new BaseFactory<>(handle.withLookup(lookup));
-//        } else if (handle instanceof FieldFactoryHandle<?>) {
-//            return new BaseFactory<>(handle.withLookup(lookup));
-//        }
-//        throw new UnsupportedOperationException(
-//                "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
+        if (handle instanceof ExecutableFactoryHandle || handle instanceof FieldFactoryHandle) {
+            return new BaseFactory<>(new ResolvedFactoryHandle<>(handle, lookup));
+        }
+        throw new UnsupportedOperationException(
+                "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
     /** {@inheritDoc} */

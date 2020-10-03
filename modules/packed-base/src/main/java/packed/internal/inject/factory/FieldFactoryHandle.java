@@ -33,6 +33,8 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
 
     private final List<DependencyDescriptor> dependencies;
 
+    private final Object instance = null;
+
     @SuppressWarnings("unchecked")
     FieldFactoryHandle(FieldDescriptor field, List<DependencyDescriptor> dependencies) {
         super((TypeLiteral<T>) field.getTypeLiteral());
@@ -47,28 +49,20 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
      */
     @Override
     public MethodHandle toMethodHandle(Lookup lookup) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a new internal factory that uses the specified lookup object to instantiate new objects.
-     * 
-     * @param lookup
-     *            the lookup object to use
-     * @return a new internal factory that uses the specified lookup object
-     */
-    @Override
-    public FactoryHandle<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
             if (Modifier.isPrivate(field.getModifiers())) {
+                // vs MethodHandles.private???
                 lookup = lookup.in(field.getDeclaringClass());
             }
             handle = field.unreflectGetter(lookup);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new ResolvedFactoryHandle<>(this, handle);
+        if (instance != null) {
+            handle = handle.bindTo(instance);
+        }
+        return handle;
     }
 
     /** {@inheritDoc} */

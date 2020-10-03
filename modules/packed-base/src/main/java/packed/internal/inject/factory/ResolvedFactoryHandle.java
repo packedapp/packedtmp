@@ -15,8 +15,6 @@
  */
 package packed.internal.inject.factory;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
@@ -32,10 +30,10 @@ final class ResolvedFactoryHandle<T> extends FactoryHandle<T> {
 
     MethodHandle methodHandle;
 
-    ResolvedFactoryHandle(FactoryHandle<T> delegate, MethodHandle mh) {
+    ResolvedFactoryHandle(FactoryHandle<T> delegate, Lookup lookup) {
         super(delegate.typeLiteral);
         this.delegate = delegate;
-        this.methodHandle = requireNonNull(mh);
+        this.methodHandle = delegate.toMethodHandle(lookup);
     }
 
     /** {@inheritDoc} */
