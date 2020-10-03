@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 
 import app.packed.base.TypeLiteral;
@@ -39,13 +39,7 @@ final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodType methodType() {
-        return MethodType.methodType(instance.getClass());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle toMethodHandle(Lookup ignore) {
         return MethodHandles.constant(instance.getClass(), instance);
     }
 

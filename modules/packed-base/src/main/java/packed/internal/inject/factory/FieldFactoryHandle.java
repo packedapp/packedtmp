@@ -15,18 +15,12 @@
  */
 package packed.internal.inject.factory;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
-import java.lang.invoke.VarHandle;
-import java.lang.invoke.VarHandle.AccessMode;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.InaccessibleMemberException;
-import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.FieldDescriptor;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -37,31 +31,13 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
     /** The field we invoke. */
     final FieldDescriptor field;
 
-    /** A var handle that can be used to read the field. */
-    @Nullable
-    final VarHandle varHandle;
     private final List<DependencyDescriptor> dependencies;
 
     @SuppressWarnings("unchecked")
     FieldFactoryHandle(FieldDescriptor field, List<DependencyDescriptor> dependencies) {
         super((TypeLiteral<T>) field.getTypeLiteral());
         this.field = field;
-        this.varHandle = null;
         this.dependencies = dependencies;
-
-    }
-
-    FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, List<DependencyDescriptor> dependencies) {
-        super(typeLiteralOrKey);
-        this.field = requireNonNull(field);
-        this.varHandle = varHandle;
-        this.dependencies = dependencies;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return MethodType.methodType(varHandle.varType());
     }
 
     /**
@@ -70,12 +46,8 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
      * @return the compiled method handle
      */
     @Override
-    public MethodHandle toMethodHandle() {
-        MethodHandle mh = varHandle.toMethodHandle(Modifier.isVolatile(field.getModifiers()) ? AccessMode.GET_VOLATILE : AccessMode.GET);
-        // if (instance != null) {
-        // mh = mh.bindTo(instance);
-        // }
-        return mh;
+    public MethodHandle toMethodHandle(Lookup lookup) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -86,17 +58,17 @@ final class FieldFactoryHandle<T> extends FactoryHandle<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public FieldFactoryHandle<T> withLookup(Lookup lookup) {
-        VarHandle handle;
+    public FactoryHandle<T> withLookup(Lookup lookup) {
+        MethodHandle handle;
         try {
             if (Modifier.isPrivate(field.getModifiers())) {
                 lookup = lookup.in(field.getDeclaringClass());
             }
-            handle = field.unreflectVarHandle(lookup);
+            handle = field.unreflectGetter(lookup);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
         }
-        return new FieldFactoryHandle<>(returnType(), field, handle, dependencies());
+        return new ResolvedFactoryHandle<>(this, handle);
     }
 
     /** {@inheritDoc} */

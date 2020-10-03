@@ -20,7 +20,6 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.util.List;
 
 import app.packed.base.Key;
@@ -72,7 +71,7 @@ public abstract class FactoryHandle<T> {
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    public FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
+    FactoryHandle(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.key = Key.fromTypeLiteral(typeLiteral);
@@ -80,6 +79,7 @@ public abstract class FactoryHandle<T> {
         this.actualType = requireNonNull(actualType);
     }
 
+    // TODO make package-private
     public FactoryHandle(TypeLiteral<T> typeLiteralOrKey) {
         this(typeLiteralOrKey, typeLiteralOrKey.rawType());
     }
@@ -91,12 +91,6 @@ public abstract class FactoryHandle<T> {
             throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
         }
         return instance;
-    }
-
-    public abstract MethodType methodType();
-
-    public final Class<? super T> rawType() {
-        return returnTypeRaw();
     }
 
     /**
@@ -119,15 +113,11 @@ public abstract class FactoryHandle<T> {
         return type;
     }
 
-    public abstract MethodHandle toMethodHandle();
+    public abstract MethodHandle toMethodHandle(Lookup lookup);
 
     public FactoryHandle<T> withLookup(Lookup lookup) {
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
-    }
-
-    public static List<DependencyDescriptor> dependencies(BaseFactory<?> factory) {
-        return factory.handle.dependencies();
     }
 
     public static <T> FactoryHandle<T> of(BaseFactory<T> factory) {

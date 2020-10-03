@@ -36,7 +36,7 @@ public class Factory1Test {
 
         BaseFactory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
-        List<DependencyDescriptor> dependencies = FactoryHandle.dependencies(f);
+        List<DependencyDescriptor> dependencies = FactoryHandle.of(f).dependencies();
         assertThat(dependencies).hasSize(1);
         DependencyDescriptor d = dependencies.get(0);
 

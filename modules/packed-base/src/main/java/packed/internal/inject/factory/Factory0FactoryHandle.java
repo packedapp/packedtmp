@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.Supplier;
@@ -66,12 +67,6 @@ final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
         this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return MethodType.methodType(returnTypeRaw());
-    }
-
     @Override
     public List<DependencyDescriptor> dependencies() {
         return List.of();
@@ -79,9 +74,10 @@ final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle toMethodHandle(Lookup i) {
         MethodHandle mh = GET.bindTo(supplier);
-        return MethodHandles.explicitCastArguments(mh, methodType());
+        MethodType methodType = MethodType.methodType(returnTypeRaw());
+        return MethodHandles.explicitCastArguments(mh, methodType);
     }
 
     /**

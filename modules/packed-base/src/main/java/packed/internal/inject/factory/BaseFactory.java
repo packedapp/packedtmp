@@ -18,7 +18,6 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -81,7 +80,7 @@ public class BaseFactory<T> implements Factory<T> {
      * @param function
      *            the function used to create new instances
      */
-    public BaseFactory(BiFunction<?, ?, ? extends T> function) {
+    protected BaseFactory(BiFunction<?, ?, ? extends T> function) {
         this.handle = Factory2FactoryHandle.create(getClass(), function);
     }
 
@@ -103,7 +102,7 @@ public class BaseFactory<T> implements Factory<T> {
      *            the function used to create new instances
      */
     @SuppressWarnings("unchecked")
-    public BaseFactory(Function<?, ? extends T> function) {
+    protected BaseFactory(Function<?, ? extends T> function) {
         this.handle = (FactoryHandle<T>) Factory1FactoryHandle.create(getClass(), function);
     }
 
@@ -115,89 +114,9 @@ public class BaseFactory<T> implements Factory<T> {
      *            the supplier used to create new instances
      */
     @SuppressWarnings("unchecked")
-    public BaseFactory(Supplier<? extends T> supplier) {
+    protected BaseFactory(Supplier<? extends T> supplier) {
         this.handle = (FactoryHandle<T>) Factory0FactoryHandle.create(getClass(), supplier);
     }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
-//
-//        // Do we allow binding non-matching keys???
-//        // Could be useful from Prime annotations...
-//
-//        // Tror vi skal have to forskellige
-//
-//        // bindParameter(int index).... retains index....
-//        // Throws
-//
-//        // bindWithKey();
-//
-//        // bindRaw(); <---- Only takes a class, ignores nullable.....
-//
-//        // Hvordan klarer vi Foo(String firstName, String lastName)...
-//        // Eller
-//
-//        // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
-//
-//        // Det eneste der er forskel er parameter index'et...
-//        // Maaske bliver man bare noedt til at lave en statisk metoder....
-//
-//        // Skal vi have en speciel MemberFactory?????
-//
-//        //
-//
-//        // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
-//
-//        // resolveDependency()...
-//        // Its not really an argument its a dependency that we resolve...
-//
-//        // withArgumentSupplier
-//        throw new UnsupportedOperationException();
-//    }
-
-//    /** {@inheritDoc} */
-//    // Required/Optional - Key - Variable?
-//    // Requirement
-//
-//    // FactoryDescriptor.of(Factory f) <--- in devtools???
-//
-//    @Override
-//    public final <S> Factory<T> bind(Key<S> key, @Nullable S instance) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    @SuppressWarnings({ "rawtypes", "unchecked" })
-//    public final Factory<T> bind(Object instance) {
-//        requireNonNull(instance, "instance is null");
-//        return bind((Class) instance.getClass(), instance);
-//
-//        // someExtension()
-//        // install(Factory.of(Foo.class).withArgument(this))).
-//
-//        // There is going to be some automatic support for injecting extensions into
-//        // services installed by them. We are just not quite there yet.
-//        // Will bind to any assignable parameter...
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public final <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier) {
-//        // Altsaa vi kan vel bruge et andet factory????
-//        // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
-//        // f.eks. fra Foo(CardReader) -> new Factory0<
-//        // new Factory0<>(e->e);
-//        // withArgumentSupplier
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
-//        throw new UnsupportedOperationException();
-//    }
 
     public final List<?> dependencies() {
         // What if have Factory f = Factory.of(Foo(String x, String y));
@@ -284,7 +203,7 @@ public class BaseFactory<T> implements Factory<T> {
 
     // Hvem skal vi scanne???? Den vi laver oprindelig?? Eller den vi har mappet til?
     // Haelder nok til den vi har mappet til?????
-
+    // Kan vi finde en usecase???
     final <R> Factory<R> mapTo0(Factory1<? super T, ? extends R> mapper) {
         // Factory<String> f = null;
         // @SuppressWarnings({ "null", "unused" })
@@ -293,16 +212,16 @@ public class BaseFactory<T> implements Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    final boolean needsLookup() {
-        // Tror ikke rigtig den fungere...
-        // Det skal jo vaere relativt til en klasse...
-        // F.eks. hvis X en public klasse, med en public constructor.
-        // Og X er readable til A, men ikke B.
-        // Saa har A ikke brug for et Lookup Object, men B har.
-        // Ved ikke rigtig hvad denne skal bruges til....
-        // Maa betyde om man skal
-        return false;
-    }
+//    final boolean needsLookup() {
+//        // Tror ikke rigtig den fungere...
+//        // Det skal jo vaere relativt til en klasse...
+//        // F.eks. hvis X en public klasse, med en public constructor.
+//        // Og X er readable til A, men ikke B.
+//        // Saa har A ikke brug for et Lookup Object, men B har.
+//        // Ved ikke rigtig hvad denne skal bruges til....
+//        // Maa betyde om man skal
+//        return false;
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -380,6 +299,14 @@ public class BaseFactory<T> implements Factory<T> {
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         return new BaseFactory<>(handle.withLookup(lookup));
+//        
+//        if (handle instanceof ExecutableFactoryHandle<?>) {
+//            return new BaseFactory<>(handle.withLookup(lookup));
+//        } else if (handle instanceof FieldFactoryHandle<?>) {
+//            return new BaseFactory<>(handle.withLookup(lookup));
+//        }
+//        throw new UnsupportedOperationException(
+//                "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
     }
 
     /** {@inheritDoc} */
@@ -454,11 +381,84 @@ public class BaseFactory<T> implements Factory<T> {
     public static <T> Factory<T> fromInstance(T instance) {
         return new BaseFactory<>(InstanceFactoryHandle.of(instance));
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return handle.methodType();
-    }
-
 }
+
+///** {@inheritDoc} */
+//@Override
+//public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
+//
+//  // Do we allow binding non-matching keys???
+//  // Could be useful from Prime annotations...
+//
+//  // Tror vi skal have to forskellige
+//
+//  // bindParameter(int index).... retains index....
+//  // Throws
+//
+//  // bindWithKey();
+//
+//  // bindRaw(); <---- Only takes a class, ignores nullable.....
+//
+//  // Hvordan klarer vi Foo(String firstName, String lastName)...
+//  // Eller
+//
+//  // Hvordan klarer vi Foo(String firstName, SomeComposite sc)...
+//
+//  // Det eneste der er forskel er parameter index'et...
+//  // Maaske bliver man bare noedt til at lave en statisk metoder....
+//
+//  // Skal vi have en speciel MemberFactory?????
+//
+//  //
+//
+//  // bindTo? Det er jo ikke et argument hvis det f.eks. er et field...
+//
+//  // resolveDependency()...
+//  // Its not really an argument its a dependency that we resolve...
+//
+//  // withArgumentSupplier
+//  throw new UnsupportedOperationException();
+//}
+
+///** {@inheritDoc} */
+//// Required/Optional - Key - Variable?
+//// Requirement
+//
+//// FactoryDescriptor.of(Factory f) <--- in devtools???
+//
+//@Override
+//public final <S> Factory<T> bind(Key<S> key, @Nullable S instance) {
+//  throw new UnsupportedOperationException();
+//}
+//
+///** {@inheritDoc} */
+//@Override
+//@SuppressWarnings({ "rawtypes", "unchecked" })
+//public final Factory<T> bind(Object instance) {
+//  requireNonNull(instance, "instance is null");
+//  return bind((Class) instance.getClass(), instance);
+//
+//  // someExtension()
+//  // install(Factory.of(Foo.class).withArgument(this))).
+//
+//  // There is going to be some automatic support for injecting extensions into
+//  // services installed by them. We are just not quite there yet.
+//  // Will bind to any assignable parameter...
+//}
+//
+///** {@inheritDoc} */
+//@Override
+//public final <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier) {
+//  // Altsaa vi kan vel bruge et andet factory????
+//  // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
+//  // f.eks. fra Foo(CardReader) -> new Factory0<
+//  // new Factory0<>(e->e);
+//  // withArgumentSupplier
+//  throw new UnsupportedOperationException();
+//}
+//
+///** {@inheritDoc} */
+//@Override
+//public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
+//  throw new UnsupportedOperationException();
+//}

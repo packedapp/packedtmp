@@ -16,7 +16,6 @@
 package app.packed.inject;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -97,8 +96,6 @@ public interface Factory<T> {
      */
     // defaultKey() ??????
     Key<T> key();
-
-    MethodType methodType();
 
     /**
      * Returns the raw type of the type of objects this factory provide. This is also the type that is used for annotation

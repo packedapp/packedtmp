@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
@@ -77,13 +76,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodType methodType() {
-        return methodHandle.type();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle toMethodHandle(Lookup lookup) {
         MethodHandle mh = methodHandle;
         if (executable.isVarArgs()) {
             mh = mh.asFixedArity();
@@ -104,7 +97,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
      * @return a new internal factory that uses the specified lookup object
      */
     @Override
-    public ExecutableFactoryHandle<T> withLookup(Lookup lookup) {
+    public FactoryHandle<T> withLookup(Lookup lookup) {
         MethodHandle handle;
         try {
             if (Modifier.isPrivate(executable.getModifiers())) {
@@ -115,7 +108,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
             throw new InaccessibleMemberException(
                     "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
         }
-        return new ExecutableFactoryHandle<>(returnType(), executable, handle, dependencies());
+        return new ResolvedFactoryHandle<>(this, handle);
     }
 
     static <T> FactoryHandle<T> find(Class<T> implementation) {
@@ -132,7 +125,7 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     // Should we have a strict type? For example, a static method on MyExtension.class
     // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
     // MyExtension.class create()
-    static ExecutableDescriptor findExecutable(Class<?> type) {
+    private static ExecutableDescriptor findExecutable(Class<?> type) {
         return ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(type));
     }
 }

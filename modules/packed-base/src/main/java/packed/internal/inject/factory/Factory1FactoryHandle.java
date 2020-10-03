@@ -18,7 +18,7 @@ package packed.internal.inject.factory;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.List;
 import java.util.Map.Entry;
@@ -65,13 +65,7 @@ final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodType methodType() {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle toMethodHandle() {
+    public MethodHandle toMethodHandle(Lookup ignore) {
         return APPLY.bindTo(function);
     }
 

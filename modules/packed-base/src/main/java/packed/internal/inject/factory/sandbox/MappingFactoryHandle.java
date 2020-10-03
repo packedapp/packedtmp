@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package packed.internal.inject.factory.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 import java.util.function.Function;
 
 import app.packed.base.TypeLiteral;
 import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.methodhandle.LookupUtil;
 
 /** A function that maps the result of another function. */
@@ -62,18 +63,12 @@ final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle toMethodHandle() {
-        MethodHandle mf = mapFrom.toMethodHandle();
+    public MethodHandle toMethodHandle(Lookup lookup) {
+        MethodHandle mf = mapFrom.toMethodHandle(lookup);
 
         // Change return type to Object so the method handle for the function will accept it
         mf = mf.asType(mf.type().changeReturnType(Object.class));
         return MethodHandles.foldArguments(APPLY.bindTo(mapper), mf);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

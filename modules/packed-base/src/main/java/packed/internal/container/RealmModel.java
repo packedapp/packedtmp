@@ -132,10 +132,10 @@ public final class RealmModel extends Model implements SourceModelLookup {
         if (factory instanceof ExecutableFactoryHandle) {
             ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
             if (!e.hasMethodHandle()) {
-                return e.withLookup(MethodHandles.lookup()).toMethodHandle();
+                return e.withLookup(MethodHandles.lookup()).toMethodHandle(MethodHandles.lookup());
             }
         }
-        return factory.toMethodHandle();
+        return factory.toMethodHandle(MethodHandles.lookup());
     }
 
     public SourceModelLookup withLookup(Lookup lookup) {
@@ -209,10 +209,10 @@ public final class RealmModel extends Model implements SourceModelLookup {
             if (factory instanceof ExecutableFactoryHandle) {
                 ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
                 if (!e.hasMethodHandle()) {
-                    return e.withLookup(lookup).toMethodHandle();
+                    return e.withLookup(lookup).toMethodHandle(lookup);
                 }
             }
-            return factory.toMethodHandle();
+            return factory.toMethodHandle(lookup);
         }
     }
 }
