@@ -33,5 +33,5 @@ public interface SourceModelLookup {
     OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
 
     // Just return MethodHandle directly???
-    MethodHandle readable(FactoryHandle<?> factory);
+    MethodHandle toMethodHandle(FactoryHandle<?> factory);
 }

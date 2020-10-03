@@ -98,7 +98,7 @@ public abstract class FactoryHandle<T> {
      *
      * @return the type of objects this operation returns on invocation
      */
-    public final TypeLiteral<T> returnType() {
+    final TypeLiteral<T> returnType() {
         return typeLiteral;
     }
 
@@ -114,11 +114,6 @@ public abstract class FactoryHandle<T> {
     }
 
     public abstract MethodHandle toMethodHandle(Lookup lookup);
-
-    FactoryHandle<T> withLookup(Lookup lookup) {
-        throw new UnsupportedOperationException(
-                "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
-    }
 
     public static <T> FactoryHandle<T> of(BaseFactory<T> factory) {
         return factory.handle;

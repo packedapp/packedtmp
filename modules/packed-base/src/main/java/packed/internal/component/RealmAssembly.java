@@ -60,8 +60,8 @@ public final class RealmAssembly {
         return lookup.modelOf(componentType);
     }
 
-    MethodHandle fromFactoryHandle(FactoryHandle<?> handle) {
-        return lookup.readable(handle);
+    MethodHandle toMethodHandle(FactoryHandle<?> handle) {
+        return lookup.toMethodHandle(handle);
     }
 
     public RealmAssembly linkBundle(Bundle<?> bundle) {

@@ -30,7 +30,7 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.methodhandle.LookupUtil;
 
 /** A factory handle for {@link Factory1}. */
-final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
+final class Factory1FactoryHandle<T> extends FactoryHandle<T> {
 
     /** A method handle for {@link Function#apply(Object)}. */
     private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
@@ -49,9 +49,9 @@ final class Factory1FactoryHandle<T, R> extends FactoryHandle<R> {
     private final List<DependencyDescriptor> dependencies;
 
     /** The function that creates the actual objects. */
-    private final Function<? super T, ? extends R> function;
+    private final Function<?, ? extends T> function;
 
-    private Factory1FactoryHandle(TypeLiteral<R> type, Function<? super T, ? extends R> function, List<DependencyDescriptor> dependencies) {
+    private Factory1FactoryHandle(TypeLiteral<T> type, Function<?, ? extends T> function, List<DependencyDescriptor> dependencies) {
         super(type);
         this.function = requireNonNull(function, "function is null");
         this.dependencies = dependencies;

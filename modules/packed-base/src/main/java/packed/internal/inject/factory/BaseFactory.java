@@ -17,6 +17,7 @@ package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -299,7 +300,8 @@ public class BaseFactory<T> implements Factory<T> {
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (handle instanceof ExecutableFactoryHandle || handle instanceof FieldFactoryHandle) {
-            return new BaseFactory<>(new ResolvedFactoryHandle<>(handle, lookup));
+            MethodHandle mh = handle.toMethodHandle(lookup);
+            return new BaseFactory<>(new ResolvedFactoryHandle<>(handle, mh));
         }
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");

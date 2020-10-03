@@ -78,7 +78,7 @@ public final class SourceAssembly implements DependencyProvider {
         if (factory == null) {
             this.injectable = null;
         } else {
-            MethodHandle mh = compConf.realm.fromFactoryHandle(factory);
+            MethodHandle mh = compConf.realm.toMethodHandle(factory);
             this.injectable = new Injectable(this, factory.dependencies(), mh);
         }
     }

@@ -125,15 +125,7 @@ public final class RealmModel extends Model implements SourceModelLookup {
     }
 
     @Override
-    public MethodHandle readable(FactoryHandle<?> factory) {
-        // TODO needs to cached
-        // TODO add field...
-//        if (factory instanceof ExecutableFactoryHandle) {
-//            ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
-//            if (!e.hasMethodHandle()) {
-//                return e.withLookup(MethodHandles.lookup()).toMethodHandle(MethodHandles.lookup());
-//            }
-//        }
+    public MethodHandle toMethodHandle(FactoryHandle<?> factory) {
         return factory.toMethodHandle(MethodHandles.lookup());
     }
 
@@ -202,15 +194,7 @@ public final class RealmModel extends Model implements SourceModelLookup {
         }
 
         @Override
-        public MethodHandle readable(FactoryHandle<?> factory) {
-            // TODO needs to cached
-            // TODO add field...
-//            if (factory instanceof ExecutableFactoryHandle) {
-//                ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
-//                if (!e.hasMethodHandle()) {
-//                    return e.withLookup(lookup).toMethodHandle(lookup);
-//                }
-//            }
+        public MethodHandle toMethodHandle(FactoryHandle<?> factory) {
             return factory.toMethodHandle(lookup);
         }
     }
