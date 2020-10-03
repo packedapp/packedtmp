@@ -21,9 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.inject.Factory;
-import packed.internal.inject.factory.FactoryHandle;
 import testutil.assertj.inject.FactoryAssert;
-import testutil.assertj.inject.InternalFunctionAssert;
 
 /**
  *
@@ -49,9 +47,5 @@ public class Assertions {
 
     public static <T> FactoryAssert<T> checkThat(Factory<T> factory) {
         return new FactoryAssert<>(factory);
-    }
-
-    public static <T> InternalFunctionAssert<T> checkThat(FactoryHandle<T> factory) {
-        return new InternalFunctionAssert<>(factory);
     }
 }

@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.factory;
+package app.packed.inject;
 
-/** Tests {@link Factory0FactoryHandle}. */
 public class InternalFactory0Test {
 
 }

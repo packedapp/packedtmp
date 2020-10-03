@@ -15,12 +15,20 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  * A {@link Factory} type that uses a {@link Supplier} to provide instances.
@@ -42,7 +50,13 @@ import packed.internal.inject.factory.BaseFactory;
  * @see Factory1
  * @see Factory2
  */
-public abstract class Factory0<R> extends BaseFactory<R> {
+public abstract class Factory0<R> extends Factory<R> {
+
+    /** A method handle for {@link Supplier#get()}. */
+    private static final MethodHandle GET = LookupUtil.lookupVirtualPublic(Supplier.class, "get", Object.class);
+
+    /** The supplier that creates the actual objects. */
+    private final Supplier<? extends R> supplier;
 
     /**
      * Creates a new factory, that uses the specified supplier to provide instances.
@@ -50,11 +64,24 @@ public abstract class Factory0<R> extends BaseFactory<R> {
      * @param supplier
      *            the supplier that provide instances. The supplier should never return null, but should instead throw a
      *            relevant exception if unable to provide a value
-     * @throws FactoryDefinitionException
+     * @throws FactoryException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */
     protected Factory0(Supplier<? extends R> supplier) {
-        super(supplier);
+        this.supplier = requireNonNull(supplier);
+    }
+
+    @Override
+    List<DependencyDescriptor> dependencies() {
+        return List.of();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    MethodHandle toMethodHandle(Lookup i) {
+        MethodHandle mh = GET.bindTo(supplier);
+        MethodType methodType = MethodType.methodType(returnTypeRaw());
+        return MethodHandles.explicitCastArguments(mh, methodType);
     }
 }

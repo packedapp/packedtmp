@@ -24,20 +24,24 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
+import app.packed.inject.Factory;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.component.SourceModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.Hook;
 import packed.internal.hook.OnHook;
 import packed.internal.hook.OnHookModel;
-import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
 import packed.internal.sidecar.old.PackletMotherShip;
 import packed.internal.util.LookupValue;
+import packed.internal.util.ThrowableUtil;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */
 public final class RealmModel extends Model implements SourceModelLookup {
+
+    private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
+            MethodHandle.class, Lookup.class);
 
     /** A cache of model. */
     private static final ClassValue<RealmModel> MODEL_CACHE = new ClassValue<>() {
@@ -125,8 +129,13 @@ public final class RealmModel extends Model implements SourceModelLookup {
     }
 
     @Override
-    public MethodHandle toMethodHandle(FactoryHandle<?> factory) {
-        return factory.toMethodHandle(MethodHandles.lookup());
+    public MethodHandle toMethodHandle(Factory<?> factory) {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        try {
+            return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 
     public SourceModelLookup withLookup(Lookup lookup) {
@@ -194,8 +203,12 @@ public final class RealmModel extends Model implements SourceModelLookup {
         }
 
         @Override
-        public MethodHandle toMethodHandle(FactoryHandle<?> factory) {
-            return factory.toMethodHandle(lookup);
+        public MethodHandle toMethodHandle(Factory<?> factory) {
+            try {
+                return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
     }
 }

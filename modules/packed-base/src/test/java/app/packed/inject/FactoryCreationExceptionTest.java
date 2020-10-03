@@ -21,15 +21,15 @@ import org.junit.jupiter.api.Test;
 
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link FactoryDefinitionException}. */
+/** Tests {@link FactoryException}. */
 public class FactoryCreationExceptionTest {
 
     /** Tests the various constructors.  */
     @Test
     public void test() {
-        assertThat(new FactoryDefinitionException("foo")).hasNoCause();
-        assertThat(new FactoryDefinitionException("foo")).hasMessage("foo");
-        assertThat(new FactoryDefinitionException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new FactoryDefinitionException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new FactoryException("foo")).hasNoCause();
+        assertThat(new FactoryException("foo")).hasMessage("foo");
+        assertThat(new FactoryException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new FactoryException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

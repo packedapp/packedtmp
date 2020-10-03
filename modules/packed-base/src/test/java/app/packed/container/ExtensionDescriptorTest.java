@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Attribute;
-import app.packed.base.ExposeAttribute;
 import app.packed.base.Contract;
+import app.packed.base.ExposeAttribute;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {

@@ -16,26 +16,32 @@
 package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.factory.BaseFactory;
-import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
+import packed.internal.util.ThrowableUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceAssembly implements DependencyProvider {
+
+    private static final MethodHandle FACTORY_TO_DEPENDENCIES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "dependencies",
+            List.class);
 
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration compConf;
 
     @Nullable
-    private final FactoryHandle<?> factory;
+    private final Factory<?> factory;
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
@@ -63,11 +69,11 @@ public final class SourceAssembly implements DependencyProvider {
         if (source instanceof Class) {
             Class<?> c = (Class<?>) source;
             this.instance = null;
-            this.factory = compConf.modifiers().isStateless() ? null : FactoryHandle.of(c);
+            this.factory = compConf.modifiers().isStateless() ? null : Factory.of(c);
             this.model = compConf.realm.componentModelOf(c);
         } else if (source instanceof Factory) {
             this.instance = null;
-            this.factory = FactoryHandle.of((BaseFactory<?>) source);
+            this.factory = (Factory<?>) source;
             this.model = compConf.realm.componentModelOf(factory.returnTypeRaw());
         } else {
             this.factory = null;
@@ -79,7 +85,14 @@ public final class SourceAssembly implements DependencyProvider {
             this.injectable = null;
         } else {
             MethodHandle mh = compConf.realm.toMethodHandle(factory);
-            this.injectable = new Injectable(this, factory.dependencies(), mh);
+            List<DependencyDescriptor> dependencies;
+            try {
+                dependencies = (List<DependencyDescriptor>) FACTORY_TO_DEPENDENCIES.invoke(factory);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+
+            this.injectable = new Injectable(this, dependencies, mh);
         }
     }
 

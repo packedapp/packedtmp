@@ -15,11 +15,17 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import packed.internal.inject.factory.BaseFactory;
+import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -71,7 +77,25 @@ import packed.internal.inject.factory.BaseFactory;
  * @see Factory0
  * @see Factory2
  */
-public abstract class Factory1<T, R> extends BaseFactory<R> {
+public abstract class Factory1<T, R> extends Factory<R> {
+
+    /** A method handle for {@link Function#apply(Object)}. */
+    private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
+
+    /** A cache of extracted type variables and dependencies from subclasses of this class. */
+    static final ClassValue<List<DependencyDescriptor>> CACHE = new ClassValue<>() {
+
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected List<DependencyDescriptor> computeValue(Class<?> type) {
+            return DependencyDescriptor.fromTypeVariables((Class) type, Factory1.class, 0);
+        }
+    };
+    private final List<DependencyDescriptor> dependencies;
+
+    /** The function that creates the actual objects. */
+    private final Function<?, ? extends R> function;
 
     /**
      * Creates a new factory, that uses the specified function to provide instances.
@@ -79,11 +103,24 @@ public abstract class Factory1<T, R> extends BaseFactory<R> {
      * @param function
      *            the function that provide instances. The function should never return null, but should instead throw a
      *            relevant exception if unable to provide a value
-     * @throws FactoryDefinitionException
+     * @throws FactoryException
      *             if any of type variables could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */
     protected Factory1(Function<? super T, ? extends R> function) {
-        super(function);
+        this.dependencies = CACHE.get(getClass());
+        this.function = requireNonNull(function, "function is null");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    List<DependencyDescriptor> dependencies() {
+        return dependencies;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    MethodHandle toMethodHandle(Lookup ignore) {
+        return APPLY.bindTo(function);
     }
 }

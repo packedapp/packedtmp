@@ -33,7 +33,7 @@ import app.packed.sidecar.Packlet;
  * situations an annotation can be used for providing greater control over how dependencies are being injected.
  * <p>
  * One such example is if a dependency should only be injected if it is available. Injecting {@code null} instead of
- * throwing an {@link FactoryDefinitionException}.
+ * throwing an {@link FactoryException}.
  * <p>
  * While we support direct injection onto fields and into methods. We recommend using constructor injection where ever
  * possible. List reasons...

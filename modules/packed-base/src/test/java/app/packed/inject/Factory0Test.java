@@ -61,10 +61,10 @@ public class Factory0Test {
     public void typeParameterIndeterminable() {
         // TODO change to Factory instead of BaseFactory
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Factory0(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <R> for BaseFactory<T> on class app.packed.inject.");
+                .withMessageStartingWith("Cannot determine type variable <R> for Factory<T> on class app.packed.inject.");
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> new Intermediate(() -> 1) {}).withNoCause()
-                .withMessageStartingWith("Cannot determine type variable <T> for BaseFactory<T> on class app.packed.inject.Factory0");
+                .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
     }
 
     /** Check that we can have an intermediate abstract class. */
