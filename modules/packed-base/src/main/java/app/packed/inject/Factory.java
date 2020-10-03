@@ -101,15 +101,16 @@ public abstract class Factory<T> {
 
     // Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
 
-    final Class<?> actualType;
+    /** A cache of extracted type variables from subclasses of this class. */
+    static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
 
-    public final Key<T> key;
+        /** {@inheritDoc} */
+        @SuppressWarnings({ "unchecked", "rawtypes" })
 
-    /** The dependencies for this factory. */
-    private final Class<? super T> type;
-
-    /** The type of objects this factory creates. */
-    public final TypeLiteral<T> typeLiteral;
+        protected TypeLiteral<?> computeValue(Class<?> type) {
+            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
+        }
+    };
 
     /** A cache of factories used by {@link #of(Class)}. */
     private static final ClassValue<Factory<?>> CLASS_CACHE = new ClassValue<>() {
@@ -135,40 +136,81 @@ public abstract class Factory<T> {
         }
     };
 
-    /** A cache of extracted type variables from subclasses of this class. */
-    static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-
-        protected TypeLiteral<?> computeValue(Class<?> type) {
-            return TypeLiteral.fromTypeVariable((Class) type, Factory.class, 0);
-        }
-    };
-
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
+    final Class<?> actualType;
+
+    public final Key<T> key;
+
+    /** The dependencies for this factory. */
+    private final Class<? super T> type;
+
+    /** The type of objects this factory creates. */
+    public final TypeLiteral<T> typeLiteral;
+
     /**
-     * Used by {@link Factory0#Factory0(Supplier)} because we cannot call {@link Object#getClass()} before calling a
+     * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
      * constructor in this class (super).
-     *
      */
     @SuppressWarnings("unchecked")
-    protected Factory() {
+    Factory() {
         this.typeLiteral = (TypeLiteral<T>) CACHE.get(getClass());
         this.key = Key.fromTypeLiteral(typeLiteral);
         this.type = typeLiteral.rawType();
         this.actualType = requireNonNull(type);
     }
 
+    // TODO make package-private
+    private Factory(TypeLiteral<T> typeLiteralOrKey) {
+        this(typeLiteralOrKey, typeLiteralOrKey.rawType());
+    }
+
+    private Factory(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
+        requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
+        this.typeLiteral = typeLiteralOrKey;
+        this.key = Key.fromTypeLiteral(typeLiteral);
+        this.type = typeLiteral.rawType();
+        this.actualType = requireNonNull(actualType);
+    }
+
     /**
-     * Returns the type of objects this operation returns on invocation.
-     *
-     * @return the type of objects this operation returns on invocation
+     * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method
+     * is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
+     * sufficient. A typical example is a constructor with two parameters of the same type.
+     * 
+     * @param index
+     *            the index of the variable to bind
+     * @param argument
+     *            the (nullable) argument to bind
+     * @return a new factory
+     * @throws IndexOutOfBoundsException
+     *             if the specified index does not represent a valid variable in {@link #variables()}
+     * @throws ClassCastException
+     *             if the specified argument is not compatible with the actual type of the variable
+     * @throws NullPointerException
+     *             if the specified argument is null and the variable does not represent a reference type
      */
-    final TypeLiteral<T> returnType() {
-        return typeLiteral;
+
+    public final Factory<T> bind(int index, @Nullable Object argument) {
+        // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
+        // F.eks. for dooo(String x, String y)
+        // Og det gider vi ikke....
+        // Saa variables stay the same -> Why shouldn't we able to bind them...
+
+        // Maybe add isVariableBound(int index)
+
+        // Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
+
+        // Har vi en optional MemberDescriptor?????
+
+        // Hvis man nu vil injecte en composite....
+
+        throw new UnsupportedOperationException();
+    }
+
+    public final Factory<T> bind(int index, Supplier<?> supplier) {
+        throw new UnsupportedOperationException();
     }
 
     protected T checkLowerbound(T instance) {
@@ -182,30 +224,6 @@ public abstract class Factory<T> {
 
     abstract List<DependencyDescriptor> dependencies();
 
-    /**
-     * Returns the raw type of objects this operation returns on invocation.
-     *
-     * @return the raw type of objects this operation returns on invocation
-     */
-    public final Class<? super T> returnTypeRaw() {
-        return type;
-    }
-
-    abstract MethodHandle toMethodHandle(Lookup lookup);
-
-    Factory(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
-        requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
-        this.typeLiteral = typeLiteralOrKey;
-        this.key = Key.fromTypeLiteral(typeLiteral);
-        this.type = typeLiteral.rawType();
-        this.actualType = requireNonNull(actualType);
-    }
-
-    // TODO make package-private
-    public Factory(TypeLiteral<T> typeLiteralOrKey) {
-        this(typeLiteralOrKey, typeLiteralOrKey.rawType());
-    }
-
     final List<?> dependenciesx() {
         // What if have Factory f = Factory.of(Foo(String x, String y));
         // f.bindVariable(0, "FooBar");
@@ -216,18 +234,6 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
 
         // Factory<T> narrow() <- removes bound dependencies/parameters()...
-    }
-
-    /**
-     * Returns a new factory that will perform the specified action after the factory has produced an object.
-     * 
-     * @param action
-     *            the injection action
-     * @return the new factory
-     */
-    public final Factory<T> postConstruction(Consumer<? super T> action) {
-        // Bare u
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -307,16 +313,17 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-//    final boolean needsLookup() {
-//        // Tror ikke rigtig den fungere...
-//        // Det skal jo vaere relativt til en klasse...
-//        // F.eks. hvis X en public klasse, med en public constructor.
-//        // Og X er readable til A, men ikke B.
-//        // Saa har A ikke brug for et Lookup Object, men B har.
-//        // Ved ikke rigtig hvad denne skal bruges til....
-//        // Maa betyde om man skal
-//        return false;
-//    }
+    /**
+     * Returns a new factory that will perform the specified action after the factory has produced an object.
+     * 
+     * @param action
+     *            the injection action
+     * @return the new factory
+     */
+    public final Factory<T> postConstruction(Consumer<? super T> action) {
+        // Bare u
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the raw type of the type of objects this factory provide. This is also the type that is used for annotation
@@ -330,6 +337,35 @@ public abstract class Factory<T> {
         return typeLiteral().rawType();
     }
 
+//    final boolean needsLookup() {
+//        // Tror ikke rigtig den fungere...
+//        // Det skal jo vaere relativt til en klasse...
+//        // F.eks. hvis X en public klasse, med en public constructor.
+//        // Og X er readable til A, men ikke B.
+//        // Saa har A ikke brug for et Lookup Object, men B har.
+//        // Ved ikke rigtig hvad denne skal bruges til....
+//        // Maa betyde om man skal
+//        return false;
+//    }
+
+    /**
+     * Returns the type of objects this operation returns on invocation.
+     *
+     * @return the type of objects this operation returns on invocation
+     */
+    final TypeLiteral<T> returnType() {
+        return typeLiteral;
+    }
+
+    /**
+     * Returns the raw type of objects this operation returns on invocation.
+     *
+     * @return the raw type of objects this operation returns on invocation
+     */
+    public final Class<? super T> returnTypeRaw() {
+        return type;
+    }
+
     /**
      * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
      * annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
@@ -341,6 +377,8 @@ public abstract class Factory<T> {
     Class<? super T> scannableType() {
         return rawType();
     }
+
+    abstract MethodHandle toMethodHandle(Lookup lookup);
 
     /**
      * Returns the type of the type of objects this factory provide.
@@ -452,45 +490,6 @@ public abstract class Factory<T> {
     }
 
     /**
-     * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method
-     * is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
-     * sufficient. A typical example is a constructor with two parameters of the same type.
-     * 
-     * @param index
-     *            the index of the variable to bind
-     * @param argument
-     *            the (nullable) argument to bind
-     * @return a new factory
-     * @throws IndexOutOfBoundsException
-     *             if the specified index does not represent a valid variable in {@link #variables()}
-     * @throws ClassCastException
-     *             if the specified argument is not compatible with the actual type of the variable
-     * @throws NullPointerException
-     *             if the specified argument is null and the variable does not represent a reference type
-     */
-
-    public final Factory<T> bind(int index, @Nullable Object argument) {
-        // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
-        // F.eks. for dooo(String x, String y)
-        // Og det gider vi ikke....
-        // Saa variables stay the same -> Why shouldn't we able to bind them...
-
-        // Maybe add isVariableBound(int index)
-
-        // Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
-
-        // Har vi en optional MemberDescriptor?????
-
-        // Hvis man nu vil injecte en composite....
-
-        throw new UnsupportedOperationException();
-    }
-
-    public final Factory<T> bind(int index, Supplier<?> supplier) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * This method is equivalent to {@link #of(Class)} except taking a type literal.
      *
      * @param <T>
@@ -513,26 +512,6 @@ public abstract class Factory<T> {
         } else {
             return ExecutableFactory.findX(implementation);
         }
-    }
-
-    /**
-     * Returns a factory that returns the specified instance every time the factory is used.
-     * <p>
-     * If the specified instance makes use of field or method injection the returned factory should not be used more than
-     * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
-     * factory.
-     * 
-     * @param <T>
-     *            the type of instances created by the factory
-     * @param instance
-     *            the instance to return every time a new instance is requested
-     * @return the factory
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Factory<T> ofInstance(T instance) {
-        requireNonNull(instance, "instance is null");
-        Class<?> type = instance.getClass();
-        return new InstanceFactory<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
     }
 
     /**
@@ -593,6 +572,26 @@ public abstract class Factory<T> {
         } else {
             return ExecutableFactory.findX(implementation);
         }
+    }
+
+    /**
+     * Returns a factory that returns the specified instance every time the factory is used.
+     * <p>
+     * If the specified instance makes use of field or method injection the returned factory should not be used more than
+     * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
+     * factory.
+     * 
+     * @param <T>
+     *            the type of instances created by the factory
+     * @param instance
+     *            the instance to return every time a new instance is requested
+     * @return the factory
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> Factory<T> ofInstance(T instance) {
+        requireNonNull(instance, "instance is null");
+        Class<?> type = instance.getClass();
+        return new InstanceFactory<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
     }
 
     /** The backing class of {@link Factory}. */
@@ -684,6 +683,13 @@ public abstract class Factory<T> {
             this.field = field;
         }
 
+        /** {@inheritDoc} */
+
+        @Override
+        List<DependencyDescriptor> dependencies() {
+            return List.of();
+        }
+
         /**
          * Compiles the code to a single method handle.
          * 
@@ -706,13 +712,6 @@ public abstract class Factory<T> {
                 handle = handle.bindTo(instance);
             }
             return handle;
-        }
-
-        /** {@inheritDoc} */
-
-        @Override
-        List<DependencyDescriptor> dependencies() {
-            return List.of();
         }
     }
 

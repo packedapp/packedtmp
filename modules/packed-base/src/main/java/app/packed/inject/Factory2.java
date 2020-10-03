@@ -39,7 +39,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
     private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(BiFunction.class, "apply", Object.class, Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<List<DependencyDescriptor>> CACHE = new ClassValue<>() {
+    private static final ClassValue<List<DependencyDescriptor>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -67,7 +67,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         this.function = requireNonNull(function, "function is null");
-        this.dependencies = CACHE.get(getClass());
+        this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
     }
 
     /** {@inheritDoc} */
