@@ -77,6 +77,9 @@ import packed.internal.invoke.typevariable.TypeVariableExtractor;
 // This class used to provide some bind methods...
 // But we don't do that no more. Because it was just impossible to
 // see what was what...
+
+// Its friend the abstract class Procedure... like Factory but no return..
+// Then move it to base...
 public abstract class Factory<T> {
     //////// TYPES (Raw)
     // ExactType... -> Instance, Constructor

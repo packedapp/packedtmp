@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.component.Assembler;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentDriver;
@@ -56,12 +57,12 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         this.newShellMH = requireNonNull(newShellMH);
     }
 
-    public <D> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
+    public <D extends Assembler> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
     @Override
-    public <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
+    public <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = PackedInitializationContext.initialize(node);
         return newShell(ac);

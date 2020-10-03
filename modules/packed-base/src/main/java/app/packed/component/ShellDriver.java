@@ -44,7 +44,7 @@ import packed.internal.component.PackedShellDriver;
  */
 public interface ShellDriver<S> {
 
-    <C, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets);
+    <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets);
 
     /**
      * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of shell

@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
+import app.packed.component.Assembler;
 import app.packed.component.AssemblyContext;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentModifierSet;
@@ -124,7 +125,7 @@ public final class PackedAssemblyContext implements AssemblyContext {
         return compConf;
     }
 
-    public static <C, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C extends Assembler, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste

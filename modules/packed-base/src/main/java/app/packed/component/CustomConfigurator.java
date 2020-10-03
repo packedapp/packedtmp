@@ -15,23 +15,12 @@
  */
 package app.packed.component;
 
-import java.lang.invoke.MethodHandles.Lookup;
-
 /**
  *
  */
 @FunctionalInterface
 // T extends AbstractRealm
-public interface CustomConfigurator<T> {
+public interface CustomConfigurator<T extends Assembler> {
 
     void configure(T stuff);
-}
-
-// T extends AbstractRealm
-class AbstractRealm {
-
-    // StuffInner stuff
-    public final void realm(Lookup lookup) {
-
-    }
 }

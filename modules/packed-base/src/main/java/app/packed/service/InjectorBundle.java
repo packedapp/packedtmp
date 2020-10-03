@@ -15,10 +15,12 @@
  */
 package app.packed.service;
 
+import app.packed.container.ContainerBundle;
+
 /**
  *
  */
 // Specielt lavet til at lave injectors.
-abstract class InjectorBundle {
+abstract class InjectorBundle extends ContainerBundle {
 
 }

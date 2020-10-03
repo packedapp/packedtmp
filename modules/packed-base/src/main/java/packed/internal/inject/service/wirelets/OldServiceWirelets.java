@@ -58,7 +58,7 @@ public final class OldServiceWirelets {
     }
 
     public static void main(String[] args) {
-        provideMapped(new Mapper<Long, Integer>(e -> e.intValue()) {});
+        provideMapped(new Factory1<Long, Integer>(e -> e.intValue()) {});
 
         mapTo(new Factory1<TimeZone, ZoneId>(TimeZone::toZoneId) {});
 
@@ -88,9 +88,9 @@ public final class OldServiceWirelets {
         return new PackedUpstreamInjectionWirelet.ApplyFunctionUpstream(fromKey, toKey, mapper, false);
     }
 
-    public static Wirelet mapUpstream(Mapper<?, ?> mapper) {
-        throw new UnsupportedOperationException();
-    }
+//    public static Wirelet mapUpstream(Mapper<?, ?> mapper) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * This method exists mainly to support debugging, where you want to see which services are available at a particular
@@ -160,7 +160,7 @@ public final class OldServiceWirelets {
     // Saa kan vi have vilkaerlige
 
     // Problemet er at vi skal angive 2 noegler
-    static Wirelet provideMapped(Mapper<?, ?> r) {
+    static Wirelet provideMapped(Factory1<?, ?> r) {
         throw new UnsupportedOperationException();
     }
 
@@ -182,21 +182,21 @@ public final class OldServiceWirelets {
 
     // Maybe have a generic mapper, not only for injection...
     // Transformer, maaske i .function package
-    static abstract class Mapper<T, R> {
-        protected Mapper(Function<? super T, ? extends R> function) {
-            throw new UnsupportedOperationException();
-        }
-    }
+//    static abstract class Mapper<T, R> {
+//        protected Mapper(Function<? super T, ? extends R> function) {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
 
-    static class Transformer<F, T> {
-        Key<F> from() {
-            throw new UnsupportedOperationException();
-        }
-
-        Key<F> to() {
-            throw new UnsupportedOperationException();
-        }
-    }
+//    static class Transformer<F, T> {
+//        Key<F> from() {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        Key<F> to() {
+//            throw new UnsupportedOperationException();
+//        }
+//    }
 }
 
 /// into

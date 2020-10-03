@@ -18,12 +18,13 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
+import app.packed.container.BaseBundle;
 import packed.internal.component.BundleHelper;
 import packed.internal.component.PackedComponentDriver;
 
 /**
  * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component. This
- * class is primary used through one of its subclasses such as .
+ * class is primary used through one of its subclasses such as {@link BaseBundle}.
  * <p>
  * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
  * functionality of Packed.
@@ -34,7 +35,7 @@ import packed.internal.component.PackedComponentDriver;
 public abstract class Bundle<C> implements ComponentSystem {
 
     /**
-     * The configuration of this bundle. This field is "magically" set via a var handle from {@link BundleHelper}.
+     * The configuration of this bundle. This field is set via a VarHandle from {@link BundleHelper}.
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the bundle has not yet been consumed.
@@ -43,17 +44,17 @@ public abstract class Bundle<C> implements ComponentSystem {
      * </ul>
      */
     @Nullable
-    private Object configuration;
-
-    /** The driver of this bundle. Is "magically" read via a var handle from {@link BundleHelper}. */
-    @SuppressWarnings("unused")
     // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
     // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
     // [afdf, state = Unusued]consuming|consumed]
-    private final PackedComponentDriver<? extends C> driver; // TODO maybe use for tostring??? Include state
+    private Object configuration;
+
+    /** The driver of this bundle. This field is read via a VarHandle from {@link BundleHelper}. */
+    @SuppressWarnings("unused")
+    private final PackedComponentDriver<? extends C> driver;
 
     /**
-     * Creates a new bundle using the specified driver.
+     * Creates a new bundle using the specified component driver.
      * 
      * @param driver
      *            the driver to use for constructing this bundle's configuration object

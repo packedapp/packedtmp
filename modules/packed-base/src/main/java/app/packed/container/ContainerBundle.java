@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import app.packed.base.TreePath;
 import app.packed.component.BeanConfiguration;
@@ -107,30 +106,6 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      */
     protected final String getName() {
         return configuration().getName();
-    }
-
-    /**
-     * @param <W>
-     * @param wireletType
-     * @param predicate
-     * @return stuff
-     */
-    // Should we add wirelet(Type, consumer) or Optional<Wirelet>
-    final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
-        // Mainly used for inheritable wirelets...
-        // Would be nice if pipeline = wirelet... Because then we could do
-        // ifWirelet(somePipeline, containsX) ->
-        // Which we can if the user implements Wirelet themself
-
-        // This should not really be the first tool you use...
-        // Yeah I think bundle.setFoo() is so much better????
-        // Not sure we want to encourage it....
-
-        // But its useful for extensions, no? Well only to override
-        // settings such as WebExtension.defaultPort(); <- but that's runtime
-        // I mean for
-        // The runtime then...
-        return false;
     }
 
     /**
@@ -283,4 +258,29 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
 //// useWirelet()
 //protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
 //  return configuration().assemblyWirelet(type);
+//}
+
+//// De her conditional wirelet kom aldrig til at fungere godt. PGA ordering
+///**
+// * @param <W>
+// * @param wireletType
+// * @param predicate
+// * @return stuff
+// */
+//// Should we add wirelet(Type, consumer) or Optional<Wirelet>
+//final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
+//    // Mainly used for inheritable wirelets...
+//    // Would be nice if pipeline = wirelet... Because then we could do
+//    // ifWirelet(somePipeline, containsX) ->
+//    // Which we can if the user implements Wirelet themself
+//
+//    // This should not really be the first tool you use...
+//    // Yeah I think bundle.setFoo() is so much better????
+//    // Not sure we want to encourage it....
+//
+//    // But its useful for extensions, no? Well only to override
+//    // settings such as WebExtension.defaultPort(); <- but that's runtime
+//    // I mean for
+//    // The runtime then...
+//    return false;
 //}

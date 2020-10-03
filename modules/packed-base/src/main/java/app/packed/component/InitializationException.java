@@ -19,6 +19,7 @@ package app.packed.component;
  *
  */
 public class InitializationException extends RuntimeException {
+
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
 

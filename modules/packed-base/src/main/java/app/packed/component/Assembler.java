@@ -15,12 +15,19 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles.Lookup;
+
 /**
  *
  */
 // Can take a CCC context. And cast it and provide lookup??
 
 // Maaske er det altid en container????
-public abstract class Assembler {
 
+// Maker
+public abstract class Assembler {
+    // StuffInner stuff
+    public final void realm(Lookup lookup) {
+
+    }
 }

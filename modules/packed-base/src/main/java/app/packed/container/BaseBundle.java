@@ -66,7 +66,7 @@ import app.packed.statemachine.OnStart;
 // Og saa sige at folk skal laere derfra
 public abstract class BaseBundle extends ContainerBundle {
 
-    protected void requireGuest() {
+    protected final void requireGuest() {
         // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
 
         // Vi skal have en eller anden maade at kunne specificere det her
@@ -82,7 +82,7 @@ public abstract class BaseBundle extends ContainerBundle {
      * @throws IllegalArgumentException
      *             if the specified extension type is {@link Extension}
      */
-    public boolean isUsed(Class<? extends Extension> extensionType) {
+    protected final boolean isUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         if (extensionType == Extension.class) {
             throw new IllegalArgumentException("Cannot specify Extension.class");
