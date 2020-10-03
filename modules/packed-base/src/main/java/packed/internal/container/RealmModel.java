@@ -30,7 +30,6 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hook.Hook;
 import packed.internal.hook.OnHook;
 import packed.internal.hook.OnHookModel;
-import packed.internal.inject.factory.ExecutableFactoryHandle;
 import packed.internal.inject.factory.FactoryHandle;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
@@ -129,12 +128,12 @@ public final class RealmModel extends Model implements SourceModelLookup {
     public MethodHandle readable(FactoryHandle<?> factory) {
         // TODO needs to cached
         // TODO add field...
-        if (factory instanceof ExecutableFactoryHandle) {
-            ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
-            if (!e.hasMethodHandle()) {
-                return e.withLookup(MethodHandles.lookup()).toMethodHandle(MethodHandles.lookup());
-            }
-        }
+//        if (factory instanceof ExecutableFactoryHandle) {
+//            ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
+//            if (!e.hasMethodHandle()) {
+//                return e.withLookup(MethodHandles.lookup()).toMethodHandle(MethodHandles.lookup());
+//            }
+//        }
         return factory.toMethodHandle(MethodHandles.lookup());
     }
 
@@ -206,12 +205,12 @@ public final class RealmModel extends Model implements SourceModelLookup {
         public MethodHandle readable(FactoryHandle<?> factory) {
             // TODO needs to cached
             // TODO add field...
-            if (factory instanceof ExecutableFactoryHandle) {
-                ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
-                if (!e.hasMethodHandle()) {
-                    return e.withLookup(lookup).toMethodHandle(lookup);
-                }
-            }
+//            if (factory instanceof ExecutableFactoryHandle) {
+//                ExecutableFactoryHandle<?> e = (ExecutableFactoryHandle<?>) factory;
+//                if (!e.hasMethodHandle()) {
+//                    return e.withLookup(lookup).toMethodHandle(lookup);
+//                }
+//            }
             return factory.toMethodHandle(lookup);
         }
     }

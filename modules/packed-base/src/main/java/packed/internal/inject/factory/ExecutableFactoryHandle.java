@@ -45,22 +45,17 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
     /** A factory with an executable as a target. */
     public final ExecutableDescriptor executable;
 
-    /** A special method handle that should for this factory. */
-    final MethodHandle methodHandle;
-
     @SuppressWarnings("unchecked")
     public ExecutableFactoryHandle(MethodDescriptor methodDescriptor, List<DependencyDescriptor> dependencies) {
         super((TypeLiteral<T>) methodDescriptor.returnTypeLiteral());
         this.executable = methodDescriptor;
-        this.methodHandle = null;
         this.checkLowerBound = false;
         this.dependencies = dependencies;
     }
 
-    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, MethodHandle methodHandle, List<DependencyDescriptor> dependencies) {
+    public ExecutableFactoryHandle(TypeLiteral<T> key, ExecutableDescriptor executable, List<DependencyDescriptor> dependencies) {
         super(key);
         this.executable = executable;
-        this.methodHandle = methodHandle;
         this.checkLowerBound = false;
         this.dependencies = dependencies;
     }
@@ -70,13 +65,20 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
         return dependencies;
     }
 
-    public boolean hasMethodHandle() {
-        return methodHandle != null;
-    }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle toMethodHandle(Lookup lookup) {
+        MethodHandle methodHandle;
+        try {
+            if (Modifier.isPrivate(executable.getModifiers())) {
+                lookup = lookup.in(executable.getDeclaringClass());
+            }
+            methodHandle = executable.unreflect(lookup);
+        } catch (IllegalAccessException e) {
+            throw new InaccessibleMemberException(
+                    "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
+        }
+
         MethodHandle mh = methodHandle;
         if (executable.isVarArgs()) {
             mh = mh.asFixedArity();
@@ -113,13 +115,13 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
 
     static <T> FactoryHandle<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
-        return new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable));
+        return new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, DependencyDescriptor.fromExecutable(executable));
     }
 
     static <T> FactoryHandle<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable));
+        return new ExecutableFactoryHandle<>(implementation, executable, DependencyDescriptor.fromExecutable(executable));
     }
 
     // Should we have a strict type? For example, a static method on MyExtension.class
