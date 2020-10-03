@@ -73,12 +73,9 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
 
     /**
      * Any child containers located in the same artifact will be has been defined. Typically using . The next event will be
-     * {@link #GUESTS_DEFINITIONS}.
+     * {@link #CHILD_LINKING}.
      */
     public static final String CHILD_LINKING = "ChildLinking";
-
-    /** This is the final event. This event will be invoked even if no guests are defined. */
-    public static final String GUESTS_DEFINITIONS = "GuestsDefinitions";
 
     /** The end state of the extension. */
     public static final String ASSEMBLED = "Assembled";
@@ -370,8 +367,8 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         };
 
         /** Meta data about the extension sidecar. */
-        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSetup.class, LifecycleDefinition.of(ExtensionModel.INSTANTIATING,
-                ExtensionModel.NORMAL_USAGE, ExtensionModel.CHILD_LINKING, ExtensionModel.GUESTS_DEFINITIONS));
+        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSetup.class,
+                LifecycleDefinition.of(ExtensionModel.INSTANTIATING, ExtensionModel.NORMAL_USAGE, ExtensionModel.CHILD_LINKING));
 
         // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;

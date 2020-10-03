@@ -54,6 +54,6 @@ public class AnnotationMaker<T extends Annotation> {
 
     public static <T extends Annotation> AnnotationMaker<T> of(MethodHandles.Lookup lookup, Class<T> annotationType) {
         // lookup must Read Annotation
-        throw new UnsupportedOperationException();
+        return null;
     }
 }
