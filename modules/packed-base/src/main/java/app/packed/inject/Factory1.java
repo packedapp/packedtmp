@@ -83,7 +83,7 @@ public abstract class Factory1<T, R> extends Factory<R> {
     private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    static final ClassValue<List<DependencyDescriptor>> CACHE = new ClassValue<>() {
+    static final ClassValue<List<DependencyDescriptor>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -92,6 +92,8 @@ public abstract class Factory1<T, R> extends Factory<R> {
             return DependencyDescriptor.fromTypeVariables((Class) type, Factory1.class, 0);
         }
     };
+
+    /** The dependencies of this factory, extracted from the type variables of the subclass. */
     private final List<DependencyDescriptor> dependencies;
 
     /** The function that creates the actual objects. */
@@ -108,8 +110,8 @@ public abstract class Factory1<T, R> extends Factory<R> {
      *             {@link Optional}
      */
     protected Factory1(Function<? super T, ? extends R> function) {
-        this.dependencies = CACHE.get(getClass());
         this.function = requireNonNull(function, "function is null");
+        this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
     }
 
     /** {@inheritDoc} */

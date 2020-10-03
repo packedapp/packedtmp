@@ -111,7 +111,7 @@ public abstract class Factory<T> {
     /** The type of objects this factory creates. */
     public final TypeLiteral<T> typeLiteral;
 
-    /** A cache of factories used by {@link #find(Class)}. */
+    /** A cache of factories used by {@link #of(Class)}. */
     private static final ClassValue<Factory<?>> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -490,14 +490,8 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Factory<T> find(Class<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        return (Factory<T>) CLASS_CACHE.get(implementation);
-    }
-
     /**
-     * This method is equivalent to {@link #find(Class)} except taking a type literal.
+     * This method is equivalent to {@link #of(Class)} except taking a type literal.
      *
      * @param <T>
      *            the implementation type
@@ -515,7 +509,7 @@ public abstract class Factory<T> {
         }
         Type t = implementation.type();
         if (t instanceof Class) {
-            return (Factory<T>) find((Class<?>) t);
+            return (Factory<T>) of((Class<?>) t);
         } else {
             return ExecutableFactory.findX(implementation);
         }
@@ -571,8 +565,10 @@ public abstract class Factory<T> {
     // Rename of()... syntes det er fint den hedder of()... og saa er det en fejl situation
     // Eneste er vi generalt returnere en optional for find metoder...
     // Har droppet at kalde den find... Fordi find generelt returnere en Optional...
+    @SuppressWarnings("unchecked")
     public static <T> Factory<T> of(Class<T> implementation) {
-        return Factory.find(implementation);
+        requireNonNull(implementation, "implementation is null");
+        return (Factory<T>) CLASS_CACHE.get(implementation);
     }
 
     /**
@@ -584,8 +580,19 @@ public abstract class Factory<T> {
      *            the implementation type
      * @return a factory for the specified implementation type
      */
+    @SuppressWarnings("unchecked")
     public static <T> Factory<T> of(TypeLiteral<T> implementation) {
-        return Factory.find(implementation);
+        requireNonNull(implementation, "implementation is null");
+        if (!ModuleAccess.base().isCanonicalized(implementation)) {
+            // We cache factories for all "new TypeLiteral<>(){}"
+            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
+        }
+        Type t = implementation.type();
+        if (t instanceof Class) {
+            return (Factory<T>) of((Class<?>) t);
+        } else {
+            return ExecutableFactory.findX(implementation);
+        }
     }
 
     /** The backing class of {@link Factory}. */

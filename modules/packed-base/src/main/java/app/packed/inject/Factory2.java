@@ -49,9 +49,10 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
         }
     };
 
+    /** The dependencies of this factory, extracted from the type variables of the subclass. */
     private final List<DependencyDescriptor> dependencies;
 
-    /** The function responsible for creating the actual objects. */
+    /** The function that creates the actual instances. */
     private final BiFunction<? super T, ? super U, ? extends R> function;
 
     /**
@@ -65,7 +66,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
      *             {@link Optional}
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
-        this.function = requireNonNull(function);
+        this.function = requireNonNull(function, "function is null");
         this.dependencies = CACHE.get(getClass());
     }
 

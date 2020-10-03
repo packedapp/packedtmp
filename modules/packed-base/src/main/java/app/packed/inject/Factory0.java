@@ -69,9 +69,10 @@ public abstract class Factory0<R> extends Factory<R> {
      *             {@link Optional}
      */
     protected Factory0(Supplier<? extends R> supplier) {
-        this.supplier = requireNonNull(supplier);
+        this.supplier = requireNonNull(supplier, "supplier is null");
     }
 
+    /** {@inheritDoc} */
     @Override
     List<DependencyDescriptor> dependencies() {
         return List.of();
