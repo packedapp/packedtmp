@@ -40,7 +40,6 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.context.PackedProvideContext;
 import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
-import packed.internal.util.KeyBuilder;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /** The default implementation of {@link Injector}. */
@@ -150,6 +149,6 @@ public final class PackedInjector extends AbstractInjector {
     /** {@inheritDoc} */
     @Override
     public AttributedElementStream<Service> stream() {
-        return new PackedAttributeHolderStream<>(entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> e));
+        return new PackedAttributeHolderStream<>(entries.values().stream().map(e -> e));
     }
 }

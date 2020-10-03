@@ -23,9 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.junit.jupiter.api.Test;
 
-import testutil.stubs.Throwables.Error1;
 import testutil.stubs.Throwables.Exception1;
-import testutil.stubs.Throwables.RuntimeException1;
 import testutil.stubs.Throwables.Throwable1;
 
 /** Tests {@link ThrowableUtil}. */
@@ -49,22 +47,22 @@ public class ThrowableUtilTest {
         assertThat(ThrowableUtil.fromCompletionFuture(cf)).isInstanceOf(CancellationException.class);
     }
 
-    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
-    @Test
-    public void rethrowErrorOrException() throws Exception {
-        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
-        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
-        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
-        assertThat(ThrowableUtil.rethrowErrorOrException(Throwable1.INSTANCE)).isSameAs(Throwable1.INSTANCE);
-    }
-
-    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
-    @Test
-    public void rethrowErrorOrRuntimeException() {
-        assertThatThrownBy(() -> ThrowableUtil.throwIfUnchecked(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
-        assertThatThrownBy(() -> ThrowableUtil.throwIfUnchecked(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
-        assertThat(ThrowableUtil.throwIfUnchecked(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
-    }
+//    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
+//    @Test
+//    public void rethrowErrorOrException() throws Exception {
+//        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
+//        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
+//        assertThatThrownBy(() -> ThrowableUtil.rethrowErrorOrException(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
+//        assertThat(ThrowableUtil.rethrowErrorOrException(Throwable1.INSTANCE)).isSameAs(Throwable1.INSTANCE);
+//    }
+//
+//    /** Tests {@link ThrowableUtil#throwIfUnchecked(Throwable)}. */
+//    @Test
+//    public void rethrowErrorOrRuntimeException() {
+//        assertThatThrownBy(() -> ThrowableUtil.throwIfUnchecked(Error1.INSTANCE)).isSameAs(Error1.INSTANCE);
+//        assertThatThrownBy(() -> ThrowableUtil.throwIfUnchecked(RuntimeException1.INSTANCE)).isSameAs(RuntimeException1.INSTANCE);
+//        assertThat(ThrowableUtil.throwIfUnchecked(Exception1.INSTANCE)).isSameAs(Exception1.INSTANCE);
+//    }
 
     /** Tests {@link ThrowableUtil#throwAny(Throwable)}. */
     @Test

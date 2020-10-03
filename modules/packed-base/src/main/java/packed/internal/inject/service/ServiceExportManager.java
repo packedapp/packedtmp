@@ -34,7 +34,6 @@ import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.PackedExportedServiceConfiguration;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.PackedServiceRegistry;
-import packed.internal.util.KeyBuilder;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -214,10 +213,8 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
 
         if (exportAll != null) {
             for (ServiceAssembly<?> e : sm.resolvedServices.values()) {
-                if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) {
-                    if (!resolvedExports.containsKey(e.key())) {
-                        resolvedExports.put(e.key(), new ExportedServiceAssembly<>(sm, e, exportAll));
-                    }
+                if (!resolvedExports.containsKey(e.key())) {
+                    resolvedExports.put(e.key(), new ExportedServiceAssembly<>(sm, e, exportAll));
                 }
             }
         }

@@ -48,26 +48,13 @@ public final class ThrowableUtil {
     }
 
     /**
-     * Throws the specified throwable if it is an {@link Error} or a {@link Exception}. Otherwise returns the specified
-     * throwable.
+     * Throws the specified throwable if it is an {@link Error} or a {@link RuntimeException}. Otherwise returns the
+     * specified throwable.
      *
-     * @param <T>
-     *            the type of throwable
      * @param throwable
      *            the throwable
-     * @return the specified throwable if it not an Error or a Exception
-     * @throws Exception
-     *             if the specified throwable is a checked exception
+     * @return the specified throwable if it not an Error or a RuntimeException
      */
-    public static <T extends Throwable> T rethrowErrorOrException(T throwable) throws Exception {
-        if (throwable instanceof Error) {
-            throw (Error) throwable;
-        } else if (throwable instanceof Exception) {
-            throw (Exception) throwable;
-        }
-        return throwable;
-    }
-
     public static UndeclaredThrowableException orUndeclared(Throwable throwable) {
         if (throwable instanceof RuntimeException) {
             throw (RuntimeException) throwable;
@@ -75,25 +62,6 @@ public final class ThrowableUtil {
             throw (Error) throwable;
         }
         return new UndeclaredThrowableException(throwable);
-    }
-
-    /**
-     * Throws the specified throwable if it is an {@link Error} or a {@link RuntimeException}. Otherwise returns the
-     * specified throwable.
-     *
-     * @param <T>
-     *            the type of throwable
-     * @param throwable
-     *            the throwable
-     * @return the specified throwable if it not an Error or a RuntimeException
-     */
-    public static <T extends Throwable> T throwIfUnchecked(T throwable) {
-        if (throwable instanceof Error) {
-            throw (Error) throwable;
-        } else if (throwable instanceof RuntimeException) {
-            throw (RuntimeException) throwable;
-        }
-        return throwable;
     }
 
     /**
@@ -126,3 +94,33 @@ public final class ThrowableUtil {
         throw (E) throwable;
     }
 }
+//
+///**
+// * Throws the specified throwable if it is an {@link Error} or a {@link Exception}. Otherwise returns the specified
+// * throwable.
+// *
+// * @param <T>
+// *            the type of throwable
+// * @param throwable
+// *            the throwable
+// * @return the specified throwable if it not an Error or a Exception
+// * @throws Exception
+// *             if the specified throwable is a checked exception
+// */
+//public static <T extends Throwable> T rethrowErrorOrException(T throwable) throws Exception {
+//    if (throwable instanceof Error) {
+//        throw (Error) throwable;
+//    } else if (throwable instanceof Exception) {
+//        throw (Exception) throwable;
+//    }
+//    return throwable;
+//}
+//
+//public static <T extends Throwable> T throwIfUnchecked(T throwable) {
+//    if (throwable instanceof Error) {
+//        throw (Error) throwable;
+//    } else if (throwable instanceof RuntimeException) {
+//        throw (RuntimeException) throwable;
+//    }
+//    return throwable;
+//}

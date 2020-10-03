@@ -29,7 +29,6 @@ import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
-import packed.internal.util.KeyBuilder;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
 public final class ProvideAllFromOtherInjector {
@@ -66,9 +65,7 @@ public final class ProvideAllFromOtherInjector {
         this.injector = requireNonNull(injector);
 
         injector.forEachEntry(e -> {
-            if (!e.key().equals(KeyBuilder.INJECTOR_KEY)) { // ignores Injector, and other
-                entries.put(e.key(), new FromOtherInjectorServiceAssembly<>(this, (RuntimeService<Object>) e));
-            }
+            entries.put(e.key(), new FromOtherInjectorServiceAssembly<>(this, (RuntimeService<Object>) e));
         });
 
         // process wirelets for filtering/transformations
