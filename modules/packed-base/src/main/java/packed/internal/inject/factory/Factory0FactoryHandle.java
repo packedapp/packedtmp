@@ -84,7 +84,7 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
     @SuppressWarnings("unchecked")
     public static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
         TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
-        return new FactorySupport<>(new Factory0FactoryHandle<>(tt, supplier), List.of());
+        return new FactorySupport<>(new Factory0FactoryHandle<>(tt, supplier));
     }
 
     /** {@inheritDoc} */

@@ -80,7 +80,6 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
     public static <T, U, R> FactorySupport<R> create(Class<?> implementation, BiFunction<?, ?, ? extends R> function) {
         Entry<TypeLiteral<?>, List<DependencyDescriptor>> fs = CACHE.get(implementation);
         return new FactorySupport<>(
-                new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function, fs.getValue()),
-                fs.getValue());
+                new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function, fs.getValue()));
     }
 }

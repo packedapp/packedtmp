@@ -2,8 +2,6 @@ package packed.internal.inject.factory;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.List;
-
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.ExecutableDescriptor;
@@ -19,7 +17,7 @@ final class FactorySupport<T> {
     /** The key that this factory will be registered under by default with an injector. */
     public final Key<T> key;
 
-    public FactorySupport(FactoryHandle<T> function, List<DependencyDescriptor> dependencies) {
+    public FactorySupport(FactoryHandle<T> function) {
         this.handle = requireNonNull(function);
         this.key = Key.fromTypeLiteral(function.typeLiteral);
     }
@@ -27,15 +25,13 @@ final class FactorySupport<T> {
     static <T> FactorySupport<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
         return new FactorySupport<>(
-                new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable)),
-                DependencyDescriptor.fromExecutable(executable));
+                new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable)));
     }
 
     static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable)),
-                DependencyDescriptor.fromExecutable(executable));
+        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable)));
     }
 
     // Should we have a strict type? For example, a static method on MyExtension.class
