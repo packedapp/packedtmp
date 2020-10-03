@@ -26,7 +26,7 @@ import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 
 /** A function handle for instances, usually created with {@link Factory#ofInstance(Object)}. */
-public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
+final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
 
     /** The instance that is returned every time. */
     private final T instance;
@@ -59,7 +59,7 @@ public final class InstanceFactoryHandle<T> extends FactoryHandle<T> {
      * @see Factory#ofInstance(Object)
      */
     @SuppressWarnings("unchecked")
-    public static <T> FactoryHandle<T> of(T instance) {
+    static <T> FactoryHandle<T> of(T instance) {
         requireNonNull(instance, "instance is null");
         Class<?> type = instance.getClass();
         return new InstanceFactoryHandle<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);

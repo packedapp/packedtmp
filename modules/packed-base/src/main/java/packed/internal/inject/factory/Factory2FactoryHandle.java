@@ -30,7 +30,7 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.methodhandle.LookupUtil;
 
 /** An internal factory for {@link Factory2}. */
-public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
+class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link BiFunction#apply(Object, Object)}. */
     private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(BiFunction.class, "apply", Object.class, Object.class, Object.class);
@@ -77,9 +77,8 @@ public class Factory2FactoryHandle<T, U, R> extends FactoryHandle<R> {
      * @return a new factory support instance
      */
     @SuppressWarnings("unchecked")
-    public static <T, U, R> FactorySupport<R> create(Class<?> implementation, BiFunction<?, ?, ? extends R> function) {
+    static <T, U, R> FactoryHandle<R> create(Class<?> implementation, BiFunction<?, ?, ? extends R> function) {
         Entry<TypeLiteral<?>, List<DependencyDescriptor>> fs = CACHE.get(implementation);
-        return new FactorySupport<>(
-                new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function, fs.getValue()));
+        return new Factory2FactoryHandle<>((TypeLiteral<R>) fs.getKey(), (BiFunction<? super T, ? super U, ? extends R>) function, fs.getValue());
     }
 }

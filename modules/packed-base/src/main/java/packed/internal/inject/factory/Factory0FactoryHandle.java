@@ -33,7 +33,7 @@ import packed.internal.methodhandle.LookupUtil;
  * @param <T>
  *            the type of elements the factory produces
  */
-public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
+final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
 
     /** A cache of extracted type variables from subclasses of this class. */
     private static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
@@ -67,6 +67,12 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
 
     /** {@inheritDoc} */
     @Override
+    public MethodType methodType() {
+        return MethodType.methodType(returnTypeRaw());
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public MethodHandle toMethodHandle() {
         MethodHandle mh = GET.bindTo(supplier);
         return MethodHandles.explicitCastArguments(mh, methodType());
@@ -82,14 +88,8 @@ public final class Factory0FactoryHandle<T> extends FactoryHandle<T> {
      * @return a new factory support instance
      */
     @SuppressWarnings("unchecked")
-    public static <T> FactorySupport<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
+    static <T> FactoryHandle<T> create(Class<?> implementation, Supplier<? extends T> supplier) {
         TypeLiteral<T> tt = (TypeLiteral<T>) CACHE.get(implementation);
-        return new FactorySupport<>(new Factory0FactoryHandle<>(tt, supplier));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodType methodType() {
-        return MethodType.methodType(returnTypeRaw());
+        return new Factory0FactoryHandle<>(tt, supplier);
     }
 }

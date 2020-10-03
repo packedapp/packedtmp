@@ -32,23 +32,23 @@ import app.packed.introspection.FieldDescriptor;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** An invoker that can read and write fields. */
-public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
+final class FieldFactoryHandle<T> extends FactoryHandle<T> {
 
     /** The field we invoke. */
-    public final FieldDescriptor field;
+    final FieldDescriptor field;
 
     /** Whether or not the field is static. */
-    public final boolean isStatic;
+    final boolean isStatic;
 
     /** Whether or not the field is volatile. */
-    public final boolean isVolatile;
+    final boolean isVolatile;
 
     /** A var handle that can be used to read the field. */
     @Nullable
-    public final VarHandle varHandle;
+    final VarHandle varHandle;
 
     @SuppressWarnings("unchecked")
-    public FieldFactoryHandle(FieldDescriptor field, List<DependencyDescriptor> dependencies) {
+    FieldFactoryHandle(FieldDescriptor field, List<DependencyDescriptor> dependencies) {
         super((TypeLiteral<T>) field.getTypeLiteral(), dependencies);
         this.field = field;
         this.varHandle = null;
@@ -56,7 +56,7 @@ public final class FieldFactoryHandle<T> extends FactoryHandle<T> {
         this.isStatic = Modifier.isStatic(field.getModifiers());
     }
 
-    public FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, List<DependencyDescriptor> dependencies) {
+    FieldFactoryHandle(TypeLiteral<T> typeLiteralOrKey, FieldDescriptor field, VarHandle varHandle, List<DependencyDescriptor> dependencies) {
         super(typeLiteralOrKey, dependencies);
         this.field = requireNonNull(field);
         this.varHandle = varHandle;

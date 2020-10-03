@@ -27,7 +27,7 @@ import app.packed.base.TypeLiteral;
 import packed.internal.methodhandle.LookupUtil;
 
 /** A function that maps the result of another function. */
-public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
+final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
 
     /** A method handle for {@link Function#apply(Object)}. */
     private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(Function.class, "apply", Object.class, Object.class);
@@ -38,7 +38,7 @@ public final class MappingFactoryHandle<T, R> extends FactoryHandle<R> {
     /** The function used to map the result. */
     final Function<? super T, ? extends R> mapper;
 
-    public MappingFactoryHandle(TypeLiteral<R> typeLiteral, FactoryHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
+    MappingFactoryHandle(TypeLiteral<R> typeLiteral, FactoryHandle<T> mapFrom, Function<? super T, ? extends R> mapper) {
         super(typeLiteral, List.of());
         this.mapFrom = requireNonNull(mapFrom, "mapFrom is null");
         this.mapper = requireNonNull(mapper, "mapper is null");

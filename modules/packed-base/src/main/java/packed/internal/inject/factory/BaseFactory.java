@@ -72,7 +72,7 @@ public class BaseFactory<T> implements Factory<T> {
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
     /** The internal instance that all calls delegate to. */
-    final FactorySupport<T> factory;
+    final FactoryHandle<T> handle;
 
     /**
      * Used by {@link Factory2#Factory2(BiFunction)} because we cannot refer to an instance method {@link Object#getClass()}
@@ -82,7 +82,7 @@ public class BaseFactory<T> implements Factory<T> {
      *            the function used to create new instances
      */
     public BaseFactory(BiFunction<?, ?, ? extends T> function) {
-        this.factory = Factory2FactoryHandle.create(getClass(), function);
+        this.handle = Factory2FactoryHandle.create(getClass(), function);
     }
 
     /**
@@ -91,8 +91,8 @@ public class BaseFactory<T> implements Factory<T> {
      * @param factory
      *            the internal factory to wrap.
      */
-    BaseFactory(FactorySupport<T> factory) {
-        this.factory = requireNonNull(factory, "factory is null");
+    BaseFactory(FactoryHandle<T> factory) {
+        this.handle = requireNonNull(factory, "factory is null");
     }
 
     /**
@@ -104,7 +104,7 @@ public class BaseFactory<T> implements Factory<T> {
      */
     @SuppressWarnings("unchecked")
     public BaseFactory(Function<?, ? extends T> function) {
-        this.factory = (FactorySupport<T>) Factory1FactoryHandle.create(getClass(), function);
+        this.handle = (FactoryHandle<T>) Factory1FactoryHandle.create(getClass(), function);
     }
 
     /**
@@ -116,7 +116,7 @@ public class BaseFactory<T> implements Factory<T> {
      */
     @SuppressWarnings("unchecked")
     public BaseFactory(Supplier<? extends T> supplier) {
-        this.factory = (FactorySupport<T>) Factory0FactoryHandle.create(getClass(), supplier);
+        this.handle = (FactoryHandle<T>) Factory0FactoryHandle.create(getClass(), supplier);
     }
 
 //    /** {@inheritDoc} */
@@ -226,7 +226,7 @@ public class BaseFactory<T> implements Factory<T> {
     /** {@inheritDoc} */
     @Override
     public final Key<T> key() {
-        return factory.handle.key;
+        return handle.key;
     }
 
     final <R> Factory<R> mapTo(Class<R> key, Function<? super T, ? extends R> mapper) {
@@ -326,7 +326,7 @@ public class BaseFactory<T> implements Factory<T> {
     @Override
     public final TypeLiteral<T> typeLiteral() {
         // Passer ikke hvis vi bruger map()...
-        return factory.handle.returnType();
+        return handle.returnType();
     }
 
     /** {@inheritDoc} */
@@ -379,7 +379,7 @@ public class BaseFactory<T> implements Factory<T> {
     @Override
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
-        return new BaseFactory<>(new FactorySupport<T>(factory.handle.withLookup(lookup)));
+        return new BaseFactory<>(handle.withLookup(lookup));
     }
 
     /** {@inheritDoc} */
@@ -452,13 +452,13 @@ public class BaseFactory<T> implements Factory<T> {
      * @return the factory
      */
     public static <T> Factory<T> fromInstance(T instance) {
-        return new BaseFactory<>(new FactorySupport<>(InstanceFactoryHandle.of(instance)));
+        return new BaseFactory<>(InstanceFactoryHandle.of(instance));
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodType methodType() {
-        return factory.handle.methodType();
+        return handle.methodType();
     }
 
 }

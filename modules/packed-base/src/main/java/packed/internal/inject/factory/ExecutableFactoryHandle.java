@@ -109,16 +109,15 @@ public final class ExecutableFactoryHandle<T> extends FactoryHandle<T> {
         return methodHandle.type();
     }
 
-    static <T> FactorySupport<T> find(Class<T> implementation) {
+    static <T> FactoryHandle<T> find(Class<T> implementation) {
         ExecutableDescriptor executable = findExecutable(implementation);
-        return new FactorySupport<>(
-                new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable)));
+        return new ExecutableFactoryHandle<>(TypeLiteral.of(implementation), executable, null, DependencyDescriptor.fromExecutable(executable));
     }
 
-    static <T> FactorySupport<T> find(TypeLiteral<T> implementation) {
+    static <T> FactoryHandle<T> find(TypeLiteral<T> implementation) {
         requireNonNull(implementation, "implementation is null");
         ExecutableDescriptor executable = findExecutable(implementation.rawType());
-        return new FactorySupport<>(new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable)));
+        return new ExecutableFactoryHandle<>(implementation, executable, null, DependencyDescriptor.fromExecutable(executable));
     }
 
     // Should we have a strict type? For example, a static method on MyExtension.class

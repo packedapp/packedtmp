@@ -124,11 +124,11 @@ public abstract class FactoryHandle<T> {
     public abstract MethodType methodType();
 
     public static <T> FactoryHandle<T> of(BaseFactory<T> factory) {
-        return factory.factory.handle;
+        return factory.handle;
     }
 
     public static List<DependencyDescriptor> dependencies(BaseFactory<?> factory) {
-        return factory.factory.handle.dependencies;
+        return factory.handle.dependencies;
     }
 }
 // public abstract class PFunction<T> {

@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.service.factory;
+package packed.internal.inject.factory;
 
 import static testutil.assertj.Assertions.checkThat;
 
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import packed.internal.inject.factory.FactoryHandle;
-import packed.internal.inject.factory.InstanceFactoryHandle;
 
 /** Tests {@link InstanceFactoryHandle} */
 public class InternalFunctionInstanceTest {
