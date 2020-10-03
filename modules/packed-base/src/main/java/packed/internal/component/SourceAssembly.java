@@ -35,7 +35,7 @@ public final class SourceAssembly implements DependencyProvider {
     public final ComponentNodeConfiguration compConf;
 
     @Nullable
-    private final BaseFactory<?> factory;
+    private final FactoryHandle<?> factory;
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
@@ -60,26 +60,28 @@ public final class SourceAssembly implements DependencyProvider {
         this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
+        BaseFactory<?> baseFactory = null;
         if (source instanceof Class) {
             Class<?> c = (Class<?>) source;
             this.instance = null;
-            this.factory = compConf.modifiers().isStateless() ? null : (BaseFactory<?>) Factory.of(c);
+            baseFactory = compConf.modifiers().isStateless() ? null : (BaseFactory<?>) Factory.of(c);
             this.model = compConf.realm.componentModelOf(c);
         } else if (source instanceof Factory) {
             this.instance = null;
-            this.factory = (BaseFactory<?>) source;
-            this.model = compConf.realm.componentModelOf(factory.rawType());
+            baseFactory = (BaseFactory<?>) source;
+            this.model = compConf.realm.componentModelOf(baseFactory.rawType());
         } else {
             this.instance = source;
-            this.factory = null;
             this.model = compConf.realm.componentModelOf(source.getClass());
         }
 
-        if (factory == null) {
+        if (baseFactory == null) {
             this.injectable = null;
+            this.factory = null;
         } else {
-            MethodHandle mh = compConf.realm.fromFactoryHandle(FactoryHandle.of(factory));
-            this.injectable = new Injectable(this, FactoryHandle.dependencies(factory), mh);
+            this.factory = FactoryHandle.of(baseFactory);
+            MethodHandle mh = compConf.realm.fromFactoryHandle(factory);
+            this.injectable = new Injectable(this, factory.dependencies, mh);
         }
     }
 
@@ -110,7 +112,7 @@ public final class SourceAssembly implements DependencyProvider {
             if (instance != null) {
                 key = Key.of(model.modelType()); // Move to model?? What if instance has Qualifier???
             } else {
-                key = factory.key();
+                key = factory.key;
             }
             s = service = compConf.injectionManager().services(true).provideSource(compConf, key);
         }
