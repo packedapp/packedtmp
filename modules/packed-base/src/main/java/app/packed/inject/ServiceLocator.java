@@ -168,6 +168,6 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return an empty service locator
      */
     static ServiceLocator empty() {
-        return PackedInjector.EMPTY_SERVICE_REGISTRY;
+        return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
 }

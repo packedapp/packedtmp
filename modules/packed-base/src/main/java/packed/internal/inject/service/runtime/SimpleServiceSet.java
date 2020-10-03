@@ -18,10 +18,10 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 import app.packed.inject.Service;
 import app.packed.inject.ServiceRegistry;
+import packed.internal.util.PackedAttributeHolderStream;
 
 /**
  *
@@ -36,8 +36,8 @@ public class SimpleServiceSet implements ServiceRegistry {
 
     /** {@inheritDoc} */
     @Override
-    public Stream<Service> stream() {
-        return services.stream();
+    public PackedAttributeHolderStream<Service> stream() {
+        return new PackedAttributeHolderStream<>(services.stream());
     }
 
     @Override

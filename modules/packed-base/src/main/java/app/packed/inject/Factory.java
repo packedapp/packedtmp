@@ -123,7 +123,7 @@ public abstract class Factory<T> {
     };
 
     /**
-     * A cache of factories used by {@link #find(TypeLiteral)}. This cache is only used by subclasses of TypeLiteral, never
+     * A cache of factories used by {@link #of(TypeLiteral)}. This cache is only used by subclasses of TypeLiteral, never
      * literals that are manually constructed.
      */
     private static final ClassValue<Factory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
@@ -490,31 +490,6 @@ public abstract class Factory<T> {
     }
 
     /**
-     * This method is equivalent to {@link #of(Class)} except taking a type literal.
-     *
-     * @param <T>
-     *            the implementation type
-     * @param implementation
-     *            the implementation type
-     * @return a factory for the specified implementation type
-     */
-    @SuppressWarnings("unchecked")
-    // Can cache it with a Class[] array corresponding to type parameters...
-    public static <T> Factory<T> find(TypeLiteral<T> implementation) {
-        requireNonNull(implementation, "implementation is null");
-        if (!ModuleAccess.base().isCanonicalized(implementation)) {
-            // We cache factories for all "new TypeLiteral<>(){}"
-            return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
-        }
-        Type t = implementation.type();
-        if (t instanceof Class) {
-            return (Factory<T>) of((Class<?>) t);
-        } else {
-            return ExecutableFactory.findX(implementation);
-        }
-    }
-
-    /**
      * Tries to find a single static method or constructor on the specified class using the following rules:
      * <ul>
      * <li>If a single static method (non-static methods are ignored) annotated with {@link Inject} is present a factory
@@ -561,6 +536,7 @@ public abstract class Factory<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> Factory<T> of(TypeLiteral<T> implementation) {
+        // Can cache it with a Class[] array corresponding to type parameters...
         requireNonNull(implementation, "implementation is null");
         if (!ModuleAccess.base().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"

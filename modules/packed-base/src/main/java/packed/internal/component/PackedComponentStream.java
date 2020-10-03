@@ -22,10 +22,10 @@ import java.util.stream.Stream;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
-import packed.internal.util.AbstractAttributeHolderStream;
+import packed.internal.util.PackedAttributeHolderStream;
 
 /** Implementation of {@link ComponentStream}. */
-final class PackedComponentStream extends AbstractAttributeHolderStream<Component> implements ComponentStream {
+final class PackedComponentStream extends PackedAttributeHolderStream<Component> implements ComponentStream {
 
     /**
      * Creates a new component stream.
@@ -39,43 +39,55 @@ final class PackedComponentStream extends AbstractAttributeHolderStream<Componen
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream dropWhile(Predicate<? super Component> predicate) {
+    public PackedComponentStream distinct() {
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedComponentStream dropWhile(Predicate<? super Component> predicate) {
         return with(stream.dropWhile(predicate));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream filter(Predicate<? super Component> predicate) {
+    public PackedComponentStream filter(Predicate<? super Component> predicate) {
         return with(stream.filter(predicate));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream limit(long maxSize) {
+    public PackedComponentStream limit(long maxSize) {
         return with(stream.limit(maxSize));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream peek(Consumer<? super Component> action) {
+    public PackedComponentStream peek(Consumer<? super Component> action) {
         return with(stream.peek(action));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream skip(long n) {
+    public PackedComponentStream skip(long n) {
         return with(stream.skip(n));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream sorted(Comparator<? super Component> comparator) {
+    public PackedComponentStream sorted() {
+        return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PackedComponentStream sorted(Comparator<? super Component> comparator) {
         return with(stream.sorted(comparator));
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream takeWhile(Predicate<? super Component> predicate) {
+    public PackedComponentStream takeWhile(Predicate<? super Component> predicate) {
         return with(stream.takeWhile(predicate));
     }
 

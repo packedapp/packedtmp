@@ -44,132 +44,6 @@ import packed.internal.inject.service.runtime.AbstractInjector;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
 import packed.internal.inject.sidecar.AtProvidesHook;
 
-class ExtraFunc {
-
-    // Skal vi ogsaa supportere noget paa tvaers af bundles???
-    // Det er vel en slags Wirelet
-    // CycleBreaker(SE, ...);
-    // CycleBreaker(SE, ...);
-
-    // Maaske er det her mere injection then service
-
-    protected void addAlias(Class<?> existing, Class<?> newKey) {}
-
-    protected void addAlias(Key<?> existing, Key<?> newKey) {}
-
-    <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
-        // @Inject is allowed, but other annotations, types und so weiter is not...
-        // Den har ihvertfald slet ikke noget providing...
-        throw new UnsupportedOperationException();
-    }
-
-//    <S, U> void breakCycle(OP2<S, U> op) {
-//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
-//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
-//        // Eller kan bruge det...
-//        throw new UnsupportedOperationException();
-//    }
-
-    <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
-        // Hmm maaske vi skal kalde den noget andet...
-        // SingletonService kan sikkert sagtens extende den...
-        // ProtoypeConfiguration has altid en noegle og ikek optional..
-        throw new UnsupportedOperationException();
-    }
-
-    <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
-        // cycleBreaker
-        throw new UnsupportedOperationException();
-    }
-
-    // Det er jo i virkeligheden bare en @RunOnInjection klasse
-    // LifecycleExtension-> BreakCycle(X,Y) ->
-    <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
-        // keyProducer will have a Consumer<U> injected in its constructor.
-        // In which case it must call it exactly once with a valid instance of U.
-        // U will then be field/method inject, initialization und so weither as normally.
-        // But to the outside it will not that S depends on U.
-
-        // Den der tager en biconsumer supportere ikke at de kan vaere final fields af hinanden...
-
-        // Det kan ogsaa vaere en klasse CycleBreaker.. som tager ContainerConfiguration
-        // Bundle, Service Extension, ExtensionContext ect...
-
-        // DE her virker kun indefor samme container...
-
-        // Syntes i virkeligheden consumer versionen er bedre....
-        // Den er meget mere explicit.
-        // Den her skal jo pakke initialisering af U ind i en consumer
-    }
-
-    <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
-
-        // Taenker om vi skal checke at key2 depender on key1...
-        // Jeg taenker ja, fordi saa saa kan vi visuelleciere det...
-        // Og vi fejler hvis der ikke er en actuel dependency
-
-        // Maaske bare warn istedet for at fejle. Men syntes ikke folk skal have en masse af dem liggende...
-
-//        Break circular references...
-//        runOnInitialize(ST2<Xcomp, YComp>(xComp.setY(yComp){});
-//        Ideen er at vi har super streng cyclic check...
-//        Og saa kan man bruge saadan en her til at bende det...
-
-        // Maaske har vi endda en eksplicit i ServiceManager...
-        // breakCycle, breakDependencyCycle
-        // cyclicBreak(Op2(X, Y) -> x.setY(y)
-
-        // Alternativt vil vi godt sige at X laver en ny Y component (ikke bare en service)
-
-        // Will probably validate if there is an actual cycle...
-
-//        Of course the idea is that we want to be very explicit about the eyesoar
-//        So people can find it...
-
-        // In a perfect world we would also write perfect cycle free code..
-        // But to support your petty little program
-
-        // http://blog.jdevelop.eu/?p=382
-        // We don't support this. Server must instantiate the Client if it needs it
-        // But then client isn't managed!!!
-
-        // Could we also allow the user, to provide another OP???
-        // That server could get which it could invoke
-        // FN<Client, Server, String> : from server
-        // this.client = fn.invoke(this, "fooobar");
-        // Hmm, ikke saerlig paen... Men hvis vi vil have final/final
-        // Vi tillader kun et object... Hvis man vil have flere.
-        // Maa man pakke det ind i en Composite... I saa fald.. Vil det se ud som om
-        // At det faktisk er client'en der kalder ting. F.eks. kunne man have en logger.... Som stadig ville se
-        // client og ikke server. Selvom man kaldte gemmen servers constructor
-        // CycleBreak
-        // CConf c= install(Server.class)
-        // c.assistInstall(client, new FN2<Client, Server, @Composite SomeRecord(Logger, RandomOtherThing))
-
-        // Break down circles manuel.. https://github.com/google/guice/wiki/CyclicDependencies
-        // Using decomposition
-
-        throw new UnsupportedOperationException();
-    }
-
-    // autoExport
-
-    /**
-     * 
-     * <p>
-     * Contracts should be set before exports
-     * 
-     * @param contract
-     * 
-     * @throws IllegalStateException
-     *             if any services have already been exported
-     */
-    public void useContract(ServiceContract contract) {
-
-    }
-
-}
-
 /**
  * This extension provides functionality for exposing and consuming services.
  * 
@@ -255,7 +129,10 @@ public final class ServiceExtension extends Extension {
         return export(Key.of(key));
     }
 
-    public <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
+    // Vi venter med den...
+    // Altsaa det er jo kun services den kan exportere...
+    // Altsaa vi kan jo have nogle
+    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
         // Exports a service by mapping an existing service
         // Eneste problem er nu har vi exported services som ikke er services...
         // Men det er vel ikke anderledes end install(X).provide();
@@ -488,4 +365,130 @@ public final class ServiceExtension extends Extension {
         }
 
     }
+}
+
+class ZExtraFunc {
+
+    // Skal vi ogsaa supportere noget paa tvaers af bundles???
+    // Det er vel en slags Wirelet
+    // CycleBreaker(SE, ...);
+    // CycleBreaker(SE, ...);
+
+    // Maaske er det her mere injection then service
+
+    protected void addAlias(Class<?> existing, Class<?> newKey) {}
+
+    protected void addAlias(Key<?> existing, Key<?> newKey) {}
+
+    <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
+        // @Inject is allowed, but other annotations, types und so weiter is not...
+        // Den har ihvertfald slet ikke noget providing...
+        throw new UnsupportedOperationException();
+    }
+
+//    <S, U> void breakCycle(OP2<S, U> op) {
+//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
+//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
+//        // Eller kan bruge det...
+//        throw new UnsupportedOperationException();
+//    }
+
+    <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
+        // Hmm maaske vi skal kalde den noget andet...
+        // SingletonService kan sikkert sagtens extende den...
+        // ProtoypeConfiguration has altid en noegle og ikek optional..
+        throw new UnsupportedOperationException();
+    }
+
+    <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
+        // cycleBreaker
+        throw new UnsupportedOperationException();
+    }
+
+    // Det er jo i virkeligheden bare en @RunOnInjection klasse
+    // LifecycleExtension-> BreakCycle(X,Y) ->
+    <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
+        // keyProducer will have a Consumer<U> injected in its constructor.
+        // In which case it must call it exactly once with a valid instance of U.
+        // U will then be field/method inject, initialization und so weither as normally.
+        // But to the outside it will not that S depends on U.
+
+        // Den der tager en biconsumer supportere ikke at de kan vaere final fields af hinanden...
+
+        // Det kan ogsaa vaere en klasse CycleBreaker.. som tager ContainerConfiguration
+        // Bundle, Service Extension, ExtensionContext ect...
+
+        // DE her virker kun indefor samme container...
+
+        // Syntes i virkeligheden consumer versionen er bedre....
+        // Den er meget mere explicit.
+        // Den her skal jo pakke initialisering af U ind i en consumer
+    }
+
+    <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
+
+        // Taenker om vi skal checke at key2 depender on key1...
+        // Jeg taenker ja, fordi saa saa kan vi visuelleciere det...
+        // Og vi fejler hvis der ikke er en actuel dependency
+
+        // Maaske bare warn istedet for at fejle. Men syntes ikke folk skal have en masse af dem liggende...
+
+//        Break circular references...
+//        runOnInitialize(ST2<Xcomp, YComp>(xComp.setY(yComp){});
+//        Ideen er at vi har super streng cyclic check...
+//        Og saa kan man bruge saadan en her til at bende det...
+
+        // Maaske har vi endda en eksplicit i ServiceManager...
+        // breakCycle, breakDependencyCycle
+        // cyclicBreak(Op2(X, Y) -> x.setY(y)
+
+        // Alternativt vil vi godt sige at X laver en ny Y component (ikke bare en service)
+
+        // Will probably validate if there is an actual cycle...
+
+//        Of course the idea is that we want to be very explicit about the eyesoar
+//        So people can find it...
+
+        // In a perfect world we would also write perfect cycle free code..
+        // But to support your petty little program
+
+        // http://blog.jdevelop.eu/?p=382
+        // We don't support this. Server must instantiate the Client if it needs it
+        // But then client isn't managed!!!
+
+        // Could we also allow the user, to provide another OP???
+        // That server could get which it could invoke
+        // FN<Client, Server, String> : from server
+        // this.client = fn.invoke(this, "fooobar");
+        // Hmm, ikke saerlig paen... Men hvis vi vil have final/final
+        // Vi tillader kun et object... Hvis man vil have flere.
+        // Maa man pakke det ind i en Composite... I saa fald.. Vil det se ud som om
+        // At det faktisk er client'en der kalder ting. F.eks. kunne man have en logger.... Som stadig ville se
+        // client og ikke server. Selvom man kaldte gemmen servers constructor
+        // CycleBreak
+        // CConf c= install(Server.class)
+        // c.assistInstall(client, new FN2<Client, Server, @Composite SomeRecord(Logger, RandomOtherThing))
+
+        // Break down circles manuel.. https://github.com/google/guice/wiki/CyclicDependencies
+        // Using decomposition
+
+        throw new UnsupportedOperationException();
+    }
+
+    // autoExport
+
+    /**
+     * 
+     * <p>
+     * Contracts should be set before exports
+     * 
+     * @param contract
+     * 
+     * @throws IllegalStateException
+     *             if any services have already been exported
+     */
+    public void useContract(ServiceContract contract) {
+
+    }
+
 }

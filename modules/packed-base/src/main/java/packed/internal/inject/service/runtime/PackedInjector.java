@@ -26,8 +26,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
+import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -41,11 +41,13 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.context.PackedProvideContext;
 import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 import packed.internal.util.KeyBuilder;
+import packed.internal.util.PackedAttributeHolderStream;
 
 /** The default implementation of {@link Injector}. */
 public final class PackedInjector extends AbstractInjector {
 
-    public static final ServiceLocator EMPTY_SERVICE_REGISTRY = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
+    /** An empty service locator. */
+    public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
 
     /** A stack walker used from {@link #spawn(Wirelet...)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -147,7 +149,7 @@ public final class PackedInjector extends AbstractInjector {
 
     /** {@inheritDoc} */
     @Override
-    public Stream<Service> stream() {
-        return entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> e);
+    public AttributedElementStream<Service> stream() {
+        return new PackedAttributeHolderStream<>(entries.values().stream().filter(e -> !e.key().equals(KeyBuilder.INJECTOR_KEY)).map(e -> e));
     }
 }

@@ -39,6 +39,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 /** A partial implemented stream that delegates most methods to another stream. */
+// I think long term we will ditch it... Because with Valhalla we can return wrappers for free 
 public abstract class AbstractDelegatingStream<T> implements Stream<T> {
 
     /** The stream we are wrapping. */

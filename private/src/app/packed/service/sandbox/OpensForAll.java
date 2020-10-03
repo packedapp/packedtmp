@@ -1,7 +1,8 @@
-package app.packed.base;
+package app.packed.service.sandbox;
 
 import java.lang.annotation.Annotation;
 
+import app.packed.base.OpenMode;
 import app.packed.container.Extension;
 
 @interface AnnotationMetaMapper {

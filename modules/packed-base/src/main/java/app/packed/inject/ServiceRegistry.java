@@ -19,19 +19,20 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 
 /**
  * An immutable set of services with unique {@link Service#key() keys}. Unlike {@link ServiceLocator} this interface
  * does not contain any methods to acquire actual service instances.
  * 
- * @apiNote In the future, if the Java language permits, {@link ServiceRegistry} may become a {@code sealed} interface, which
- *          would prohibit subclassing except by explicitly permitted types.
+ * @apiNote In the future, if the Java language permits, {@link ServiceRegistry} may become a {@code sealed} interface,
+ *          which would prohibit subclassing except by explicitly permitted types.
  */
 //Keys are unique because findService can only return 1 service.
 public interface ServiceRegistry extends Iterable<Service> {
@@ -117,5 +118,14 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return a unordered {@code Stream} of all services in this set
      */
     // Rename to services????
-    Stream<Service> stream();
+    AttributedElementStream<Service> stream();
+
+    /**
+     * Returns a list of every service in this registry.
+     * 
+     * @return a list of every service in this registry
+     */
+    default List<Service> toList() {
+        return stream().collect(Collectors.toList());
+    }
 }
