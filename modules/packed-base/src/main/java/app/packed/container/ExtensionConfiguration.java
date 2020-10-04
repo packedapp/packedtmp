@@ -36,7 +36,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.container.ContainerAssembly;
 import packed.internal.container.ExtensionAssembly;
 
 /**
@@ -188,7 +187,7 @@ public interface ExtensionConfiguration {
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     @Nullable
-    private static ExtensionAssembly pa(MethodHandles.Lookup lookup, Component component) {
+    private static ExtensionAssembly getExtensionAssembly(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "component is null");
 
         // lookup.lookupClass() must point to the extension that should be extracted
@@ -204,12 +203,13 @@ public interface ExtensionConfiguration {
             throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
         }
+        if (!component.modifiers().isContainer()) {
+            throw new IllegalArgumentException(
+                    "The specified component '" + component.path() + "' must have the Container modifier, modifiers = " + component.modifiers());
+        }
 
-        ComponentNodeConfiguration node = ComponentNodeConfiguration.unadapt(lookup, component);
-
-        // TODO, do allow ask for this on none component instances???
-        ContainerAssembly container = node.getMemberOfContainer();
-        return container == null ? null : container.getExtensionContext(extensionType);
+        ComponentNodeConfiguration compConf = ComponentNodeConfiguration.unadapt(lookup, component);
+        return compConf.container.getExtensionContext(extensionType);
     }
 
     /**
@@ -235,7 +235,7 @@ public interface ExtensionConfiguration {
      */
     static Optional<ExtensionConfiguration> privateAccess(MethodHandles.Lookup caller, Component component) {
         requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(pa(caller, component));
+        return Optional.ofNullable(getExtensionAssembly(caller, component));
     }
 
     /**
@@ -257,7 +257,7 @@ public interface ExtensionConfiguration {
             throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
         @Nullable
-        ExtensionAssembly pec = pa(lookup, component);
+        ExtensionAssembly pec = getExtensionAssembly(lookup, component);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 }

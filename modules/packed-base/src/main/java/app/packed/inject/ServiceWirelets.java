@@ -153,6 +153,39 @@ class ServiceWireletsSandbox {
         throw new UnsupportedOperationException();
     }
 
+    // Ideen er at vi kan aendre om ting er constants...
+    // F.eks. hvis vi gerne vil cache noget??
+    // Maaske have en map(dddd, boolean isConstant) istedet for
+    // Er ikke super vild med dem...
+    public static Wirelet constanfy(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet constanfyTo(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet unconstanfy(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet unconstanfyTo(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+}
+
+class ZBadIdeas {
+
+    // Taenker det bliver lidt noget rod... fordi ServiceLocator er auto aktiverende...
+    // Men maa lave en selection hvis man har behov for det...
+    public static Wirelet exposeServiceLocator() {
+        return exposeServiceLocator(Key.of(ServiceLocator.class));
+    }
+
+    public static Wirelet exposeServiceLocator(Key<? extends ServiceLocator> key) {
+        throw new UnsupportedOperationException();
+    }
+
     // Service transformere er saa meget lettere....
     // at bruge...
     // Det store problem er incoming hvor hvis vi laver bulk operations.
@@ -191,23 +224,4 @@ class ServiceWireletsSandbox {
         throw new UnsupportedOperationException();
     }
 
-    // Ideen er at vi kan aendre om ting er constants...
-    // F.eks. hvis vi gerne vil cache noget??
-    // Maaske have en map(dddd, boolean isConstant) istedet for
-    // Er ikke super vild med dem...
-    public static Wirelet constanfy(Key<?> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet constanfyTo(Key<?> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet unconstanfy(Key<?> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet unconstanfyTo(Key<?> key) {
-        throw new UnsupportedOperationException();
-    }
 }

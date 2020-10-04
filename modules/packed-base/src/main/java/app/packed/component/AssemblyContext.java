@@ -42,6 +42,8 @@ public interface AssemblyContext {
     // ServiceExtension.failed()
 
     // Throws IAE if post construct
+    // Why would I add errors here???
+    // Instead of lets say the extension?
     void addError(ErrorMessage message);
 
     default boolean isActive() {

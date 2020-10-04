@@ -24,6 +24,7 @@ import java.util.Optional;
 import app.packed.component.AssemblyContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
+import app.packed.component.Image;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
@@ -83,11 +84,12 @@ public abstract class Extension {
 
     /**
      * Invoked by the runtime immediately after the extension's constructor has returned successfully. Since most methods on
-     * this class cannot be invoked from within the constructor. This method can be used as an alternative to set up things.
+     * this class cannot be invoked from within the constructor. This method can be used to perform any post instantiation
+     * processing. Before the extension instance is returned to the user.
      * <p>
-     * The reason for prohibiting configuration from the constructor. Is that users might then link other components that in
-     * turn requires access to the actual extension instance. Which is not possible since it is still being instantiated.
-     * While this is rare in practice. Too be on the safe side we prohibit it.
+     * The reason for prohibiting configuration from the constructor. Is to avoid situations.. that users might then link
+     * other components that in turn requires access to the actual extension instance. Which is not possible since it is
+     * still being instantiated. While this is rare in practice. Too be on the safe side we prohibit it.
      * <p>
      * Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
      * anywhere where we can get a hold of the actual extension instance...
@@ -105,26 +107,25 @@ public abstract class Extension {
     // If you have configuration that
     protected void preChildContainers() {}
 
+    /**
+     * Invoked by the runtime when the configuration of the container is completed.
+     * <p>
+     * 
+     */
     protected void complete() {}
 
     protected final void checkNoChildContainers() {
         configuration().checkNoChildContainers();
     }
 
-    // When creating an image.
-    // This can be used to clean up data structures that was only
-    // remember that people might still inspect the image
-    // The default implementation does nothing
-
-    // Der er ikke rigtig en let maade at finde ud af om man er et image???
-    // AssemblyContext viser jo bare hvad roden er....
-    // Men hvis man nu er deployet paa configurations tidspunktet
-    // paa en eller anden host... SessionImage er et godt eksempel
-
-    // Maaske skal vi hellere have en isImage()....
-    // og saa kan folk selv trimme ting i en onFinish() callback metode
-    // Eller hvornaar de nu vil..
-    void imageTrim() {}
+    /**
+     * Returns whether or not the container that this extension belongs is being built into an {@link Image}.
+     * 
+     * @return true if the extension
+     */
+    protected final boolean isPartOfImage() {
+        return false;
+    }
 
     /**
      * Returns the assembly context the extension is a part of.
@@ -307,6 +308,23 @@ public abstract class Extension {
     }
 
 }
+
+// Was ImageTrim -> But when to call it
+
+// When creating an image.
+// This can be used to clean up data structures that was only
+// remember that people might still inspect the image
+// The default implementation does nothing
+
+// Der er ikke rigtig en let maade at finde ud af om man er et image???
+// AssemblyContext viser jo bare hvad roden er....
+// Men hvis man nu er deployet paa configurations tidspunktet
+// paa en eller anden host... SessionImage er et godt eksempel
+
+// Maaske skal vi hellere have en isImage()....
+// og saa kan folk selv trimme ting i en onFinish() callback metode
+// Eller hvornaar de nu vil..
+
 //* 
 //* @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
 //*          streamline with other sidecars we only allow it to be dependency injected into subclasses.

@@ -327,7 +327,14 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
     }
 
+    /**
+     * Called whenever a realm is closed on the top component in the realm.
+     * 
+     * @param realm
+     *            the realm that was closed.
+     */
     void onRealmClose(RealmAssembly realm) {
+        // Closes all components in the same realm depth first
         for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
             // child components with a different realm, has either already been closed, or will be closed elsewhere
             if (compConf.realm == realm) {
@@ -336,7 +343,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
 
         if (container != null) {
-            container.finish(region);
+            container.close(region);
         }
         finalState = true;
     }

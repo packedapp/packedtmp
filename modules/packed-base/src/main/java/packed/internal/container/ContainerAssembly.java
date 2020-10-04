@@ -89,7 +89,7 @@ public final class ContainerAssembly {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    public void finish(RegionAssembly region) {
+    public void close(RegionAssembly region) {
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }
