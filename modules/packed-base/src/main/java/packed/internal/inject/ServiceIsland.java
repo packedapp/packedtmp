@@ -34,7 +34,7 @@ import packed.internal.inject.dependency.Injectable;
 
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
-final class PostProcesser {
+final class ServiceIsland {
 
     /**
      * Tries to find a dependency cycle.
@@ -60,7 +60,7 @@ final class PostProcesser {
 
         for (Injectable node : detectCyclesFor) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = PostProcesser.detectCycle(region, node, stack, dependencies);
+                DependencyCycle dc = ServiceIsland.detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
                     return dc;
                 }

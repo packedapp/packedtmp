@@ -39,6 +39,7 @@ import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.ContainerAssembly;
+import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
@@ -204,6 +205,12 @@ public final class ServiceBuildManager {
                 resolvedServices.putIfAbsent(a.key(), a);
             }
         }
+
+        if (im.em != null) {
+            InjectionErrorManagerMessages.addDuplicateNodes(im.em.failingDuplicateProviders);
+        }
+
+        resolveExports();
         // Run through all linked containers...
         // Apply any wirelets to exports, and take
 

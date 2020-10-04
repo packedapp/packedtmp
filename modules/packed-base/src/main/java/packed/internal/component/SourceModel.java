@@ -121,27 +121,6 @@ public final class SourceModel extends Model {
 
             Injectable i = new Injectable(source, smm);
             compConf.injectionManager().addInjectable(i);
-
-//            if (source.regionIndex > -1) {
-//                // Maybe shared with SourceAssembly
-//                if (smm.runAt == RunAt.INITIALIZATION) {
-//
-//                }
-//
-//                MethodHandle mh1 = MethodHandleUtil.replaceParameter(smm.directMethodHandle, 0, source.dependencyAccessor());
-//                System.out.println("----");
-//                // Hvis vi tager service parametere... bliver vi noedt til at resolve them foerst.
-//                System.out.println(smm.model.onInitialize);
-//                MethodHandle mh2 = MethodHandles.collectArguments(smm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
-//                System.out.println(mh2);
-//
-//                System.out.println("----");
-//                mh2 = mh2.bindTo(mh1);
-//
-//                compConf.region.initializers.add(mh2);
-//
-//                System.out.println(mh2);
-//            }
         }
 
         // Tmp
