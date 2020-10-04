@@ -26,7 +26,7 @@ import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
 
@@ -44,7 +44,7 @@ public final class ProvideAllFromOtherInjector {
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> entries = new LinkedHashMap<>();
 
     /** The injector that provides the services. */
-    final AbstractInjector injector;
+    final PackedInjector injector;
 
     /**
      * Creates a new instance.
@@ -59,7 +59,7 @@ public final class ProvideAllFromOtherInjector {
      *            any wirelets used when importing the injector
      */
     @SuppressWarnings("unchecked")
-    public ProvideAllFromOtherInjector(ServiceBuildManager node, ConfigSite configSite, AbstractInjector injector, WireletList wirelets) {
+    public ProvideAllFromOtherInjector(ServiceBuildManager node, ConfigSite configSite, PackedInjector injector, WireletList wirelets) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);

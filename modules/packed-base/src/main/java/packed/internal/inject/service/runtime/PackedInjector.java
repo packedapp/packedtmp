@@ -19,15 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 
-import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -40,10 +37,59 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.context.PackedProvideContext;
 import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
-import packed.internal.util.PackedAttributeHolderStream;
 
 /** The default implementation of {@link Injector}. */
-public final class PackedInjector extends AbstractInjector {
+public final class PackedInjector extends AbstractServiceRegistry implements Injector {
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> Optional<T> find(Class<T> key) {
+        return Optional.ofNullable(getInstanceOrNull(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> Optional<T> find(Key<T> key) {
+        return Optional.ofNullable(getInstanceOrNull(key));
+    }
+
+    @Nullable
+    protected <T> RuntimeService<T> findNode(Class<T> key) {
+        return findNode(Key.of(key));
+    }
+
+    @Nullable
+    private <T> T getInstanceOrNull(Class<T> key) {
+        return getInstanceOrNull(Key.of(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> T use(Class<T> key) {
+        T t = getInstanceOrNull(key);
+        if (t != null) {
+            return t;
+        }
+        failedGet(Key.of(key));
+
+        // /child [ss.BaseMyBundle] does not export a service with the specified key
+
+        // FooBundle does not export a service with the key
+        // It has an internal service. Maybe you forgot to export it()
+        // Is that breaking encapsulation
+
+        throw new NoSuchElementException("No service with the specified key could be found, key = " + key);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> T use(Key<T> key) {
+        T t = getInstanceOrNull(key);
+        if (t == null) {
+            throw new NoSuchElementException("No service with the specified key could be found, key = " + key);
+        }
+        return t;
+    }
 
     /** An empty service locator. */
     public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
@@ -59,7 +105,7 @@ public final class PackedInjector extends AbstractInjector {
 
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
-    final AbstractInjector parent;
+    final PackedInjector parent;
 
     public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService<?>> services) {
         this.parent = null;
@@ -73,19 +119,22 @@ public final class PackedInjector extends AbstractInjector {
         return configSite;
     }
 
-    @Override
+    /**
+     * Ideen er egentlig at vi kan lave en detaljeret fejlbesked, f.eks, vi har en X type, men den har en qualifier. Eller
+     * vi har en qualifier med navnet DDooo og du skrev PDooo
+     * 
+     * @param key
+     */
     protected void failedGet(Key<?> key) {
         // Oehhh hvad med internal injector, skal vi have en reference til den.
         // Vi kan jo saadan set GC'en den??!?!?!?
         // for (ServiceNode<?> n : services) {
         // if (n instanceof RuntimeNode<T>)
         // }
-        super.failedGet(key);
+
     }
 
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
-    @Override
     @Nullable
     protected <T> RuntimeService<T> findNode(Key<T> key) {
         return (RuntimeService<T>) entries.get(key);
@@ -97,13 +146,10 @@ public final class PackedInjector extends AbstractInjector {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void forEachEntry(Consumer<? super RuntimeService<?>> action) {
         entries.values().forEach(action);
     }
 
-    @Override
     @Nullable
     protected <T> T getInstanceOrNull(Key<T> key) {
         RuntimeService<T> n = findNode(key);
@@ -111,19 +157,6 @@ public final class PackedInjector extends AbstractInjector {
             return null;
         }
         return n.getInstance(PackedProvideContext.of(key));
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public Iterator<Service> iterator() {
-        return (Iterator) Collections.unmodifiableCollection(entries.values()).iterator();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Set<Key<?>> keys() {
-        return entries.keySet(); // I assume entries are immutable
     }
 
     /** {@inheritDoc} */
@@ -147,8 +180,68 @@ public final class PackedInjector extends AbstractInjector {
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public AttributedElementStream<Service> stream() {
-        return new PackedAttributeHolderStream<>(entries.values().stream().map(e -> e));
+    protected Map<Key<?>, Service> services() {
+        return (Map) entries;
     }
 }
+
+//protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
+//// Inject fields
+//if (!descriptor.fields.isEmpty()) {
+//for (OldAtInject atInject : descriptor.fields) {
+//Dependency dependency = atInject.dependencies.get(0);
+//FieldFactoryHandle<?> field = (FieldFactoryHandle<?>) atInject.invokable;
+//InjectorEntry<?> node = findNode(dependency.key());
+//if (node != null) {
+//Object value = node.getInstance(PrototypeRequest.of(dependency, component));
+//value = dependency.wrapIfOptional(value);
+//field.setOnInstance(instance, value);
+//} else if (dependency.isOptional()) {
+//// 3 Valgmuligheder
+//
+//// Altid overskriv
+//
+//// Overskriv Optional, ikke for nullable
+//
+//// Aldrig overskriv
+//
+//// I think we want to set optional fields????
+//// But not nullable
+//// I think
+//// if field == null, inject, otherwise leave to value
+//// Hmm, should we override existing value???
+//// For consistentsee reason yes, but hmm it is useful not to override
+//} else {
+//String msg = "Could not find a valid value for " + dependency.key() + " on field " + field.toString();
+//throw new InjectionException(msg);
+//}
+//}
+//}
+//
+/// ** {@inheritDoc} */
+//@Override
+//public final <T> T injectMembers(T instance, MethodHandles.Lookup lookup) {
+//requireNonNull(instance, "instance is null");
+//requireNonNull(lookup, "lookup is null");
+//AtInjectGroup scd = MemberScanner.forService(instance.getClass(), lookup).inject.build();
+//injectMembers(scd, instance, null);
+//return instance;
+//}
+//Better help
+//
+//public static String getInstanceNotFound(Key<?> key) {
+//return "No service of the specified type is available [type = " + key + "]. You can use " +
+//OldInjector.class.getSimpleName()
+//+ "#getAvailableServices() to find out what kind of services are available";
+//}
+//
+////Think we can put in some more help, when people try inject "strange things"
+////InjectionSite can only be injected into non-static methods annotated with @Provides
+//
+//public static String getProviderNotFound(Key<?> key) {
+//return "No service of the specified type is available [type = " + key + "]. You can use " +
+//OldInjector.class.getSimpleName()
+//+ "#getAvailableServices() to find out what kind of services are available";
+//}

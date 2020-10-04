@@ -22,6 +22,8 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.Service;
+import app.packed.inject.ServiceLocator;
+import packed.internal.inject.context.PackedProvideContext;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** An entry that represents a service at runtime. */
@@ -71,6 +73,12 @@ public abstract class RuntimeService<T> implements Service {
     }
 
     public abstract boolean requiresPrototypeRequest();
+
+    public T forLocator(ServiceLocator locator) {
+        ProvisionContext pc = PackedProvideContext.of(key);
+        T t = getInstance(pc);
+        return t;
+    }
 
     /** {@inheritDoc} */
     @Override

@@ -40,7 +40,7 @@ import packed.internal.hook.OnHook;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
 import packed.internal.inject.sidecar.AtProvidesHook;
 
@@ -246,12 +246,12 @@ public final class ServiceExtension extends Extension {
      */
     public void provideAll(Injector injector, Wirelet... wirelets) {
         requireNonNull(injector, "injector is null");
-        if (!(injector instanceof AbstractInjector)) {
+        if (!(injector instanceof PackedInjector)) {
             throw new IllegalArgumentException(
                     "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
         }
         checkConfigurable();
-        sbm.provideFromInjector((AbstractInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
+        sbm.provideFromInjector((PackedInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...

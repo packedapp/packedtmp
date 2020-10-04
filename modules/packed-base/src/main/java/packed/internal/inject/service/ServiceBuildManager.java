@@ -35,6 +35,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.service.Injector;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.InjectionManager;
@@ -43,7 +44,7 @@ import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.AbstractInjector;
+import packed.internal.inject.service.runtime.ExportedServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -139,13 +140,21 @@ public final class ServiceBuildManager {
         });
     }
 
-    public ServiceLocator newServiceRegistry(ComponentNode comp, RuntimeRegion region) {
+    public ServiceLocator newServiceLocator(ComponentNode comp, RuntimeRegion region) {
         LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (var e : exports()) {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
-        return new PackedInjector(comp.configSite(), runtimeEntries);
+
+        PackedShellDriver<?> psd = (PackedShellDriver<?>) im.container.compConf.assembly().shellDriver();
+        if (Injector.class.isAssignableFrom(psd.shellRawType())) {
+            return new PackedInjector(comp.configSite(), runtimeEntries);
+        } else {
+            return new ExportedServiceLocator(comp, runtimeEntries);
+        }
+
+//        
     }
 
     public void provideAtProvides(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
@@ -161,7 +170,7 @@ public final class ServiceBuildManager {
         }
     }
 
-    public void provideFromInjector(AbstractInjector injector, ConfigSite configSite, WireletList wirelets) {
+    public void provideFromInjector(PackedInjector injector, ConfigSite configSite, WireletList wirelets) {
         ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(this, configSite, injector, wirelets);
         ArrayList<ProvideAllFromOtherInjector> p = provideAll;
         if (provideAll == null) {

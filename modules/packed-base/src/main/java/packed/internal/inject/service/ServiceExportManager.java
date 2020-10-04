@@ -27,13 +27,14 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceRegistry;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.PackedExportedServiceConfiguration;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.PackedServiceRegistry;
+import packed.internal.inject.service.runtime.AbstractServiceRegistry;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -150,8 +151,8 @@ public final class ServiceExportManager implements Iterable<ExportedServiceAssem
      * @return all exported services in a service registry. Or null if there are no exported services
      */
     @Nullable
-    public PackedServiceRegistry exportsAsServiceRegistry() {
-        return resolvedExports == null ? null : PackedServiceRegistry.of(resolvedExports);
+    public ServiceRegistry exportsAsServiceRegistry() {
+        return resolvedExports == null ? null : AbstractServiceRegistry.copyOf(resolvedExports);
     }
 
     /** {@inheritDoc} */

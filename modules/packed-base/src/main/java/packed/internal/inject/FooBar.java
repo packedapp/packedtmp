@@ -38,6 +38,10 @@ public class FooBar extends BaseBundle {
     }
 
     public static void main(String[] args) {
+        try (App app = App.of(new Child())) {
+            System.out.println(app.use(String.class));
+        }
+
         App.of(new FooBar());
     }
 
@@ -46,7 +50,7 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            provideInstance("Foo").export();
+            provideInstance("Foo");// .export();
         }
     }
 }
