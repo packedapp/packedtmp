@@ -18,22 +18,17 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.inject.Provider;
-import app.packed.inject.ProvisionContext;
+import app.packed.base.Nullable;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.ComponentNode;
-import packed.internal.inject.context.PackedProvideContext;
 
 /**
  *
  */
-public final class ExportedServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
+public final class ExportedServiceLocator extends AbstractServiceLocator implements ServiceLocator {
 
     private final ComponentNode component;
 
@@ -45,69 +40,27 @@ public final class ExportedServiceLocator extends AbstractServiceRegistry implem
         this.component = requireNonNull(component);
     }
 
+    @Override
+    protected String failedToFindServiceMessage(Key<?> key) {
+        // /child [ss.BaseMyBundle] does not export a service with the specified key
+
+        // FooBundle does not export a service with the key
+        // It has an internal service. Maybe you forgot to export it()
+        // Is that breaking encapsulation
+
+        return "'" + component.path() + "' does not export a service with the specified key, key = " + key;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    @Nullable
+    protected <T> RuntimeService<T> getService(Key<T> key) {
+        return (RuntimeService<T>) services.get(key);
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Map<Key<?>, Service> services() {
         return (Map) services;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> Optional<T> find(Key<T> key) {
-        requireNonNull(key, "key is null");
-        @SuppressWarnings("unchecked")
-        RuntimeService<T> s = (RuntimeService<T>) services.get(key);
-        if (s == null) {
-            return Optional.empty();
-        }
-        T t = s.forLocator(this);
-        return Optional.of(t);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> Optional<Provider<T>> findProvider(Key<T> key) {
-        requireNonNull(key, "key is null");
-        @SuppressWarnings("unchecked")
-        RuntimeService<T> s = (RuntimeService<T>) services.get(key);
-        if (s == null) {
-            return Optional.empty();
-        }
-
-        Provider<T> provider;
-        if (s.isConstant()) {
-            T t = s.forLocator(this);
-            provider = Provider.ofConstant(t);
-        } else {
-            ProvisionContext pc = PackedProvideContext.of(key);
-            provider = new NonConstantLocatorProvider<T>(s, pc);
-        }
-        return Optional.of(provider);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
-        requireNonNull(key, "key is null");
-        requireNonNull(action, "action is null");
-        @SuppressWarnings("unchecked")
-        RuntimeService<T> s = (RuntimeService<T>) services.get(key);
-        if (s != null) {
-            T t = s.forLocator(this);
-            action.accept(t);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> T use(Key<T> key) {
-        requireNonNull(key, "key is null");
-        @SuppressWarnings("unchecked")
-        RuntimeService<T> s = (RuntimeService<T>) services.get(key);
-        if (s != null) {
-            return s.forLocator(this);
-        }
-        // /child [ss.BaseMyBundle] does not export a service with the specified key
-        throw new NoSuchElementException("'" + component.path() + "' does not export a service with the specified key, key = " + key);
     }
 }

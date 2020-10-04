@@ -21,7 +21,6 @@ import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -29,67 +28,15 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Provider;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.service.Injector;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.inject.context.PackedProvideContext;
 import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 
 /** The default implementation of {@link Injector}. */
-public final class PackedInjector extends AbstractServiceRegistry implements Injector {
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> Optional<T> find(Class<T> key) {
-        return Optional.ofNullable(getInstanceOrNull(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> Optional<T> find(Key<T> key) {
-        return Optional.ofNullable(getInstanceOrNull(key));
-    }
-
-    @Nullable
-    protected <T> RuntimeService<T> findNode(Class<T> key) {
-        return findNode(Key.of(key));
-    }
-
-    @Nullable
-    private <T> T getInstanceOrNull(Class<T> key) {
-        return getInstanceOrNull(Key.of(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> T use(Class<T> key) {
-        T t = getInstanceOrNull(key);
-        if (t != null) {
-            return t;
-        }
-        failedGet(Key.of(key));
-
-        // /child [ss.BaseMyBundle] does not export a service with the specified key
-
-        // FooBundle does not export a service with the key
-        // It has an internal service. Maybe you forgot to export it()
-        // Is that breaking encapsulation
-
-        throw new NoSuchElementException("No service with the specified key could be found, key = " + key);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final <T> T use(Key<T> key) {
-        T t = getInstanceOrNull(key);
-        if (t == null) {
-            throw new NoSuchElementException("No service with the specified key could be found, key = " + key);
-        }
-        return t;
-    }
+public final class PackedInjector extends AbstractServiceLocator implements Injector {
 
     /** An empty service locator. */
     public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
@@ -119,44 +66,29 @@ public final class PackedInjector extends AbstractServiceRegistry implements Inj
         return configSite;
     }
 
-    /**
-     * Ideen er egentlig at vi kan lave en detaljeret fejlbesked, f.eks, vi har en X type, men den har en qualifier. Eller
-     * vi har en qualifier med navnet DDooo og du skrev PDooo
-     * 
-     * @param key
-     */
-    protected void failedGet(Key<?> key) {
-        // Oehhh hvad med internal injector, skal vi have en reference til den.
-        // Vi kan jo saadan set GC'en den??!?!?!?
-        // for (ServiceNode<?> n : services) {
-        // if (n instanceof RuntimeNode<T>)
-        // }
-
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    protected <T> RuntimeService<T> findNode(Key<T> key) {
-        return (RuntimeService<T>) entries.get(key);
-    }
-
     /** {@inheritDoc} */
     @Override
-    public <T> Optional<Provider<T>> findProvider(Key<T> key) {
-        throw new UnsupportedOperationException();
+    protected String failedToFindServiceMessage(Key<?> key) {
+        return "No service with the specified key could be found, key = " + key;
     }
 
     public void forEachEntry(Consumer<? super RuntimeService<?>> action) {
         entries.values().forEach(action);
     }
 
+    /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
+    @Override
     @Nullable
-    protected <T> T getInstanceOrNull(Key<T> key) {
-        RuntimeService<T> n = findNode(key);
-        if (n == null) {
-            return null;
-        }
-        return n.getInstance(PackedProvideContext.of(key));
+    protected <T> RuntimeService<T> getService(Key<T> key) {
+        return (RuntimeService<T>) entries.get(key);
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    protected Map<Key<?>, Service> services() {
+        return (Map) entries;
     }
 
     /** {@inheritDoc} */
@@ -177,13 +109,6 @@ public final class PackedInjector extends AbstractServiceRegistry implements Inj
         wl.forEach(PackedDownstreamServiceWirelet.class, w -> w.process(ccs, newServices));
         // TODO Auto-generated method stub
         return new PackedInjector(cs, newServices);
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
-    protected Map<Key<?>, Service> services() {
-        return (Map) entries;
     }
 }
 
