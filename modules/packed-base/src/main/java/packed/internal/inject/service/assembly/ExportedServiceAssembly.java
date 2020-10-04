@@ -78,13 +78,13 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
 
     @Override
     public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
+        return exportedEntry.dependencyAccessor();
     }
 
     @Override
     @Nullable
     public Injectable getInjectable() {
-        throw new UnsupportedOperationException();
+        return exportedEntry.getInjectable();
     }
 
     /** {@inheritDoc} */

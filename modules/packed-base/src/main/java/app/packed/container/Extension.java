@@ -102,31 +102,6 @@ public abstract class Extension {
      */
     protected void add() {}
 
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    protected void preChildContainers() {}
-
-    /**
-     * Invoked by the runtime when the configuration of the container is completed.
-     * <p>
-     * 
-     */
-    protected void complete() {}
-
-    protected final void checkNoChildContainers() {
-        configuration().checkNoChildContainers();
-    }
-
-    /**
-     * Returns whether or not the container that this extension belongs is being built into an {@link Image}.
-     * 
-     * @return true if the extension
-     */
-    protected final boolean isPartOfImage() {
-        return false;
-    }
-
     /**
      * Returns the assembly context the extension is a part of.
      * 
@@ -200,6 +175,17 @@ public abstract class Extension {
         configuration().checkConfigurable();
     }
 
+    protected final void checkNoChildContainers() {
+        configuration().checkNoChildContainers();
+    }
+
+    /**
+     * Invoked by the runtime when the configuration of the container is completed.
+     * <p>
+     * 
+     */
+    protected void complete() {}
+
     /**
      * Returns a configuration for this extension. This is useful, for example, if the extension delegates some
      * responsibility to classes that are not define in the same package as the extension.
@@ -246,10 +232,24 @@ public abstract class Extension {
         return configuration().installInstance(instance);
     }
 
+    /**
+     * Returns whether or not the container that this extension belongs is being built into an {@link Image}.
+     * 
+     * @return true if the extension
+     */
+    protected final boolean isPartOfImage() {
+        return configuration().isPartOfImage();
+    }
+
     protected final void lookup(Lookup l) {
         // Den fungere ligesom Bundle.lookup()
         // Her har vi selve extension'en som
     }
+
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    protected void preChildContainers() {}
 
     protected final <E extends Subtension> E use(Class<E> extensionType) {
         return configuration().use(extensionType);

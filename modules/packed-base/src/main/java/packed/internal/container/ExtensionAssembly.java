@@ -201,7 +201,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** {@inheritDoc} */
     @Override
-    public boolean isInImage() {
+    public boolean isPartOfImage() {
         Boolean b = isImage;
         if (b != null) {
             return b;

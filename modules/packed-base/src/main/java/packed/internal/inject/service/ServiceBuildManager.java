@@ -38,6 +38,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
@@ -79,6 +80,8 @@ public final class ServiceBuildManager {
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
+
+    public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
 
     /**
      * @param im
@@ -185,8 +188,7 @@ public final class ServiceBuildManager {
         return e;
     }
 
-    public LinkedHashMap<Key<?>, ServiceAssembly<?>> resolve() {
-
+    public void resolveLocal() {
         // First process provided entries, then any entries added via provideAll
         resolve0(im, resolvedServices, assemblies);
 
@@ -196,12 +198,16 @@ public final class ServiceBuildManager {
                 resolve0(im, resolvedServices, fromInjector.entries.values());
             }
         }
-
+        for (ServiceBuildManager m : children) {
+            for (ExportedServiceAssembly<?> a : m.exports()) {
+                // System.out.println("EXPORT " + a);
+                resolvedServices.putIfAbsent(a.key(), a);
+            }
+        }
         // Run through all linked containers...
         // Apply any wirelets to exports, and take
 
         // Add error messages if any nodes with the same key have been added multiple times
-        return resolvedServices;
     }
 
     private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
@@ -226,6 +232,13 @@ public final class ServiceBuildManager {
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();
+            ContainerAssembly parent = im.container.parent;
+            if (parent != null) {
+                ServiceBuildManager sbm = parent.im.getServiceManager();
+                if (sbm != null) {
+                    sbm.children.add(this);
+                }
+            }
         }
     }
     // En InjectionManager kan have en service manager...

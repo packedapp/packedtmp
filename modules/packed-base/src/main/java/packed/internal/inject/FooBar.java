@@ -17,6 +17,7 @@ package packed.internal.inject;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
+import app.packed.inject.ServiceExtension;
 
 /**
  *
@@ -26,21 +27,18 @@ public class FooBar extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        use(ServiceExtension.class);
         install(NeedsString.class);
-
         link(new Child());
     }
 
     public static class NeedsString {
         public NeedsString(String string) {
-
+            System.out.println("GOt " + string);
         }
     }
 
     public static void main(String[] args) {
-        try (App app = App.of(new Child())) {
-            System.out.println(app.use(String.class));
-        }
 
         App.of(new FooBar());
     }
@@ -50,7 +48,7 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            provideInstance("Foo");// .export();
+            provideInstance("Foo").export();
         }
     }
 }

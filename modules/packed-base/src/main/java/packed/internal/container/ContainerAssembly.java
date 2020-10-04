@@ -98,10 +98,8 @@ public final class ContainerAssembly {
             pec.completed();
         }
 
-        if (compConf.getParent() == null) {
-            InjectionManager im = compConf.injectionManager();
-            im.build(region);
-        }
+        InjectionManager im = compConf.injectionManager();
+        im.build(region);
     }
 
     /**

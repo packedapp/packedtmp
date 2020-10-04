@@ -127,11 +127,7 @@ public interface ExtensionConfiguration {
      * 
      * @return ssdsd
      */
-    // isPartOfImage
-    // isImageParticipant
-    // Maybe Image is viral...
-    // But then how to check image in image
-    boolean isInImage();
+    boolean isPartOfImage();
 
     <E extends Subtension> E use(Class<E> extensionType);
 
@@ -203,6 +199,8 @@ public interface ExtensionConfiguration {
             throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
                     + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
         }
+
+        // We only allow to call in directly on the container itself
         if (!component.modifiers().isContainer()) {
             throw new IllegalArgumentException(
                     "The specified component '" + component.path() + "' must have the Container modifier, modifiers = " + component.modifiers());
@@ -233,7 +231,7 @@ public interface ExtensionConfiguration {
      *             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
      *             specified lookup object does not have full privileges
      */
-    static Optional<ExtensionConfiguration> privateAccess(MethodHandles.Lookup caller, Component component) {
+    static Optional<ExtensionConfiguration> privateLookup(MethodHandles.Lookup caller, Component component) {
         requireNonNull(caller, "caller is null");
         return Optional.ofNullable(getExtensionAssembly(caller, component));
     }
@@ -251,11 +249,12 @@ public interface ExtensionConfiguration {
      * 
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> Optional<T> privateAccessExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component component) {
+    static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component component) {
         requireNonNull(lookup, "lookup is null");
         if (lookup.lookupClass() != extensionType) {
             throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
+
         @Nullable
         ExtensionAssembly pec = getExtensionAssembly(lookup, component);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());

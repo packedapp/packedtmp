@@ -25,6 +25,7 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 
 /**
  * Since the logic for the service extension is quite complex. Especially with cross-container integration. We spread it
@@ -67,8 +68,11 @@ public final class InjectionManager {
     }
 
     public void build(RegionAssembly region) {
+
+        // Checks that no local services are registered with the same key and
+        // moves them to
         if (services != null) {
-            services.resolve();
+            services.resolveLocal();
         }
 
         if (em != null) {
@@ -87,7 +91,6 @@ public final class InjectionManager {
             services.dependencies().checkForMissingDependencies(this);
         }
         PostProcesser.dependencyCyclesDetect(region, this);
-
     }
 
     /**
@@ -101,6 +104,10 @@ public final class InjectionManager {
             e = em = new InjectionErrorManager();
         }
         return e;
+    }
+
+    public void addExportedChildService(ExportedServiceAssembly<?> service) {
+        System.out.println("Getting export " + service);
     }
 
     @Nullable
