@@ -81,8 +81,6 @@ public final class ServiceBuildManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
 
-    public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
-
     /**
      * @param im
      */
@@ -198,7 +196,7 @@ public final class ServiceBuildManager {
                 resolve0(im, resolvedServices, fromInjector.entries.values());
             }
         }
-        for (ServiceBuildManager m : children) {
+        for (ServiceBuildManager m : im.children) {
             for (ExportedServiceAssembly<?> a : m.exports()) {
                 // System.out.println("EXPORT " + a);
                 resolvedServices.putIfAbsent(a.key(), a);
@@ -234,10 +232,7 @@ public final class ServiceBuildManager {
             exporter.resolve();
             ContainerAssembly parent = im.container.parent;
             if (parent != null) {
-                ServiceBuildManager sbm = parent.im.getServiceManager();
-                if (sbm != null) {
-                    sbm.children.add(this);
-                }
+                parent.im.children.add(this);
             }
         }
     }

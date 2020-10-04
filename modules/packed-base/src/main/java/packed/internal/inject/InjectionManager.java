@@ -47,6 +47,8 @@ public final class InjectionManager {
     @Nullable
     private ServiceBuildManager services;
 
+    public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
+
     /**
      * Creates a new injection manager.
      * 
@@ -65,6 +67,11 @@ public final class InjectionManager {
      */
     public void addInjectable(Injectable injectable) {
         allInjectables.add(requireNonNull(injectable));
+        // I virkeligheden vil vi bare gerne checke at man ikke har
+        // contexts
+        if (services == null && !injectable.dependencies.isEmpty()) {
+            services(true);
+        }
     }
 
     public void build(RegionAssembly region) {
