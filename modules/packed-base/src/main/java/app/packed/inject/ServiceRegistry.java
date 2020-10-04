@@ -36,16 +36,6 @@ import app.packed.base.Key;
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
-     * Returns a service contract for this registry. The returned service contract will contain all the keys of this
-     * registry via {@link ServiceContract#provides()}.
-     * 
-     * @return a service contract containing the services of this registry
-     */
-    default ServiceContract contract() {
-        return ServiceContract.newContract(c -> stream().forEach(s -> c.provides(s.key())));
-    }
-
-    /**
      * Finds and returns a service with the specified key if present. Otherwise return {@link Optional#empty()}.
      * 
      * @param key
@@ -143,3 +133,15 @@ public interface ServiceRegistry extends Iterable<Service> {
         return stream().collect(Collectors.toList());
     }
 }
+//
+///**
+// * Returns a service contract for this registry. The returned service contract will contain all the keys of this
+// * registry via {@link ServiceContract#provides()}.
+// * 
+// * @return a service contract containing the services of this registry
+// */
+//// Jeg er ikke sikker paa vi vil have den her...
+//// Den er ret forvirrende naar vi brugere service transofmer
+//default ServiceContract contract() {
+//    return ServiceContract.newContract(c -> stream().forEach(s -> c.provides(s.key())));
+//}
