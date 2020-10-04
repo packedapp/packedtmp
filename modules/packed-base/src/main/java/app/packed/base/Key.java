@@ -242,6 +242,10 @@ public abstract class Key<T> {
         return typeLiteral;
     }
 
+    public Class<?> rawType() {
+        return typeLiteral.rawType();
+    }
+
     /**
      * Calling this method will replace any existing qualifier.
      * 

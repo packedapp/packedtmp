@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import app.packed.base.Attribute;
 import app.packed.base.Key;
@@ -28,15 +29,36 @@ import app.packed.base.Key;
 /**
  * A selection of service where each service provide instances of a similar type.
  */
-public interface ServiceSelection<S> extends ServiceRegistry {
+//ServiceSelector?
 
-    void forEachInstance(BiConsumer<? super Service, ? super S> action);
+// Metoder
+
+// forEach
+// Stream?
+// ToList/ToMap
+
+// Instance
+// Provider
+// Service + Instance
+// Service + Provider
+
+// Hmm hvordan haandtere vi Injector????
+// Vi bliver noedt til ogsaa at have den paa plads..
+// 
+
+public interface ServiceSelection<S> extends ServiceLocator {
 
     void forEachInstance(Consumer<? super S> action);
 
-    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
-
     void forEachProvider(Consumer<? super Provider<S>> action);
+
+    void forEachServiceInstance(BiConsumer<? super Service, ? super S> action);
+
+    void forEachServiceProvider(BiConsumer<? super Service, ? super Provider<S>> action);
+
+    Stream<S> instances();
+
+    Stream<Provider<S>> providers();
 
     <T> ServiceSelection<S> selectOnAttribute(Attribute<T> attribute, Predicate<? super T> filter);
 
@@ -45,24 +67,26 @@ public interface ServiceSelection<S> extends ServiceRegistry {
 
     <T extends Annotation> ServiceSelection<S> selectOnQualifier(Class<? extends T> qualifier, Predicate<? super T> filter);
 
-    // selectOnType();
+    Stream<Map.Entry<Service, S>> serviceInstances();
 
-    Map<Key<? extends S>, S> toInstanceKeyMap();
+    Stream<Map.Entry<Service, S>> serviceProvides();
 
     /**
-     * Returns an immutable list an instance for each service.
+     * Returns an immutable list containing a provided service instance for every service in this selection in any order.
      * 
-     * @return an immutable list an instance for each service
+     * @return an immutable list containing a provided service instance for every service in this selection in any order
      */
-    List<S> toInstanceList();
+    List<S> toListInstances();
 
-    Map<Service, S> toInstanceMap();
+    List<Provider<S>> toListProviders();
 
-    Map<Key<? extends S>, Provider<S>> toProviderKeyMap();
+    Map<Key<? extends S>, S> toMapKeyInstances();
 
-    List<Provider<S>> toProviderList();
+    Map<Key<? extends S>, Provider<S>> toMapKeyProviders();
 
-    Map<Service, Provider<S>> toProviderMap();
+    Map<Service, S> toMapServiceInstances();
+
+    Map<Service, Provider<S>> toMapServiceProviders();
 }
 //It is not a set... Because we might have multiple instances of the same type...
 //Det er hellere ikke rigtig en collection fordi vi laver maaske nye instanser hver gang...

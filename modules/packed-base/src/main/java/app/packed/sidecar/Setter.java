@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 
 import app.packed.base.Nullable;
+import app.packed.inject.ServiceSelection;
 
 /**
  * a setter is a method that updates the value of a variable
@@ -46,4 +47,8 @@ public interface Setter<T> {
      * @return the method handle
      */
     MethodHandle toMethodHandle();
+
+    default void voo(ServiceSelection<String> ss) {
+
+    }
 }

@@ -25,10 +25,7 @@ import app.packed.base.Key;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- * A service locator interface that can be used to manually lookup service instances.
- * 
- * @apiNote In the future, if the Java language permits, {@link ServiceLocator} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ * A service locator interface that can be used to manually look up service instances.
  */
 public interface ServiceLocator extends ServiceRegistry {
 
@@ -99,14 +96,26 @@ public interface ServiceLocator extends ServiceRegistry {
         }
     }
 
+    /**
+     * Returns a service selection with all of the services in this locator with a {@link Key} whose {@link Key#rawType()}
+     * is assignable to the specified service type.
+     * <p>
+     * Primitive types will automatically be boxed if specified.
+     * 
+     * @return a service selection with all of the services in this locator with a key whose raw type is assignable to the
+     *         specified service type
+     * @see Class#isAssignableFrom(Class)
+     * @see Key#rawType()
+     */
+    // Hmm kan vi sige noget om actual type som vi producere???
     default <T> ServiceSelection<T> select(Class<T> serviceType) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Returns a service selection with of the services in this locator.
+     * Returns a service selection with all of the services in this locator.
      * 
-     * @return a service selection with of the services in this locator
+     * @return a service selection with all of the services in this locator
      */
     default ServiceSelection<Object> selectAll() {
         throw new UnsupportedOperationException();
@@ -124,11 +133,6 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a service for the specified key
      * @throws NoSuchElementException
      *             if no service with the specified key exist
-     * @throws IllegalStateException
-     *             if a service with the specified key exist, but the service has not been properly initialized yet. For
-     *             example, if injecting an injector into a constructor of a service and then using the injector to try and
-     *             access other service that have not been properly initialized yet. For example, a service that depends on
-     *             the service being constructed
      * @see #isPresent(Class)
      */
     default <T> T use(Class<T> key) {
@@ -161,11 +165,6 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a service with the specified key
      * @throws NoSuchElementException
      *             if no service with the specified key exist
-     * @throws IllegalStateException
-     *             if a service with the specified key exist, but the service is not ready to be consumed yet. For example,
-     *             if injecting an injector into a constructor of a service and then using the injector to try and access
-     *             other service that have not been properly initialized yet. For example, a service that depends on the
-     *             service being constructed
      */
     default <T> T use(Key<T> key) {
         Optional<T> t = find(key);
@@ -180,7 +179,12 @@ public interface ServiceLocator extends ServiceRegistry {
      * 
      * @return an empty service locator
      */
-    static ServiceLocator empty() {
+    static ServiceLocator of() {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
 }
+//* @throws IllegalStateException
+//*             if a service with the specified key exist, but the service is not ready to be consumed yet. For example,
+//*             if injecting an injector into a constructor of a service and then using the injector to try and access
+//*             other service that have not been properly initialized yet. For example, a service that depends on the
+//*             service being constructed

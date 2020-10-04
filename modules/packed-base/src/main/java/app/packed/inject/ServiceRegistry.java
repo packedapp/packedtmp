@@ -28,16 +28,18 @@ import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 
 /**
- * An immutable set of services with unique {@link Service#key() keys}. Unlike {@link ServiceLocator} this interface
- * does not contain any methods to acquire actual service instances.
+ * An immutable collection of services each having a unique {@link Service#key() key}.
+ * <p>
+ * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain any methods to acquire
+ * actual service instances.
  */
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
-     * Returns a service contract for this set. The returned service contract will contain all the keys of this set via
-     * {@link ServiceContract#provides()}.
+     * Returns a service contract for this registry. The returned service contract will contain all the keys of this
+     * registry via {@link ServiceContract#provides()}.
      * 
-     * @return the service contract contained the services this set provides
+     * @return a service contract containing the services of this registry
      */
     default ServiceContract contract() {
         return ServiceContract.newContract(c -> stream().forEach(s -> c.provides(s.key())));
@@ -133,9 +135,9 @@ public interface ServiceRegistry extends Iterable<Service> {
     AttributedElementStream<Service> stream(); // Rename to services????
 
     /**
-     * Returns a list of every service in this registry.
+     * Returns a list of every service in this registry in any order.
      * 
-     * @return a list of every service in this registry
+     * @return a list of every service in this registry in any order
      */
     default List<Service> toList() {
         return stream().collect(Collectors.toList());

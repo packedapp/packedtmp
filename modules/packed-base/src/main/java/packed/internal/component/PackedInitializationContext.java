@@ -94,7 +94,7 @@ public final class PackedInitializationContext {
 
     public ServiceLocator services() {
         ServiceBuildManager sm = root.injectionManager().getServiceManager();
-        return sm == null ? ServiceLocator.empty() : sm.newServiceRegistry(component, component.region);
+        return sm == null ? ServiceLocator.of() : sm.newServiceRegistry(component, component.region);
 //                
 //        /// Create a service registry...
 //        // We do not stored this in the region but outside...
