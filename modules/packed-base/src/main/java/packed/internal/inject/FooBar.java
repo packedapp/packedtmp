@@ -45,7 +45,7 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            provideInstance("Foo").export();
+            provideInstance("Fooddd").export();
         }
     }
 }

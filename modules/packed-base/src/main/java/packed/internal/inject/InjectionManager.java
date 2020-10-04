@@ -34,7 +34,7 @@ import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 public final class InjectionManager {
 
     /** All injectables that needs to be resolved. */
-    final ArrayList<Injectable> allInjectables = new ArrayList<>();
+    final ArrayList<Injectable> injectables = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
@@ -46,8 +46,6 @@ public final class InjectionManager {
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
     private ServiceBuildManager services;
-
-    public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
 
     /**
      * Creates a new injection manager.
@@ -66,11 +64,12 @@ public final class InjectionManager {
      *            the injectable to add
      */
     public void addInjectable(Injectable injectable) {
-        allInjectables.add(requireNonNull(injectable));
-        // I virkeligheden vil vi bare gerne checke at man ikke har
-        // contexts
+        injectables.add(requireNonNull(injectable));
+
+        // I virkeligheden vil vi bare gerne checke at om man
+        // har ting der ikke kan resolves via contexts
         if (services == null && !injectable.dependencies.isEmpty()) {
-            services(true);
+            container.useExtension(ServiceExtension.class);
         }
     }
 
@@ -90,13 +89,14 @@ public final class InjectionManager {
             services.resolveExports();
         }
 
-        for (Injectable i : allInjectables) {
+        for (Injectable i : injectables) {
             i.resolve();
         }
 
         if (services != null) {
             services.dependencies().checkForMissingDependencies(this);
         }
+
         PostProcesser.dependencyCyclesDetect(region, this);
     }
 
