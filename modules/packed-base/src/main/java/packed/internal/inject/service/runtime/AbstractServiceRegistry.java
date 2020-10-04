@@ -114,7 +114,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         return new CopyOfServiceRegistry(l);
     }
 
-    private static final class CopyOfServiceRegistry extends AbstractServiceRegistry implements ServiceRegistry {
+    private static final class CopyOfServiceRegistry extends AbstractServiceRegistry {
 
         /** The services that are wrapped */
         private final Map<Key<?>, Service> services;

@@ -22,13 +22,12 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Service;
-import app.packed.inject.ServiceLocator;
 import packed.internal.component.ComponentNode;
 
 /**
  *
  */
-public final class ExportedServiceLocator extends AbstractServiceLocator implements ServiceLocator {
+public final class ExportedServiceLocator extends AbstractServiceLocator {
 
     private final ComponentNode component;
 
@@ -41,7 +40,7 @@ public final class ExportedServiceLocator extends AbstractServiceLocator impleme
     }
 
     @Override
-    protected String failedToFindServiceMessage(Key<?> key) {
+    protected String failedToUseMessage(Key<?> key) {
         // /child [ss.BaseMyBundle] does not export a service with the specified key
 
         // FooBundle does not export a service with the key

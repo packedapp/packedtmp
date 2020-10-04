@@ -28,12 +28,10 @@ import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.context.PackedProvideContext;
 
-/**
- *
- */
+/** An abstract implementation of {@link ServiceLocator}. */
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
 
-    protected abstract String failedToFindServiceMessage(Key<?> key);
+    protected abstract String failedToUseMessage(Key<?> key);
 
     /** {@inheritDoc} */
     @Override
@@ -90,7 +88,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         if (s != null) {
             return s.forLocator(this);
         }
-        String msg = failedToFindServiceMessage(key);
+        String msg = failedToUseMessage(key);
         // /child [ss.BaseMyBundle] does not export a service with the specified key
         throw new NoSuchElementException(msg);
     }

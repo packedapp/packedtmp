@@ -68,7 +68,7 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
 
     /** {@inheritDoc} */
     @Override
-    protected String failedToFindServiceMessage(Key<?> key) {
+    protected String failedToUseMessage(Key<?> key) {
         return "No service with the specified key could be found, key = " + key;
     }
 
