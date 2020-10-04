@@ -44,7 +44,7 @@ final class ServiceIsland {
      */
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    static void dependencyCyclesDetect(RegionAssembly region, InjectionManager im) {
+    static void finish(RegionAssembly region, InjectionManager im) {
         DependencyCycle c = dependencyCyclesFind(region, im.injectables);
         if (c != null) {
             throw new AssemblyException("Dependency cycle detected: " + c);

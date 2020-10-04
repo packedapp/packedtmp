@@ -128,23 +128,19 @@ public final class SourceModel extends Model {
     }
 
     public <T> void invokeOnHookOnInstall(ComponentNodeConfiguration compConf) {
-        try {
-            // First invoke any OnHook methods on the container source (bundle)
-            if (sourceHook != null) {
-                // sourceHook.invoke(cs.source, acc);
-                // new Exception().printStackTrace();
-            }
-            // Next, invoke any OnHook methods on relevant extensions.
-            for (ExtensionRequestPair he : extensionHooks) {
-                // Finds (possible installing) the extension with @OnHook methods
-                // Maybe null, but this code will be refactored out.
-                Extension extension = compConf.memberOfContainer.useExtension(he.extensionType);
 
-                // Invoke each method annotated with @OnHook on the extension instance
+        // Next, invoke any OnHook methods on relevant extensions.
+        for (ExtensionRequestPair he : extensionHooks) {
+            // Finds (possible installing) the extension with @OnHook methods
+            // Maybe null, but this code will be refactored out.
+            Extension extension = compConf.memberOfContainer.useExtension(he.extensionType);
+
+            // Invoke each method annotated with @OnHook on the extension instance
+            try {
                 he.request.invoke(extension, compConf);
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
             }
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
         }
     }
 

@@ -80,6 +80,7 @@ public final class InjectionManager {
 
     public void build(RegionAssembly region) {
         InjectionManager parent = container.parent == null ? null : container.parent.im;
+        @SuppressWarnings("unused")
         boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
 
         // Resolve local services
@@ -99,9 +100,9 @@ public final class InjectionManager {
 
         // TODO Check any contracts we might as well catch it early
 
-        // If we form for a service island
+        // If we form for a service island and is root of the island
         // Do checks here
-        ServiceIsland.dependencyCyclesDetect(region, this);
+        ServiceIsland.finish(region, this);
     }
 
     /**
