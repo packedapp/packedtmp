@@ -22,13 +22,13 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.methodhandle.LookupUtil;
+import packed.internal.methodhandle.MethodHandleUtil;
 
 /**
  * A {@link Factory} type that uses a {@link Supplier} to provide instances.
@@ -52,11 +52,8 @@ import packed.internal.methodhandle.LookupUtil;
  */
 public abstract class Factory0<R> extends Factory<R> {
 
-    /** A method handle for {@link Supplier#get()}. */
-    private static final MethodHandle GET = LookupUtil.lookupVirtualPublic(Supplier.class, "get", Object.class);
-
-    private static final MethodHandle TYPE_CHECK = LookupUtil.lookupStatic(MethodHandles.lookup(), "checkType", Object.class, Supplier.class, Class.class,
-            Object.class);
+    /** A method handle for invoking {@link #create(Supplier, Class)}. */
+    private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
 
     /** The method handle will provide the actual values. */
     private final MethodHandle methodHandle;
@@ -73,23 +70,8 @@ public abstract class Factory0<R> extends Factory<R> {
      */
     protected Factory0(Supplier<? extends R> supplier) {
         requireNonNull(supplier, "supplier is null");
-        MethodHandle mh = GET.bindTo(supplier); // (Supplier)Object -> ()Object
-
-        // Create a method handle that will check the type returned by the supplier
-        MethodHandle checker = TYPE_CHECK.bindTo(supplier).bindTo(returnTypeRaw());
-        mh = MethodHandles.filterReturnValue(mh, checker);
-
-        MethodType methodType = MethodType.methodType(returnTypeRaw());
-        this.methodHandle = MethodHandles.explicitCastArguments(mh, methodType); // ()Object -> T
-    }
-
-    static Object checkType(Supplier<?> supplier, Class<?> expectedType, Object value) {
-        Class<?> c = value.getClass();
-        if (!expectedType.isAssignableFrom(c)) {
-            throw new FactoryException("The supplier '" + supplier + "' was expected to return instances of type " + expectedType.getName() + " but returned a "
-                    + c.getName() + " instance");
-        }
-        return value;
+        MethodHandle mh = CREATE.bindTo(supplier).bindTo(returnTypeRaw()); // (Supplier, Class)Object -> ()Object
+        this.methodHandle = MethodHandleUtil.castReturnType(mh, returnTypeRaw()); // ()Object -> ()R
     }
 
     /** {@inheritDoc} */
@@ -102,5 +84,30 @@ public abstract class Factory0<R> extends Factory<R> {
     @Override
     MethodHandle toMethodHandle(Lookup ignore) {
         return methodHandle;
+    }
+
+    /**
+     * Supplies a value.
+     * 
+     * @param <T>
+     *            the type of value supplied
+     * @param supplier
+     *            the supplier that supplies the actual value
+     * @param expectedType
+     *            the type we expect the supplier to return
+     * @return the value that was supplied by the specified supplier
+     */
+    static <T> T create(Supplier<T> supplier, Class<?> expectedType) {
+        T value = supplier.get();
+        if (value == null) {
+            // NPE???
+            throw new FactoryException("The supplier '" + supplier + "' must not return null");
+        }
+        Class<?> c = value.getClass();
+        if (!expectedType.isAssignableFrom(c)) {
+            throw new FactoryException("The supplier '" + supplier + "' was expected to return instances of type " + expectedType.getName() + " but returned a "
+                    + c.getName() + " instance");
+        }
+        return value;
     }
 }

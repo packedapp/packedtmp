@@ -35,7 +35,7 @@ public class FactoryCleanup extends BaseBundle {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void configure() {
-        Supplier<String> s = () -> "Asd";
+        Supplier s = () -> 23;
 
         providePrototype(new Factory0<String>(s) {}).export();
     }
