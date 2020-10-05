@@ -67,7 +67,7 @@ public final class ServiceBuildManager {
     private final ArrayList<ServiceAssembly<?>> assemblies = new ArrayList<>();
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceDependencyManager dependencies;
+    public ServiceRequirementsManager dependencies;
 
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
@@ -101,10 +101,10 @@ public final class ServiceBuildManager {
      * 
      * @return the dependency manager for this builder
      */
-    public ServiceDependencyManager dependencies() {
-        ServiceDependencyManager d = dependencies;
+    public ServiceRequirementsManager dependencies() {
+        ServiceRequirementsManager d = dependencies;
         if (d == null) {
-            d = dependencies = new ServiceDependencyManager();
+            d = dependencies = new ServiceRequirementsManager();
         }
         return d;
     }
@@ -202,6 +202,9 @@ public final class ServiceBuildManager {
         for (ServiceBuildManager m : children) {
             for (ExportedServiceAssembly<?> a : m.exports()) {
                 // System.out.println("EXPORT " + a);
+
+                // Skal vi wrappe den????
+
                 resolvedServices.putIfAbsent(a.key(), a);
             }
         }

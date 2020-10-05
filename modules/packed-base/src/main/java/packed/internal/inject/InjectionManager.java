@@ -89,7 +89,7 @@ public final class InjectionManager {
         }
 
         for (Injectable i : injectables) {
-            i.resolve();
+            i.resolve(this);
         }
 
         // Now we know every dependency that we are missing

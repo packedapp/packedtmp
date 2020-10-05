@@ -78,6 +78,8 @@ public class Injectable {
     @Nullable
     public final SourceModelSidecarMethod sourceMember;
 
+    public final int providerDelta;
+
     // Creates the Source...
     public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
@@ -87,6 +89,7 @@ public class Injectable {
         this.dependencies = dependencies;
         this.directMethodHandle = mh;
 
+        this.providerDelta = 0;
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
@@ -102,6 +105,9 @@ public class Injectable {
 
         if (providers.length != dependencies.size()) {
             providers[0] = source;
+            this.providerDelta = 1;
+        } else {
+            this.providerDelta = 0;
         }
     }
 
@@ -117,6 +123,9 @@ public class Injectable {
 
         if (providers.length != dependencies.size()) {
             providers[0] = source;
+            this.providerDelta = 1;
+        } else {
+            this.providerDelta = 0;
         }
     }
 
@@ -189,11 +198,10 @@ public class Injectable {
         }
     }
 
-    public void resolve() {
-        InjectionManager im = source.compConf.injectionManager();
-        int startIndex = providers.length != dependencies.size() ? 1 : 0;
+    public void resolve(InjectionManager im) {
         for (int i = 0; i < dependencies.size(); i++) {
-            if (providers[i + startIndex] == null) {
+            int providerIndex = i + providerDelta;
+            if (providers[providerIndex] == null) {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProvider e = null;
                 if (source != null) {
@@ -202,15 +210,13 @@ public class Injectable {
                         e = sm.sourceServices.get(sd.key());
                     }
                 }
+
                 if (e == null) {
-                    e = im.services(false).resolvedServices.get(sd.key());
+                    e = im.services(true).resolvedServices.get(sd.key());
                 }
-                im.services(true).dependencies().recordResolvedDependency(im, this, sd, e, false);
-                // may be null, in which case it is a required service that must be provided.
-                // By the user
-                providers[i + startIndex] = e;
-            } else {
-                // System.out.println("Already resolved " + resolved[i + startIndex]);
+
+                im.services(true).dependencies().recordResolvedDependency(im, this, i, sd, e, false);
+                providers[providerIndex] = e;
             }
         }
     }

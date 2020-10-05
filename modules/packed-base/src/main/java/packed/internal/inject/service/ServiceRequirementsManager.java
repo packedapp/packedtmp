@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -36,15 +36,14 @@ import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /**
- * This class manages everything to do with dependencies of components and service for an {@link ServiceExtension}.
+ * This class manages everything to do with the requirements for a {@link ServiceExtension}.
  * 
  * @see ServiceExtension#require(Key...)
  * @see ServiceExtension#requireOptionally(Key...)
  */
-public final class ServiceDependencyManager {
+public final class ServiceRequirementsManager {
 
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
@@ -63,22 +62,21 @@ public final class ServiceDependencyManager {
     // Skal jo erstattet af noget Contract...
     boolean manualRequirementsManagement;
 
-    /** A list of all dependencies that have not been resolved */
-    private ArrayList<ServiceDependencyRequirement> missingDependencies;
-
     /** A set of all explicitly registered required service keys. */
     final HashSet<Key<?>> required = new HashSet<>();
 
     /** A set of all explicitly registered optional service keys. */
     final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
-    /** A map of all dependencies that could not be resolved */
-    IdentityHashMap<ServiceAssembly<?>, List<DependencyDescriptor>> unresolvedDependencies;
+    /** A list of all dependencies that have not been resolved */
+    private ArrayList<ServiceDependencyRequirement> unresolvedRequirements;
+
+    final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
 
     public void checkForMissingDependencies(InjectionManager node) {
-        if (missingDependencies != null) {
+        if (unresolvedRequirements != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
-            for (ServiceDependencyRequirement e : missingDependencies) {
+            for (ServiceDependencyRequirement e : unresolvedRequirements) {
                 if (!e.dependency.isOptional() && manualRequirementsManagement) {
                     // Long long error message
                     StringBuilder sb = new StringBuilder();
@@ -129,59 +127,31 @@ public final class ServiceDependencyManager {
     }
 
     /**
-     * Requires that all requirements are explicitly added via either {@link ServiceExtension#requireOptionally(Key...)},
-     * {@link ServiceExtension#require(Key...)} or via implementing a contract.
-     */
-    // Kan vi lave denne generisk paa tvaers af extensions...
-    // disableAutomaticRequirements()
-    // Jeg taenker lidt det er enten eller. Vi kan ikke goere det per component.
-    // Problemet er dem der f.eks. har metoder
-    //// Vil det ikke altid bliver efterfuldt af en contract?????
-    // Ser ingen grund til baade at support
-    // ManualRequirements management..
-    // AutoExport with regards to contract???
-
-    // Drop Management?
-    // Skal vi istedet for bare specificere en Contract????
-
-    // exactContract(Contract, forceValidate)
-    // supportContract() <-- can require less dependencies, any optional dependencies, export more dependencies
-    // Contract driven og manual requirements management er 2 sider af samme sag
-    // Contract driven er meget staerkere... og vi gider ikke supportere begge ting...
-
-    public void manualRequirementsManagement() {
-        manualRequirementsManagement = true;
-    }
-
-    public void recordMissingDependency(ServiceAssembly<?> entry, DependencyDescriptor dependency, boolean fromParent) {
-
-    }
-
-    /**
      * Record a dependency that could not be resolved
      * 
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager im, Injectable entry, DependencyDescriptor dependency, @Nullable DependencyProvider resolvedTo,
-            boolean fromParent) {
+    public void recordResolvedDependency(InjectionManager im, Injectable entry, int index, DependencyDescriptor dependency,
+            @Nullable DependencyProvider resolvedTo, boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {
             return;
         }
-        ArrayList<ServiceDependencyRequirement> m = missingDependencies;
+        Key<?> key = dependency.key();
+        ArrayList<ServiceDependencyRequirement> m = unresolvedRequirements;
         if (m == null) {
-            m = missingDependencies = new ArrayList<>();
+            m = unresolvedRequirements = new ArrayList<>();
         }
         m.add(new ServiceDependencyRequirement(dependency, entry));
 
-        if (!manualRequirementsManagement) {
-            if (dependency.isOptional()) {
-                requiredOptionally.add(dependency.key());
-            } else {
-                required.add(dependency.key());
-            }
+        Requirement r = requirements.computeIfAbsent(key, Requirement::new);
+
+        if (dependency.isOptional()) {
+            requiredOptionally.add(dependency.key());
+        } else {
+            required.add(dependency.key());
         }
     }
 
@@ -200,3 +170,7 @@ public final class ServiceDependencyManager {
         explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 }
+// exactContract(Contract, forceValidate)
+// supportContract() <-- can require less dependencies, any optional dependencies, export more dependencies
+// Contract driven og manual requirements management er 2 sider af samme sag
+// Contract driven er meget staerkere... og vi gider ikke supportere begge ting...

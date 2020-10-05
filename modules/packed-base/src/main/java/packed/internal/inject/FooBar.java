@@ -27,11 +27,12 @@ public class FooBar extends BaseBundle {
     @Override
     protected void configure() {
         install(NeedsString.class);
+        provideInstance(123L);
         link(new Child());
     }
 
     public static class NeedsString {
-        public NeedsString(String string) {
+        public NeedsString(ChildServ string) {
             System.out.println("GOt " + string);
         }
     }
@@ -45,7 +46,14 @@ public class FooBar extends BaseBundle {
         /** {@inheritDoc} */
         @Override
         protected void configure() {
-            provideInstance("Fooddd").export();
+            provide(ChildServ.class).export();
+        }
+    }
+
+    public static class ChildServ {
+
+        public ChildServ(Long l) {
+
         }
     }
 }
