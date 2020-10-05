@@ -67,6 +67,17 @@ public class Factory0Test {
                 .withMessageStartingWith("Cannot determine type variable <T> for Factory<T> on class app.packed.inject.Factory0");
     }
 
+    @Test
+    public void fff() throws Throwable {
+        @SuppressWarnings("rawtypes")
+        Supplier s = () -> 23;
+        @SuppressWarnings("unchecked")
+        Factory<?> f = new Factory0<String>(s) {};
+        try {
+            f.toMethodHandle(null).invoke();
+        } catch (FactoryException ok) {}
+    }
+
     /** Check that we can have an intermediate abstract class. */
     static abstract class Intermediate<S, T, R> extends Factory0<T> {
         protected Intermediate(Supplier<T> supplier) {
