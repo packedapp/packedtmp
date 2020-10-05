@@ -85,7 +85,7 @@ final class ServiceIsland {
     @Nullable
     private static DependencyCycle detectCycle(RegionAssembly region, Injectable injectable, ArrayDeque<Injectable> stack,
             ArrayDeque<Injectable> dependencies) {
-        DependencyProvider[] deps = injectable.resolved;
+        DependencyProvider[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);
             for (int i = 0; i < deps.length; i++) {

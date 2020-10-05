@@ -69,8 +69,8 @@ public class Injectable {
 
     public boolean needsPostProcessing = true;
 
-    /** Resolved dependencies. */
-    public final DependencyProvider[] resolved;
+    /** Resolved dependencies. Must match the number of parameters in {@link #directMethodHandle}. */
+    public final DependencyProvider[] providers;
 
     /** The source (component) this injectable belongs to. */
     public final SourceAssembly source;
@@ -87,22 +87,7 @@ public class Injectable {
         this.dependencies = dependencies;
         this.directMethodHandle = mh;
 
-        this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
-    }
-
-    public Injectable(SourceAssembly source, AtProvideServiceAssembly<?> buildEntry, AtProvides ap) {
-        this.source = requireNonNull(source);
-        this.sourceMember = null;
-
-        this.service = requireNonNull(buildEntry);
-        this.dependencies = ap.dependencies;
-        this.directMethodHandle = ap.methodHandle;
-
-        this.resolved = new DependencyProvider[directMethodHandle.type().parameterCount()];
-
-        if (resolved.length != dependencies.size()) {
-            resolved[0] = source;
-        }
+        this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
     public Injectable(SourceAssembly source, SourceModelSidecarMethod smm) {
@@ -113,10 +98,25 @@ public class Injectable {
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
 
-        this.resolved = smm.createProviders();
+        this.providers = smm.createProviders();
 
-        if (resolved.length != dependencies.size()) {
-            resolved[0] = source;
+        if (providers.length != dependencies.size()) {
+            providers[0] = source;
+        }
+    }
+
+    public Injectable(SourceAssembly source, AtProvideServiceAssembly<?> buildEntry, AtProvides ap) {
+        this.source = requireNonNull(source);
+        this.sourceMember = null;
+
+        this.service = requireNonNull(buildEntry);
+        this.dependencies = ap.dependencies;
+        this.directMethodHandle = ap.methodHandle;
+
+        this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
+
+        if (providers.length != dependencies.size()) {
+            providers[0] = source;
         }
     }
 
@@ -126,21 +126,21 @@ public class Injectable {
             return mh;
         }
 
-        if (resolved.length == 0) {
+        if (providers.length == 0) {
             return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
-        } else if (resolved.length == 1) {
-            return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, resolved[0].dependencyAccessor());
+        } else if (providers.length == 1) {
+            return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, providers[0].dependencyAccessor());
         } else {
             mh = directMethodHandle;
 
             // We create a new method that a
-            for (int i = 0; i < resolved.length; i++) {
-                DependencyProvider dp = resolved[i];
+            for (int i = 0; i < providers.length; i++) {
+                DependencyProvider dp = providers[i];
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
             MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
-            return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[resolved.length]);
+            return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[providers.length]);
         }
     }
 
@@ -191,9 +191,9 @@ public class Injectable {
 
     public void resolve() {
         InjectionManager im = source.compConf.injectionManager();
-        int startIndex = resolved.length != dependencies.size() ? 1 : 0;
+        int startIndex = providers.length != dependencies.size() ? 1 : 0;
         for (int i = 0; i < dependencies.size(); i++) {
-            if (resolved[i + startIndex] == null) {
+            if (providers[i + startIndex] == null) {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProvider e = null;
                 if (source != null) {
@@ -208,7 +208,7 @@ public class Injectable {
                 im.services(true).dependencies().recordResolvedDependency(im, this, sd, e, false);
                 // may be null, in which case it is a required service that must be provided.
                 // By the user
-                resolved[i + startIndex] = e;
+                providers[i + startIndex] = e;
             } else {
                 // System.out.println("Already resolved " + resolved[i + startIndex]);
             }

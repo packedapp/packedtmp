@@ -59,7 +59,7 @@ public abstract class Factory0<R> extends Factory<R> {
     private final MethodHandle methodHandle;
 
     /**
-     * Creates a new factory, that will use the specified supplier to provide values.
+     * Creates a new factory, that use the specified supplier to provide values.
      *
      * @param supplier
      *            the supplier that will provide the actual values. The supplier should never return null, but should
@@ -97,7 +97,8 @@ public abstract class Factory0<R> extends Factory<R> {
      *            the type we expect the supplier to return
      * @return the value that was supplied by the specified supplier
      */
-    static <T> T create(Supplier<T> supplier, Class<?> expectedType) {
+    @SuppressWarnings("unused") // only invoked by CREATE
+    private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {
         T value = supplier.get();
         if (value == null) {
             // NPE???
