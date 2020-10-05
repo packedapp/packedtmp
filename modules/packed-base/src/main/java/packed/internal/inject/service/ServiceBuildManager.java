@@ -17,8 +17,6 @@ package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -53,16 +51,11 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.inject.sidecar.AtProvidesHook;
-import packed.internal.methodhandle.LookupUtil;
 
 /**
  *
  */
 public final class ServiceBuildManager {
-
-    /** A VarHandle that can access ServiceExtension#sm. */
-    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ServiceExtension.class, "sbm",
-            ServiceBuildManager.class);
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceAssembly<?>> assemblies = new ArrayList<>();
@@ -129,7 +122,7 @@ public final class ServiceBuildManager {
 
     public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
-            if (hasExports()) {
+            if (exporter != null) {
                 for (ExportedServiceAssembly<?> n : exports()) {
                     c.provides(n.key());
                 }
@@ -155,14 +148,13 @@ public final class ServiceBuildManager {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
 
+        // A hack to support Injector
         PackedShellDriver<?> psd = (PackedShellDriver<?>) im.container.compConf.assembly().shellDriver();
         if (Injector.class.isAssignableFrom(psd.shellRawType())) {
             return new PackedInjector(comp.configSite(), runtimeEntries);
         } else {
             return new ExportedServiceLocator(comp, runtimeEntries);
         }
-
-//        
     }
 
     public void provideAtProvides(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
@@ -271,16 +263,5 @@ public final class ServiceBuildManager {
             }
         }
     }
-    // En InjectionManager kan have en service manager...
 
-    /**
-     * Extracts the service node from a service extension.
-     * 
-     * @param extension
-     *            the extension to extract from
-     * @return the service node
-     */
-    public static ServiceBuildManager fromExtension(ServiceExtension extension) {
-        return (ServiceBuildManager) VH_SERVICE_EXTENSION_NODE.get(extension);
-    }
 }

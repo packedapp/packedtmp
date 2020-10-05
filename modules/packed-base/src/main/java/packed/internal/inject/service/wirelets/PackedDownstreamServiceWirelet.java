@@ -17,6 +17,8 @@ package packed.internal.inject.service.wirelets;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.LinkedHashMap;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -30,9 +32,25 @@ import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.runtime.ConstantInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
+import packed.internal.methodhandle.LookupUtil;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
+
+    /** A VarHandle that can access ServiceExtension#sm. */
+    private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ServiceExtension.class, "sbm",
+            ServiceBuildManager.class);
+
+    /**
+     * Extracts the service node from a service extension.
+     * 
+     * @param extension
+     *            the extension to extract from
+     * @return the service node
+     */
+    public static ServiceBuildManager fromExtension(ServiceExtension extension) {
+        return (ServiceBuildManager) VH_SERVICE_EXTENSION_NODE.get(extension);
+    }
 
     @ExtensionMember(ServiceExtension.class)
     public static class FilterOnKey extends PackedDownstreamServiceWirelet {
@@ -76,7 +94,7 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceExtension extension) {
-            for (ExportedServiceAssembly<?> e : ServiceBuildManager.fromExtension(extension).exports()) {
+            for (ExportedServiceAssembly<?> e : fromExtension(extension).exports()) {
                 action.accept(e.toService());
             }
         }

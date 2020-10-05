@@ -144,22 +144,20 @@ public final class ServiceRequirementsManager {
     }
 
     /**
-     * Adds the specified dependency.
+     * Adds the specified explicit requirement.
      * 
-     * @param dependency
-     *            the service dependency
+     * @param key
+     *            the key that is required
+     * @param isOptional
+     *            whether or not it is optional
      * @param configSite
      *            the config site
      * 
      * @see ServiceExtension#require(Key...)
      * @see ServiceExtension#requireOptionally(Key...)
      */
-    public void require(DependencyDescriptor dependency, ConfigSite configSite) {
-        explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
-    }
-
     public void require(Key<?> key, boolean isOptional, ConfigSite configSite) {
-
+        // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 }
 // exactContract(Contract, forceValidate)

@@ -60,6 +60,13 @@ public abstract class MethodSidecar {
     }
 
     /**
+     * Provides the return type as a service
+     */
+    protected final void provideAsService() {
+
+    }
+
+    /**
      * 
      * @throws IllegalStateException
      *             if called from outside of {@link #configure()}
