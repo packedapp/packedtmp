@@ -98,7 +98,6 @@ public final class ContainerAssembly {
             pec.completed();
         }
 
-        InjectionManager im = compConf.injectionManager();
         im.build(region);
     }
 

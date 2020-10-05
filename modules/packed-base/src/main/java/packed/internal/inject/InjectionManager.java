@@ -80,7 +80,6 @@ public final class InjectionManager {
 
     public void build(RegionAssembly region) {
         InjectionManager parent = container.parent == null ? null : container.parent.im;
-        @SuppressWarnings("unused")
         boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
 
         // Resolve local services
@@ -92,6 +91,7 @@ public final class InjectionManager {
         for (Injectable i : injectables) {
             i.resolve();
         }
+
         // Now we know every dependency that we are missing
         // I think we must plug this in somewhere
 
@@ -103,7 +103,9 @@ public final class InjectionManager {
 
         // If we form for a service island and is root of the island
         // Do checks here
-        ServiceIsland.finish(region, this);
+        if (!isIslandChild) {
+            ServiceIsland.finish(region, this);
+        }
     }
 
     /**

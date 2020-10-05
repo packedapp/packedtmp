@@ -18,13 +18,13 @@ package packed.internal.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.component.AssemblyException;
 import packed.internal.component.RegionAssembly;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.service.ServiceBuildManager;
 
 /** A utility class that can find cycles in a dependency graph. */
 
@@ -45,27 +45,37 @@ final class ServiceIsland {
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
     static void finish(RegionAssembly region, InjectionManager im) {
-        DependencyCycle c = dependencyCyclesFind(region, im.injectables);
+
+        DependencyCycle c = dependencyCyclesFind(region, im);
+
         if (c != null) {
             throw new AssemblyException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(RegionAssembly region, ArrayList<Injectable> detectCyclesFor) {
-        if (detectCyclesFor == null) {
-            throw new IllegalStateException("Must resolve nodes before detecting cycles");
-        }
+    private static DependencyCycle dependencyCyclesFind(RegionAssembly region, InjectionManager im) {
         ArrayDeque<Injectable> stack = new ArrayDeque<>();
         ArrayDeque<Injectable> dependencies = new ArrayDeque<>();
 
-        for (Injectable node : detectCyclesFor) {
+        return dependencyCyclesFind(stack, dependencies, region, im);
+    }
+
+    private static DependencyCycle dependencyCyclesFind(ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies, RegionAssembly region,
+            InjectionManager im) {
+        for (Injectable node : im.injectables) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
-                DependencyCycle dc = ServiceIsland.detectCycle(region, node, stack, dependencies);
+                DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
                     return dc;
                 }
             }
         }
+        if (im.getServiceManager() != null) {
+            for (ServiceBuildManager m : im.getServiceManager().children) {
+                dependencyCyclesFind(stack, dependencies, region, m.im);
+            }
+        }
+
         return null;
     }
 
