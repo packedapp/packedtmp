@@ -55,7 +55,7 @@ public abstract class Factory0<R> extends Factory<R> {
     /** A method handle for invoking {@link #create(Supplier, Class)}. */
     private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
 
-    /** The method handle will provide the actual values. */
+    /** The method handle responsible for providing the actual values. */
     private final MethodHandle methodHandle;
 
     /**
@@ -97,17 +97,17 @@ public abstract class Factory0<R> extends Factory<R> {
      *            the type we expect the supplier to return
      * @return the value that was supplied by the specified supplier
      */
-    @SuppressWarnings("unused") // only invoked by CREATE
+    @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {
         T value = supplier.get();
-        if (value == null) {
-            // NPE???
-            throw new FactoryException("The supplier '" + supplier + "' must not return null");
-        }
-        Class<?> c = value.getClass();
-        if (!expectedType.isAssignableFrom(c)) {
-            throw new FactoryException("The supplier '" + supplier + "' was expected to return instances of type " + expectedType.getName() + " but returned a "
-                    + c.getName() + " instance");
+        if (!expectedType.isInstance(value)) {
+            if (value == null) {
+                // NPE???
+                throw new FactoryException("The supplier '" + supplier + "' must not return null");
+            } else {
+                throw new FactoryException("The supplier '" + supplier + "' was expected to return instances of type " + expectedType.getName()
+                        + " but returned a " + value.getClass().getName() + " instance");
+            }
         }
         return value;
     }

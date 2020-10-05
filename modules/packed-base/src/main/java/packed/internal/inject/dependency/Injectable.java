@@ -80,7 +80,6 @@ public class Injectable {
 
     public final int providerDelta;
 
-    // Creates the Source...
     public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
