@@ -41,6 +41,7 @@ import packed.internal.hook.HookRequest;
 import packed.internal.hook.HookRequestBuilder;
 import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHook;
+import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
@@ -118,8 +119,11 @@ public final class SourceModel extends Model {
 
         // Iterate through all "interesting" methods on the source.
         for (SourceModelSidecarMethod smm : methods) {
-
-            Injectable i = new Injectable(source, smm);
+            DependencyProvider[] dp = smm.createProviders();
+            if (smm.isInstanceMethod()) {
+                dp[0] = source;
+            }
+            Injectable i = new Injectable(source, smm, dp);
             compConf.injectionManager().addInjectable(i);
         }
 

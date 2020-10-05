@@ -93,7 +93,7 @@ public class Injectable {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Injectable(SourceAssembly source, SourceModelSidecarMethod smm) {
+    public Injectable(SourceAssembly source, SourceModelSidecarMethod smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -101,14 +101,8 @@ public class Injectable {
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
 
-        this.providers = smm.createProviders();
-
-        if (providers.length != dependencies.size()) {
-            providers[0] = source;
-            this.providerDelta = 1;
-        } else {
-            this.providerDelta = 0;
-        }
+        this.providers = dependencyProviders;
+        this.providerDelta = providers.length == dependencies.size() ? 0 : 1;
     }
 
     public Injectable(SourceAssembly source, AtProvideServiceAssembly<?> buildEntry, AtProvides ap) {

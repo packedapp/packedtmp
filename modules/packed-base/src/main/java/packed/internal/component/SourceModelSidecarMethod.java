@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Nullable;
@@ -61,12 +62,12 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
         this.directMethodHandle = requireNonNull(mh);
     }
 
-    public enum RunAt {
-        INITIALIZATION;
+    public boolean isInstanceMethod() {
+        return !Modifier.isStatic(method.getModifiers());
     }
 
-    public void resolved() {
-
+    public enum RunAt {
+        INITIALIZATION;
     }
 
     public DependencyProvider[] createProviders() {
