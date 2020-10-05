@@ -31,7 +31,7 @@ import packed.internal.inject.ConstantProvider;
 
 // We let people implement this in order to help with testing.
 // For example, 
-@FunctionalInterface // I don't know if we want this...
+@FunctionalInterface // I don't know if we want this... Det er ikke meningen brugere skal implementere dette interface
 public interface Provider<T> {
 
     /**

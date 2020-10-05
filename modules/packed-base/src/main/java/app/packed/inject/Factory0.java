@@ -55,21 +55,41 @@ public abstract class Factory0<R> extends Factory<R> {
     /** A method handle for {@link Supplier#get()}. */
     private static final MethodHandle GET = LookupUtil.lookupVirtualPublic(Supplier.class, "get", Object.class);
 
-    /** The supplier that creates the actual objects. */
-    private final Supplier<? extends R> supplier;
+    private static final MethodHandle TYPE_CHECK = LookupUtil.lookupStatic(MethodHandles.lookup(), "checkType", Object.class, Supplier.class, Class.class,
+            Object.class);
+
+    /** The method handle will provide the actual values. */
+    private final MethodHandle methodHandle;
 
     /**
-     * Creates a new factory, that uses the specified supplier to provide instances.
+     * Creates a new factory, that will use the specified supplier to provide values.
      *
      * @param supplier
-     *            the supplier that provide instances. The supplier should never return null, but should instead throw a
-     *            relevant exception if unable to provide a value
+     *            the supplier that will provide the actual values. The supplier should never return null, but should
+     *            instead throw a relevant exception if unable to provide a value
      * @throws FactoryException
      *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
      *             {@link Optional}
      */
     protected Factory0(Supplier<? extends R> supplier) {
-        this.supplier = requireNonNull(supplier, "supplier is null");
+        requireNonNull(supplier, "supplier is null");
+        MethodHandle mh = GET.bindTo(supplier); // (Supplier)Object -> ()Object
+
+        // Create a method handle that will check the type returned by the supplier
+        MethodHandle checker = TYPE_CHECK.bindTo(supplier).bindTo(returnTypeRaw());
+        mh = MethodHandles.filterReturnValue(mh, checker);
+
+        MethodType methodType = MethodType.methodType(returnTypeRaw());
+        this.methodHandle = MethodHandles.explicitCastArguments(mh, methodType); // ()Object -> T
+    }
+
+    static Object checkType(Supplier<?> supplier, Class<?> expectedType, Object value) {
+        Class<?> c = value.getClass();
+        if (!expectedType.isAssignableFrom(c)) {
+            throw new FactoryException("The supplier '" + supplier + "' was expected to return instances of type " + expectedType.getName() + " but returned a "
+                    + c.getName() + " instance");
+        }
+        return value;
     }
 
     /** {@inheritDoc} */
@@ -80,9 +100,7 @@ public abstract class Factory0<R> extends Factory<R> {
 
     /** {@inheritDoc} */
     @Override
-    MethodHandle toMethodHandle(Lookup i) {
-        MethodHandle mh = GET.bindTo(supplier);
-        MethodType methodType = MethodType.methodType(returnTypeRaw());
-        return MethodHandles.explicitCastArguments(mh, methodType);
+    MethodHandle toMethodHandle(Lookup ignore) {
+        return methodHandle;
     }
 }

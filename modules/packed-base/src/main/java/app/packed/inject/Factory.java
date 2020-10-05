@@ -121,7 +121,9 @@ public abstract class Factory<T> {
         /** {@inheritDoc} */
 
         protected Factory<?> computeValue(Class<?> implementation) {
-            return ExecutableFactory.findX(implementation);
+
+            ExecutableDescriptor executable = ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(implementation));
+            return new ExecutableFactory<>(TypeLiteral.of(implementation), executable, DependencyDescriptor.fromExecutable(executable));
         }
     };
 
@@ -135,7 +137,7 @@ public abstract class Factory<T> {
 
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            return ExecutableFactory.findX(ModuleAccess.base().toTypeLiteral(t));
+            return ExecutableFactory.fromTypeLiteral(ModuleAccess.base().toTypeLiteral(t));
         }
     };
 
@@ -165,6 +167,11 @@ public abstract class Factory<T> {
     }
 
     // TODO make package-private
+
+    private Factory(Class<T> type) {
+        this(TypeLiteral.of(type), type);
+    }
+
     private Factory(TypeLiteral<T> typeLiteralOrKey) {
         this(typeLiteralOrKey, typeLiteralOrKey.rawType());
     }
@@ -482,7 +489,6 @@ public abstract class Factory<T> {
 
     // Lookup object paa et factory. Kan bruges til alle metoder....Ikke kun dem med inject
     // Giver ikke mening andet...
-
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (this instanceof ExecutableFactory || this instanceof FieldFactory) {
@@ -549,31 +555,29 @@ public abstract class Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) of((Class<?>) t);
         } else {
-            return ExecutableFactory.findX(implementation);
+            return ExecutableFactory.fromTypeLiteral(implementation);
         }
     }
 
     /**
-     * Returns a factory that returns the specified instance every time the factory is used.
+     * Returns a factory that returns the specified instance every time the factory most provide a value.
      * <p>
      * If the specified instance makes use of field or method injection the returned factory should not be used more than
      * once. As these fields and members will be injected every time, possible concurrently, an instance is provided by the
      * factory.
      * 
      * @param <T>
-     *            the type of instances created by the factory
+     *            the type of value returned by the factory
      * @param instance
-     *            the instance to return every time a new instance is requested
+     *            the instance to return for every request
      * @return the factory
      */
-    @SuppressWarnings("unchecked")
     public static <T> Factory<T> ofInstance(T instance) {
         requireNonNull(instance, "instance is null");
-        Class<?> type = instance.getClass();
-        return new InstanceFactory<T>((TypeLiteral<T>) TypeLiteral.of(type), instance, type);
+        return new InstanceFactory<T>(instance);
     }
 
-    /** The backing class of {@link Factory}. */
+    /** A factory that wraps a method or constructor. */
     static final class ExecutableFactory<T> extends Factory<T> {
 
         /**
@@ -636,13 +640,7 @@ public abstract class Factory<T> {
         // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
         // MyExtension.class create()
 
-        static <T> Factory<T> findX(Class<T> implementation) {
-            ExecutableDescriptor executable = ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(implementation));
-            return new ExecutableFactory<>(TypeLiteral.of(implementation), executable, DependencyDescriptor.fromExecutable(executable));
-        }
-
-        static <T> Factory<T> findX(TypeLiteral<T> implementation) {
-            requireNonNull(implementation, "implementation is null");
+        static <T> Factory<T> fromTypeLiteral(TypeLiteral<T> implementation) {
             ExecutableDescriptor executable = ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(implementation.rawType()));
             return new ExecutableFactory<>(implementation, executable, DependencyDescriptor.fromExecutable(executable));
         }
@@ -694,62 +692,58 @@ public abstract class Factory<T> {
         }
     }
 
-    /** A factory that creates the same instance every time, used by {@link Factory#ofInstance(Object)}. */
+    /** A factory that provides the same value every time, used by {@link Factory#ofInstance(Object)}. */
     private static final class InstanceFactory<T> extends Factory<T> {
 
-        /** The instance that is returned every time. */
+        /** The value that is returned every time. */
         private final T instance;
 
-        InstanceFactory(TypeLiteral<T> typeLiteralOrKey, T instance, Class<?> actualType) {
-            super(typeLiteralOrKey, actualType);
+        @SuppressWarnings("unchecked")
+        private InstanceFactory(T instance) {
+            super((Class<T>) instance.getClass());
             this.instance = instance;
         }
 
         /** {@inheritDoc} */
-
         @Override
         public List<DependencyDescriptor> dependencies() {
             return List.of();
         }
 
         /** {@inheritDoc} */
-
         @Override
         MethodHandle toMethodHandle(Lookup ignore) {
             return MethodHandles.constant(instance.getClass(), instance);
         }
     }
 
-    /**
-    *
-    */
+    /** A special factory created via {@link #withLookup(Lookup)}. */
     private static final class LookedUpFactory<T> extends Factory<T> {
 
+        /** The ExecutableFactor or FieldFactory to delegate to. */
         private final Factory<T> delegate;
 
-        final MethodHandle methodHandle;
+        /** The method handle that was unreflected. */
+        private final MethodHandle methodHandle;
 
-        private LookedUpFactory(Factory<T> delegate, MethodHandle handle) {
+        private LookedUpFactory(Factory<T> delegate, MethodHandle methodHandle) {
             super(delegate.typeLiteral);
             this.delegate = delegate;
-            this.methodHandle = requireNonNull(handle);
+            this.methodHandle = requireNonNull(methodHandle);
         }
 
         /** {@inheritDoc} */
-
         @Override
         List<DependencyDescriptor> dependencies() {
             return delegate.dependencies();
         }
 
         /** {@inheritDoc} */
-
         @Override
         MethodHandle toMethodHandle(Lookup ignore) {
             return methodHandle;
         }
     }
-
 }
 
 ///** {@inheritDoc} */

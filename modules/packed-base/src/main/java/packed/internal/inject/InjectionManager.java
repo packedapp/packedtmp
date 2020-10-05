@@ -92,7 +92,8 @@ public final class InjectionManager {
         for (Injectable i : injectables) {
             i.resolve();
         }
-        // Now we know every Key that is missing
+        // Now we know every dependency that we are missing
+        // I think we must plug this in somewhere
 
         if (sbm != null) {
             sbm.dependencies().checkForMissingDependencies(this);
