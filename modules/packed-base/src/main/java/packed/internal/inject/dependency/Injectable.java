@@ -200,7 +200,7 @@ public class Injectable {
 
     public void setDependencyProvider(int index, DependencyProvider p) {
         int providerIndex = index + providerDelta;
-        if (providers[providerIndex] == null) {
+        if (providers[providerIndex] != null) {
             throw new IllegalStateException();
         }
         this.providers[providerIndex] = requireNonNull(p);

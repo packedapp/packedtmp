@@ -28,6 +28,7 @@ public class FooBar extends BaseBundle {
     protected void configure() {
         install(NeedsString.class);
         provideInstance(123L);
+
         link(new Child());
     }
 
@@ -53,7 +54,7 @@ public class FooBar extends BaseBundle {
     public static class ChildServ {
 
         public ChildServ(Long l) {
-
+            System.out.println("L " + l);
         }
     }
 }
