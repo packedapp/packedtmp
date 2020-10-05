@@ -198,6 +198,14 @@ public class Injectable {
         }
     }
 
+    public void setDependencyProvider(int index, DependencyProvider p) {
+        int providerIndex = index + providerDelta;
+        if (providers[providerIndex] == null) {
+            throw new IllegalStateException();
+        }
+        this.providers[providerIndex] = requireNonNull(p);
+    }
+
     public void resolve(InjectionManager im) {
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;

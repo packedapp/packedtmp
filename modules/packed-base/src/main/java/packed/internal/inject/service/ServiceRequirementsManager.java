@@ -18,7 +18,6 @@ package packed.internal.inject.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringJoiner;
@@ -61,12 +60,6 @@ public final class ServiceRequirementsManager {
      */
     // Skal jo erstattet af noget Contract...
     boolean manualRequirementsManagement;
-
-    /** A set of all explicitly registered required service keys. */
-    final HashSet<Key<?>> required = new HashSet<>();
-
-    /** A set of all explicitly registered optional service keys. */
-    final HashSet<Key<?>> requiredOptionally = new HashSet<>();
 
     /** A list of all dependencies that have not been resolved */
     private ArrayList<ServiceDependencyRequirement> unresolvedRequirements;
@@ -147,12 +140,7 @@ public final class ServiceRequirementsManager {
         m.add(new ServiceDependencyRequirement(dependency, entry));
 
         Requirement r = requirements.computeIfAbsent(key, Requirement::new);
-
-        if (dependency.isOptional()) {
-            requiredOptionally.add(dependency.key());
-        } else {
-            required.add(dependency.key());
-        }
+        r.missingDependency(entry, index, dependency);
     }
 
     /**
@@ -168,6 +156,10 @@ public final class ServiceRequirementsManager {
      */
     public void require(DependencyDescriptor dependency, ConfigSite configSite) {
         explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
+    }
+
+    public void require(Key<?> key, boolean isOptional, ConfigSite configSite) {
+
     }
 }
 // exactContract(Contract, forceValidate)

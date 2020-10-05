@@ -41,6 +41,7 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
+import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
@@ -134,11 +135,14 @@ public final class ServiceBuildManager {
                 }
             }
             if (dependencies != null) {
-                if (dependencies.requiredOptionally != null) {
-                    dependencies.requiredOptionally.forEach(k -> c.optional(k));
-                }
-                if (dependencies.required != null) {
-                    dependencies.required.forEach(k -> c.requires(k));
+                if (dependencies.requirements != null) {
+                    for (Requirement r : dependencies.requirements.values()) {
+                        if (r.isOptional) {
+                            c.optional(r.key);
+                        } else {
+                            c.requires(r.key);
+                        }
+                    }
                 }
             }
         });
@@ -218,6 +222,22 @@ public final class ServiceBuildManager {
         // Apply any wirelets to exports, and take
 
         // Add error messages if any nodes with the same key have been added multiple times
+
+        // also lets try and resolve children
+        for (ServiceBuildManager sbm : children) {
+            ServiceRequirementsManager srm = sbm.dependencies;
+            if (srm != null) {
+                for (Requirement r : srm.requirements.values()) {
+                    ServiceAssembly<?> sa = resolvedServices.get(r.key);
+                    if (resolvedServices.containsKey(r.key)) {
+                        for (FromInjectable i : r.list) {
+                            i.i.setDependencyProvider(i.dependencyIndex, sa);
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,

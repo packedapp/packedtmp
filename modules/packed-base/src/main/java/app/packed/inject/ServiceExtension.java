@@ -38,7 +38,6 @@ import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ExtensionAssembly;
 import packed.internal.hook.OnHook;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
@@ -265,7 +264,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            sbm.dependencies().require(DependencyDescriptor.of(key), cs);
+            sbm.dependencies().require(Key.of(key), false, cs);
         }
     }
 
@@ -290,12 +289,19 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            sbm.dependencies().require(DependencyDescriptor.of(key), cs);
+            sbm.dependencies().require(key, false, cs);
         }
     }
 
+    // It is kind of bindAllExplicit
+    // Fail if child services provide these???
+    // Maybe not
     public void requireOptionally(Class<?>... keys) {
-        throw new UnsupportedOperationException();
+        checkConfigurable();
+        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
+        for (Class<?> key : keys) {
+            sbm.dependencies().require(Key.of(key), true, cs);
+        }
     }
 
     /**
@@ -308,11 +314,12 @@ public final class ServiceExtension extends Extension {
      * @param keys
      *            the key(s) to add
      */
+    // How does this work with child services...
     public void requireOptionally(Key<?>... keys) {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            sbm.dependencies().require(DependencyDescriptor.ofOptional(key), cs);
+            sbm.dependencies().require(key, true, cs);
         }
     }
 

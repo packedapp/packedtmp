@@ -15,6 +15,10 @@
  */
 package packed.internal.inject.service;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.ArrayList;
+
 import app.packed.base.Key;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.Injectable;
@@ -30,16 +34,29 @@ class Requirement {
 
     final Key<?> key;
 
+    final ArrayList<FromInjectable> list = new ArrayList<>();
+
     Requirement(Key<?> key) {
         this.key = key;
     }
 
     void missingDependency(Injectable i, int dependencyIndex, DependencyDescriptor d) {
-
+        if (!d.isOptional()) {
+            isOptional = false;
+        }
+        list.add(new FromInjectable(i, dependencyIndex, d));
     }
 
     static class FromInjectable {
-        Injectable i;
-        int dependencyIndex;
+        final Injectable i;
+        final int dependencyIndex;
+        final DependencyDescriptor d;
+
+        FromInjectable(Injectable i, int dependencyIndex, DependencyDescriptor d) {
+            this.i = requireNonNull(i);
+            this.dependencyIndex = dependencyIndex;
+            this.d = d;
+        }
+
     }
 }
