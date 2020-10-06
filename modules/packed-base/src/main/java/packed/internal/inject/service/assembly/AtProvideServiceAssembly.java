@@ -21,14 +21,12 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.sidecar.AtProvides;
 
 /**
  *
@@ -39,17 +37,6 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
 
     /** If constant, the region index to store it in */
     public final int regionIndex;
-
-    /**
-     * Creates a new node from an instance.
-     * 
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, AtProvides ap) {
-        super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
-        this.injectable = new Injectable(compConf.source, this, ap);
-        this.regionIndex = ap.isConstant() ? compConf.region.reserve() : -1;
-    }
 
     @SuppressWarnings("unchecked")
     public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key, Injectable injectable, boolean isConst) {

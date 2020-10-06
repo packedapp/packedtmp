@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -40,7 +39,6 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
@@ -49,8 +47,6 @@ import packed.internal.inject.service.runtime.ExportedServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.sidecar.AtProvides;
-import packed.internal.inject.sidecar.AtProvidesHook;
 
 /**
  *
@@ -154,19 +150,6 @@ public final class ServiceBuildManager {
             return new PackedInjector(comp.configSite(), runtimeEntries);
         } else {
             return new ExportedServiceLocator(comp, runtimeEntries);
-        }
-    }
-
-    public void provideAtProvides(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
-        if (hook.hasInstanceMembers && compConf.source.regionIndex == -1) {
-            throw new InvalidDeclarationException("Not okay)");
-        }
-
-        // Add each @Provide as children of the parent node
-        for (AtProvides atProvides : hook.members) {
-            ServiceAssembly<?> e = new AtProvideServiceAssembly<>(this, compConf, atProvides);
-            assemblies.add(e);
-            im.addInjectable(e.getInjectable());
         }
     }
 

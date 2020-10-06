@@ -23,14 +23,13 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.inject.Provide;
 import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import testutil.stubs.annotation.StringQualifier;
 
 /**
- * Tests {@link Provide} on fields and methods.
+ * Tests {@link Provide2} on fields and methods.
  */
 public class MembersProvideTest {
 
@@ -106,19 +105,19 @@ public class MembersProvideTest {
 
     static class VisibilityStatic {
 
-        @Provide
+        @Provide2
         @StringQualifier("f_package")
         static final String F_PACKAGE = "package_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("f_private")
         private static final String F_PRIVATE = "private_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("f_protected")
         protected static final String F_PROTECTED = "protected_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("f_public")
         public static final String F_PUBLIC = "public_f";
 

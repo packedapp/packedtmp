@@ -32,16 +32,13 @@ import app.packed.service.ExportedServiceConfiguration;
 import app.packed.service.Injector;
 import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceAttributes;
-import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ExtensionAssembly;
-import packed.internal.hook.OnHook;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
-import packed.internal.inject.sidecar.AtProvidesHook;
 
 /**
  * This extension provides functionality for exposing and consuming services.
@@ -215,19 +212,6 @@ public final class ServiceExtension extends Extension {
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
         return sbm.hasExports() ? sbm.exports().exportsAsServiceRegistry() : null;
-    }
-
-    /**
-     * Invoked by the runtime for each component using {@link Provide}.
-     * 
-     * @param hook
-     *            the cached hook
-     * @param compConf
-     *            the configuration of the component that uses the annotation
-     */
-    @OnHook
-    /* package-private */ void onHook(AtProvidesHook hook, ComponentNodeConfiguration compConf) {
-        sbm.provideAtProvides(hook, compConf);
     }
 
     /**

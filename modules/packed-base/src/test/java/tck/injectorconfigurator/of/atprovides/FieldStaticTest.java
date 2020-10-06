@@ -24,14 +24,13 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
 import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
 /**
- * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
- * we have static {@link Provide} fields. Unlike for instance fields.
+ * Tests {@link Provide2#constant()} on static fields. In general we do not need to create an instance of the parent if
+ * we have static {@link Provide2} fields. Unlike for instance fields.
  */
 public class FieldStaticTest {
 

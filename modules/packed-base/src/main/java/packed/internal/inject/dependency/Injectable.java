@@ -37,7 +37,6 @@ import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
@@ -141,24 +140,6 @@ public class Injectable {
 
         this.providers = dependencyProviders;
         this.providerDelta = providers.length == dependencies.size() ? 0 : 1;
-    }
-
-    public Injectable(SourceAssembly source, AtProvideServiceAssembly<?> buildEntry, AtProvides ap) {
-        this.source = requireNonNull(source);
-        this.sourceMember = null;
-
-        this.service = requireNonNull(buildEntry);
-        this.dependencies = ap.dependencies;
-        this.directMethodHandle = ap.methodHandle;
-
-        this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
-
-        if (providers.length != dependencies.size()) {
-            providers[0] = source;
-            this.providerDelta = 1;
-        } else {
-            this.providerDelta = 0;
-        }
     }
 
     public final MethodHandle buildMethodHandle() {
