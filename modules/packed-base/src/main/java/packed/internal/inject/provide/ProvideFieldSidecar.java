@@ -13,11 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.dependency;
+package packed.internal.inject.provide;
+
+import app.packed.inject.Provide2;
+import app.packed.sidecar.FieldSidecar;
 
 /**
  *
  */
-public class AtProvidesInjectable {
+public final class ProvideFieldSidecar extends FieldSidecar {
 
+    @Override
+    protected void bootstrap(BootstrapContext context) {
+        Provide2 p2 = context.getAnnotation(Provide2.class);
+        context.provideAsService(p2.constant());
+    }
 }

@@ -15,6 +15,8 @@
  */
 package packed.internal.sidecar;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -51,6 +53,7 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
             }
             @SuppressWarnings("unchecked")
             Class<? extends FieldSidecar> csm = (Class<? extends FieldSidecar>) asm.get(SidecarActivationType.ANNOTATED_FIELD);
+            requireNonNull(csm);
             return new FieldSidecarModel.Builder(csm).build();
         }
     };
@@ -103,6 +106,7 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
         /** {@inheritDoc} */
         @Override
         protected FieldSidecarModel build() {
+            super.configure();
             OpenClass oc = ib.oc();
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
@@ -141,5 +145,4 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
             invoker = Object.class;
         }
     }
-
 }

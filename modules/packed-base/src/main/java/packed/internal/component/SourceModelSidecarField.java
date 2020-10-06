@@ -19,18 +19,21 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
+import java.lang.invoke.VarHandle;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.introspection.MethodDescriptor;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.base.Nullable;
+import app.packed.introspection.FieldDescriptor;
+import app.packed.sidecar.FieldSidecar;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.methodhandle.LookupUtil;
-import packed.internal.sidecar.MethodSidecarModel;
+import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.util.ThrowableUtil;
 
@@ -45,31 +48,35 @@ import packed.internal.util.ThrowableUtil;
 
 // Altsaa alle source metoder skal jo resolves paa assembly time
 
-public class SourceModelSidecarMethod extends SourceModelSidecarMember {
+public class SourceModelSidecarField extends SourceModelSidecarMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "bootstrap",
-            void.class, MethodSidecar.BootstrapContext.class);
+    private static final MethodHandle MH_FIELD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldSidecar.class, "bootstrap",
+            void.class, FieldSidecar.BootstrapContext.class);
 
     public final List<DependencyDescriptor> dependencies;
 
     /** A direct method handle to the method. */
-    public final MethodHandle directMethodHandle;
+    public final VarHandle directMethodHandle;
 
-    public final Method method;
+    public final Field field;
 
-    public final MethodSidecarModel model;
+    public final FieldSidecarModel model;
 
-    SourceModelSidecarMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
-        this.method = requireNonNull(method);
+    @Nullable
+    public RunAt runAt = RunAt.INITIALIZATION;
+
+    SourceModelSidecarField(Field method, FieldSidecarModel model, VarHandle mh) {
+        this.field = requireNonNull(method);
         this.model = requireNonNull(model);
-        MethodDescriptor m = MethodDescriptor.from(method);
-        this.dependencies = DependencyDescriptor.fromExecutable(m);
+        FieldDescriptor m = FieldDescriptor.from(method);
+        // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
+        this.dependencies = Arrays.asList();
         this.directMethodHandle = requireNonNull(mh);
     }
 
     public boolean isInstanceMethod() {
-        return !Modifier.isStatic(method.getModifiers());
+        return !Modifier.isStatic(field.getModifiers());
     }
 
     public enum RunAt {
@@ -77,14 +84,14 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
     }
 
     public DependencyProvider[] createProviders() {
-        DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        DependencyProvider[] providers = new DependencyProvider[Modifier.isStatic(field.getModifiers()) ? 0 : 1];
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
             SidecarDependencyProvider dp = model.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
-                int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;
+                int index = i + (Modifier.isStatic(field.getModifiers()) ? 0 : 1);
                 providers[index] = dp;
                 // System.out.println("SEtting provider " + dp.dependencyAccessor());
             }
@@ -99,7 +106,7 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
     public void bootstrap(SourceModel.Builder b) {
         MethodSidecarBootstrapContext c = new MethodSidecarBootstrapContext();
         try {
-            MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), c);
+            MH_FIELD_SIDECAR_BOOTSTRAP.invoke(model.instance(), c);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -109,20 +116,20 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
         this.provideAsConstant = c.provideAsConstant;
         this.provideAskey = c.provideAsKey;
 
-        b.methods.add(this);
+        b.fields.add(this);
         Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
         if (keys != null) {
             b.globalServices.putAll(keys);
         }
     }
 
-    public final class MethodSidecarBootstrapContext implements MethodSidecar.BootstrapContext {
+    public final class MethodSidecarBootstrapContext implements FieldSidecar.BootstrapContext {
 
         public boolean disable;
 
         @Override
         public void provideAsService(boolean isConstant) {
-            provideAsService(isConstant, Key.fromMethodReturnType(method));
+            provideAsService(isConstant, Key.fromField(field()));
         }
 
         @Override
@@ -143,8 +150,8 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
 
         /** {@inheritDoc} */
         @Override
-        public Method method() {
-            return method;
+        public Field field() {
+            return field;
         }
     }
 }

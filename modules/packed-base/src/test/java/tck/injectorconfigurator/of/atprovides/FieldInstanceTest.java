@@ -29,6 +29,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
@@ -144,10 +145,10 @@ public class FieldInstanceTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         Integer p = 1;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         Short s = 1;
 
         static void test(Consumer<? super InjectorAssembler> configurator) {
@@ -173,7 +174,7 @@ public class FieldInstanceTest {
 
     static class PrototypeField {
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         Short s = 1;
 
         PrototypeField(AtomicBoolean b) {
@@ -183,7 +184,7 @@ public class FieldInstanceTest {
 
     static class SingletonField {
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         Short s = 1;
 
         SingletonField(AtomicBoolean b) {

@@ -18,12 +18,12 @@ package app.packed.sidecar;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.sidecar.MethodSidecarModel;
+import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarModel;
 
 /**
@@ -38,7 +38,7 @@ public abstract class FieldSidecar extends Sidecar {
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private MethodSidecarModel.Builder builder;
+    private FieldSidecarModel.Builder builder;
 
     protected void bootstrap(BootstrapContext context) {}
 
@@ -47,8 +47,8 @@ public abstract class FieldSidecar extends Sidecar {
      * 
      * @return this sidecar's builder object
      */
-    private MethodSidecarModel.Builder builder() {
-        MethodSidecarModel.Builder c = builder;
+    private FieldSidecarModel.Builder builder() {
+        FieldSidecarModel.Builder c = builder;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -88,14 +88,14 @@ public abstract class FieldSidecar extends Sidecar {
         void disable();
 
         default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return method().getAnnotation(annotationClass);
+            return field().getAnnotation(annotationClass);
         }
 
         default Optional<Key<?>> key() {
             return null;
         }
 
-        Method method();
+        Field field();
 
         default void provideAsService(boolean isConstant) {}
 

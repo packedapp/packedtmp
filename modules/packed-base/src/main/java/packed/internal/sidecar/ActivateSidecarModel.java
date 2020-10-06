@@ -72,15 +72,14 @@ final class ActivateSidecarModel {
             HashSet<SidecarActivationType> s = new HashSet<>(List.of(activations));
             for (SidecarActivationType t : s) {
 //                Class<? extends Sidecar> result;
-//                Class<? extends Sidecar> expected = MAPPER.get(t);
+                Class<? extends Sidecar> expected = MAPPER.get(t);
                 for (Iterator<Class<? extends Sidecar>> iterator = sidecarsSet.iterator(); iterator.hasNext();) {
                     Class<? extends Sidecar> sidecarActivationType = iterator.next();
-                    actualResult.put(t, sidecarActivationType);
+                    if (expected.isAssignableFrom(sidecarActivationType)) {
+                        actualResult.put(t, sidecarActivationType);
+                    }
                 }
             }
-
-            Class<?>[] sidecar = as.sidecar();
-            System.out.println(sidecar);
             return new ActivateSidecarModel(actualResult);
         }
     };

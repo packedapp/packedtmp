@@ -88,6 +88,8 @@ public interface ShellDriver<S> {
      * The specified implementation can have the following types injected.
      * 
      * If the specified implementation implements {@link AutoCloseable} a {@link Guest} can also be injected.
+     * <p>
+     * Fields and methods are not processed.
      * 
      * @param <S>
      *            the type of shells the driver creates

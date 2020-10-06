@@ -83,6 +83,7 @@ public abstract class SidecarModel<T> {
             this.vhConfiguration = requireNonNull(vh);
             this.mhConfigure = requireNonNull(configure);
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
+
             // validate extension
         }
 

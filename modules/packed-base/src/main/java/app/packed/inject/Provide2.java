@@ -26,6 +26,7 @@ import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Opens;
 import app.packed.sidecar.SidecarActivationType;
 import app.packed.sidecar.SidecarPermit;
+import packed.internal.inject.provide.ProvideFieldSidecar;
 import packed.internal.inject.provide.ProvideMethodSidecar;
 
 /**
@@ -73,13 +74,14 @@ import packed.internal.inject.provide.ProvideMethodSidecar;
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-@Target({ ElementType.TYPE, /* { ElementType.FIELD , */ ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(ServiceExtension.class)
 @Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_SET })
-@ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, permits = { SidecarPermit.METHOD_INVOKE,
-        SidecarPermit.PROVIDE_SERVICE }, sidecar = ProvideMethodSidecar.class)
+@ActivateSidecar(activation = { SidecarActivationType.ANNOTATED_METHOD, SidecarActivationType.ANNOTATED_FIELD }, permits = { SidecarPermit.METHOD_INVOKE,
+        SidecarPermit.PROVIDE_SERVICE }, sidecar = { ProvideMethodSidecar.class, ProvideFieldSidecar.class })
+// @ActivateFieldSidecar(allowReadField = true, allowWriteField =true, Sidecar);
 public @interface Provide2 {
 
     /**

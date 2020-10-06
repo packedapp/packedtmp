@@ -15,13 +15,22 @@
  */
 package packed.internal.component;
 
+import app.packed.base.Key;
+import app.packed.base.Nullable;
+import packed.internal.component.SourceModelSidecarMethod.RunAt;
+
 /**
  *
  */
 // SourceModel...
 // Maa have en liste af regions slots den skal bruge
 public abstract class SourceModelSidecarMember {
+    public Key<?> provideAskey;
 
+    public boolean provideAsConstant;
+
+    @Nullable
+    public RunAt runAt = RunAt.INITIALIZATION;
     // Jeg tror man loeber alle parameterene igennem og ser om der
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.

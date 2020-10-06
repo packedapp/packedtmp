@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHook;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
+import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.sidecar.model.Model;
@@ -66,6 +68,8 @@ public final class SourceModel extends Model {
 
     public final List<SourceModelSidecarMethod> methods;
 
+    public final List<SourceModelSidecarField> fields;
+
     public final Map<Key<?>, SidecarDependencyProvider> sourceServices;
 
     /**
@@ -77,6 +81,7 @@ public final class SourceModel extends Model {
     private SourceModel(SourceModel.Builder builder) {
         super(builder.cp.type());
         this.methods = List.copyOf(builder.methods);
+        this.fields = List.copyOf(builder.fields);
         try {
             this.sourceHook = builder.csb == null ? null : builder.csb.build();
         } catch (Throwable ee) {
@@ -127,6 +132,14 @@ public final class SourceModel extends Model {
             compConf.injectionManager().addInjectable(i);
 
         }
+        for (SourceModelSidecarField smm : fields) {
+            DependencyProvider[] dp = smm.createProviders();
+            if (smm.isInstanceMethod()) {
+                dp[0] = source;
+            }
+            Injectable i = new Injectable(source, smm, dp);
+            compConf.injectionManager().addInjectable(i);
+        }
 
         // Tmp
         invokeOnHookOnInstall(compConf);
@@ -175,6 +188,8 @@ public final class SourceModel extends Model {
         final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
 
         final ArrayList<SourceModelSidecarMethod> methods = new ArrayList<>();
+
+        final ArrayList<SourceModelSidecarField> fields = new ArrayList<>();
 
         final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
 
@@ -247,6 +262,8 @@ public final class SourceModel extends Model {
         }
 
         private void findAnnotatedFields(MemberUnreflector htp, LazyExtensionActivationMap activatorMap, Field field) throws Throwable {
+            VarHandle varHandle = null;
+
             for (Annotation a : field.getAnnotations()) {
                 findAnnotatedFields0(htp, a, field, LazyExtensionActivationMap.EXTENSION_ACTIVATORS.get(a.annotationType()));
                 if (activatorMap != null) {
@@ -254,6 +271,19 @@ public final class SourceModel extends Model {
                 }
                 if (csb != null) {
                     csb.onAnnotatedField(field, a);
+                }
+
+                FieldSidecarModel model = FieldSidecarModel.getModelForAnnotatedMethod(a.annotationType());
+                if (model != null) {
+
+                    // We can have more than 1 sidecar attached to a method
+                    if (varHandle == null) {
+                        varHandle = htp.unreflectVarhandle(field);
+                    }
+
+                    SourceModelSidecarField smm = new SourceModelSidecarField(field, model, varHandle);
+                    smm.bootstrap(this);
+
                 }
             }
         }

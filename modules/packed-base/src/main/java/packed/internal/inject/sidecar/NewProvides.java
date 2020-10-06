@@ -29,15 +29,22 @@ public class NewProvides extends BaseBundle {
     protected void configure() {
         install(F.class);
         export(String.class);
+        export(Long.class);
     }
 
     public static void main(String[] args) {
         App app = App.of(new NewProvides());
         System.out.println(app.use(String.class));
         System.out.println(app.use(String.class));
+
+        System.out.println(app.use(Long.class));
+        System.out.println(app.use(Long.class));
     }
 
     public static class F {
+
+        @Provide2(constant = true)
+        public Long l = 123L;
 
         @Provide2(constant = true)
         public String s() {
