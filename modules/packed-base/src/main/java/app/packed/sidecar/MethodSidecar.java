@@ -17,6 +17,7 @@ package app.packed.sidecar;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -70,6 +71,10 @@ public abstract class MethodSidecar extends Sidecar {
     }
 
     public interface BootstrapContext {
+
+        default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            return method().getAnnotation(annotationClass);
+        }
 
         default <T> void attach(Class<T> key, T instance) {
             attach(Key.of(key), instance);

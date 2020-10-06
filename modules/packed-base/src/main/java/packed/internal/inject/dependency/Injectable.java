@@ -110,6 +110,7 @@ public class Injectable {
 
         this.providers = dependencyProviders;
         this.providerDelta = providers.length == dependencies.size() ? 0 : 1;
+
     }
 
     public Injectable(SourceAssembly source, AtProvideServiceAssembly<?> buildEntry, AtProvides ap) {
@@ -158,11 +159,12 @@ public class Injectable {
     public int regionIndex() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
+        if (service != null) {
+            return service.regionIndex;
+        }
         if (sourceMember != null) {
             // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
             return -1;
-        } else if (service != null) {
-            return service.regionIndex;
         }
         return source.regionIndex;
     }
