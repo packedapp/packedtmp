@@ -20,8 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Modifier;
 import java.util.List;
 
+import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
@@ -99,6 +101,10 @@ public class Injectable {
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
+            if (!Modifier.isStatic(smm.method.getModifiers()) && source.regionIndex == -1) {
+                throw new InvalidDeclarationException("Not okay)");
+            }
+
             ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
             ServiceAssembly<?> sa = this.service = new AtProvideServiceAssembly<>(sbm, source.compConf, smm.provideAskey, this, smm.provideAsConstant);
             sbm.addAssembly(sa);

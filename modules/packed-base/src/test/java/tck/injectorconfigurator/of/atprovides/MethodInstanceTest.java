@@ -28,14 +28,14 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
-/** Tests {@link Provide#constant()}. */
+/** Tests {@link Provide2#constant()}. */
 public class MethodInstanceTest {
 
-    /** Tests default {@link Provide#constant()} on instance methods. */
+    /** Tests default {@link Provide2#constant()} on instance methods. */
     @Test
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
@@ -44,7 +44,7 @@ public class MethodInstanceTest {
         MixedMethods.test(c -> c.provide(Factory.of(new TypeLiteral<MixedMethods>() {})));
     }
 
-    // /** Tests lazy {@link Provide#instantionMode()} on instance methods. */
+    // /** Tests lazy {@link Provide2#instantionMode()} on instance methods. */
     // @Test
     // public void provideLazy() {
     // MixedMethods.test(c -> c.provide(MixedMethods.class).lazy());
@@ -90,7 +90,7 @@ public class MethodInstanceTest {
     // b.set(true);
     // }
     //
-    // @Provide(instantionMode = InstantiationMode.LAZY)
+    // @Provide2(instantionMode = InstantiationMode.LAZY)
     // public Short s() {
     // return s;
     // }
@@ -104,17 +104,17 @@ public class MethodInstanceTest {
 
         Short s = 1;
 
-        // @Provide(instantionMode = InstantiationMode.LAZY)
+        // @Provide2(instantionMode = InstantiationMode.LAZY)
         // Long l() {
         // return l;
         // }
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         Integer p() {
             return p;
         }
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         Short s() {
             return s;
         }
@@ -149,7 +149,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         public Short s() {
             return s;
         }
@@ -163,7 +163,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         public Short s() {
             return s;
         }

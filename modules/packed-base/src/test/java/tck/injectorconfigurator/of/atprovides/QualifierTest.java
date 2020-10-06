@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import testutil.stubs.annotation.StringQualifier;
@@ -45,11 +46,11 @@ public class QualifierTest {
         // TODO check message
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMethodKeys.class)));
-        at.isExactlyInstanceOf(InvalidDeclarationException.class);
+        at.isExactlyInstanceOf(IllegalStateException.class);
         at.hasNoCause();
 
         at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedMemberKeys.class)));
-        at.isExactlyInstanceOf(InvalidDeclarationException.class);
+        at.isExactlyInstanceOf(IllegalStateException.class);
         at.hasNoCause();
     }
 
@@ -108,7 +109,7 @@ public class QualifierTest {
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("A")
         static Long b() {
             return 0L;
@@ -117,13 +118,13 @@ public class QualifierTest {
 
     static class MultipleIdenticalQualifiedMethodKeys {
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("A")
         static Long a() {
             return 0L;
         }
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("A")
         static Long b() {
             return 0L;

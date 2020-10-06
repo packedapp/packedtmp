@@ -22,9 +22,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
-import app.packed.sidecar.SidecarPermit;
 import app.packed.sidecar.Opens;
 import app.packed.sidecar.Packlet;
+import app.packed.sidecar.SidecarPermit;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
