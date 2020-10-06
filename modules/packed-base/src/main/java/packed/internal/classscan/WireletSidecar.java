@@ -19,7 +19,7 @@ import java.util.List;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.sidecar.VariableSidecar;
 
@@ -55,7 +55,7 @@ public final class WireletSidecar extends VariableSidecar {
         throw new UnsupportedOperationException();
     }
 
-    @Provide
+    @Provide2
     public Object provide(ComponentConfiguration cc, Context context) {
         if (context.isList) {
             return List.of();

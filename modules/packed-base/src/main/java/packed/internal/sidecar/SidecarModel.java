@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
-import app.packed.sidecar.MethodSidecar;
 import packed.internal.classscan.util.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
@@ -40,28 +39,6 @@ import packed.internal.util.ThrowableUtil;
 //
 public abstract class SidecarModel<T> {
 
-    /** A cache of models. */
-    static final ClassValue<SidecarModel<?>> CACHE = new ClassValue<>() {
-
-        /** {@inheritDoc} */
-        @Override
-        protected SidecarModel<?> computeValue(Class<?> implementation) {
-            // Problemet er lidt referencer paa kryds og tvaers mellem modeller....
-            // Vi kan i virkeligheden godt ende op med nogle cirkler
-            // Tror maaske vi bare gennem klasse for nu...
-
-            SidecarModel.Builder<?> b;
-            if (MethodSidecar.class.isAssignableFrom(implementation)) {
-                b = new MethodSidecarModel.Builder(implementation);
-            } else {
-                throw new IllegalArgumentException("" + implementation);
-            }
-
-            b.configure();
-            return b.build();
-        }
-    };
-
     private final Object instance;
 
     public Object instance() {
@@ -78,10 +55,6 @@ public abstract class SidecarModel<T> {
         this.instance = requireNonNull(builder.instance);
     }
 
-    public static SidecarModel<?> of(Class<?> implementation) {
-        return CACHE.get(implementation);
-    }
-
     static <T extends SidecarModel<T>> T ofd(Class<T> sidecarType, Class<?> implementation) {
 
         @SuppressWarnings("unused")
@@ -89,10 +62,6 @@ public abstract class SidecarModel<T> {
         // Er der nogengang vi ved
         // hellere Maaske hellere <T extends SidecarModel> of (Class<T> sidecarType, Class<?> implementation)
         throw new UnsupportedOperationException();
-    }
-
-    public static MethodSidecarModel ofMethod(Class<?> implementation) {
-        return (MethodSidecarModel) CACHE.get(implementation);
     }
 
     /** A builder for a sidecar model. */
@@ -124,7 +93,7 @@ public abstract class SidecarModel<T> {
          */
         protected abstract SidecarModel<T> build();
 
-        private void configure() {
+        protected final void configure() {
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
             // Don't think it makes sense to register

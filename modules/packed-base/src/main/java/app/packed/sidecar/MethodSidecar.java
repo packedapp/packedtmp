@@ -72,10 +72,6 @@ public abstract class MethodSidecar extends Sidecar {
 
     public interface BootstrapContext {
 
-        default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return method().getAnnotation(annotationClass);
-        }
-
         default <T> void attach(Class<T> key, T instance) {
             attach(Key.of(key), instance);
         }
@@ -90,6 +86,10 @@ public abstract class MethodSidecar extends Sidecar {
 
         /** Disables the sidecar for the particular method. No further processing will be done. */
         void disable();
+
+        default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            return method().getAnnotation(annotationClass);
+        }
 
         default Optional<Key<?>> key() {
             return null;

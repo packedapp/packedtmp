@@ -280,7 +280,7 @@ public final class SourceModel extends Model {
                     csb.onAnnotatedMethod(method, a);
                 }
 
-                MethodSidecarModel model = MethodSidecarModel.getModel(a.annotationType());
+                MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
                 if (model != null) {
 
                     // We can have more than 1 sidecar attached to a method

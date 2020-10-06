@@ -15,9 +15,92 @@
  */
 package app.packed.sidecar;
 
+import static java.util.Objects.requireNonNull;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Optional;
+
+import app.packed.base.Key;
+import app.packed.base.Nullable;
+import packed.internal.sidecar.MethodSidecarModel;
+import packed.internal.sidecar.SidecarModel;
+
 /**
  *
  */
 public abstract class FieldSidecar extends Sidecar {
 
+    // Hver sidecar har sit eget context object...
+    // Eneste maade at subclasses ikke kan faa fat it
+    // Med mindre selvfoelgelig at vi laver den package private..
+    // Men kan sagtens se vi faar sidecars udenfor denne pakke.
+
+    /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
+    @Nullable
+    private MethodSidecarModel.Builder builder;
+
+    protected void bootstrap(BootstrapContext context) {}
+
+    /**
+     * Returns this sidecar's builder object.
+     * 
+     * @return this sidecar's builder object
+     */
+    private MethodSidecarModel.Builder builder() {
+        MethodSidecarModel.Builder c = builder;
+        if (c == null) {
+            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
+        }
+        return c;
+    }
+
+    protected void configure() {}
+
+    protected final void disableServiceInjection() {
+        // syntes den er enabled by default
+    }
+
+    /**
+     * 
+     * @throws IllegalStateException
+     *             if called from outside of {@link #configure()}
+     */
+    protected final void provideInvoker() {
+        builder().provideInvoker();
+    }
+
+    public interface BootstrapContext {
+
+        default <T> void attach(Class<T> key, T instance) {
+            attach(Key.of(key), instance);
+        }
+
+        default <T> void attach(Key<T> key, T instance) {}
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        default void attach(Object instance) {
+            requireNonNull(instance, "instance is null");
+            attach((Class) instance.getClass(), instance);
+        }
+
+        /** Disables the sidecar for the particular method. No further processing will be done. */
+        void disable();
+
+        default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            return method().getAnnotation(annotationClass);
+        }
+
+        default Optional<Key<?>> key() {
+            return null;
+        }
+
+        Method method();
+
+        default void provideAsService(boolean isConstant) {}
+
+        default void provideAsService(boolean isConstant, Class<?> key) {}
+
+        default void provideAsService(boolean isConstant, Key<?> key) {}
+    }
 }

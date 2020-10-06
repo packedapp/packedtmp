@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 import testutil.stubs.annotation.StringQualifier;
@@ -78,25 +79,25 @@ public class MembersProvideTest {
         @StringQualifier("f_public")
         public final String F_PUBLIC = "public_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("m_package")
         String m_package() {
             return "package_m";
         }
 
-        @Provide
+        @Provide2
         @StringQualifier("m_private")
         private String m_private() {
             return "private_m";
         }
 
-        @Provide
+        @Provide2
         @StringQualifier("m_protected")
         protected String m_protected() {
             return "protected_m";
         }
 
-        @Provide
+        @Provide2
         @StringQualifier("m_public")
         public String m_public() {
             return "public_m";
@@ -121,25 +122,25 @@ public class MembersProvideTest {
         @StringQualifier("f_public")
         public static final String F_PUBLIC = "public_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("m_package")
         static String m_package() {
             return "package_m";
         }
 
-        @Provide
+        @Provide2
         @StringQualifier("m_private")
         private static String m_private() {
             return "private_m";
         }
 
-        @Provide
+        @Provide2
         @StringQualifier("m_protected")
         protected static String m_protected() {
             return "protected_m";
         }
 
-        @Provide
+        @Provide2
         @StringQualifier("m_public")
         public static String m_public() {
             return "public_m";

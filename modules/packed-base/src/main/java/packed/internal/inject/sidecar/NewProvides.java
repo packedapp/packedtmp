@@ -17,7 +17,7 @@ package packed.internal.inject.sidecar;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
-import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 
 /**
  *
@@ -32,7 +32,6 @@ public class NewProvides extends BaseBundle {
     }
 
     public static void main(String[] args) {
-
         App app = App.of(new NewProvides());
         System.out.println(app.use(String.class));
         System.out.println(app.use(String.class));
@@ -40,7 +39,7 @@ public class NewProvides extends BaseBundle {
 
     public static class F {
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         public String s() {
             return "f " + System.nanoTime();
         }

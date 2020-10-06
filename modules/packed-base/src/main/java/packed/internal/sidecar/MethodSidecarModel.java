@@ -27,9 +27,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
-import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.SidecarActivationType;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -39,12 +39,17 @@ import packed.internal.methodhandle.LookupUtil;
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     /** A cache of any extensions a particular annotation activates. */
-    static final ClassValue<MethodSidecarModel> METHOD_SIDECARS = new ClassValue<>() {
+    static final ClassValue<MethodSidecarModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
 
         @Override
         protected MethodSidecarModel computeValue(Class<?> type) {
-            ActivateSidecar ae = type.getAnnotation(ActivateSidecar.class);
-            return ae == null ? null : SidecarModel.ofMethod(ae.sidecar()[0]);
+            ActivateSidecarModel asm = ActivateSidecarModel.CACHE.get(type);
+            if (asm == null) {
+                return null;
+            }
+            @SuppressWarnings("unchecked")
+            Class<? extends MethodSidecar> csm = (Class<? extends MethodSidecar>) asm.get(SidecarActivationType.ANNOTATED_METHOD);
+            return new MethodSidecarModel.Builder(csm).build();
         }
     };
 
@@ -61,8 +66,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     // Must take an invoker...
     public final MethodHandle onInitialize;
 
-    public final boolean provideAsService;
-
     /**
      * Creates a new model.
      * 
@@ -72,15 +75,14 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     private MethodSidecarModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
-        this.provideAsService = builder.provideAsService;
         Map<Key<?>, SidecarDependencyProvider> tmp = new HashMap<>();
         builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
 
     @Nullable
-    public static MethodSidecarModel getModel(Class<? extends Annotation> c) {
-        return METHOD_SIDECARS.get(c);
+    public static MethodSidecarModel getModelForAnnotatedMethod(Class<? extends Annotation> c) {
+        return ANNOTATION_ON_METHOD_SIDECARS.get(c);
     }
 
     /** A builder for method sidecar. */
@@ -90,17 +92,16 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
         private MethodHandle onInitialize;
 
-        boolean provideAsService;
-
         private final HashMap<Key<?>, SidecarDependencyProvider.Builder> providing = new HashMap<>();
 
-        Builder(Class<?> implementation) {
+        Builder(Class<? extends MethodSidecar> implementation) {
             super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation);
         }
 
         /** {@inheritDoc} */
         @Override
         protected MethodSidecarModel build() {
+            super.configure();
             OpenClass oc = ib.oc();
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
@@ -130,10 +131,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
             });
 
             return new MethodSidecarModel(this);
-        }
-
-        public void provideAsService() {
-            this.provideAsService = true;
         }
 
         public void provideInvoker() {

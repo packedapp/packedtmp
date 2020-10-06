@@ -71,7 +71,7 @@ import app.packed.sidecar.SidecarPermit;
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Packlet(extension = ServiceExtension.class)
