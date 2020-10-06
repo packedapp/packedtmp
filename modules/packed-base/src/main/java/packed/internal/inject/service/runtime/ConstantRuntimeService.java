@@ -25,7 +25,7 @@ import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** An entry holding a constant. */
-public final class ConstantInjectorEntry<T> extends RuntimeService<T> {
+public final class ConstantRuntimeService<T> extends RuntimeService<T> {
 
     /** The singleton instance. */
     private final T constant;
@@ -37,7 +37,7 @@ public final class ConstantInjectorEntry<T> extends RuntimeService<T> {
      *            the build entry to create this entry from
      */
     @SuppressWarnings("unchecked")
-    public ConstantInjectorEntry(ServiceAssembly<T> service, RuntimeRegion region, int index) {
+    public ConstantRuntimeService(ServiceAssembly<T> service, RuntimeRegion region, int index) {
         super(service);
         this.constant = requireNonNull((T) region.getSingletonInstance(index));
     }
@@ -46,7 +46,7 @@ public final class ConstantInjectorEntry<T> extends RuntimeService<T> {
      * @param configSite
      * @param key
      */
-    public ConstantInjectorEntry(ConfigSite configSite, Key<T> key, @Nullable T instance) {
+    public ConstantRuntimeService(ConfigSite configSite, Key<T> key, @Nullable T instance) {
         super(configSite, key);
         this.constant = requireNonNull(instance);
     }

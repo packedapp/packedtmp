@@ -75,6 +75,7 @@ public final class RuntimeRegion {
             throw new IllegalStateException();
         }
         store[index] = instance;
+        // new Exception().printStackTrace();
     }
 
     public static MethodHandle readSingletonAs(int index, Class<?> type) {

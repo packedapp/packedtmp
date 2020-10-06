@@ -24,7 +24,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.runtime.ConstantInjectorEntry;
+import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -67,7 +67,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantInjectorEntry<>(this, context.region, regionIndex);
+            return new ConstantRuntimeService<>(this, context.region, regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
         }

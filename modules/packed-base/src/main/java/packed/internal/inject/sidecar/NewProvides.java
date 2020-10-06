@@ -32,14 +32,17 @@ public class NewProvides extends BaseBundle {
     }
 
     public static void main(String[] args) {
-        System.out.println(App.of(new NewProvides()).use(String.class));
+
+        App app = App.of(new NewProvides());
+        System.out.println(app.use(String.class));
+        System.out.println(app.use(String.class));
     }
 
-    public class F {
+    public static class F {
 
-        @Provide2
+        @Provide2(constant = true)
         public String s() {
-            return "f";
+            return "f " + System.nanoTime();
         }
     }
 }

@@ -25,7 +25,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.runtime.ConstantInjectorEntry;
+import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -58,7 +58,7 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantInjectorEntry<>(this, context.region, source.regionIndex);
+            return new ConstantRuntimeService<>(this, context.region, source.regionIndex);
         } else {
             return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
         }

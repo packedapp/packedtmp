@@ -43,9 +43,6 @@ import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHook;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
-import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
-import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.sidecar.model.Model;
@@ -128,11 +125,7 @@ public final class SourceModel extends Model {
             }
             Injectable i = new Injectable(source, smm, dp);
             compConf.injectionManager().addInjectable(i);
-            if (smm.provideAskey != null) {
-                ServiceBuildManager sbm = compConf.injectionManager().services(true);
-                ServiceAssembly<?> sa = new AtProvideServiceAssembly<>(sbm, compConf, smm.provideAskey, i, smm.provideAsConstant);
-                sbm.addAssembly(sa);
-            }
+
         }
 
         // Tmp

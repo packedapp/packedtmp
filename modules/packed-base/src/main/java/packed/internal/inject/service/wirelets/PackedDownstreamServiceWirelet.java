@@ -30,7 +30,7 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
-import packed.internal.inject.service.runtime.ConstantInjectorEntry;
+import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.methodhandle.LookupUtil;
 
@@ -130,7 +130,7 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService<?>> newServices) {
-            newServices.put(key, new ConstantInjectorEntry(cs, key, instance));
+            newServices.put(key, new ConstantRuntimeService(cs, key, instance));
         }
 
         @Override

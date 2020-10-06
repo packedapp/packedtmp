@@ -30,7 +30,9 @@ import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelSidecarMethod;
 import packed.internal.component.SourceModelSidecarMethod.RunAt;
 import packed.internal.inject.InjectionManager;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.sidecar.AtProvides;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
@@ -96,7 +98,13 @@ public class Injectable {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
-        this.service = null;
+        if (smm.provideAskey != null) {
+            ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
+            ServiceAssembly<?> sa = this.service = new AtProvideServiceAssembly<>(sbm, source.compConf, smm.provideAskey, this, smm.provideAsConstant);
+            sbm.addAssembly(sa);
+        } else {
+            this.service = null;
+        }
         this.dependencies = smm.dependencies;
         this.directMethodHandle = smm.directMethodHandle;
 
@@ -131,6 +139,7 @@ public class Injectable {
         if (providers.length == 0) {
             return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
         } else if (providers.length == 1) {
+            requireNonNull(providers[0]);
             return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, providers[0].dependencyAccessor());
         } else {
             mh = directMethodHandle;
@@ -152,10 +161,10 @@ public class Injectable {
         if (sourceMember != null) {
             // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
             return -1;
-        } else if (service == null) {
-            return source.regionIndex;
+        } else if (service != null) {
+            return service.regionIndex;
         }
-        return service.regionIndex;
+        return source.regionIndex;
     }
 
     public void onResolveSuccess(RegionAssembly region) {
@@ -175,18 +184,20 @@ public class Injectable {
                 if (sourceMember.runAt == RunAt.INITIALIZATION) {
 
                 }
-                MethodHandle mh1 = buildMethodHandle();
+                if (sourceMember.provideAskey == null) {
+                    MethodHandle mh1 = buildMethodHandle();
 
-                // RuntimeRegionInvoker
-                // the method on the sidecar: sourceMember.model.onInitialize
+                    // RuntimeRegionInvoker
+                    // the method on the sidecar: sourceMember.model.onInitialize
 
-                // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                MethodHandle mh2 = MethodHandles.collectArguments(sourceMember.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                    // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
+                    MethodHandle mh2 = MethodHandles.collectArguments(sourceMember.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
 
-                System.out.println(mh2);
-                mh2 = mh2.bindTo(mh1);
+                    System.out.println(mh2);
+                    mh2 = mh2.bindTo(mh1);
 
-                region.initializers.add(mh2);
+                    region.initializers.add(mh2);
+                }
             }
         }
     }
