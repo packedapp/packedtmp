@@ -19,9 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import packed.internal.inject.dependency.Injectable;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.sidecar.AtInject;
+import packed.internal.inject.dependency.Injectable;
 
 /**
  *
@@ -34,8 +33,6 @@ class ServiceDependencyRequirement {
 
     @Nullable
     final Injectable entry;
-
-    AtInject atInject;// ???
 
     ServiceDependencyRequirement(DependencyDescriptor dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");

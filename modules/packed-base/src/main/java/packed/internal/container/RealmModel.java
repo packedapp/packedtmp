@@ -21,16 +21,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.base.InvalidDeclarationException;
-import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.inject.Factory;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.component.SourceModel;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hook.Hook;
-import packed.internal.hook.OnHook;
-import packed.internal.hook.OnHookModel;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
 import packed.internal.util.LookupValue;
@@ -54,9 +48,6 @@ public final class RealmModel extends Model implements SourceModelLookup {
         }
     };
 
-    @Nullable
-    public final LazyExtensionActivationMap activatorMap;
-
     /** A cache of component models that have been accessed without a lookup object. */
     // most likely they will have the same class loader as the container source
     private final ClassValue<SourceModel> componentsNoLookup = new ClassValue<>() {
@@ -79,10 +70,6 @@ public final class RealmModel extends Model implements SourceModelLookup {
         }
     };
 
-    /** Any methods annotated with {@link OnHook} on the container source. */
-    @Nullable
-    private final OnHookModel onHookModel;
-
     /**
      * Creates a new container source model.
      * 
@@ -91,30 +78,12 @@ public final class RealmModel extends Model implements SourceModelLookup {
      */
     private RealmModel(Class<? extends Bundle<?>> realmType) {
         super(realmType);
-        if (Hook.class.isAssignableFrom(realmType)) {
-            throw new InvalidDeclarationException(realmType + " must not implement/extend " + Hook.class);
-        }
-
-        this.onHookModel = OnHookModel.newModel(new OpenClass(MethodHandles.lookup(), realmType, true), false,
-                UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-        this.activatorMap = LazyExtensionActivationMap.of(realmType);
     }
 
     /** {@inheritDoc} */
     @Override
     public SourceModel modelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
-    }
-
-    /**
-     * If the underlying container source has any methods annotated with {@link OnHook} return the model. Otherwise returns
-     * null.
-     * 
-     * @return any hook model
-     */
-    @Nullable
-    public OnHookModel hooks() {
-        return onHookModel;
     }
 
     /** {@inheritDoc} */

@@ -21,8 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.sidecar.SidecarPermit;
 import app.packed.sidecar.Opens;
+import app.packed.sidecar.SidecarPermit;
 
 /**
  * The type of the field or the return type of the method must match the type of attribute. Packed makes no check if any

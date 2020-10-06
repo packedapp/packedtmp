@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hook;
+package packed.internal.inject.sidecar;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,15 +28,6 @@ public final class ModuleAccess {
 
     /** Never instantiate. */
     private ModuleAccess() {}
-
-    /**
-     * Returns an access object for app.packed.container.
-     * 
-     * @return an access object for app.packed.container
-     */
-    public static AppPackedHookAccess hook() {
-        return HookSingletonHolder.INSTANCE;
-    }
 
     /**
      * Initializes an access object.
@@ -79,13 +70,6 @@ public final class ModuleAccess {
      */
     public static AppPackedBaseAccess base() {
         return BaseSingletonHolder.INSTANCE;
-    }
-
-    /** Holder of the {@link AppPackedHookAccess} singleton. */
-    private static class HookSingletonHolder {
-
-        /** The singleton instance. */
-        private static final AppPackedHookAccess INSTANCE = singleton(AppPackedHookAccess.class, AnnotatedFieldHook.class);
     }
 
     /** Holder of the {@link AppPackedBaseAccess} singleton. */

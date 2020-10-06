@@ -28,7 +28,6 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.introspection.FieldDescriptor;
 import app.packed.sidecar.FieldSidecar;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
@@ -69,7 +68,7 @@ public class SourceModelSidecarField extends SourceModelSidecarMember {
     SourceModelSidecarField(Field method, FieldSidecarModel model, VarHandle mh) {
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
-        FieldDescriptor m = FieldDescriptor.from(method);
+        // FieldDescriptor m = FieldDescriptor.from(method);
         // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
         this.dependencies = Arrays.asList();
         this.directMethodHandle = requireNonNull(mh);

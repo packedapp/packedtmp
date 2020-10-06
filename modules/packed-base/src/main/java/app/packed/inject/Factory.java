@@ -36,8 +36,8 @@ import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.classscan.util.ConstructorUtil;
-import packed.internal.hook.ModuleAccess;
 import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.sidecar.ModuleAccess;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.methodhandle.LookupUtil;
 

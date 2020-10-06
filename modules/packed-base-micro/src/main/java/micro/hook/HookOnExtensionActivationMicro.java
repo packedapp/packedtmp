@@ -31,11 +31,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.BeanConfiguration;
 import app.packed.container.Extension;
-import app.packed.sidecar.Packlet;
-import packed.internal.hook.AnnotatedFieldHook;
-import packed.internal.hook.AnnotatedMethodHook;
 
 /**
  *
@@ -119,14 +115,6 @@ public class HookOnExtensionActivationMicro {
     @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
-    @Packlet(extension = HookActivateExtension.class)
     public @interface HookActivateAnnotation {}
-
-    public static class HookActivateExtension extends Extension {
-
-        public void process(BeanConfiguration<?> cc, AnnotatedFieldHook<HookActivateAnnotation> hook) {}
-
-        public void process(BeanConfiguration<?> cc, AnnotatedMethodHook<HookActivateAnnotation> hook) {}
-    }
 
 }

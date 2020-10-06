@@ -22,20 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
 import app.packed.sidecar.Packlet;
-import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.hook.AnnotatedFieldHook;
-import packed.internal.hook.AnnotatedMethodHook;
-import packed.internal.hook.Hook;
-import packed.internal.hook.OnHook;
 import testutil.util.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
+@Disabled // uses Packlets
 public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
@@ -97,55 +94,52 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
         String value();
     }
 
-    static class Foo implements Hook {
-        final String s;
-
-        Foo(String s) {
-            this.s = s;
-        }
-
-        static class Builder implements Hook.Builder<Foo> {
-
-            /** {@inheritDoc} */
-            @Override
-            public Foo build() {
-                return new Foo("ffooo");
-            }
-
-            @OnHook
-            public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
-                assertThat(h.annotation().value()).isEqualTo("Foo");
-                assertThat(h.field().getName()).isEqualTo("foo");
-                assertThat(h.varHandle()).isNotNull();
-                if (h.field().isStatic()) {
-                    assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldStatic.class);
-                    assertThat(h.varHandle().get()).isEqualTo("ABC");
-                } else {
-                    assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldInstance.class);
-                    assertThat(h.varHandle().get(new WithFieldInstance())).isEqualTo("ABC");
-                }
-            }
-
-            @OnHook
-            public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
-                assertThat(h.annotation().value()).isEqualTo("Foo");
-                assertThat(h.method().getName()).isEqualTo("foo");
-                assertThat(h.methodHandle()).isNotNull();
-                if (h.method().isStatic()) {
-                    assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodStatic.class);
-                    assertThat(h.methodHandle().invoke()).isEqualTo("ABC");
-                } else {
-                    assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodInstance.class);
-                    assertThat(h.methodHandle().invoke(new WithMethodInstance())).isEqualTo("ABC");
-                }
-            }
-        }
-    }
+//    static class Foo implements Hook {
+//        final String s;
+//
+//        Foo(String s) {
+//            this.s = s;
+//        }
+//
+//        static class Builder implements Hook.Builder<Foo> {
+//
+//            /** {@inheritDoc} */
+//            @Override
+//            public Foo build() {
+//                return new Foo("ffooo");
+//            }
+//
+//            @OnHook
+//            public void onField(AnnotatedFieldHook<ActivateMyExtension> h) throws Throwable {
+//                assertThat(h.annotation().value()).isEqualTo("Foo");
+//                assertThat(h.field().getName()).isEqualTo("foo");
+//                assertThat(h.varHandle()).isNotNull();
+//                if (h.field().isStatic()) {
+//                    assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldStatic.class);
+//                    assertThat(h.varHandle().get()).isEqualTo("ABC");
+//                } else {
+//                    assertThat(h.field().getDeclaringClass()).isSameAs(WithFieldInstance.class);
+//                    assertThat(h.varHandle().get(new WithFieldInstance())).isEqualTo("ABC");
+//                }
+//            }
+//
+//            @OnHook
+//            public void onMethod(AnnotatedMethodHook<ActivateMyExtension> h) throws Throwable {
+//                assertThat(h.annotation().value()).isEqualTo("Foo");
+//                assertThat(h.method().getName()).isEqualTo("foo");
+//                assertThat(h.methodHandle()).isNotNull();
+//                if (h.method().isStatic()) {
+//                    assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodStatic.class);
+//                    assertThat(h.methodHandle().invoke()).isEqualTo("ABC");
+//                } else {
+//                    assertThat(h.method().getDeclaringClass()).isSameAs(WithMethodInstance.class);
+//                    assertThat(h.methodHandle().invoke(new WithMethodInstance())).isEqualTo("ABC");
+//                }
+//            }
+//        }
+//    }
 
     public static final class MyExtension extends Extension {
-
-        @OnHook
-        protected void set(Foo s, ComponentNodeConfiguration a) {}
 
     }
 

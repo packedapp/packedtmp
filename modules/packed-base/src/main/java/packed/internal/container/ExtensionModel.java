@@ -45,10 +45,6 @@ import app.packed.statemachine.LifecycleContext;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hook.BaseHookQualifierList;
-import packed.internal.hook.OnHook;
-import packed.internal.hook.OnHookModel;
 import packed.internal.lifecycle.old.LifecycleDefinition;
 import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
@@ -133,11 +129,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
     @Nullable
     final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
 
-    final BaseHookQualifierList hooksNonActivating;
-
-    @Nullable
-    private final OnHookModel hooksOnHookModel;
-
     /** A unique id of the extension. */
     final int id; // We don't currently use it...
 
@@ -175,9 +166,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         this.extensionLinkedToAncestorExtension = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;
-
-        this.hooksOnHookModel = builder.onHookModel;
-        this.hooksNonActivating = hooksOnHookModel == null ? null : LazyExtensionActivationMap.findNonExtending(hooksOnHookModel);
     }
 
     /** {@inheritDoc} */
@@ -310,19 +298,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         return MODELS.get(extensionType);
     }
 
-    /**
-     * Returns a on hook model of all the methods annotated with {@link OnHook} on the extension. Or null if the extension
-     * does not define any methods annotated with {@link OnHook}.
-     * 
-     * @param extensionType
-     *            the extension type to return the model for
-     * @return a hook model
-     */
-    @Nullable
-    public static OnHookModel onHookModelOf(Class<? extends Extension> extensionType) {
-        return of(extensionType).hooksOnHookModel;
-    }
-
     /** A builder of {@link ExtensionModel}. */
     static final class Builder extends AbstractExtensionModel.Builder {
 
@@ -388,9 +363,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         /** The loader used to load the extension. */
         private final Loader loader;
 
-        /** A builder for all methods annotated with {@link OnHook} on the extension. */
-        private OnHookModel onHookModel;
-
         private ProvidableAttributeModel pam;
 
         /**
@@ -445,7 +417,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
-            this.onHookModel = OnHookModel.newModel(cp, false, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             this.pam = ProvidableAttributeModel.analyse(cp);
 
             if (linked != null) {

@@ -16,8 +16,8 @@
 package app.packed.service;
 
 import app.packed.base.Key;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
