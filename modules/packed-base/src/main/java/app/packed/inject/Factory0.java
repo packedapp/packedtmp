@@ -55,7 +55,7 @@ public abstract class Factory0<R> extends Factory<R> {
     /** A method handle for invoking {@link #create(Supplier, Class)}. */
     private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
 
-    /** The method handle responsible for providing the actual values. */
+    /** The method handle responsible for providing the actual values. Eagerly created. */
     private final MethodHandle methodHandle;
 
     /**
@@ -70,8 +70,8 @@ public abstract class Factory0<R> extends Factory<R> {
      */
     protected Factory0(Supplier<? extends R> supplier) {
         requireNonNull(supplier, "supplier is null");
-        MethodHandle mh = CREATE.bindTo(supplier).bindTo(returnTypeRaw()); // (Supplier, Class)Object -> ()Object
-        this.methodHandle = MethodHandleUtil.castReturnType(mh, returnTypeRaw()); // ()Object -> ()R
+        MethodHandle mh = CREATE.bindTo(supplier).bindTo(rawType()); // (Supplier, Class)Object -> ()Object
+        this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // ()Object -> ()R
     }
 
     /** {@inheritDoc} */
@@ -96,6 +96,8 @@ public abstract class Factory0<R> extends Factory<R> {
      * @param expectedType
      *            the type we expect the supplier to return
      * @return the value that was supplied by the specified supplier
+     * @throws FactoryException
+     *             if the created value is null or not of an expected type
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {

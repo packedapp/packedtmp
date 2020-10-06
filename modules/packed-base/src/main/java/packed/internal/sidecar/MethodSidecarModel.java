@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,41 +39,6 @@ import packed.internal.methodhandle.LookupUtil;
 /** A model of a {@link MethodSidecar}. */
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
-    /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
-            "configuration", MethodSidecarModel.Builder.class);
-
-    /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
-            void.class);
-
-    public final Map<Key<?>, SidecarDependencyProvider> keys;
-
-    // Must take an invoker...
-    public final MethodHandle onInitialize;
-
-    public final boolean provideMethod = false;
-
-    /**
-     * Creates a new model.
-     * 
-     * @param builder
-     *            the builder
-     */
-    private MethodSidecarModel(Builder builder) {
-        super(builder);
-        this.onInitialize = builder.onInitialize;
-
-        Map<Key<?>, SidecarDependencyProvider> tmp = new HashMap<>();
-        builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
-        this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
-    }
-
-    @Nullable
-    public static MethodSidecarModel getModel(Class<? extends Annotation> c) {
-        return METHOD_SIDECARS.get(c);
-    }
-
     /** A cache of any extensions a particular annotation activates. */
     static final ClassValue<MethodSidecarModel> METHOD_SIDECARS = new ClassValue<>() {
 
@@ -83,12 +49,51 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         }
     };
 
+    /** A MethodHandle that can invoke MethodSidecar#configure. */
+    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
+            void.class);
+
+    /** A VarHandle that can access MethodSidecar#configuration. */
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class, "builder",
+            MethodSidecarModel.Builder.class);
+
+    public final Map<Key<?>, SidecarDependencyProvider> keys;
+
+    // Must take an invoker...
+    public final MethodHandle onInitialize;
+
+    public final boolean provideAsService;
+
+    /**
+     * Creates a new model.
+     * 
+     * @param builder
+     *            the builder
+     */
+    private MethodSidecarModel(Builder builder) {
+        super(builder);
+        this.onInitialize = builder.onInitialize;
+        this.provideAsService = builder.provideAsService;
+        Map<Key<?>, SidecarDependencyProvider> tmp = new HashMap<>();
+        builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
+        this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
+    }
+
+    @Nullable
+    public static MethodSidecarModel getModel(Class<? extends Annotation> c) {
+        return METHOD_SIDECARS.get(c);
+    }
+
     /** A builder for method sidecar. */
     public final static class Builder extends SidecarModel.Builder<MethodSidecar> {
 
-        private final HashMap<Key<?>, SidecarDependencyProvider.Builder> providing = new HashMap<>();
+        Class<?> invoker;
 
         private MethodHandle onInitialize;
+
+        boolean provideAsService;
+
+        private final HashMap<Key<?>, SidecarDependencyProvider.Builder> providing = new HashMap<>();
 
         Builder(Class<?> implementation) {
             super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation);
@@ -128,9 +133,9 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
             return new MethodSidecarModel(this);
         }
 
-        Class<?> invoker;
-
-        boolean provideAsService;
+        public void provideAsService() {
+            this.provideAsService = true;
+        }
 
         public void provideInvoker() {
             if (invoker != null) {
@@ -138,9 +143,29 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
             }
             invoker = Object.class;
         }
+    }
 
-        public void provideAsService() {
-            this.provideAsService = true;
+    public final class MethodSidecarBootstrapContext implements MethodSidecar.BootstrapContext {
+
+        public boolean disable;
+
+        Method method;
+
+        MethodSidecarBootstrapContext(Method method) {
+            this.method = method;
         }
+
+        /** {@inheritDoc} */
+        @Override
+        public void disable() {
+            this.disable = true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Method method() {
+            return null;
+        }
+
     }
 }

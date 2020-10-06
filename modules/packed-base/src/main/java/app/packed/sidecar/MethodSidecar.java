@@ -35,19 +35,19 @@ public abstract class MethodSidecar extends Sidecar {
     // Med mindre selvfoelgelig at vi laver den package private..
     // Men kan sagtens se vi faar sidecars udenfor denne pakke.
 
-    /** A sidecar configurations object. Updated by {@link SidecarModel.Builder}. */
+    /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private MethodSidecarModel.Builder configuration;
+    private MethodSidecarModel.Builder builder;
 
     protected void bootstrap(BootstrapContext context) {}
 
     /**
-     * Returns this sidecar's configuration object.
+     * Returns this sidecar's builder object.
      * 
-     * @return this sidecar's configuration object
+     * @return this sidecar's builder object
      */
-    private MethodSidecarModel.Builder configuration() {
-        MethodSidecarModel.Builder c = configuration;
+    private MethodSidecarModel.Builder builder() {
+        MethodSidecarModel.Builder c = builder;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -61,19 +61,12 @@ public abstract class MethodSidecar extends Sidecar {
     }
 
     /**
-     * Provides the return type as a service
-     */
-    protected final void provideAsService() {
-        configuration().provideAsService();
-    }
-
-    /**
      * 
      * @throws IllegalStateException
      *             if called from outside of {@link #configure()}
      */
     protected final void provideInvoker() {
-        configuration().provideInvoker();
+        builder().provideInvoker();
     }
 
     public interface BootstrapContext {
@@ -82,7 +75,7 @@ public abstract class MethodSidecar extends Sidecar {
             attach(Key.of(key), instance);
         }
 
-        <T> void attach(Key<T> key, T instance);
+        default <T> void attach(Key<T> key, T instance) {}
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         default void attach(Object instance) {
@@ -93,14 +86,16 @@ public abstract class MethodSidecar extends Sidecar {
         /** Disables the sidecar for the particular method. No further processing will be done. */
         void disable();
 
-        Optional<Key<?>> key();
-
-        void provideAsService();
-
-        void provideAsService(Class<?> key);
-
-        void provideAsService(Key<?> key);
+        default Optional<Key<?>> key() {
+            return null;
+        }
 
         Method method();
+
+        default void provideAsService(boolean isConstant) {}
+
+        default void provideAsService(boolean isConstant, Class<?> key) {}
+
+        default void provideAsService(boolean isConstant, Key<?> key) {}
     }
 }

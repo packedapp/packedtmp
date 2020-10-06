@@ -15,6 +15,7 @@
  */
 package packed.internal.inject.provide;
 
+import app.packed.inject.Provide2;
 import app.packed.sidecar.MethodSidecar;
 
 /**
@@ -23,14 +24,8 @@ import app.packed.sidecar.MethodSidecar;
 public final class ProvideMethodSidecar extends MethodSidecar {
 
     @Override
-    protected void configure() {
-        provideAsService();
-    }
-
-    @Override
     protected void bootstrap(BootstrapContext context) {
-        String name = context.method().getName();
-        context.provideAsService(context.key().get().withName(name));
+        Provide2 p2 = context.method().getAnnotation(Provide2.class);
+        context.provideAsService(p2.constant());
     }
-
 }

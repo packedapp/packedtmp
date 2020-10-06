@@ -366,15 +366,6 @@ public abstract class Factory<T> {
     }
 
     /**
-     * Returns the raw type of objects this operation returns on invocation.
-     *
-     * @return the raw type of objects this operation returns on invocation
-     */
-    public final Class<? super T> returnTypeRaw() {
-        return type;
-    }
-
-    /**
      * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
      * annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
      *
