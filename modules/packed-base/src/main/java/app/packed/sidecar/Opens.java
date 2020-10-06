@@ -77,7 +77,7 @@ public @interface Opens {
      * 
      * @return the type of access rights that are needed
      */
-    OpenMode[] to();
+    SidecarPermit[] to();
 }
 
 interface OpenGatekeeper {

@@ -156,7 +156,7 @@ public abstract class Factory<T> {
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
-     * constructor in this class (super).
+     * constructor in this (super) class.
      */
     @SuppressWarnings("unchecked")
     Factory() {
@@ -165,8 +165,6 @@ public abstract class Factory<T> {
         this.type = typeLiteral.rawType();
         this.actualType = requireNonNull(type);
     }
-
-    // TODO make package-private
 
     private Factory(Class<T> type) {
         this(TypeLiteral.of(type), type);

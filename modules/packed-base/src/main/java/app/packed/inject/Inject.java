@@ -15,8 +15,8 @@
  */
 package app.packed.inject;
 
-import static app.packed.sidecar.OpenMode.FIELD_GET;
-import static app.packed.sidecar.OpenMode.METHOD_INVOKE;
+import static app.packed.sidecar.SidecarPermit.FIELD_GET;
+import static app.packed.sidecar.SidecarPermit.METHOD_INVOKE;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

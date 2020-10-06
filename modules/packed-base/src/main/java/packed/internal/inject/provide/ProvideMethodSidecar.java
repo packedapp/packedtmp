@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.runtime;
+package packed.internal.inject.provide;
 
-import static java.util.Objects.requireNonNull;
-
-import app.packed.inject.Provider;
-import app.packed.inject.ProvisionContext;
+import app.packed.sidecar.MethodSidecar;
 
 /**
  *
  */
-public class NonConstantLocatorProvider<T> implements Provider<T> {
+public final class ProvideMethodSidecar extends MethodSidecar {
 
-    final RuntimeService<T> service;
-
-    final ProvisionContext ppc;
-
-    NonConstantLocatorProvider(RuntimeService<T> service, ProvisionContext ppc) {
-        this.service = requireNonNull(service);
-        this.ppc = requireNonNull(ppc);
-    }
-
-    /** {@inheritDoc} */
     @Override
-    public T provide() {
-        return service.getInstance(ppc);
+    protected void configure() {
+        provideAsService();
     }
+
+    @Override
+    protected void bootstrap(BootstrapContext context) {
+        String name = context.method().getName();
+        context.provideAsService(context.key().get().withName(name));
+    }
+
 }

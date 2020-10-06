@@ -18,6 +18,6 @@ package app.packed.sidecar;
 /**
  *
  */
-public @interface SidecarAssemble {
-
+public abstract class Sidecar {
+    Sidecar() {}
 }

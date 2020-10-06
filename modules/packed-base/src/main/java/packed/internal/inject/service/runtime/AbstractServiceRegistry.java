@@ -36,6 +36,19 @@ import packed.internal.util.PackedAttributeHolderStream;
 /** An abstract implementation of ServiceRegistry. */
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
+    /**
+     * Subclasses must extend this method and provide an immutable service map.
+     * 
+     * @return an immutable map containing all services
+     */
+    protected abstract Map<Key<?>, Service> services();
+
+    /** {@inheritDoc} */
+    @Override
+    public final Optional<Service> findService(Class<?> key) {
+        return findService(Key.of(key));
+    }
+
     /** {@inheritDoc} */
     @Override
     public final Optional<Service> findService(Key<?> key) {
@@ -58,6 +71,12 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     /** {@inheritDoc} */
     @Override
+    public final boolean isPresent(Class<?> key) {
+        return isPresent(Key.of(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public final boolean isPresent(Key<?> key) {
         requireNonNull(key, "key is null");
         return services().containsKey(key);
@@ -74,8 +93,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     public final Set<Key<?>> keys() {
         return services().keySet();
     }
-
-    protected abstract Map<Key<?>, Service> services();
 
     /** {@inheritDoc} */
     @Override
@@ -101,25 +118,35 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         return List.copyOf(services().values());
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return services().toString();
     }
 
-    public static AbstractServiceRegistry copyOf(Map<Key<?>, ? extends ServiceAssembly<?>> map) {
+    /**
+     * Creates a new service registry by making an immutable copy of the specified service map.
+     * 
+     * @param map
+     *            the map to make an immutable copy
+     * @return a new service registry
+     */
+    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceAssembly<?>> map) {
         LinkedHashMap<Key<?>, Service> l = new LinkedHashMap<Key<?>, Service>();
         for (ServiceAssembly<?> e : map.values()) {
             l.put(e.key(), e.toService());
         }
-        return new CopyOfServiceRegistry(l);
+        return new CopyOfRegistry(l);
     }
 
-    private static final class CopyOfServiceRegistry extends AbstractServiceRegistry {
+    /** The registry implementation returned by {@link #copyOf(Map)}. */
+    private static final class CopyOfRegistry extends AbstractServiceRegistry {
 
         /** The services that are wrapped */
         private final Map<Key<?>, Service> services;
 
-        private CopyOfServiceRegistry(Map<Key<?>, Service> services) {
+        private CopyOfRegistry(Map<Key<?>, Service> services) {
+            // TODO does not maintain order?
             this.services = Map.copyOf(services); // We want the map to immutable
         }
 

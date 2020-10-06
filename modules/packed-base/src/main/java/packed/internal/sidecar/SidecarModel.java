@@ -50,7 +50,7 @@ public abstract class SidecarModel<T> {
             // Vi kan i virkeligheden godt ende op med nogle cirkler
             // Tror maaske vi bare gennem klasse for nu...
 
-            SidecarModel.Builder<?, ?> b;
+            SidecarModel.Builder<?> b;
             if (MethodSidecar.class.isAssignableFrom(implementation)) {
                 b = new MethodSidecarModel.Builder(implementation);
             } else {
@@ -68,7 +68,7 @@ public abstract class SidecarModel<T> {
      * @param builder
      *            the builder.
      */
-    protected SidecarModel(Builder<T, ?> builder) {}
+    protected SidecarModel(Builder<T> builder) {}
 
     public static SidecarModel<?> of(Class<?> implementation) {
         return CACHE.get(implementation);
@@ -88,10 +88,7 @@ public abstract class SidecarModel<T> {
     }
 
     /** A builder for a sidecar model. */
-    static abstract class Builder<T, C> {
-
-        /** The configuration object that the sidecar implementation can use. */
-        private final C configuration;
+    static abstract class Builder<T> {
 
         final InstantiatorBuilder ib;
 
@@ -105,10 +102,9 @@ public abstract class SidecarModel<T> {
         protected Object instance;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
-        Builder(VarHandle vh, MethodHandle configure, Class<?> implementation, C context) {
+        Builder(VarHandle vh, MethodHandle configure, Class<?> implementation) {
             this.vhConfiguration = requireNonNull(vh);
             this.mhConfigure = requireNonNull(configure);
-            this.configuration = requireNonNull(context);
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
             // validate extension
         }
@@ -119,10 +115,6 @@ public abstract class SidecarModel<T> {
          * @return the new sidecar model
          */
         protected abstract SidecarModel<T> build();
-
-        protected final C configuration() {
-            return configuration;
-        }
 
         private void configure() {
             // We perform a compare and exchange with configuration. Guarding against
@@ -136,7 +128,7 @@ public abstract class SidecarModel<T> {
                 throw ThrowableUtil.orUndeclared(e);
             }
 
-            vhConfiguration.set(instance, configuration);
+            vhConfiguration.set(instance, this);
             try {
                 mhConfigure.invoke(instance); // Invokes sidecar#configure()
             } catch (Throwable e) {

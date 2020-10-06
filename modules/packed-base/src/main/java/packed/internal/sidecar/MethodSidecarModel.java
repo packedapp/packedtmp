@@ -40,7 +40,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     /** A VarHandle that can access MethodSidecar#configuration. */
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
-            "configuration", MethodSidecarConfiguration.class);
+            "configuration", MethodSidecarModel.Builder.class);
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
     private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
@@ -50,6 +50,8 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     // Must take an invoker...
     public final MethodHandle onInitialize;
+
+    public final boolean provideMethod = false;
 
     /**
      * Creates a new model.
@@ -82,14 +84,14 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     };
 
     /** A builder for method sidecar. */
-    final static class Builder extends SidecarModel.Builder<MethodSidecar, MethodSidecarConfiguration> {
+    public final static class Builder extends SidecarModel.Builder<MethodSidecar> {
 
         private final HashMap<Key<?>, SidecarDependencyProvider.Builder> providing = new HashMap<>();
 
         private MethodHandle onInitialize;
 
         Builder(Class<?> implementation) {
-            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation, new MethodSidecarConfiguration());
+            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation);
         }
 
         /** {@inheritDoc} */
@@ -125,18 +127,20 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
             return new MethodSidecarModel(this);
         }
-    }
-
-    /** A configuration object we provide to MethodSidecar. */
-    public final static class MethodSidecarConfiguration {
 
         Class<?> invoker;
+
+        boolean provideAsService;
 
         public void provideInvoker() {
             if (invoker != null) {
                 throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
             }
             invoker = Object.class;
+        }
+
+        public void provideAsService() {
+            this.provideAsService = true;
         }
     }
 }

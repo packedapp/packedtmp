@@ -19,7 +19,7 @@ package app.packed.sidecar;
  *
  */
 // AccessOperation.. Instance er vel mere en type end en operation
-public enum OpenMode {
+public enum SidecarPermit {
 
     CUSTOM, // Can specify a class...
     // Eller ogsaa er det i addition til hvad man har specificeret her/
@@ -31,6 +31,10 @@ public enum OpenMode {
 
     /** Access rights for invocation of a method or constructor. */
     METHOD_INVOKE,
+
+    // En extension kan expose en service uden problemer...
+    // Saa er ikke sikker paa det skal vaere
+    PROVIDE_SERVICE,
 
     /** Access rights for reading a field. */
     FIELD_SET,

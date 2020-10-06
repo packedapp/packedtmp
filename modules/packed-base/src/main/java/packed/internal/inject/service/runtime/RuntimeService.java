@@ -35,6 +35,11 @@ public abstract class RuntimeService<T> implements Service {
     /** The key under which the service is available. */
     private final Key<T> key;
 
+    RuntimeService(ConfigSite configSite, Key<T> key) {
+        this.configSite = requireNonNull(configSite);
+        this.key = requireNonNull(key);
+    }
+
     /**
      * Creates a new runtime node from a build entry.
      *
@@ -45,13 +50,14 @@ public abstract class RuntimeService<T> implements Service {
         this(buildEntry.configSite(), buildEntry.key());
     }
 
-    RuntimeService(ConfigSite configSite, Key<T> key) {
-        this.configSite = requireNonNull(configSite);
-        this.key = requireNonNull(key);
-    }
-
     public final ConfigSite configSite() {
         return configSite;
+    }
+
+    public T forLocator(ServiceLocator locator) {
+        ProvisionContext pc = PackedProvideContext.of(key);
+        T t = getInstance(pc);
+        return t;
     }
 
     /**
@@ -73,12 +79,6 @@ public abstract class RuntimeService<T> implements Service {
     }
 
     public abstract boolean requiresPrototypeRequest();
-
-    public T forLocator(ServiceLocator locator) {
-        ProvisionContext pc = PackedProvideContext.of(key);
-        T t = getInstance(pc);
-        return t;
-    }
 
     /** {@inheritDoc} */
     @Override

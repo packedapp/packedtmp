@@ -74,7 +74,7 @@ public final class ServiceWirelets {
     }
 
     public static <T> Wirelet mapAllFrom(Function<Service, ? super Key<?>> mapper) {
-        mapAll(s -> s.key().withNameQualifier("foo"));
+        mapAll(s -> s.key().withName("foo"));
         throw new UnsupportedOperationException();
     }
 

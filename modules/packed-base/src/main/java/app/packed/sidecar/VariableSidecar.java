@@ -22,7 +22,7 @@ import packed.internal.sidecar.VariableSidecarModel.VariableSidecarConfiguration
 /**
  *
  */
-public abstract class VariableSidecar {
+public abstract class VariableSidecar extends Sidecar {
 
     /** A sidecar configurations object. Updated by {@link SidecarModel.Builder}. */
     @Nullable

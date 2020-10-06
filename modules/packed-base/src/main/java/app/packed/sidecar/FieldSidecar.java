@@ -18,6 +18,6 @@ package app.packed.sidecar;
 /**
  *
  */
-public abstract class FieldSidecar {
+public abstract class FieldSidecar extends Sidecar {
 
 }

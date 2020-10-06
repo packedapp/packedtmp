@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.inject.Provide;
-import app.packed.sidecar.SidecarAssemble;
 import app.packed.statemachine.OnInitialize;
 
 /**
@@ -46,7 +45,5 @@ final class SidecarModelMethods {
             onInitialize = m;
         }
 
-        SidecarAssemble sa = m.getAnnotation(SidecarAssemble.class);
-        System.out.println(sa);
     }
 }

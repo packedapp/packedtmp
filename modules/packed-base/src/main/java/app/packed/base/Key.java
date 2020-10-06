@@ -253,7 +253,7 @@ public abstract class Key<T> {
      *            the qualifier name
      * @return the new key
      */
-    public final Key<T> withNameQualifier(String name) {
+    public final Key<T> withName(String name) {
         requireNonNull(name, "name is null");
         return withQualifier(Named.MAKER.make(name));
     }
@@ -268,7 +268,7 @@ public abstract class Key<T> {
         return qualifiers == null ? this : new CanonicalizedKey<>(typeLiteral, (Annotation[]) null);
     }
 
-    public final Key<T> withoutNameQualifier() {
+    public final Key<T> withoutName() {
         throw new UnsupportedOperationException();
     }
 

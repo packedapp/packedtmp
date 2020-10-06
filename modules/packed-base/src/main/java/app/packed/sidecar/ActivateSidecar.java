@@ -24,11 +24,11 @@ import java.lang.annotation.Target;
 
 /**
  *
- * @apiNote this interface is not {@link Documented}. Because we believe that how an extension chooses to xxx is
- *          implementation dependent
  */
 @Target(ElementType.TYPE)
 @Retention(RUNTIME)
+@Documented
+// Maybe split out into 3 annotations. Where sidecar is not @Documented
 public @interface ActivateSidecar {
 
     /**
@@ -38,6 +38,8 @@ public @interface ActivateSidecar {
      */
     SidecarActivationType[] activation();
 
+    SidecarPermit[] permits();
+
     // Tmp MethodSidecar
-    Class<? extends MethodSidecar>[] sidecar();
+    Class<? extends Sidecar>[] sidecar();
 }

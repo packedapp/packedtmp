@@ -23,7 +23,6 @@ import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.runtime.PackedService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 

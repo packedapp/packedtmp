@@ -18,16 +18,17 @@ package app.packed.sidecar;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.sidecar.MethodSidecarModel.MethodSidecarConfiguration;
+import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarModel;
 
 /**
  * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
  */
-public abstract class MethodSidecar {
+public abstract class MethodSidecar extends Sidecar {
 
     // Hver sidecar har sit eget context object...
     // Eneste maade at subclasses ikke kan faa fat it
@@ -36,7 +37,7 @@ public abstract class MethodSidecar {
 
     /** A sidecar configurations object. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private MethodSidecarConfiguration configuration;
+    private MethodSidecarModel.Builder configuration;
 
     protected void bootstrap(BootstrapContext context) {}
 
@@ -45,8 +46,8 @@ public abstract class MethodSidecar {
      * 
      * @return this sidecar's configuration object
      */
-    private MethodSidecarConfiguration configuration() {
-        MethodSidecarConfiguration c = configuration;
+    private MethodSidecarModel.Builder configuration() {
+        MethodSidecarModel.Builder c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -63,7 +64,7 @@ public abstract class MethodSidecar {
      * Provides the return type as a service
      */
     protected final void provideAsService() {
-
+        configuration().provideAsService();
     }
 
     /**
@@ -91,6 +92,14 @@ public abstract class MethodSidecar {
 
         /** Disables the sidecar for the particular method. No further processing will be done. */
         void disable();
+
+        Optional<Key<?>> key();
+
+        void provideAsService();
+
+        void provideAsService(Class<?> key);
+
+        void provideAsService(Key<?> key);
 
         Method method();
     }

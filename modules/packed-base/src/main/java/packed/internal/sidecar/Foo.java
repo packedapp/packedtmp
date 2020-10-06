@@ -31,6 +31,7 @@ import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.sidecar.SidecarActivationType;
+import app.packed.sidecar.SidecarPermit;
 import app.packed.statemachine.OnInitialize;
 
 /**
@@ -52,7 +53,7 @@ public class Foo extends BaseBundle {
 
     @Target(ElementType.METHOD)
     @Retention(RUNTIME)
-    @ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, sidecar = TestIt.class)
+    @ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, permits = SidecarPermit.METHOD_INVOKE, sidecar = TestIt.class)
     public @interface Hej {
 
     }
@@ -77,6 +78,7 @@ class TestIt extends MethodSidecar {
     @Override
     protected void configure() {
         provideInvoker();
+        System.out.println("CONF");
     }
 
     @Override

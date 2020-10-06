@@ -22,9 +22,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
+import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.SidecarPermit;
 import app.packed.sidecar.Opens;
 import app.packed.sidecar.Packlet;
+import app.packed.sidecar.SidecarActivationType;
+import packed.internal.inject.provide.ProvideMethodSidecar;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -77,7 +80,9 @@ import app.packed.sidecar.Packlet;
 @Packlet(extension = ServiceExtension.class)
 @ExtensionMember(ServiceExtension.class)
 @Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_SET })
-public @interface Provide {
+@ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, permits = { SidecarPermit.METHOD_INVOKE,
+        SidecarPermit.PROVIDE_SERVICE }, sidecar = ProvideMethodSidecar.class)
+public @interface Provide2 {
 
     /**
      * Indicates whether or not the provided value is a constant.

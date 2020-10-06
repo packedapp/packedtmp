@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.runtime;
+package packed.internal.inject.service.assembly;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,6 @@ import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
-import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** An implementation of {@link Service} because {@link ServiceAssembly} is not immutable. */
 public final class PackedService implements Service {

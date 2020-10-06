@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.sidecar.OpenMode;
+import app.packed.sidecar.SidecarPermit;
 import app.packed.sidecar.Opens;
 
 /**
@@ -31,7 +31,7 @@ import app.packed.sidecar.Opens;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Opens(to = { OpenMode.METHOD_INVOKE, OpenMode.FIELD_GET })
+@Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_GET })
 // Giver det mening at kunne injecte attributer??? Not sure
 
 // AttributeExpose syntes jeg... Vi har nok provide
