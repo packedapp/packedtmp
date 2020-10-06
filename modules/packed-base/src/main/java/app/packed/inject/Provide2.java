@@ -23,10 +23,9 @@ import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
 import app.packed.sidecar.ActivateSidecar;
-import app.packed.sidecar.SidecarPermit;
 import app.packed.sidecar.Opens;
-import app.packed.sidecar.Packlet;
 import app.packed.sidecar.SidecarActivationType;
+import app.packed.sidecar.SidecarPermit;
 import packed.internal.inject.provide.ProvideMethodSidecar;
 
 /**
@@ -77,7 +76,6 @@ import packed.internal.inject.provide.ProvideMethodSidecar;
 @Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Packlet(extension = ServiceExtension.class)
 @ExtensionMember(ServiceExtension.class)
 @Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_SET })
 @ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, permits = { SidecarPermit.METHOD_INVOKE,

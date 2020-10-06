@@ -43,6 +43,9 @@ import packed.internal.hook.MemberUnreflector;
 import packed.internal.hook.OnHook;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.sidecar.model.Model;
@@ -125,6 +128,11 @@ public final class SourceModel extends Model {
             }
             Injectable i = new Injectable(source, smm, dp);
             compConf.injectionManager().addInjectable(i);
+            if (smm.provideAskey != null) {
+                ServiceBuildManager sbm = compConf.injectionManager().services(true);
+                ServiceAssembly<?> sa = new AtProvideServiceAssembly<>(sbm, compConf, smm.provideAskey, i, smm.provideAsConstant);
+                sbm.addAssembly(sa);
+            }
         }
 
         // Tmp
@@ -162,7 +170,7 @@ public final class SourceModel extends Model {
     }
 
     /** A builder object for a component model. */
-    private static final class Builder {
+    static final class Builder {
 
         private final OpenClass cp;
 
@@ -171,11 +179,11 @@ public final class SourceModel extends Model {
         final RealmModel csm;
 
         /** A map of builders for every activated extension. */
-        private final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
+        final IdentityHashMap<Class<? extends Extension>, HookRequestBuilder> extensionBuilders = new IdentityHashMap<>();
 
-        private final ArrayList<SourceModelSidecarMethod> methods = new ArrayList<>();
+        final ArrayList<SourceModelSidecarMethod> methods = new ArrayList<>();
 
-        private final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
+        final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
 
         /**
          * Creates a new component model builder
@@ -288,12 +296,8 @@ public final class SourceModel extends Model {
                     }
 
                     SourceModelSidecarMethod smm = new SourceModelSidecarMethod(method, model, directMethodHandle);
-                    methods.add(smm);
+                    smm.bootstrap(this);
 
-                    Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
-                    if (keys != null) {
-                        globalServices.putAll(keys);
-                    }
                 }
             }
         }

@@ -62,13 +62,21 @@ public abstract class SidecarModel<T> {
         }
     };
 
+    private final Object instance;
+
+    public Object instance() {
+        return instance;
+    }
+
     /**
      * Creates a new model.
      * 
      * @param builder
      *            the builder.
      */
-    protected SidecarModel(Builder<T> builder) {}
+    protected SidecarModel(Builder<T> builder) {
+        this.instance = requireNonNull(builder.instance);
+    }
 
     public static SidecarModel<?> of(Class<?> implementation) {
         return CACHE.get(implementation);

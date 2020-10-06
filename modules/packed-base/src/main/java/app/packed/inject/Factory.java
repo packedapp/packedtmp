@@ -39,6 +39,7 @@ import packed.internal.classscan.util.ConstructorUtil;
 import packed.internal.hook.ModuleAccess;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.methodhandle.LookupUtil;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -322,15 +323,15 @@ public abstract class Factory<T> {
     }
 
     /**
-     * Returns a new factory that will perform the specified action after the factory has produced an object.
+     * Returns a new factory that will perform the specified action after the factory has produced an object. But before the
+     * instance is used anywhere.
      * 
      * @param action
-     *            the injection action
+     *            the post construction action
      * @return the new factory
      */
     public final Factory<T> postConstruction(Consumer<? super T> action) {
-        // Bare u
-        throw new UnsupportedOperationException();
+        return new PostConstructionFactory<>(this, action);
     }
 
     /**
@@ -346,6 +347,8 @@ public abstract class Factory<T> {
     }
 
 //    final boolean needsLookup() {
+    // Needs Realm?
+
 //        // Tror ikke rigtig den fungere...
 //        // Det skal jo vaere relativt til en klasse...
 //        // F.eks. hvis X en public klasse, med en public constructor.
@@ -731,6 +734,39 @@ public abstract class Factory<T> {
         @Override
         MethodHandle toMethodHandle(Lookup ignore) {
             return methodHandle;
+        }
+    }
+
+    /** A special factory created via {@link #withLookup(Lookup)}. */
+    private static final class PostConstructionFactory<T> extends Factory<T> {
+
+        /** A method handle for {@link Function#apply(Object)}. */
+        private static final MethodHandle ACCEPT = LookupUtil.lookupVirtualPublic(Consumer.class, "accept", void.class, Object.class);
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Factory<T> delegate;
+
+        /** The method handle that was unreflected. */
+        private final Consumer<? super T> action;
+
+        private PostConstructionFactory(Factory<T> delegate, Consumer<? super T> action) {
+            super(delegate.typeLiteral);
+            this.delegate = delegate;
+            this.action = requireNonNull(action, "action is null");
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        List<DependencyDescriptor> dependencies() {
+            return delegate.dependencies();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle toMethodHandle(Lookup ignore) {
+            System.out.println(ACCEPT);
+            System.out.println(action);
+            throw new UnsupportedOperationException();
         }
     }
 }

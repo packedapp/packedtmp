@@ -15,6 +15,8 @@
  */
 package packed.internal.inject.service.assembly;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
@@ -47,6 +49,13 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
         super(im, compConf.configSite().thenAnnotatedMember(ConfigSiteInjectOperations.INJECTOR_PROVIDE, ap.provides, ap.member), (Key) ap.key);
         this.injectable = new Injectable(compConf.source, this, ap);
         this.regionIndex = ap.isConstant() ? compConf.region.reserve() : -1;
+    }
+
+    @SuppressWarnings("unchecked")
+    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key, Injectable injectable, boolean isConst) {
+        super(im, compConf.configSite(), (Key<T>) key);
+        this.injectable = requireNonNull(injectable);
+        this.regionIndex = isConst ? compConf.region.reserve() : -1;
     }
 
     @Override

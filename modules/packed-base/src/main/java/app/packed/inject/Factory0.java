@@ -97,7 +97,7 @@ public abstract class Factory0<R> extends Factory<R> {
      *            the type we expect the supplier to return
      * @return the value that was supplied by the specified supplier
      * @throws FactoryException
-     *             if the created value is null or not of an expected type
+     *             if the created value is null or not assignable to the raw type of the factory
      */
     @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {

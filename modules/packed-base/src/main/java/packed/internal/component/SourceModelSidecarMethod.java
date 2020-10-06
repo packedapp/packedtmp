@@ -18,16 +18,22 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Map;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.introspection.MethodDescriptor;
+import app.packed.sidecar.MethodSidecar;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -42,6 +48,10 @@ import packed.internal.sidecar.SidecarDependencyProvider;
 
 public class SourceModelSidecarMethod extends SourceModelSidecarMember {
 
+    /** A MethodHandle that can invoke MethodSidecar#configure. */
+    private static final MethodHandle MH_METHOD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "bootstrap",
+            void.class, MethodSidecar.BootstrapContext.class);
+
     public final List<DependencyDescriptor> dependencies;
 
     /** A direct method handle to the method. */
@@ -53,6 +63,10 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
+
+    public Key<?> provideAskey;
+
+    public boolean provideAsConstant;
 
     SourceModelSidecarMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
         this.method = requireNonNull(method);
@@ -85,5 +99,60 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
         }
 
         return providers;
+    }
+
+    /**
+     * 
+     */
+    public void bootstrap(SourceModel.Builder b) {
+        MethodSidecarBootstrapContext c = new MethodSidecarBootstrapContext();
+        try {
+            MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), c);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        if (c.disable) {
+            return;
+        }
+        this.provideAsConstant = c.provideAsConstant;
+        this.provideAskey = c.provideAsKey;
+
+        b.methods.add(this);
+        Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
+        if (keys != null) {
+            b.globalServices.putAll(keys);
+        }
+    }
+
+    public final class MethodSidecarBootstrapContext implements MethodSidecar.BootstrapContext {
+
+        public boolean disable;
+
+        @Override
+        public void provideAsService(boolean isConstant) {
+            provideAsService(isConstant, Key.fromMethodReturnType(method));
+        }
+
+        @Override
+        public void provideAsService(boolean isConstant, Key<?> key) {
+            provideAsConstant = isConstant;
+            provideAsKey = key;
+        }
+
+        public Key<?> provideAsKey;
+
+        public boolean provideAsConstant;
+
+        /** {@inheritDoc} */
+        @Override
+        public void disable() {
+            this.disable = true;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Method method() {
+            return method;
+        }
     }
 }

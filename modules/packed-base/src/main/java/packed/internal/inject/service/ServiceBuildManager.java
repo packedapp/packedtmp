@@ -179,6 +179,11 @@ public final class ServiceBuildManager {
         p.add(pi);
     }
 
+    public void addAssembly(ServiceAssembly<?> a) {
+        requireNonNull(a);
+        assemblies.add(a);
+    }
+
     public <T> ServiceAssembly<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
         ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
         assemblies.add(e);

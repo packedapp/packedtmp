@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
@@ -145,27 +144,4 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         }
     }
 
-    public final class MethodSidecarBootstrapContext implements MethodSidecar.BootstrapContext {
-
-        public boolean disable;
-
-        Method method;
-
-        MethodSidecarBootstrapContext(Method method) {
-            this.method = method;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void disable() {
-            this.disable = true;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Method method() {
-            return null;
-        }
-
-    }
 }
