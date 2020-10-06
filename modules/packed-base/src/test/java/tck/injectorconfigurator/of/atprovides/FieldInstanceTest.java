@@ -28,15 +28,14 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
 import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
-/** Tests {@link Provide#constant()} on fields. */
+/** Tests {@link Provide2#constant()} on fields. */
 public class FieldInstanceTest {
 
-    /** Tests default {@link Provide#constant()} on instance fields. */
+    /** Tests default {@link Provide2#constant()} on instance fields. */
     @Test
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));

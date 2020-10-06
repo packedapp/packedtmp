@@ -63,19 +63,19 @@ public class MembersProvideTest {
 
     static class VisibilityNonStatic {
 
-        @Provide
+        @Provide2
         @StringQualifier("f_package")
         final String F_PACKAGE = "package_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("f_private")
         private final String F_PRIVATE = "private_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("f_protected")
         protected final String F_PROTECTED = "protected_f";
 
-        @Provide
+        @Provide2
         @StringQualifier("f_public")
         public final String F_PUBLIC = "public_f";
 

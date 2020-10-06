@@ -24,9 +24,7 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
-import app.packed.inject.Provide;
 import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
@@ -41,7 +39,7 @@ public class QualifierTest {
     public void cannotDefineSameProvidedKeys() {
 
         AbstractThrowableAssert<?, ?> at = assertThatThrownBy(() -> create(c -> c.provide(MultipleIdenticalQualifiedFieldKeys.class)));
-        at.isExactlyInstanceOf(InvalidDeclarationException.class);
+        at.isExactlyInstanceOf(IllegalStateException.class);
         at.hasNoCause();
         // TODO check message
 
@@ -94,18 +92,18 @@ public class QualifierTest {
 
     static class MultipleIdenticalQualifiedFieldKeys {
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("A")
         private Long A = 0L;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("A")
         private Long B = 0L;
     }
 
     static class MultipleIdenticalQualifiedMemberKeys {
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("A")
         private Long A = 0L;
 
@@ -137,15 +135,15 @@ public class QualifierTest {
         // @StringQualifier("A")
         // private static Long A;
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         @StringQualifier("B")
         private static Long B;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         @StringQualifier("C")
         private static Long C;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         private static Long L;
     }
 }

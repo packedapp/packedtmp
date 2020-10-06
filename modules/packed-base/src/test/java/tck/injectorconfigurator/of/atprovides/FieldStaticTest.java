@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
+import app.packed.inject.Provide2;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
@@ -34,7 +35,7 @@ import app.packed.service.InjectorAssembler;
  */
 public class FieldStaticTest {
 
-    /** Tests default {@link Provide#constant()} on static fields. */
+    /** Tests default {@link Provide2#constant()} on static fields. */
     @Test
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
@@ -43,7 +44,7 @@ public class FieldStaticTest {
         MixedFieldsInstantiable.test(c -> c.provide(Factory.of(new TypeLiteral<MixedFieldsInstantiable>() {})));
     }
 
-    /** Tests prototype {@link Provide#constant()} on static fields. */
+    /** Tests prototype {@link Provide2#constant()} on static fields. */
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
@@ -57,10 +58,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         private static Integer P;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         private static Short S;
 
         MixedFieldsInstantiable() {
@@ -103,10 +104,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide(constant = false)
+        @Provide2(constant = false)
         private static Integer P;
 
-        @Provide(constant = true)
+        @Provide2(constant = true)
         private static Short S;
 
         public MixedFieldsNoInstantiation() {
