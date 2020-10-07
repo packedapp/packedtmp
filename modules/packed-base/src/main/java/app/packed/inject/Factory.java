@@ -37,7 +37,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.VariableDescriptor;
-import packed.internal.classscan.ConstructorUtil;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.sidecar.ModuleAccess;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
@@ -583,7 +583,7 @@ public abstract class Factory<T> {
 
         private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
             super(key);
-            this.executable = ConstructorUtil.findInjectableIAE(findConstructorOn);
+            this.executable = FindInjectableConstructor.findInjectableIAE(findConstructorOn);
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 

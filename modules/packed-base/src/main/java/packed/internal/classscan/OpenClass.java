@@ -29,6 +29,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.NativeImage;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableConsumer;
@@ -81,7 +82,7 @@ public final class OpenClass {
     }
 
     public MethodHandle findConstructor(MethodHandleBuilder dim) {
-        Constructor<?> constructor = ConstructorUtil.findInjectableIAE(type);
+        Constructor<?> constructor = FindInjectableConstructor.findInjectableIAE(type);
         return new MethodHandleBuilderHelper(this, constructor, dim).find();
     }
 
@@ -242,6 +243,11 @@ public final class OpenClass {
         int decMod = m.getDeclaringClass().getModifiers();
         return !((Modifier.isPublic(decMod) || Modifier.isProtected(decMod)) && Modifier.isPublic(m.getModifiers()));
     }
+}
+
+//IDeen er at man kan specificere den til OpenClass...
+enum SourceModelX {
+    INJECT_ONLY, FULL;
 }
 // Check to see, if we need to use a private lookup
 

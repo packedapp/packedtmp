@@ -23,6 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 import app.packed.base.Key;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -75,7 +76,7 @@ public final class InstantiatorBuilder {
         TypeUtil.checkClassIsInstantiable(implementation);
         OpenClass oc = new OpenClass(lookup, implementation, true);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-        Constructor<?> constructor = ConstructorUtil.findInjectableIAE(implementation);
+        Constructor<?> constructor = FindInjectableConstructor.findInjectableIAE(implementation);
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
 

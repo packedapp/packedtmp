@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.inject;
 
 import static packed.internal.util.StringFormatter.format;
 
@@ -24,7 +24,7 @@ import java.util.function.Function;
 import app.packed.inject.Inject;
 
 /** A utility class for finding an injectable constructor. */
-public final class ConstructorUtil {
+public final class FindInjectableConstructor {
 
     /**
      * @param type
