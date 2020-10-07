@@ -19,8 +19,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -36,10 +38,8 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
-import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
@@ -205,9 +205,9 @@ public final class DependencyDescriptor {
      * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
      * dependency was not created from a member.
      * <p>
-     * If this dependency was created from a member this method will an optional containing either a {@link FieldDescriptor}
-     * in case of field injection, A {@link MethodDescriptor} in case of method injection or a {@link ConstructorDescriptor}
-     * in case of constructor injection.
+     * If this dependency was created from a member this method will an optional containing either a {@link Field} in case
+     * of field injection, A {@link Method} in case of method injection or a {@link Constructor} in case of constructor
+     * injection.
      * 
      * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         member.

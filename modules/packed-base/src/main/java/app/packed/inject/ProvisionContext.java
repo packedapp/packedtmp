@@ -19,10 +19,8 @@ import java.util.Optional;
 
 import app.packed.component.Component;
 import app.packed.container.Extension;
-import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
-import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
@@ -138,9 +136,6 @@ public interface ProvisionContext {
      * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
      * dependency was not created from a member.
      * <p>
-     * If this dependency was created from a member this method will an optional containing either a {@link FieldDescriptor}
-     * in case of field injection, A {@link MethodDescriptor} in case of method injection or a {@link ConstructorDescriptor}
-     * in case of constructor injection.
      * 
      * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         member.

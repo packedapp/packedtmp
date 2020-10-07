@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.MethodDescriptor;
 
 /**
@@ -119,9 +118,9 @@ class FactoryNewMethods {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Factory<T> fromConstructor(ConstructorDescriptor<T> constructor) {
-        throw new UnsupportedOperationException();
-    }
+//    public static <T> Factory<T> fromConstructor(Constructor<T> constructor) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Creates a factory by looking at the specified type for a constructor with the specified parameter types. For example,
@@ -139,7 +138,7 @@ class FactoryNewMethods {
      * @throws IllegalArgumentException
      *             if a constructor with the specified parameter types does not exist on the specified type
      */
-    public static <T> Factory<T> fromConstructor(ConstructorDescriptor<T> constructor, Key<T> key) {
+    public static <T> Factory<T> fromConstructor(Constructor<T> constructor, Key<T> key) {
         throw new UnsupportedOperationException();
     }
 
