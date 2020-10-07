@@ -41,17 +41,17 @@ public final class ContainerAssembly {
     public final ComponentNodeConfiguration compConf;
 
     /** All used extensions, in order of registration. */
-    public final IdentityHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
 
     public final InjectionManager im;
 
-    /** Any parent container this container might have */
+    /** Any parent container this container might have. */
     @Nullable
     public final ContainerAssembly parent;
 
-    ArrayList<ExtensionAssembly> tmpExtension;
+    private ArrayList<ExtensionAssembly> tmpExtension;
 
     @Nullable
     private Boolean isImage;
@@ -67,7 +67,6 @@ public final class ContainerAssembly {
         this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
         if (parent != null) {
             parent.runPredContainerChildren();
-
             ArrayList<ContainerAssembly> c = parent.children;
             if (c == null) {
                 c = parent.children = new ArrayList<>();
@@ -140,15 +139,17 @@ public final class ContainerAssembly {
             return;
         }
         hasRunPreContainerChildren = true;
+        if (extensions.isEmpty()) {
+            return;
+        }
         // We have a problem here... We need to
         // keep track of extensions that are added in this step..
         // And run ea.preContainerChildren on them...
         // And then repeat until some list/set has not been touched...
-        if (!extensions.isEmpty()) {
-            for (ExtensionAssembly ea : extensions.values()) {
-                ea.preContainerChildren();
-            }
+        for (ExtensionAssembly ea : extensions.values()) {
+            ea.preContainerChildren();
         }
+
         while (tmpExtension != null) {
             ArrayList<ExtensionAssembly> te = tmpExtension;
             tmpExtension = null;
@@ -156,7 +157,6 @@ public final class ContainerAssembly {
                 ea.preContainerChildren();
             }
         }
-
     }
 
     /**
