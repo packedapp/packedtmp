@@ -22,6 +22,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
+import app.packed.sidecar.ActivateFieldSidecar;
+import app.packed.sidecar.ActivateMethodSidecar;
+import packed.internal.inject.provide.ProvideFieldSidecar;
+import packed.internal.inject.provide.ProvideMethodSidecar;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -72,6 +76,8 @@ import app.packed.container.ExtensionMember;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ExtensionMember(ServiceExtension.class)
+@ActivateMethodSidecar(allowInvoke = true, sidecar = ProvideMethodSidecar.class)
+@ActivateFieldSidecar(allowGet = true, sidecar = ProvideFieldSidecar.class)
 public @interface Provide {
 
     /**

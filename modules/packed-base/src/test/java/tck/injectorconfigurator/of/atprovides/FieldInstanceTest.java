@@ -28,14 +28,14 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide2;
+import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
-/** Tests {@link Provide2#constant()} on fields. */
+/** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {
 
-    /** Tests default {@link Provide2#constant()} on instance fields. */
+    /** Tests default {@link Provide#constant()} on instance fields. */
     @Test
     public void provide() {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
@@ -144,10 +144,10 @@ public class FieldInstanceTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
 
-        @Provide2(constant = false)
+        @Provide(constant = false)
         Integer p = 1;
 
-        @Provide2(constant = true)
+        @Provide(constant = true)
         Short s = 1;
 
         static void test(Consumer<? super InjectorAssembler> configurator) {
@@ -173,7 +173,7 @@ public class FieldInstanceTest {
 
     static class PrototypeField {
 
-        @Provide2(constant = false)
+        @Provide(constant = false)
         Short s = 1;
 
         PrototypeField(AtomicBoolean b) {
@@ -183,7 +183,7 @@ public class FieldInstanceTest {
 
     static class SingletonField {
 
-        @Provide2(constant = true)
+        @Provide(constant = true)
         Short s = 1;
 
         SingletonField(AtomicBoolean b) {

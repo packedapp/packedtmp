@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.provide;
 
-import app.packed.inject.Provide2;
+import app.packed.inject.Provide;
 import app.packed.sidecar.FieldSidecar;
 
 /**
@@ -25,7 +25,7 @@ public final class ProvideFieldSidecar extends FieldSidecar {
 
     @Override
     protected void bootstrap(BootstrapContext context) {
-        Provide2 p2 = context.getAnnotation(Provide2.class);
+        Provide p2 = context.getAnnotation(Provide.class);
         context.provideAsService(p2.constant());
     }
 }

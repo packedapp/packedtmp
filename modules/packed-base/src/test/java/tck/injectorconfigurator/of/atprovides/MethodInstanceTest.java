@@ -28,14 +28,14 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide2;
+import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
-/** Tests {@link Provide2#constant()}. */
+/** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
 
-    /** Tests default {@link Provide2#constant()} on instance methods. */
+    /** Tests default {@link Provide#constant()} on instance methods. */
     @Test
     public void provide() {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
@@ -109,12 +109,12 @@ public class MethodInstanceTest {
         // return l;
         // }
 
-        @Provide2(constant = false)
+        @Provide(constant = false)
         Integer p() {
             return p;
         }
 
-        @Provide2(constant = true)
+        @Provide(constant = true)
         Short s() {
             return s;
         }
@@ -149,7 +149,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide2(constant = false)
+        @Provide(constant = false)
         public Short s() {
             return s;
         }
@@ -163,7 +163,7 @@ public class MethodInstanceTest {
             b.set(true);
         }
 
-        @Provide2(constant = true)
+        @Provide(constant = true)
         public Short s() {
             return s;
         }

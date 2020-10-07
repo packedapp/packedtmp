@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Key;
-import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  *

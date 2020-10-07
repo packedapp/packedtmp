@@ -32,9 +32,9 @@ import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.InjectionManager;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Dependant;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.

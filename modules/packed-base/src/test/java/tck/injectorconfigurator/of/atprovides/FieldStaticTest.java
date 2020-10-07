@@ -24,17 +24,17 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeLiteral;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide2;
+import app.packed.inject.Provide;
 import app.packed.service.Injector;
 import app.packed.service.InjectorAssembler;
 
 /**
- * Tests {@link Provide2#constant()} on static fields. In general we do not need to create an instance of the parent if
- * we have static {@link Provide2} fields. Unlike for instance fields.
+ * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
+ * we have static {@link Provide} fields. Unlike for instance fields.
  */
 public class FieldStaticTest {
 
-    /** Tests default {@link Provide2#constant()} on static fields. */
+    /** Tests default {@link Provide#constant()} on static fields. */
     @Test
     public void provide() {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
@@ -43,7 +43,7 @@ public class FieldStaticTest {
         MixedFieldsInstantiable.test(c -> c.provide(Factory.of(new TypeLiteral<MixedFieldsInstantiable>() {})));
     }
 
-    /** Tests prototype {@link Provide2#constant()} on static fields. */
+    /** Tests prototype {@link Provide#constant()} on static fields. */
     @Test
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
@@ -57,10 +57,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide2(constant = false)
+        @Provide(constant = false)
         private static Integer P;
 
-        @Provide2(constant = true)
+        @Provide(constant = true)
         private static Short S;
 
         MixedFieldsInstantiable() {
@@ -103,10 +103,10 @@ public class FieldStaticTest {
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
 
-        @Provide2(constant = false)
+        @Provide(constant = false)
         private static Integer P;
 
-        @Provide2(constant = true)
+        @Provide(constant = true)
         private static Short S;
 
         public MixedFieldsNoInstantiation() {
