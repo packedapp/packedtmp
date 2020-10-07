@@ -17,18 +17,19 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Function;
+
 import app.packed.inject.ProvisionContext;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
-/**
- * A delegating runtime service node.
- * <p>
- * This type is used for exported nodes as well as nodes that are imported from other containers.
- */
-public final class DelegatingInjectorEntry<T> extends RuntimeService<T> {
+/** A runtime service entry that uses a {@link Function} to map an existing service. */
+public final class MappingRuntimeService<F, T> extends RuntimeService<T> {
 
-    /** The runtime node to delegate to. */
-    private final RuntimeService<T> delegate;
+    /** The runtime entry whose service should mapped. */
+    private final RuntimeService<F> delegate;
+
+    /** The function that maps the service. */
+    private final Function<? super F, ? extends T> function;
 
     /**
      * Creates a new runtime alias node.
@@ -36,21 +37,28 @@ public final class DelegatingInjectorEntry<T> extends RuntimeService<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingInjectorEntry(ServiceAssembly<T> buildNode, RuntimeService<T> delegate) {
+    public MappingRuntimeService(ServiceAssembly<T> buildNode, RuntimeService<F> delegate, Function<? super F, ? extends T> function) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
+        this.function = requireNonNull(function);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T getInstance(ProvisionContext site) {
+        F f = delegate.getInstance(site);
+        T t = function.apply(f);
+        // TODO Check Type, and not null
+        // Throw Provision Exception????
+        // Every node
+        // Vi bliver vel ogsaa noedt til at checke det for en build entry....
+        return t;
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
         return delegate.isConstant();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(ProvisionContext site) {
-        return delegate.getInstance(site);
     }
 
     /** {@inheritDoc} */

@@ -17,50 +17,45 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.inject.ProvisionContext;
-import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.util.ThrowableUtil;
 
-/** A runtime service node for prototypes. */
-public class PrototypeInjectorEntry<T> extends RuntimeService<T> {
+/**
+ * A delegating runtime service node.
+ * <p>
+ * This type is used for exported nodes as well as nodes that are imported from other containers.
+ */
+public final class DelegatingRuntimeService<T> extends RuntimeService<T> {
 
-    /** The method handle used to create new instances. */
-    private final MethodHandle mh;
-
-    /** The region used when creating new instances. */
-    private final RuntimeRegion region;
+    /** The runtime node to delegate to. */
+    private final RuntimeService<T> delegate;
 
     /**
-     * @param service
+     * Creates a new runtime alias node.
+     *
+     * @param delegate
+     *            the build time alias node to create a runtime node from
      */
-    public PrototypeInjectorEntry(ServiceAssembly<T> service, RuntimeRegion region, MethodHandle mh) {
-        super(service);
-        this.region = requireNonNull(region);
-        this.mh = requireNonNull(mh);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public T getInstance(ProvisionContext site) {
-        try {
-            return (T) mh.invoke(region);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+    public DelegatingRuntimeService(ServiceAssembly<T> buildNode, RuntimeService<T> delegate) {
+        super(buildNode);
+        this.delegate = requireNonNull(delegate);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return false;
+        return delegate.isConstant();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T getInstance(ProvisionContext site) {
+        return delegate.getInstance(site);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean requiresPrototypeRequest() {
-        return false;
+        return delegate.requiresPrototypeRequest();
     }
 }

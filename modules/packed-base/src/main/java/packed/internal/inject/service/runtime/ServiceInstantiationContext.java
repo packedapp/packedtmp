@@ -25,7 +25,7 @@ import packed.internal.inject.service.assembly.ServiceAssembly;
 /** A special instantiation context that is created */
 // Vi beholder den lidt endnu, det saa traels hver gang vi
 // laver aendringer, hvis vi bare sender Region+IHM rundt
-public class ServiceInstantiationContext {
+public final class ServiceInstantiationContext {
 
     public final RuntimeRegion region;
 

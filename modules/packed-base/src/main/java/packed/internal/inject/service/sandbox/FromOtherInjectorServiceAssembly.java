@@ -23,7 +23,7 @@ import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
+import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -45,7 +45,7 @@ final class FromOtherInjectorServiceAssembly<T> extends ServiceAssembly<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingInjectorEntry<T>(this, entry);
+        return new DelegatingRuntimeService<T>(this, entry);
     }
 
     @Override

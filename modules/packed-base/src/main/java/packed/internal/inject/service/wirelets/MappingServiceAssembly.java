@@ -26,7 +26,7 @@ import app.packed.config.ConfigSite;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.MappingInjectorEntry;
+import packed.internal.inject.service.runtime.MappingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -50,7 +50,7 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new MappingInjectorEntry<>(this, entryToMap.toRuntimeEntry(context), function);
+        return new MappingRuntimeService<>(this, entryToMap.toRuntimeEntry(context), function);
     }
 
     @Override

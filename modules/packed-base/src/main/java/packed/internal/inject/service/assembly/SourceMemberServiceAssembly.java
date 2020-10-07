@@ -24,7 +24,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
-import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
+import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -69,7 +69,7 @@ public class SourceMemberServiceAssembly<T> extends ServiceAssembly<T> {
         if (isConstant()) {
             return new ConstantRuntimeService<>(this, context.region, regionIndex);
         } else {
-            return new PrototypeInjectorEntry<>(this, context.region, dependencyAccessor());
+            return new PrototypeRuntimeService<>(this, context.region, dependencyAccessor());
         }
     }
 

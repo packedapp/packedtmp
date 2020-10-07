@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
@@ -39,10 +41,10 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.assembly.SourceInstanceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.ExportedServiceLocator;
+import packed.internal.inject.service.assembly.SourceInstanceServiceAssembly;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -249,6 +251,43 @@ public final class ServiceBuildManager {
                     sm.children.add(this);
                 }
             }
+        }
+    }
+
+    private static final class ExportedServiceLocator extends AbstractServiceLocator {
+
+        private final ComponentNode component;
+
+        /** All services that this injector provides. */
+        private final Map<Key<?>, RuntimeService<?>> services;
+
+        private ExportedServiceLocator(ComponentNode component, Map<Key<?>, RuntimeService<?>> services) {
+            this.services = requireNonNull(services);
+            this.component = requireNonNull(component);
+        }
+
+        @Override
+        protected String failedToUseMessage(Key<?> key) {
+            // /child [ss.BaseMyBundle] does not export a service with the specified key
+
+            // FooBundle does not export a service with the key
+            // It has an internal service. Maybe you forgot to export it()
+            // Is that breaking encapsulation
+
+            return "'" + component.path() + "' does not export a service with the specified key, key = " + key;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        @Nullable
+        protected <T> RuntimeService<T> getService(Key<T> key) {
+            return (RuntimeService<T>) services.get(key);
+        }
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @Override
+        protected Map<Key<?>, Service> services() {
+            return (Map) services;
         }
     }
 
