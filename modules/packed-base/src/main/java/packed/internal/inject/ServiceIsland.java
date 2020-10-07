@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.component.AssemblyException;
 import packed.internal.component.RegionAssembly;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /** A utility class that can find cycles in a dependency graph. */
@@ -54,15 +54,15 @@ final class ServiceIsland {
     }
 
     private static DependencyCycle dependencyCyclesFind(RegionAssembly region, InjectionManager im) {
-        ArrayDeque<Injectable> stack = new ArrayDeque<>();
-        ArrayDeque<Injectable> dependencies = new ArrayDeque<>();
+        ArrayDeque<Dependant> stack = new ArrayDeque<>();
+        ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, im);
     }
 
-    private static DependencyCycle dependencyCyclesFind(ArrayDeque<Injectable> stack, ArrayDeque<Injectable> dependencies, RegionAssembly region,
+    private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, RegionAssembly region,
             InjectionManager im) {
-        for (Injectable node : im.injectables) {
+        for (Dependant node : im.injectables) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
@@ -93,8 +93,8 @@ final class ServiceIsland {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private static DependencyCycle detectCycle(RegionAssembly region, Injectable injectable, ArrayDeque<Injectable> stack,
-            ArrayDeque<Injectable> dependencies) {
+    private static DependencyCycle detectCycle(RegionAssembly region, Dependant injectable, ArrayDeque<Dependant> stack,
+            ArrayDeque<Dependant> dependencies) {
         DependencyProvider[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);
@@ -102,7 +102,7 @@ final class ServiceIsland {
                 DependencyProvider dependency = deps[i];
 
                 if (dependency != null) {
-                    Injectable next = dependency.getInjectable();
+                    Dependant next = dependency.getInjectable();
                     if (next != null) {
                         if (next.needsPostProcessing) {
                             dependencies.push(next);
@@ -134,9 +134,9 @@ final class ServiceIsland {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<Injectable> dependencies;
+        final ArrayDeque<Dependant> dependencies;
 
-        DependencyCycle(ArrayDeque<Injectable> dependencies) {
+        DependencyCycle(ArrayDeque<Dependant> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 

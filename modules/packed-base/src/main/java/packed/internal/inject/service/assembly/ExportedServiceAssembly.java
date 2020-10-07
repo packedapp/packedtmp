@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -83,7 +83,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
 
     @Override
     @Nullable
-    public Injectable getInjectable() {
+    public Dependant getInjectable() {
         return exportedEntry.getInjectable();
     }
 

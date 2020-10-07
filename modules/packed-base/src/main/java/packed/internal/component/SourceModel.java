@@ -32,7 +32,7 @@ import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.container.RealmModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
@@ -105,7 +105,7 @@ public final class SourceModel extends Model {
             if (smm.isInstanceMethod()) {
                 dp[0] = source;
             }
-            Injectable i = new Injectable(source, smm, dp);
+            Dependant i = new Dependant(source, smm, dp);
             compConf.injectionManager().addInjectable(i);
 
         }
@@ -114,7 +114,7 @@ public final class SourceModel extends Model {
             if (smm.isInstanceMethod()) {
                 dp[0] = source;
             }
-            Injectable i = new Injectable(source, smm, dp);
+            Dependant i = new Dependant(source, smm, dp);
             compConf.injectionManager().addInjectable(i);
         }
 

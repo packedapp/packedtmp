@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 import app.packed.base.Key;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 
 /**
  *
@@ -40,7 +40,7 @@ class Requirement {
         this.key = key;
     }
 
-    void missingDependency(Injectable i, int dependencyIndex, DependencyDescriptor d) {
+    void missingDependency(Dependant i, int dependencyIndex, DependencyDescriptor d) {
         if (!d.isOptional()) {
             isOptional = false;
         }
@@ -48,11 +48,11 @@ class Requirement {
     }
 
     static class FromInjectable {
-        final Injectable i;
+        final Dependant i;
         final int dependencyIndex;
         final DependencyDescriptor d;
 
-        FromInjectable(Injectable i, int dependencyIndex, DependencyDescriptor d) {
+        FromInjectable(Dependant i, int dependencyIndex, DependencyDescriptor d) {
             this.i = requireNonNull(i);
             this.dependencyIndex = dependencyIndex;
             this.d = d;

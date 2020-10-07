@@ -18,7 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -35,7 +35,7 @@ public final class RegionAssembly {
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
     // For now written by DependencyCycleDetector via BFS
-    public final ArrayList<Injectable> regionStores = new ArrayList<>();
+    public final ArrayList<Dependant> regionStores = new ArrayList<>();
 
     private int nextIndex;
 
@@ -57,7 +57,7 @@ public final class RegionAssembly {
         // All constants that must be instantiated and stored
         // Order here is very important. As for every constant.
         // Its dependencies are guaranteed to have been already stored
-        for (Injectable injectable : regionStores) {
+        for (Dependant injectable : regionStores) {
             MethodHandle mh = injectable.buildMethodHandle();
 
             Object instance;

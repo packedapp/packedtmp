@@ -55,7 +55,7 @@ public abstract class Factory0<R> extends Factory<R> {
     /** A method handle for invoking {@link #create(Supplier, Class)}. */
     private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
 
-    /** The method handle responsible for providing the actual values. Eagerly created. */
+    /** The method handle responsible for providing the actual values. */
     private final MethodHandle methodHandle;
 
     /**

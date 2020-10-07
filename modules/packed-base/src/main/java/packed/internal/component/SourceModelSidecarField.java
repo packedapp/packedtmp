@@ -23,7 +23,6 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
@@ -32,6 +31,7 @@ import app.packed.sidecar.FieldSidecar;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.methodhandle.LookupUtil;
+import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.util.ThrowableUtil;
@@ -53,8 +53,6 @@ public class SourceModelSidecarField extends SourceModelSidecarMember {
     private static final MethodHandle MH_FIELD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldSidecar.class, "bootstrap",
             void.class, FieldSidecar.BootstrapContext.class);
 
-    public final List<DependencyDescriptor> dependencies;
-
     /** A direct method handle to the method. */
     public final VarHandle directMethodHandle;
 
@@ -64,6 +62,12 @@ public class SourceModelSidecarField extends SourceModelSidecarMember {
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
+
+    /** {@inheritDoc} */
+    @Override
+    public int getModifiers() {
+        return field.getModifiers();
+    }
 
     SourceModelSidecarField(Field method, FieldSidecarModel model, VarHandle mh) {
         this.field = requireNonNull(method);
@@ -152,5 +156,11 @@ public class SourceModelSidecarField extends SourceModelSidecarMember {
         public Field field() {
             return field;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle methodHandle() {
+        return MethodHandleUtil.getFromField(field, directMethodHandle);
     }
 }

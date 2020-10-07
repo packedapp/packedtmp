@@ -15,9 +15,13 @@
  */
 package packed.internal.component;
 
+import java.lang.invoke.MethodHandle;
+import java.util.List;
+
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.SourceModelSidecarMethod.RunAt;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  *
@@ -29,6 +33,8 @@ public abstract class SourceModelSidecarMember {
 
     public boolean provideAsConstant;
 
+    public List<DependencyDescriptor> dependencies;
+
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
     // Jeg tror man loeber alle parameterene igennem og ser om der
@@ -36,4 +42,7 @@ public abstract class SourceModelSidecarMember {
     // Saa man sidecar providen dertil.
 
     // Sidecar provideren tager i oevrigt RegionAssembly
+    public abstract int getModifiers();
+
+    public abstract MethodHandle methodHandle();
 }

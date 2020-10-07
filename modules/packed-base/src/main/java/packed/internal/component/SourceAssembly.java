@@ -25,7 +25,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
@@ -45,7 +45,7 @@ public final class SourceAssembly implements DependencyProvider {
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
-    final Injectable injectable;
+    final Dependant injectable;
 
     /** If the source represents an instance. */
     @Nullable
@@ -92,7 +92,7 @@ public final class SourceAssembly implements DependencyProvider {
                 throw ThrowableUtil.orUndeclared(e);
             }
 
-            this.injectable = new Injectable(this, dependencies, mh);
+            this.injectable = new Dependant(this, dependencies, mh);
         }
     }
 
@@ -111,7 +111,7 @@ public final class SourceAssembly implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Injectable getInjectable() {
+    public Dependant getInjectable() {
         return injectable;
     }
 

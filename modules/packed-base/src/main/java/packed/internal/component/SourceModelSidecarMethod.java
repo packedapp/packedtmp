@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
@@ -50,8 +49,6 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
     /** A MethodHandle that can invoke MethodSidecar#configure. */
     private static final MethodHandle MH_METHOD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "bootstrap",
             void.class, MethodSidecar.BootstrapContext.class);
-
-    public final List<DependencyDescriptor> dependencies;
 
     /** A direct method handle to the method. */
     public final MethodHandle directMethodHandle;
@@ -146,5 +143,17 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
         public Method method() {
             return method;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getModifiers() {
+        return method.getModifiers();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle methodHandle() {
+        return directMethodHandle;
     }
 }

@@ -29,7 +29,6 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
-import packed.internal.component.SourceModelSidecarField;
 import packed.internal.component.SourceModelSidecarMember;
 import packed.internal.component.SourceModelSidecarMethod;
 import packed.internal.component.SourceModelSidecarMethod.RunAt;
@@ -37,7 +36,6 @@ import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
 /**
@@ -60,7 +58,7 @@ import packed.internal.sidecar.RuntimeRegionInvoker;
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
 // Something with dependencis
-public class Injectable {
+public class Dependant {
 
     @Nullable
     private final AtProvideServiceAssembly<?> service;
@@ -78,15 +76,15 @@ public class Injectable {
     /** Resolved dependencies. Must match the number of parameters in {@link #directMethodHandle}. */
     public final DependencyProvider[] providers;
 
-    /** The source (component) this injectable belongs to. */
+    /** The source (component) this dependent is or is a part of. */
     public final SourceAssembly source;
 
     @Nullable
-    public final SourceModelSidecarMember sourceMember;
+    private final SourceModelSidecarMember sourceMember;
 
     public final int providerDelta;
 
-    public Injectable(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public Dependant(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -98,12 +96,12 @@ public class Injectable {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Injectable(SourceAssembly source, SourceModelSidecarMethod smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(SourceAssembly source, SourceModelSidecarMember smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.method.getModifiers()) && source.regionIndex == -1) {
+            if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new InvalidDeclarationException("Not okay)");
             }
 
@@ -114,29 +112,7 @@ public class Injectable {
             this.service = null;
         }
         this.dependencies = smm.dependencies;
-        this.directMethodHandle = smm.directMethodHandle;
-
-        this.providers = dependencyProviders;
-        this.providerDelta = providers.length == dependencies.size() ? 0 : 1;
-    }
-
-    public Injectable(SourceAssembly source, SourceModelSidecarField smm, DependencyProvider[] dependencyProviders) {
-        this.source = requireNonNull(source);
-        this.sourceMember = requireNonNull(smm);
-
-        if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.field.getModifiers()) && source.regionIndex == -1) {
-                throw new InvalidDeclarationException("Not okay)");
-            }
-
-            ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
-            ServiceAssembly<?> sa = this.service = new AtProvideServiceAssembly<>(sbm, source.compConf, smm.provideAskey, this, smm.provideAsConstant);
-            sbm.addAssembly(sa);
-        } else {
-            this.service = null;
-        }
-        this.dependencies = smm.dependencies;
-        this.directMethodHandle = MethodHandleUtil.getFromField(smm.field, smm.directMethodHandle);
+        this.directMethodHandle = smm.methodHandle();
 
         this.providers = dependencyProviders;
         this.providerDelta = providers.length == dependencies.size() ? 0 : 1;

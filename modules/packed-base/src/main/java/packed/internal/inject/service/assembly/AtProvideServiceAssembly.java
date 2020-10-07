@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
@@ -33,20 +33,20 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
 
-    private final Injectable injectable;
+    private final Dependant injectable;
 
     /** If constant, the region index to store it in */
     public final int regionIndex;
 
     @SuppressWarnings("unchecked")
-    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key, Injectable injectable, boolean isConst) {
+    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key, Dependant injectable, boolean isConst) {
         super(im, compConf.configSite(), (Key<T>) key);
         this.injectable = requireNonNull(injectable);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;
     }
 
     @Override
-    public Injectable getInjectable() {
+    public Dependant getInjectable() {
         return injectable;
     }
 

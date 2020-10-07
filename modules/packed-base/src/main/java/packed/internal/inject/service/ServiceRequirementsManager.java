@@ -34,7 +34,7 @@ import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.
@@ -125,7 +125,7 @@ public final class ServiceRequirementsManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager im, Injectable entry, int index, DependencyDescriptor dependency,
+    public void recordResolvedDependency(InjectionManager im, Dependant entry, int index, DependencyDescriptor dependency,
             @Nullable DependencyProvider resolvedTo, boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);

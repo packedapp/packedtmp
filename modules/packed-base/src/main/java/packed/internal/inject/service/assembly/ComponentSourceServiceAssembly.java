@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.SourceAssembly;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeInjectorEntry;
@@ -50,7 +50,7 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Injectable getInjectable() {
+    public Dependant getInjectable() {
         return source.getInjectable();
     }
 

@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /**
@@ -33,7 +33,7 @@ import packed.internal.inject.service.ServiceBuildManager;
 public final class InjectionManager {
 
     /** All injectables that needs to be resolved. */
-    final ArrayList<Injectable> injectables = new ArrayList<>();
+    final ArrayList<Dependant> injectables = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
     public final ContainerAssembly container;
@@ -67,7 +67,7 @@ public final class InjectionManager {
      * @param injectable
      *            the injectable to add
      */
-    public void addInjectable(Injectable injectable) {
+    public void addInjectable(Dependant injectable) {
         injectables.add(requireNonNull(injectable));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
@@ -88,7 +88,7 @@ public final class InjectionManager {
             sbm.resolveLocal();
         }
 
-        for (Injectable i : injectables) {
+        for (Dependant i : injectables) {
             i.resolve(this);
         }
 

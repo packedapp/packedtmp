@@ -21,7 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -49,7 +49,7 @@ final class FromOtherInjectorServiceAssembly<T> extends ServiceAssembly<T> {
 
     @Override
     @Nullable
-    public Injectable getInjectable() {
+    public Dependant getInjectable() {
         throw new UnsupportedOperationException();
     }
 

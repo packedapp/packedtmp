@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.Injectable;
+import packed.internal.inject.dependency.Dependant;
 
 /**
  *
@@ -32,7 +32,7 @@ class ServiceDependencyRequirement {
     final DependencyDescriptor dependency;
 
     @Nullable
-    final Injectable entry;
+    final Dependant entry;
 
     ServiceDependencyRequirement(DependencyDescriptor dependency, ConfigSite configSite) {
         this.dependency = requireNonNull(dependency, "dependency is null");
@@ -40,7 +40,7 @@ class ServiceDependencyRequirement {
         this.entry = null;
     }
 
-    ServiceDependencyRequirement(DependencyDescriptor dependency, Injectable entry) {
+    ServiceDependencyRequirement(DependencyDescriptor dependency, Dependant entry) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.configSite = null;
         this.entry = entry;
