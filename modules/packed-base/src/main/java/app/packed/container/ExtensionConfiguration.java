@@ -54,6 +54,7 @@ public interface ExtensionConfiguration {
 
     // ComponentAttributes
 
+    // Thinking about removing this
     AssemblyContext assembly();
 
     /**

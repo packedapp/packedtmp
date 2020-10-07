@@ -52,6 +52,8 @@ public final class ContainerAssembly {
     public final ContainerAssembly parent;
 
     ArrayList<ExtensionAssembly> tmpExtension;
+    @Nullable
+    private Boolean isImage;
 
     /**
      * Creates a new container
@@ -80,6 +82,21 @@ public final class ContainerAssembly {
         }
     }
 
+    public boolean isPartOfImage() {
+        Boolean b = isImage;
+        if (b != null) {
+            return b;
+        }
+        ComponentNodeConfiguration cc = compConf.getParent();
+        while (cc != null) {
+            if (cc.modifiers().isImage()) {
+                return isImage = Boolean.TRUE;
+            }
+            cc = cc.getParent();
+        }
+        return isImage = Boolean.FALSE;
+    }
+
     /**
      * Returns a set view of the extension registered with this container.
      * 
@@ -95,7 +112,7 @@ public final class ContainerAssembly {
         }
         TreeSet<ExtensionAssembly> extensionsOrdered = new TreeSet<>(extensions.values());
         for (ExtensionAssembly pec : extensionsOrdered) {
-            pec.completed();
+            pec.complete();
         }
 
         im.build(region);
