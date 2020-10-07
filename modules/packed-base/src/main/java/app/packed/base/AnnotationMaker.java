@@ -46,7 +46,7 @@ public class AnnotationMaker<T extends Annotation> {
     }
 
     public T make(Object value) {
-        throw new UnsupportedOperationException();
+        return make("value", value);
     }
 
     public T make(String name, Object value) {

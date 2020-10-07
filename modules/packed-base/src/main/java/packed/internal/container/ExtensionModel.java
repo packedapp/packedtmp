@@ -151,6 +151,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
      */
     private ExtensionModel(Builder builder) {
         super(builder);
+        this.constructor = builder.constructor;
         this.id = builder.id;
         this.depth = builder.depth;
 
@@ -167,6 +168,9 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;
     }
+
+    /** A method handle for creating a new sidecar instance. */
+    protected final MethodHandle constructor;
 
     /** {@inheritDoc} */
     @Override
@@ -432,11 +436,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
                 li = iss.build(cp, linked);
             }
             return new ExtensionModel(this);
-        }
-
-        @Override
-        protected void decorateOnSidecar(MethodHandleBuilder builder) {
-            addExtensionContextElements(builder, 1);
         }
 
         @Override
