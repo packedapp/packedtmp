@@ -23,8 +23,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 import app.packed.base.Key;
-import packed.internal.classscan.invoke.MethodHandleBuilder;
-import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.util.TypeUtil;
 
 /**

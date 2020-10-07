@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /**

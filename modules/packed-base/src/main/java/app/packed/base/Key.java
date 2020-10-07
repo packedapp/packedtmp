@@ -357,7 +357,7 @@ public abstract class Key<T> {
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     public static Key<?> fromField(Field field) {
         TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
-        Annotation[] annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
@@ -379,14 +379,14 @@ public abstract class Key<T> {
             throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
         TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
-        Annotation[] annotation = QualifierHelper.findQualifier(method, method.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
     public static Key<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
         TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
-        Annotation[] annotation = QualifierHelper.findQualifier(parameter, parameter.getAnnotations());
+        Annotation[] annotation = QualifierHelper.findQualifier(parameter.getAnnotations());
         return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
 
@@ -449,7 +449,7 @@ public abstract class Key<T> {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
-        Annotation[] qa = QualifierHelper.findQualifier(pta, annotations);
+        Annotation[] qa = QualifierHelper.findQualifier(annotations);
         return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 

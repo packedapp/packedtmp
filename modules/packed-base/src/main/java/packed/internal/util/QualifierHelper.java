@@ -18,7 +18,6 @@ package packed.internal.util;
 import static packed.internal.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
@@ -39,7 +38,7 @@ public final class QualifierHelper {
     }
 
     @Nullable
-    public static Annotation[] findQualifier(AnnotatedElement element, Annotation[] annotations) {
+    public static Annotation[] findQualifier(Annotation[] annotations) {
         Annotation[] qualifiers = null;
         for (Annotation a : annotations) {
             Class<? extends Annotation> annotationType = a.annotationType();

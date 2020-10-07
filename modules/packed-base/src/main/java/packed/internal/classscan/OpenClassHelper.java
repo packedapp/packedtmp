@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan.invoke;
+package packed.internal.classscan;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

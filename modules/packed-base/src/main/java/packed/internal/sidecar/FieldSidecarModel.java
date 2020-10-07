@@ -31,7 +31,7 @@ import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.FieldSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.statemachine.OnInitialize;
-import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.methodhandle.LookupUtil;
 

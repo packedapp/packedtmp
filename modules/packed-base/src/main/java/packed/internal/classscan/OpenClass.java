@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan.invoke;
+package packed.internal.classscan;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
-import packed.internal.classscan.ConstructorUtil;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.NativeImage;
 import packed.internal.util.StringFormatter;

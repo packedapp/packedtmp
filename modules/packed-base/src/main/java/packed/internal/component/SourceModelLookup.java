@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
-import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.classscan.OpenClass;
 
 /**
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}

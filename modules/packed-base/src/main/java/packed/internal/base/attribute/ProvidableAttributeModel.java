@@ -23,7 +23,7 @@ import java.util.Map;
 
 import app.packed.base.ExposeAttribute;
 import app.packed.base.Nullable;
-import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /**

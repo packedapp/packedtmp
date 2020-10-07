@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.sidecar.old;
-
-import static java.util.Objects.requireNonNull;
-
-import java.lang.annotation.Annotation;
-
-import packed.internal.lifecycle.old.LifecycleDefinition;
+package packed.internal.classscan;
 
 /**
  *
  */
-public final class SidecarTypeMeta {
-
-    public final LifecycleDefinition ld;
-
-    final Class<? extends Annotation> sidecarAnnotation;
-
-    public SidecarTypeMeta(Class<? extends Annotation> sidecarAnnotation, LifecycleDefinition ld) {
-        this.sidecarAnnotation = requireNonNull(sidecarAnnotation);
-        this.ld = requireNonNull(ld);
-    }
+// IDeen er at man kan specificere den til OpenClass...
+public enum SourceModelX {
+    INJECT_ONLY, FULL;
 }

@@ -30,6 +30,8 @@ import app.packed.base.Nullable;
 /**
  *
  */
+// maaske drop count...
+// taenker det er noget a.ka. 1 eller 2 i 99% af alle tilfaelde...
 public final class Tiny<E> {
 
     public final E element;

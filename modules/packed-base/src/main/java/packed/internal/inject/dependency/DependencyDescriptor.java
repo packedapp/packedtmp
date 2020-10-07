@@ -336,7 +336,7 @@ public final class DependencyDescriptor {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
-        Annotation[] qa = QualifierHelper.findQualifier(pta, annotations);
+        Annotation[] qa = QualifierHelper.findQualifier(annotations);
 
         Optionality optionalType = null;
         if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Optional.class) {
@@ -379,7 +379,7 @@ public final class DependencyDescriptor {
         requireNonNull(desc, "variable is null");
         TypeLiteral<?> tl = desc.getTypeLiteral();
 
-        Annotation[] qualifiers = QualifierHelper.findQualifier(desc, desc.getAnnotations());
+        Annotation[] qualifiers = QualifierHelper.findQualifier(desc.getAnnotations());
 
         // Illegal
         // Optional<Optional*>

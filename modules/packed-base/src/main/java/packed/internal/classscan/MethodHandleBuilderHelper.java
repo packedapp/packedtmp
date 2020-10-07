@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan.invoke;
+package packed.internal.classscan;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -32,7 +32,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
 import app.packed.introspection.ParameterDescriptor;
-import packed.internal.classscan.invoke.MethodHandleBuilder.Entry;
+import packed.internal.classscan.MethodHandleBuilder.Entry;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.context.PackedInjectionContext;
 import packed.internal.inject.dependency.DependencyDescriptor;

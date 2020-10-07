@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
-import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;

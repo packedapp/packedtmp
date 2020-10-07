@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.component.wirelet;
 
 import java.util.List;
 

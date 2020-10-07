@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.component.Bundle;
 import app.packed.inject.Factory;
-import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.classscan.OpenClass;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
 import packed.internal.util.LookupValue;
