@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.sidecar;
 
 import java.lang.invoke.MethodHandles;
 
@@ -27,12 +27,16 @@ import java.lang.invoke.MethodHandles;
 
 // Cross module extension hirakies
 
-// Maaske er det snare i .component
+// Maaske er det snare i component
+// Altsaa det er jo kun taenkt paa source support
 ////
 
 //ComponentSupport
 
 class LookupSupport {
+
+    // FieldSidecar.openFields();
+    // FieldSidecar.openMethods();
 
     public static void openForSubclasses(MethodHandles.Lookup lookup, Class<?> superClass) {
         // allows subclasses...
