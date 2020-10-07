@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
 import packed.internal.classscan.invoke.OpenClass;
-import packed.internal.component.SourceModel;
 
 /**
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}

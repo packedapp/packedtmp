@@ -17,7 +17,6 @@ package tests.container.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
@@ -34,18 +33,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     public void testCanCallUseFromOnExtensionAdded() {
         appOf(c -> {
             c.use(Ex1.class);
-            assertThat(c.extensions()).containsExactly(Ex3.class, Ex2.class, Ex1.class);
-        });
-    }
-
-    /** While we do not advertise it. We do allow cyclic dependencies between extensions. */
-    // Ehmmm no we don't
-    @Test
-    @Disabled
-    public void testAllowCyclicDependenciesExtension() {
-        appOf(c -> {
-            c.use(ExRecursive1.class);
-            assertThat(c.extensions()).containsExactly(ExRecursive1.class, ExRecursive2.class);
+            assertThat(c.extensions()).containsExactlyInAnyOrder(Ex3.class, Ex2.class, Ex1.class);
         });
     }
 
@@ -67,20 +55,5 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     static final class Ex3 extends Extension {
 
-    }
-
-    @ExtensionSetup(dependencies = ExRecursive2.class)
-    static final class ExRecursive1 extends Extension {
-        @Override
-        protected void add() {
-            useOld(ExRecursive2.class);
-        }
-    }
-
-    static final class ExRecursive2 extends Extension {
-        @Override
-        protected void add() {
-            useOld(ExRecursive1.class);
-        }
     }
 }

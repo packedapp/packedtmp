@@ -59,8 +59,7 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
         @Override
         protected ExtensionModel computeValue(Class<?> type) {
             // We have a number of checks here that the requested extension type is actually valid.
-            // We do them here, because it is faster then checking the type every time it is requested.
-
+            // We do them here, because it is faster then checking the extension type every time it is requested.
             if (type == Extension.class) {
                 throw new IllegalArgumentException(Extension.class.getSimpleName() + ".class is not a valid argument to this method.");
             } else if (!Extension.class.isAssignableFrom(type)) {
@@ -75,12 +74,6 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
             return Loader.load((Class<? extends Extension>) type, null);
         }
     };
-
-    static final int ON_0_INSTANTIATION = 0;
-
-    static final int ON_1_MAIN = 1;
-
-    static final int ON_2_CHILDREN_DONE = 2;
 
     final MethodHandle bundleBuilderMethod;
 
@@ -116,6 +109,7 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
     /** The simple name of the extension, as returned by {@link Class#getSimpleName()}. */
     final String nameSimple;
 
+    /** Any attributes defined on the extension. */
     private final ProvidableAttributeModel pam;
 
     /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.component.Bundle;
 import app.packed.inject.Factory;
 import packed.internal.classscan.invoke.OpenClass;
-import packed.internal.component.SourceModel;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.model.Model;
 import packed.internal.util.LookupValue;

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
+import java.util.IdentityHashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -41,7 +41,7 @@ public final class ContainerAssembly {
     public final ComponentNodeConfiguration compConf;
 
     /** All used extensions, in order of registration. */
-    public final LinkedHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new LinkedHashMap<>();
+    public final IdentityHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
 
@@ -52,6 +52,7 @@ public final class ContainerAssembly {
     public final ContainerAssembly parent;
 
     ArrayList<ExtensionAssembly> tmpExtension;
+
     @Nullable
     private Boolean isImage;
 
