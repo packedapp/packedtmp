@@ -27,10 +27,10 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import app.packed.introspection.ParameterDescriptor;
-import packed.internal.inject.sidecar.AppPackedBaseAccess;
-import packed.internal.inject.sidecar.ModuleAccess;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.util.ModuleAccess;
 import packed.internal.util.TypeUtil;
+import packed.internal.util.ModuleAccess.AppPackedBaseAccess;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does

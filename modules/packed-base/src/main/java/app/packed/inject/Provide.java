@@ -24,8 +24,6 @@ import java.lang.annotation.Target;
 import app.packed.container.ExtensionMember;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.ActivateMethodSidecar;
-import packed.internal.inject.provide.ProvideFieldSidecar;
-import packed.internal.inject.provide.ProvideMethodSidecar;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

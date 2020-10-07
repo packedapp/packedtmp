@@ -44,9 +44,9 @@ import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.inject.sidecar.ModuleAccess;
 import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
+import packed.internal.util.ModuleAccess;
 import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
 

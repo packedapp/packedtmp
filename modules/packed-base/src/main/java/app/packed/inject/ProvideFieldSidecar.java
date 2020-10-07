@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.provide;
+package app.packed.inject;
 
-import app.packed.inject.Provide;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.FieldSidecar;
 
-/**
- *
- */
-public final class ProvideMethodSidecar extends MethodSidecar {
+/** A field sidecar for {@link Provide}. */
+final class ProvideFieldSidecar extends FieldSidecar {
 
     @Override
     protected void bootstrap(BootstrapContext context) {
-        Provide p2 = context.getAnnotation(Provide.class);
-        context.registerAsService(p2.constant());
+        Provide p = context.getAnnotation(Provide.class);
+        context.provideAsService(p.constant());
     }
 }

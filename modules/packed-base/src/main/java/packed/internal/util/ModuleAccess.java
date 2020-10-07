@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.sidecar;
+package packed.internal.util;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
+import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
@@ -78,4 +82,22 @@ public final class ModuleAccess {
         /** The singleton instance. */
         private static final AppPackedBaseAccess INSTANCE = singleton(AppPackedBaseAccess.class, TypeLiteral.class);
     }
+
+    /** A support class for calling package private methods in the app.packed.base package. */
+    public interface AppPackedBaseAccess {
+
+        boolean isCanonicalized(TypeLiteral<?> typeLiteral);
+
+        Key<?> toKeyNullableQualifier(Type type, @Nullable Annotation[] qualifier);
+
+        /**
+         * Converts the type to a type literal.
+         * 
+         * @param type
+         *            the type to convert
+         * @return the type literal
+         */
+        TypeLiteral<?> toTypeLiteral(Type type);
+    }
+
 }
