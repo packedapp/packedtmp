@@ -56,6 +56,18 @@ public final class SourceInstanceServiceAssembly<T> extends ServiceAssembly<T> {
 
     /** {@inheritDoc} */
     @Override
+    public MethodHandle dependencyAccessor() {
+        return source.dependencyAccessor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return source.regionIndex > -1;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
             return new ConstantRuntimeService<>(this, context.region, source.regionIndex);
@@ -66,19 +78,7 @@ public final class SourceInstanceServiceAssembly<T> extends ServiceAssembly<T> {
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle dependencyAccessor() {
-        return source.dependencyAccessor();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String toString() {
         return "Singleton " + source;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConstant() {
-        return source.regionIndex > -1;
     }
 }

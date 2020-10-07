@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.assembly;
+package packed.internal.inject.service.sandbox;
 
 import java.lang.invoke.MethodHandle;
 
@@ -22,6 +22,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
 import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;

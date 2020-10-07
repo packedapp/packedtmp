@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.assembly;
+package packed.internal.inject.service.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +26,7 @@ import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;

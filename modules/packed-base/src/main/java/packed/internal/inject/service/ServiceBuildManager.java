@@ -41,12 +41,12 @@ import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.assembly.SourceInstanceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
-import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.ExportedServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
+import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
 
 /**
  *
