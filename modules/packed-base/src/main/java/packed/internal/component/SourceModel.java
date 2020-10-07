@@ -18,10 +18,8 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +31,6 @@ import packed.internal.container.RealmModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;
-import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 import packed.internal.sidecar.model.Model;
 
@@ -142,7 +139,7 @@ public final class SourceModel extends Model {
             // findAssinableTo(htp, componentType);
             // findAnnotatedTypes(htp, componentType);
             // Inherited annotations???
-            cp.findMethodsAndFields(method -> SourceModelMethod.findAnnotatedMethods(this, method), field -> findAnnotatedFields(field));
+            cp.findMethodsAndFields(method -> SourceModelMethod.process(this, method), field -> findAnnotatedFields(field));
             return new SourceModel(this);
         }
 
@@ -157,24 +154,6 @@ public final class SourceModel extends Model {
                     }
                     SourceModelField smm = new SourceModelField(field, model, varHandle);
                     smm.bootstrap(this);
-                }
-            }
-        }
-
-        private void findAnnotatedMethods(Method method) {
-            MethodHandle directMethodHandle = null;
-            for (Annotation a : method.getAnnotations()) {
-                MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
-                if (model != null) {
-                    // We can have more than 1 sidecar attached to a method
-                    if (directMethodHandle == null) {
-                        directMethodHandle = cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    }
-
-                    SourceModelMethod smm = SourceModelMethod.bootstrap(method, model, directMethodHandle);
-                    if (smm != null) {
-                        methods.add(smm);
-                    }
                 }
             }
         }

@@ -57,47 +57,12 @@ public class SourceModelMethod extends SourceModelMember {
 
     public final MethodSidecarModel model;
 
-    SourceModelMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
-        this.method = requireNonNull(method);
+    SourceModelMethod(Shared wrapper, MethodSidecarModel model) {
+        this.method = requireNonNull(wrapper.methodUnsafe);
         this.model = requireNonNull(model);
         MethodDescriptor m = MethodDescriptor.from(method);
         this.dependencies = DependencyDescriptor.fromExecutable(m);
-        this.directMethodHandle = requireNonNull(mh);
-    }
-
-    static void findAnnotatedMethods(SourceModel.Builder builder, Method method) {
-        MethodHandle directMethodHandle = null;
-        for (Annotation a : method.getAnnotations()) {
-            MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
-            if (model != null) {
-                // We can have more than 1 sidecar attached to a method
-                if (directMethodHandle == null) {
-                    directMethodHandle = builder.cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                }
-
-                SourceModelMethod smm = SourceModelMethod.bootstrap(method, model, directMethodHandle);
-                if (smm != null) {
-                    builder.methods.add(smm);
-                }
-            }
-        }
-    }
-
-    public static SourceModelMethod bootstrap(Method method, MethodSidecarModel model, MethodHandle mh) {
-        SourceModelMethod smm = new SourceModelMethod(method, model, mh);
-
-        MethodSidecarBootstrapContext c = smm.new MethodSidecarBootstrapContext();
-        try {
-            MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), c);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        if (c.disable) {
-            return null;
-        }
-        smm.provideAsConstant = c.provideAsConstant;
-        smm.provideAskey = c.provideAsKey;
-        return smm;
+        this.directMethodHandle = requireNonNull(wrapper.direct());
     }
 
     public DependencyProvider[] createProviders() {
@@ -129,9 +94,49 @@ public class SourceModelMethod extends SourceModelMember {
         return directMethodHandle;
     }
 
-    public final class MethodSidecarBootstrapContext extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
+    static void process(SourceModel.Builder builder, Method method) {
+        Shared wrapper = null;
+        for (Annotation a : method.getAnnotations()) {
+            MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
+            if (model != null) {
+                if (wrapper == null) {
+                    wrapper = new Shared(builder, method);
+                }
+                process0(wrapper, model);
+            }
+        }
+    }
+
+    private static void process0(Shared wrapper, MethodSidecarModel model) {
+        SourceModelMethod smm = new SourceModelMethod(wrapper, model);
+
+        Builder builder = new Builder(wrapper);
+        try {
+            MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        //
+        if (builder.disable) {
+            return;
+        }
+
+        smm.provideAsConstant = builder.provideAsConstant;
+        smm.provideAskey = builder.provideAsKey;
+        wrapper.source.methods.add(smm);
+    }
+
+    public static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
 
         public boolean disable;
+
+        private Method method;
+
+        private final Shared shared;
+
+        Builder(Shared shared) {
+            this.shared = requireNonNull(shared);
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -142,12 +147,27 @@ public class SourceModelMethod extends SourceModelMember {
         /** {@inheritDoc} */
         @Override
         public Method method() {
-            return method;
+            Method m = method;
+            if (m == null) {
+                // We want to avoid sharing method instances between multiple sidecar methods
+                Method unsafe = shared.methodUnsafe;
+                if (!shared.mustSafetyClone) {
+                    shared.mustSafetyClone = true;
+                    m = method = unsafe;
+                } else {
+                    try {
+                        m = method = unsafe.getDeclaringClass().getDeclaredMethod(unsafe.getName(), unsafe.getParameterTypes());
+                    } catch (NoSuchMethodException e) {
+                        throw new IllegalStateException(e);
+                    }
+                }
+            }
+            return m;
         }
 
         @Override
         public void registerAsService(boolean isConstant) {
-            registerAsService(isConstant, Key.fromMethodReturnType(method));
+            registerAsService(isConstant, Key.fromMethodReturnType(shared.methodUnsafe));
         }
 
         @Override
@@ -159,5 +179,33 @@ public class SourceModelMethod extends SourceModelMember {
 
     public enum RunAt {
         INITIALIZATION;
+    }
+
+    /**
+     * This class mainly exists because {@link Method} is mutable. We want to avoid situations where a method activates two
+     * different sidecars. And both sidecars tries to access the Method instance. And one of them may call
+     * {@link Method#setAccessible(boolean)} which could then allow the other sidecar to unintentional have access.
+     */
+    private static class Shared {
+
+        /** The source. */
+        private final SourceModel.Builder source;
+
+        MethodHandle directMethodHandle;
+        private final Method methodUnsafe;
+        private boolean mustSafetyClone;
+
+        private Shared(SourceModel.Builder source, Method method) {
+            this.source = requireNonNull(source);
+            this.methodUnsafe = requireNonNull(method);
+        }
+
+        MethodHandle direct() {
+            if (directMethodHandle == null) {
+                directMethodHandle = source.cp.unreflect(methodUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            }
+            return directMethodHandle;
+        }
+
     }
 }
