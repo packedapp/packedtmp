@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.sidecar.MethodSidecar;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -57,12 +58,14 @@ public class SourceModelMethod extends SourceModelMember {
 
     public final MethodSidecarModel model;
 
-    SourceModelMethod(Shared wrapper, MethodSidecarModel model) {
-        this.method = requireNonNull(wrapper.methodUnsafe);
-        this.model = requireNonNull(model);
+    private SourceModelMethod(Builder builder) {
+        this.method = requireNonNull(builder.shared.methodUnsafe);
+        this.model = requireNonNull(builder.model);
+        this.provideAsConstant = builder.provideAsConstant;
+        this.provideAskey = builder.provideAsKey;
         MethodDescriptor m = MethodDescriptor.from(method);
         this.dependencies = DependencyDescriptor.fromExecutable(m);
-        this.directMethodHandle = requireNonNull(wrapper.direct());
+        this.directMethodHandle = requireNonNull(builder.shared.direct());
     }
 
     public DependencyProvider[] createProviders() {
@@ -94,48 +97,50 @@ public class SourceModelMethod extends SourceModelMember {
         return directMethodHandle;
     }
 
-    static void process(SourceModel.Builder builder, Method method) {
-        Shared wrapper = null;
+    static void process(SourceModel.Builder source, Method method) {
+        Shared shared = null;
         for (Annotation a : method.getAnnotations()) {
             MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
             if (model != null) {
-                if (wrapper == null) {
-                    wrapper = new Shared(builder, method);
+                if (shared == null) {
+                    shared = new Shared(source, method);
                 }
-                process0(wrapper, model);
+                Builder builder = new Builder(model, shared);
+                try {
+                    MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
+                } catch (Throwable e) {
+                    throw ThrowableUtil.orUndeclared(e);
+                }
+                if (!builder.disable) {
+                    SourceModelMethod smm = new SourceModelMethod(builder);
+                    shared.source.methods.add(smm);
+                }
             }
         }
     }
 
-    private static void process0(Shared wrapper, MethodSidecarModel model) {
-        SourceModelMethod smm = new SourceModelMethod(wrapper, model);
+    /** A builder. */
+    private static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
 
-        Builder builder = new Builder(wrapper);
-        try {
-            MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-        //
-        if (builder.disable) {
-            return;
-        }
+        /** Disable the sidecar. */
+        private boolean disable;
 
-        smm.provideAsConstant = builder.provideAsConstant;
-        smm.provideAskey = builder.provideAsKey;
-        wrapper.source.methods.add(smm);
-    }
+        /** The method, if exposed to end-users. */
+        @Nullable
+        private Method exposedMethod;
 
-    public static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
+        private final Method unsafeMethod;
 
-        public boolean disable;
+        /** The sidecar model. */
+        private final MethodSidecarModel model;
 
-        private Method method;
-
+        /** The shared context. */
         private final Shared shared;
 
-        Builder(Shared shared) {
+        Builder(MethodSidecarModel model, Shared shared) {
             this.shared = requireNonNull(shared);
+            this.model = requireNonNull(model);
+            this.unsafeMethod = shared.methodUnsafe;
         }
 
         /** {@inheritDoc} */
@@ -147,33 +152,42 @@ public class SourceModelMethod extends SourceModelMember {
         /** {@inheritDoc} */
         @Override
         public Method method() {
-            Method m = method;
+            Method m = exposedMethod;
             if (m == null) {
                 // We want to avoid sharing method instances between multiple sidecar methods
-                Method unsafe = shared.methodUnsafe;
-                if (!shared.mustSafetyClone) {
-                    shared.mustSafetyClone = true;
-                    m = method = unsafe;
-                } else {
+                if (shared.isMethodUsed) {
                     try {
-                        m = method = unsafe.getDeclaringClass().getDeclaredMethod(unsafe.getName(), unsafe.getParameterTypes());
+                        m = exposedMethod = unsafeMethod.getDeclaringClass().getDeclaredMethod(unsafeMethod.getName(), unsafeMethod.getParameterTypes());
                     } catch (NoSuchMethodException e) {
                         throw new IllegalStateException(e);
                     }
+                } else {
+                    m = exposedMethod = unsafeMethod;
+                    shared.isMethodUsed = true;
                 }
             }
             return m;
         }
 
+        /** {@inheritDoc} */
         @Override
         public void registerAsService(boolean isConstant) {
-            registerAsService(isConstant, Key.fromMethodReturnType(shared.methodUnsafe));
+            provideAsConstant = isConstant;
+            provideAsKey = Key.fromMethodReturnType(unsafeMethod);
         }
 
+        /** {@inheritDoc} */
         @Override
         public void registerAsService(boolean isConstant, Key<?> key) {
             provideAsConstant = isConstant;
+            // Check assignable.
             provideAsKey = key;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            return unsafeMethod.getAnnotation(annotationClass);
         }
     }
 
@@ -183,17 +197,22 @@ public class SourceModelMethod extends SourceModelMember {
 
     /**
      * This class mainly exists because {@link Method} is mutable. We want to avoid situations where a method activates two
-     * different sidecars. And both sidecars tries to access the Method instance. And one of them may call
-     * {@link Method#setAccessible(boolean)} which could then allow the other sidecar to unintentional have access.
+     * different sidecars. And both sidecars access the Method instance. And one of them may call
+     * {@link Method#setAccessible(boolean)} which could then allow the other sidecar to unintentional have access to an
+     * accessible method.
      */
     private static class Shared {
 
+        private MethodHandle directMethodHandle;
+
+        /** Whether or not {@link #methodUnsafe} has been exposed to users. */
+        private boolean isMethodUsed;
+
+        /** The method we are processing. */
+        private final Method methodUnsafe;
+
         /** The source. */
         private final SourceModel.Builder source;
-
-        MethodHandle directMethodHandle;
-        private final Method methodUnsafe;
-        private boolean mustSafetyClone;
 
         private Shared(SourceModel.Builder source, Method method) {
             this.source = requireNonNull(source);

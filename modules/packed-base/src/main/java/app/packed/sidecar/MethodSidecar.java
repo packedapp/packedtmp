@@ -86,9 +86,7 @@ public abstract class MethodSidecar extends Sidecar {
          * 
          * @see AnnotatedElement#getAnnotation(Class)
          */
-        default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return method().getAnnotation(annotationClass);
-        }
+        <T extends Annotation> T getAnnotation(Class<T> annotationClass);
 
         /**
          * Returns the method that is being bootstrapped.
@@ -113,6 +111,6 @@ public abstract class MethodSidecar extends Sidecar {
             registerAsService(isConstant, Key.of(key));
         }
 
-        default void registerAsService(boolean isConstant, Key<?> key) {}
+        void registerAsService(boolean isConstant, Key<?> key);
     }
 }
