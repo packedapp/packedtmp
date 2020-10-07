@@ -35,13 +35,13 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
 
-    /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
-    @Nullable
-    public ServiceAssembly<T> exportedEntry;
-
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
     public final Key<?> exportAsKey;
+
+    /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
+    @Nullable
+    public ServiceAssembly<T> exportedEntry;
 
     /**
      * Exports an entry via its key.
@@ -77,25 +77,25 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
     }
 
     @Override
-    public MethodHandle dependencyAccessor() {
-        return exportedEntry.dependencyAccessor();
-    }
-
-    @Override
     @Nullable
     public Dependant dependant() {
         return exportedEntry.dependant();
     }
 
-    /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
+    public MethodHandle dependencyAccessor() {
+        return exportedEntry.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
         return exportedEntry.isConstant();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
+        return new DelegatingInjectorEntry<>(this, exportedEntry.toRuntimeEntry(context));
     }
 }
