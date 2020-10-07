@@ -31,12 +31,11 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
-import packed.internal.util.Model;
 
 /**
  * A model of a source, a cached instance of this class is acquired via {@link RealmModel#modelOf(Class)}.
  */
-public final class SourceModel extends Model {
+public final class SourceModel {
 
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     /// Should we have a little of cache simpleName0, simpleName1, ...
@@ -50,6 +49,8 @@ public final class SourceModel extends Model {
 
     public final Map<Key<?>, SidecarContextDependencyProvider> sourceServices;
 
+    public final Class<?> type;
+
     /**
      * Creates a new descriptor.
      * 
@@ -57,7 +58,7 @@ public final class SourceModel extends Model {
      *            a builder for this descriptor
      */
     private SourceModel(SourceModel.Builder builder) {
-        super(builder.cp.type());
+        this.type = builder.cp.type();
         this.methods = List.copyOf(builder.methods);
         this.fields = List.copyOf(builder.fields);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
@@ -71,7 +72,7 @@ public final class SourceModel extends Model {
     String defaultPrefix() {
         String s = simpleName;
         if (s == null) {
-            s = simpleName = modelType().getSimpleName();
+            s = simpleName = type.getSimpleName();
         }
         return s;
     }

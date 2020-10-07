@@ -99,7 +99,7 @@ public final class PackedOrderedExtensionSet implements OrderedExtensionSet {
      */
     @SuppressWarnings("unchecked")
     public static PackedOrderedExtensionSet of(Collection<Class<? extends Extension>> extensions) {
-        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.modelType()).collect(Collectors.toList());
+        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).collect(Collectors.toList());
         return new PackedOrderedExtensionSet((List<Class<? extends Extension>>) l);
     }
 }

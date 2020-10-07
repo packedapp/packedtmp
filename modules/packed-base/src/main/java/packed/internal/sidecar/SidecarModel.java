@@ -41,10 +41,6 @@ public abstract class SidecarModel<T> {
 
     private final Object instance;
 
-    public Object instance() {
-        return instance;
-    }
-
     /**
      * Creates a new model.
      * 
@@ -55,13 +51,8 @@ public abstract class SidecarModel<T> {
         this.instance = requireNonNull(builder.instance);
     }
 
-    static <T extends SidecarModel<T>> T ofd(Class<T> sidecarType, Class<?> implementation) {
-
-        @SuppressWarnings("unused")
-        Runnable eclipseBug = () -> {};
-        // Er der nogengang vi ved
-        // hellere Maaske hellere <T extends SidecarModel> of (Class<T> sidecarType, Class<?> implementation)
-        throw new UnsupportedOperationException();
+    public Object instance() {
+        return instance;
     }
 
     /** A builder for a sidecar model. */
@@ -69,14 +60,14 @@ public abstract class SidecarModel<T> {
 
         final InstantiatorBuilder ib;
 
+        /** The sidecar instance. */
+        protected Object instance;
+
         /** A method handle that can call the sidecar's configure method. */
         private final MethodHandle mhConfigure;
 
         /** A var handle for setting the configuration's object */
         private final VarHandle vhConfiguration;
-
-        /** The sidecar instance. */
-        protected Object instance;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
         Builder(VarHandle vh, MethodHandle configure, Class<?> implementation) {

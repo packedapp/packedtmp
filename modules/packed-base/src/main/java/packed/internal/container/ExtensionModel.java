@@ -44,12 +44,11 @@ import app.packed.container.OrderedExtensionSet;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.classscan.OpenClass;
-import packed.internal.util.Model;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
-public final class ExtensionModel extends Model implements ExtensionDescriptor {
+public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A cache of extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
@@ -112,6 +111,8 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
     /** Any attributes defined on the extension. */
     private final ProvidableAttributeModel pam;
 
+    private final Class<? extends Extension> type;
+
     /**
      * Creates a new extension model from the specified builder.
      * 
@@ -119,7 +120,7 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
      *            the builder for this model
      */
     private ExtensionModel(Builder builder) {
-        super(builder.sidecarType);
+        this.type = builder.sidecarType;
         this.constructor = builder.constructor;
         this.id = builder.id;
         this.depth = builder.depth;
@@ -224,9 +225,8 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
      * @return the extension type of this model
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Class<? extends Extension> type() {
-        return (Class<? extends Extension>) type;
+        return type;
     }
 
     /** {@inheritDoc} */
@@ -352,7 +352,7 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
         /** The constructor used to create a new extension instance. */
         MethodHandle constructor;
 
-        protected final Class<?> sidecarType;
+        protected final Class<? extends Extension> sidecarType;
 
         protected OpenClass prep(MethodHandleBuilder spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);

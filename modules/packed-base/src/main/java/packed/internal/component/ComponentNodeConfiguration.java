@@ -257,7 +257,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         DefaultAttributeMap dam = new DefaultAttributeMap();
 
         if (source != null) {
-            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.modelType());
+            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.type);
         }
 
         if (extension != null) {

@@ -97,7 +97,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     @Override
     public void checkConfigurable() {
         if (isConfigured) {
-            throw new IllegalStateException("This extension (" + model.modelType().getSimpleName() + ") is no longer configurable");
+            throw new IllegalStateException("This extension (" + model.nameSimple + ") is no longer configurable");
         }
     }
 

@@ -26,11 +26,10 @@ import app.packed.inject.Factory;
 import packed.internal.classscan.OpenClass;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.util.LookupValue;
-import packed.internal.util.Model;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */
-public final class RealmModel extends Model implements SourceModelLookup {
+public final class RealmModel implements SourceModelLookup {
 
     private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
             MethodHandle.class, Lookup.class);
@@ -76,8 +75,10 @@ public final class RealmModel extends Model implements SourceModelLookup {
      *            the source type
      */
     private RealmModel(Class<? extends Bundle<?>> realmType) {
-        super(realmType);
+        this.type = realmType;
     }
+
+    private final Class<?> type;
 
     /** {@inheritDoc} */
     @Override
@@ -108,7 +109,7 @@ public final class RealmModel extends Model implements SourceModelLookup {
         // There are two classes in a lookup object.
         if (lookup == null) {
             return this;
-        } else if (lookup.lookupClass() == modelType() && LookupUtil.isLookupDefault(lookup)) {
+        } else if (lookup.lookupClass() == type && LookupUtil.isLookupDefault(lookup)) {
             // The default lookup is just BundleImpl { MethodHandles.lookup()}
             SourceModelLookup cl = defaultLookup;
             if (cl != null) {

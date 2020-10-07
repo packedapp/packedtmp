@@ -19,9 +19,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.container.ExtensionModel;
-import packed.internal.util.Model;
 
-public final class WireletModel extends Model {
+public final class WireletModel {
 
     /** A cache of models for {@link Wirelet} subclasses. */
     private static final ClassValue<WireletModel> MODELS = new ClassValue<>() {
@@ -45,7 +44,6 @@ public final class WireletModel extends Model {
      *            the wirelet type
      */
     private WireletModel(Class<? extends Wirelet> type) {
-        super(type);
         this.extension = ExtensionModel.getAnyExtensionMember(type);
     }
 
