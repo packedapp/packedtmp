@@ -28,9 +28,18 @@ import java.lang.invoke.MethodHandles;
 public class AnnotationMaker<T extends Annotation> {
 
     /**
+     * Returns the annotation type this maker wraps.
+     * 
+     * @return the annotation type this maker wraps
+     */
+    public Class<T> annotationType() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * @return an annotation instance
      * @throws UnsupportedOperationException
-     *             if the annotation has mandatory attributes
+     *             if the annotation type has any non-default attributes
      */
     public T make() {
         throw new UnsupportedOperationException();

@@ -49,6 +49,36 @@ public @interface Leaving {
     // Normally the annotated method will never be invoked
     Class<? extends Throwable>[] alsoOnFailure() default {};
 }
+//
+//cp.findMethods(m -> {
+//    onMethod(m);
+//    Leaving oa = m.getAnnotation(Leaving.class);
+//    if (oa != null) {
+//        // To support nextStates. We create a MH filter with a guard on the next state...
+//        // To support Error transitions. I think we have specific code for this
+//        // It is not performance criticial... So we do not want to check this normally...
+//
+//        // Validate states
+//        String state = oa.state();
+//        int index = statics.ld.indexOf(state);
+//        if (index == -1) {
+//            // TODO remove instantiating, available values
+//            throw new InternalExtensionException("Unknown sidecar lifecycle event '" + state + "' for method " + m + ", available states are "
+//                    + Arrays.toString(statics.ld.toArray()));
+//        }
+//
+//        MethodHandleBuilder mhb = MethodHandleBuilder.of(void.class, Object.class, Object.class);
+//        decorateOnSidecar(mhb);
+//        MethodHandle lt = MethodHandles.constant(StateTransition.class, new DefaultLifecycleTransition("Gll", "F", "FordiDuErDum"));
+//        lt = MethodHandles.dropArguments(lt, 0, Object.class);
+//        mhb.addKey(StateTransition.class, lt, 0);
+//        MethodHandle mh = mhb.build(cp, m);
+//
+//        // If there are multiple methods with the same index. We just fold them to a single MethodHandle
+//        MethodHandle existing = postSidecars[index];
+//        postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
+//    }
+//});
 // Failing(types = IOException.class , state = Starting)
 
 // LifecycleTest(Object instance()

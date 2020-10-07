@@ -20,19 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import app.packed.container.InternalExtensionException;
-import app.packed.statemachine.Leaving;
-import app.packed.statemachine.StateTransition;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
-import packed.internal.lifecycle.old.DefaultLifecycleTransition;
 import packed.internal.sidecar.model.Model;
 import packed.internal.sidecar.old.SidecarTypeMeta;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * A model of a sidecar.
@@ -50,10 +44,6 @@ public abstract class AbstractExtensionModel extends Model {
     // And not provide other constract
     protected final Map<Class<? extends Contract>, MethodHandle> contracts;
 
-    /** Methods annotated with {@link Leaving}. Takes the sidecar instance */
-    // Det kan jo vaere gemt i en int istedet for saa vi bare test noget modulo...
-    private final MethodHandle[] postSidecars; // TODO take a SidecarModel as well as well???
-
     /**
      * Creates a new sidecar model.
      * 
@@ -64,22 +54,10 @@ public abstract class AbstractExtensionModel extends Model {
         super(builder.sidecarType);
         this.constructor = builder.constructor;
         this.contracts = Map.copyOf(builder.contracts);
-        this.postSidecars = builder.postSidecars;
     }
 
     public Map<Class<? extends Contract>, MethodHandle> contracts() {
         return contracts;
-    }
-
-    public void invokePostSidecarAnnotatedMethods(int stateId, Object sidecar, Object context) {
-        MethodHandle mh = postSidecars[stateId];
-        if (mh != null) {
-            try {
-                mh.invokeExact(sidecar, context);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
     }
 
     public static abstract class Builder {
@@ -95,8 +73,6 @@ public abstract class AbstractExtensionModel extends Model {
         // So add all shit, quick validation-> Sync->Validate final -> AddAll ->UnSync
         protected final IdentityHashMap<Class<? extends Contract>, MethodHandle> contracts = new IdentityHashMap<>();
 
-        private final MethodHandle[] postSidecars;
-
         protected final Class<?> sidecarType;
 
         final SidecarTypeMeta statics;
@@ -104,7 +80,6 @@ public abstract class AbstractExtensionModel extends Model {
         protected Builder(Class<?> sidecarType, SidecarTypeMeta statics) {
             this.sidecarType = requireNonNull(sidecarType);
             this.statics = requireNonNull(statics);
-            this.postSidecars = new MethodHandle[statics.ld.numberOfStates()];
         }
 
         protected void decorateOnSidecar(MethodHandleBuilder builder) {}
@@ -113,46 +88,7 @@ public abstract class AbstractExtensionModel extends Model {
 
         protected OpenClass prep(MethodHandleBuilder spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
-
             this.constructor = cp.findConstructor(spec);
-            cp.findMethods(m -> {
-                onMethod(m);
-                Leaving oa = m.getAnnotation(Leaving.class);
-                if (oa != null) {
-                    // To support nextStates. We create a MH filter with a guard on the next state...
-                    // To support Error transitions. I think we have specific code for this
-                    // It is not performance criticial... So we do not want to check this normally...
-
-                    // Validate states
-                    String state = oa.state();
-                    int index = statics.ld.indexOf(state);
-                    if (index == -1) {
-                        // TODO remove instantiating, available values
-                        throw new InternalExtensionException("Unknown sidecar lifecycle event '" + state + "' for method " + m + ", available states are "
-                                + Arrays.toString(statics.ld.toArray()));
-                    }
-
-                    MethodHandleBuilder mhb = MethodHandleBuilder.of(void.class, Object.class, Object.class);
-                    decorateOnSidecar(mhb);
-                    MethodHandle lt = MethodHandles.constant(StateTransition.class, new DefaultLifecycleTransition("Gll", "F", "FordiDuErDum"));
-                    lt = MethodHandles.dropArguments(lt, 0, Object.class);
-                    mhb.addKey(StateTransition.class, lt, 0);
-                    MethodHandle mh = mhb.build(cp, m);
-
-                    // If there are multiple methods with the same index. We just fold them to a single MethodHandle
-                    MethodHandle existing = postSidecars[index];
-                    postSidecars[index] = existing == null ? mh : MethodHandles.foldArguments(existing, mh);
-                }
-//                Expose ex = m.getAnnotation(Expose.class);
-//                if (ex != null) {
-//                    if (m.getReturnType() == void.class) {
-//                        builderMethod = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-//                    } else {
-//                        MethodHandle mh = cp.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-//                        contracts.put((Class) m.getReturnType(), mh);
-//                    }
-//                }
-            });
             return cp;
         }
     }
