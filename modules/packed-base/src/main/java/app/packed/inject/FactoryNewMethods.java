@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,6 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import app.packed.inject.Factory;
-import app.packed.inject.Inject;
 import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.MethodDescriptor;
 
@@ -45,7 +43,7 @@ import app.packed.introspection.MethodDescriptor;
 //Finde metoder paa statisk vs instance....
 //Hvis vi kun tillader @Inject paa de statiske, bliver algoritmerne lidt for forskellige..
 
-class NewFactoryMethods {
+class FactoryNewMethods {
 
     // either one annotated with inject, or just one method, for example lambda..
 

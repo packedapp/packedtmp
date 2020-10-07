@@ -19,7 +19,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.container.ExtensionModel;
-import packed.internal.sidecar.model.Model;
+import packed.internal.util.Model;
 
 public final class WireletModel extends Model {
 

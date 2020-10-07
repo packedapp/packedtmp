@@ -25,8 +25,8 @@ import app.packed.component.Bundle;
 import app.packed.inject.Factory;
 import packed.internal.classscan.OpenClass;
 import packed.internal.methodhandle.LookupUtil;
-import packed.internal.sidecar.model.Model;
 import packed.internal.util.LookupValue;
+import packed.internal.util.Model;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */

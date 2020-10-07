@@ -31,7 +31,7 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
-import packed.internal.sidecar.model.Model;
+import packed.internal.util.Model;
 
 /**
  * A model of a source, a cached instance of this class is acquired via {@link RealmModel#modelOf(Class)}.

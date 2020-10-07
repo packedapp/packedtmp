@@ -44,7 +44,7 @@ import app.packed.container.OrderedExtensionSet;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.classscan.OpenClass;
-import packed.internal.sidecar.model.Model;
+import packed.internal.util.Model;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
