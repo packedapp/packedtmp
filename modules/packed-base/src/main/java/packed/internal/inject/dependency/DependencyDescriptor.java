@@ -45,7 +45,7 @@ import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
-import packed.internal.util.ModuleAccess;
+import packed.internal.util.BasePackageAccess;
 import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
 
@@ -341,7 +341,7 @@ public final class DependencyDescriptor {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new DependencyDescriptor(ModuleAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new DependencyDescriptor(BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<DependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -379,7 +379,7 @@ public final class DependencyDescriptor {
         } else if (rawType == Optional.class) {
             optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
-            tl = ModuleAccess.base().toTypeLiteral(cl);
+            tl = BasePackageAccess.base().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("have multiple layers of optionals such as " + cl));
             }

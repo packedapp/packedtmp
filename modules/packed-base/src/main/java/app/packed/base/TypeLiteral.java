@@ -28,9 +28,9 @@ import java.lang.reflect.Type;
 
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
-import packed.internal.util.ModuleAccess;
+import packed.internal.util.BasePackageAccess;
 import packed.internal.util.TypeUtil;
-import packed.internal.util.ModuleAccess.AppPackedBaseAccess;
+import packed.internal.util.BasePackageAccess.AppPackedBaseAccess;
 
 /**
  * A TypeLiteral represents a generic type {@code T}. This class is used to work around the limitation that Java does
@@ -60,7 +60,7 @@ public abstract class TypeLiteral<T> {
     };
 
     static {
-        ModuleAccess.initialize(AppPackedBaseAccess.class, new AppPackedBaseAccess() {
+        BasePackageAccess.initialize(AppPackedBaseAccess.class, new AppPackedBaseAccess() {
 
             @Override
             public boolean isCanonicalized(TypeLiteral<?> typeLiteral) {

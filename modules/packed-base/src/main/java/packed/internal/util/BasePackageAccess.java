@@ -24,14 +24,13 @@ import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
-// Rename to ModuleAccess.
-public final class ModuleAccess {
+public final class BasePackageAccess {
 
     /** All secrets, we never remove them to make sure we never add anything twice. */
     private final static ConcurrentHashMap<Class<?>, Object> TMP = new ConcurrentHashMap<>();
 
     /** Never instantiate. */
-    private ModuleAccess() {}
+    private BasePackageAccess() {}
 
     /**
      * Initializes an access object.

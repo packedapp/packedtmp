@@ -41,7 +41,7 @@ import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.ModuleAccess;
+import packed.internal.util.BasePackageAccess;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -136,7 +136,7 @@ public abstract class Factory<T> {
         /** {@inheritDoc} */
         protected ExecutableFactory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            TypeLiteral<?> tl = ModuleAccess.base().toTypeLiteral(t);
+            TypeLiteral<?> tl = BasePackageAccess.base().toTypeLiteral(t);
             return new ExecutableFactory<>(tl, tl.rawType());
         }
     };
@@ -542,7 +542,7 @@ public abstract class Factory<T> {
     public static <T> Factory<T> of(TypeLiteral<T> implementation) {
         // Can cache it with a Class[] array corresponding to type parameters...
         requireNonNull(implementation, "implementation is null");
-        if (!ModuleAccess.base().isCanonicalized(implementation)) {
+        if (!BasePackageAccess.base().isCanonicalized(implementation)) {
             // We cache factories for all "new TypeLiteral<>(){}"
             return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
         }

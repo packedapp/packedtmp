@@ -40,6 +40,7 @@ public final class SourceAssembly implements DependencyProvider {
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration compConf;
 
+    /** Any factory that was us */
     @Nullable
     private final Factory<?> factory;
 
@@ -59,27 +60,28 @@ public final class SourceAssembly implements DependencyProvider {
 
     /** Whether or not this source is provided as a service. */
     @Nullable
-    public ServiceAssembly<?> service;
+    ServiceAssembly<?> service;
 
     SourceAssembly(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
         this.compConf = compConf;
         this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
+        Class<?> sourceType;
         if (source instanceof Class) {
-            Class<?> c = (Class<?>) source;
+            sourceType = (Class<?>) source;
             this.instance = null;
-            this.factory = compConf.modifiers().isStateless() ? null : Factory.of(c);
-            this.model = compConf.realm.componentModelOf(c);
+            this.factory = compConf.modifiers().isStateless() ? null : Factory.of(sourceType);
         } else if (source instanceof Factory) {
             this.instance = null;
             this.factory = (Factory<?>) source;
-            this.model = compConf.realm.componentModelOf(factory.rawType());
+            sourceType = factory.rawType();
         } else {
-            this.factory = null;
             this.instance = source;
-            this.model = compConf.realm.componentModelOf(source.getClass());
+            this.factory = null;
+            sourceType = source.getClass();
         }
+        this.model = compConf.realm.componentModelOf(sourceType);
 
         if (factory == null) {
             this.injectable = null;
