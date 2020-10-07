@@ -41,12 +41,9 @@ import app.packed.container.ExtensionSetup;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.OrderedExtensionSet;
 import app.packed.statemachine.Leaving;
-import app.packed.statemachine.LifecycleContext;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
-import packed.internal.lifecycle.old.LifecycleDefinition;
-import packed.internal.sidecar.old.SidecarTypeMeta;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
@@ -346,8 +343,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
         };
 
         /** Meta data about the extension sidecar. */
-        public static final SidecarTypeMeta STM = new SidecarTypeMeta(ExtensionSetup.class,
-                LifecycleDefinition.of(ExtensionModel.INSTANTIATING, ExtensionModel.NORMAL_USAGE, ExtensionModel.CHILD_LINKING));
 
         // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;
@@ -376,7 +371,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
          *            the type of extension we are building a model for
          */
         Builder(Class<? extends Extension> extensionType, Loader loader, int id) {
-            super(extensionType, STM);
+            super(extensionType);
             this.loader = requireNonNull(loader);
             this.id = id;
         }
@@ -392,7 +387,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
 
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
-            builder.addKey(LifecycleContext.class, ExtensionAssembly.MH_LIFECYCLE_CONTEXT, index);
             builder.addAnnoClassMapper(WireletConsume.class, ExtensionAssembly.MH_FIND_WIRELET, index);
         }
 

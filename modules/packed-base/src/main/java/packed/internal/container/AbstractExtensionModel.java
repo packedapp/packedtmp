@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.sidecar.model.Model;
-import packed.internal.sidecar.old.SidecarTypeMeta;
 
 /**
  * A model of a sidecar.
@@ -50,7 +49,7 @@ public abstract class AbstractExtensionModel extends Model {
 
         protected final Class<?> sidecarType;
 
-        protected Builder(Class<?> sidecarType, SidecarTypeMeta statics) {
+        protected Builder(Class<?> sidecarType) {
             this.sidecarType = requireNonNull(sidecarType);
         }
 

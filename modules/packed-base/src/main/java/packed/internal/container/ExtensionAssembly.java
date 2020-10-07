@@ -33,9 +33,7 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import app.packed.statemachine.LifecycleContext;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.lifecycle.old.LifecycleContextHelper;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -54,9 +52,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
-
-    /** A MethodHandle for invoking {@link #lifecycle()} used by {@link ExtensionModel}. */
-    static final MethodHandle MH_LIFECYCLE_CONTEXT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "lifecycle", LifecycleContext.class);
 
     /** A VarHandle used by {@link #of(ContainerAssembly, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
@@ -114,14 +109,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 //        if (isConfigured) {
 //            throw new IllegalStateException("This extension (" + instance().getClass().getSimpleName() + ") is no longer configurable");
 //        }
-    }
-
-    private void checkState(String expected) {
-        String current = lifecycle().current();
-        if (!current.equals(expected)) {
-            throw new IllegalStateException("Expected " + expected + ", was " + current);
-        }
-
     }
 
     /** {@inheritDoc} */
@@ -216,27 +203,6 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         return isImage = Boolean.FALSE;
     }
 
-    /**
-     * Returns a lifecycle context for the extension. Used by {@link #MH_LIFECYCLE_CONTEXT}.
-     * 
-     * @return a lifecycle context for the extension
-     */
-    private LifecycleContext lifecycle() {
-        return new LifecycleContextHelper.SimpleLifecycleContext(ExtensionModel.Builder.STM.ld) {
-
-            @Override
-            protected int state() {
-                if (instance == null) {
-                    return 0;
-                } else if (isConfigured == false) {
-                    return 1;
-                } else {
-                    return 2;
-                }
-            }
-        };
-    }
-
     /** {@inheritDoc} */
     @Override
     public void link(Bundle<?> bundle, Wirelet... wirelets) {
@@ -265,10 +231,10 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** Invoked by the container configuration, whenever the extension is configured. */
     void onConfigured() {
-        checkState(ExtensionModel.NORMAL_USAGE);
+        // checkState(ExtensionModel.NORMAL_USAGE);
         // model.invokePostSidecarAnnotatedMethods(ExtensionModel.ON_1_MAIN, instance, this);
         isConfigured = true;
-        checkState(ExtensionModel.CHILD_LINKING);
+        // checkState(ExtensionModel.CHILD_LINKING);
     }
 
     /** {@inheritDoc} */
@@ -338,9 +304,9 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(container.compConf, model);
         ExtensionAssembly ea = compConf.extension;
 
-        ea.checkState(ExtensionModel.INSTANTIATING);
+        // ea.checkState(ExtensionModel.INSTANTIATING);
         Extension e = ea.instance = model.newInstance(ea); // Creates a new instance of the extension
-        ea.checkState(ExtensionModel.NORMAL_USAGE);
+        // ea.checkState(ExtensionModel.NORMAL_USAGE);
 
         // Set app.packed.container.Extension.configuration = ea
         VH_EXTENSION_CONFIGURATION.set(e, ea); // field is package-private in a public package
