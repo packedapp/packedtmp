@@ -20,8 +20,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
 import app.packed.guest.Guest;
+import app.packed.inject.ServiceLocator;
 import app.packed.service.Injector;
-import packed.internal.classscan.ShellDriverScan;
+import packed.internal.classscan.InstantiatorBuilder;
+import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedShellDriver;
 
 /**
@@ -103,7 +105,16 @@ public interface ShellDriver<S> {
         // We automatically assume that if the implementation implements AutoClosable. Then we need a guest.
         boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
 
-        MethodHandle mh = ShellDriverScan.of(caller, implementation, isGuest);
+        // We currently do not support @Provide ect... Don't know if we ever will
+        // Create a new MethodHandle that can create shell instances.
+
+        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);
+        ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
+        ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
+        if (isGuest) {
+            ib.addKey(Guest.class, PackedInitializationContext.MH_GUEST, 0);
+        }
+        MethodHandle mh = ib.build();
         return new PackedShellDriver<>(isGuest, mh);
     }
 

@@ -28,7 +28,7 @@ import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.ComponentModifierSet;
 import app.packed.inject.Factory;
-import packed.internal.classscan.util.InstantiatorBuilder;
+import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /**

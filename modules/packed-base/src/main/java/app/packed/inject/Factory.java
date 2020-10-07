@@ -37,7 +37,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.VariableDescriptor;
-import packed.internal.classscan.util.ConstructorUtil;
+import packed.internal.classscan.ConstructorUtil;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.sidecar.ModuleAccess;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
@@ -124,9 +124,7 @@ public abstract class Factory<T> {
         /** {@inheritDoc} */
 
         protected Factory<?> computeValue(Class<?> implementation) {
-
-            Executable executable = ConstructorUtil.findInjectableIAE(implementation);
-            return new ExecutableFactory<>(TypeLiteral.of(implementation), executable);
+            return new ExecutableFactory<>(TypeLiteral.of(implementation), implementation);
         }
     };
 
@@ -140,7 +138,8 @@ public abstract class Factory<T> {
 
         protected Factory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
-            return ExecutableFactory.fromTypeLiteral(ModuleAccess.base().toTypeLiteral(t));
+            TypeLiteral<?> tl = ModuleAccess.base().toTypeLiteral(t);
+            return new ExecutableFactory<>(tl, tl.rawType());
         }
     };
 
@@ -553,7 +552,7 @@ public abstract class Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) of((Class<?>) t);
         } else {
-            return ExecutableFactory.fromTypeLiteral(implementation);
+            return new ExecutableFactory<>(implementation, implementation.rawType());
         }
     }
 
@@ -592,20 +591,20 @@ public abstract class Factory<T> {
 
         private final Object instance = null;
 
-        private ExecutableFactory(TypeLiteral<T> key, Executable executable) {
+        private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
             super(key);
-            this.executable = executable;
+            this.executable = ConstructorUtil.findInjectableIAE(findConstructorOn);
             this.checkLowerBound = false;
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 
+        /** {@inheritDoc} */
         @Override
         List<DependencyDescriptor> dependencies() {
             return dependencies;
         }
 
         /** {@inheritDoc} */
-
         @Override
         MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle methodHandle;
@@ -637,14 +636,6 @@ public abstract class Factory<T> {
         @Override
         public String toString() {
             return executable.toString();
-        }
-
-        // Should we have a strict type? For example, a static method on MyExtension.class
-        // must return MyExtension... Det maa de sgu alle.. Den anden er findMethod()...
-        // MyExtension.class create()
-
-        static <T> Factory<T> fromTypeLiteral(TypeLiteral<T> implementation) {
-            return new ExecutableFactory<>(implementation, ConstructorUtil.findInjectableIAE(implementation.rawType()));
         }
     }
 
@@ -753,11 +744,11 @@ public abstract class Factory<T> {
         /** A method handle for {@link Function#apply(Object)}. */
         private static final MethodHandle ACCEPT = LookupUtil.lookupVirtualPublic(Consumer.class, "accept", void.class, Object.class);
 
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
         /** The method handle that was unreflected. */
         private final Consumer<? super T> action;
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Factory<T> delegate;
 
         private PostConstructionFactory(Factory<T> delegate, Consumer<? super T> action) {
             super(delegate.typeLiteral);

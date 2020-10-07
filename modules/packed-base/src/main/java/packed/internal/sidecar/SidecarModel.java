@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
-import packed.internal.classscan.util.InstantiatorBuilder;
+import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /**
