@@ -29,7 +29,7 @@ import packed.internal.sidecar.SidecarModel;
 /**
  *
  */
-public abstract class FieldSidecar extends Sidecar {
+public abstract class FieldSidecar {
 
     // Hver sidecar har sit eget context object...
     // Eneste maade at subclasses ikke kan faa fat it

@@ -101,7 +101,7 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * 
      * @return the subtension type if any
      * 
-     * @See {@link Subtension}
+     * @see Subtension
      */
     Optional<Class<? extends Subtension>> subtensionType();
 

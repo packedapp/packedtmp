@@ -29,7 +29,7 @@ import packed.internal.sidecar.SidecarModel;
 /**
  * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
  */
-public abstract class MethodSidecar extends Sidecar {
+public abstract class MethodSidecar {
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
