@@ -31,10 +31,10 @@ import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
+import packed.internal.inject.Dependant;
+import packed.internal.inject.DependencyDescriptor;
+import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.dependency.Dependant;
-import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.base.TypeLiteral;
-import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.DependencyDescriptor;
 
 /**
  *

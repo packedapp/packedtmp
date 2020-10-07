@@ -23,7 +23,6 @@ import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.RegionAssembly;
 import packed.internal.container.ContainerAssembly;
-import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /**

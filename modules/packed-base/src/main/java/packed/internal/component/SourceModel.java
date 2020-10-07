@@ -24,7 +24,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import packed.internal.classscan.OpenClass;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**

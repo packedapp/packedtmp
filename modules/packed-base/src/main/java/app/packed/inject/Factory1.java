@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
 
 /**

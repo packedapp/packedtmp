@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.dependency;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,7 +32,6 @@ import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.component.SourceModelMethod.RunAt;
-import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.SourceMemberServiceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;

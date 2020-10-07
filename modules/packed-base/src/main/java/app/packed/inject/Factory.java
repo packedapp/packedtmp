@@ -37,11 +37,11 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.VariableDescriptor;
+import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.FindInjectableConstructor;
-import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
-import packed.internal.util.LookupUtil;
 import packed.internal.util.BasePackageAccess;
+import packed.internal.util.LookupUtil;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -146,7 +146,7 @@ public abstract class Factory<T> {
 
     final Class<?> actualType;
 
-    public final Key<T> key;
+    private final Key<T> key;
 
     /** The dependencies for this factory. */
     private final Class<? super T> type;

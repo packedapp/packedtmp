@@ -27,7 +27,6 @@ import app.packed.inject.ProvisionContext;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
-import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** Implementation of {@link ProvisionContext}. */
 public final class PackedProvideContext implements ProvisionContext {

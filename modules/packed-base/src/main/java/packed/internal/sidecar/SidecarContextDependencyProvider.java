@@ -25,8 +25,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.dependency.Dependant;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.Dependant;
+import packed.internal.inject.DependencyProvider;
 
 /**
  * Represents a method on a sidecar annotated with {@link Provide}.

@@ -23,9 +23,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.inject.dependency.Dependant;
-import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.Dependant;
+import packed.internal.inject.DependencyDescriptor;
+import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
@@ -125,7 +125,7 @@ public final class SourceAssembly implements DependencyProvider {
             if (instance != null) {
                 key = Key.of(model.type); // Move to model?? What if instance has Qualifier???
             } else {
-                key = factory.key;
+                key = factory.key();
             }
             s = service = compConf.injectionManager().services(true).provideSource(compConf, key);
         }

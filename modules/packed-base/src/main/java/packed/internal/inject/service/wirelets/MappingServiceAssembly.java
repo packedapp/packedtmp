@@ -23,7 +23,7 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.MappingInjectorEntry;

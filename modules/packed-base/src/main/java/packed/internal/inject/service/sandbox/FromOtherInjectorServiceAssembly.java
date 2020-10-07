@@ -21,7 +21,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.Dependant;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.inject.service.runtime.DelegatingInjectorEntry;
 import packed.internal.inject.service.runtime.RuntimeService;

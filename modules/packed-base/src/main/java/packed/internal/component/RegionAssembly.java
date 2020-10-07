@@ -18,7 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.Dependant;
 import packed.internal.util.ThrowableUtil;
 
 /**

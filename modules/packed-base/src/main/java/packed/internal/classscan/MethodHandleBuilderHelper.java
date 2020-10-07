@@ -34,8 +34,8 @@ import app.packed.inject.InjectionContext;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.classscan.MethodHandleBuilder.Entry;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.PackedInjectionContext;
-import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.util.MethodHandleUtil;
 
 /**

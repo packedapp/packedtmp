@@ -22,8 +22,6 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.component.AssemblyException;
 import packed.internal.component.RegionAssembly;
-import packed.internal.inject.dependency.Dependant;
-import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /** A utility class that can find cycles in a dependency graph. */
