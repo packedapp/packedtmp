@@ -122,9 +122,6 @@ public class SourceModelMethod extends SourceModelMember {
     /** A builder. */
     private static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
 
-        /** Disable the sidecar. */
-        private boolean disable;
-
         /** The method, if exposed to end-users. */
         @Nullable
         private Method exposedMethod;
@@ -141,12 +138,6 @@ public class SourceModelMethod extends SourceModelMember {
             this.shared = requireNonNull(shared);
             this.model = requireNonNull(model);
             this.unsafeMethod = shared.methodUnsafe;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void disable() {
-            this.disable = true;
         }
 
         /** {@inheritDoc} */

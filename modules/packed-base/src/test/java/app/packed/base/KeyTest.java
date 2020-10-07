@@ -36,7 +36,6 @@ import java.util.OptionalLong;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.introspection.MethodDescriptor;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.CharQualifier;
 import testutil.stubs.annotation.IntQualifier;
@@ -197,7 +196,6 @@ public class KeyTest {
         }
 
         npe(() -> Key.fromMethodReturnType((Method) null), "method");
-        npe(() -> Key.fromMethodReturnType((MethodDescriptor) null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
         assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);

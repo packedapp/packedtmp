@@ -58,9 +58,7 @@ final class ActivateSidecarModel {
             if (as == null) {
                 return null;
             }
-
             Map<SidecarActivationType, Class<? extends Sidecar>> actualResult = new HashMap<>();
-
             SidecarActivationType[] activations = as.activation();
             if (activations.length == 0) {
                 throw new InternalExtensionException("The ann");
@@ -68,10 +66,8 @@ final class ActivateSidecarModel {
             Class<? extends Sidecar>[] sidecars = as.sidecar();
             HashSet<Class<? extends Sidecar>> sidecarsSet = new HashSet<>(List.of(sidecars));
 
-//            HashMap<SidecarActivationType, Class<? extends Sidecar>> map = new HashMap<>();
             HashSet<SidecarActivationType> s = new HashSet<>(List.of(activations));
             for (SidecarActivationType t : s) {
-//                Class<? extends Sidecar> result;
                 Class<? extends Sidecar> expected = MAPPER.get(t);
                 for (Iterator<Class<? extends Sidecar>> iterator = sidecarsSet.iterator(); iterator.hasNext();) {
                     Class<? extends Sidecar> sidecarActivationType = iterator.next();

@@ -56,11 +56,18 @@ public abstract class SourceModelMember {
 
     static abstract class Builder {
 
+        /** Disable the sidecar. */
+        boolean disable;
+
         /** If the member is being provided as a service whether or not it is constant. */
         boolean provideAsConstant;
 
         /** If the member is being provided as a service its key. */
         @Nullable
         Key<?> provideAsKey;
+
+        public final void disable() {
+            this.disable = true;
+        }
     }
 }

@@ -27,8 +27,6 @@ import app.packed.base.Attribute;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MemberDescriptor;
-import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;
 
@@ -125,21 +123,21 @@ public interface ConfigSite {
         forEach(e -> System.out.println(e));
     }
 
-    default ConfigSite thenAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
-        return new ConfigSiteSupport.AnnotatedFieldConfigSite(this, operation, field, annotation);
-    }
-
-    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, MemberDescriptor member) {
-        if (member instanceof MethodDescriptor) {
-            return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
-        } else {
-            return thenAnnotatedField(cst, (FieldDescriptor) member, annotation);
-        }
-    }
-
-    default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
-        return new ConfigSiteSupport.AnnotatedMethodConfigSite(this, cst, method, annotation);
-    }
+//    default ConfigSite thenAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
+//        return new ConfigSiteSupport.AnnotatedFieldConfigSite(this, operation, field, annotation);
+//    }
+//
+//    default ConfigSite thenAnnotatedMember(String cst, Annotation annotation, MemberDescriptor member) {
+//        if (member instanceof MethodDescriptor) {
+//            return thenAnnotatedMethod(cst, annotation, (MethodDescriptor) member);
+//        } else {
+//            return thenAnnotatedField(cst, (FieldDescriptor) member, annotation);
+//        }
+//    }
+//
+//    default ConfigSite thenAnnotatedMethod(String cst, Annotation annotation, MethodDescriptor method) {
+//        return new ConfigSiteSupport.AnnotatedMethodConfigSite(this, cst, method, annotation);
+//    }
 
     default ConfigSite thenStackFrame(String operation, StackFrame stackFrame) {
         return new ConfigSiteSupport.StackFrameConfigSite(this, operation, stackFrame);

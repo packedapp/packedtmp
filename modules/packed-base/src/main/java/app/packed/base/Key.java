@@ -38,10 +38,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.base.TypeLiteral.CanonicalizedTypeLiteral;
-import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
-import packed.internal.introspection.PackedMethodDescriptor;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
@@ -364,12 +361,6 @@ public abstract class Key<T> {
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
-    public static Key<?> fromField(FieldDescriptor field) {
-        TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
-        Annotation[] annotation = QualifierHelper.findQualifier(field, field.getAnnotations());
-        return fromTypeLiteralNullableAnnotation(field, tl, annotation);
-    }
-
     /**
      * Returns a key matching the return type of the specified method and any qualifier that may be present on the method.
      * 
@@ -390,11 +381,6 @@ public abstract class Key<T> {
         TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
         Annotation[] annotation = QualifierHelper.findQualifier(method, method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
-    }
-
-    public static Key<?> fromMethodReturnType(MethodDescriptor method) {
-        requireNonNull(method, "method is null");
-        return PackedMethodDescriptor.cast(method).fromMethodReturnType();
     }
 
     public static Key<?> fromParameter(Parameter parameter) {
@@ -443,8 +429,8 @@ public abstract class Key<T> {
     public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
-        assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof FieldDescriptor
-                || source instanceof MethodDescriptor || source instanceof TypeLiteral || source instanceof Class);
+        assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof TypeLiteral
+                || source instanceof Class);
 
         typeLiteral = typeLiteral.box();
         if (TypeUtil.isOptionalType(typeLiteral.rawType())) {

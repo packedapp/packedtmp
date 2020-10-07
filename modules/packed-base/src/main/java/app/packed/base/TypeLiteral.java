@@ -26,8 +26,6 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.inject.sidecar.AppPackedBaseAccess;
 import packed.internal.inject.sidecar.ModuleAccess;
@@ -214,19 +212,6 @@ public abstract class TypeLiteral<T> {
     }
 
     /**
-     * Returns the type of the specified field descriptor as a type literal.
-     * 
-     * @param descriptor
-     *            the field descriptor to return a type literal for
-     * @return the type literal for the field
-     * @see Field#getGenericType()
-     */
-    public static TypeLiteral<?> fromField(FieldDescriptor descriptor) {
-        requireNonNull(descriptor, "field is null");
-        return new CanonicalizedTypeLiteral<>(descriptor.getParameterizedType());
-    }
-
-    /**
      * Returns the type of the specified method's return type as a type literal.
      * 
      * @param method
@@ -235,19 +220,6 @@ public abstract class TypeLiteral<T> {
      * @see Method#getGenericReturnType()
      */
     public static TypeLiteral<?> fromMethodReturnType(Method method) {
-        requireNonNull(method, "method is null");
-        return new CanonicalizedTypeLiteral<>(method.getGenericReturnType());
-    }
-
-    /**
-     * Returns the type of the specified method descriptor's return type as a type literal.
-     * 
-     * @param method
-     *            the method descriptor whose return type to return a type literal for
-     * @return the type literal for the return type of the specified method descriptor
-     * @see MethodDescriptor#getGenericReturnType()
-     */
-    public static TypeLiteral<?> fromMethodReturnType(MethodDescriptor method) {
         requireNonNull(method, "method is null");
         return new CanonicalizedTypeLiteral<>(method.getGenericReturnType());
     }

@@ -118,10 +118,6 @@ public class SourceModelField extends SourceModelMember {
         return field.getModifiers();
     }
 
-    public boolean isInstanceMethod() {
-        return !Modifier.isStatic(field.getModifiers());
-    }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
@@ -129,14 +125,6 @@ public class SourceModelField extends SourceModelMember {
     }
 
     private final class Builder extends SourceModelMember.Builder implements FieldSidecar.BootstrapContext {
-
-        public boolean disable;
-
-        /** {@inheritDoc} */
-        @Override
-        public void disable() {
-            this.disable = true;
-        }
 
         /** {@inheritDoc} */
         @Override
