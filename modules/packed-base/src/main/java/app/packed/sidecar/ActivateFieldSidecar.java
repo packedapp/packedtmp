@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
-public @interface ActiveFieldSidecar {
+public @interface ActivateFieldSidecar {
 
     /** Whether or not the sidecar is allow to get the contents of a field. */
     boolean allowGet() default false;

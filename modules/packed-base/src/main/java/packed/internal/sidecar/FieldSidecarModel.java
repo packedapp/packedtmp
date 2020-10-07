@@ -15,8 +15,6 @@
  */
 package packed.internal.sidecar;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -29,9 +27,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
+import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.FieldSidecar;
 import app.packed.sidecar.Invoker;
-import app.packed.sidecar.SidecarActivationType;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -47,14 +45,8 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
 
         @Override
         protected FieldSidecarModel computeValue(Class<?> type) {
-            ActivateSidecarModel asm = ActivateSidecarModel.CACHE.get(type);
-            if (asm == null) {
-                return null;
-            }
-            @SuppressWarnings("unchecked")
-            Class<? extends FieldSidecar> csm = (Class<? extends FieldSidecar>) asm.get(SidecarActivationType.ANNOTATED_FIELD);
-            requireNonNull(csm);
-            return new FieldSidecarModel.Builder(csm).build();
+            ActivateFieldSidecar afs = type.getAnnotation(ActivateFieldSidecar.class);
+            return afs == null ? null : new FieldSidecarModel.Builder(afs).build();
         }
     };
 
@@ -99,8 +91,8 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
 
         private final HashMap<Key<?>, SidecarContextDependencyProvider.Builder> providing = new HashMap<>();
 
-        Builder(Class<?> implementation) {
-            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation);
+        Builder(ActivateFieldSidecar afs) {
+            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, afs.sidecar());
         }
 
         /** {@inheritDoc} */

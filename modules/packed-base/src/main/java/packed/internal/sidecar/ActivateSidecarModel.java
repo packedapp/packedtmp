@@ -24,7 +24,6 @@ import java.util.Map;
 import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.sidecar.ActivateSidecar;
-import app.packed.sidecar.FieldSidecar;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.sidecar.Sidecar;
 import app.packed.sidecar.SidecarActivationType;
@@ -34,8 +33,7 @@ import app.packed.sidecar.SidecarActivationType;
  */
 final class ActivateSidecarModel {
 
-    static final Map<SidecarActivationType, Class<? extends Sidecar>> MAPPER = Map.of(SidecarActivationType.ANNOTATED_METHOD, MethodSidecar.class,
-            SidecarActivationType.ANNOTATED_FIELD, FieldSidecar.class);
+    static final Map<SidecarActivationType, Class<? extends Sidecar>> MAPPER = Map.of(SidecarActivationType.ANNOTATED_METHOD, MethodSidecar.class);
 
     final Map<SidecarActivationType, Class<? extends Sidecar>> sidecars;
 

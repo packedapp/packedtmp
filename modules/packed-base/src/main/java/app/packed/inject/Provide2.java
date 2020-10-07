@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
+import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Opens;
 import app.packed.sidecar.SidecarActivationType;
@@ -79,9 +80,9 @@ import packed.internal.inject.provide.ProvideMethodSidecar;
 @Documented
 @ExtensionMember(ServiceExtension.class)
 @Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_SET })
-@ActivateSidecar(activation = { SidecarActivationType.ANNOTATED_METHOD, SidecarActivationType.ANNOTATED_FIELD }, permits = { SidecarPermit.METHOD_INVOKE,
-        SidecarPermit.PROVIDE_SERVICE }, sidecar = { ProvideMethodSidecar.class, ProvideFieldSidecar.class })
-// @ActivateFieldSidecar(allowReadField = true, allowWriteField =true, Sidecar);
+@ActivateSidecar(activation = { SidecarActivationType.ANNOTATED_METHOD }, permits = { SidecarPermit.METHOD_INVOKE, SidecarPermit.PROVIDE_SERVICE }, sidecar = {
+        ProvideMethodSidecar.class, ProvideFieldSidecar.class })
+@ActivateFieldSidecar(allowGet = true, sidecar = ProvideFieldSidecar.class)
 public @interface Provide2 {
 
     /**

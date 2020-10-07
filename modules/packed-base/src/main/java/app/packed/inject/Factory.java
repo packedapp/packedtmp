@@ -21,7 +21,10 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -33,7 +36,6 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.classscan.util.ConstructorUtil;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -123,8 +125,8 @@ public abstract class Factory<T> {
 
         protected Factory<?> computeValue(Class<?> implementation) {
 
-            ExecutableDescriptor executable = ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(implementation));
-            return new ExecutableFactory<>(TypeLiteral.of(implementation), executable, DependencyDescriptor.fromExecutable(executable));
+            Executable executable = ConstructorUtil.findInjectableIAE(implementation);
+            return new ExecutableFactory<>(TypeLiteral.of(implementation), executable);
         }
     };
 
@@ -586,15 +588,15 @@ public abstract class Factory<T> {
         private final List<DependencyDescriptor> dependencies;
 
         /** A factory with an executable as a target. */
-        public final ExecutableDescriptor executable;
+        public final Executable executable;
 
         private final Object instance = null;
 
-        private ExecutableFactory(TypeLiteral<T> key, ExecutableDescriptor executable, List<DependencyDescriptor> dependencies) {
+        private ExecutableFactory(TypeLiteral<T> key, Executable executable) {
             super(key);
             this.executable = executable;
             this.checkLowerBound = false;
-            this.dependencies = dependencies;
+            this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 
         @Override
@@ -611,10 +613,15 @@ public abstract class Factory<T> {
                 if (Modifier.isPrivate(executable.getModifiers())) {
                     lookup = lookup.in(executable.getDeclaringClass());
                 }
-                methodHandle = executable.unreflect(lookup);
+                if (executable instanceof Constructor) {
+                    methodHandle = lookup.unreflectConstructor((Constructor<?>) executable);
+                } else {
+                    methodHandle = lookup.unreflect((Method) executable);
+                }
+
             } catch (IllegalAccessException e) {
-                throw new InaccessibleMemberException(
-                        "No access to the " + executable.descriptorTypeName() + " " + executable + " with the specified lookup object", e);
+                String name = executable instanceof Constructor ? "constructor" : "method";
+                throw new InaccessibleMemberException("No access to the " + name + " " + executable + " with the specified lookup object", e);
             }
 
             MethodHandle mh = methodHandle;
@@ -637,8 +644,7 @@ public abstract class Factory<T> {
         // MyExtension.class create()
 
         static <T> Factory<T> fromTypeLiteral(TypeLiteral<T> implementation) {
-            ExecutableDescriptor executable = ExecutableDescriptor.from(ConstructorUtil.findInjectableIAE(implementation.rawType()));
-            return new ExecutableFactory<>(implementation, executable, DependencyDescriptor.fromExecutable(executable));
+            return new ExecutableFactory<>(implementation, ConstructorUtil.findInjectableIAE(implementation.rawType()));
         }
     }
 

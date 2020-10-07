@@ -19,19 +19,19 @@ import app.packed.base.Key;
 
 /** This enum contains the various ways a sidecar can be activated. */
 public enum SidecarActivationType {
-    
+
     /** Activated by a specific annotation on a class. */
     ANNOTATED_CLASS,
-    
-    /** Activated by a specific annotation on a field. */
-    ANNOTATED_FIELD,
-    
+//    
+//    /** Activated by a specific annotation on a field. */
+//    ANNOTATED_FIELD,
+
     /** Activated by a specific annotation on a method. */
     ANNOTATED_METHOD,
-    
+
     /** Activated by a specific annotation on a variable (field, parameter or type variable). */
     ANNOTATED_VARIABLE,
-    
+
     /** Activated by a dependency represented via a {@link Key}. */
     DEPENDENCY;
 }
