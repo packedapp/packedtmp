@@ -27,9 +27,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
+import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
-import app.packed.sidecar.SidecarActivationType;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -43,13 +43,8 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
         @Override
         protected MethodSidecarModel computeValue(Class<?> type) {
-            ActivateSidecarModel asm = ActivateSidecarModel.CACHE.get(type);
-            if (asm == null) {
-                return null;
-            }
-            @SuppressWarnings("unchecked")
-            Class<? extends MethodSidecar> csm = (Class<? extends MethodSidecar>) asm.get(SidecarActivationType.ANNOTATED_METHOD);
-            return new MethodSidecarModel.Builder(csm).build();
+            ActivateMethodSidecar ams = type.getAnnotation(ActivateMethodSidecar.class);
+            return ams == null ? null : new Builder(ams).build();
         }
     };
 
@@ -85,7 +80,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         return ANNOTATION_ON_METHOD_SIDECARS.get(c);
     }
 
-    /** A builder for method sidecar. */
+    /** A builder for method sidecar. This class is public because it used from {@link MethodSidecar}. */
     public final static class Builder extends SidecarModel.Builder<MethodSidecar> {
 
         Class<?> invoker;
@@ -94,8 +89,8 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
         private final HashMap<Key<?>, SidecarContextDependencyProvider.Builder> providing = new HashMap<>();
 
-        Builder(Class<? extends MethodSidecar> implementation) {
-            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation);
+        Builder(ActivateMethodSidecar ams) {
+            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, ams.sidecar());
         }
 
         /** {@inheritDoc} */

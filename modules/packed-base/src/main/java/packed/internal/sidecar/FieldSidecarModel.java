@@ -46,7 +46,7 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
         @Override
         protected FieldSidecarModel computeValue(Class<?> type) {
             ActivateFieldSidecar afs = type.getAnnotation(ActivateFieldSidecar.class);
-            return afs == null ? null : new FieldSidecarModel.Builder(afs).build();
+            return afs == null ? null : new Builder(afs).build();
         }
     };
 

@@ -23,6 +23,7 @@ import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
 import app.packed.sidecar.ActivateFieldSidecar;
+import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.ActivateSidecar;
 import app.packed.sidecar.Opens;
 import app.packed.sidecar.SidecarActivationType;
@@ -82,6 +83,8 @@ import packed.internal.inject.provide.ProvideMethodSidecar;
 @Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_SET })
 @ActivateSidecar(activation = { SidecarActivationType.ANNOTATED_METHOD }, permits = { SidecarPermit.METHOD_INVOKE, SidecarPermit.PROVIDE_SERVICE }, sidecar = {
         ProvideMethodSidecar.class, ProvideFieldSidecar.class })
+
+@ActivateMethodSidecar(allowInvoke = true, sidecar = ProvideMethodSidecar.class)
 @ActivateFieldSidecar(allowGet = true, sidecar = ProvideFieldSidecar.class)
 public @interface Provide2 {
 
