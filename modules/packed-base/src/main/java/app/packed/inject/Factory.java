@@ -21,6 +21,7 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -33,7 +34,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.ExecutableDescriptor;
-import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.classscan.util.ConstructorUtil;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -646,13 +646,13 @@ public abstract class Factory<T> {
     static final class FieldFactory<T> extends Factory<T> {
 
         /** The field we invoke. */
-        private final FieldDescriptor field;
+        private final Field field;
 
         private final Object instance = null;
 
         @SuppressWarnings("unchecked")
-        FieldFactory(FieldDescriptor field) {
-            super((TypeLiteral<T>) field.getTypeLiteral());
+        FieldFactory(Field field) {
+            super((TypeLiteral<T>) TypeLiteral.fromField(field));
             this.field = field;
         }
 
@@ -677,7 +677,7 @@ public abstract class Factory<T> {
                     // vs MethodHandles.private???
                     lookup = lookup.in(field.getDeclaringClass());
                 }
-                handle = field.unreflectGetter(lookup);
+                handle = lookup.unreflectGetter(field);
             } catch (IllegalAccessException e) {
                 throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
