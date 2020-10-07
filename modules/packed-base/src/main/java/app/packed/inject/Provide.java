@@ -22,9 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
-import app.packed.sidecar.Opens;
 import app.packed.sidecar.Packlet;
-import app.packed.sidecar.SidecarPermit;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -76,7 +74,6 @@ import app.packed.sidecar.SidecarPermit;
 @Documented
 @Packlet(extension = ServiceExtension.class)
 @ExtensionMember(ServiceExtension.class)
-@Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_SET })
 public @interface Provide {
 
     /**

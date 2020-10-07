@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 /**
  * 
  * <p>
- * Opens usage sites of the annotated annotation for access by #{@link Opens#toModules()}.
+ * Opens usage sites of the annotated annotation for access by
  * <p>
  * This annotation never applies transitively.
  * 

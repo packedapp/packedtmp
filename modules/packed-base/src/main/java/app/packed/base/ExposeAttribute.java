@@ -21,9 +21,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.sidecar.Opens;
-import app.packed.sidecar.SidecarPermit;
-
 /**
  * The type of the field or the return type of the method must match the type of attribute. Packed makes no check if any
  * of the types are generic.
@@ -31,7 +28,6 @@ import app.packed.sidecar.SidecarPermit;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Opens(to = { SidecarPermit.METHOD_INVOKE, SidecarPermit.FIELD_GET })
 // Giver det mening at kunne injecte attributer??? Not sure
 
 // AttributeExpose syntes jeg... Vi har nok provide
