@@ -59,11 +59,8 @@ public final class OldServiceWirelets {
 
     public static void main(String[] args) {
         provideMapped(new Factory1<Long, Integer>(e -> e.intValue()) {});
-
         mapTo(new Factory1<TimeZone, ZoneId>(TimeZone::toZoneId) {});
-
         provideMapped(Long.class, Integer.class, e -> e.intValue());
-
         provideMapped(Key.of(Long.class), Key.of(Integer.class), e -> e.intValue());
         mapTo(new Factory1<Long, Integer>(Long::intValue) {});
     }

@@ -31,6 +31,7 @@ import packed.internal.inject.PackedProvideContext;
 /** An abstract implementation of {@link ServiceLocator}. */
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
 
+    // /child [ss.BaseMyBundle] does not export a service with the specified key
     protected abstract String failedToUseMessage(Key<?> key);
 
     /** {@inheritDoc} */
@@ -60,7 +61,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             provider = Provider.ofConstant(t);
         } else {
             ProvisionContext pc = PackedProvideContext.of(key);
-            provider = new NonConstantLocatorProvider<T>(s, pc);
+            provider = new ServiceWrapperProvider<T>(s, pc);
         }
         return Optional.of(provider);
     }
@@ -89,7 +90,6 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             return s.forLocator(this);
         }
         String msg = failedToUseMessage(key);
-        // /child [ss.BaseMyBundle] does not export a service with the specified key
         throw new NoSuchElementException(msg);
     }
 }

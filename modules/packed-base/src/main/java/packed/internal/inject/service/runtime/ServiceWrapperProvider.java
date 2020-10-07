@@ -23,13 +23,13 @@ import app.packed.inject.ProvisionContext;
 /**
  *
  */
-public class NonConstantLocatorProvider<T> implements Provider<T> {
+public class ServiceWrapperProvider<T> implements Provider<T> {
 
     final RuntimeService<T> service;
 
     final ProvisionContext ppc;
 
-    NonConstantLocatorProvider(RuntimeService<T> service, ProvisionContext ppc) {
+    ServiceWrapperProvider(RuntimeService<T> service, ProvisionContext ppc) {
         this.service = requireNonNull(service);
         this.ppc = requireNonNull(ppc);
     }
