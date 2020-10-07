@@ -34,7 +34,7 @@ import packed.internal.component.SourceModelMethod;
 import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
+import packed.internal.inject.service.assembly.SourceMemberServiceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
@@ -61,7 +61,7 @@ import packed.internal.sidecar.RuntimeRegionInvoker;
 public class Dependant {
 
     @Nullable
-    private final AtProvideServiceAssembly<?> service;
+    private final SourceMemberServiceAssembly<?> service;
 
     MethodHandle buildMethodHandle;
 
@@ -106,7 +106,7 @@ public class Dependant {
             }
 
             ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
-            ServiceAssembly<?> sa = this.service = new AtProvideServiceAssembly<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
+            ServiceAssembly<?> sa = this.service = new SourceMemberServiceAssembly<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;

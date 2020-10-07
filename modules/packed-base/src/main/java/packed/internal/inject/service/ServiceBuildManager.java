@@ -39,7 +39,7 @@ import packed.internal.container.ContainerAssembly;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.assembly.ComponentSourceServiceAssembly;
+import packed.internal.inject.service.assembly.SourceInstanceServiceAssembly;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.assembly.ProvideAllFromOtherInjector;
 import packed.internal.inject.service.assembly.ServiceAssembly;
@@ -168,7 +168,7 @@ public final class ServiceBuildManager {
     }
 
     public <T> ServiceAssembly<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
-        ServiceAssembly<T> e = new ComponentSourceServiceAssembly<>(this, compConf, key);
+        ServiceAssembly<T> e = new SourceInstanceServiceAssembly<>(this, compConf, key);
         assemblies.add(e);
         return e;
     }

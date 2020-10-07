@@ -31,7 +31,7 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /** A build entry wrapping a component source. */
-public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> {
+public final class SourceInstanceServiceAssembly<T> extends ServiceAssembly<T> {
 
     /** The singleton source we are wrapping */
     private final SourceAssembly source;
@@ -42,7 +42,7 @@ public final class ComponentSourceServiceAssembly<T> extends ServiceAssembly<T> 
      * @param compConf
      *            the component we provide for
      */
-    public ComponentSourceServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<T> key) {
+    public SourceInstanceServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<T> key) {
         super(im, compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }

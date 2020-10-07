@@ -29,10 +29,9 @@ public class ServiceInstantiationContext {
 
     public final RuntimeRegion region;
 
-    // Translates from BuildEntry->RuntimeEntry
     public final IdentityHashMap<ServiceAssembly<?>, RuntimeService<?>> transformers = new IdentityHashMap<>();
 
-    public ServiceInstantiationContext(RuntimeRegion ns) {
-        this.region = requireNonNull(ns);
+    public ServiceInstantiationContext(RuntimeRegion region) {
+        this.region = requireNonNull(region);
     }
 }

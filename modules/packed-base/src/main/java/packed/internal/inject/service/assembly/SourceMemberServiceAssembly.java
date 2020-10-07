@@ -31,7 +31,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 /**
  *
  */
-public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
+public class SourceMemberServiceAssembly<T> extends ServiceAssembly<T> {
 
     private final Dependant dependant;
 
@@ -39,17 +39,19 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     public final int regionIndex;
 
     @SuppressWarnings("unchecked")
-    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Dependant dependant, Key<?> key, boolean isConst) {
+    public SourceMemberServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Dependant dependant, Key<?> key, boolean isConst) {
         super(im, compConf.configSite(), (Key<T>) key);
         this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;
     }
 
+    /** {@inheritDoc} */
     @Override
     public Dependant dependant() {
         return dependant;
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
         return dependant.buildMethodHandle();
@@ -71,6 +73,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
         }
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return "@Provide " + dependant.directMethodHandle;

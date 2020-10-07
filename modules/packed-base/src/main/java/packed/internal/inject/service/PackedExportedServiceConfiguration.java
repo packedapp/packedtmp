@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.assembly;
+package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,6 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.ExportedServiceConfiguration;
+import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 
 /**
  * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
