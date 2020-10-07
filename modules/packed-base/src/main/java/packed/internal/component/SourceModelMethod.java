@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.introspection.MethodDescriptor;
 import app.packed.sidecar.MethodSidecar;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -63,8 +62,7 @@ public class SourceModelMethod extends SourceModelMember {
         this.model = requireNonNull(builder.model);
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
-        MethodDescriptor m = MethodDescriptor.from(method);
-        this.dependencies = DependencyDescriptor.fromExecutable(m);
+        this.dependencies = DependencyDescriptor.fromExecutable(method);
         this.directMethodHandle = requireNonNull(builder.shared.direct());
     }
 

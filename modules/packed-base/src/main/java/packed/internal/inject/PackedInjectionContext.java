@@ -17,27 +17,37 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.inject.Provider;
+import java.util.Set;
 
-/** An implementation of {@link Provider} that returns the instance on every invocation. */
-public final class ConstantProvider<T> implements Provider<T> {
+import app.packed.base.Key;
+import app.packed.inject.InjectionContext;
 
-    /** The constant to provide on every invocation. */
-    private final T constant;
+/** The default implementation of {@link InjectionContext}. */
+public class PackedInjectionContext implements InjectionContext {
 
-    public ConstantProvider(T constant) {
-        this.constant = requireNonNull(constant, "constant is null");
+    private final Class<?> target;
+
+    private final Set<Key<?>> keys;
+
+    public PackedInjectionContext(Class<?> target, Set<Key<?>> keys) {
+        this.target = requireNonNull(target);
+        this.keys = requireNonNull(keys);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return true;
+    public Set<Key<?>> keys() {
+        return keys;
     }
 
     /** {@inheritDoc} */
     @Override
-    public T provide() {
-        return constant;
+    public Class<?> targetClass() {
+        return target;
+    }
+
+    @Override
+    public String toString() {
+        return "InjectionContext[" + target.getCanonicalName() + "]: " + keys;
     }
 }

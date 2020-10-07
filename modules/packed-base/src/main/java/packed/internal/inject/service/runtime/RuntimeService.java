@@ -23,7 +23,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.context.PackedProvideContext;
+import packed.internal.inject.PackedProvideContext;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 
 /** An entry that represents a service at runtime. */

@@ -37,7 +37,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
 import app.packed.introspection.ConstructorDescriptor;
-import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.MethodDescriptor;
@@ -282,24 +281,6 @@ public final class DependencyDescriptor {
      *            the executable to return a list of dependencies for
      * @return a list of dependencies from the specified executable
      */
-    public static List<DependencyDescriptor> fromExecutable(ExecutableDescriptor executable) {
-        ParameterDescriptor[] parameters = executable.getParametersUnsafe();
-        switch (parameters.length) {
-        case 0:
-            return List.of();
-        case 1:
-            return List.of(fromVariable(parameters[0]));
-        case 2:
-            return List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
-        default:
-            DependencyDescriptor[] sd = new DependencyDescriptor[parameters.length];
-            for (int i = 0; i < sd.length; i++) {
-                sd[i] = fromVariable(parameters[i]);
-            }
-            return List.of(sd);
-        }
-    }
-
     public static List<DependencyDescriptor> fromExecutable(Executable executable) {
         Parameter[] parameters = executable.getParameters();
         switch (parameters.length) {

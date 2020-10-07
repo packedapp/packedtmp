@@ -17,8 +17,6 @@ package app.packed.inject;
 
 import java.util.stream.Stream;
 
-import packed.internal.inject.ConstantProvider;
-
 /**
  * A provider of instances.
  * 
@@ -73,7 +71,7 @@ public interface Provider<T> {
      * @return a new provider that provides the specified constant everytime
      */
     static <T> Provider<T> ofConstant(T constant) {
-        return new ConstantProvider<>(constant);
+        return new ProviderConstant<>(constant);
     }
 }
 

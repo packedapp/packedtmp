@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.context.PackedProvideContext;
+import packed.internal.inject.PackedProvideContext;
 
 /** An abstract implementation of {@link ServiceLocator}. */
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
