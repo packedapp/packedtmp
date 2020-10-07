@@ -26,6 +26,6 @@ public final class ProvideMethodSidecar extends MethodSidecar {
     @Override
     protected void bootstrap(BootstrapContext context) {
         Provide2 p2 = context.getAnnotation(Provide2.class);
-        context.provideAsService(p2.constant());
+        context.registerAsService(p2.constant());
     }
 }

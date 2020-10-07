@@ -61,7 +61,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class, "builder",
             MethodSidecarModel.Builder.class);
 
-    public final Map<Key<?>, SidecarDependencyProvider> keys;
+    public final Map<Key<?>, SidecarContextDependencyProvider> keys;
 
     // Must take an invoker...
     public final MethodHandle onInitialize;
@@ -75,7 +75,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
     private MethodSidecarModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
-        Map<Key<?>, SidecarDependencyProvider> tmp = new HashMap<>();
+        Map<Key<?>, SidecarContextDependencyProvider> tmp = new HashMap<>();
         builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
@@ -92,7 +92,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
         private MethodHandle onInitialize;
 
-        private final HashMap<Key<?>, SidecarDependencyProvider.Builder> providing = new HashMap<>();
+        private final HashMap<Key<?>, SidecarContextDependencyProvider.Builder> providing = new HashMap<>();
 
         Builder(Class<? extends MethodSidecar> implementation) {
             super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, implementation);
@@ -110,7 +110,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                     if (!Modifier.isStatic(m.getModifiers())) {
                         mh = mh.bindTo(instance);
                     }
-                    SidecarDependencyProvider.Builder b = new SidecarDependencyProvider.Builder(m, mh);
+                    SidecarContextDependencyProvider.Builder b = new SidecarContextDependencyProvider.Builder(m, mh);
                     if (providing.putIfAbsent(b.key, b) != null) {
                         throw new InternalExtensionException("Multiple methods on " + instance.getClass() + " that provide " + b.key);
                     }

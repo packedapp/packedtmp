@@ -23,14 +23,14 @@ import app.packed.inject.Provide;
 import packed.internal.component.RegionAssembly;
 import packed.internal.component.SourceAssembly;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.sidecar.SidecarDependencyProvider;
+import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**
  * Something that
  * 
  * {@link SourceAssembly} for methods or fields that needs an instance of the component source
  * 
- * {@link SidecarDependencyProvider} for methods annotated with {@link Provide}
+ * {@link SidecarContextDependencyProvider} for methods annotated with {@link Provide}
  * 
  * {@link ServiceAssembly} a service of some kind
  */

@@ -31,22 +31,21 @@ import packed.internal.inject.dependency.DependencyProvider;
 /**
  * Represents a method on a sidecar annotated with {@link Provide}.
  */
-public final class SidecarDependencyProvider implements DependencyProvider {
+public final class SidecarContextDependencyProvider implements DependencyProvider {
 
     /** The key under which the dependency is provided. */
     public final Key<?> key;
 
+    /** A (bound if needed) method handle. */
     private final MethodHandle methodHandle;
 
     /** The sidecar that provides the instance. */
     public final SidecarModel<?> sidecarModel;
 
-    private SidecarDependencyProvider(SidecarModel<?> sidecarModel, Builder builder) {
+    private SidecarContextDependencyProvider(SidecarModel<?> sidecarModel, Builder builder) {
         this.key = builder.key;
         this.sidecarModel = sidecarModel;
-        MethodHandle mh = builder.methodHandle;
-
-        this.methodHandle = MethodHandles.dropArguments(mh, 0, RuntimeRegion.class);
+        this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, RuntimeRegion.class);
     }
 
     /** {@inheritDoc} */
@@ -62,19 +61,19 @@ public final class SidecarDependencyProvider implements DependencyProvider {
         return null;
     }
 
-    public static class Builder {
+    static class Builder {
 
-        public final Key<?> key;
+        final Key<?> key;
 
-        private final MethodHandle methodHandle;
+        final MethodHandle methodHandle;
 
         Builder(Method method, MethodHandle methodHandle) {
             this.key = Key.fromMethodReturnType(method);
             this.methodHandle = requireNonNull(methodHandle);
         }
 
-        SidecarDependencyProvider build(SidecarModel<?> sidecarModel) {
-            return new SidecarDependencyProvider(sidecarModel, this);
+        SidecarContextDependencyProvider build(SidecarModel<?> sidecarModel) {
+            return new SidecarContextDependencyProvider(sidecarModel, this);
         }
     }
 }

@@ -18,8 +18,8 @@ package app.packed.sidecar;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -30,11 +30,6 @@ import packed.internal.sidecar.SidecarModel;
  * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
  */
 public abstract class MethodSidecar extends Sidecar {
-
-    // Hver sidecar har sit eget context object...
-    // Eneste maade at subclasses ikke kan faa fat it
-    // Med mindre selvfoelgelig at vi laver den package private..
-    // Men kan sagtens se vi faar sidecars udenfor denne pakke.
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
@@ -87,20 +82,37 @@ public abstract class MethodSidecar extends Sidecar {
         /** Disables the sidecar for the particular method. No further processing will be done. */
         void disable();
 
+        /**
+         * 
+         * @see AnnotatedElement#getAnnotation(Class)
+         */
         default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
             return method().getAnnotation(annotationClass);
         }
 
-        default Optional<Key<?>> key() {
-            return null;
-        }
-
+        /**
+         * Returns the method that is being bootstrapped.
+         * 
+         * @return the method that is being bootstrapped
+         */
         Method method();
 
-        default void provideAsService(boolean isConstant) {}
+        /**
+         * Provide the result of invoking the method.
+         * <p>
+         * Cannot create invokers.
+         * 
+         * @param isConstant
+         *            whether or not the service is constant. Constants are always eagerly stored at initialization time
+         * @see #registerAsService(boolean, Class)
+         * @see #registerAsService(boolean, Key)
+         */
+        void registerAsService(boolean isConstant);
 
-        default void provideAsService(boolean isConstant, Class<?> key) {}
+        default void registerAsService(boolean isConstant, Class<?> key) {
+            registerAsService(isConstant, Key.of(key));
+        }
 
-        default void provideAsService(boolean isConstant, Key<?> key) {}
+        default void registerAsService(boolean isConstant, Key<?> key) {}
     }
 }

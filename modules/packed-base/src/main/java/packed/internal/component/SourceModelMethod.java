@@ -17,20 +17,20 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.sidecar.MethodSidecar;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.MethodSidecarModel;
-import packed.internal.sidecar.SidecarDependencyProvider;
+import packed.internal.sidecar.SidecarContextDependencyProvider;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -65,27 +65,39 @@ public class SourceModelMethod extends SourceModelMember {
         this.directMethodHandle = requireNonNull(mh);
     }
 
-    /**
-     * 
-     */
-    public void bootstrap(SourceModel.Builder b) {
-        MethodSidecarBootstrapContext c = new MethodSidecarBootstrapContext();
+    static void findAnnotatedMethods(SourceModel.Builder builder, Method method) {
+        MethodHandle directMethodHandle = null;
+        for (Annotation a : method.getAnnotations()) {
+            MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
+            if (model != null) {
+                // We can have more than 1 sidecar attached to a method
+                if (directMethodHandle == null) {
+                    directMethodHandle = builder.cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                }
+
+                SourceModelMethod smm = SourceModelMethod.bootstrap(method, model, directMethodHandle);
+                if (smm != null) {
+                    builder.methods.add(smm);
+                }
+            }
+        }
+    }
+
+    public static SourceModelMethod bootstrap(Method method, MethodSidecarModel model, MethodHandle mh) {
+        SourceModelMethod smm = new SourceModelMethod(method, model, mh);
+
+        MethodSidecarBootstrapContext c = smm.new MethodSidecarBootstrapContext();
         try {
             MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), c);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
         if (c.disable) {
-            return;
+            return null;
         }
-        this.provideAsConstant = c.provideAsConstant;
-        this.provideAskey = c.provideAsKey;
-
-        b.methods.add(this);
-        Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
-        if (keys != null) {
-            b.globalServices.putAll(keys);
-        }
+        smm.provideAsConstant = c.provideAsConstant;
+        smm.provideAskey = c.provideAsKey;
+        return smm;
     }
 
     public DependencyProvider[] createProviders() {
@@ -93,7 +105,7 @@ public class SourceModelMethod extends SourceModelMember {
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
-            SidecarDependencyProvider dp = model.keys.get(d.key());
+            SidecarContextDependencyProvider dp = model.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
                 int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;
@@ -109,10 +121,6 @@ public class SourceModelMethod extends SourceModelMember {
     @Override
     public int getModifiers() {
         return method.getModifiers();
-    }
-
-    public boolean isInstanceMethod() {
-        return !Modifier.isStatic(method.getModifiers());
     }
 
     /** {@inheritDoc} */
@@ -138,12 +146,12 @@ public class SourceModelMethod extends SourceModelMember {
         }
 
         @Override
-        public void provideAsService(boolean isConstant) {
-            provideAsService(isConstant, Key.fromMethodReturnType(method));
+        public void registerAsService(boolean isConstant) {
+            registerAsService(isConstant, Key.fromMethodReturnType(method));
         }
 
         @Override
-        public void provideAsService(boolean isConstant, Key<?> key) {
+        public void registerAsService(boolean isConstant, Key<?> key) {
             provideAsConstant = isConstant;
             provideAsKey = key;
         }

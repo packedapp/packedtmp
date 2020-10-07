@@ -34,7 +34,7 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.MethodSidecarModel;
-import packed.internal.sidecar.SidecarDependencyProvider;
+import packed.internal.sidecar.SidecarContextDependencyProvider;
 import packed.internal.sidecar.model.Model;
 
 /**
@@ -52,7 +52,7 @@ public final class SourceModel extends Model {
     /** All fields with a sidecar. */
     private final List<SourceModelField> fields;
 
-    public final Map<Key<?>, SidecarDependencyProvider> sourceServices;
+    public final Map<Key<?>, SidecarContextDependencyProvider> sourceServices;
 
     /**
      * Creates a new descriptor.
@@ -64,7 +64,7 @@ public final class SourceModel extends Model {
         super(builder.cp.type());
         this.methods = List.copyOf(builder.methods);
         this.fields = List.copyOf(builder.fields);
-        this.sourceServices = Map.copyOf(builder.globalServices);
+        this.sourceServices = Map.copyOf(builder.sourceContexts);
     }
 
     /**
@@ -111,7 +111,7 @@ public final class SourceModel extends Model {
     /** A builder object for a component model. */
     static final class Builder {
 
-        private final OpenClass cp;
+        final OpenClass cp;
 
         final RealmModel csm;
 
@@ -119,7 +119,7 @@ public final class SourceModel extends Model {
 
         final ArrayList<SourceModelField> fields = new ArrayList<>();
 
-        final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
+        final Map<Key<?>, SidecarContextDependencyProvider> sourceContexts = new HashMap<>();
 
         /**
          * Creates a new component model builder
@@ -142,7 +142,7 @@ public final class SourceModel extends Model {
             // findAssinableTo(htp, componentType);
             // findAnnotatedTypes(htp, componentType);
             // Inherited annotations???
-            cp.findMethodsAndFields(method -> findAnnotatedMethods(method), field -> findAnnotatedFields(field));
+            cp.findMethodsAndFields(method -> SourceModelMethod.findAnnotatedMethods(this, method), field -> findAnnotatedFields(field));
             return new SourceModel(this);
         }
 
@@ -170,8 +170,11 @@ public final class SourceModel extends Model {
                     if (directMethodHandle == null) {
                         directMethodHandle = cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     }
-                    SourceModelMethod smm = new SourceModelMethod(method, model, directMethodHandle);
-                    smm.bootstrap(this);
+
+                    SourceModelMethod smm = SourceModelMethod.bootstrap(method, model, directMethodHandle);
+                    if (smm != null) {
+                        methods.add(smm);
+                    }
                 }
             }
         }

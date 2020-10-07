@@ -33,7 +33,7 @@ import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.FieldSidecarModel;
-import packed.internal.sidecar.SidecarDependencyProvider;
+import packed.internal.sidecar.SidecarContextDependencyProvider;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -76,7 +76,7 @@ public class SourceModelField extends SourceModelMember {
      * 
      */
     public void bootstrap(SourceModel.Builder b) {
-        MethodSidecarBootstrapContext c = new MethodSidecarBootstrapContext();
+        Builder c = new Builder();
         try {
             MH_FIELD_SIDECAR_BOOTSTRAP.invoke(model.instance(), c);
         } catch (Throwable e) {
@@ -89,9 +89,9 @@ public class SourceModelField extends SourceModelMember {
         this.provideAskey = c.provideAsKey;
 
         b.fields.add(this);
-        Map<Key<?>, SidecarDependencyProvider> keys = model.keys;
+        Map<Key<?>, SidecarContextDependencyProvider> keys = model.keys;
         if (keys != null) {
-            b.globalServices.putAll(keys);
+            b.sourceContexts.putAll(keys);
         }
     }
 
@@ -100,7 +100,7 @@ public class SourceModelField extends SourceModelMember {
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
-            SidecarDependencyProvider dp = model.keys.get(d.key());
+            SidecarContextDependencyProvider dp = model.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
                 int index = i + (Modifier.isStatic(field.getModifiers()) ? 0 : 1);
@@ -128,7 +128,7 @@ public class SourceModelField extends SourceModelMember {
         return MethodHandleUtil.getFromField(field, directMethodHandle);
     }
 
-    public final class MethodSidecarBootstrapContext extends SourceModelMember.Builder implements FieldSidecar.BootstrapContext {
+    private final class Builder extends SourceModelMember.Builder implements FieldSidecar.BootstrapContext {
 
         public boolean disable;
 
