@@ -27,8 +27,8 @@ import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.methodhandle.LookupUtil;
-import packed.internal.methodhandle.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */

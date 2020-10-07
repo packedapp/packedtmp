@@ -27,8 +27,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.methodhandle.LookupUtil;
-import packed.internal.methodhandle.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  * A {@link Factory} type that uses a {@link Supplier} to provide instances.

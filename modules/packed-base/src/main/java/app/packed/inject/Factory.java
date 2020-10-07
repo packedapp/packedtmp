@@ -41,7 +41,7 @@ import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.sidecar.ModuleAccess;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an

@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 
 /**
  * An injector is an immutable holder of services that can be dependency injected or looked up by their type at runtime.

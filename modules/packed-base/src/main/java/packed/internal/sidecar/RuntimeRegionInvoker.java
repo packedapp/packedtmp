@@ -23,8 +23,8 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import app.packed.sidecar.Invoker;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.methodhandle.LookupUtil;
-import packed.internal.methodhandle.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  * A implementation of {@link Invoker} that takes a method handle that needs a single {@link RuntimeRegion} to be

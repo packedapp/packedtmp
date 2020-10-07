@@ -32,7 +32,7 @@ import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.ExportedServiceAssembly;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {

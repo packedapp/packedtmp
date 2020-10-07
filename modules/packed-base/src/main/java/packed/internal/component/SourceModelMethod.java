@@ -29,9 +29,9 @@ import app.packed.sidecar.MethodSidecar;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.methodhandle.LookupUtil;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**

@@ -30,10 +30,10 @@ import app.packed.base.Nullable;
 import app.packed.sidecar.FieldSidecar;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.methodhandle.LookupUtil;
-import packed.internal.methodhandle.MethodHandleUtil;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**

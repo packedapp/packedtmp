@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.component.Bundle;
 import app.packed.inject.Factory;
 import packed.internal.classscan.OpenClass;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 import packed.internal.util.ThrowableUtil;
 

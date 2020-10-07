@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.inject.ServiceLocator;
-import packed.internal.methodhandle.LookupUtil;
-import packed.internal.methodhandle.MethodHandleUtil;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  * All strongly connected components relate to the same pod.

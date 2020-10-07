@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.methodhandle;
+package packed.internal.util;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
-
-import packed.internal.util.ThrowableUtil;
 
 /** Various {@link Lookup} utility methods. */
 public final class LookupUtil {

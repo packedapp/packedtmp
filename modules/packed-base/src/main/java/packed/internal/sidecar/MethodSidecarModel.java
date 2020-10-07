@@ -33,7 +33,7 @@ import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 
 /** A model of a {@link MethodSidecar}. */
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {

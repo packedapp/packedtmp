@@ -34,7 +34,7 @@ import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ExtensionConfiguration}. */

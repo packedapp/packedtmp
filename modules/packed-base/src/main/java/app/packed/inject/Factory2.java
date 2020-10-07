@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.methodhandle.LookupUtil;
+import packed.internal.util.LookupUtil;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
