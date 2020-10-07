@@ -29,6 +29,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 // Maybe split out into 3 annotations. Where sidecar is not @Documented
+@Deprecated
 public @interface ActivateSidecar {
 
     /**

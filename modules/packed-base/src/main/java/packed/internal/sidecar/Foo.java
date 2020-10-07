@@ -27,11 +27,9 @@ import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Provide;
-import app.packed.sidecar.ActivateSidecar;
+import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
-import app.packed.sidecar.SidecarActivationType;
-import app.packed.sidecar.SidecarPermit;
 import app.packed.statemachine.OnInitialize;
 
 /**
@@ -53,7 +51,7 @@ public class Foo extends BaseBundle {
 
     @Target(ElementType.METHOD)
     @Retention(RUNTIME)
-    @ActivateSidecar(activation = SidecarActivationType.ANNOTATED_METHOD, permits = SidecarPermit.METHOD_INVOKE, sidecar = TestIt.class)
+    @ActivateMethodSidecar(allowInvoke = true, sidecar = TestIt.class)
     public @interface Hej {
 
     }
