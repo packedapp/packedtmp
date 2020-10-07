@@ -15,17 +15,11 @@
  */
 package app.packed.inject;
 
-import static app.packed.sidecar.SidecarPermit.FIELD_GET;
-import static app.packed.sidecar.SidecarPermit.METHOD_INVOKE;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import app.packed.sidecar.Opens;
-import app.packed.sidecar.Packlet;
 
 /**
  * Unlike many other popular dependency injection frameworks. There are usually no requirements in Packed to use
@@ -48,8 +42,6 @@ import app.packed.sidecar.Packlet;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Packlet(extension = ServiceExtension.class) // Replace with UseSidecar(InjectSidecar.class) [maske defineret i denne klasse]
-@Opens(to = { METHOD_INVOKE, FIELD_GET })
 public @interface Inject {}
 
 //Maaske skal vi endda at hvis man ikke har en sidecar, og kun @OnLifecycle... Saa koerer man setField/invokeMethod

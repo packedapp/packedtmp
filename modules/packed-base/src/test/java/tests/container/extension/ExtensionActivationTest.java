@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.container.Extension;
-import app.packed.sidecar.Packlet;
+import packed.internal.container.Packlet;
 import testutil.util.AbstractArtifactTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */

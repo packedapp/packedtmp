@@ -16,7 +16,6 @@
 package packed.internal.container;
 
 import app.packed.container.Extension;
-import app.packed.sidecar.Packlet;
 
 /**
  *

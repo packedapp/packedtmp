@@ -20,7 +20,6 @@ import java.util.List;
 
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.sidecar.Packlet;
 import packed.internal.util.StringFormatter;
 
 /**

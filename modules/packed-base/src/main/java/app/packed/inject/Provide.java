@@ -22,7 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.container.ExtensionMember;
-import app.packed.sidecar.Packlet;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -72,7 +71,6 @@ import app.packed.sidecar.Packlet;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Packlet(extension = ServiceExtension.class)
 @ExtensionMember(ServiceExtension.class)
 public @interface Provide {
 
