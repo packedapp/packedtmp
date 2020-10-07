@@ -20,12 +20,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import packed.internal.container.ExtensionModel;
-
 /**
  * An annotation indicating that a method needs to be executed by the runtime after a particular event in the sidecars
  * lifecycle. Each sidecar type defines the type of events it supports as static string fields on the sidecar
- * annotation. For example, {@link ExtensionModel#INSTANTIATING}.
+ * annotation. For example,
  * <p>
  * Return values from annotated methods are always ignored. And unless otherwise specified no objects are available for
  * injection into the method.

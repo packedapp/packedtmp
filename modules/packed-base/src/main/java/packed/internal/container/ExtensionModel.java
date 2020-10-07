@@ -41,7 +41,6 @@ import app.packed.container.ExtensionMember;
 import app.packed.container.ExtensionSetup;
 import app.packed.container.InternalExtensionException;
 import app.packed.container.OrderedExtensionSet;
-import app.packed.statemachine.Leaving;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
@@ -51,29 +50,6 @@ import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
 public final class ExtensionModel extends Model implements ExtensionDescriptor {
-    /**
-     * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
-     * soon as the extension has been successfully instantiated and before it is returned to the user.
-     * <p>
-     * 
-     * An extension sidecar event that the sidecar has been successfully instantiated by the runtime. But the instance has
-     * not yet been returned to the user. The next event will be {@link #NORMAL_USAGE}.
-     */
-    public static final String INSTANTIATING = "Instantiating";
-
-    /**
-     * All components and extensions have been added and configured. The next event will be {@link #CHILD_LINKING}
-     */
-    public static final String NORMAL_USAGE = "NormalUsage";
-
-    /**
-     * Any child containers located in the same artifact will be has been defined. Typically using . The next event will be
-     * {@link #CHILD_LINKING}.
-     */
-    public static final String CHILD_LINKING = "ChildLinking";
-
-    /** The end state of the extension. */
-    public static final String ASSEMBLED = "Assembled";
 
     /** A cache of extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
@@ -303,7 +279,6 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
 
     /** A builder of {@link ExtensionModel}. */
     static final class Builder {
-
         /**  */
         private static ClassValue<?> OPTIONALS = new ClassValue<>() {
 
@@ -489,8 +464,6 @@ public final class ExtensionModel extends Model implements ExtensionDescriptor {
         private static int nextExtensionId;
 
         private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
-
-        private Loader() {}
 
         private ExtensionModel load1(Class<? extends Extension> extensionType) {
             // Den eneste grund til at vi gennem en exception er pga

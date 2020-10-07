@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Attribute;
 import app.packed.base.ExposeAttribute;
-import packed.internal.container.Contract;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
@@ -52,7 +51,7 @@ public class ExtensionDescriptorTest {
             return new SomeContract();
         }
 
-        static class SomeContract extends Contract {
+        static class SomeContract {
 
             /** {@inheritDoc} */
             @Override
