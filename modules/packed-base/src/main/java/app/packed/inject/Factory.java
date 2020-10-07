@@ -119,11 +119,10 @@ public abstract class Factory<T> {
     };
 
     /** A cache of factories used by {@link #of(Class)}. */
-    private static final ClassValue<Factory<?>> CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<ExecutableFactory<?>> CLASS_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
-
-        protected Factory<?> computeValue(Class<?> implementation) {
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
             return new ExecutableFactory<>(TypeLiteral.of(implementation), implementation);
         }
     };
@@ -132,11 +131,10 @@ public abstract class Factory<T> {
      * A cache of factories used by {@link #of(TypeLiteral)}. This cache is only used by subclasses of TypeLiteral, never
      * literals that are manually constructed.
      */
-    private static final ClassValue<Factory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
+    private static final ClassValue<ExecutableFactory<?>> TYPE_LITERAL_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
-
-        protected Factory<?> computeValue(Class<?> implementation) {
+        protected ExecutableFactory<?> computeValue(Class<?> implementation) {
             Type t = TYPE_LITERAL_TV_EXTRACTOR.extract(implementation);
             TypeLiteral<?> tl = ModuleAccess.base().toTypeLiteral(t);
             return new ExecutableFactory<>(tl, tl.rawType());
@@ -552,7 +550,8 @@ public abstract class Factory<T> {
         if (t instanceof Class) {
             return (Factory<T>) of((Class<?>) t);
         } else {
-            return new ExecutableFactory<>(implementation, implementation.rawType());
+            ExecutableFactory<?> f = CLASS_CACHE.get(implementation.rawType());
+            return new ExecutableFactory<>(f, implementation);
         }
     }
 
@@ -577,25 +576,21 @@ public abstract class Factory<T> {
     /** A factory that wraps a method or constructor. */
     static final class ExecutableFactory<T> extends Factory<T> {
 
-        /**
-         * Whether or not we need to check the lower bound of the instances we return. This is only needed if we allow, for
-         * example to register CharSequence fooo() as String.class. And I'm not sure we allow that..... Maybe have a special
-         * Factory.overrideMethodReturnWith(), and then not allow it as default..
-         */
-        final boolean checkLowerBound;
-
         private final List<DependencyDescriptor> dependencies;
 
         /** A factory with an executable as a target. */
         public final Executable executable;
 
-        private final Object instance = null;
-
         private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
             super(key);
             this.executable = ConstructorUtil.findInjectableIAE(findConstructorOn);
-            this.checkLowerBound = false;
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
+        }
+
+        private ExecutableFactory(ExecutableFactory<?> from, TypeLiteral<T> key) {
+            super(key);
+            this.executable = from.executable;
+            this.dependencies = from.dependencies;
         }
 
         /** {@inheritDoc} */
@@ -627,9 +622,6 @@ public abstract class Factory<T> {
             if (executable.isVarArgs()) {
                 mh = mh.asFixedArity();
             }
-            if (instance != null) {
-                return mh.bindTo(instance);
-            }
             return mh;
         }
 
@@ -644,8 +636,6 @@ public abstract class Factory<T> {
 
         /** The field we invoke. */
         private final Field field;
-
-        private final Object instance = null;
 
         @SuppressWarnings("unchecked")
         FieldFactory(Field field) {
@@ -678,9 +668,6 @@ public abstract class Factory<T> {
             } catch (IllegalAccessException e) {
                 throw new InaccessibleMemberException("No access to the field " + field + ", use lookup(MethodHandles.Lookup) to give access", e);
             }
-            if (instance != null) {
-                handle = handle.bindTo(instance);
-            }
             return handle;
         }
     }
@@ -707,6 +694,34 @@ public abstract class Factory<T> {
         @Override
         MethodHandle toMethodHandle(Lookup ignore) {
             return MethodHandles.constant(instance.getClass(), instance);
+        }
+    }
+
+    /** A special factory created via {@link #withLookup(Lookup)}. */
+    private static final class InstanceBinder<T> extends Factory<T> {
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Object instance;
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Factory<T> delegate;
+
+        private InstanceBinder(Factory<T> delegate, Object instance) {
+            super(delegate.typeLiteral);
+            this.instance = requireNonNull(instance);
+            this.delegate = requireNonNull(delegate);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        List<DependencyDescriptor> dependencies() {
+            return delegate.dependencies();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle toMethodHandle(Lookup lookup) {
+            return delegate.toMethodHandle(lookup).bindTo(instance);
         }
     }
 
