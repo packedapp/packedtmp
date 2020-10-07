@@ -36,7 +36,6 @@ import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarDependencyProvider;
 import packed.internal.sidecar.model.Model;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * A model of a source, a cached instance of this class is acquired via {@link RealmModel#modelOf(Class)}.
@@ -140,26 +139,21 @@ public final class SourceModel extends Model {
          * @return a new model
          */
         private SourceModel build() {
-            try (MemberUnreflector htp = new MemberUnreflector(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
-
-                // findAssinableTo(htp, componentType);
-                // findAnnotatedTypes(htp, componentType);
-                // Inherited annotations???
-                cp.findMethodsAndFields(method -> findAnnotatedMethods(htp, method), field -> findAnnotatedFields(htp, field));
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+            // findAssinableTo(htp, componentType);
+            // findAnnotatedTypes(htp, componentType);
+            // Inherited annotations???
+            cp.findMethodsAndFields(method -> findAnnotatedMethods(method), field -> findAnnotatedFields(field));
             return new SourceModel(this);
         }
 
-        private void findAnnotatedFields(MemberUnreflector htp, Field field) throws Throwable {
+        private void findAnnotatedFields(Field field) {
             VarHandle varHandle = null;
             for (Annotation a : field.getAnnotations()) {
                 FieldSidecarModel model = FieldSidecarModel.getModelForAnnotatedMethod(a.annotationType());
                 if (model != null) {
                     // We can have more than 1 sidecar attached to a method
                     if (varHandle == null) {
-                        varHandle = htp.unreflectVarhandle(field);
+                        varHandle = cp.unreflectVarhandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     }
                     SourceModelField smm = new SourceModelField(field, model, varHandle);
                     smm.bootstrap(this);
@@ -167,14 +161,14 @@ public final class SourceModel extends Model {
             }
         }
 
-        private void findAnnotatedMethods(MemberUnreflector htp, Method method) throws Throwable {
+        private void findAnnotatedMethods(Method method) {
             MethodHandle directMethodHandle = null;
             for (Annotation a : method.getAnnotations()) {
                 MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
                 if (model != null) {
                     // We can have more than 1 sidecar attached to a method
                     if (directMethodHandle == null) {
-                        directMethodHandle = htp.unreflect(method);
+                        directMethodHandle = cp.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                     }
                     SourceModelMethod smm = new SourceModelMethod(method, model, directMethodHandle);
                     smm.bootstrap(this);

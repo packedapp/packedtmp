@@ -65,31 +65,6 @@ public class SourceModelMethod extends SourceModelMember {
         this.directMethodHandle = requireNonNull(mh);
     }
 
-    public boolean isInstanceMethod() {
-        return !Modifier.isStatic(method.getModifiers());
-    }
-
-    public enum RunAt {
-        INITIALIZATION;
-    }
-
-    public DependencyProvider[] createProviders() {
-        DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
-        // System.out.println("RESOLVING " + directMethodHandle);
-        for (int i = 0; i < dependencies.size(); i++) {
-            DependencyDescriptor d = dependencies.get(i);
-            SidecarDependencyProvider dp = model.keys.get(d.key());
-            if (dp != null) {
-                // System.out.println("MAtches for " + d.key());
-                int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;
-                providers[index] = dp;
-                // System.out.println("SEtting provider " + dp.dependencyAccessor());
-            }
-        }
-
-        return providers;
-    }
-
     /**
      * 
      */
@@ -113,24 +88,42 @@ public class SourceModelMethod extends SourceModelMember {
         }
     }
 
-    public final class MethodSidecarBootstrapContext implements MethodSidecar.BootstrapContext {
+    public DependencyProvider[] createProviders() {
+        DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        // System.out.println("RESOLVING " + directMethodHandle);
+        for (int i = 0; i < dependencies.size(); i++) {
+            DependencyDescriptor d = dependencies.get(i);
+            SidecarDependencyProvider dp = model.keys.get(d.key());
+            if (dp != null) {
+                // System.out.println("MAtches for " + d.key());
+                int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;
+                providers[index] = dp;
+                // System.out.println("SEtting provider " + dp.dependencyAccessor());
+            }
+        }
+
+        return providers;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getModifiers() {
+        return method.getModifiers();
+    }
+
+    public boolean isInstanceMethod() {
+        return !Modifier.isStatic(method.getModifiers());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle methodHandle() {
+        return directMethodHandle;
+    }
+
+    public final class MethodSidecarBootstrapContext extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
 
         public boolean disable;
-
-        @Override
-        public void provideAsService(boolean isConstant) {
-            provideAsService(isConstant, Key.fromMethodReturnType(method));
-        }
-
-        @Override
-        public void provideAsService(boolean isConstant, Key<?> key) {
-            provideAsConstant = isConstant;
-            provideAsKey = key;
-        }
-
-        public Key<?> provideAsKey;
-
-        public boolean provideAsConstant;
 
         /** {@inheritDoc} */
         @Override
@@ -143,17 +136,20 @@ public class SourceModelMethod extends SourceModelMember {
         public Method method() {
             return method;
         }
+
+        @Override
+        public void provideAsService(boolean isConstant) {
+            provideAsService(isConstant, Key.fromMethodReturnType(method));
+        }
+
+        @Override
+        public void provideAsService(boolean isConstant, Key<?> key) {
+            provideAsConstant = isConstant;
+            provideAsKey = key;
+        }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public int getModifiers() {
-        return method.getModifiers();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle methodHandle() {
-        return directMethodHandle;
+    public enum RunAt {
+        INITIALIZATION;
     }
 }

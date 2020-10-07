@@ -63,12 +63,6 @@ public class SourceModelField extends SourceModelMember {
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
-    /** {@inheritDoc} */
-    @Override
-    public int getModifiers() {
-        return field.getModifiers();
-    }
-
     SourceModelField(Field method, FieldSidecarModel model, VarHandle mh) {
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
@@ -76,31 +70,6 @@ public class SourceModelField extends SourceModelMember {
         // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
         this.dependencies = Arrays.asList();
         this.directMethodHandle = requireNonNull(mh);
-    }
-
-    public boolean isInstanceMethod() {
-        return !Modifier.isStatic(field.getModifiers());
-    }
-
-    public enum RunAt {
-        INITIALIZATION;
-    }
-
-    public DependencyProvider[] createProviders() {
-        DependencyProvider[] providers = new DependencyProvider[Modifier.isStatic(field.getModifiers()) ? 0 : 1];
-        // System.out.println("RESOLVING " + directMethodHandle);
-        for (int i = 0; i < dependencies.size(); i++) {
-            DependencyDescriptor d = dependencies.get(i);
-            SidecarDependencyProvider dp = model.keys.get(d.key());
-            if (dp != null) {
-                // System.out.println("MAtches for " + d.key());
-                int index = i + (Modifier.isStatic(field.getModifiers()) ? 0 : 1);
-                providers[index] = dp;
-                // System.out.println("SEtting provider " + dp.dependencyAccessor());
-            }
-        }
-
-        return providers;
     }
 
     /**
@@ -126,24 +95,42 @@ public class SourceModelField extends SourceModelMember {
         }
     }
 
-    public final class MethodSidecarBootstrapContext implements FieldSidecar.BootstrapContext {
+    public DependencyProvider[] createProviders() {
+        DependencyProvider[] providers = new DependencyProvider[Modifier.isStatic(field.getModifiers()) ? 0 : 1];
+        // System.out.println("RESOLVING " + directMethodHandle);
+        for (int i = 0; i < dependencies.size(); i++) {
+            DependencyDescriptor d = dependencies.get(i);
+            SidecarDependencyProvider dp = model.keys.get(d.key());
+            if (dp != null) {
+                // System.out.println("MAtches for " + d.key());
+                int index = i + (Modifier.isStatic(field.getModifiers()) ? 0 : 1);
+                providers[index] = dp;
+                // System.out.println("SEtting provider " + dp.dependencyAccessor());
+            }
+        }
+
+        return providers;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int getModifiers() {
+        return field.getModifiers();
+    }
+
+    public boolean isInstanceMethod() {
+        return !Modifier.isStatic(field.getModifiers());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle methodHandle() {
+        return MethodHandleUtil.getFromField(field, directMethodHandle);
+    }
+
+    public final class MethodSidecarBootstrapContext extends SourceModelMember.Builder implements FieldSidecar.BootstrapContext {
 
         public boolean disable;
-
-        @Override
-        public void provideAsService(boolean isConstant) {
-            provideAsService(isConstant, Key.fromField(field()));
-        }
-
-        @Override
-        public void provideAsService(boolean isConstant, Key<?> key) {
-            provideAsConstant = isConstant;
-            provideAsKey = key;
-        }
-
-        public Key<?> provideAsKey;
-
-        public boolean provideAsConstant;
 
         /** {@inheritDoc} */
         @Override
@@ -156,11 +143,20 @@ public class SourceModelField extends SourceModelMember {
         public Field field() {
             return field;
         }
+
+        @Override
+        public void provideAsService(boolean isConstant) {
+            provideAsService(isConstant, Key.fromField(field()));
+        }
+
+        @Override
+        public void provideAsService(boolean isConstant, Key<?> key) {
+            provideAsConstant = isConstant;
+            provideAsKey = key;
+        }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle methodHandle() {
-        return MethodHandleUtil.getFromField(field, directMethodHandle);
+    public enum RunAt {
+        INITIALIZATION;
     }
 }
