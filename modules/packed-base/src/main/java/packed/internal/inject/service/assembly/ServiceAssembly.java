@@ -99,7 +99,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
         });
     }
 
-    /** An implementation of {@link Service} because {@link ServiceAssembly} is not immutable. */
+    /** An implementation of {@link Service} because {@link ServiceAssembly} is mutable. */
     private final class PackedService implements Service {
 
         /** The configuration site of the service. */
@@ -108,6 +108,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
         /** The key of the service. */
         private final Key<?> key;
 
+        /** Whether or not the service is a constant. */
         private final boolean isConstant;
 
         /**
@@ -124,6 +125,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
             this.isConstant = isConstant;
         }
 
+        /** {@inheritDoc} */
         @Override
         public AttributeMap attributes() {
             throw new UnsupportedOperationException();

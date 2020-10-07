@@ -17,9 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.VarHandle;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +24,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import packed.internal.classscan.OpenClass;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.Dependant;
-import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**
@@ -110,7 +105,7 @@ public final class SourceModel {
 
         final OpenClass cp;
 
-        final RealmModel csm;
+        final RealmModel realm;
 
         final ArrayList<SourceModelMethod> methods = new ArrayList<>();
 
@@ -125,8 +120,8 @@ public final class SourceModel {
          *            a class processor usable by hooks
          * 
          */
-        private Builder(RealmModel csm, OpenClass cp) {
-            this.csm = requireNonNull(csm);
+        private Builder(RealmModel realm, OpenClass cp) {
+            this.realm = requireNonNull(realm);
             this.cp = requireNonNull(cp);
         }
 
@@ -139,23 +134,8 @@ public final class SourceModel {
             // findAssinableTo(htp, componentType);
             // findAnnotatedTypes(htp, componentType);
             // Inherited annotations???
-            cp.findMethodsAndFields(method -> SourceModelMethod.process(this, method), field -> findAnnotatedFields(field));
+            cp.findMethodsAndFields(method -> SourceModelMethod.process(this, method), field -> SourceModelField.process(this, field));
             return new SourceModel(this);
-        }
-
-        private void findAnnotatedFields(Field field) {
-            VarHandle varHandle = null;
-            for (Annotation a : field.getAnnotations()) {
-                FieldSidecarModel model = FieldSidecarModel.getModelForAnnotatedMethod(a.annotationType());
-                if (model != null) {
-                    // We can have more than 1 sidecar attached to a method
-                    if (varHandle == null) {
-                        varHandle = cp.unreflectVarhandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    }
-                    SourceModelField smm = new SourceModelField(field, model, varHandle);
-                    smm.bootstrap(this);
-                }
-            }
         }
     }
 }

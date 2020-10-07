@@ -32,9 +32,10 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 public abstract class SourceModelMember {
     public List<DependencyDescriptor> dependencies;
 
-    public boolean provideAsConstant;
+    public final boolean provideAsConstant;
 
-    public Key<?> provideAskey;
+    @Nullable
+    public final Key<?> provideAskey;
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
@@ -53,6 +54,11 @@ public abstract class SourceModelMember {
     public abstract int getModifiers();
 
     public abstract MethodHandle methodHandle();
+
+    SourceModelMember(Builder builder) {
+        this.provideAsConstant = builder.provideAsConstant;
+        this.provideAskey = builder.provideAsKey;
+    }
 
     static abstract class Builder {
 
