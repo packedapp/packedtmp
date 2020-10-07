@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -44,11 +45,12 @@ import app.packed.statemachine.Leaving;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.invoke.MethodHandleBuilder;
 import packed.internal.classscan.invoke.OpenClass;
+import packed.internal.sidecar.model.Model;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of an Extension. */
-public final class ExtensionModel extends AbstractExtensionModel implements ExtensionDescriptor {
+public final class ExtensionModel extends Model implements ExtensionDescriptor {
     /**
      * Used together with the {@link Leaving} annotation to indicate that an {@link Extension}method should be executed as
      * soon as the extension has been successfully instantiated and before it is returned to the user.
@@ -147,7 +149,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
      *            the builder for this model
      */
     private ExtensionModel(Builder builder) {
-        super(builder);
+        super(builder.sidecarType);
         this.constructor = builder.constructor;
         this.id = builder.id;
         this.depth = builder.depth;
@@ -300,7 +302,7 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
     }
 
     /** A builder of {@link ExtensionModel}. */
-    static final class Builder extends AbstractExtensionModel.Builder {
+    static final class Builder {
 
         /**  */
         private static ClassValue<?> OPTIONALS = new ClassValue<>() {
@@ -371,9 +373,26 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
          *            the type of extension we are building a model for
          */
         Builder(Class<? extends Extension> extensionType, Loader loader, int id) {
-            super(extensionType);
+            this.sidecarType = requireNonNull(extensionType);
             this.loader = requireNonNull(loader);
             this.id = id;
+        }
+
+        public MethodHandle builderMethod;
+
+        /** The constructor used to create a new extension instance. */
+        MethodHandle constructor;
+
+        protected final Class<?> sidecarType;
+
+        protected OpenClass prep(MethodHandleBuilder spec) {
+            OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
+            this.constructor = cp.findConstructor(spec);
+            cp.findMethods(m -> {
+                onMethod(m);
+            });
+
+            return cp;
         }
 
         private void addDependency(Class<? extends Extension> dependencyType) {
@@ -432,7 +451,6 @@ public final class ExtensionModel extends AbstractExtensionModel implements Exte
             return new ExtensionModel(this);
         }
 
-        @Override
         protected void onMethod(Method m) {
             ComponentLinked da = m.getAnnotation(ComponentLinked.class);
             if (da != null) {

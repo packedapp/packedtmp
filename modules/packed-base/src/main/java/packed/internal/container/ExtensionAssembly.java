@@ -68,7 +68,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     private Extension instance;
 
     /** Whether or not the extension has been configured. */
-    private boolean isConfigured;
+    boolean isConfigured;
 
     @Nullable
     private Boolean isImage;
