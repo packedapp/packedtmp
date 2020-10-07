@@ -44,7 +44,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Altsaa alle source metoder skal jo resolves paa assembly time
 
-public class SourceModelSidecarMethod extends SourceModelSidecarMember {
+public class SourceModelMethod extends SourceModelMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
     private static final MethodHandle MH_METHOD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "bootstrap",
@@ -57,7 +57,7 @@ public class SourceModelSidecarMethod extends SourceModelSidecarMember {
 
     public final MethodSidecarModel model;
 
-    SourceModelSidecarMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
+    SourceModelMethod(Method method, MethodSidecarModel model, MethodHandle mh) {
         this.method = requireNonNull(method);
         this.model = requireNonNull(model);
         MethodDescriptor m = MethodDescriptor.from(method);

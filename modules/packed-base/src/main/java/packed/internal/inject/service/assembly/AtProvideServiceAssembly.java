@@ -33,21 +33,32 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
 
-    private final Dependant injectable;
+    private final Dependant dependant;
 
     /** If constant, the region index to store it in */
     public final int regionIndex;
 
     @SuppressWarnings("unchecked")
-    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key, Dependant injectable, boolean isConst) {
+    public AtProvideServiceAssembly(ServiceBuildManager im, ComponentNodeConfiguration compConf, Dependant dependant, Key<?> key, boolean isConst) {
         super(im, compConf.configSite(), (Key<T>) key);
-        this.injectable = requireNonNull(injectable);
+        this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;
     }
 
     @Override
-    public Dependant getInjectable() {
-        return injectable;
+    public Dependant dependant() {
+        return dependant;
+    }
+
+    @Override
+    public MethodHandle dependencyAccessor() {
+        return dependant.buildMethodHandle();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return regionIndex > -1;
     }
 
     /** {@inheritDoc} */
@@ -61,18 +72,7 @@ public class AtProvideServiceAssembly<T> extends ServiceAssembly<T> {
     }
 
     @Override
-    public MethodHandle dependencyAccessor() {
-        return injectable.buildMethodHandle();
-    }
-
-    @Override
     public String toString() {
-        return "@Provide " + injectable.directMethodHandle;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConstant() {
-        return regionIndex > -1;
+        return "@Provide " + dependant.directMethodHandle;
     }
 }

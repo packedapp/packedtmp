@@ -20,7 +20,7 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.SourceModelSidecarMethod.RunAt;
+import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
@@ -28,7 +28,7 @@ import packed.internal.inject.dependency.DependencyDescriptor;
  */
 // SourceModel...
 // Maa have en liste af regions slots den skal bruge
-public abstract class SourceModelSidecarMember {
+public abstract class SourceModelMember {
     public Key<?> provideAskey;
 
     public boolean provideAsConstant;

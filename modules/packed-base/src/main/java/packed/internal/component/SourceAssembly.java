@@ -23,9 +23,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.assembly.ServiceAssembly;
 import packed.internal.methodhandle.LookupUtil;
 import packed.internal.methodhandle.MethodHandleUtil;
@@ -111,7 +111,7 @@ public final class SourceAssembly implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Dependant getInjectable() {
+    public Dependant dependant() {
         return injectable;
     }
 

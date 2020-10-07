@@ -25,8 +25,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependencyProvider;
 
 /**
  * Represents a method on a sidecar annotated with {@link Provide}.
@@ -58,7 +58,7 @@ public final class SidecarDependencyProvider implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Dependant getInjectable() {
+    public Dependant dependant() {
         return null;
     }
 

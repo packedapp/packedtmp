@@ -49,7 +49,7 @@ final class FromOtherInjectorServiceAssembly<T> extends ServiceAssembly<T> {
 
     @Override
     @Nullable
-    public Dependant getInjectable() {
+    public Dependant dependant() {
         throw new UnsupportedOperationException();
     }
 

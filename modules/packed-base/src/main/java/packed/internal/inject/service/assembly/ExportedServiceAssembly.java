@@ -83,8 +83,8 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
 
     @Override
     @Nullable
-    public Dependant getInjectable() {
-        return exportedEntry.getInjectable();
+    public Dependant dependant() {
+        return exportedEntry.dependant();
     }
 
     /** {@inheritDoc} */

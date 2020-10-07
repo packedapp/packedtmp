@@ -47,7 +47,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Altsaa alle source metoder skal jo resolves paa assembly time
 
-public class SourceModelSidecarField extends SourceModelSidecarMember {
+public class SourceModelField extends SourceModelMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
     private static final MethodHandle MH_FIELD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldSidecar.class, "bootstrap",
@@ -69,7 +69,7 @@ public class SourceModelSidecarField extends SourceModelSidecarMember {
         return field.getModifiers();
     }
 
-    SourceModelSidecarField(Field method, FieldSidecarModel model, VarHandle mh) {
+    SourceModelField(Field method, FieldSidecarModel model, VarHandle mh) {
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
         // FieldDescriptor m = FieldDescriptor.from(method);

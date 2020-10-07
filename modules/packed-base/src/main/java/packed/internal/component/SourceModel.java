@@ -31,7 +31,6 @@ import app.packed.base.Key;
 import packed.internal.classscan.invoke.OpenClass;
 import packed.internal.container.RealmModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Dependant;
 import packed.internal.sidecar.FieldSidecarModel;
 import packed.internal.sidecar.MethodSidecarModel;
@@ -40,7 +39,7 @@ import packed.internal.sidecar.model.Model;
 import packed.internal.util.ThrowableUtil;
 
 /**
- * A model of a container, a cached instance of this class is acquired via {@link RealmModel#modelOf(Class)}.
+ * A model of a source, a cached instance of this class is acquired via {@link RealmModel#modelOf(Class)}.
  */
 public final class SourceModel extends Model {
 
@@ -48,9 +47,11 @@ public final class SourceModel extends Model {
     /// Should we have a little of cache simpleName0, simpleName1, ...
     private String simpleName;
 
-    public final List<SourceModelSidecarMethod> methods;
+    /** All methods with a sidecar. */
+    private final List<SourceModelMethod> methods;
 
-    public final List<SourceModelSidecarField> fields;
+    /** All fields with a sidecar. */
+    private final List<SourceModelField> fields;
 
     public final Map<Key<?>, SidecarDependencyProvider> sourceServices;
 
@@ -64,22 +65,6 @@ public final class SourceModel extends Model {
         super(builder.cp.type());
         this.methods = List.copyOf(builder.methods);
         this.fields = List.copyOf(builder.fields);
-
-        // There should probably be some order we call extensions in....
-        /// Other first, packed lasts?
-        /// Think they need an order id....
-        // Boer vaere lowest dependency id first...
-        // Preferable deterministic
-
-//        this.extensionHooks = builder.extensionBuilders.entrySet().stream().map(e -> {
-//            HookRequest r;
-//            try {
-//                r = e.getValue().build();
-//            } catch (Throwable ee) {
-//                throw ThrowableUtil.orUndeclared(ee);
-//            }
-//            return new ExtensionRequestPair(e.getKey(), r);
-//        }).toArray(i -> new ExtensionRequestPair[i]);
         this.sourceServices = Map.copyOf(builder.globalServices);
     }
 
@@ -99,25 +84,16 @@ public final class SourceModel extends Model {
     public <T> void register(ComponentNodeConfiguration compConf) {
         SourceAssembly source = compConf.source;
 
-        // Iterate through all "interesting" methods on the source.
-        for (SourceModelSidecarMethod smm : methods) {
-            DependencyProvider[] dp = smm.createProviders();
-            if (smm.isInstanceMethod()) {
-                dp[0] = source;
-            }
-            Dependant i = new Dependant(source, smm, dp);
-            compConf.injectionManager().addInjectable(i);
-
-        }
-        for (SourceModelSidecarField smm : fields) {
-            DependencyProvider[] dp = smm.createProviders();
-            if (smm.isInstanceMethod()) {
-                dp[0] = source;
-            }
-            Dependant i = new Dependant(source, smm, dp);
+        for (SourceModelField f : fields) {
+            Dependant i = new Dependant(source, f, f.createProviders());
             compConf.injectionManager().addInjectable(i);
         }
 
+        for (SourceModelMethod m : methods) {
+            Dependant i = new Dependant(source, m, m.createProviders());
+            compConf.injectionManager().addInjectable(i);
+
+        }
     }
 
     /**
@@ -140,11 +116,9 @@ public final class SourceModel extends Model {
 
         final RealmModel csm;
 
-        /** A map of builders for every activated extension. */
+        final ArrayList<SourceModelMethod> methods = new ArrayList<>();
 
-        final ArrayList<SourceModelSidecarMethod> methods = new ArrayList<>();
-
-        final ArrayList<SourceModelSidecarField> fields = new ArrayList<>();
+        final ArrayList<SourceModelField> fields = new ArrayList<>();
 
         final Map<Key<?>, SidecarDependencyProvider> globalServices = new HashMap<>();
 
@@ -166,7 +140,6 @@ public final class SourceModel extends Model {
          * @return a new model
          */
         private SourceModel build() {
-
             try (MemberUnreflector htp = new MemberUnreflector(cp, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY)) {
 
                 // findAssinableTo(htp, componentType);
@@ -181,43 +154,32 @@ public final class SourceModel extends Model {
 
         private void findAnnotatedFields(MemberUnreflector htp, Field field) throws Throwable {
             VarHandle varHandle = null;
-
             for (Annotation a : field.getAnnotations()) {
-
                 FieldSidecarModel model = FieldSidecarModel.getModelForAnnotatedMethod(a.annotationType());
                 if (model != null) {
-
                     // We can have more than 1 sidecar attached to a method
                     if (varHandle == null) {
                         varHandle = htp.unreflectVarhandle(field);
                     }
-
-                    SourceModelSidecarField smm = new SourceModelSidecarField(field, model, varHandle);
+                    SourceModelField smm = new SourceModelField(field, model, varHandle);
                     smm.bootstrap(this);
-
                 }
             }
         }
 
         private void findAnnotatedMethods(MemberUnreflector htp, Method method) throws Throwable {
             MethodHandle directMethodHandle = null;
-
             for (Annotation a : method.getAnnotations()) {
-
                 MethodSidecarModel model = MethodSidecarModel.getModelForAnnotatedMethod(a.annotationType());
                 if (model != null) {
-
                     // We can have more than 1 sidecar attached to a method
                     if (directMethodHandle == null) {
                         directMethodHandle = htp.unreflect(method);
                     }
-
-                    SourceModelSidecarMethod smm = new SourceModelSidecarMethod(method, model, directMethodHandle);
+                    SourceModelMethod smm = new SourceModelMethod(method, model, directMethodHandle);
                     smm.bootstrap(this);
-
                 }
             }
         }
-
     }
 }

@@ -55,7 +55,7 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
 
     @Override
     @Nullable
-    public Dependant getInjectable() {
+    public Dependant dependant() {
         throw new UnsupportedOperationException();
     }
 

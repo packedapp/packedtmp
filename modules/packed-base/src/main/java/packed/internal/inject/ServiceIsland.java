@@ -22,8 +22,8 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.component.AssemblyException;
 import packed.internal.component.RegionAssembly;
-import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /** A utility class that can find cycles in a dependency graph. */
@@ -93,8 +93,7 @@ final class ServiceIsland {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private static DependencyCycle detectCycle(RegionAssembly region, Dependant injectable, ArrayDeque<Dependant> stack,
-            ArrayDeque<Dependant> dependencies) {
+    private static DependencyCycle detectCycle(RegionAssembly region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
         DependencyProvider[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);
@@ -102,7 +101,7 @@ final class ServiceIsland {
                 DependencyProvider dependency = deps[i];
 
                 if (dependency != null) {
-                    Dependant next = dependency.getInjectable();
+                    Dependant next = dependency.dependant();
                     if (next != null) {
                         if (next.needsPostProcessing) {
                             dependencies.push(next);

@@ -29,9 +29,9 @@ import packed.internal.component.RegionAssembly;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.SourceAssembly;
 import packed.internal.component.SourceModel;
-import packed.internal.component.SourceModelSidecarMember;
-import packed.internal.component.SourceModelSidecarMethod;
-import packed.internal.component.SourceModelSidecarMethod.RunAt;
+import packed.internal.component.SourceModelMember;
+import packed.internal.component.SourceModelMethod;
+import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.assembly.AtProvideServiceAssembly;
@@ -80,7 +80,7 @@ public class Dependant {
     public final SourceAssembly source;
 
     @Nullable
-    private final SourceModelSidecarMember sourceMember;
+    private final SourceModelMember sourceMember;
 
     public final int providerDelta;
 
@@ -96,7 +96,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(SourceAssembly source, SourceModelSidecarMember smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(SourceAssembly source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -106,7 +106,7 @@ public class Dependant {
             }
 
             ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
-            ServiceAssembly<?> sa = this.service = new AtProvideServiceAssembly<>(sbm, source.compConf, smm.provideAskey, this, smm.provideAsConstant);
+            ServiceAssembly<?> sa = this.service = new AtProvideServiceAssembly<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;
@@ -116,6 +116,10 @@ public class Dependant {
 
         this.providers = dependencyProviders;
         this.providerDelta = providers.length == dependencies.size() ? 0 : 1;
+
+        if (!Modifier.isStatic(smm.getModifiers())) {
+            dependencyProviders[0] = source;
+        }
     }
 
     public final MethodHandle buildMethodHandle() {
@@ -148,8 +152,7 @@ public class Dependant {
         // In which case we store the build entry (if available) in the source instead
         if (service != null) {
             return service.regionIndex;
-        }
-        if (sourceMember != null) {
+        } else if (sourceMember != null) {
             // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
             return -1;
         }
@@ -180,7 +183,7 @@ public class Dependant {
                     // the method on the sidecar: sourceMember.model.onInitialize
 
                     // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                    SourceModelSidecarMethod msm = (SourceModelSidecarMethod) sourceMember;
+                    SourceModelMethod msm = (SourceModelMethod) sourceMember;
                     MethodHandle mh2 = MethodHandles.collectArguments(msm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
 
                     System.out.println(mh2);
