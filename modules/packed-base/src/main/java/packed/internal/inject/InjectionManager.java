@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
-import packed.internal.component.RegionAssembly;
-import packed.internal.container.ContainerAssembly;
+import packed.internal.component.RegionBuild;
+import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /**
@@ -35,7 +35,7 @@ public final class InjectionManager {
     final ArrayList<Dependant> injectables = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
-    public final ContainerAssembly container;
+    public final ContainerBuild container;
 
     /** An error manager that is lazily initialized. */
     @Nullable
@@ -51,7 +51,7 @@ public final class InjectionManager {
      * @param container
      *            the container this manager belongs to
      */
-    public InjectionManager(ContainerAssembly container) {
+    public InjectionManager(ContainerBuild container) {
         this.container = requireNonNull(container);
     }
 
@@ -77,7 +77,7 @@ public final class InjectionManager {
         }
     }
 
-    public void build(RegionAssembly region) {
+    public void build(RegionBuild region) {
         InjectionManager parent = container.parent == null ? null : container.parent.im;
         boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
 

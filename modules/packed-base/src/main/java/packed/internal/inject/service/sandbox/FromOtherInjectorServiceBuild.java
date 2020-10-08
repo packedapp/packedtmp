@@ -13,44 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.wirelets;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.inject.service.sandbox;
 
 import java.lang.invoke.MethodHandle;
-import java.util.function.Function;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
+import app.packed.component.Wirelet;
+import app.packed.inject.ServiceExtension;
+import app.packed.service.Injector;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.runtime.MappingRuntimeService;
+import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/**
- * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
- */
-final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
+/** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
+final class FromOtherInjectorServiceBuild<T> extends ServiceBuild<T> {
 
-    /** The entry that should be mapped. */
-    final ServiceAssembly<F> entryToMap;
+    /** The entry from the 'imported' injector. */
+    private final RuntimeService<T> entry;
 
-    /** The function to apply on the */
-    private final Function<? super F, T> function;
+    /** A wrapper for the 'imported' injector. */
+    final ProvideAllFromOtherInjector fromInjector; // not used currently
 
-    MappingServiceAssembly(ServiceBuildManager node, ConfigSite configSite, ServiceAssembly<F> entryToMap, Key<T> toKey, Function<F, T> function) {
-        super(node, configSite, toKey);
-        this.entryToMap = entryToMap;
-        this.function = requireNonNull(function, "function is null");
+    FromOtherInjectorServiceBuild(ProvideAllFromOtherInjector fromInjector, RuntimeService<T> entry) {
+        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), entry.key());
+        this.entry = entry;
+        this.fromInjector = fromInjector;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new MappingRuntimeService<>(this, entryToMap.toRuntimeEntry(context), function);
+        return new DelegatingRuntimeService<T>(this, entry);
     }
 
     @Override
@@ -67,6 +62,7 @@ final class MappingServiceAssembly<F, T> extends ServiceAssembly<T> {
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return entryToMap.isConstant();
+        return false;
     }
+
 }

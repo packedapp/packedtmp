@@ -20,7 +20,7 @@ import app.packed.component.Bundle;
 import app.packed.component.Wirelet;
 import app.packed.guest.GuestState;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedAssemblyContext;
+import packed.internal.component.PackedBuildContext;
 import packed.internal.component.PackedInitializationContext;
 
 /**
@@ -55,14 +55,14 @@ public class Main {
     // exitable daemon...
     // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
     public static void execute(Bundle<?> bundle, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, null, wirelets);
+        ComponentNodeConfiguration node = PackedBuildContext.assemble(bundle, 0, null, wirelets);
         PackedInitializationContext.initialize(node);
     }
 
     // sync deamon???????
     // App.main(new Goo(), args);
     public static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.assemble(bundle, 0, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
+        ComponentNodeConfiguration node = PackedBuildContext.assemble(bundle, 0, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
         PackedInitializationContext.initialize(node);
     }
 }

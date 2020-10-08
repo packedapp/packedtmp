@@ -29,7 +29,7 @@ import app.packed.container.ExtensionMember;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.ExportedServiceAssembly;
+import packed.internal.inject.service.assembly.ExportedServiceBuild;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.util.LookupUtil;
@@ -94,7 +94,7 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceExtension extension) {
-            for (ExportedServiceAssembly<?> e : fromExtension(extension).exports()) {
+            for (ExportedServiceBuild<?> e : fromExtension(extension).exports()) {
                 action.accept(e.toService());
             }
         }

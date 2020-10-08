@@ -20,19 +20,19 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.RegionAssembly;
-import packed.internal.component.SourceAssembly;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.component.RegionBuild;
+import packed.internal.component.SourceBuild;
+import packed.internal.inject.service.assembly.ServiceBuild;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**
  * Something that
  * 
- * {@link SourceAssembly} for methods or fields that needs an instance of the component source
+ * {@link SourceBuild} for methods or fields that needs an instance of the component source
  * 
  * {@link SidecarContextDependencyProvider} for methods annotated with {@link Provide}
  * 
- * {@link ServiceAssembly} a service of some kind
+ * {@link ServiceBuild} a service of some kind
  */
 public interface DependencyProvider {
 
@@ -46,7 +46,7 @@ public interface DependencyProvider {
      * 
      * 
      * 
-     * The returned method handle takes a single argument of type {@link RegionAssembly}. And returns an instance of the
+     * The returned method handle takes a single argument of type {@link RegionBuild}. And returns an instance of the
      * dependency.
      * <p>
      * If the instance is cached by the runtime. the returned method handle must uphold it

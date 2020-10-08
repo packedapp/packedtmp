@@ -26,13 +26,13 @@ import app.packed.inject.Factory;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceBuild;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
-public final class SourceAssembly implements DependencyProvider {
+public final class SourceBuild implements DependencyProvider {
 
     private static final MethodHandle FACTORY_TO_DEPENDENCIES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "dependencies",
             List.class);
@@ -60,9 +60,9 @@ public final class SourceAssembly implements DependencyProvider {
 
     /** Whether or not this source is provided as a service. */
     @Nullable
-    ServiceAssembly<?> service;
+    ServiceBuild<?> service;
 
-    SourceAssembly(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
+    SourceBuild(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
         this.compConf = compConf;
         this.regionIndex = regionIndex;
 
@@ -117,9 +117,9 @@ public final class SourceAssembly implements DependencyProvider {
         return injectable;
     }
 
-    ServiceAssembly<?> provide() {
+    ServiceBuild<?> provide() {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        ServiceAssembly<?> s = service;
+        ServiceBuild<?> s = service;
         if (s == null) {
             Key<?> key;
             if (instance != null) {

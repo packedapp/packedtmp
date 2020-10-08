@@ -18,9 +18,9 @@ package app.packed.component;
 import app.packed.cli.MainArgs;
 
 /**
- * Artifact images are immutable ahead-of-time configured artifacts. By configuring an artifact ahead of time, the
- * actual time to instantiation an artifact can be severely decreased often down to a couple of microseconds. In
- * addition to this, artifact images can be reusable, so you can create multiple artifacts from a single image.
+ * Images are immutable ahead-of-time configured component systems. By configuring an system ahead of time, the actual
+ * time to instantiation the system can be severely decreased often down to a couple of microseconds. In addition to
+ * this, images can be reusable, so you can create multiple systems from a single image.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.
@@ -47,6 +47,17 @@ import app.packed.cli.MainArgs;
 // ImageAttribute -> What happens on use()
 public interface Image<A> extends ComponentDelegate {
 
+    /**
+     * Is typically used from main methods
+     * 
+     * List example
+     * 
+     * @param args
+     *            string args
+     * @param wirelets
+     *            optional wirelets
+     * @return the result of using the image
+     */
     default A use(String[] args, Wirelet... wirelets) {
         return use(Wirelet.combine(MainArgs.wireletOf(args), wirelets));
     }

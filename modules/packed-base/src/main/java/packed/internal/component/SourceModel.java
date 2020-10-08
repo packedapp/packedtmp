@@ -73,7 +73,7 @@ public final class SourceModel {
     }
 
     public <T> void register(ComponentNodeConfiguration compConf) {
-        SourceAssembly source = compConf.source;
+        SourceBuild source = compConf.source;
 
         for (SourceModelField f : fields) {
             Dependant i = new Dependant(source, f, f.createProviders());

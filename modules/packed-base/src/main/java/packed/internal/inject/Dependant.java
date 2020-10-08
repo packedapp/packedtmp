@@ -25,16 +25,16 @@ import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import packed.internal.component.RegionAssembly;
+import packed.internal.component.RegionBuild;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.component.SourceAssembly;
+import packed.internal.component.SourceBuild;
 import packed.internal.component.SourceModel;
 import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.SourceMemberServiceAssembly;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.inject.service.assembly.SourceMemberServiceBuild;
+import packed.internal.inject.service.assembly.ServiceBuild;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
 /**
@@ -60,7 +60,7 @@ import packed.internal.sidecar.RuntimeRegionInvoker;
 public class Dependant {
 
     @Nullable
-    private final SourceMemberServiceAssembly<?> service;
+    private final SourceMemberServiceBuild<?> service;
 
     MethodHandle buildMethodHandle;
 
@@ -76,14 +76,14 @@ public class Dependant {
     public final DependencyProvider[] providers;
 
     /** The source (component) this dependent is or is a part of. */
-    public final SourceAssembly source;
+    public final SourceBuild source;
 
     @Nullable
     private final SourceModelMember sourceMember;
 
     public final int providerDelta;
 
-    public Dependant(SourceAssembly source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public Dependant(SourceBuild source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -95,7 +95,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(SourceAssembly source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(SourceBuild source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -105,7 +105,7 @@ public class Dependant {
             }
 
             ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
-            ServiceAssembly<?> sa = this.service = new SourceMemberServiceAssembly<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
+            ServiceBuild<?> sa = this.service = new SourceMemberServiceBuild<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;
@@ -158,7 +158,7 @@ public class Dependant {
         return source.regionIndex;
     }
 
-    public void onResolveSuccess(RegionAssembly region) {
+    public void onResolveSuccess(RegionBuild region) {
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way

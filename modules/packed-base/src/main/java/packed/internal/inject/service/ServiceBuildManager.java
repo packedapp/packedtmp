@@ -37,13 +37,13 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.container.ContainerAssembly;
+import packed.internal.container.ContainerBuild;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.assembly.ExportedServiceAssembly;
-import packed.internal.inject.service.assembly.ServiceAssembly;
-import packed.internal.inject.service.assembly.SourceInstanceServiceAssembly;
+import packed.internal.inject.service.assembly.ExportedServiceBuild;
+import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.assembly.SourceInstanceServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -56,7 +56,7 @@ import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
 public final class ServiceBuildManager {
 
     /** All explicit added build entries. */
-    private final ArrayList<ServiceAssembly<?>> assemblies = new ArrayList<>();
+    private final ArrayList<ServiceBuild<?>> assemblies = new ArrayList<>();
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceRequirementsManager dependencies;
@@ -72,7 +72,7 @@ public final class ServiceBuildManager {
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices = new LinkedHashMap<>();
 
     public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
 
@@ -121,7 +121,7 @@ public final class ServiceBuildManager {
     public ServiceContract newServiceContract() {
         return ServiceContract.newContract(c -> {
             if (exporter != null) {
-                for (ExportedServiceAssembly<?> n : exports()) {
+                for (ExportedServiceBuild<?> n : exports()) {
                     c.provides(n.key());
                 }
             }
@@ -164,13 +164,13 @@ public final class ServiceBuildManager {
         p.add(pi);
     }
 
-    public void addAssembly(ServiceAssembly<?> a) {
+    public void addAssembly(ServiceBuild<?> a) {
         requireNonNull(a);
         assemblies.add(a);
     }
 
-    public <T> ServiceAssembly<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
-        ServiceAssembly<T> e = new SourceInstanceServiceAssembly<>(this, compConf, key);
+    public <T> ServiceBuild<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
+        ServiceBuild<T> e = new SourceInstanceServiceBuild<>(this, compConf, key);
         assemblies.add(e);
         return e;
     }
@@ -186,7 +186,7 @@ public final class ServiceBuildManager {
             }
         }
         for (ServiceBuildManager m : children) {
-            for (ExportedServiceAssembly<?> a : m.exports()) {
+            for (ExportedServiceBuild<?> a : m.exports()) {
                 // System.out.println("EXPORT " + a);
 
                 // Skal vi wrappe den????
@@ -210,7 +210,7 @@ public final class ServiceBuildManager {
             ServiceRequirementsManager srm = sbm.dependencies;
             if (srm != null) {
                 for (Requirement r : srm.requirements.values()) {
-                    ServiceAssembly<?> sa = resolvedServices.get(r.key);
+                    ServiceBuild<?> sa = resolvedServices.get(r.key);
                     if (resolvedServices.containsKey(r.key)) {
                         for (FromInjectable i : r.list) {
                             i.i.setDependencyProvider(i.dependencyIndex, sa);
@@ -222,12 +222,12 @@ public final class ServiceBuildManager {
 
     }
 
-    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceAssembly<?>> resolvedServices,
-            Collection<? extends ServiceAssembly<?>> buildEntries) {
-        for (ServiceAssembly<?> entry : buildEntries) {
-            ServiceAssembly<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
+    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices,
+            Collection<? extends ServiceBuild<?>> buildEntries) {
+        for (ServiceBuild<?> entry : buildEntries) {
+            ServiceBuild<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
             if (existing != null) {
-                LinkedHashSet<ServiceAssembly<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                LinkedHashSet<ServiceBuild<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                 hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                 hs.add(entry);
             }
@@ -244,7 +244,7 @@ public final class ServiceBuildManager {
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();
-            ContainerAssembly parent = im.container.parent;
+            ContainerBuild parent = im.container.parent;
             if (parent != null) {
                 ServiceBuildManager sm = parent.im.getServiceManager();
                 if (sm != null) {

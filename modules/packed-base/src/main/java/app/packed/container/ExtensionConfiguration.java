@@ -36,7 +36,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.container.ExtensionAssembly;
+import packed.internal.container.ExtensionBuild;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into
@@ -184,7 +184,7 @@ public interface ExtensionConfiguration {
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     @Nullable
-    private static ExtensionAssembly getExtensionAssembly(MethodHandles.Lookup lookup, Component component) {
+    private static ExtensionBuild getExtensionAssembly(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "component is null");
 
         // lookup.lookupClass() must point to the extension that should be extracted
@@ -257,7 +257,7 @@ public interface ExtensionConfiguration {
         }
 
         @Nullable
-        ExtensionAssembly pec = getExtensionAssembly(lookup, component);
+        ExtensionBuild pec = getExtensionAssembly(lookup, component);
         return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
     }
 }

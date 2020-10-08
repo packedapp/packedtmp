@@ -29,7 +29,7 @@ import packed.internal.container.ExtensionModel;
 /**
  *
  */
-public final class RealmAssembly {
+public final class RealmBuild {
 
     ComponentNodeConfiguration compConf;
 
@@ -41,10 +41,10 @@ public final class RealmAssembly {
     /** A container model. */
     private final RealmModel model;
 
-    final PackedAssemblyContext pac;
+    final PackedBuildContext pac;
     private final Class<?> type;
 
-    private RealmAssembly(PackedAssemblyContext pac, Class<?> type) {
+    private RealmBuild(PackedBuildContext pac, Class<?> type) {
         this.type = requireNonNull(type);
         this.lookup = this.model = RealmModel.of(type);
         this.pac = requireNonNull(pac);
@@ -62,8 +62,8 @@ public final class RealmAssembly {
         return lookup.toMethodHandle(handle);
     }
 
-    public RealmAssembly linkBundle(Bundle<?> bundle) {
-        return new RealmAssembly(pac, bundle.getClass());
+    public RealmBuild linkBundle(Bundle<?> bundle) {
+        return new RealmBuild(pac, bundle.getClass());
     }
 
     /**
@@ -73,8 +73,8 @@ public final class RealmAssembly {
      *            the extension model
      * @return a new realm
      */
-    public RealmAssembly linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
-        RealmAssembly realm = new RealmAssembly(pac, model.type());
+    public RealmBuild linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
+        RealmBuild realm = new RealmBuild(pac, model.type());
         realm.compConf = requireNonNull(compConf);
         return realm;
     }
@@ -90,11 +90,11 @@ public final class RealmAssembly {
         return type;
     }
 
-    public static RealmAssembly fromBundle(PackedAssemblyContext pac, Bundle<?> bundle) {
-        return new RealmAssembly(pac, bundle.getClass());
+    public static RealmBuild fromBundle(PackedBuildContext pac, Bundle<?> bundle) {
+        return new RealmBuild(pac, bundle.getClass());
     }
 
-    public static RealmAssembly fromConfigurator(PackedAssemblyContext pac, CustomConfigurator<?> consumer) {
-        return new RealmAssembly(pac, consumer.getClass());
+    public static RealmBuild fromConfigurator(PackedBuildContext pac, CustomConfigurator<?> consumer) {
+        return new RealmBuild(pac, consumer.getClass());
     }
 }

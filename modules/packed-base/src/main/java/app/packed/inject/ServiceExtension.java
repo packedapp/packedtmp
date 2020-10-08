@@ -34,7 +34,7 @@ import app.packed.service.PrototypeConfiguration;
 import app.packed.service.ServiceAttributes;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.container.ExtensionAssembly;
+import packed.internal.container.ExtensionBuild;
 import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -85,7 +85,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.im = ((ExtensionAssembly) extension).container().im;
+        this.im = ((ExtensionBuild) extension).container().im;
         this.sbm = im.services(false);
     }
 

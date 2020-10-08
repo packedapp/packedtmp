@@ -38,7 +38,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ExtensionConfiguration}. */
-public final class ExtensionAssembly implements ExtensionConfiguration, Comparable<ExtensionAssembly> {
+public final class ExtensionBuild implements ExtensionConfiguration, Comparable<ExtensionBuild> {
 
     /** A MethodHandle for invoking {@link Extension#add()}. */
     private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
@@ -53,7 +53,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A VarHandle used by {@link #of(ContainerAssembly, Class)} to access the field Extension#configuration. */
+    /** A VarHandle used by {@link #of(ContainerBuild, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -61,9 +61,9 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
     private final ComponentNodeConfiguration compConf;
 
     /** The container this extension belongs to. */
-    private final ContainerAssembly container;
+    private final ContainerBuild container;
 
-    /** The extension instance this assembly wraps, instantiated in {@link #of(ContainerAssembly, Class)}. */
+    /** The extension instance this assembly wraps, instantiated in {@link #of(ContainerBuild, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -81,7 +81,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      * @param model
      *            a model of the extension.
      */
-    public ExtensionAssembly(ComponentNodeConfiguration compConf, ExtensionModel model) {
+    public ExtensionBuild(ComponentNodeConfiguration compConf, ExtensionModel model) {
         this.compConf = requireNonNull(compConf);
         this.container = requireNonNull(compConf.getMemberOfContainer());
         this.model = requireNonNull(model);
@@ -109,7 +109,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(ExtensionAssembly c) {
+    public int compareTo(ExtensionBuild c) {
         return -model.compareTo(c.model);
     }
 
@@ -128,7 +128,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      * 
      * @return the configuration of the container the extension is registered in
      */
-    public ContainerAssembly container() {
+    public ContainerBuild container() {
         return container;
     }
 
@@ -282,11 +282,11 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
      *            the type of extension to initialize
      * @return the assembly of the extension
      */
-    static ExtensionAssembly of(ContainerAssembly container, Class<? extends Extension> extensionType) {
+    static ExtensionBuild of(ContainerBuild container, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(container.compConf, model);
-        ExtensionAssembly assembly = compConf.extension;
+        ExtensionBuild assembly = compConf.extension;
 
         // Creates a new extension instance and set extension.configuration = assembly
         Extension extension = assembly.instance = model.newInstance(assembly);
@@ -296,8 +296,8 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
         // of the extensions existence. This is done first in order to let the remaining steps use any
         // information set by the parent or ancestor.
         if (model.extensionLinkedToAncestorExtension != null) {
-            ExtensionAssembly parentExtension = null;
-            ContainerAssembly parent = container.parent;
+            ExtensionBuild parentExtension = null;
+            ContainerBuild parent = container.parent;
             if (!model.extensionLinkedDirectChildrenOnly) {
                 while (parentExtension == null && parent != null) {
                     parentExtension = parent.getExtensionContext(extensionType);

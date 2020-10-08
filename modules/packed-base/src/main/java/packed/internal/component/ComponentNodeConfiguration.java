@@ -55,8 +55,8 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ContainerAssembly;
-import packed.internal.container.ExtensionAssembly;
+import packed.internal.container.ContainerBuild;
+import packed.internal.container.ExtensionBuild;
 import packed.internal.container.ExtensionModel;
 import packed.internal.inject.InjectionManager;
 import packed.internal.util.ThrowableUtil;
@@ -77,26 +77,26 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /* *************** ASSEMBLIES **************** */
 
     /** The region this component is a part of. */
-    public final RegionAssembly region;
+    public final RegionBuild region;
 
     /** The realm this component is a part of. */
-    public final RealmAssembly realm;
+    public final RealmBuild realm;
 
     /** The container, if source Any container this component is part of. A container is part of it self. */
     @Nullable
-    public final ContainerAssembly container;
+    public final ContainerBuild container;
 
     /** Any container this component is part of. A container is part of it self. */
     @Nullable
-    public final ContainerAssembly memberOfContainer;
+    public final ContainerBuild memberOfContainer;
 
     /** Any extension that is attached to this component. */
     @Nullable
-    public final ExtensionAssembly extension;
+    public final ExtensionBuild extension;
 
     /** Any source that is attached to this component. */
     @Nullable
-    public final SourceAssembly source;
+    public final SourceBuild source;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -123,7 +123,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param parent
      *            the parent of the component
      */
-    ComponentNodeConfiguration(RealmAssembly realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
+    ComponentNodeConfiguration(RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
@@ -132,7 +132,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.wirelets = wirelets;
         int mod = driver.modifiers;
         if (parent == null) {
-            this.region = new RegionAssembly(); // Root always needs a nodestore
+            this.region = new RegionBuild(); // Root always needs a nodestore
 
             mod = mod | realm.pac.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
@@ -141,7 +141,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
         } else {
-            this.region = driver.modifiers().isGuest() ? new RegionAssembly() : parent.region;
+            this.region = driver.modifiers().isGuest() ? new RegionBuild() : parent.region;
         }
         this.modifiers = mod;
 
@@ -153,7 +153,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Container
         if (modifiers().isContainer()) {
-            this.memberOfContainer = this.container = new ContainerAssembly(this);
+            this.memberOfContainer = this.container = new ContainerBuild(this);
         } else {
             this.container = null;
             this.memberOfContainer = parent == null ? null : parent.memberOfContainer;
@@ -170,7 +170,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             int regionIndex = modifiers().isSingleton() ? region.reserve() : -1;
 
             // Create the source
-            this.source = new SourceAssembly(this, regionIndex, driver.data);
+            this.source = new SourceBuild(this, regionIndex, driver.data);
 
             if (source.instance != null) {
                 region.constants.add(source);
@@ -201,7 +201,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.configSite = parent.configSite();
         this.container = null;
         this.memberOfContainer = parent.container;
-        this.extension = new ExtensionAssembly(this, model);
+        this.extension = new ExtensionBuild(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = parent.realm.linkExtension(this, model);
         this.region = parent.region;
@@ -315,7 +315,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** {@inheritDoc} */
     @Override
-    public PackedAssemblyContext assembly() {
+    public PackedBuildContext assembly() {
         return realm.pac;
     }
 
@@ -333,7 +333,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param realm
      *            the realm that was closed.
      */
-    void onRealmClose(RealmAssembly realm) {
+    void onRealmClose(RealmBuild realm) {
         // Closes all components in the same realm depth first
         for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
             // child components with a different realm, has either already been closed, or will be closed elsewhere
@@ -360,7 +360,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @return the container this component is a part of
      */
     @Nullable
-    public ContainerAssembly getMemberOfContainer() {
+    public ContainerBuild getMemberOfContainer() {
         return memberOfContainer;
     }
 
@@ -395,7 +395,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         ConfigSite cs = ConfigSite.UNKNOWN;
 
         // Create a new realm, since the bundle is 'foreign' code
-        RealmAssembly r = realm.linkBundle(bundle);
+        RealmBuild r = realm.linkBundle(bundle);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime

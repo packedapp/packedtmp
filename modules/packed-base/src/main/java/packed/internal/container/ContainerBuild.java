@@ -27,21 +27,21 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.RegionAssembly;
+import packed.internal.component.RegionBuild;
 import packed.internal.inject.InjectionManager;
 
 /** Contains data and logic relevant for containers. */
-public final class ContainerAssembly {
+public final class ContainerBuild {
 
     /** Child containers, lazy initialized */
     @Nullable
-    private ArrayList<ContainerAssembly> children;
+    private ArrayList<ContainerBuild> children;
 
     /** The component this container is a part of. */
     public final ComponentNodeConfiguration compConf;
 
     /** All used extensions, in order of registration. */
-    private final IdentityHashMap<Class<? extends Extension>, ExtensionAssembly> extensions = new IdentityHashMap<>();
+    private final IdentityHashMap<Class<? extends Extension>, ExtensionBuild> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
 
@@ -49,9 +49,9 @@ public final class ContainerAssembly {
 
     /** Any parent container this container might have. */
     @Nullable
-    public final ContainerAssembly parent;
+    public final ContainerBuild parent;
 
-    private ArrayList<ExtensionAssembly> tmpExtension;
+    private ArrayList<ExtensionBuild> tmpExtension;
 
     @Nullable
     private Boolean isImage;
@@ -62,12 +62,12 @@ public final class ContainerAssembly {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public ContainerAssembly(ComponentNodeConfiguration compConf) {
+    public ContainerBuild(ComponentNodeConfiguration compConf) {
         this.compConf = requireNonNull(compConf);
         this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
         if (parent != null) {
             parent.runPredContainerChildren();
-            ArrayList<ContainerAssembly> c = parent.children;
+            ArrayList<ContainerBuild> c = parent.children;
             if (c == null) {
                 c = parent.children = new ArrayList<>();
             }
@@ -106,12 +106,12 @@ public final class ContainerAssembly {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
-    public void close(RegionAssembly region) {
+    public void close(RegionBuild region) {
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }
-        TreeSet<ExtensionAssembly> extensionsOrdered = new TreeSet<>(extensions.values());
-        for (ExtensionAssembly pec : extensionsOrdered) {
+        TreeSet<ExtensionBuild> extensionsOrdered = new TreeSet<>(extensions.values());
+        for (ExtensionBuild pec : extensionsOrdered) {
             pec.complete();
         }
 
@@ -126,10 +126,10 @@ public final class ContainerAssembly {
      *            the type of extension to return a context for
      * @return an extension's context, iff the specified extension type has already been added
      * @see #useExtension(Class)
-     * @see #useExtension(Class, ExtensionAssembly)
+     * @see #useExtension(Class, ExtensionBuild)
      */
     @Nullable
-    public ExtensionAssembly getExtensionContext(Class<? extends Extension> extensionType) {
+    public ExtensionBuild getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
     }
@@ -146,14 +146,14 @@ public final class ContainerAssembly {
         // keep track of extensions that are added in this step..
         // And run ea.preContainerChildren on them...
         // And then repeat until some list/set has not been touched...
-        for (ExtensionAssembly ea : extensions.values()) {
+        for (ExtensionBuild ea : extensions.values()) {
             ea.preContainerChildren();
         }
 
         while (tmpExtension != null) {
-            ArrayList<ExtensionAssembly> te = tmpExtension;
+            ArrayList<ExtensionBuild> te = tmpExtension;
             tmpExtension = null;
-            for (ExtensionAssembly ea : te) {
+            for (ExtensionBuild ea : te) {
                 ea.preContainerChildren();
             }
         }
@@ -173,9 +173,9 @@ public final class ContainerAssembly {
      * @throws InternalExtensionException
      *             if the
      */
-    ExtensionAssembly useExtension(Class<? extends Extension> extensionType, @Nullable ExtensionAssembly caller) {
+    ExtensionBuild useExtension(Class<? extends Extension> extensionType, @Nullable ExtensionBuild caller) {
         requireNonNull(extensionType, "extensionType is null");
-        ExtensionAssembly extension = extensions.get(extensionType);
+        ExtensionBuild extension = extensions.get(extensionType);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
@@ -192,13 +192,13 @@ public final class ContainerAssembly {
                 caller.checkConfigurable();
             }
             // Create the new extension
-            extension = ExtensionAssembly.of(this, extensionType);
+            extension = ExtensionBuild.of(this, extensionType);
 
             // Add the extension to the extension map
             extensions.put(extensionType, extension);
 
             if (hasRunPreContainerChildren) {
-                ArrayList<ExtensionAssembly> l = tmpExtension;
+                ArrayList<ExtensionBuild> l = tmpExtension;
                 if (l == null) {
                     l = tmpExtension = new ArrayList<>();
                 }

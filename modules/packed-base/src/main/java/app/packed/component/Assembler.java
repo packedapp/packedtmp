@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles.Lookup;
  *
  */
 // Can take a CCC context. And cast it and provide lookup??
-
 // Maaske er det altid en container????
 
 // Maker

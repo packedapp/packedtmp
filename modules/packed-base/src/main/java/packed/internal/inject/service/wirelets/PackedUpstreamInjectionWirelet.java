@@ -25,7 +25,7 @@ import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceBuild;
 import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
 
 /** The common superclass for upstream service wirelets. */
@@ -88,12 +88,12 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
                 throw new RuntimeException();
             }
             // We map, not alias...
-            ServiceAssembly<?> e = extract ? ii.entries.get(frpm) : ii.entries.remove(frpm);
+            ServiceBuild<?> e = extract ? ii.entries.get(frpm) : ii.entries.remove(frpm);
             if (e == null) {
                 // FAIL -> WireletProcessingException????
                 throw new RuntimeException();
             }
-            ServiceAssembly newE = new MappingServiceAssembly(ii.node, ii.configSite, e, to, function);
+            ServiceBuild newE = new MappingServiceBuild(ii.node, ii.configSite, e, to, function);
             ii.entries.put(to, newE);
         }
 
@@ -126,7 +126,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @Override
         public void process(ProvideAllFromOtherInjector ii) {
-            for (ServiceAssembly<?> e : ii.entries.values()) {
+            for (ServiceBuild<?> e : ii.entries.values()) {
                 action.accept(e.toService());
             }
         }

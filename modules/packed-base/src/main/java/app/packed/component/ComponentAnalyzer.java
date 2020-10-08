@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Attribute;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedAssemblyContext;
+import packed.internal.component.PackedBuildContext;
 import packed.internal.component.PackedComponentModifierSet;
 
 /**
@@ -60,7 +60,7 @@ public final class ComponentAnalyzer {
             Bundle<?> bundle = (Bundle<?>) s;
 
             // Assembles the system with the ComponentModifier.ANALYSIS modifier set
-            ComponentNodeConfiguration component = PackedAssemblyContext.assemble(bundle, PackedComponentModifierSet.I_ANALYSIS, null);
+            ComponentNodeConfiguration component = PackedBuildContext.assemble(bundle, PackedComponentModifierSet.I_ANALYSIS, null);
 
             // Returns a ComponentConfiguration -> Component adaptor
             return component.adaptToComponent();

@@ -33,7 +33,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
  * exported.
  */
-public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
+public final class ExportedServiceBuild<T> extends ServiceBuild<T> {
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
@@ -41,7 +41,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    public ServiceAssembly<T> exportedEntry;
+    public ServiceBuild<T> exportedEntry;
 
     /**
      * Exports an entry via its key.
@@ -53,7 +53,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedServiceAssembly(ServiceBuildManager builder, Key<T> exportAsKey, ConfigSite configSite) {
+    public ExportedServiceBuild(ServiceBuildManager builder, Key<T> exportAsKey, ConfigSite configSite) {
         super(builder, configSite, exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
@@ -67,7 +67,7 @@ public final class ExportedServiceAssembly<T> extends ServiceAssembly<T> {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedServiceAssembly(ServiceBuildManager builder, ServiceAssembly<T> entryToExport, ConfigSite configSite) {
+    public ExportedServiceBuild(ServiceBuildManager builder, ServiceBuild<T> entryToExport, ConfigSite configSite) {
         super(builder, configSite, entryToExport.key());
         this.exportedEntry = entryToExport;
         this.exportAsKey = null;

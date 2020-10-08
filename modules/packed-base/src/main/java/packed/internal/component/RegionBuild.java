@@ -27,10 +27,10 @@ import packed.internal.util.ThrowableUtil;
 // Vi gemmer alt det her i en region...
 // Fordi raekkefoelgen af initialisering gaar paa tvaers af containere
 // Idet de kan dependende paa hinanden
-public final class RegionAssembly {
+public final class RegionBuild {
 
-    /** Components that contains constants that should be stored in a region. Is only written by {@link SourceAssembly}. */
-    final ArrayList<SourceAssembly> constants = new ArrayList<>();
+    /** Components that contains constants that should be stored in a region. Is only written by {@link SourceBuild}. */
+    final ArrayList<SourceBuild> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
@@ -50,7 +50,7 @@ public final class RegionAssembly {
         }
 
         // We start by storing all constant instances in the region array
-        for (SourceAssembly sa : constants) {
+        for (SourceBuild sa : constants) {
             region.store(sa.regionIndex, sa.instance);
         }
 

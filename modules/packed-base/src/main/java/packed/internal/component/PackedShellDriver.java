@@ -63,7 +63,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     @Override
     public <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        ComponentNodeConfiguration node = PackedAssemblyContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
+        ComponentNodeConfiguration node = PackedBuildContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = PackedInitializationContext.initialize(node);
         return newShell(ac);
     }
@@ -99,7 +99,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         // Assemble the system with the ComponentModifier.IMAGE modifier added
-        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(bundle, modifiers | I_IMAGE, this, wirelets);
+        ComponentNodeConfiguration component = PackedBuildContext.assemble(bundle, modifiers | I_IMAGE, this, wirelets);
 
         // Return a new image that be people can use (Image::use)
         return new ShellImage(component);
@@ -109,7 +109,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public S newShell(Bundle<?> bundle, Wirelet... wirelets) {
         // Assemble the system
-        ComponentNodeConfiguration component = PackedAssemblyContext.assemble(bundle, modifiers, this, wirelets);
+        ComponentNodeConfiguration component = PackedBuildContext.assemble(bundle, modifiers, this, wirelets);
 
         // Initialize the system. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = PackedInitializationContext.initialize(component);

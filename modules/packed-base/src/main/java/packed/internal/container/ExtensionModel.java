@@ -207,7 +207,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *            the extension context that can be constructor injected into the extension
      * @return a new instance of the extension
      */
-    Extension newInstance(ExtensionAssembly context) {
+    Extension newInstance(ExtensionBuild context) {
         try {
             return (Extension) constructor.invokeExact(context);
         } catch (Throwable e) {
@@ -375,7 +375,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
-            builder.addAnnoClassMapper(WireletConsume.class, ExtensionAssembly.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(WireletConsume.class, ExtensionBuild.MH_FIND_WIRELET, index);
         }
 
         /**
@@ -399,7 +399,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             // I Would love to get rid of CONV
 
-            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, ExtensionAssembly.class);
+            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, ExtensionBuild.class);
             addExtensionContextElements(mhbConstructor, 0);
 
             OpenClass cp = prep(mhbConstructor);
@@ -407,7 +407,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             if (linked != null) {
                 // ancestor extension, descendant extension context, descendant extension
-                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, ExtensionAssembly.class, Extension.class);
+                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, ExtensionBuild.class, Extension.class);
 
                 // From the child's extension context
                 addExtensionContextElements(iss, 1);

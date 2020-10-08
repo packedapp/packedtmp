@@ -30,7 +30,7 @@ import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceRegistry;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceBuild;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /** An abstract implementation of ServiceRegistry. */
@@ -131,9 +131,9 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      *            the map to make an immutable copy
      * @return a new service registry
      */
-    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceAssembly<?>> map) {
+    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceBuild<?>> map) {
         LinkedHashMap<Key<?>, Service> l = new LinkedHashMap<Key<?>, Service>();
-        for (ServiceAssembly<?> e : map.values()) {
+        for (ServiceBuild<?> e : map.values()) {
             l.put(e.key(), e.toService());
         }
         return new CopyOfRegistry(l);

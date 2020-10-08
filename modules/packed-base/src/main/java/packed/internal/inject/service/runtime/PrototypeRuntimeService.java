@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvisionContext;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.service.assembly.ServiceAssembly;
+import packed.internal.inject.service.assembly.ServiceBuild;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -36,7 +36,7 @@ public class PrototypeRuntimeService<T> extends RuntimeService<T> {
     /**
      * @param service
      */
-    public PrototypeRuntimeService(ServiceAssembly<T> service, RuntimeRegion region, MethodHandle mh) {
+    public PrototypeRuntimeService(ServiceBuild<T> service, RuntimeRegion region, MethodHandle mh) {
         super(service);
         this.region = requireNonNull(region);
         this.mh = requireNonNull(mh);

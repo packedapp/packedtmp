@@ -34,7 +34,7 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.errorhandling.ErrorMessage;
 
 /** The default implementation of {@link BuildContext} */
-public final class PackedAssemblyContext implements BuildContext {
+public final class PackedBuildContext implements BuildContext {
 
     /** The build output. */
     final int modifiers;
@@ -58,7 +58,7 @@ public final class PackedAssemblyContext implements BuildContext {
      * @param modifiers
      *            the output of the build process
      */
-    PackedAssemblyContext(int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+    PackedBuildContext(int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
         this.modifiers = modifiers + PackedComponentModifierSet.I_ASSEMBLY; // we use + to make sure others don't provide ASSEMBLY
         this.shellDriver = shellDriver;
         this.wirelets = wirelets;
@@ -109,13 +109,13 @@ public final class PackedAssemblyContext implements BuildContext {
         PackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
 
         // Create a new assembly context that we passe around
-        PackedAssemblyContext pac = new PackedAssemblyContext(modifiers, shellDriver, wirelets);
+        PackedBuildContext pac = new PackedBuildContext(modifiers, shellDriver, wirelets);
 
         WireletPack wp = WireletPack.from(componentDriver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        RealmAssembly realm = RealmAssembly.fromBundle(pac, bundle);
+        RealmBuild realm = RealmBuild.fromBundle(pac, bundle);
 
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm, componentDriver, cs, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
@@ -131,9 +131,9 @@ public final class PackedAssemblyContext implements BuildContext {
         // Vil gerne parse nogle wirelets some det allerfoerste
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        PackedAssemblyContext pac = new PackedAssemblyContext(0, ad);
+        PackedBuildContext pac = new PackedBuildContext(0, ad);
 
-        RealmAssembly realm = RealmAssembly.fromConfigurator(pac, consumer);
+        RealmBuild realm = RealmBuild.fromConfigurator(pac, consumer);
         ComponentNodeConfiguration node = new ComponentNodeConfiguration(realm, driver, cs, null, wp);
 
         D conf = driver.toConfiguration(node);

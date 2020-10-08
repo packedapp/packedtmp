@@ -35,7 +35,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class ServiceAssembly<T> implements DependencyProvider {
+public abstract class ServiceBuild<T> implements DependencyProvider {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -50,7 +50,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
     /** The service manager that this service belongs to. */
     public final ServiceBuildManager sm;
 
-    public ServiceAssembly(ServiceBuildManager sm, ConfigSite configSite, Key<T> key) {
+    public ServiceBuild(ServiceBuildManager sm, ConfigSite configSite, Key<T> key) {
         this.sm = requireNonNull(sm);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
@@ -99,7 +99,7 @@ public abstract class ServiceAssembly<T> implements DependencyProvider {
         });
     }
 
-    /** An implementation of {@link Service} because {@link ServiceAssembly} is mutable. */
+    /** An implementation of {@link Service} because {@link ServiceBuild} is mutable. */
     private final class PackedService implements Service {
 
         /** The configuration site of the service. */
