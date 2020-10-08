@@ -44,7 +44,7 @@ public interface GuestWirelets {
 
     // * The returned application will lazily start itself when needed. For example, on first invocation of
     // * {@link #use(Class)}.
-    static Wirelet delayStart() {
+    static Wirelet lazyStart() {
         throw new UnsupportedOperationException();
     }
 

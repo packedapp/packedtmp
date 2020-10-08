@@ -26,7 +26,7 @@ import app.packed.inject.Factory;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;

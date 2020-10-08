@@ -23,8 +23,8 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
-import app.packed.component.BuildContext;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.BuildContext;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentClassDriver;
@@ -55,7 +55,9 @@ public interface ExtensionConfiguration {
     // ComponentAttributes
 
     // Thinking about removing this
-    BuildContext assembly();
+    // Altsaa det den er god for er at tilfoeje callbacks...
+    // Men det behoever vi jo ikke have et interface for..
+    BuildContext build();
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

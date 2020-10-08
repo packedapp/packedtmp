@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvisionContext;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */

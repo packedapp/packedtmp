@@ -22,7 +22,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.Injector;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;

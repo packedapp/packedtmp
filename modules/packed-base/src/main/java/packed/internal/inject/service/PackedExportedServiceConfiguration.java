@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import app.packed.service.ExportedServiceConfiguration;
-import packed.internal.inject.service.assembly.ExportedServiceBuild;
+import packed.internal.inject.service.build.ExportedServiceBuild;
 
 /**
  * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service

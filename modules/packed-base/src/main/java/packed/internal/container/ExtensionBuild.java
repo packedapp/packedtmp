@@ -89,7 +89,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public BuildContext assembly() {
+    public BuildContext build() {
         return compConf.assembly();
     }
 

@@ -16,11 +16,13 @@
 package app.packed.component;
 
 /**
- * An exception thrown by the runtime when a pod cannot be assembled properly. This exception normally indicates a
- * programmatic error and can usually only be recovered by updating the underlying code.
+ * An exception typically thrown by the runtime when something goes wrong doing the build phase of a component system.
+ * This exception normally indicates a programmatic error and can usually only be recovered by updating the underlying
+ * code.
  */
 // Or in .base/.component??? was in .artifact
 // Skal vi have en liste af errors???
+// Skal vi have en lifecycle base extension for denne og InitializationExtception  
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

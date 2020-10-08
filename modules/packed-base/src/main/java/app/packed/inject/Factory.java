@@ -16,7 +16,6 @@
 package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -28,6 +27,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -152,7 +152,7 @@ public abstract class Factory<T> {
     private final Class<? super T> type;
 
     /** The type of objects this factory creates. */
-    public final TypeLiteral<T> typeLiteral;
+    private final TypeLiteral<T> typeLiteral;
 
     /**
      * Used by the various FactoryN constructor, because we cannot call {@link Object#getClass()} before calling a
@@ -183,70 +183,65 @@ public abstract class Factory<T> {
     }
 
     /**
-     * Binds the specified argument to a variable with the specified index as returned by {@link #variables()}. This method
-     * is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
+     * Binds the specified argument(s) to a variable with the specified index as returned by {@link #variables()}. This
+     * method is typically used to bind arguments to parameters on a method or constructors when key-based binding is not
      * sufficient. A typical example is a constructor with two parameters of the same type.
      * 
-     * @param index
+     * @param position
      *            the index of the variable to bind
      * @param argument
      *            the (nullable) argument to bind
+     * @param additionalArguments
+     *            any additional (nullable) arguments to bind
      * @return a new factory
      * @throws IndexOutOfBoundsException
      *             if the specified index does not represent a valid variable in {@link #variables()}
      * @throws ClassCastException
-     *             if the specified argument is not compatible with the actual type of the variable
+     *             if an argument does not match the corresponding variable type.
+     * @throws IllegalArgumentException
+     *             if (@code pos) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the number of
+     *             dependencies and {@code L} is the length of the additional argument array.
      * @throws NullPointerException
      *             if the specified argument is null and the variable does not represent a reference type
      */
-
-    public final Factory<T> bind(int index, @Nullable Object argument) {
-        // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
-        // F.eks. for dooo(String x, String y)
-        // Og det gider vi ikke....
-        // Saa variables stay the same -> Why shouldn't we able to bind them...
-
-        // Maaske er index ligegyldigt...
-        // Og det er bare en speciel mode for MethodSidecar
-        // Hvor man kan sige jeg tager denne variable ud af ligningen...
-
-        // Maybe add isVariableBound(int index)
-
-        // Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
-
-        // Har vi en optional MemberDescriptor?????
-
-        // Hvis man nu vil injecte en composite....
-
-        throw new UnsupportedOperationException();
-    }
-
-    public final Factory<T> bind(int index, Supplier<?> supplier) {
-        throw new UnsupportedOperationException();
-    }
-
-    protected T checkLowerbound(T instance) {
-        if (!type.isInstance(instance)) {
-            // TODO I think this should probably be a Make Exception....
-            // IDeen er at de har "løjet" om hvad de returnere.
-            throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " + instance.getClass());
+    public final Factory<T> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
+        requireNonNull(additionalArguments, "additionalArguments is null");
+        List<DependencyDescriptor> dependencies = dependencies();
+        Objects.checkIndex(position, dependencies.size());
+        int len = 1 + additionalArguments.length;
+        int newLen = dependencies.size() - len;
+        if (newLen < 0) {
+            throw new IllegalArgumentException(
+                    "Cannot specify more than " + (len - position) + " arguments for position = " + position + ", but arguments array was size " + len);
         }
-        return instance;
+
+        // Removing dependencies that are being replaced
+        DependencyDescriptor[] dd = new DependencyDescriptor[newLen];
+        for (int i = 0; i < position; i++) {
+            dd[i] = dependencies().get(i);
+        }
+        for (int i = position; i < dd.length; i++) {
+            dd[i] = dependencies.get(i + len);
+        }
+
+        // Populate final argument array
+        Object[] args = new Object[len];
+        args[0] = argument;
+        for (int i = 0; i < additionalArguments.length; i++) {
+            args[i + 1] = additionalArguments[i];
+        }
+
+        // TODO check types...
+
+        return new BindingFactory<>(this, position, dd, args);
     }
 
-    abstract List<DependencyDescriptor> dependencies();
-
-    final List<?> dependenciesx() {
-        // What if have Factory f = Factory.of(Foo(String x, String y));
-        // f.bindVariable(0, "FooBar");
-        // Now the first parameter (with Key String) is bound.
-        // But not the second parameter (also with Key String)
-        // What if we bind String now??? Only too second parameter?
-
+    final Factory<T> bindSupplier(int index, Supplier<?> supplier) {
         throw new UnsupportedOperationException();
-
-        // Factory<T> narrow() <- removes bound dependencies/parameters()...
     }
+
+    // taenker vi laver den her public og saa bare caster...
+    abstract List<DependencyDescriptor> dependencies();
 
     /**
      * The key under which If this factory is registered as a service. This method returns the (default) key that will be
@@ -362,27 +357,6 @@ public abstract class Factory<T> {
 //        return false;
 //    }
 
-    /**
-     * Returns the type of objects this operation returns on invocation.
-     *
-     * @return the type of objects this operation returns on invocation
-     */
-    final TypeLiteral<T> returnType() {
-        return typeLiteral;
-    }
-
-    /**
-     * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
-     * annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
-     *
-     * @return stuff
-     */
-    // We should make this public...
-    // InjectableType
-    Class<? super T> scannableType() {
-        return rawType();
-    }
-
     abstract MethodHandle toMethodHandle(Lookup lookup);
 
     /**
@@ -397,7 +371,7 @@ public abstract class Factory<T> {
         return typeLiteral;
     }
 
-    public final Factory<T> useExactType(Class<? extends T> type) {
+    final Factory<T> useExactType(Class<? extends T> type) {
         // TypeHint.. withExactType
 
         // scanAs() must be exact type. Show example with static method that returns a Foo, but should scan with FooImpl
@@ -415,10 +389,10 @@ public abstract class Factory<T> {
      * Returns an immutable list of all variables (typically fields or parameters) that needs to be successfully injected in
      * order for the factory to provide a new value.
      * <p>
-     * The list returned by this method is unaffected by any previous bindings to specific variables. For example, via
-     * {@link #bind(int, Object)}.
+     * The list returned by this method is affected by any previous bindings to specific variables. For example, via
+     * {@link #bind(int, Object, Object...)}.
      * <p>
-     * Any factory created via {@link #ofInstance(Object)} will return an empty list.
+     * Factories created via {@link #ofInstance(Object)} always return an empty list.
      * 
      * @return any variables that was used to construct the factory
      */
@@ -447,6 +421,8 @@ public abstract class Factory<T> {
      */
 
     public final Factory<T> withKey(Key<?> key) {
+        // Just make a new KeyedFactory
+        // Hvor kun noeglen er aendret....
         // Must be compatible with key in some way
         throw new UnsupportedOperationException();
     }
@@ -574,7 +550,7 @@ public abstract class Factory<T> {
     }
 
     /** A factory that wraps a method or constructor. */
-    static final class ExecutableFactory<T> extends Factory<T> {
+    private static final class ExecutableFactory<T> extends Factory<T> {
 
         private final List<DependencyDescriptor> dependencies;
 
@@ -632,13 +608,13 @@ public abstract class Factory<T> {
     }
 
     /** An invoker that can read and write fields. */
-    static final class FieldFactory<T> extends Factory<T> {
+    private static final class FieldFactory<T> extends Factory<T> {
 
         /** The field we invoke. */
         private final Field field;
 
         @SuppressWarnings("unchecked")
-        FieldFactory(Field field) {
+        private FieldFactory(Field field) {
             super((TypeLiteral<T>) TypeLiteral.fromField(field));
             this.field = field;
         }
@@ -698,7 +674,42 @@ public abstract class Factory<T> {
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
-    private static final class InstanceBinder<T> extends Factory<T> {
+    private static final class BindingFactory<T> extends Factory<T> {
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final int index;
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Factory<T> delegate;
+
+        private final Object[] arguments;
+
+        private final List<DependencyDescriptor> dependencies;
+
+        private BindingFactory(Factory<T> delegate, int index, DependencyDescriptor[] dd, Object[] arguments) {
+            super(delegate.typeLiteral);
+            this.index = index;
+            this.delegate = requireNonNull(delegate);
+            this.arguments = arguments;
+            this.dependencies = List.of(dd);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        List<DependencyDescriptor> dependencies() {
+            return dependencies;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle toMethodHandle(Lookup lookup) {
+            MethodHandle mh = delegate.toMethodHandle(lookup);
+            return MethodHandles.insertArguments(mh, index, arguments);
+        }
+    }
+
+    /** A special factory created via {@link #withLookup(Lookup)}. */
+    private static final class MemberInstanceBindingFactory<T> extends Factory<T> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final Object instance;
@@ -706,7 +717,7 @@ public abstract class Factory<T> {
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final Factory<T> delegate;
 
-        private InstanceBinder(Factory<T> delegate, Object instance) {
+        private MemberInstanceBindingFactory(Factory<T> delegate, Object instance) {
             super(delegate.typeLiteral);
             this.instance = requireNonNull(instance);
             this.delegate = requireNonNull(delegate);
@@ -787,6 +798,18 @@ public abstract class Factory<T> {
     }
 }
 
+///**
+// * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for
+// * annotations. This might differ from the actual type, for example, if {@link #mapTo(Class, Function)} is used
+// *
+// * @return stuff
+// */
+//// We should make this public...
+//// InjectableType
+//Class<? super T> scannableType() {
+//    return rawType();
+//}
+
 ///** {@inheritDoc} */
 //@Override
 //public final <S> Factory<T> bind(Class<S> key, @Nullable S instance) {
@@ -866,3 +889,20 @@ public abstract class Factory<T> {
 //public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
 //  throw new UnsupportedOperationException();
 //}
+
+// Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
+// F.eks. for dooo(String x, String y)
+// Og det gider vi ikke....
+// Saa variables stay the same -> Why shouldn't we able to bind them...
+
+// Maaske er index ligegyldigt...
+// Og det er bare en speciel mode for MethodSidecar
+// Hvor man kan sige jeg tager denne variable ud af ligningen...
+
+// Maybe add isVariableBound(int index)
+
+// Rebinding? Ja hvorfor ikke... maaske have en #unbindable()
+
+// Har vi en optional MemberDescriptor?????
+
+// Hvis man nu vil injecte en composite....

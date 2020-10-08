@@ -129,7 +129,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Returns a driver that produces {@link App} instances.
+     * Returns a driver that produce {@link App} instances.
      * <p>
      * This method is mainly used by advanced users.
      * 
@@ -145,12 +145,14 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Create and start a new application using the specified bundle. The state of the returned application is
+     * Build and start a new application using the specified bundle. The state of the returned application is
      * {@link GuestState#RUNNING}.
      * <p>
      * Should be used with try-with-resources
      * <p>
-     * If you do not wish to immediately start the application use {@link GuestWirelets#delayStart()}.
+     * Applications that are created using this method is always automatically started. If you wish to delay the start
+     * process you can use {@link GuestWirelets#lazyStart()}. Which will return an application in the
+     * {@link GuestState#INITIALIZED} phase instead.
      * 
      * @param bundle
      *            the bundle to use for creating the application

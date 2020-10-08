@@ -33,8 +33,8 @@ import packed.internal.component.SourceModelMember;
 import packed.internal.component.SourceModelMethod;
 import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.SourceMemberServiceBuild;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.SourceMemberServiceBuild;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
 /**

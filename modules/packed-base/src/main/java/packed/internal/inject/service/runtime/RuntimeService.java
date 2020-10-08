@@ -24,7 +24,7 @@ import app.packed.inject.ProvisionContext;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.PackedProvideContext;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /** An entry that represents a service at runtime. */
 public abstract class RuntimeService<T> implements Service {

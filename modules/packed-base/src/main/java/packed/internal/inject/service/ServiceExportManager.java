@@ -31,8 +31,8 @@ import app.packed.inject.ServiceRegistry;
 import app.packed.service.ExportedServiceConfiguration;
 import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.InjectionManager;
-import packed.internal.inject.service.assembly.ExportedServiceBuild;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ExportedServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceRegistry;
 
 /**

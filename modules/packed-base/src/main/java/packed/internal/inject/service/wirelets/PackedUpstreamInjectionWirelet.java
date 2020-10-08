@@ -25,7 +25,7 @@ import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
 
 /** The common superclass for upstream service wirelets. */

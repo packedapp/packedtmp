@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvisionContext;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /** An entry holding a constant. */
 public final class ConstantRuntimeService<T> extends RuntimeService<T> {

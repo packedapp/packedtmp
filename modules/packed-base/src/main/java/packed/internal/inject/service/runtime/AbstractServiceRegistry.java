@@ -30,7 +30,7 @@ import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceRegistry;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /** An abstract implementation of ServiceRegistry. */

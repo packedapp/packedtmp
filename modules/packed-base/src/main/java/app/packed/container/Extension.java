@@ -110,7 +110,7 @@ public abstract class Extension {
      *             if invoked from the constructor of the extension
      */
     protected final BuildContext assembly() {
-        return configuration().assembly();
+        return configuration().build();
     }
 
     /**

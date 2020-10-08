@@ -18,7 +18,7 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.inject.ProvisionContext;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /**
  * A delegating runtime service node.

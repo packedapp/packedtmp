@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.inject.ProvisionContext;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
 public final class MappingRuntimeService<F, T> extends RuntimeService<T> {

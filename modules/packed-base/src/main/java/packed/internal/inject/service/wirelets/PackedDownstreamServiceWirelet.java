@@ -29,7 +29,7 @@ import app.packed.container.ExtensionMember;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.assembly.ExportedServiceBuild;
+import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.util.LookupUtil;

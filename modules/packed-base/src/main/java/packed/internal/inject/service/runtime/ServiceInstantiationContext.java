@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.IdentityHashMap;
 
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /** A special instantiation context that is created */
 // Vi beholder den lidt endnu, det saa traels hver gang vi

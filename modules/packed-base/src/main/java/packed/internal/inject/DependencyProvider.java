@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.RegionBuild;
 import packed.internal.component.SourceBuild;
-import packed.internal.inject.service.assembly.ServiceBuild;
+import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**
