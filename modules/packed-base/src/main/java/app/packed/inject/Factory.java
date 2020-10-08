@@ -159,14 +159,10 @@ public abstract class Factory<T> {
     }
 
     private Factory(Class<T> type) {
-        this(TypeLiteral.of(type), type);
+        this(TypeLiteral.of(type));
     }
 
     private Factory(TypeLiteral<T> typeLiteralOrKey) {
-        this(typeLiteralOrKey, typeLiteralOrKey.rawType());
-    }
-
-    private Factory(TypeLiteral<T> typeLiteralOrKey, Class<?> actualType) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.key = Key.fromTypeLiteral(typeLiteral);
