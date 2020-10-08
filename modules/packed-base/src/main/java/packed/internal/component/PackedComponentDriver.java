@@ -41,7 +41,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
     final int modifiers;
 
     // Holds ExtensionModel for extensions, source for sourced components
-    final Object data;
+    public final Object data;
 
     PackedComponentDriver(Meta meta, Object data) {
         this.meta = requireNonNull(meta);

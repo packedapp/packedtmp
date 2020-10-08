@@ -18,6 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
+import packed.internal.component.source.SourceBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.util.ThrowableUtil;
 
@@ -30,7 +31,7 @@ import packed.internal.util.ThrowableUtil;
 public final class RegionBuild {
 
     /** Components that contains constants that should be stored in a region. Is only written by {@link SourceBuild}. */
-    final ArrayList<SourceBuild> constants = new ArrayList<>();
+    public final ArrayList<SourceBuild> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized

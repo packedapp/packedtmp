@@ -49,7 +49,7 @@ public final class ComponentNode implements Component {
     /** The name of the component. The name is guaranteed to be unique between siblings. */
     private final String name;
 
-    /** The parent component if it has one. */
+    /** The parent component, or null is root. */
     @Nullable
     final ComponentNode parent;
 

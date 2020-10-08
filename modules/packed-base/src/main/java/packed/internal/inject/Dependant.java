@@ -25,13 +25,14 @@ import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
+import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionBuild;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.component.SourceBuild;
-import packed.internal.component.SourceModel;
-import packed.internal.component.SourceModelMember;
-import packed.internal.component.SourceModelMethod;
-import packed.internal.component.SourceModelMethod.RunAt;
+import packed.internal.component.source.SourceBuild;
+import packed.internal.component.source.SourceModel;
+import packed.internal.component.source.SourceModelMember;
+import packed.internal.component.source.SourceModelMethod;
+import packed.internal.component.source.SourceModelMethod.RunAt;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceMemberServiceBuild;
@@ -95,7 +96,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(SourceBuild source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentNodeConfiguration compConf, SourceBuild source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -103,8 +104,8 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new InvalidDeclarationException("Not okay)");
             }
-            ServiceBuildManager sbm = source.compConf.memberOfContainer.getServiceManagerOrCreate();
-            ServiceBuild<?> sa = this.service = new SourceMemberServiceBuild<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
+            ServiceBuildManager sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
+            ServiceBuild<?> sa = this.service = new SourceMemberServiceBuild<>(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,7 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.SourceModelMethod.RunAt;
+import packed.internal.component.source.SourceModelMethod.RunAt;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 
@@ -33,6 +33,8 @@ import packed.internal.inject.DependencyProvider;
 // SourceModel...
 // Maa have en liste af regions slots den skal bruge
 public abstract class SourceModelMember {
+
+    /** Dependencies that needs to be resolved. */
     public final List<DependencyDescriptor> dependencies;
 
     public final boolean provideAsConstant;

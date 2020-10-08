@@ -51,6 +51,7 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
+import packed.internal.component.source.SourceBuild;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
@@ -165,20 +166,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Source
         if (modifiers().isSource()) {
-            // Reserve a place in the regions runtime memory, if the component is a singleton
-            int regionIndex = modifiers().isSingleton() ? region.reserve() : -1;
-
-            // Create the source
-            this.source = new SourceBuild(this, regionIndex, driver.data);
-
-            if (source.instance != null) {
-                region.constants.add(source);
-            } else if (source.injectable != null) {
-                memberOfContainer.addInjectable(source.injectable);
-            }
-
-            // Apply any sidecars
-            source.model.register(this);
+            this.source = SourceBuild.create(this, driver);
         } else {
             this.source = null;
         }
@@ -619,7 +607,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     public void sourceProvide() {
         checkConfigurable();
         checkHasSource();
-        source.provide();
+        source.provide(this);
     }
 
     /** {@inheritDoc} */
@@ -646,7 +634,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         if (source == null) {
             throw new UnsupportedOperationException();
         }
-        source.provide().as((Key) key);
+        source.provide(this).as((Key) key);
     }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */

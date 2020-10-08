@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.source;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -22,6 +22,9 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
+import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -31,20 +34,17 @@ import packed.internal.util.MethodHandleUtil;
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceBuild implements DependencyProvider {
 
-    /** The component this source is a part of. */
-    public final ComponentNodeConfiguration compConf;
-
-    /** Any factory that was us */
+    /** Any factory that is used to create the source. */
     @Nullable
     private final Factory<?> factory;
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
-    final Dependant injectable;
+    private final Dependant dependant;
 
     /** If the source represents an instance. */
     @Nullable
-    final Object instance;
+    public final Object instance;
 
     /** The source model. */
     public final SourceModel model;
@@ -54,10 +54,9 @@ public final class SourceBuild implements DependencyProvider {
 
     /** Whether or not this source is provided as a service. */
     @Nullable
-    ServiceBuild<?> service;
+    public ServiceBuild<?> service;
 
-    SourceBuild(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
-        this.compConf = compConf;
+    private SourceBuild(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
         this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
@@ -78,14 +77,32 @@ public final class SourceBuild implements DependencyProvider {
         this.model = compConf.realm.componentModelOf(sourceType);
 
         if (factory == null) {
-            this.injectable = null;
+            this.dependant = null;
         } else {
             MethodHandle mh = compConf.realm.toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
-            this.injectable = new Dependant(this, dependencies, mh);
+            this.dependant = new Dependant(this, dependencies, mh);
         }
+    }
+
+    public static SourceBuild create(ComponentNodeConfiguration compConf, PackedComponentDriver<?> driver) {
+        // Reserve a place in the regions runtime memory, if the component is a singleton
+        int regionIndex = compConf.modifiers().isSingleton() ? compConf.region.reserve() : -1;
+
+        // Create the source
+        SourceBuild s = new SourceBuild(compConf, regionIndex, driver.data);
+
+        if (s.instance != null) {
+            compConf.region.constants.add(s);
+        } else if (s.dependant != null) {
+            compConf.memberOfContainer.addInjectable(s.dependant);
+        }
+
+        // Apply any sidecars
+        s.model.register(compConf, s);
+        return s;
     }
 
     /** {@inheritDoc} */
@@ -96,7 +113,7 @@ public final class SourceBuild implements DependencyProvider {
         } else if (regionIndex > -1) {
             return RuntimeRegion.readSingletonAs(regionIndex, model.type);
         } else {
-            return injectable.buildMethodHandle();
+            return dependant.buildMethodHandle();
         }
     }
 
@@ -104,10 +121,10 @@ public final class SourceBuild implements DependencyProvider {
     @Override
     @Nullable
     public Dependant dependant() {
-        return injectable;
+        return dependant;
     }
 
-    ServiceBuild<?> provide() {
+    public ServiceBuild<?> provide(ComponentNodeConfiguration compConf) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceBuild<?> s = service;
         if (s == null) {

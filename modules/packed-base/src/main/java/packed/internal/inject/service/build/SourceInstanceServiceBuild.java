@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.SourceBuild;
+import packed.internal.component.source.SourceBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;

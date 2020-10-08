@@ -24,6 +24,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.inject.Factory;
+import packed.internal.component.source.SourceModel;
+import packed.internal.component.source.SourceModelLookup;
 import packed.internal.container.ExtensionModel;
 
 /**
@@ -58,7 +60,7 @@ public final class RealmBuild {
         return lookup.modelOf(componentType);
     }
 
-    MethodHandle toMethodHandle(Factory<?> handle) {
+    public MethodHandle toMethodHandle(Factory<?> handle) {
         return lookup.toMethodHandle(handle);
     }
 

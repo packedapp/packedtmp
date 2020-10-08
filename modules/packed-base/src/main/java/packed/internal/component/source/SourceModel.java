@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,6 +24,8 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import packed.internal.classscan.OpenClass;
+import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.RealmModel;
 import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
@@ -64,7 +66,7 @@ public final class SourceModel {
      * 
      * @return the default prefix for the component, if no name is explicitly set by the user
      */
-    String defaultPrefix() {
+    public String defaultPrefix() {
         String s = simpleName;
         if (s == null) {
             s = simpleName = type.getSimpleName();
@@ -72,8 +74,7 @@ public final class SourceModel {
         return s;
     }
 
-    public <T> void register(ComponentNodeConfiguration compConf) {
-        SourceBuild source = compConf.source;
+    public <T> void register(ComponentNodeConfiguration compConf, SourceBuild source) {
 
         for (SourceModelField f : fields) {
             registerMember(compConf, source, f);
@@ -85,7 +86,8 @@ public final class SourceModel {
     }
 
     private void registerMember(ComponentNodeConfiguration compConf, SourceBuild source, SourceModelMember m) {
-        Dependant i = new Dependant(source, m, m.createProviders());
+        requireNonNull(source);
+        Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {
         compConf.memberOfContainer.addInjectable(i);
         // }
