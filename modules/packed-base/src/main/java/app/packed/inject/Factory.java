@@ -683,7 +683,7 @@ public abstract class Factory<T> {
 
         private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
             super(key);
-            this.executable = FindInjectableConstructor.findInjectableIAE(findConstructorOn);
+            this.executable = FindInjectableConstructor.findConstructorIAE(findConstructorOn);
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 

@@ -53,18 +53,19 @@ import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
  */
 public final class ServiceBuildManager {
 
-    /** All explicit added build entries. */
-    private final ArrayList<ServiceBuild<?>> assemblies = new ArrayList<>();
+    /** The container this service manager is a part of. */
+    private final ContainerBuild container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceRequirementsManager dependencies;
 
+    /** An error manager that is lazily initialized. */
+    @Nullable
+    private InjectionErrorManager em;
+
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
     private ServiceExportManager exporter;
-
-    /** The container this service manager is a part of. */
-    public final ContainerBuild container;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
@@ -72,22 +73,8 @@ public final class ServiceBuildManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices = new LinkedHashMap<>();
 
-    /** An error manager that is lazily initialized. */
-    @Nullable
-    public InjectionErrorManager em;
-
-    /**
-     * Returns an error manager.
-     * 
-     * @return an error manager
-     */
-    public InjectionErrorManager errorManager() {
-        InjectionErrorManager e = em;
-        if (e == null) {
-            e = em = new InjectionErrorManager();
-        }
-        return e;
-    }
+    /** All explicit added build entries. */
+    private final ArrayList<ServiceBuild<?>> unresolvedServices = new ArrayList<>();
 
     /**
      * @param container
@@ -95,6 +82,11 @@ public final class ServiceBuildManager {
      */
     public ServiceBuildManager(ContainerBuild container) {
         this.container = requireNonNull(container);
+    }
+
+    public void addAssembly(ServiceBuild<?> a) {
+        requireNonNull(a);
+        unresolvedServices.add(a);
     }
 
     public void checkExportConfigurable() {
@@ -116,6 +108,19 @@ public final class ServiceBuildManager {
     }
 
     /**
+     * Returns an error manager.
+     * 
+     * @return an error manager
+     */
+    public InjectionErrorManager errorManager() {
+        InjectionErrorManager e = em;
+        if (e == null) {
+            e = em = new InjectionErrorManager();
+        }
+        return e;
+    }
+
+    /**
      * Returns the {@link ServiceExportManager} for this builder.
      * 
      * @return the service exporter for this builder
@@ -133,24 +138,22 @@ public final class ServiceBuildManager {
     }
 
     public ServiceContract newServiceContract() {
-        return ServiceContract.newContract(c -> {
-            if (exporter != null) {
-                for (ExportedServiceBuild<?> n : exports()) {
-                    c.provides(n.key());
+        ServiceContract.Builder b = ServiceContract.newContract();
+        if (exporter != null) {
+            for (ExportedServiceBuild<?> n : exporter) {
+                b.provides(n.key());
+            }
+        }
+        if (dependencies != null && dependencies.requirements != null) {
+            for (Requirement r : dependencies.requirements.values()) {
+                if (r.isOptional) {
+                    b.optional(r.key);
+                } else {
+                    b.requires(r.key);
                 }
             }
-            if (dependencies != null) {
-                if (dependencies.requirements != null) {
-                    for (Requirement r : dependencies.requirements.values()) {
-                        if (r.isOptional) {
-                            c.optional(r.key);
-                        } else {
-                            c.requires(r.key);
-                        }
-                    }
-                }
-            }
-        });
+        }
+        return b.build();
     }
 
     public ServiceLocator newServiceLocator(ComponentNode comp, RuntimeRegion region) {
@@ -178,20 +181,39 @@ public final class ServiceBuildManager {
         p.add(pi);
     }
 
-    public void addAssembly(ServiceBuild<?> a) {
-        requireNonNull(a);
-        assemblies.add(a);
-    }
-
     public <T> ServiceBuild<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
         ServiceBuild<T> e = new SourceInstanceServiceBuild<>(this, compConf, key);
-        assemblies.add(e);
+        unresolvedServices.add(e);
         return e;
     }
 
+    private void resolve0(ContainerBuild im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices, Collection<? extends ServiceBuild<?>> buildEntries) {
+        for (ServiceBuild<?> entry : buildEntries) {
+            ServiceBuild<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
+            if (existing != null) {
+                LinkedHashSet<ServiceBuild<?>> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                hs.add(entry);
+            }
+        }
+    }
+
+    // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
+    // Saa det der med at resolve. Det er ikke services...
+    // men injection...
+    public void resolveExports() {
+        if (exporter != null) {
+            exporter.resolve();
+        }
+    }
+
+    // Vi smide alt omkring services der...
+
+    // Lazy laver den...
+
     public void resolveLocal() {
         // First process provided entries, then any entries added via provideAll
-        resolve0(container, resolvedServices, assemblies);
+        resolve0(container, resolvedServices, unresolvedServices);
 
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
@@ -241,30 +263,6 @@ public final class ServiceBuildManager {
             }
         }
 
-    }
-
-    private void resolve0(ContainerBuild im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices, Collection<? extends ServiceBuild<?>> buildEntries) {
-        for (ServiceBuild<?> entry : buildEntries) {
-            ServiceBuild<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
-            if (existing != null) {
-                LinkedHashSet<ServiceBuild<?>> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
-                hs.add(entry);
-            }
-        }
-    }
-
-    // Vi smide alt omkring services der...
-
-    // Lazy laver den...
-
-    // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
-    // Saa det der med at resolve. Det er ikke services...
-    // men injection...
-    public void resolveExports() {
-        if (exporter != null) {
-            exporter.resolve();
-        }
     }
 
     private static final class ExportedServiceLocator extends AbstractServiceLocator {

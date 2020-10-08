@@ -27,8 +27,8 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
-import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
+import app.packed.component.StatelessConfiguration;
 import packed.internal.component.ComponentNodeConfiguration;
 
 /**

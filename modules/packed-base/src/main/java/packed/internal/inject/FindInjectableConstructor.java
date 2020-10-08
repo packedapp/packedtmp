@@ -33,11 +33,11 @@ public final class FindInjectableConstructor {
      * @throws IllegalArgumentException
      *             if a valid injectable constructor could not be found
      */
-    public static Constructor<?> findInjectableIAE(Class<?> type) {
-        return findInjectable(type, s -> new IllegalArgumentException(s));
+    public static Constructor<?> findConstructorIAE(Class<?> type) {
+        return findConstructor(type, s -> new IllegalArgumentException(s));
     }
 
-    private static Constructor<?> findInjectable(Class<?> type, Function<String, RuntimeException> errorMaker) {
+    private static Constructor<?> findConstructor(Class<?> type, Function<String, RuntimeException> errorMaker) {
         if (type.isAnnotation()) {
             String errorMsg = format(type) + " is an annotation and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
@@ -127,5 +127,4 @@ public final class FindInjectableConstructor {
                 + format(type);
         return errorMaker.apply(errorMsg);
     }
-
 }

@@ -45,9 +45,7 @@ public final class ServiceIsland {
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
     public static void finish(RegionBuild region, ContainerBuild im) {
-
         DependencyCycle c = dependencyCyclesFind(region, im);
-
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }

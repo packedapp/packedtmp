@@ -29,7 +29,6 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.service.ExportedServiceConfiguration;
-import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceRegistry;
@@ -172,7 +171,6 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
     public void resolve() {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
-        ContainerBuild im = sm.container;
         LinkedHashMap<Key<?>, ExportedServiceBuild<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
         if (exportedEntries != null) {
@@ -204,7 +202,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
         }
 
         if (sm.errorManager().failingUnresolvedKeyedExports != null) {
-            InjectionErrorManagerMessages.addUnresolvedExports(im, sm.errorManager().failingUnresolvedKeyedExports);
+            InjectionErrorManagerMessages.addUnresolvedExports(sm, sm.errorManager().failingUnresolvedKeyedExports);
         }
         if (sm.errorManager().failingDuplicateExports != null) {
             // TODO add error messages
