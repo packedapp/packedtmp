@@ -33,7 +33,7 @@ public abstract class MethodSidecar {
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private MethodSidecarModel.Builder builder;
+    private MethodSidecarModel.Builder configuration;
 
     protected void bootstrap(BootstrapContext context) {}
 
@@ -42,8 +42,8 @@ public abstract class MethodSidecar {
      * 
      * @return this sidecar's builder object
      */
-    private MethodSidecarModel.Builder builder() {
-        MethodSidecarModel.Builder c = builder;
+    private MethodSidecarModel.Builder configuration() {
+        MethodSidecarModel.Builder c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -62,7 +62,7 @@ public abstract class MethodSidecar {
      *             if called from outside of {@link #configure()}
      */
     protected final void provideInvoker() {
-        builder().provideInvoker();
+        configuration().provideInvoker();
     }
 
     public interface BootstrapContext {

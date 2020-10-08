@@ -16,7 +16,6 @@
 package app.packed.base;
 
 /** A runtime exception used in places where we cannot throw the checked {@link IllegalAccessException}. */
-
 // UncheckedIllegalAccessException...
 // RuntimeIllegalAccessException
 
@@ -25,7 +24,6 @@ package app.packed.base;
 // NotOpenedException
 // UndeclaredAccessException
 // Was UncheckedIllegalAccessException
-
 public class InaccessibleMemberException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

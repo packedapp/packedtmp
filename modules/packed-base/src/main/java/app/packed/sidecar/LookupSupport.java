@@ -32,17 +32,34 @@ import java.lang.invoke.MethodHandles;
 ////
 
 //ComponentSupport
-
+// SidecarSupport <--- Saa kan vi lige saa godt have en Sidecar klasse...
+// OpenSupport
 class LookupSupport {
 
     // FieldSidecar.openFields();
     // FieldSidecar.openMethods();
 
-    public static void openForSubclasses(MethodHandles.Lookup lookup, Class<?> superClass) {
+    // Tror alligevel en dedikeret klasse er bedst...
+    // Vil gerne have nogle metoder der tager en hel klasse...
+    //
+
+    // Hvis felterne er statiske kan vi ikke lade det at en constructor ikke er protected/public
+    // styre adgangen...
+    // Alle kan bruge installStatic()...
+    // Saa tror realm skal have adgang til alle members...
+
+    // Hvad hvis den er aabent til et andet modul...
+    // Saa behoever vi vel ikke denne?? IDK
+
+    // Consumer<Realm> <--- for detaljeret check.
+
+    // Must be called in static... before the class is first used... Otherwise throws ISE
+    // Taenker vi gemmer det i class value der bliver checket fra en source member class value
+    public static void openFieldsForAllSubclasses(MethodHandles.Lookup lookup, Class<?> superClass) {
         // allows subclasses...
     }
 
-    public static void openForSubclasses(MethodHandles.Lookup lookup, Class<?> superClass, String... modules) {
+    public static void openFieldsForSubclasses(MethodHandles.Lookup lookup, Class<?> superClass, String... modules) {
         // allows subclasses...
     }
 }

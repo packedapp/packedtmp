@@ -135,6 +135,8 @@ public interface Attribute<T> /* extends AttributeHolder */ {
         return PackedAttribute.of(lookup, name, type.rawType(), type, options);
     }
 
+    // Use a builder...
+    // And have methods with an without a builder
     /** Various options that can be specified when creating new attributes. */
     static interface Option<T> {
         // Supportere ikke Nullable. Saa mangler attributen bare..

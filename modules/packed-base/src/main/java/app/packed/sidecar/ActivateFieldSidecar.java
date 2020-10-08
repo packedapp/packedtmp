@@ -30,6 +30,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface ActivateFieldSidecar {
 
+    Class<?>[] activatedBy() default {};
+
     /** Whether or not the sidecar is allow to get the contents of a field. */
     boolean allowGet() default false;
 

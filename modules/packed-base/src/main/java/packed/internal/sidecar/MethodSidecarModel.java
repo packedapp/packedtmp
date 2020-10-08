@@ -53,8 +53,8 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
             void.class);
 
     /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class, "builder",
-            MethodSidecarModel.Builder.class);
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
+            "configuration", MethodSidecarModel.Builder.class);
 
     public final Map<Key<?>, SidecarContextDependencyProvider> keys;
 
