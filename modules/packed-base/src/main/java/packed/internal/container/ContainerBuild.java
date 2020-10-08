@@ -46,7 +46,7 @@ public final class ContainerBuild {
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
 
-    /** All used extensions, in order of registration. */
+    /** All extensions that have been used, in any order. */
     private final IdentityHashMap<Class<? extends Extension>, ExtensionBuild> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
@@ -100,11 +100,25 @@ public final class ContainerBuild {
         }
     }
 
-    public void build(RegionBuild region) {
-        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
+    public void checkNoChildContainers() {
+        if (children != null) {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void close(RegionBuild region) {
+        if (!hasRunPreContainerChildren) {
+            runPredContainerChildren();
+        }
+        // Complete all extensions in order
+        // Vil faktisk mene det skal vaere den modsatte order...
+        // Tror vi skal have vendt comparatoren
+        TreeSet<ExtensionBuild> extensionsOrdered = new TreeSet<>(extensions.values());
+        for (ExtensionBuild pec : extensionsOrdered) {
+            pec.complete();
+        }
 
         // Resolve local services
-        // As well as services from child containers
         if (sbm != null) {
             sbm.resolveLocal();
         }
@@ -124,27 +138,10 @@ public final class ContainerBuild {
 
         // If we form for a service island and is root of the island
         // Do checks here
+        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
         if (!isIslandChild) {
             ServiceIsland.finish(region, this);
         }
-    }
-
-    public void checkNoChildContainers() {
-        if (children != null) {
-            throw new IllegalStateException();
-        }
-    }
-
-    public void close(RegionBuild region) {
-        if (!hasRunPreContainerChildren) {
-            runPredContainerChildren();
-        }
-        TreeSet<ExtensionBuild> extensionsOrdered = new TreeSet<>(extensions.values());
-        for (ExtensionBuild pec : extensionsOrdered) {
-            pec.complete();
-        }
-
-        build(region);
     }
 
     /**
@@ -186,10 +183,6 @@ public final class ContainerBuild {
         return s;
     }
 
-    public ServiceBuildManager newServiceManagerFromServiceExtension() {
-        return sbm = new ServiceBuildManager(this);
-    }
-
     public boolean isPartOfImage() {
         Boolean b = isImage;
         if (b != null) {
@@ -203,6 +196,10 @@ public final class ContainerBuild {
             cc = cc.getParent();
         }
         return isImage = Boolean.FALSE;
+    }
+
+    public ServiceBuildManager newServiceManagerFromServiceExtension() {
+        return sbm = new ServiceBuildManager(this);
     }
 
     private void runPredContainerChildren() {
