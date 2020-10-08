@@ -143,12 +143,7 @@ public abstract class Factory<T> {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeLiteral.class);
 
-    final Class<?> actualType;
-
     private final Key<T> key;
-
-    /** The dependencies for this factory. */
-    private final Class<? super T> type;
 
     /** The type of objects this factory creates. */
     private final TypeLiteral<T> typeLiteral;
@@ -161,8 +156,6 @@ public abstract class Factory<T> {
     Factory() {
         this.typeLiteral = (TypeLiteral<T>) CACHE.get(getClass());
         this.key = Key.fromTypeLiteral(typeLiteral);
-        this.type = typeLiteral.rawType();
-        this.actualType = requireNonNull(type);
     }
 
     private Factory(Class<T> type) {
@@ -177,8 +170,6 @@ public abstract class Factory<T> {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.key = Key.fromTypeLiteral(typeLiteral);
-        this.type = typeLiteral.rawType();
-        this.actualType = requireNonNull(actualType);
     }
 
     /**
@@ -455,7 +446,6 @@ public abstract class Factory<T> {
     //// Ideen er at man kan pakke en method handle ind...
     // Stacked lookups..
     // Vi skal have en hel section omkring method handlers.
-
     // Lookup object paa et factory. Kan bruges til alle metoder....Ikke kun dem med inject
     // Giver ikke mening andet...
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
