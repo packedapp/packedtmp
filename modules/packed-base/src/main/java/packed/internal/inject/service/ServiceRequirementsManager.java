@@ -125,8 +125,8 @@ public final class ServiceRequirementsManager {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(InjectionManager im, Dependant entry, int index, DependencyDescriptor dependency,
-            @Nullable DependencyProvider resolvedTo, boolean fromParent) {
+    public void recordResolvedDependency(Dependant entry, int index, DependencyDescriptor dependency, @Nullable DependencyProvider resolvedTo,
+            boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
         if (resolvedTo != null) {

@@ -68,7 +68,7 @@ final class ServiceIsland {
                 }
             }
         }
-        if (im.getServiceManager() != null) {
+        if (im.container.getServiceManager() != null) {
             for (ServiceBuildManager m : im.getServiceManager().children) {
                 dependencyCyclesFind(stack, dependencies, region, m.im);
             }

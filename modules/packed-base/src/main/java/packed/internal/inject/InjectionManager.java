@@ -83,7 +83,7 @@ public final class InjectionManager {
         }
 
         for (Dependant i : dependants) {
-            i.resolve(sbm, this);
+            i.resolve(sbm);
         }
 
         // Now we know every dependency that we are missing
