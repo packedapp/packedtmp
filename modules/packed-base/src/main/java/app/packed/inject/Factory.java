@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.OldVariable;
 import app.packed.base.TypeLiteral;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.FindInjectableConstructor;
@@ -218,6 +219,14 @@ public abstract class Factory<T> {
         return new BindingFactory<>(this, position, dd, args);
     }
 
+    /**
+     * Binds the first variable to the specified argument.
+     * <p>
+     * 
+     * @param argument
+     *            the argument to bind.
+     * @return the new factory
+     */
     public final Factory<T> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
@@ -343,21 +352,6 @@ public abstract class Factory<T> {
 //        return false;
 //    }
 
-    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
-        if (!expectedType.isInstance(value)) {
-            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
-            if (value == null) {
-                // NPE???
-                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
-            } else {
-                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
-                // instance.getClass());
-                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
-                        + " but returned a " + value.getClass().getName() + " instance");
-            }
-        }
-    }
-
     abstract MethodHandle toMethodHandle(Lookup lookup);
 
     /**
@@ -386,6 +380,10 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
+    public final int variableCount() {
+        return dependencies().size();
+    }
+
     /**
      * Returns an immutable list of all variables (typically fields or parameters) that needs to be successfully injected in
      * order for the factory to provide a new value.
@@ -399,12 +397,8 @@ public abstract class Factory<T> {
      */
     // input, output...
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public final List<Variable> variables() {
+    public final List<OldVariable> variables() {
         return (List) dependencies();
-    }
-
-    public final int variableCount() {
-        return dependencies().size();
     }
 
     /**
@@ -465,6 +459,21 @@ public abstract class Factory<T> {
         }
         throw new UnsupportedOperationException(
                 "This method is only supported by factories created from a field, constructor or method. And must be applied as the first operation after creating the factory");
+    }
+
+    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
+        if (!expectedType.isInstance(value)) {
+            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
+            if (value == null) {
+                // NPE???
+                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
+            } else {
+                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
+                // instance.getClass());
+                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
+                        + " but returned a " + value.getClass().getName() + " instance");
+            }
+        }
     }
 
     /**
@@ -530,7 +539,8 @@ public abstract class Factory<T> {
     }
 
     public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
-        throw new UnsupportedOperationException();
+        requireNonNull(type, "type is null");
+        return ofConstructor(constructor, TypeLiteral.of(type));
     }
 
     // new Factory<String>(SomeMethod);
@@ -594,7 +604,8 @@ public abstract class Factory<T> {
 
     // Hvad goer vi med en klasse der er mere restri
     public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
-        return ofMethod(implementation, name, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), parameters);
+        requireNonNull(returnType, "returnType is null");
+        return ofMethod(implementation, name, TypeLiteral.of(returnType), parameters);
     }
 
     // Annotations will be retained from the method
@@ -605,7 +616,8 @@ public abstract class Factory<T> {
     // If the specified instance is not a static method. An extra variable
     // use bind(Foo) to bind the variable.
     public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
-        return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
+        requireNonNull(returnType, "returnType is null");
+        return ofMethod(method, TypeLiteral.of(returnType));
     }
 
     // Den her sletter evt. Qualifier paa metoden...

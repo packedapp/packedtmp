@@ -245,7 +245,7 @@ public final class ServiceContract {
             throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
         }
         ComponentNodeConfiguration compConf = ComponentNodeConfiguration.unadapt(null, c);
-        ServiceBuildManager sm = compConf.injectionManager().getServiceManager();
+        ServiceBuildManager sm = compConf.container.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

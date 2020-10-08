@@ -29,6 +29,7 @@ import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionBuild;
 import packed.internal.inject.InjectionManager;
+import packed.internal.inject.service.ServiceBuildManager;
 
 /** Contains data and logic relevant for containers. */
 public final class ContainerBuild {
@@ -211,5 +212,14 @@ public final class ContainerBuild {
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionType) {
         return (T) useExtension(extensionType, null).instance();
+    }
+
+    @Nullable
+    public ServiceBuildManager getServiceManager() {
+        return im.getServiceManager();
+    }
+
+    public ServiceBuildManager getServiceManagerOrCreate() {
+        return im.services(true);
     }
 }

@@ -31,8 +31,8 @@ import packed.internal.inject.service.ServiceBuildManager;
  */
 public final class InjectionManager {
 
-    /** All injectables that needs to be resolved. */
-    final ArrayList<Dependant> injectables = new ArrayList<>();
+    /** All dependants that needs to be resolved. */
+    final ArrayList<Dependant> dependants = new ArrayList<>();
 
     /** The container this injection manager belongs to. */
     public final ContainerBuild container;
@@ -55,11 +55,6 @@ public final class InjectionManager {
         this.container = requireNonNull(container);
     }
 
-    @Nullable
-    public InjectionManager parent() {
-        return container.parent == null ? null : container.parent.im;
-    }
-
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
      * 
@@ -67,7 +62,7 @@ public final class InjectionManager {
      *            the injectable to add
      */
     public void addInjectable(Dependant injectable) {
-        injectables.add(requireNonNull(injectable));
+        dependants.add(requireNonNull(injectable));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
         // I virkeligheden vil vi bare gerne checke at om man
@@ -87,7 +82,7 @@ public final class InjectionManager {
             sbm.resolveLocal();
         }
 
-        for (Dependant i : injectables) {
+        for (Dependant i : dependants) {
             i.resolve(this);
         }
 

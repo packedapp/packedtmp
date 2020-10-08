@@ -93,32 +93,8 @@ public final class PackedInitializationContext {
     }
 
     public ServiceLocator services() {
-        ServiceBuildManager sm = root.injectionManager().getServiceManager();
+        ServiceBuildManager sm = root.container.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.region);
-//                
-//        /// Create a service registry...
-//        // We do not stored this in the region but outside...
-//        ContainerAssembly container = compConf.memberOfContainer;
-//        int registryIndex = root.modifiers().isGuest() ? 1 : 0;
-//        InjectionManager node = container.im;
-//        // Move this to lazy create via PIC
-//        // And no need to store this is the region
-//        if (node != null) {
-//            region.store(registryIndex, ));
-//        } else {
-//            region.store(registryIndex, ServiceRegistry.empty());
-//        }
-//
-//        
-
-        // TODO fix ServiceRegistry saa det er visibility fra Bundle/lookup klasse.
-        // Som afgoer om en service er med...
-        // Naahh er det ikke bare alt der bliver explicit exporteret????
-
-        // TODO lav det lazy, hvis det bliver efterspurgt...
-        // Ingen grund til det er i en regions node...
-        // if !container return empty registry...
-        // return component.region.serviceRegistry(component);
     }
 
     /**

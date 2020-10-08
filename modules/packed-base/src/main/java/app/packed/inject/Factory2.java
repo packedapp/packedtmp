@@ -110,5 +110,4 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
         checkReturnValue(expectedType, value, function);
         return value;
     }
-
 }

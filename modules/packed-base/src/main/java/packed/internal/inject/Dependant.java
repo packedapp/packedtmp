@@ -103,8 +103,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new InvalidDeclarationException("Not okay)");
             }
-
-            ServiceBuildManager sbm = source.compConf.injectionManager().services(true);
+            ServiceBuildManager sbm = source.compConf.memberOfContainer.getServiceManagerOrCreate();
             ServiceBuild<?> sa = this.service = new SourceMemberServiceBuild<>(sbm, source.compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {

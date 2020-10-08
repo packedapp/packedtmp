@@ -60,7 +60,7 @@ final class ServiceIsland {
 
     private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, RegionBuild region,
             InjectionManager im) {
-        for (Dependant node : im.injectables) {
+        for (Dependant node : im.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {

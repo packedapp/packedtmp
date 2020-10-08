@@ -639,7 +639,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) injectionManager().services(true).exports().export(source.service,
+        return (ExportedServiceConfiguration<T>) memberOfContainer.getServiceManagerOrCreate().exports().export(source.service,
                 captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 

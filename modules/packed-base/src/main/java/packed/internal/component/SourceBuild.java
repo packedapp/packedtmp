@@ -117,7 +117,7 @@ public final class SourceBuild implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = compConf.injectionManager().services(true).provideSource(compConf, key);
+            s = service = compConf.memberOfContainer.getServiceManagerOrCreate().provideSource(compConf, key);
         }
         return s;
     }

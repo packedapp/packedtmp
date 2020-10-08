@@ -222,8 +222,7 @@ public final class ServiceBuildManager {
 
     }
 
-    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices,
-            Collection<? extends ServiceBuild<?>> buildEntries) {
+    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices, Collection<? extends ServiceBuild<?>> buildEntries) {
         for (ServiceBuild<?> entry : buildEntries) {
             ServiceBuild<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
             if (existing != null) {
@@ -246,7 +245,7 @@ public final class ServiceBuildManager {
             exporter.resolve();
             ContainerBuild parent = im.container.parent;
             if (parent != null) {
-                ServiceBuildManager sm = parent.im.getServiceManager();
+                ServiceBuildManager sm = parent.getServiceManager();
                 if (sm != null) {
                     sm.children.add(this);
                 }
