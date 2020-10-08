@@ -201,8 +201,7 @@ public class Dependant {
         this.providers[providerIndex] = requireNonNull(p);
     }
 
-    public void resolve(InjectionManager im) {
-        ServiceBuildManager sbm = im.getServiceManager();
+    public void resolve(ServiceBuildManager sbm, InjectionManager im) {
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {

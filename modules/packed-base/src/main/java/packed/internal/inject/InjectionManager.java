@@ -83,7 +83,7 @@ public final class InjectionManager {
         }
 
         for (Dependant i : dependants) {
-            i.resolve(this);
+            i.resolve(sbm, this);
         }
 
         // Now we know every dependency that we are missing
@@ -118,6 +118,10 @@ public final class InjectionManager {
     @Nullable
     public ServiceBuildManager getServiceManager() {
         return sbm;
+    }
+
+    public void setServiceManager(ServiceBuildManager sbm) {
+        this.sbm = requireNonNull(sbm);
     }
 
     /**
