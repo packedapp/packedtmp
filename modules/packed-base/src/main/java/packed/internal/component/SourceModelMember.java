@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Member;
 import java.util.List;
@@ -30,7 +32,7 @@ import packed.internal.inject.DependencyDescriptor;
 // SourceModel...
 // Maa have en liste af regions slots den skal bruge
 public abstract class SourceModelMember {
-    public List<DependencyDescriptor> dependencies;
+    public final List<DependencyDescriptor> dependencies;
 
     public final boolean provideAsConstant;
 
@@ -55,7 +57,8 @@ public abstract class SourceModelMember {
 
     public abstract MethodHandle methodHandle();
 
-    SourceModelMember(Builder builder) {
+    SourceModelMember(Builder builder, List<DependencyDescriptor> dependencies) {
+        this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
     }

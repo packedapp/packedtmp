@@ -58,10 +58,9 @@ public class SourceModelMethod extends SourceModelMember {
     public final MethodSidecarModel model;
 
     private SourceModelMethod(Builder builder) {
-        super(builder);
+        super(builder, DependencyDescriptor.fromExecutable(builder.shared.methodUnsafe));
         this.method = requireNonNull(builder.shared.methodUnsafe);
         this.model = requireNonNull(builder.model);
-        this.dependencies = DependencyDescriptor.fromExecutable(method);
         this.directMethodHandle = requireNonNull(builder.shared.direct());
     }
 

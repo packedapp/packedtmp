@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
+import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -65,12 +65,11 @@ public class SourceModelField extends SourceModelMember {
     public RunAt runAt = RunAt.INITIALIZATION;
 
     SourceModelField(Builder builder, Field method, FieldSidecarModel model, VarHandle mh) {
-        super(builder);
+        super(builder, List.of());
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
         // FieldDescriptor m = FieldDescriptor.from(method);
         // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
-        this.dependencies = Arrays.asList();
         this.directMethodHandle = requireNonNull(mh);
     }
 
