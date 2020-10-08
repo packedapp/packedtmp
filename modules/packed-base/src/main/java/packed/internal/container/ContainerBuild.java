@@ -26,9 +26,11 @@ import java.util.TreeSet;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
+import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionBuild;
-import packed.internal.inject.InjectionManager;
+import packed.internal.inject.Dependant;
+import packed.internal.inject.ServiceIsland;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /** Contains data and logic relevant for containers. */
@@ -45,8 +47,6 @@ public final class ContainerBuild {
     private final IdentityHashMap<Class<? extends Extension>, ExtensionBuild> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
-
-    public final InjectionManager im;
 
     /** Any parent container this container might have. */
     @Nullable
@@ -74,7 +74,6 @@ public final class ContainerBuild {
             }
             c.add(this);
         }
-        this.im = new InjectionManager(this);
     }
 
     public void checkNoChildContainers() {
@@ -116,7 +115,7 @@ public final class ContainerBuild {
             pec.complete();
         }
 
-        im.build(region);
+        build(region);
     }
 
     /**
@@ -214,12 +213,89 @@ public final class ContainerBuild {
         return (T) useExtension(extensionType, null).instance();
     }
 
-    @Nullable
-    public ServiceBuildManager getServiceManager() {
-        return im.getServiceManager();
+    public ServiceBuildManager getServiceManagerOrCreate() {
+        return services(true);
     }
 
-    public ServiceBuildManager getServiceManagerOrCreate() {
-        return im.services(true);
+    /**
+     * Adds the specified injectable to list of injectables that needs to be resolved.
+     * 
+     * @param injectable
+     *            the injectable to add
+     */
+    public void addInjectable(Dependant injectable) {
+        dependants.add(requireNonNull(injectable));
+
+        // Bliver noedt til at lave noget sidecar preresolve her.
+        // I virkeligheden vil vi bare gerne checke at om man
+        // har ting der ikke kan resolves via contexts
+        if (sbm == null && !injectable.dependencies.isEmpty()) {
+            useExtension(ServiceExtension.class);
+        }
+    }
+
+    /** All dependants that needs to be resolved. */
+    public final ArrayList<Dependant> dependants = new ArrayList<>();
+
+    /** A service manager that handles everything to do with services, is lazily initialized. */
+    @Nullable
+    private ServiceBuildManager sbm;
+
+    public void build(RegionBuild region) {
+        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
+
+        // Resolve local services
+        // As well as services from child containers
+        if (sbm != null) {
+            sbm.resolveLocal();
+        }
+
+        for (Dependant i : dependants) {
+            i.resolve(sbm);
+        }
+
+        // Now we know every dependency that we are missing
+        // I think we must plug this in somewhere
+
+        if (sbm != null) {
+            sbm.dependencies().checkForMissingDependencies(this);
+        }
+
+        // TODO Check any contracts we might as well catch it early
+
+        // If we form for a service island and is root of the island
+        // Do checks here
+        if (!isIslandChild) {
+            ServiceIsland.finish(region, this);
+        }
+    }
+
+    @Nullable
+    public ServiceBuildManager getServiceManager() {
+        return sbm;
+    }
+
+    public void setServiceManager(ServiceBuildManager sbm) {
+        this.sbm = requireNonNull(sbm);
+    }
+
+    /**
+     * Returns the {@link ServiceBuildManager}, creating it lazily if it does not already exist.
+     * 
+     * @param registerServiceExtension
+     *            whether or not we should register the {@link ServiceExtension}. Should always be true, unless the service
+     *            manager is installed from the ServiceExtension itself
+     * 
+     * @return the service exporter for this builder
+     */
+    public ServiceBuildManager services(boolean registerServiceExtension) {
+        ServiceBuildManager e = sbm;
+        if (e == null) {
+            e = sbm = new ServiceBuildManager(this);
+            if (registerServiceExtension) {
+                useExtension(ServiceExtension.class);
+            }
+        }
+        return e;
     }
 }

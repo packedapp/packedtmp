@@ -26,6 +26,7 @@ import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
+import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.util.StringFormatter;
@@ -77,7 +78,7 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(InjectionManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(ContainerBuild node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild<?>>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 

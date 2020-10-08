@@ -31,10 +31,10 @@ import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
+import packed.internal.container.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.InjectionManager;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.
@@ -66,7 +66,7 @@ public final class ServiceRequirementsManager {
 
     final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
 
-    public void checkForMissingDependencies(InjectionManager node) {
+    public void checkForMissingDependencies(ContainerBuild node) {
         if (unresolvedRequirements != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (ServiceDependencyRequirement e : unresolvedRequirements) {

@@ -22,6 +22,7 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import packed.internal.component.RegionBuild;
+import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.ServiceBuildManager;
 
 /** A utility class that can find cycles in a dependency graph. */
@@ -32,7 +33,7 @@ import packed.internal.inject.service.ServiceBuildManager;
 
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
-final class ServiceIsland {
+public final class ServiceIsland {
 
     /**
      * Tries to find a dependency cycle.
@@ -42,7 +43,7 @@ final class ServiceIsland {
      */
 
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    static void finish(RegionBuild region, InjectionManager im) {
+    public static void finish(RegionBuild region, ContainerBuild im) {
 
         DependencyCycle c = dependencyCyclesFind(region, im);
 
@@ -51,7 +52,7 @@ final class ServiceIsland {
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(RegionBuild region, InjectionManager im) {
+    private static DependencyCycle dependencyCyclesFind(RegionBuild region, ContainerBuild im) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
@@ -59,7 +60,7 @@ final class ServiceIsland {
     }
 
     private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, RegionBuild region,
-            InjectionManager im) {
+            ContainerBuild im) {
         for (Dependant node : im.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
@@ -68,7 +69,7 @@ final class ServiceIsland {
                 }
             }
         }
-        if (im.container.getServiceManager() != null) {
+        if (im.getServiceManager() != null) {
             for (ServiceBuildManager m : im.getServiceManager().children) {
                 dependencyCyclesFind(stack, dependencies, region, m.im);
             }

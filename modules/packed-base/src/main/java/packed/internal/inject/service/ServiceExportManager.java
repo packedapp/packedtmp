@@ -29,8 +29,8 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.service.ExportedServiceConfiguration;
+import packed.internal.container.ContainerBuild;
 import packed.internal.inject.InjectionErrorManagerMessages;
-import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceRegistry;
@@ -173,7 +173,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
     public void resolve() {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
-        InjectionManager im = sm.im;
+        ContainerBuild im = sm.im;
         LinkedHashMap<Key<?>, ExportedServiceBuild<?>> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
         if (exportedEntries != null) {
@@ -185,7 +185,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
                 if (entryToExport == null) {
                     entryToExport = sm.resolvedServices.get(entry.exportAsKey);
                     if (entryToExport == null) {
-                        im.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
+                        sm.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
                     } else {
                         entry.exportedEntry = (ServiceBuild) entryToExport;
@@ -195,7 +195,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
                 if (export) {
                     ExportedServiceBuild<?> existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
-                        LinkedHashSet<ExportedServiceBuild<?>> hs = im.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
+                        LinkedHashSet<ExportedServiceBuild<?>> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
                                 m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
@@ -204,10 +204,10 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
             }
         }
 
-        if (im.errorManager().failingUnresolvedKeyedExports != null) {
-            InjectionErrorManagerMessages.addUnresolvedExports(im, im.errorManager().failingUnresolvedKeyedExports);
+        if (sm.errorManager().failingUnresolvedKeyedExports != null) {
+            InjectionErrorManagerMessages.addUnresolvedExports(im, sm.errorManager().failingUnresolvedKeyedExports);
         }
-        if (im.errorManager().failingDuplicateExports != null) {
+        if (sm.errorManager().failingDuplicateExports != null) {
             // TODO add error messages
         }
 

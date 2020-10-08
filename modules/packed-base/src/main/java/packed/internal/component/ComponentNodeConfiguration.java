@@ -58,7 +58,6 @@ import packed.internal.config.ConfigSiteSupport;
 import packed.internal.container.ContainerBuild;
 import packed.internal.container.ExtensionBuild;
 import packed.internal.container.ExtensionModel;
-import packed.internal.inject.InjectionManager;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
@@ -175,7 +174,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             if (source.instance != null) {
                 region.constants.add(source);
             } else if (source.injectable != null) {
-                injectionManager().addInjectable(source.injectable);
+                memberOfContainer.addInjectable(source.injectable);
             }
 
             // Apply any sidecars
@@ -370,10 +369,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Only update with NAME_GET if no prev set/get op
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
         return name;
-    }
-
-    public InjectionManager injectionManager() {
-        return memberOfContainer.im;
     }
 
     // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before

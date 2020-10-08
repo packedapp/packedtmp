@@ -38,8 +38,8 @@ import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.ContainerBuild;
+import packed.internal.inject.InjectionErrorManager;
 import packed.internal.inject.InjectionErrorManagerMessages;
-import packed.internal.inject.InjectionManager;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
@@ -66,7 +66,7 @@ public final class ServiceBuildManager {
     private ServiceExportManager exporter;
 
     /** The injection manager this service manager is a part of. */
-    public final InjectionManager im;
+    public final ContainerBuild im;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
@@ -76,10 +76,27 @@ public final class ServiceBuildManager {
 
     public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
 
+    /** An error manager that is lazily initialized. */
+    @Nullable
+    public InjectionErrorManager em;
+
+    /**
+     * Returns an error manager.
+     * 
+     * @return an error manager
+     */
+    public InjectionErrorManager errorManager() {
+        InjectionErrorManager e = em;
+        if (e == null) {
+            e = em = new InjectionErrorManager();
+        }
+        return e;
+    }
+
     /**
      * @param im
      */
-    public ServiceBuildManager(InjectionManager im) {
+    public ServiceBuildManager(ContainerBuild im) {
         this.im = requireNonNull(im);
     }
 
@@ -147,7 +164,7 @@ public final class ServiceBuildManager {
         }
 
         // A hack to support Injector
-        PackedShellDriver<?> psd = (PackedShellDriver<?>) im.container.compConf.assembly().shellDriver();
+        PackedShellDriver<?> psd = (PackedShellDriver<?>) im.compConf.assembly().shellDriver();
         if (Injector.class.isAssignableFrom(psd.shellRawType())) {
             return new PackedInjector(comp.configSite(), runtimeEntries);
         } else {
@@ -195,8 +212,8 @@ public final class ServiceBuildManager {
             }
         }
 
-        if (im.em != null) {
-            InjectionErrorManagerMessages.addDuplicateNodes(im.em.failingDuplicateProviders);
+        if (em != null) {
+            InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
         }
 
         resolveExports();
@@ -222,11 +239,11 @@ public final class ServiceBuildManager {
 
     }
 
-    private void resolve0(InjectionManager im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices, Collection<? extends ServiceBuild<?>> buildEntries) {
+    private void resolve0(ContainerBuild im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices, Collection<? extends ServiceBuild<?>> buildEntries) {
         for (ServiceBuild<?> entry : buildEntries) {
             ServiceBuild<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
             if (existing != null) {
-                LinkedHashSet<ServiceBuild<?>> hs = im.errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                LinkedHashSet<ServiceBuild<?>> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                 hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                 hs.add(entry);
             }
@@ -243,7 +260,7 @@ public final class ServiceBuildManager {
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();
-            ContainerBuild parent = im.container.parent;
+            ContainerBuild parent = im.parent;
             if (parent != null) {
                 ServiceBuildManager sm = parent.getServiceManager();
                 if (sm != null) {
