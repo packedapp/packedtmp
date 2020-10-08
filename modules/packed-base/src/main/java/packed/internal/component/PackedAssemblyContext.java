@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembler;
-import app.packed.component.AssemblyContext;
+import app.packed.component.BuildContext;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
@@ -33,8 +33,8 @@ import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.errorhandling.ErrorMessage;
 
-/** The default implementation of {@link AssemblyContext} */
-public final class PackedAssemblyContext implements AssemblyContext {
+/** The default implementation of {@link BuildContext} */
+public final class PackedAssemblyContext implements BuildContext {
 
     /** The build output. */
     final int modifiers;

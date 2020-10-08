@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.component.AssemblyContext;
+import app.packed.component.BuildContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.Image;
@@ -109,7 +109,7 @@ public abstract class Extension {
      * @throws IllegalStateException
      *             if invoked from the constructor of the extension
      */
-    protected final AssemblyContext assembly() {
+    protected final BuildContext assembly() {
         return configuration().assembly();
     }
 

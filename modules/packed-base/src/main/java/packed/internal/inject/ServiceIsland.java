@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
-import app.packed.component.AssemblyException;
+import app.packed.component.BuildException;
 import packed.internal.component.RegionAssembly;
 import packed.internal.inject.service.ServiceBuildManager;
 
@@ -37,7 +37,7 @@ final class ServiceIsland {
     /**
      * Tries to find a dependency cycle.
      *
-     * @throws AssemblyException
+     * @throws BuildException
      *             if a dependency cycle was detected
      */
 
@@ -47,7 +47,7 @@ final class ServiceIsland {
         DependencyCycle c = dependencyCyclesFind(region, im);
 
         if (c != null) {
-            throw new AssemblyException("Dependency cycle detected: " + c);
+            throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
@@ -87,7 +87,7 @@ final class ServiceIsland {
      * @param injectable
      *            the node to visit
      * @return stuff
-     * @throws AssemblyException
+     * @throws BuildException
      *             if there is a cycle in the graph
      */
     @Nullable

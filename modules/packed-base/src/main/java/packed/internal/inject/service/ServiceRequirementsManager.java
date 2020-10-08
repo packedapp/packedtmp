@@ -24,7 +24,7 @@ import java.util.StringJoiner;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.AssemblyException;
+import app.packed.component.BuildException;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.introspection.ExecutableDescriptor;
@@ -113,7 +113,7 @@ public final class ServiceRequirementsManager {
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                     // UnresolvedVariableException
-                    throw new AssemblyException(sb.toString());
+                    throw new BuildException(sb.toString());
                 }
             }
         }

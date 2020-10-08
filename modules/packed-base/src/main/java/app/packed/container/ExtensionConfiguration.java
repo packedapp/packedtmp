@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
-import app.packed.component.AssemblyContext;
+import app.packed.component.BuildContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
@@ -55,7 +55,7 @@ public interface ExtensionConfiguration {
     // ComponentAttributes
 
     // Thinking about removing this
-    AssemblyContext assembly();
+    BuildContext assembly();
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

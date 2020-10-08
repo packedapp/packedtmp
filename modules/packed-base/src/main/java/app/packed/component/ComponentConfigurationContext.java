@@ -54,7 +54,7 @@ import app.packed.service.ExportedServiceConfiguration;
 // sourceProvideAs();
 public interface ComponentConfigurationContext {
 
-    AssemblyContext assembly();
+    BuildContext assembly();
 
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.

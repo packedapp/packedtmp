@@ -34,7 +34,7 @@ import packed.internal.errorhandling.ErrorMessage;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 @SuppressWarnings("exports")
-public interface AssemblyContext {
+public interface BuildContext {
 
     // Maaske vi hellere vil tilfoeje det lokalt???
     // F.eks. via Extension, eller bundle...
@@ -53,7 +53,7 @@ public interface AssemblyContext {
     /**
      * Returns the set of modifiers used for this assembling.
      * <p>
-     * The returned set will always contain the {@link ComponentModifier#ASSEMBLY} modifier.
+     * The returned set will always contain the {@link ComponentModifier#BUILD} modifier.
      * 
      * @return a set of modifiers
      */

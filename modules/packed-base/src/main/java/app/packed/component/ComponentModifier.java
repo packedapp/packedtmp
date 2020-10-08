@@ -48,10 +48,10 @@ public enum ComponentModifier {
      * <p>
      * A system that has the {@link #IMAGE} modifier set is always in an assembled state.
      * <p>
-     * The modifier set returned by {@link AssemblyContext#modifiers()} always contain this modifier.
+     * The modifier set returned by {@link BuildContext#modifiers()} always contain this modifier.
      **/
-    //
-    ASSEMBLY,
+    // BUILDING?
+    BUILD,
 
     // System wide.. what is part of the system and what is part of the environment
     // System boundary
@@ -74,7 +74,7 @@ public enum ComponentModifier {
      * 
      * Components with this modifier:
      * <ul>
-     * <li>Always has a parent component with the {@link #ASSEMBLY} modifier set.</li>
+     * <li>Always has a parent component with the {@link #BUILD} modifier set.</li>
      * <li>Either have the {@link #SYSTEM} modifier set, or has a parent component with {@link #HOST} modifier set.</li>
      * <li>The subtree of an image is always immutable once constructed. A {@link #HOST} modifier on a sub component. Merely
      * indicates that a runtime spawn of the image can add guests.</li>
@@ -180,7 +180,7 @@ public enum ComponentModifier {
      * never go through any initialization phase. Extensions may use this information to avoid work that is not needed if
      * the system is never initialized.
      * <p>
-     * This modifier is typically checked by accessing {@link AssemblyContext#modifiers()}, for example, via
+     * This modifier is typically checked by accessing {@link BuildContext#modifiers()}, for example, via
      * {@link Extension#assembly()}.
      * <p>
      * The modifier is set by the various methods in {@link ComponentAnalyzer} when specifying a bundle. Systems that are
@@ -188,7 +188,7 @@ public enum ComponentModifier {
      * 
      * Components with this property:
      * <ul>
-     * <li>Always have the {@link #ASSEMBLY} modifier set as well.</li>
+     * <li>Always have the {@link #BUILD} modifier set as well.</li>
      * <li>Are never present at runtime.</li>
      * </ul>
      * 

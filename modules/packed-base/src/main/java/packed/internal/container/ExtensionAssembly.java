@@ -23,7 +23,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
-import app.packed.component.AssemblyContext;
+import app.packed.component.BuildContext;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentDriver;
@@ -89,7 +89,7 @@ public final class ExtensionAssembly implements ExtensionConfiguration, Comparab
 
     /** {@inheritDoc} */
     @Override
-    public AssemblyContext assembly() {
+    public BuildContext assembly() {
         return compConf.assembly();
     }
 

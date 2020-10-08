@@ -19,7 +19,7 @@ package app.packed.component;
  * These wirelets can only be used in the assembly phase of a component system.
  */
 // Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
-final class AssemblyWirelets {
+final class BuildWirelets {
 
     // NO FAIL <--- maaske brugbart for analyse
 

@@ -21,7 +21,7 @@ package app.packed.component;
  */
 // Or in .base/.component??? was in .artifact
 // Skal vi have en liste af errors???
-public class AssemblyException extends RuntimeException {
+public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -34,7 +34,7 @@ public class AssemblyException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public AssemblyException(String message) {
+    public BuildException(String message) {
         super(message);
     }
 
@@ -48,7 +48,7 @@ public class AssemblyException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public AssemblyException(String message, Throwable cause) {
+    public BuildException(String message, Throwable cause) {
         super(message, cause);
     }
 }

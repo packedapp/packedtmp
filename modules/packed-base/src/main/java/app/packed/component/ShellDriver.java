@@ -65,7 +65,7 @@ public interface ShellDriver<S> {
      * @param wirelets
      *            optional wirelets
      * @return a new image
-     * @throws AssemblyException
+     * @throws BuildException
      *             if the system could not assembled properly
      */
     Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets);
@@ -78,7 +78,7 @@ public interface ShellDriver<S> {
      * @param wirelets
      *            optional wirelets
      * @return the new shell
-     * @throws AssemblyException
+     * @throws BuildException
      *             if the system could not assembled properly
      */
     // Maaske kan vi laver en function der smider Throwable...
