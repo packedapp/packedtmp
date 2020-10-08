@@ -202,6 +202,7 @@ public class Dependant {
     }
 
     public void resolve(InjectionManager im) {
+        ServiceBuildManager sbm = im.getServiceManager();
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {
@@ -213,12 +214,13 @@ public class Dependant {
                         e = sm.sourceServices.get(sd.key());
                     }
                 }
+                if (sbm != null) {
+                    if (e == null) {
+                        e = sbm.resolvedServices.get(sd.key());
+                    }
 
-                if (e == null) {
-                    e = im.services(true).resolvedServices.get(sd.key());
+                    sbm.dependencies().recordResolvedDependency(im, this, i, sd, e, false);
                 }
-
-                im.services(true).dependencies().recordResolvedDependency(im, this, i, sd, e, false);
                 providers[providerIndex] = e;
             }
         }
