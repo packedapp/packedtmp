@@ -1,21 +1,18 @@
-package packed.internal.component;
+package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.App;
-import app.packed.component.Component;
-import app.packed.component.ShellDriver;
 import app.packed.guest.Guest;
 import app.packed.inject.ServiceLocator;
 
 /** The default implementation of {@link App}. */
 // Could be a really nice little record this one.
-public final class PackedApp implements App {
+final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
-    public static final ShellDriver<App> DRIVER = ShellDriver.of(MethodHandles.lookup(), PackedApp.class);
+    static final ShellDriver<App> DRIVER = ShellDriver.of(MethodHandles.lookup(), PackedApp.class);
 
     /** The system component. */
     private final Component component;
