@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.PackedProvideContext;
+import packed.internal.inject.PackedProvisionContext;
 
 /** An abstract implementation of {@link ServiceLocator}. */
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
@@ -60,7 +60,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             T t = s.forLocator(this);
             provider = Provider.ofConstant(t);
         } else {
-            ProvisionContext pc = PackedProvideContext.of(key);
+            ProvisionContext pc = PackedProvisionContext.of(key);
             provider = new ServiceWrapperProvider<T>(s, pc);
         }
         return Optional.of(provider);

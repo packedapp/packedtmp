@@ -29,7 +29,7 @@ import app.packed.introspection.VariableDescriptor;
 import app.packed.service.Injector;
 
 /** Implementation of {@link ProvisionContext}. */
-public final class PackedProvideContext implements ProvisionContext {
+public final class PackedProvisionContext implements ProvisionContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable
@@ -38,7 +38,7 @@ public final class PackedProvideContext implements ProvisionContext {
     /** The key of the service that was requested */
     private final DependencyDescriptor dependency;
 
-    public PackedProvideContext(DependencyDescriptor dependency, @Nullable Component component) {
+    public PackedProvisionContext(DependencyDescriptor dependency, @Nullable Component component) {
         this.dependency = requireNonNull(dependency, "dependency is null");
         this.component = component;
     }
@@ -90,11 +90,11 @@ public final class PackedProvideContext implements ProvisionContext {
     }
 
     static ProvisionContext of(DependencyDescriptor dependency) {
-        return new PackedProvideContext(dependency, null);
+        return new PackedProvisionContext(dependency, null);
     }
 
     static ProvisionContext of(DependencyDescriptor dependency, Component componenent) {
-        return new PackedProvideContext(dependency, requireNonNull(componenent, "component is null"));
+        return new PackedProvisionContext(dependency, requireNonNull(componenent, "component is null"));
     }
 
     /**
@@ -107,7 +107,7 @@ public final class PackedProvideContext implements ProvisionContext {
      * @return an injection site for the specified injector and key.
      */
     public static ProvisionContext of(Key<?> key) {
-        return new PackedProvideContext(DependencyDescriptor.of(key), null);
+        return new PackedProvisionContext(DependencyDescriptor.of(key), null);
     }
 
     /**
@@ -120,7 +120,7 @@ public final class PackedProvideContext implements ProvisionContext {
      * @return an injection site for the specified injector and key and component.
      */
     static ProvisionContext of(Key<?> key, Component component) {
-        return new PackedProvideContext(DependencyDescriptor.of(key), requireNonNull(component, "component is null"));
+        return new PackedProvisionContext(DependencyDescriptor.of(key), requireNonNull(component, "component is null"));
     }
 }
 // static {AopReady r = AOPSupport.compile(FooClass.class)}, at runtime r.newInstance(r))// Arghh grimt

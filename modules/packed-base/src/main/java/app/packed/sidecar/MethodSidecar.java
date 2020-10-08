@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -147,6 +148,10 @@ public abstract class MethodSidecar {
 
         default void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
             // Must take class value
+        }
+
+        default void forEachUnbound(Consumer<? super VariableBinder> action) {
+
         }
     }
 }

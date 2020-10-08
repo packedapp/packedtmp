@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import java.util.Optional;
 
+import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.introspection.FieldDescriptor;
@@ -83,18 +84,26 @@ public interface ProvisionContext {
     Optional<Class<? extends Extension>> extension();
 
     /**
-     * Returns whether or the instance is being injected into a field, method, constructor.
-     *
-     * @return whether or the instance is being injected into a field, method, constructor
+     * The class that is being provided a value to. Or {@link Optional#empty()} if a lookup
+     * 
+     * @return stuff
      */
-    boolean isInjection();
+    default Optional<Class<?>> injectingInto() {
+        // RequestingClass
+        // RequestingMember
+        // RequestingVariable
+
+        // Requester, if used for dependency injection....
+        // Her er det taenkt som den oprindelig klasse... sans mappers...sans composites
+        throw new UnsupportedOperationException();
+    }
 
     /**
-     * Returns whether the instance is being provided via a lookup. For example, via a call to {@link ServiceLocator}.
+     * Returns whether or the instance is being injected. For example, into a field, method, constructor.
      *
-     * @return whether the instance is being provided via a lookup
+     * @return whether or the instance is being injected
      */
-    boolean isLookup();
+    boolean isInjection();
 
     /**
      * Returns the key of the service that needs to be provided.
@@ -108,6 +117,15 @@ public interface ProvisionContext {
     // Key<?> key();
 
     /**
+     * Returns whether the instance is being provided via a lookup. Typically via {@link ServiceLocator}.
+     *
+     * @return whether the instance is being provided via a lookup
+     * @see ServiceLocator#use(Class)
+     * @see ServiceLocator#use(Key)
+     */
+    boolean isLookup();
+
+    /**
      * Returns whether or not this dependency is optional.
      *
      * @return whether or not this dependency is optional
@@ -118,21 +136,6 @@ public interface ProvisionContext {
     boolean isOptional();
 
     /**
-     * The class that is requesting
-     * 
-     * @return stuff
-     */
-    default Optional<Class<?>> requestingClass() {
-        // RequestingClass
-        // RequestingMember
-        // RequestingVariable
-
-        // Requester, if used for dependency injection....
-        // Her er det taenkt som den oprindelig klasse... sans mappers...sans composites
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
      * dependency was not created from a member.
      * <p>
@@ -141,6 +144,7 @@ public interface ProvisionContext {
      *         member.
      * @see #requestingVariable()
      */
+    // Altsaa taenker man laver en special annotation.
     Optional<MemberDescriptor> requestingMember();
 
     /**
