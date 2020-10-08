@@ -38,8 +38,6 @@ import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.container.ContainerBuild;
-import packed.internal.inject.InjectionErrorManager;
-import packed.internal.inject.InjectionErrorManagerMessages;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
@@ -65,8 +63,8 @@ public final class ServiceBuildManager {
     @Nullable
     private ServiceExportManager exporter;
 
-    /** The injection manager this service manager is a part of. */
-    public final ContainerBuild im;
+    /** The container this service manager is a part of. */
+    public final ContainerBuild container;
 
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
@@ -94,10 +92,11 @@ public final class ServiceBuildManager {
     }
 
     /**
-     * @param im
+     * @param container
+     *            the container this service manager is a part of
      */
-    public ServiceBuildManager(ContainerBuild im) {
-        this.im = requireNonNull(im);
+    public ServiceBuildManager(ContainerBuild container) {
+        this.container = requireNonNull(container);
     }
 
     public void checkExportConfigurable() {
@@ -164,7 +163,7 @@ public final class ServiceBuildManager {
         }
 
         // A hack to support Injector
-        PackedShellDriver<?> psd = (PackedShellDriver<?>) im.compConf.assembly().shellDriver();
+        PackedShellDriver<?> psd = (PackedShellDriver<?>) container.compConf.assembly().shellDriver();
         if (Injector.class.isAssignableFrom(psd.shellRawType())) {
             return new PackedInjector(comp.configSite(), runtimeEntries);
         } else {
@@ -194,12 +193,12 @@ public final class ServiceBuildManager {
 
     public void resolveLocal() {
         // First process provided entries, then any entries added via provideAll
-        resolve0(im, resolvedServices, assemblies);
+        resolve0(container, resolvedServices, assemblies);
 
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromOtherInjector fromInjector : provideAll) {
-                resolve0(im, resolvedServices, fromInjector.entries.values());
+                resolve0(container, resolvedServices, fromInjector.entries.values());
             }
         }
         for (ServiceBuildManager m : children) {
@@ -260,7 +259,7 @@ public final class ServiceBuildManager {
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();
-            ContainerBuild parent = im.parent;
+            ContainerBuild parent = container.parent;
             if (parent != null) {
                 ServiceBuildManager sm = parent.getServiceManager();
                 if (sm != null) {

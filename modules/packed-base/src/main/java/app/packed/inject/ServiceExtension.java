@@ -73,7 +73,7 @@ import packed.internal.inject.service.wirelets.OldServiceWirelets;
 public final class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
-    private final ContainerBuild im;
+    private final ContainerBuild container;
 
     /** The service build manager. */
     private final ServiceBuildManager sbm;
@@ -85,8 +85,8 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.im = ((ExtensionBuild) extension).container();
-        this.sbm = im.services(false);
+        this.container = ((ExtensionBuild) extension).container();
+        this.sbm = container.newServiceManagerFromServiceExtension();
     }
 
     public void bindAllChildServices() {
@@ -241,7 +241,7 @@ public final class ServiceExtension extends Extension {
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return im.compConf.wire(prototype(), factory);
+        return container.compConf.wire(prototype(), factory);
     }
 
     public void require(Class<?>... keys) {

@@ -30,8 +30,8 @@ import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionBuild;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.ServiceIsland;
 import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceIsland;
 
 /** Contains data and logic relevant for containers. */
 public final class ContainerBuild {
@@ -43,19 +43,26 @@ public final class ContainerBuild {
     /** The component this container is a part of. */
     public final ComponentNodeConfiguration compConf;
 
+    /** All dependants that needs to be resolved. */
+    public final ArrayList<Dependant> dependants = new ArrayList<>();
+
     /** All used extensions, in order of registration. */
     private final IdentityHashMap<Class<? extends Extension>, ExtensionBuild> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
 
+    @Nullable
+    private Boolean isImage;
+
     /** Any parent container this container might have. */
     @Nullable
     public final ContainerBuild parent;
 
-    private ArrayList<ExtensionBuild> tmpExtension;
-
+    /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private Boolean isImage;
+    private ServiceBuildManager sbm;
+
+    private ArrayList<ExtensionBuild> tmpExtension;
 
     /**
      * Creates a new container
@@ -76,34 +83,56 @@ public final class ContainerBuild {
         }
     }
 
+    /**
+     * Adds the specified injectable to list of injectables that needs to be resolved.
+     * 
+     * @param injectable
+     *            the injectable to add
+     */
+    public void addInjectable(Dependant injectable) {
+        dependants.add(requireNonNull(injectable));
+
+        // Bliver noedt til at lave noget sidecar preresolve her.
+        // I virkeligheden vil vi bare gerne checke at om man
+        // har ting der ikke kan resolves via contexts
+        if (sbm == null && !injectable.dependencies.isEmpty()) {
+            useExtension(ServiceExtension.class);
+        }
+    }
+
+    public void build(RegionBuild region) {
+        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
+
+        // Resolve local services
+        // As well as services from child containers
+        if (sbm != null) {
+            sbm.resolveLocal();
+        }
+
+        for (Dependant i : dependants) {
+            i.resolve(sbm);
+        }
+
+        // Now we know every dependency that we are missing
+        // I think we must plug this in somewhere
+
+        if (sbm != null) {
+            sbm.dependencies().checkForMissingDependencies(this);
+        }
+
+        // TODO Check any contracts we might as well catch it early
+
+        // If we form for a service island and is root of the island
+        // Do checks here
+        if (!isIslandChild) {
+            ServiceIsland.finish(region, this);
+        }
+    }
+
     public void checkNoChildContainers() {
         if (children != null) {
             throw new IllegalStateException();
         }
-    }
-
-    public boolean isPartOfImage() {
-        Boolean b = isImage;
-        if (b != null) {
-            return b;
-        }
-        ComponentNodeConfiguration cc = compConf.getParent();
-        while (cc != null) {
-            if (cc.modifiers().isImage()) {
-                return isImage = Boolean.TRUE;
-            }
-            cc = cc.getParent();
-        }
-        return isImage = Boolean.FALSE;
-    }
-
-    /**
-     * Returns a set view of the extension registered with this container.
-     * 
-     * @return a set view of the extension registered with this container
-     */
-    public Set<Class<? extends Extension>> extensionView() {
-        return Collections.unmodifiableSet(extensions.keySet());
     }
 
     public void close(RegionBuild region) {
@@ -116,6 +145,15 @@ public final class ContainerBuild {
         }
 
         build(region);
+    }
+
+    /**
+     * Returns a set view of the extension registered with this container.
+     * 
+     * @return a set view of the extension registered with this container
+     */
+    public Set<Class<? extends Extension>> extensionView() {
+        return Collections.unmodifiableSet(extensions.keySet());
     }
 
     /**
@@ -132,6 +170,39 @@ public final class ContainerBuild {
     public ExtensionBuild getExtensionContext(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.get(extensionType);
+    }
+
+    @Nullable
+    public ServiceBuildManager getServiceManager() {
+        return sbm;
+    }
+
+    public ServiceBuildManager getServiceManagerOrCreate() {
+        ServiceBuildManager s = sbm;
+        if (s == null) {
+            useExtension(ServiceExtension.class);
+            s = sbm;
+        }
+        return s;
+    }
+
+    public ServiceBuildManager newServiceManagerFromServiceExtension() {
+        return sbm = new ServiceBuildManager(this);
+    }
+
+    public boolean isPartOfImage() {
+        Boolean b = isImage;
+        if (b != null) {
+            return b;
+        }
+        ComponentNodeConfiguration cc = compConf.getParent();
+        while (cc != null) {
+            if (cc.modifiers().isImage()) {
+                return isImage = Boolean.TRUE;
+            }
+            cc = cc.getParent();
+        }
+        return isImage = Boolean.FALSE;
     }
 
     private void runPredContainerChildren() {
@@ -211,91 +282,5 @@ public final class ContainerBuild {
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionType) {
         return (T) useExtension(extensionType, null).instance();
-    }
-
-    public ServiceBuildManager getServiceManagerOrCreate() {
-        return services(true);
-    }
-
-    /**
-     * Adds the specified injectable to list of injectables that needs to be resolved.
-     * 
-     * @param injectable
-     *            the injectable to add
-     */
-    public void addInjectable(Dependant injectable) {
-        dependants.add(requireNonNull(injectable));
-
-        // Bliver noedt til at lave noget sidecar preresolve her.
-        // I virkeligheden vil vi bare gerne checke at om man
-        // har ting der ikke kan resolves via contexts
-        if (sbm == null && !injectable.dependencies.isEmpty()) {
-            useExtension(ServiceExtension.class);
-        }
-    }
-
-    /** All dependants that needs to be resolved. */
-    public final ArrayList<Dependant> dependants = new ArrayList<>();
-
-    /** A service manager that handles everything to do with services, is lazily initialized. */
-    @Nullable
-    private ServiceBuildManager sbm;
-
-    public void build(RegionBuild region) {
-        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
-
-        // Resolve local services
-        // As well as services from child containers
-        if (sbm != null) {
-            sbm.resolveLocal();
-        }
-
-        for (Dependant i : dependants) {
-            i.resolve(sbm);
-        }
-
-        // Now we know every dependency that we are missing
-        // I think we must plug this in somewhere
-
-        if (sbm != null) {
-            sbm.dependencies().checkForMissingDependencies(this);
-        }
-
-        // TODO Check any contracts we might as well catch it early
-
-        // If we form for a service island and is root of the island
-        // Do checks here
-        if (!isIslandChild) {
-            ServiceIsland.finish(region, this);
-        }
-    }
-
-    @Nullable
-    public ServiceBuildManager getServiceManager() {
-        return sbm;
-    }
-
-    public void setServiceManager(ServiceBuildManager sbm) {
-        this.sbm = requireNonNull(sbm);
-    }
-
-    /**
-     * Returns the {@link ServiceBuildManager}, creating it lazily if it does not already exist.
-     * 
-     * @param registerServiceExtension
-     *            whether or not we should register the {@link ServiceExtension}. Should always be true, unless the service
-     *            manager is installed from the ServiceExtension itself
-     * 
-     * @return the service exporter for this builder
-     */
-    public ServiceBuildManager services(boolean registerServiceExtension) {
-        ServiceBuildManager e = sbm;
-        if (e == null) {
-            e = sbm = new ServiceBuildManager(this);
-            if (registerServiceExtension) {
-                useExtension(ServiceExtension.class);
-            }
-        }
-        return e;
     }
 }

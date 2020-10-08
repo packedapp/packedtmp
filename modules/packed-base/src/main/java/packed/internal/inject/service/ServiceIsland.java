@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,8 @@ import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import packed.internal.component.RegionBuild;
 import packed.internal.container.ContainerBuild;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.Dependant;
+import packed.internal.inject.DependencyProvider;
 
 /** A utility class that can find cycles in a dependency graph. */
 
@@ -71,7 +72,7 @@ public final class ServiceIsland {
         }
         if (im.getServiceManager() != null) {
             for (ServiceBuildManager m : im.getServiceManager().children) {
-                dependencyCyclesFind(stack, dependencies, region, m.im);
+                dependencyCyclesFind(stack, dependencies, region, m.container);
             }
         }
 
