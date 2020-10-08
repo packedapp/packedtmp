@@ -28,11 +28,13 @@ import packed.internal.inject.DependencyDescriptor;
 /** Tests {@link Factory1}. */
 public class Factory1Test {
 
-    /** Tests that we can capture information about a simple factory producing {@link Integer} instances. */
+    /**
+     * Tests that we can capture information about a simple factory producing {@link Integer} instances.
+     */
     @Test
     public void IntegerFactory0() {
 
-        Factory<Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
+        Factory1<String, Integer> f = new Factory1<String, Integer>(Integer::valueOf) {};
         checkThat(f).is(Integer.class);
         List<DependencyDescriptor> dependencies = f.dependencies();
         assertThat(dependencies).hasSize(1);

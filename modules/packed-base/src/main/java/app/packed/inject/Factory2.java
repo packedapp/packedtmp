@@ -18,6 +18,7 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import java.util.function.BiFunction;
 
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
@@ -35,8 +37,9 @@ import packed.internal.util.LookupUtil;
  */
 public abstract class Factory2<T, U, R> extends Factory<R> {
 
-    /** A method handle for {@link BiFunction#apply(Object, Object)}. */
-    private static final MethodHandle APPLY = LookupUtil.lookupVirtualPublic(BiFunction.class, "apply", Object.class, Object.class, Object.class);
+    /** A method handle for invoking {@link #create(BiFunction, Class, Object, Object)}. */
+    private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, BiFunction.class, Class.class,
+            Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
     private static final ClassValue<List<DependencyDescriptor>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
@@ -52,8 +55,8 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
     /** The dependencies of this factory, extracted from the type variables of the subclass. */
     private final List<DependencyDescriptor> dependencies;
 
-    /** The function that creates the actual instances. */
-    private final BiFunction<? super T, ? super U, ? extends R> function;
+    /** The method handle responsible for providing the actual values. */
+    private final MethodHandle methodHandle;
 
     /**
      * Creates a new factory, that uses the specified function to provide instances.
@@ -66,8 +69,10 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
      *             {@link Optional}
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
-        this.function = requireNonNull(function, "function is null");
+        requireNonNull(function, "function is null");
         this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
+        MethodHandle mh = CREATE.bindTo(function).bindTo(rawType()); // (Function, Class, Object, Object)Object -> (Object, Object)Object
+        this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // (Object, Object)Object -> (Object, Object)R
     }
 
     /** {@inheritDoc} */
@@ -79,6 +84,31 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
     /** {@inheritDoc} */
     @Override
     MethodHandle toMethodHandle(Lookup ignore) {
-        return APPLY.bindTo(function);
+        return methodHandle;
     }
+
+    /**
+     * Supplies a value.
+     * 
+     * @param <T>
+     *            the type of value supplied
+     * @param function
+     *            the function that supplies the actual value
+     * @param expectedType
+     *            the type we expect the supplier to return
+     * @param obj1
+     *            the 1st argument to the function
+     * @param obj2
+     *            the 2nd argument to the function
+     * @return the value that was supplied by the specified supplier
+     * @throws FactoryException
+     *             if the created value is null or not assignable to the raw type of the factory
+     */
+    @SuppressWarnings("unused") // only invoked via #CREATE
+    private static <T> T create(BiFunction<Object, Object, ? extends T> function, Class<?> expectedType, Object obj1, Object obj2) {
+        T value = function.apply(obj1, obj2);
+        checkReturnValue(expectedType, value, function);
+        return value;
+    }
+
 }

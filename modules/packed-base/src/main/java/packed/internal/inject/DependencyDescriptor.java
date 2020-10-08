@@ -106,13 +106,13 @@ public final class DependencyDescriptor implements Variable {
             if (type == Optional.class) {
                 throw new IllegalArgumentException("Cannot determine type variable <T> for type Optional<T>");
             } else if (type == OptionalInt.class) {
-                return new DependencyDescriptor(Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
+                return new DependencyDescriptor(int.class, Key.of(Integer.class), Optionality.OPTIONAL_INT, null);
             } else if (type == OptionalLong.class) {
-                return new DependencyDescriptor(Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
+                return new DependencyDescriptor(long.class, Key.of(Long.class), Optionality.OPTIONAL_LONG, null);
             } else if (type == OptionalDouble.class) {
-                return new DependencyDescriptor(Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
+                return new DependencyDescriptor(double.class, Key.of(Double.class), Optionality.OPTIONAL_DOUBLE, null);
             }
-            return new DependencyDescriptor(Key.of(type), Optionality.REQUIRED, null);
+            return new DependencyDescriptor(type, Key.of(type), Optionality.REQUIRED, null);
         }
     };
 
@@ -126,6 +126,8 @@ public final class DependencyDescriptor implements Variable {
     @Nullable
     private final VariableDescriptor variable;
 
+    final Type type;
+
     /**
      * Creates a new service dependency.
      * 
@@ -136,7 +138,8 @@ public final class DependencyDescriptor implements Variable {
      * @param variable
      *            an optional field or parameter
      */
-    private DependencyDescriptor(Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
+    private DependencyDescriptor(Type type, Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
+        this.type = requireNonNull(type);
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
         this.variable = variable;
@@ -342,7 +345,7 @@ public final class DependencyDescriptor implements Variable {
             optionalType = Optionality.REQUIRED;
         }
         // TODO check that there are no qualifier annotations on the type.
-        return new DependencyDescriptor(BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
+        return new DependencyDescriptor(type, BasePackageAccess.base().toKeyNullableQualifier(type, qa), optionalType, null);
     }
 
     public static <T> List<DependencyDescriptor> fromTypeVariables(Class<? extends T> actualClass, Class<T> baseClass, int... baseClassTypeVariableIndexes) {
@@ -411,7 +414,7 @@ public final class DependencyDescriptor implements Variable {
         // TL is free from Optional
         Key<?> key = Key.fromTypeLiteralNullableAnnotation(desc, tl, qualifiers);
 
-        return new DependencyDescriptor(key, optionallaity, desc);
+        return new DependencyDescriptor(desc.getParameterizedType(), key, optionallaity, desc);
     }
 
     /**
@@ -434,7 +437,7 @@ public final class DependencyDescriptor implements Variable {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new DependencyDescriptor(key, Optionality.REQUIRED, null);
+        return new DependencyDescriptor(key.typeLiteral().type(), key, Optionality.REQUIRED, null);
     }
 
     public static DependencyDescriptor ofOptional(Key<?> key) {
@@ -445,7 +448,7 @@ public final class DependencyDescriptor implements Variable {
                 return CLASS_CACHE.get(tl.rawType());
             }
         }
-        return new DependencyDescriptor(key, Optionality.OPTIONAL_NULLABLE, null);
+        return new DependencyDescriptor(key.typeLiteral().type(), key, Optionality.OPTIONAL_NULLABLE, null);
     }
 
     private enum Optionality {
@@ -511,6 +514,12 @@ public final class DependencyDescriptor implements Variable {
         public Object wrapIfOptional(Object object) {
             return null;
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> rawType() {
+        throw new UnsupportedOperationException();
     }
 }
 

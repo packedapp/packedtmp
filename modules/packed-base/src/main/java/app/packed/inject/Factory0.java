@@ -102,19 +102,7 @@ public abstract class Factory0<R> extends Factory<R> {
     @SuppressWarnings("unused") // only invoked via #CREATE
     private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {
         T value = supplier.get();
-
-        // Den her gaar vist igen mellem Factory0,1,2
-        if (!expectedType.isInstance(value)) {
-            if (value == null) {
-                // NPE???
-                throw new FactoryException("The supplier '" + supplier + "' must not return null");
-            } else {
-                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
-                // instance.getClass());
-                throw new FactoryException("The supplier '" + supplier + "' was expected to return instances of type " + expectedType.getName()
-                        + " but returned a " + value.getClass().getName() + " instance");
-            }
-        }
+        checkReturnValue(expectedType, value, supplier);
         return value;
     }
 }

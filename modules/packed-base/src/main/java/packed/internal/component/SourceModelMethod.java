@@ -212,6 +212,5 @@ public class SourceModelMethod extends SourceModelMember {
             }
             return directMethodHandle;
         }
-
     }
 }

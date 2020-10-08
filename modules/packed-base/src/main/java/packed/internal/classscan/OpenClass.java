@@ -222,7 +222,7 @@ public final class OpenClass {
         return mh;
     }
 
-    public <T extends RuntimeException> VarHandle unreflectVarhandle(Field field, UncheckedThrowableFactory<T> tf) throws T {
+    public <T extends RuntimeException> VarHandle unreflectVarHandle(Field field, UncheckedThrowableFactory<T> tf) throws T {
         Lookup lookup = lookup(field, tf);
 
         VarHandle vh;

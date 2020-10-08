@@ -158,10 +158,6 @@ public abstract class Factory<T> {
         this.key = Key.fromTypeLiteral(typeLiteral);
     }
 
-    private Factory(Class<T> type) {
-        this(TypeLiteral.of(type));
-    }
-
     private Factory(TypeLiteral<T> typeLiteralOrKey) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
@@ -347,6 +343,21 @@ public abstract class Factory<T> {
 //        return false;
 //    }
 
+    static void checkReturnValue(Class<?> expectedType, Object value, Object supplierOrFunction) {
+        if (!expectedType.isInstance(value)) {
+            String type = Supplier.class.isAssignableFrom(supplierOrFunction.getClass()) ? "supplier" : "function";
+            if (value == null) {
+                // NPE???
+                throw new FactoryException("The " + type + " '" + supplierOrFunction + "' must not return null");
+            } else {
+                // throw new ClassCastException("Expected factory to produce an instance of " + format(type) + " but was " +
+                // instance.getClass());
+                throw new FactoryException("The \" + type + \" '" + supplierOrFunction + "' was expected to return instances of type " + expectedType.getName()
+                        + " but returned a " + value.getClass().getName() + " instance");
+            }
+        }
+    }
+
     abstract MethodHandle toMethodHandle(Lookup lookup);
 
     /**
@@ -387,10 +398,13 @@ public abstract class Factory<T> {
      * @return any variables that was used to construct the factory
      */
     // input, output...
-
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public final List<Variable> variables() {
         return (List) dependencies();
+    }
+
+    public final int variableCount() {
+        return dependencies().size();
     }
 
     /**
@@ -588,6 +602,8 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
+    // If the specified instance is not a static method. An extra variable
+    // use bind(Foo) to bind the variable.
     public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
         return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
     }
@@ -604,6 +620,7 @@ public abstract class Factory<T> {
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
+    // A simple version of Binding... Maybe just only have one
     private static final class BindingFactory<T> extends Factory<T> {
 
         private final Object[] arguments;
@@ -745,7 +762,7 @@ public abstract class Factory<T> {
 
         @SuppressWarnings("unchecked")
         private InstanceFactory(T instance) {
-            super((Class<T>) instance.getClass());
+            super((TypeLiteral<T>) TypeLiteral.of(instance.getClass()));
             this.instance = instance;
         }
 
@@ -790,19 +807,22 @@ public abstract class Factory<T> {
         }
     }
 
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    private static final class MemberInstanceBindingFactory<T> extends Factory<T> {
+    /** A special factory created for {@link #postConstruction(Consumer)}}. */
+    private static final class PostConstructionFactory<T> extends Factory<T> {
+
+        /** A method handle for {@link Function#apply(Object)}. */
+        private static final MethodHandle ACCEPT = LookupUtil.lookupVirtualPublic(Consumer.class, "accept", void.class, Object.class);
+
+        /** The method handle that was unreflected. */
+        private final MethodHandle consumer;
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
         private final Factory<T> delegate;
 
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Object instance;
-
-        private MemberInstanceBindingFactory(Factory<T> delegate, Object instance) {
+        private PostConstructionFactory(Factory<T> delegate, Consumer<? super T> action) {
             super(delegate.typeLiteral);
-            this.instance = requireNonNull(instance);
-            this.delegate = requireNonNull(delegate);
+            this.delegate = delegate;
+            this.consumer = ACCEPT.bindTo(requireNonNull(action, "action is null"));
         }
 
         /** {@inheritDoc} */
@@ -814,40 +834,10 @@ public abstract class Factory<T> {
         /** {@inheritDoc} */
         @Override
         MethodHandle toMethodHandle(Lookup lookup) {
-            return delegate.toMethodHandle(lookup).bindTo(instance);
-        }
-    }
-
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    private static final class PostConstructionFactory<T> extends Factory<T> {
-
-        /** A method handle for {@link Function#apply(Object)}. */
-        private static final MethodHandle ACCEPT = LookupUtil.lookupVirtualPublic(Consumer.class, "accept", void.class, Object.class);
-
-        /** The method handle that was unreflected. */
-        private final Consumer<? super T> action;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
-        private PostConstructionFactory(Factory<T> delegate, Consumer<? super T> action) {
-            super(delegate.typeLiteral);
-            this.delegate = delegate;
-            this.action = requireNonNull(action, "action is null");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        List<DependencyDescriptor> dependencies() {
-            return delegate.dependencies();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup ignore) {
-            System.out.println(ACCEPT);
-            System.out.println(action);
-            throw new UnsupportedOperationException();
+            MethodHandle mh = delegate.toMethodHandle(lookup);
+            // Hmm No way to post process the return value...
+            // System.out.println(consumer);
+            return MethodHandles.filterReturnValue(mh, consumer);
         }
     }
 }

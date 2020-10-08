@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
@@ -80,7 +81,7 @@ public class SourceModelField extends SourceModelMember {
             if (model != null) {
                 // We can have more than 1 sidecar attached to a method
                 if (varHandle == null) {
-                    varHandle = source.cp.unreflectVarhandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    varHandle = source.cp.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 }
                 Builder builder = new Builder(field);
                 try {
@@ -147,6 +148,47 @@ public class SourceModelField extends SourceModelMember {
         public void provideAsService(boolean isConstant, Key<?> key) {
             provideAsConstant = isConstant;
             provideAsKey = key;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public void set(Object argument) {}
+
+        /** {@inheritDoc} */
+        @Override
+        public void checkWritable() {}
+    }
+
+    /**
+     * This class mainly exists because {@link Method} is mutable. We want to avoid situations where a method activates two
+     * different sidecars. And both sidecars access the Method instance. And one of them may call
+     * {@link Method#setAccessible(boolean)} which could then allow the other sidecar to unintentional have access to an
+     * accessible method.
+     */
+    @SuppressWarnings("unused")
+    private static class Shared {
+
+        private VarHandle varHandle;
+
+        /** Whether or not {@link #fieldUnsafe} has been exposed to users. */
+        private boolean isFieldUsed;
+
+        /** The method we are processing. */
+        private final Field fieldUnsafe;
+
+        /** The source. */
+        private final SourceModel.Builder source;
+
+        private Shared(SourceModel.Builder source, Field field) {
+            this.source = requireNonNull(source);
+            this.fieldUnsafe = requireNonNull(field);
+        }
+
+        VarHandle direct() {
+            if (varHandle == null) {
+                varHandle = source.cp.unreflectVarHandle(fieldUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            }
+            return varHandle;
         }
     }
 

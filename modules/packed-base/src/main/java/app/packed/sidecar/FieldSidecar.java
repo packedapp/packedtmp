@@ -40,7 +40,10 @@ public abstract class FieldSidecar {
     @Nullable
     private FieldSidecarModel.Builder builder;
 
-    protected void bootstrap(BootstrapContext context) {}
+    // IDK about throwing an exception? //throws ReflectiveOperationException
+    protected void bootstrap(BootstrapContext context) {
+
+    }
 
     /**
      * Returns this sidecar's builder object.
@@ -97,10 +100,27 @@ public abstract class FieldSidecar {
 
         Field field();
 
+        /**
+         * Sets the field to the specified argument.
+         * 
+         * @param argument
+         *            the argument to set
+         * @throws UnsupportedOperationException
+         *             if {@link ActivateFieldSidecar#allowSet()} is false
+         * @throws ClassCastException
+         *             if the specified argument is not assignable to the field
+         */
+        void set(Object argument);
+
         default void provideAsService(boolean isConstant) {}
 
         default void provideAsService(boolean isConstant, Class<?> key) {}
 
         default void provideAsService(boolean isConstant, Key<?> key) {}
+
+        /**
+         * 
+         */
+        void checkWritable();
     }
 }

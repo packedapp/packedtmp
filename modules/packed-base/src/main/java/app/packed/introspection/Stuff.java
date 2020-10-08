@@ -13,13 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.introspection;
+
+import app.packed.component.App;
+import app.packed.container.BaseBundle;
+import app.packed.inject.Factory;
+import app.packed.inject.Factory0;
 
 /**
  *
  */
+public class Stuff extends BaseBundle {
 
-public interface Variable {
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        Factory<String> f = new Factory0<String>(() -> "ffoo") {};
+        f = f.postConstruction(s -> System.out.println(s));
+        install(f);
+    }
 
-    Class<?> rawType();
+    public static void main(String[] args) {
+        App.of(new Stuff());
+    }
 }
