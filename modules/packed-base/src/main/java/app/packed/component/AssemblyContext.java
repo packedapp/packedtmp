@@ -99,30 +99,3 @@ public interface AssemblyContext {
 //}
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.
-
-// Specials -> IsFromImage, isNativeImageGenerate, isNativeImageBuild
-// source instanceof ContainerImage
-// APP
-// INJECTOR
-// DESCRIPTOR
-// NATIVE_IMAGE_GENRATION
-// CONTAINER_IMAGE_GENERATION
-// NATIVE_IMAGE_GENERATION + CONTAINER_IMAGE_GENERATION
-
-// Image -> App
-// Image -> Injector
-// Image -> Descriptor
-
-// AnyBundle -> App
-// AnyBundle -> Injector
-// AnyBundle -> Descriptor
-// AnyBundle -> Image
-
-// Graal -> App
-// Graal -> Injector
-// Graal -> Descriptor
-// Graal -> ContainerImage
-
-// Graal + Image -> App
-// Graal + Image -> Injector
-// Graal + Image -> Descriptor
