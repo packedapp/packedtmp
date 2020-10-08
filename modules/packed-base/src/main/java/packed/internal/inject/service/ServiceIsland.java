@@ -61,8 +61,8 @@ public final class ServiceIsland {
     }
 
     private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, RegionBuild region,
-            ContainerBuild im) {
-        for (Dependant node : im.dependants) {
+            ContainerBuild container) {
+        for (Dependant node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
@@ -70,9 +70,9 @@ public final class ServiceIsland {
                 }
             }
         }
-        if (im.getServiceManager() != null) {
-            for (ServiceBuildManager m : im.getServiceManager().children) {
-                dependencyCyclesFind(stack, dependencies, region, m.container);
+        if (container.children != null) {
+            for (ContainerBuild c : container.children) {
+                dependencyCyclesFind(stack, dependencies, region, c);
             }
         }
 

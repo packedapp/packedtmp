@@ -72,8 +72,6 @@ public final class ServiceBuildManager {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices = new LinkedHashMap<>();
 
-    public final ArrayList<ServiceBuildManager> children = new ArrayList<>();
-
     /** An error manager that is lazily initialized. */
     @Nullable
     public InjectionErrorManager em;
@@ -201,13 +199,17 @@ public final class ServiceBuildManager {
                 resolve0(container, resolvedServices, fromInjector.entries.values());
             }
         }
-        for (ServiceBuildManager m : children) {
-            for (ExportedServiceBuild<?> a : m.exports()) {
-                // System.out.println("EXPORT " + a);
 
-                // Skal vi wrappe den????
+        if (container.children != null) {
+            for (ContainerBuild c : container.children) {
+                ServiceBuildManager m = c.getServiceManager();
+                for (ExportedServiceBuild<?> a : m.exports()) {
+                    // System.out.println("EXPORT " + a);
 
-                resolvedServices.putIfAbsent(a.key(), a);
+                    // Skal vi wrappe den????
+
+                    resolvedServices.putIfAbsent(a.key(), a);
+                }
             }
         }
 
@@ -222,14 +224,17 @@ public final class ServiceBuildManager {
         // Add error messages if any nodes with the same key have been added multiple times
 
         // also lets try and resolve children
-        for (ServiceBuildManager sbm : children) {
-            ServiceRequirementsManager srm = sbm.dependencies;
-            if (srm != null) {
-                for (Requirement r : srm.requirements.values()) {
-                    ServiceBuild<?> sa = resolvedServices.get(r.key);
-                    if (resolvedServices.containsKey(r.key)) {
-                        for (FromInjectable i : r.list) {
-                            i.i.setDependencyProvider(i.dependencyIndex, sa);
+        if (container.children != null) {
+            for (ContainerBuild c : container.children) {
+                ServiceBuildManager m = c.getServiceManager();
+                ServiceRequirementsManager srm = m.dependencies;
+                if (srm != null) {
+                    for (Requirement r : srm.requirements.values()) {
+                        ServiceBuild<?> sa = resolvedServices.get(r.key);
+                        if (resolvedServices.containsKey(r.key)) {
+                            for (FromInjectable i : r.list) {
+                                i.i.setDependencyProvider(i.dependencyIndex, sa);
+                            }
                         }
                     }
                 }
@@ -259,13 +264,6 @@ public final class ServiceBuildManager {
     public void resolveExports() {
         if (exporter != null) {
             exporter.resolve();
-            ContainerBuild parent = container.parent;
-            if (parent != null) {
-                ServiceBuildManager sm = parent.getServiceManager();
-                if (sm != null) {
-                    sm.children.add(this);
-                }
-            }
         }
     }
 

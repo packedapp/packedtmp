@@ -38,7 +38,7 @@ public final class ContainerBuild {
 
     /** Child containers, lazy initialized */
     @Nullable
-    private ArrayList<ContainerBuild> children;
+    public ArrayList<ContainerBuild> children;
 
     /** The component this container is a part of. */
     public final ComponentNodeConfiguration compConf;
@@ -100,7 +100,7 @@ public final class ContainerBuild {
         }
     }
 
-    public void checkNoChildContainers() {
+    void checkNoChildContainers() {
         if (children != null) {
             throw new IllegalStateException();
         }
