@@ -76,15 +76,19 @@ public final class SourceModel {
         SourceBuild source = compConf.source;
 
         for (SourceModelField f : fields) {
-            Dependant i = new Dependant(source, f, f.createProviders());
-            compConf.injectionManager().addInjectable(i);
+            registerMember(compConf, source, f);
         }
 
         for (SourceModelMethod m : methods) {
-            Dependant i = new Dependant(source, m, m.createProviders());
-            compConf.injectionManager().addInjectable(i);
-
+            registerMember(compConf, source, m);
         }
+    }
+
+    private void registerMember(ComponentNodeConfiguration compConf, SourceBuild source, SourceModelMember m) {
+        Dependant i = new Dependant(source, m, m.createProviders());
+//        if (i.hasUnresolved()) {
+        compConf.injectionManager().addInjectable(i);
+        // }
     }
 
     /**

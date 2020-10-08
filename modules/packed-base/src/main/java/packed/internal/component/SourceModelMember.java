@@ -25,6 +25,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.SourceModelMethod.RunAt;
 import packed.internal.inject.DependencyDescriptor;
+import packed.internal.inject.DependencyProvider;
 
 /**
  *
@@ -62,6 +63,8 @@ public abstract class SourceModelMember {
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
     }
+
+    public abstract DependencyProvider[] createProviders();
 
     static abstract class Builder {
 

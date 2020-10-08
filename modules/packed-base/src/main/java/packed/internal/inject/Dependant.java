@@ -157,6 +157,18 @@ public class Dependant {
         return source.regionIndex;
     }
 
+    public boolean hasUnresolved() {
+        if (dependencies.size() == 0) {
+            return false;
+        }
+        for (DependencyProvider p : providers) {
+            if (p == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void onResolveSuccess(RegionBuild region) {
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
