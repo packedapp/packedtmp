@@ -38,6 +38,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
+import app.packed.inject.Variable;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.ParameterDescriptor;
@@ -94,7 +95,7 @@ import packed.internal.util.TypeUtil;
 //Dependency er flyttet til en intern klasse. Fordi den er begyndt at blive lidt for kompleks.
 // Naar vi tilfoere composites. Hvor der ikke rigtig laengere er en parameter til en service mapning.
 
-public final class DependencyDescriptor {
+public final class DependencyDescriptor implements Variable {
 
     /** A cache of service dependencies. */
     private static final ClassValue<DependencyDescriptor> CLASS_CACHE = new ClassValue<>() {

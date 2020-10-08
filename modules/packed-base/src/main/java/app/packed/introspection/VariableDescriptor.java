@@ -117,15 +117,16 @@ public interface VariableDescriptor extends AnnotatedElement {
     boolean isNamePresent();
 
     /**
-     * Returns whether or not a {@link Nullable} annotation is present.
+     * Returns whether or not a {@link Nullable} annotation is present on the variable.
      * 
-     * @return true if it is present, otherwise false
+     * @return true if a nullable annotation is present, otherwise false
      */
     default boolean isNullable() {
         return isAnnotationPresent(Nullable.class);
     }
 }
 
+// Vi har droppet index
 ///**
 // * The index of the variable, used when creating {@link Dependency} instances.
 // * <p>

@@ -36,7 +36,6 @@ import app.packed.base.InaccessibleMemberException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeLiteral;
-import app.packed.introspection.VariableDescriptor;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
@@ -199,8 +198,8 @@ public abstract class Factory<T> {
      * @throws ClassCastException
      *             if an argument does not match the corresponding variable type.
      * @throws IllegalArgumentException
-     *             if (@code pos) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the number of
-     *             dependencies and {@code L} is the length of the additional argument array.
+     *             if (@code position) is less than {@code 0} or greater than {@code N - 1 - L} where {@code N} is the
+     *             number of dependencies and {@code L} is the length of the additional argument array.
      * @throws NullPointerException
      *             if the specified argument is null and the variable does not represent a reference type
      */
@@ -234,6 +233,10 @@ public abstract class Factory<T> {
         // TODO check types...
 
         return new BindingFactory<>(this, position, dd, args);
+    }
+
+    public final Factory<T> bind(@Nullable Object argument) {
+        return bind(0, argument);
     }
 
     final Factory<T> bindSupplier(int index, Supplier<?> supplier) {
@@ -398,14 +401,9 @@ public abstract class Factory<T> {
      */
     // input, output...
 
-    public final List<VariableDescriptor> variables() {
-        // this list is static...
-
-        // Returns empty list for type variables for now...
-        throw new UnsupportedOperationException();
-
-        // If we have a List<VariableDescriptor> unboundVariables()...
-        // How would composite + primed be treated...
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public final List<Variable> variables() {
+        return (List) dependencies();
     }
 
     /**
@@ -531,6 +529,51 @@ public abstract class Factory<T> {
         }
     }
 
+    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, Class<T> type) {
+        throw new UnsupportedOperationException();
+    }
+
+    // new Factory<String>(SomeMethod);
+    // How we skal have
+    // Maaske kan vi
+
+    // If the specified method is an instance method
+    // variables will include a dependenc for it as the first
+    // parameters
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
+     * {@link #fromConstructor(Constructor)} method this method takes a type literal that can be used to create factories
+     * with a generic signature:
+     *
+     * <pre>
+     * Factory<List<String>> f = Factory.fromConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+     * });
+     * </pre>
+     *
+     * @param constructor
+     *            the constructor used from creating an instance
+     * @param type
+     *            a type literal
+     * @return the new factory
+     * @see #of(Constructor)
+     */
+    @SuppressWarnings("javadoc")
+    public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeLiteral<T> type) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Creates a new factory that uses the specified constructor to create new instances.
+     *
+     * @param constructor
+     *            the constructor used for creating new instances
+     * @return the new factory
+     */
+    public static <T> Factory<T> ofConstructor(Constructor<T> constructor) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a factory that returns the specified instance every time the factory most provide a value.
      * <p>
@@ -549,6 +592,66 @@ public abstract class Factory<T> {
         return new InstanceFactory<T>(instance);
     }
 
+    // Hvad goer vi med en klasse der er mere restri
+    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, Class<T> returnType, Class<?>... parameters) {
+        return ofMethod(implementation, name, TypeLiteral.of(requireNonNull(returnType, "returnType is null")), parameters);
+    }
+
+    // Annotations will be retained from the method
+    public static <T> Factory<T> ofMethod(Class<?> implementation, String name, TypeLiteral<T> returnType, Class<?>... parameters) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Factory<T> ofMethod(Method method, Class<T> returnType) {
+        return ofMethod(method, TypeLiteral.of(requireNonNull(returnType, "returnType is null")));
+    }
+
+    // Den her sletter evt. Qualifier paa metoden...
+    public static <T> Factory<T> ofMethod(Method method, TypeLiteral<T> returnType) {
+        requireNonNull(method, "method is null");
+        requireNonNull(returnType, "returnType is null");
+
+        // ClassMirror mirror = ClassMirror.fromImplementation(method.getDeclaringClass());
+        // return new Factory<T>(new InternalFactory.fromExecutable<T>((Key<T>) mirror.getKey().ofType(returnType), mirror,
+        // Map.of(), new MethodMirror(method)));
+        throw new UnsupportedOperationException();
+    }
+
+    /** A special factory created via {@link #withLookup(Lookup)}. */
+    private static final class BindingFactory<T> extends Factory<T> {
+
+        private final Object[] arguments;
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Factory<T> delegate;
+
+        private final List<DependencyDescriptor> dependencies;
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final int index;
+
+        private BindingFactory(Factory<T> delegate, int index, DependencyDescriptor[] dd, Object[] arguments) {
+            super(delegate.typeLiteral);
+            this.index = index;
+            this.delegate = requireNonNull(delegate);
+            this.arguments = arguments;
+            this.dependencies = List.of(dd);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        List<DependencyDescriptor> dependencies() {
+            return dependencies;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle toMethodHandle(Lookup lookup) {
+            MethodHandle mh = delegate.toMethodHandle(lookup);
+            return MethodHandles.insertArguments(mh, index, arguments);
+        }
+    }
+
     /** A factory that wraps a method or constructor. */
     private static final class ExecutableFactory<T> extends Factory<T> {
 
@@ -557,16 +660,16 @@ public abstract class Factory<T> {
         /** A factory with an executable as a target. */
         public final Executable executable;
 
-        private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
-            super(key);
-            this.executable = FindInjectableConstructor.findInjectableIAE(findConstructorOn);
-            this.dependencies = DependencyDescriptor.fromExecutable(executable);
-        }
-
         private ExecutableFactory(ExecutableFactory<?> from, TypeLiteral<T> key) {
             super(key);
             this.executable = from.executable;
             this.dependencies = from.dependencies;
+        }
+
+        private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
+            super(key);
+            this.executable = FindInjectableConstructor.findInjectableIAE(findConstructorOn);
+            this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 
         /** {@inheritDoc} */
@@ -674,69 +777,6 @@ public abstract class Factory<T> {
     }
 
     /** A special factory created via {@link #withLookup(Lookup)}. */
-    private static final class BindingFactory<T> extends Factory<T> {
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final int index;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
-        private final Object[] arguments;
-
-        private final List<DependencyDescriptor> dependencies;
-
-        private BindingFactory(Factory<T> delegate, int index, DependencyDescriptor[] dd, Object[] arguments) {
-            super(delegate.typeLiteral);
-            this.index = index;
-            this.delegate = requireNonNull(delegate);
-            this.arguments = arguments;
-            this.dependencies = List.of(dd);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        List<DependencyDescriptor> dependencies() {
-            return dependencies;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup lookup) {
-            MethodHandle mh = delegate.toMethodHandle(lookup);
-            return MethodHandles.insertArguments(mh, index, arguments);
-        }
-    }
-
-    /** A special factory created via {@link #withLookup(Lookup)}. */
-    private static final class MemberInstanceBindingFactory<T> extends Factory<T> {
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Object instance;
-
-        /** The ExecutableFactor or FieldFactory to delegate to. */
-        private final Factory<T> delegate;
-
-        private MemberInstanceBindingFactory(Factory<T> delegate, Object instance) {
-            super(delegate.typeLiteral);
-            this.instance = requireNonNull(instance);
-            this.delegate = requireNonNull(delegate);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        List<DependencyDescriptor> dependencies() {
-            return delegate.dependencies();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        MethodHandle toMethodHandle(Lookup lookup) {
-            return delegate.toMethodHandle(lookup).bindTo(instance);
-        }
-    }
-
-    /** A special factory created via {@link #withLookup(Lookup)}. */
     private static final class LookedUpFactory<T> extends Factory<T> {
 
         /** The ExecutableFactor or FieldFactory to delegate to. */
@@ -761,6 +801,34 @@ public abstract class Factory<T> {
         @Override
         MethodHandle toMethodHandle(Lookup ignore) {
             return methodHandle;
+        }
+    }
+
+    /** A special factory created via {@link #withLookup(Lookup)}. */
+    private static final class MemberInstanceBindingFactory<T> extends Factory<T> {
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Factory<T> delegate;
+
+        /** The ExecutableFactor or FieldFactory to delegate to. */
+        private final Object instance;
+
+        private MemberInstanceBindingFactory(Factory<T> delegate, Object instance) {
+            super(delegate.typeLiteral);
+            this.instance = requireNonNull(instance);
+            this.delegate = requireNonNull(delegate);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        List<DependencyDescriptor> dependencies() {
+            return delegate.dependencies();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        MethodHandle toMethodHandle(Lookup lookup) {
+            return delegate.toMethodHandle(lookup).bindTo(instance);
         }
     }
 

@@ -16,7 +16,6 @@
 package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import app.packed.base.Key;
@@ -27,15 +26,10 @@ import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
-import packed.internal.util.ThrowableUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceBuild implements DependencyProvider {
-
-    private static final MethodHandle FACTORY_TO_DEPENDENCIES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "dependencies",
-            List.class);
 
     /** The component this source is a part of. */
     public final ComponentNodeConfiguration compConf;
@@ -87,13 +81,9 @@ public final class SourceBuild implements DependencyProvider {
             this.injectable = null;
         } else {
             MethodHandle mh = compConf.realm.toMethodHandle(factory);
-            List<DependencyDescriptor> dependencies;
-            try {
-                dependencies = (List<DependencyDescriptor>) FACTORY_TO_DEPENDENCIES.invoke(factory);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
 
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            List<DependencyDescriptor> dependencies = (List) factory.variables();
             this.injectable = new Dependant(this, dependencies, mh);
         }
     }
