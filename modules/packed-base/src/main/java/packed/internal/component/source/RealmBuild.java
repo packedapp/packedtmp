@@ -17,13 +17,10 @@ package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.component.Bundle;
-import app.packed.component.CustomConfigurator;
-import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedBuildContext;
 import packed.internal.container.ExtensionModel;
@@ -33,34 +30,28 @@ import packed.internal.container.ExtensionModel;
  */
 public final class RealmBuild {
 
-    public ComponentNodeConfiguration compConf;
+    public final PackedBuildContext buildContext;
 
-    /** The current component lookup object, updated via {@link #lookup(Lookup)} */
-    private SourceModelLookup lookup;
+    /** The current lookup object, updated via {@link #lookup(Lookup)} */
+    RealmLookup lookup;
 
     /** The model of this realm. */
     private final RealmModel model;
 
-    public final PackedBuildContext pac;
+    @Nullable
+    public ComponentNodeConfiguration rootComponent;
 
-    private final Class<?> type;
-
-    private RealmBuild(PackedBuildContext pac, Class<?> type) {
-        this.type = requireNonNull(type);
+    public RealmBuild(PackedBuildContext buildContext, Class<?> type) {
+        this.buildContext = requireNonNull(buildContext);
         this.lookup = this.model = RealmModel.of(type);
-        this.pac = requireNonNull(pac);
     }
 
     public void close() {
-        compConf.onRealmClose(this);
-    }
-
-    public SourceModel componentModelOf(Class<?> componentType) {
-        return lookup.modelOf(componentType);
+        rootComponent.onRealmClose(this);
     }
 
     public RealmBuild linkBundle(Bundle<?> bundle) {
-        return new RealmBuild(pac, bundle.getClass());
+        return new RealmBuild(buildContext, bundle.getClass());
     }
 
     /**
@@ -71,8 +62,8 @@ public final class RealmBuild {
      * @return a new realm
      */
     public RealmBuild linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
-        RealmBuild realm = new RealmBuild(pac, model.type());
-        realm.compConf = requireNonNull(compConf);
+        RealmBuild realm = new RealmBuild(buildContext, model.type());
+        realm.rootComponent = requireNonNull(compConf);
         return realm;
     }
 
@@ -83,19 +74,7 @@ public final class RealmBuild {
         this.lookup = lookup == null ? model : model.withLookup(lookup);
     }
 
-    public MethodHandle toMethodHandle(Factory<?> handle) {
-        return lookup.toMethodHandle(handle);
-    }
-
     public Class<?> type() {
-        return type;
-    }
-
-    public static RealmBuild fromBundle(PackedBuildContext pac, Bundle<?> bundle) {
-        return new RealmBuild(pac, bundle.getClass());
-    }
-
-    public static RealmBuild fromConfigurator(PackedBuildContext pac, CustomConfigurator<?> consumer) {
-        return new RealmBuild(pac, consumer.getClass());
+        return model.type;
     }
 }

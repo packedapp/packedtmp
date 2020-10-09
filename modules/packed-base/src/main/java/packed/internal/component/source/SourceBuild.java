@@ -74,12 +74,13 @@ public final class SourceBuild implements DependencyProvider {
             this.factory = null;
             sourceType = source.getClass();
         }
-        this.model = compConf.realm.componentModelOf(sourceType);
+
+        this.model = compConf.realm.lookup.modelOf(sourceType);
 
         if (factory == null) {
             this.dependant = null;
         } else {
-            MethodHandle mh = compConf.realm.toMethodHandle(factory);
+            MethodHandle mh = compConf.realm.lookup.toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();

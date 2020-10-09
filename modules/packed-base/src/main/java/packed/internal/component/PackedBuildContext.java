@@ -116,7 +116,7 @@ public final class PackedBuildContext implements BuildContext {
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        RealmBuild realm = RealmBuild.fromBundle(pac, bundle);
+        RealmBuild realm = new RealmBuild(pac, bundle.getClass());
 
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm, componentDriver, cs, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
@@ -134,7 +134,7 @@ public final class PackedBuildContext implements BuildContext {
 
         PackedBuildContext pac = new PackedBuildContext(0, ad);
 
-        RealmBuild realm = RealmBuild.fromConfigurator(pac, consumer);
+        RealmBuild realm = new RealmBuild(pac, consumer.getClass());
         ComponentNodeConfiguration node = new ComponentNodeConfiguration(realm, driver, cs, null, wp);
 
         D conf = driver.toConfiguration(node);

@@ -135,9 +135,9 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         if (parent == null) {
             this.region = new RegionBuild(); // Root always needs a nodestore
 
-            mod = mod | realm.pac.modifiers;
+            mod = mod | realm.buildContext.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
-            if (realm.pac.modifiers().isGuest()) {
+            if (realm.buildContext.modifiers().isGuest()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
@@ -148,8 +148,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Realm
         this.realm = requireNonNull(realm);
-        if (realm.compConf == null) {
-            realm.compConf = this;
+        if (realm.rootComponent == null) {
+            realm.rootComponent = this;
         }
 
         // Setup Container
@@ -274,7 +274,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            PackedShellDriver<?> psd = (PackedShellDriver<?>) realm.pac.shellDriver();
+            PackedShellDriver<?> psd = (PackedShellDriver<?>) realm.buildContext.shellDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, psd.shellRawType());
         }
         return dam;
@@ -304,7 +304,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** {@inheritDoc} */
     @Override
     public PackedBuildContext assembly() {
-        return realm.pac;
+        return realm.buildContext;
     }
 
     /** {@inheritDoc} */

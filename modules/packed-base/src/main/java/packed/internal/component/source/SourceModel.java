@@ -95,14 +95,14 @@ public final class SourceModel {
     /**
      * Creates a new component model instance.
      * 
-     * @param csm
+     * @param realm
      *            a model of the container source that is trying to install the component
      * @param cp
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static SourceModel newInstance(RealmModel csm, OpenClass cp) {
-        return new Builder(csm, cp).build();
+    public static SourceModel newInstance(RealmModel realm, OpenClass cp) {
+        return new Builder(realm, cp).build();
     }
 
     /** A builder object for a component model. */

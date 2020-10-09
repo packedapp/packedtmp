@@ -17,47 +17,32 @@ package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.component.Bundle;
-import app.packed.inject.Factory;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
-import packed.internal.util.ThrowableUtil;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */
-final class RealmModel extends SourceModelLookup {
+final class RealmModel extends RealmLookup {
 
-    /** Calls package-private method Factory.toMethodHandle(Lookup). */
-    private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
-            MethodHandle.class, Lookup.class);
-
-    /** A cache of model. */
-    private static final ClassValue<RealmModel> MODEL_CACHE = new ClassValue<>() {
+    /** A cache of realm models. */
+    private static final ClassValue<RealmModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
         @Override
         protected RealmModel computeValue(Class<?> type) {
-            // Is either a bundle, or a ContainerConfigurator subclass
-            return new RealmModel((Class<? extends Bundle<?>>) type);
+            return new RealmModel(type);
         }
     };
+
+    private MethodHandles.Lookup cachedLookup;
 
     /** A cache of component models that have been accessed without a lookup object. */
-    // most likely they will have the same class loader as the container source
-    private final ClassValue<SourceModel> componentsNoLookup = new ClassValue<>() {
-
-        @Override
-        protected SourceModel computeValue(Class<?> type) {
-            return SourceModel.newInstance(RealmModel.this, RealmModel.this.newClassProcessor(type, true));
-        }
-    };
 
     /** The default lookup object, if using MethodHandles.lookup() from inside a bundle. */
-    private volatile SourceModelLookup defaultLookup;
+    private volatile RealmLookup defaultLookup;
 
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<ExplicitLookup> lookups = new LookupValue<>() {
@@ -68,19 +53,18 @@ final class RealmModel extends SourceModelLookup {
         }
     };
 
+    /** The realm type, typically a subclass of {@link Bundle}. */
+    final Class<?> type;
+
     /**
-     * Creates a new container source model.
+     * Creates a new model.
      * 
      * @param realmType
-     *            the source type
+     *            the realm type
      */
-    private RealmModel(Class<? extends Bundle<?>> realmType) {
+    private RealmModel(Class<?> realmType) {
         this.type = requireNonNull(realmType);
     }
-
-    private final Class<?> type;
-
-    private MethodHandles.Lookup cachedLookup;
 
     @Override
     MethodHandles.Lookup lookup() {
@@ -95,20 +79,11 @@ final class RealmModel extends SourceModelLookup {
 
     /** {@inheritDoc} */
     @Override
-    public SourceModel modelOf(Class<?> componentType) {
-        return componentsNoLookup.get(componentType);
+    RealmModel realm() {
+        return this;
     }
 
-    @Override
-    public MethodHandle toMethodHandle(Factory<?> factory) {
-        try {
-            return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
-    public SourceModelLookup withLookup(Lookup lookup) {
+    public RealmLookup withLookup(Lookup lookup) {
         // Use default access (this) if we specify null lookup
 
         // We need to check this in a separate class. Because from Java 13.
@@ -117,7 +92,7 @@ final class RealmModel extends SourceModelLookup {
             return this;
         } else if (lookup.lookupClass() == type && LookupUtil.isLookupDefault(lookup)) {
             // The default lookup is just BundleImpl { MethodHandles.lookup()}
-            SourceModelLookup cl = defaultLookup;
+            RealmLookup cl = defaultLookup;
             if (cl != null) {
                 return cl;
             }
@@ -135,20 +110,11 @@ final class RealmModel extends SourceModelLookup {
      * @return a container source model for the specified type
      */
     public static RealmModel of(Class<?> sourceType) {
-        return MODEL_CACHE.get(sourceType);
+        return MODELS.get(sourceType);
     }
 
     /** A realm that makes use of a explicitly registered lookup object, for example, via ContainerBundle#lookup(Lookup). */
-    private static final class ExplicitLookup extends SourceModelLookup {
-
-        /** A cache of component class descriptors. */
-        private final ClassValue<SourceModel> components = new ClassValue<>() {
-
-            @Override
-            protected SourceModel computeValue(Class<?> type) {
-                return SourceModel.newInstance(realm, ExplicitLookup.this.newClassProcessor(type, true));
-            }
-        };
+    private static final class ExplicitLookup extends RealmLookup {
 
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
@@ -162,23 +128,14 @@ final class RealmModel extends SourceModelLookup {
 
         /** {@inheritDoc} */
         @Override
-        public SourceModel modelOf(Class<?> componentType) {
-            return components.get(componentType);
-        }
-
-        @Override
-        public MethodHandle toMethodHandle(Factory<?> factory) {
-            try {
-                return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+        Lookup lookup() {
+            return lookup;
         }
 
         /** {@inheritDoc} */
         @Override
-        Lookup lookup() {
-            return lookup;
+        RealmModel realm() {
+            return realm;
         }
     }
 }
