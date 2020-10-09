@@ -41,7 +41,12 @@ public final class RealmBuild {
         this.lookup = lookup == null ? model : model.withLookup(lookup);
     }
 
-    public Class<?> type() {
+    /**
+     * Returns the type that was used to create this realm.
+     * 
+     * @return the type that was used to create this realm.
+     */
+    public Class<?> realmType() {
         return model.type;
     }
 }

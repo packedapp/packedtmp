@@ -201,11 +201,6 @@ public final class ServiceBuildManager {
     // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
     // Saa det der med at resolve. Det er ikke services...
     // men injection...
-    public void resolveExports() {
-        if (exporter != null) {
-            exporter.resolve();
-        }
-    }
 
     // Vi smide alt omkring services der...
 
@@ -224,8 +219,10 @@ public final class ServiceBuildManager {
 
         if (container.children != null) {
             for (ContainerBuild c : container.children) {
-                ServiceBuildManager m = c.getServiceManager();
-                for (ExportedServiceBuild<?> a : m.exports()) {
+                ServiceBuildManager child = c.getServiceManager();
+
+                // Get Wirelets
+                for (ExportedServiceBuild<?> a : child.exports()) {
                     // System.out.println("EXPORT " + a);
 
                     // Skal vi wrappe den????
@@ -239,7 +236,9 @@ public final class ServiceBuildManager {
             InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
         }
 
-        resolveExports();
+        if (exporter != null) {
+            exporter.resolve();
+        }
         // Run through all linked containers...
         // Apply any wirelets to exports, and take
 

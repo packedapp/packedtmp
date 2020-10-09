@@ -487,7 +487,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             } else if (container != null) {
                 // I think try and move some of this to ComponentNameWirelet
                 @Nullable
-                Class<?> source = realm.type();
+                Class<?> source = realm.realmType();
                 if (Bundle.class.isAssignableFrom(source)) {
                     String nnn = source.getSimpleName();
                     if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
