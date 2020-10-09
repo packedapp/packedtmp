@@ -28,6 +28,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import packed.internal.component.source.RealmBuild;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
@@ -115,7 +116,7 @@ public final class PackedBuildContext implements BuildContext {
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pac, bundle.getClass(), componentDriver, cs, null, wp);
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pac, new RealmBuild(bundle.getClass()), componentDriver, cs, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
@@ -131,7 +132,7 @@ public final class PackedBuildContext implements BuildContext {
 
         PackedBuildContext pac = new PackedBuildContext(0, ad);
 
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pac, consumer.getClass(), driver, cs, null, wp);
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pac, new RealmBuild(consumer.getClass()), driver, cs, null, wp);
 
         D conf = driver.toConfiguration(compConf);
         C cc = requireNonNull(factory.apply(conf));
