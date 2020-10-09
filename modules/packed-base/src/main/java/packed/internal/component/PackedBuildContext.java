@@ -119,7 +119,7 @@ public final class PackedBuildContext implements BuildContext {
         Object conf = componentDriver.toConfiguration(compConf);
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
-        compConf.realm.close();
+        compConf.close();
         return compConf;
     }
 
@@ -137,7 +137,7 @@ public final class PackedBuildContext implements BuildContext {
         C cc = requireNonNull(factory.apply(conf));
         consumer.configure(cc);
 
-        compConf.realm.close();
+        compConf.close();
         return compConf;
     }
 }

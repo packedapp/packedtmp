@@ -27,21 +27,17 @@ import packed.internal.component.ComponentNodeConfiguration;
  */
 public final class RealmBuild {
 
+    final ComponentNodeConfiguration comp;
+
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     RealmLookup lookup;
 
     /** The model of this realm. */
     private final RealmModel model;
 
-    public final ComponentNodeConfiguration rootComponent;
-
-    public RealmBuild(Class<?> type, ComponentNodeConfiguration rootComponent) {
+    public RealmBuild(Class<?> type, ComponentNodeConfiguration comp) {
         this.lookup = this.model = RealmModel.of(type);
-        this.rootComponent = requireNonNull(rootComponent);
-    }
-
-    public void close() {
-        rootComponent.onRealmClose(this);
+        this.comp = requireNonNull(comp);
     }
 
     public void lookup(@Nullable Lookup lookup) {

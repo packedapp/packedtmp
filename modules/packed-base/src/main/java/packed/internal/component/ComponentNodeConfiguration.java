@@ -316,6 +316,10 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
     }
 
+    public void close() {
+        onRealmClose(realm);
+    }
+
     /**
      * Called whenever a realm is closed on the top component in the realm.
      * 
@@ -379,8 +383,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
         ConfigSite cs = ConfigSite.UNKNOWN;
 
-        // Create a new realm, since the bundle is 'foreign' code
-
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
@@ -392,7 +394,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
 
         // Close the the linked realm, no further configuration of it is possible after Bundle::configure has been invoked
-        compConf.realm.close();
+        compConf.close();
     }
 
     /** {@inheritDoc} */
@@ -558,6 +560,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
         ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(build, null, d, configSite, parent, wp);
+
+        // We only close the component if linking a bundle (new realm)
         return d.toConfiguration(compConf);
     }
 
