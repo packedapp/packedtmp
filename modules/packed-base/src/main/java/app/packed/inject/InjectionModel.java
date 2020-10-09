@@ -15,10 +15,28 @@
  */
 package app.packed.inject;
 
+import java.lang.invoke.MethodHandle;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
+import packed.internal.util.LookupUtil;
+
 /**
  *
  */
 public final class InjectionModel {
+
+    /** A method handle for {@link Function#apply(Object)}. */
+    private static final MethodHandle ACCEPT = LookupUtil.lookupVirtualPublic(Consumer.class, "accept", void.class, Object.class);
+
     InjectionModel DEFAULT = new InjectionModel();
     InjectionModel SIMPLE = new InjectionModel();
+
+    public static void main(String[] args) {
+        Consumer<?> c = e -> System.out.println(e);
+        MethodHandle mh = ACCEPT.bindTo(c);
+
+        System.out.println(mh);
+
+    }
 }

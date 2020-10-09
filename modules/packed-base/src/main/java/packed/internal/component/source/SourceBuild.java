@@ -90,7 +90,6 @@ public final class SourceBuild implements DependencyProvider {
     public static SourceBuild create(ComponentNodeConfiguration compConf, PackedComponentDriver<?> driver) {
         // Reserve a place in the regions runtime memory, if the component is a singleton
         int regionIndex = compConf.modifiers().isSingleton() ? compConf.region.reserve() : -1;
-
         // Create the source
         SourceBuild s = new SourceBuild(compConf, regionIndex, driver.data);
 

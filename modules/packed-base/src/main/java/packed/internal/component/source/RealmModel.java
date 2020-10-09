@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,14 +24,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.component.Bundle;
 import app.packed.inject.Factory;
 import packed.internal.classscan.OpenClass;
-import packed.internal.component.source.SourceModel;
-import packed.internal.component.source.SourceModelLookup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */
-public final class RealmModel implements SourceModelLookup {
+final class RealmModel implements SourceModelLookup {
 
     private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
             MethodHandle.class, Lookup.class);

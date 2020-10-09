@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,8 +24,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.inject.Factory;
-import packed.internal.component.source.SourceModel;
-import packed.internal.component.source.SourceModelLookup;
+import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.PackedBuildContext;
 import packed.internal.container.ExtensionModel;
 
 /**
@@ -33,7 +33,7 @@ import packed.internal.container.ExtensionModel;
  */
 public final class RealmBuild {
 
-    ComponentNodeConfiguration compConf;
+    public ComponentNodeConfiguration compConf;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
     // useFor future components...
@@ -43,7 +43,8 @@ public final class RealmBuild {
     /** A container model. */
     private final RealmModel model;
 
-    final PackedBuildContext pac;
+    public final PackedBuildContext pac;
+
     private final Class<?> type;
 
     private RealmBuild(PackedBuildContext pac, Class<?> type) {
@@ -58,10 +59,6 @@ public final class RealmBuild {
 
     public SourceModel componentModelOf(Class<?> componentType) {
         return lookup.modelOf(componentType);
-    }
-
-    public MethodHandle toMethodHandle(Factory<?> handle) {
-        return lookup.toMethodHandle(handle);
     }
 
     public RealmBuild linkBundle(Bundle<?> bundle) {
@@ -86,6 +83,10 @@ public final class RealmBuild {
         // Actually I think null might be okay, then its standard module-info.java
         // Component X has access to G, but Packed does not have access
         this.lookup = lookup == null ? model : model.withLookup(lookup);
+    }
+
+    public MethodHandle toMethodHandle(Factory<?> handle) {
+        return lookup.toMethodHandle(handle);
     }
 
     public Class<?> type() {

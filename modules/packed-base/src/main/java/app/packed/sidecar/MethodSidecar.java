@@ -126,6 +126,7 @@ public abstract class MethodSidecar {
             return null;
         }
 
+        // MethodHandle must take
         default void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
             // Kunne maaske godt taenke mig noget tekst???
             // Skal vi have en klasse??

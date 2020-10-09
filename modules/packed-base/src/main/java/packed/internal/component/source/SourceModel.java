@@ -25,7 +25,6 @@ import java.util.Map;
 import app.packed.base.Key;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.RealmModel;
 import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 

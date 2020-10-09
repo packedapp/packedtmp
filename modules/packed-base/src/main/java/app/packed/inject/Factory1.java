@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -27,7 +28,6 @@ import java.util.function.Supplier;
 
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
 
 /**
  * A special {@link Factory} type that takes a single dependency as input and uses a {@link Function} to dynamically provide new instances. The input
@@ -115,8 +115,11 @@ public abstract class Factory1<T, R> extends Factory<R> {
     protected Factory1(Function<? super T, ? extends R> function) {
         requireNonNull(function, "function is null");
         this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
-        MethodHandle mh = CREATE.bindTo(function).bindTo(rawType()); // (Function, Class, Object)Object -> (Object)Object
-        this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // (Object)Object -> (Object)R
+
+        Class<?> ret = rawType();
+        Class<?> param = dependencies.get(0).rawType();
+        MethodHandle mh = CREATE.bindTo(function).bindTo(ret); // (Function, Class, Object)Object -> (Object)Object
+        this.methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ret, param)); // (Object)Object -> (T)R
     }
 
     /** {@inheritDoc} */

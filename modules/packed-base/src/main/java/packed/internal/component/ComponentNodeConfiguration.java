@@ -51,6 +51,7 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
+import packed.internal.component.source.RealmBuild;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
@@ -320,7 +321,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param realm
      *            the realm that was closed.
      */
-    void onRealmClose(RealmBuild realm) {
+    public void onRealmClose(RealmBuild realm) {
         // Closes all components in the same realm depth first
         for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
             // child components with a different realm, has either already been closed, or will be closed elsewhere

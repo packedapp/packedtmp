@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
@@ -42,6 +43,7 @@ import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.MethodHandleUtil;
 
 /**
  * An object that creates other objects. Factories are always immutable and any method that returnsfactory is an
@@ -55,57 +57,11 @@ import packed.internal.util.LookupUtil;
  * @apiNote In the future, if the Java language permits, {@link Factory} may become a {@code sealed} interface, which
  *          would prohibit subclassing except by explicitly permitted types.
  */
-// TODO Qualifiers on Methods, Types together with findInjectable????
-// Yes need to pick those up!!!!
-// probably rename defaultKey to key.
-
-// Split-module class hierachies, must
-
-// Factories only
-//
-// Is it the responsibility of the factory or the injector to inject fields and methods???
-// + Factory
-//
-// + Injector
-// Then we can disable it on a case to case basis
-// You can actually use factories without injection
-// -------------------------
-// ServiceDescriptor
-// Refereres fra InjectorDescriptor....
-// Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
-
-//Does this belong in app.packed.service????
-//No because components also uses it...
-
-// This class used to provide some bind methods...
-// But we don't do that no more. Because it was just impossible to
-// see what was what...
-
 // Its friend the abstract class Procedure... like Factory but no return..
 // Then move it to base...
+
+// Not a Function because it takes annotations...
 public abstract class Factory<T> {
-    //////// TYPES (Raw)
-    // ExactType... -> Instance, Constructor
-    // LowerBoundType, Field, Method
-    // PromisedType -> Fac0,Fac1,Fac2,
-
-    /// TypeLiteral<- Always the promised, key must be assignable via raw type
-    ///////////////
-
-    // TypeLiteral
-    // actual type
-
-    // Correctness
-    // Instance -> Lowerbound correct, upper correct
-    // Executable -> Lower bound maybe correct (if exposedType=return type), upper correct if final return type
-    // Rest, unknown all
-    // Bindable -> has no effect..
-
-    // static {
-    // Dependency.of(String.class);// Initializes InternalApis for InternalFactory
-    // }
-
-    // Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
 
     /** A cache of extracted type variables from subclasses of this class. */
     static final ClassValue<TypeLiteral<?>> CACHE = new ClassValue<>() {
@@ -328,13 +284,12 @@ public abstract class Factory<T> {
     }
 
     /**
-     * Returns the raw type of the type of objects this factory provide. This is also the type that is used for annotation
-     * scanning, for example, for finding fields annotated with {@link Inject}.
+     * Returns the (raw) type of values this factory provide. This is also the type that is used for annotation scanning,
+     * for example, for finding fields annotated with {@link Inject}.
      *
      * @return the raw type of the type of objects this factory provide
      * @see #typeLiteral()
      */
-
     public final Class<? super T> rawType() {
         return typeLiteral().rawType();
     }
@@ -352,6 +307,11 @@ public abstract class Factory<T> {
 //        return false;
 //    }
 
+    /**
+     * @param lookup
+     *            a lookup that can be used to unreflect fields, constructors or methods.
+     * @return a new method handle
+     */
     abstract MethodHandle toMethodHandle(Lookup lookup);
 
     /**
@@ -360,9 +320,7 @@ public abstract class Factory<T> {
      * @return the type of the type of objects this factory provide
      * @see #rawType()
      */
-
     public final TypeLiteral<T> typeLiteral() {
-        // Passer ikke hvis vi bruger map()...
         return typeLiteral;
     }
 
@@ -380,6 +338,11 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns the number of variables this factory has.
+     * 
+     * @return the number of variables this factory has
+     */
     public final int variableCount() {
         return dependencies().size();
     }
@@ -570,7 +533,9 @@ public abstract class Factory<T> {
      */
     @SuppressWarnings("javadoc")
     public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeLiteral<T> type) {
-        throw new UnsupportedOperationException();
+        requireNonNull(constructor, "constructor is null");
+        // TODO we probably need to validate the type literal here
+        return new ExecutableFactory<>(type, constructor);
     }
 
     /**
@@ -581,7 +546,9 @@ public abstract class Factory<T> {
      * @return the new factory
      */
     public static <T> Factory<T> ofConstructor(Constructor<T> constructor) {
-        throw new UnsupportedOperationException();
+        requireNonNull(constructor, "constructor is null");
+        TypeLiteral<T> tl = TypeLiteral.of(constructor.getDeclaringClass());
+        return new ExecutableFactory<>(tl, constructor);
     }
 
     /**
@@ -684,6 +651,12 @@ public abstract class Factory<T> {
         private ExecutableFactory(TypeLiteral<T> key, Class<?> findConstructorOn) {
             super(key);
             this.executable = FindInjectableConstructor.findConstructorIAE(findConstructorOn);
+            this.dependencies = DependencyDescriptor.fromExecutable(executable);
+        }
+
+        private ExecutableFactory(TypeLiteral<T> key, Constructor<?> constructor) {
+            super(key);
+            this.executable = constructor;
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 
@@ -823,7 +796,7 @@ public abstract class Factory<T> {
     private static final class PostConstructionFactory<T> extends Factory<T> {
 
         /** A method handle for {@link Function#apply(Object)}. */
-        private static final MethodHandle ACCEPT = LookupUtil.lookupVirtualPublic(Consumer.class, "accept", void.class, Object.class);
+        private static final MethodHandle ACCEPT = LookupUtil.lookupStatic(MethodHandles.lookup(), "accept", Object.class, Consumer.class, Object.class);
 
         /** The method handle that was unreflected. */
         private final MethodHandle consumer;
@@ -834,7 +807,8 @@ public abstract class Factory<T> {
         private PostConstructionFactory(Factory<T> delegate, Consumer<? super T> action) {
             super(delegate.typeLiteral);
             this.delegate = delegate;
-            this.consumer = ACCEPT.bindTo(requireNonNull(action, "action is null"));
+            MethodHandle mh = ACCEPT.bindTo(requireNonNull(action, "action is null"));
+            this.consumer = MethodHandles.explicitCastArguments(mh, MethodType.methodType(rawType(), rawType()));
         }
 
         /** {@inheritDoc} */
@@ -847,12 +821,64 @@ public abstract class Factory<T> {
         @Override
         MethodHandle toMethodHandle(Lookup lookup) {
             MethodHandle mh = delegate.toMethodHandle(lookup);
-            // Hmm No way to post process the return value...
-            // System.out.println(consumer);
-            return MethodHandles.filterReturnValue(mh, consumer);
+            mh = MethodHandles.filterReturnValue(mh, consumer);
+            return MethodHandleUtil.castReturnType(mh, rawType());
+        }
+
+        @SuppressWarnings({ "unchecked", "unused", "rawtypes" })
+        private static Object accept(Consumer consumer, Object object) {
+            consumer.accept(object);
+            return object;
         }
     }
 }
+//TODO Qualifiers on Methods, Types together with findInjectable????
+//Yes need to pick those up!!!!
+//probably rename defaultKey to key.
+
+//Split-module class hierachies, must
+
+//Factories only
+//
+//Is it the responsibility of the factory or the injector to inject fields and methods???
+//+ Factory
+//
+//+ Injector
+//Then we can disable it on a case to case basis
+//You can actually use factories without injection
+//-------------------------
+//ServiceDescriptor
+//Refereres fra InjectorDescriptor....
+//Skal bruges til Filtrering... Men hvis noeglerne er skjult kan vi vel bruge service....
+
+//Does this belong in app.packed.service????
+//No because components also uses it...
+
+//This class used to provide some bind methods...
+//But we don't do that no more. Because it was just impossible to
+//see what was what...
+////////TYPES (Raw)
+//ExactType... -> Instance, Constructor
+//LowerBoundType, Field, Method
+//PromisedType -> Fac0,Fac1,Fac2,
+
+/// TypeLiteral<- Always the promised, key must be assignable via raw type
+///////////////
+
+//TypeLiteral
+//actual type
+
+//Correctness
+//Instance -> Lowerbound correct, upper correct
+//Executable -> Lower bound maybe correct (if exposedType=return type), upper correct if final return type
+//Rest, unknown all
+//Bindable -> has no effect..
+
+//static {
+//Dependency.of(String.class);// Initializes InternalApis for InternalFactory
+//}
+
+//Ideen er her. at for f.eks. Factory.of(XImpl, X) saa skal der stadig scannes paa Ximpl og ikke paa X
 
 ///**
 // * Returns the injectable type of this factory. This is the type that will be used for scanning for scanning for

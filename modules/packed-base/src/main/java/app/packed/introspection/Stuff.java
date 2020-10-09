@@ -15,10 +15,12 @@
  */
 package app.packed.introspection;
 
+import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
+import app.packed.inject.Factory2;
 
 /**
  *
@@ -28,9 +30,18 @@ public class Stuff extends BaseBundle {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        Factory<String> f = new Factory0<String>(() -> "ffoo") {};
+        Factory<String> f = new Factory2<Long, Long, String>((l, i) -> "ffoo " + l + " " + i) {};
+        Factory<String> ff = new Factory2<Long, Long, @Named("foo") String>((l, i) -> "ffoo " + l + " " + i) {};
         f = f.postConstruction(s -> System.out.println(s));
+        f = f.postConstruction(s -> System.out.println(s));
+        f = f.bind(3333L);
+        f = f.bind(2343L);
+        System.out.println();
+        ff = ff.postConstruction(s -> System.out.println(s));
         install(f);
+        install(ff);
+        provideInstance(-123123);
+        providePrototype(new Factory0<Long>(System::nanoTime) {});
     }
 
     public static void main(String[] args) {

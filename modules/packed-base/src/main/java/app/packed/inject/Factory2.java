@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
 
 /**
  * A {@link Factory} type that takes two dependencies and uses a {@link BiFunction} to create new instances. The input
@@ -71,8 +71,12 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         requireNonNull(function, "function is null");
         this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
+
+        Class<?> ret = rawType();
+        Class<?> parem1 = dependencies.get(0).rawType();
+        Class<?> parem2 = dependencies.get(1).rawType();
         MethodHandle mh = CREATE.bindTo(function).bindTo(rawType()); // (Function, Class, Object, Object)Object -> (Object, Object)Object
-        this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // (Object, Object)Object -> (Object, Object)R
+        this.methodHandle = MethodHandles.explicitCastArguments(mh, MethodType.methodType(ret, parem1, parem2)); // (Object, Object)Object -> (T, U)R
     }
 
     /** {@inheritDoc} */

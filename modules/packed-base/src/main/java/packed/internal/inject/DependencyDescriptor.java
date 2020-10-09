@@ -519,7 +519,7 @@ public final class DependencyDescriptor implements OldVariable {
     /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
-        throw new UnsupportedOperationException();
+        return (Class<?>) type;
     }
 }
 

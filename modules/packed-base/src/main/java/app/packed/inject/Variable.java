@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.inject;
+
+import java.lang.reflect.AnnotatedElement;
+import java.util.Optional;
+
+import app.packed.base.TypeLiteral;
 
 /**
  *
  */
-public interface Variable {
+public interface Variable extends AnnotatedElement {
 
-    // add remove annotation
+    Optional<String> name();
 
-    // transform
+    TypeLiteral<?> type();
+
+    Class<?> rawType();
 }
-
-// Changes a single variable...
-class VariableTransformer {
-
-}
+// TypeVariable
+// Field
+// Parameter
+// Synthetic
+// Transformed

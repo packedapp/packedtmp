@@ -28,6 +28,7 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import packed.internal.component.source.RealmBuild;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
