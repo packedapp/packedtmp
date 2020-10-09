@@ -191,7 +191,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.memberOfContainer = parent.container;
         this.extension = new ExtensionBuild(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = parent.realm.linkExtension(this, model);
+        this.realm = new RealmBuild(parent.assembly(), model.type());
+        realm.rootComponent = this;
         this.region = parent.region;
         this.source = null;
         this.wirelets = null;
@@ -274,7 +275,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            PackedShellDriver<?> psd = (PackedShellDriver<?>) realm.buildContext.shellDriver();
+            PackedShellDriver<?> psd = (PackedShellDriver<?>) assembly().shellDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, psd.shellRawType());
         }
         return dam;
@@ -379,7 +380,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         ConfigSite cs = ConfigSite.UNKNOWN;
 
         // Create a new realm, since the bundle is 'foreign' code
-        RealmBuild r = realm.linkBundle(bundle);
+        RealmBuild r = new RealmBuild(assembly(), bundle.getClass());
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime

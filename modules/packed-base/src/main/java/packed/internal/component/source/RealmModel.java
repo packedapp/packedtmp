@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
+import app.packed.base.Nullable;
 import app.packed.component.Bundle;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
@@ -37,12 +38,12 @@ final class RealmModel extends RealmLookup {
         }
     };
 
+    @Nullable
     private MethodHandles.Lookup cachedLookup;
 
-    /** A cache of component models that have been accessed without a lookup object. */
-
     /** The default lookup object, if using MethodHandles.lookup() from inside a bundle. */
-    private volatile RealmLookup defaultLookup;
+    @Nullable
+    private volatile ExplicitLookup defaultLookup;
 
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
     private final LookupValue<ExplicitLookup> lookups = new LookupValue<>() {
@@ -92,7 +93,7 @@ final class RealmModel extends RealmLookup {
             return this;
         } else if (lookup.lookupClass() == type && LookupUtil.isLookupDefault(lookup)) {
             // The default lookup is just BundleImpl { MethodHandles.lookup()}
-            RealmLookup cl = defaultLookup;
+            ExplicitLookup cl = defaultLookup;
             if (cl != null) {
                 return cl;
             }

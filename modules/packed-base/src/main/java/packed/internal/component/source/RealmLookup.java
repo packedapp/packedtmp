@@ -43,7 +43,7 @@ abstract class RealmLookup {
         }
     };
 
-    public final SourceModel modelOf(Class<?> componentType) {
+    final SourceModel modelOf(Class<?> componentType) {
         return components.get(componentType);
     }
 

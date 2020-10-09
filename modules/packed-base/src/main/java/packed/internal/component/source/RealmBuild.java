@@ -20,10 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
-import app.packed.component.Bundle;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedBuildContext;
-import packed.internal.container.ExtensionModel;
 
 /**
  *
@@ -48,23 +46,6 @@ public final class RealmBuild {
 
     public void close() {
         rootComponent.onRealmClose(this);
-    }
-
-    public RealmBuild linkBundle(Bundle<?> bundle) {
-        return new RealmBuild(buildContext, bundle.getClass());
-    }
-
-    /**
-     * Creates a new realm for an extension.
-     * 
-     * @param model
-     *            the extension model
-     * @return a new realm
-     */
-    public RealmBuild linkExtension(ComponentNodeConfiguration compConf, ExtensionModel model) {
-        RealmBuild realm = new RealmBuild(buildContext, model.type());
-        realm.rootComponent = requireNonNull(compConf);
-        return realm;
     }
 
     public void lookup(@Nullable Lookup lookup) {
