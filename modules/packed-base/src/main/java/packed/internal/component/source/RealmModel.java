@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.component.Bundle;
 import app.packed.inject.Factory;
-import packed.internal.classscan.OpenClass;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 import packed.internal.util.ThrowableUtil;
@@ -83,7 +82,8 @@ final class RealmModel extends SourceModelLookup {
 
     private MethodHandles.Lookup cachedLookup;
 
-    private MethodHandles.Lookup lookup() {
+    @Override
+    MethodHandles.Lookup lookup() {
         // Making a lookup for the realm.
         MethodHandles.Lookup l = cachedLookup;
         if (l == null) {
@@ -97,12 +97,6 @@ final class RealmModel extends SourceModelLookup {
     @Override
     public SourceModel modelOf(Class<?> componentType) {
         return componentsNoLookup.get(componentType);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
-        return new OpenClass(lookup(), clazz, registerNatives);
     }
 
     @Override
@@ -172,12 +166,6 @@ final class RealmModel extends SourceModelLookup {
             return components.get(componentType);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
-            return new OpenClass(lookup, clazz, registerNatives);
-        }
-
         @Override
         public MethodHandle toMethodHandle(Factory<?> factory) {
             try {
@@ -185,6 +173,12 @@ final class RealmModel extends SourceModelLookup {
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        Lookup lookup() {
+            return lookup;
         }
     }
 }

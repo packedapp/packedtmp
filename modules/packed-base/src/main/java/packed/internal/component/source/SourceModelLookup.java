@@ -29,7 +29,11 @@ abstract class SourceModelLookup {
 
     abstract SourceModel modelOf(Class<?> sourceType);
 
-    abstract OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
+    abstract Lookup lookup();
+
+    final OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
+        return new OpenClass(lookup(), clazz, registerNatives);
+    }
 
     abstract MethodHandle toMethodHandle(Factory<?> factory);
 }
