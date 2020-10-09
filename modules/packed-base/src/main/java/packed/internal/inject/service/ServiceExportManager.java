@@ -119,6 +119,10 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
      * @return a configuration object that can be exposed to the user
      */
     private <T> PackedExportedServiceConfiguration<T> export0(ExportedServiceBuild entry) {
+        // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
+        // F.eks. hvis en extension publisher en service vi gerne vil exportere
+        // Saa sker det maaske foerst naar den completer.
+        // dvs efter bundle.configure() returnere
         ArrayList<ExportedServiceBuild> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
@@ -135,11 +139,6 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
      */
     public void exportAll(ConfigSite configSite) {
         exportAll = configSite;
-        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
-        // exportAllAs(Function<?, Key>
-
-        // Export all entries except foo which should be export as Boo
-        // exportAll(Predicate) <- takes key or service configuration???
     }
 
     /**
@@ -180,10 +179,10 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
                 if (entryToExport == null) {
                     Wrapper wrapper = sm.resolvedServices.get(entry.exportAsKey);
                     entryToExport = wrapper == null ? null : wrapper.getSingle();
+                    entry.exportedEntry = entryToExport;
                     if (entryToExport == null) {
                         sm.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                     }
-                    entry.exportedEntry = entryToExport;
                 }
 
                 if (entry.exportedEntry != null) {

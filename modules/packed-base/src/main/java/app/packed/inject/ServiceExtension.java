@@ -187,6 +187,13 @@ public final class ServiceExtension extends Extension {
      * This method can be invoked more than once. But use cases for this are limited.
      */
     public void exportAll() {
+
+        // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
+        // exportAllAs(Function<?, Key>
+
+        // Export all entries except foo which should be export as Boo
+        // exportAll(Predicate) <- takes key or service configuration???
+
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
