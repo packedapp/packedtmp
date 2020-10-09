@@ -33,15 +33,15 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 /**
  * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
  */
-final class MappingServiceBuild<F, T> extends ServiceBuild<T> {
+final class MappingServiceBuild extends ServiceBuild {
 
     /** The entry that should be mapped. */
-    final ServiceBuild<F> entryToMap;
+    final ServiceBuild entryToMap;
 
     /** The function to apply on the */
-    private final Function<? super F, T> function;
+    private final Function<?, ?> function;
 
-    MappingServiceBuild(ServiceBuildManager node, ConfigSite configSite, ServiceBuild<F> entryToMap, Key<T> toKey, Function<F, T> function) {
+    MappingServiceBuild(ServiceBuildManager node, ConfigSite configSite, ServiceBuild entryToMap, Key<?> toKey, Function<?, ?> function) {
         super(node, configSite, toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
@@ -49,8 +49,8 @@ final class MappingServiceBuild<F, T> extends ServiceBuild<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new MappingRuntimeService<>(this, entryToMap.toRuntimeEntry(context), function);
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
+        return new MappingRuntimeService(this, entryToMap.toRuntimeEntry(context), function);
     }
 
     @Override

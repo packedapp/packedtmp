@@ -25,10 +25,10 @@ import packed.internal.inject.service.build.ServiceBuild;
  * <p>
  * This type is used for exported nodes as well as nodes that are imported from other containers.
  */
-public final class DelegatingRuntimeService<T> extends RuntimeService<T> {
+public final class DelegatingRuntimeService extends RuntimeService {
 
     /** The runtime node to delegate to. */
-    private final RuntimeService<T> delegate;
+    private final RuntimeService delegate;
 
     /**
      * Creates a new runtime alias node.
@@ -36,7 +36,7 @@ public final class DelegatingRuntimeService<T> extends RuntimeService<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingRuntimeService(ServiceBuild<T> buildNode, RuntimeService<T> delegate) {
+    public DelegatingRuntimeService(ServiceBuild buildNode, RuntimeService delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
     }
@@ -49,7 +49,7 @@ public final class DelegatingRuntimeService<T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvisionContext site) {
+    public Object getInstance(ProvisionContext site) {
         return delegate.getInstance(site);
     }
 

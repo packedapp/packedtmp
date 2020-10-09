@@ -25,7 +25,7 @@ import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
-public class PrototypeRuntimeService<T> extends RuntimeService<T> {
+public class PrototypeRuntimeService extends RuntimeService {
 
     /** The method handle used to create new instances. */
     private final MethodHandle mh;
@@ -36,7 +36,7 @@ public class PrototypeRuntimeService<T> extends RuntimeService<T> {
     /**
      * @param service
      */
-    public PrototypeRuntimeService(ServiceBuild<T> service, RuntimeRegion region, MethodHandle mh) {
+    public PrototypeRuntimeService(ServiceBuild service, RuntimeRegion region, MethodHandle mh) {
         super(service);
         this.region = requireNonNull(region);
         this.mh = requireNonNull(mh);
@@ -44,9 +44,9 @@ public class PrototypeRuntimeService<T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvisionContext site) {
+    public Object getInstance(ProvisionContext site) {
         try {
-            return (T) mh.invoke(region);
+            return mh.invoke(region);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

@@ -25,18 +25,19 @@ import app.packed.inject.ProvisionContext;
  */
 public class ServiceWrapperProvider<T> implements Provider<T> {
 
-    final RuntimeService<T> service;
+    final RuntimeService service;
 
     final ProvisionContext ppc;
 
-    ServiceWrapperProvider(RuntimeService<T> service, ProvisionContext ppc) {
+    ServiceWrapperProvider(RuntimeService service, ProvisionContext ppc) {
         this.service = requireNonNull(service);
         this.ppc = requireNonNull(ppc);
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings("unchecked")
     @Override
     public T provide() {
-        return service.getInstance(ppc);
+        return (T) service.getInstance(ppc);
     }
 }

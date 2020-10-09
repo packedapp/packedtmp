@@ -27,15 +27,15 @@ import packed.internal.inject.PackedProvisionContext;
 import packed.internal.inject.service.build.ServiceBuild;
 
 /** An entry that represents a service at runtime. */
-public abstract class RuntimeService<T> implements Service {
+public abstract class RuntimeService implements Service {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
 
     /** The key under which the service is available. */
-    private final Key<T> key;
+    private final Key<?> key;
 
-    RuntimeService(ConfigSite configSite, Key<T> key) {
+    RuntimeService(ConfigSite configSite, Key<?> key) {
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }
@@ -46,7 +46,7 @@ public abstract class RuntimeService<T> implements Service {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RuntimeService(ServiceBuild<T> buildEntry) {
+    RuntimeService(ServiceBuild buildEntry) {
         this(buildEntry.configSite(), buildEntry.key());
     }
 
@@ -54,9 +54,9 @@ public abstract class RuntimeService<T> implements Service {
         return configSite;
     }
 
-    public T forLocator(ServiceLocator locator) {
+    public Object forLocator(ServiceLocator locator) {
         ProvisionContext pc = PackedProvisionContext.of(key);
-        T t = getInstance(pc);
+        Object t = getInstance(pc);
         return t;
     }
 
@@ -67,14 +67,14 @@ public abstract class RuntimeService<T> implements Service {
      *            a request if needed by {@link #requiresPrototypeRequest()}
      * @return the instance
      */
-    public abstract T getInstance(@Nullable ProvisionContext request);
+    public abstract Object getInstance(@Nullable ProvisionContext request);
 
     @Override
     public abstract boolean isConstant();
 
     /** {@inheritDoc} */
     @Override
-    public final Key<T> key() {
+    public final Key<?> key() {
         return key;
     }
 

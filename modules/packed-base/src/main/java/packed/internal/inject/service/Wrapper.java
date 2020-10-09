@@ -21,5 +21,5 @@ import packed.internal.inject.service.build.ServiceBuild;
  *
  */
 public class Wrapper {
-    ServiceBuild<?> build;
+    ServiceBuild build;
 }

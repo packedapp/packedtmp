@@ -33,7 +33,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
  * exported.
  */
-public final class ExportedServiceBuild<T> extends ServiceBuild<T> {
+public final class ExportedServiceBuild extends ServiceBuild {
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
@@ -41,7 +41,7 @@ public final class ExportedServiceBuild<T> extends ServiceBuild<T> {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    public ServiceBuild<T> exportedEntry;
+    public ServiceBuild exportedEntry;
 
     /**
      * Exports an entry via its key.
@@ -53,7 +53,7 @@ public final class ExportedServiceBuild<T> extends ServiceBuild<T> {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedServiceBuild(ServiceBuildManager builder, Key<T> exportAsKey, ConfigSite configSite) {
+    public ExportedServiceBuild(ServiceBuildManager builder, Key<?> exportAsKey, ConfigSite configSite) {
         super(builder, configSite, exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
@@ -67,7 +67,7 @@ public final class ExportedServiceBuild<T> extends ServiceBuild<T> {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedServiceBuild(ServiceBuildManager builder, ServiceBuild<T> entryToExport, ConfigSite configSite) {
+    public ExportedServiceBuild(ServiceBuildManager builder, ServiceBuild entryToExport, ConfigSite configSite) {
         super(builder, configSite, entryToExport.key());
         this.exportedEntry = entryToExport;
         this.exportAsKey = null;
@@ -95,7 +95,7 @@ public final class ExportedServiceBuild<T> extends ServiceBuild<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService<>(this, exportedEntry.toRuntimeEntry(context));
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
+        return new DelegatingRuntimeService(this, exportedEntry.toRuntimeEntry(context));
     }
 }

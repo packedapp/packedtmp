@@ -25,10 +25,10 @@ import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.build.ServiceBuild;
 
 /** An entry holding a constant. */
-public final class ConstantRuntimeService<T> extends RuntimeService<T> {
+public final class ConstantRuntimeService extends RuntimeService {
 
     /** The singleton instance. */
-    private final T constant;
+    private final Object constant;
 
     /**
      * Creates a new entry.
@@ -36,24 +36,23 @@ public final class ConstantRuntimeService<T> extends RuntimeService<T> {
      * @param service
      *            the build entry to create this entry from
      */
-    @SuppressWarnings("unchecked")
-    public ConstantRuntimeService(ServiceBuild<T> service, RuntimeRegion region, int index) {
+    public ConstantRuntimeService(ServiceBuild service, RuntimeRegion region, int index) {
         super(service);
-        this.constant = requireNonNull((T) region.getSingletonInstance(index));
+        this.constant = requireNonNull(region.getSingletonInstance(index));
     }
 
     /**
      * @param configSite
      * @param key
      */
-    public ConstantRuntimeService(ConfigSite configSite, Key<T> key, @Nullable T instance) {
+    public ConstantRuntimeService(ConfigSite configSite, Key<?> key, @Nullable Object instance) {
         super(configSite, key);
         this.constant = requireNonNull(instance);
     }
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvisionContext ignore) {
+    public Object getInstance(ProvisionContext ignore) {
         return constant;
     }
 

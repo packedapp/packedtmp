@@ -631,7 +631,6 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
                 captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
@@ -639,7 +638,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         if (source == null) {
             throw new UnsupportedOperationException();
         }
-        source.provide(this).as((Key) key);
+        source.provide(this).as(key);
     }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */

@@ -48,13 +48,13 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
     private final ConfigSite configSite;
 
     /** All services that this injector provides. */
-    private final Map<Key<?>, RuntimeService<?>> entries;
+    private final Map<Key<?>, RuntimeService> entries;
 
     /** The parent of this injector, or null if this is a top-level injector. */
     @Nullable
     final PackedInjector parent;
 
-    public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService<?>> services) {
+    public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService> services) {
         this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.entries = services;
@@ -72,16 +72,15 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
         return "No service with the specified key could be found, key = " + key;
     }
 
-    public void forEachEntry(Consumer<? super RuntimeService<?>> action) {
+    public void forEachEntry(Consumer<? super RuntimeService> action) {
         entries.values().forEach(action);
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
     @Override
     @Nullable
-    protected <T> RuntimeService<T> getService(Key<T> key) {
-        return (RuntimeService<T>) entries.get(key);
+    protected RuntimeService getService(Key<?> key) {
+        return entries.get(key);
     }
 
     /** {@inheritDoc} */
@@ -103,7 +102,7 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
             Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == PackedInjector.class).findFirst());
             cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
         }
-        LinkedHashMap<Key<?>, RuntimeService<?>> newServices = new LinkedHashMap<>(entries);
+        LinkedHashMap<Key<?>, RuntimeService> newServices = new LinkedHashMap<>(entries);
         WireletList wl = WireletList.ofAll(wirelets);
         ConfigSite ccs = cs;
         wl.forEach(PackedDownstreamServiceWirelet.class, w -> w.process(ccs, newServices));

@@ -69,7 +69,7 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService> newServices) {
             newServices.keySet().removeAll(set);
         }
     }
@@ -94,14 +94,14 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @Override
         protected void process(ServiceExtension extension) {
-            for (ExportedServiceBuild<?> e : fromExtension(extension).exports()) {
+            for (ExportedServiceBuild e : fromExtension(extension).exports()) {
                 action.accept(e.toService());
             }
         }
 
         /** {@inheritDoc} */
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService> newServices) {
             for (var s : newServices.values()) {
                 action.accept(s);
             }
@@ -127,9 +127,8 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         protected void process(ServiceExtension p) {}
 
         /** {@inheritDoc} */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService<?>> newServices) {
+        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService> newServices) {
             newServices.put(key, new ConstantRuntimeService(cs, key, instance));
         }
 
@@ -139,5 +138,5 @@ public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
         }
     }
 
-    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService<?>> newServices);
+    public abstract void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService> newServices);
 }

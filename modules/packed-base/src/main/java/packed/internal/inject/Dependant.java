@@ -61,7 +61,7 @@ import packed.internal.sidecar.RuntimeRegionInvoker;
 public class Dependant {
 
     @Nullable
-    private final SourceMemberServiceBuild<?> service;
+    private final SourceMemberServiceBuild service;
 
     MethodHandle buildMethodHandle;
 
@@ -105,7 +105,7 @@ public class Dependant {
                 throw new InvalidDeclarationException("Not okay)");
             }
             ServiceBuildManager sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
-            ServiceBuild<?> sa = this.service = new SourceMemberServiceBuild<>(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
+            ServiceBuild sa = this.service = new SourceMemberServiceBuild(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;

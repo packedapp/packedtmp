@@ -39,7 +39,7 @@ import packed.internal.util.StringFormatter;
 
 public final class InjectionErrorManagerMessages {
 
-    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<ServiceBuild<?>>> dublicateNodes) {
+    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<ServiceBuild>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
 
         csj.prefix("    ", "  & ", "  & ");
@@ -53,7 +53,7 @@ public final class InjectionErrorManagerMessages {
         // create an instance sounds like something that should not be used in the build phase...
         sb.append("ServiceExtension failed");
         int nn = 1;
-        for (Map.Entry<Key<?>, LinkedHashSet<ServiceBuild<?>>> e : dublicateNodes.entrySet()) {
+        for (Map.Entry<Key<?>, LinkedHashSet<ServiceBuild>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");
             Key<?> key = e.getKey();
             String n = "";
@@ -77,14 +77,14 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceBuildManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild<?>>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceBuildManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 
-    static String format(ServiceBuild<?> e) {
+    static String format(ServiceBuild e) {
         // TODO FIX
         // Need to look in injectable and see if first dependency is SourceAssembly
-        ServiceBuild<?> declaringEntry = e;
+        ServiceBuild declaringEntry = e;
 
         if (declaringEntry == null) {
             return e.configSite().toString();

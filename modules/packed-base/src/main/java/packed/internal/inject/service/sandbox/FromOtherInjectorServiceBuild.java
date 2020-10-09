@@ -28,15 +28,15 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-final class FromOtherInjectorServiceBuild<T> extends ServiceBuild<T> {
+final class FromOtherInjectorServiceBuild extends ServiceBuild {
 
     /** The entry from the 'imported' injector. */
-    private final RuntimeService<T> entry;
+    private final RuntimeService entry;
 
     /** A wrapper for the 'imported' injector. */
     final ProvideAllFromOtherInjector fromInjector; // not used currently
 
-    FromOtherInjectorServiceBuild(ProvideAllFromOtherInjector fromInjector, RuntimeService<T> entry) {
+    FromOtherInjectorServiceBuild(ProvideAllFromOtherInjector fromInjector, RuntimeService entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), entry.key());
         this.entry = entry;
         this.fromInjector = fromInjector;
@@ -44,8 +44,8 @@ final class FromOtherInjectorServiceBuild<T> extends ServiceBuild<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService<T>(this, entry);
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
+        return new DelegatingRuntimeService(this, entry);
     }
 
     @Override

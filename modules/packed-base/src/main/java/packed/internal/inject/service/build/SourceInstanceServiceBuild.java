@@ -31,7 +31,7 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /** A build entry wrapping a component source. */
-public final class SourceInstanceServiceBuild<T> extends ServiceBuild<T> {
+public final class SourceInstanceServiceBuild extends ServiceBuild {
 
     /** The singleton source we are wrapping */
     private final SourceBuild source;
@@ -42,7 +42,7 @@ public final class SourceInstanceServiceBuild<T> extends ServiceBuild<T> {
      * @param compConf
      *            the component we provide for
      */
-    public SourceInstanceServiceBuild(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<T> key) {
+    public SourceInstanceServiceBuild(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key) {
         super(im, compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }
@@ -68,11 +68,11 @@ public final class SourceInstanceServiceBuild<T> extends ServiceBuild<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantRuntimeService<>(this, context.region, source.regionIndex);
+            return new ConstantRuntimeService(this, context.region, source.regionIndex);
         } else {
-            return new PrototypeRuntimeService<>(this, context.region, dependencyAccessor());
+            return new PrototypeRuntimeService(this, context.region, dependencyAccessor());
         }
     }
 

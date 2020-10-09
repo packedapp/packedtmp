@@ -33,7 +33,7 @@ import packed.internal.inject.service.build.ExportedServiceBuild;
 public final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
-    private final ExportedServiceBuild<T> entry;
+    private final ExportedServiceBuild entry;
 
     /**
      * Creates a new service configuration object.
@@ -41,7 +41,7 @@ public final class PackedExportedServiceConfiguration<T> implements ExportedServ
      * @param entry
      *            the entry to export
      */
-    public PackedExportedServiceConfiguration(ExportedServiceBuild<T> entry) {
+    public PackedExportedServiceConfiguration(ExportedServiceBuild entry) {
         this.entry = requireNonNull(entry);
     }
 

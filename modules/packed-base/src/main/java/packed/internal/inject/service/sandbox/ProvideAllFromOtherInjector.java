@@ -28,7 +28,6 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.PackedInjector;
-import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
@@ -42,7 +41,7 @@ public final class ProvideAllFromOtherInjector {
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
-    public final LinkedHashMap<Key<?>, ServiceBuild<?>> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceBuild> entries = new LinkedHashMap<>();
 
     /** The injector that provides the services. */
     final PackedInjector injector;
@@ -59,14 +58,13 @@ public final class ProvideAllFromOtherInjector {
      * @param wirelets
      *            any wirelets used when importing the injector
      */
-    @SuppressWarnings("unchecked")
     public ProvideAllFromOtherInjector(ServiceBuildManager node, ConfigSite configSite, PackedInjector injector, WireletList wirelets) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);
 
         injector.forEachEntry(e -> {
-            entries.put(e.key(), new FromOtherInjectorServiceBuild<>(this, (RuntimeService<Object>) e));
+            entries.put(e.key(), new FromOtherInjectorServiceBuild(this, e));
         });
 
         // process wirelets for filtering/transformations

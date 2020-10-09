@@ -131,9 +131,9 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      *            the map to make an immutable copy
      * @return a new service registry
      */
-    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceBuild<?>> map) {
+    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceBuild> map) {
         LinkedHashMap<Key<?>, Service> l = new LinkedHashMap<Key<?>, Service>();
-        for (ServiceBuild<?> e : map.values()) {
+        for (ServiceBuild e : map.values()) {
             l.put(e.key(), e.toService());
         }
         return new CopyOfRegistry(l);

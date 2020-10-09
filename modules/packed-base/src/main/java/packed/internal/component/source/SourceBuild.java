@@ -54,7 +54,7 @@ public final class SourceBuild implements DependencyProvider {
 
     /** Whether or not this source is provided as a service. */
     @Nullable
-    public ServiceBuild<?> service;
+    public ServiceBuild service;
 
     private SourceBuild(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
         this.regionIndex = regionIndex;
@@ -124,9 +124,9 @@ public final class SourceBuild implements DependencyProvider {
         return dependant;
     }
 
-    public ServiceBuild<?> provide(ComponentNodeConfiguration compConf) {
+    public ServiceBuild provide(ComponentNodeConfiguration compConf) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        ServiceBuild<?> s = service;
+        ServiceBuild s = service;
         if (s == null) {
             Key<?> key;
             if (instance != null) {

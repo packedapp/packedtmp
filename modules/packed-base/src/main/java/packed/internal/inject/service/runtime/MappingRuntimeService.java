@@ -23,13 +23,13 @@ import app.packed.inject.ProvisionContext;
 import packed.internal.inject.service.build.ServiceBuild;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
-public final class MappingRuntimeService<F, T> extends RuntimeService<T> {
+public final class MappingRuntimeService extends RuntimeService {
 
     /** The runtime entry whose service should mapped. */
-    private final RuntimeService<F> delegate;
+    private final RuntimeService delegate;
 
     /** The function that maps the service. */
-    private final Function<? super F, ? extends T> function;
+    private final Function<?, ?> function;
 
     /**
      * Creates a new runtime alias node.
@@ -37,7 +37,7 @@ public final class MappingRuntimeService<F, T> extends RuntimeService<T> {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingRuntimeService(ServiceBuild<T> buildNode, RuntimeService<F> delegate, Function<? super F, ? extends T> function) {
+    public MappingRuntimeService(ServiceBuild buildNode, RuntimeService delegate, Function<?, ?> function) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);
@@ -45,9 +45,10 @@ public final class MappingRuntimeService<F, T> extends RuntimeService<T> {
 
     /** {@inheritDoc} */
     @Override
-    public T getInstance(ProvisionContext site) {
-        F f = delegate.getInstance(site);
-        T t = function.apply(f);
+    public Object getInstance(ProvisionContext site) {
+        Object f = delegate.getInstance(site);
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Object t = ((Function) function).apply(f);
         // TODO Check Type, and not null
         // Throw Provision Exception????
         // Every node

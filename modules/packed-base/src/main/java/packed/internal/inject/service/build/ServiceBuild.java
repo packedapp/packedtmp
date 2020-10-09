@@ -35,7 +35,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class ServiceBuild<T> implements DependencyProvider {
+public abstract class ServiceBuild implements DependencyProvider {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -45,24 +45,22 @@ public abstract class ServiceBuild<T> implements DependencyProvider {
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
      * injected before the providing method can be invoked.
      */
-    private Key<T> key;
+    private Key<?> key;
 
     /** The service manager that this service belongs to. */
     public final ServiceBuildManager sm;
 
-    public ServiceBuild(ServiceBuildManager sm, ConfigSite configSite, Key<T> key) {
+    public ServiceBuild(ServiceBuildManager sm, ConfigSite configSite, Key<?> key) {
         this.sm = requireNonNull(sm);
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }
 
-    @SuppressWarnings("unchecked")
-    public void as(Key<? super T> key) {
-        requireNonNull(key, "key is null");
+    public void as(Key<?> key) {
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
-        this.key = (Key<T>) key;
+        this.key = requireNonNull(key, "key is null");
     }
 
     /**
@@ -74,7 +72,7 @@ public abstract class ServiceBuild<T> implements DependencyProvider {
         return configSite;
     }
 
-    public final Key<T> key() {
+    public final Key<?> key() {
         return key;
     }
 
@@ -85,16 +83,15 @@ public abstract class ServiceBuild<T> implements DependencyProvider {
      *
      * @return the new runtime node
      */
-    protected abstract RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context);
+    protected abstract RuntimeService newRuntimeNode(ServiceInstantiationContext context);
 
     public final Service toService() {
         return new PackedService(key, configSite, isConstant());
     }
 
     // cacher runtime noden...
-    @SuppressWarnings("unchecked")
-    public final RuntimeService<T> toRuntimeEntry(ServiceInstantiationContext context) {
-        return (RuntimeService<T>) context.transformers.computeIfAbsent(this, k -> {
+    public final RuntimeService toRuntimeEntry(ServiceInstantiationContext context) {
+        return context.transformers.computeIfAbsent(this, k -> {
             return k.newRuntimeNode(context);
         });
     }

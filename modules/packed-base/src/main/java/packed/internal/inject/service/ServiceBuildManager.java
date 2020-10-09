@@ -71,10 +71,10 @@ public final class ServiceBuildManager {
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceBuild> resolvedServices = new LinkedHashMap<>();
 
     /** All explicit added build entries. */
-    private final ArrayList<ServiceBuild<?>> unresolvedServices = new ArrayList<>();
+    private final ArrayList<ServiceBuild> unresolvedServices = new ArrayList<>();
 
     /**
      * @param container
@@ -84,7 +84,7 @@ public final class ServiceBuildManager {
         this.container = requireNonNull(container);
     }
 
-    public void addAssembly(ServiceBuild<?> a) {
+    public void addAssembly(ServiceBuild a) {
         requireNonNull(a);
         unresolvedServices.add(a);
     }
@@ -140,7 +140,7 @@ public final class ServiceBuildManager {
     public ServiceContract newServiceContract() {
         ServiceContract.Builder b = ServiceContract.newContract();
         if (exporter != null) {
-            for (ExportedServiceBuild<?> n : exporter) {
+            for (ExportedServiceBuild n : exporter) {
                 b.provides(n.key());
             }
         }
@@ -157,7 +157,7 @@ public final class ServiceBuildManager {
     }
 
     public ServiceLocator newServiceLocator(ComponentNode comp, RuntimeRegion region) {
-        LinkedHashMap<Key<?>, RuntimeService<?>> runtimeEntries = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (var e : exports()) {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
@@ -181,17 +181,17 @@ public final class ServiceBuildManager {
         p.add(pi);
     }
 
-    public <T> ServiceBuild<T> provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
-        ServiceBuild<T> e = new SourceInstanceServiceBuild<>(this, compConf, key);
+    public <T> ServiceBuild provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
+        ServiceBuild e = new SourceInstanceServiceBuild(this, compConf, key);
         unresolvedServices.add(e);
         return e;
     }
 
-    private void resolve0(ContainerBuild im, LinkedHashMap<Key<?>, ServiceBuild<?>> resolvedServices, Collection<? extends ServiceBuild<?>> buildEntries) {
-        for (ServiceBuild<?> entry : buildEntries) {
-            ServiceBuild<?> existing = resolvedServices.putIfAbsent(entry.key(), entry);
+    private void resolve0(ContainerBuild im, LinkedHashMap<Key<?>, ServiceBuild> resolvedServices, Collection<? extends ServiceBuild> buildEntries) {
+        for (ServiceBuild entry : buildEntries) {
+            ServiceBuild existing = resolvedServices.putIfAbsent(entry.key(), entry);
             if (existing != null) {
-                LinkedHashSet<ServiceBuild<?>> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                LinkedHashSet<ServiceBuild> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                 hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                 hs.add(entry);
             }
@@ -222,7 +222,7 @@ public final class ServiceBuildManager {
                 ServiceBuildManager child = c.getServiceManager();
 
                 // Get Wirelets
-                for (ExportedServiceBuild<?> a : child.exports()) {
+                for (ExportedServiceBuild a : child.exports()) {
                     // System.out.println("EXPORT " + a);
 
                     // Skal vi wrappe den????
@@ -251,7 +251,7 @@ public final class ServiceBuildManager {
                 ServiceRequirementsManager srm = m.dependencies;
                 if (srm != null) {
                     for (Requirement r : srm.requirements.values()) {
-                        ServiceBuild<?> sa = resolvedServices.get(r.key);
+                        ServiceBuild sa = resolvedServices.get(r.key);
                         if (resolvedServices.containsKey(r.key)) {
                             for (FromInjectable i : r.list) {
                                 i.i.setDependencyProvider(i.dependencyIndex, sa);
@@ -269,9 +269,9 @@ public final class ServiceBuildManager {
         private final ComponentNode component;
 
         /** All services that this injector provides. */
-        private final Map<Key<?>, RuntimeService<?>> services;
+        private final Map<Key<?>, RuntimeService> services;
 
-        private ExportedServiceLocator(ComponentNode component, Map<Key<?>, RuntimeService<?>> services) {
+        private ExportedServiceLocator(ComponentNode component, Map<Key<?>, RuntimeService> services) {
             this.services = requireNonNull(services);
             this.component = requireNonNull(component);
         }
@@ -287,11 +287,10 @@ public final class ServiceBuildManager {
             return "'" + component.path() + "' does not export a service with the specified key, key = " + key;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         @Nullable
-        protected <T> RuntimeService<T> getService(Key<T> key) {
-            return (RuntimeService<T>) services.get(key);
+        protected RuntimeService getService(Key<?> key) {
+            return services.get(key);
         }
 
         @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -28,11 +28,11 @@ import packed.internal.inject.service.build.ServiceBuild;
 public class InjectionErrorManager {
 
     /** A map of multiple exports of the same key. */
-    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceBuild<?>>> failingDuplicateExports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> failingDuplicateExports = new LinkedHashMap<>();
 
     /** A map of all keyed exports where an entry matching the key could not be found. */
-    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceBuild<?>>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
-    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceBuild<?>>> failingDuplicateProviders = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceBuild>> failingDuplicateProviders = new LinkedHashMap<>();
 }

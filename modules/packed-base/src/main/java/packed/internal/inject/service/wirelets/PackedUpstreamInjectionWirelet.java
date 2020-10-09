@@ -81,14 +81,13 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         }
 
         /** {@inheritDoc} */
-        @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
         public void process(ProvideAllFromOtherInjector ii) {
             if (ii.entries.containsKey(to)) {
                 throw new RuntimeException();
             }
             // We map, not alias...
-            ServiceBuild<?> e = extract ? ii.entries.get(frpm) : ii.entries.remove(frpm);
+            ServiceBuild e = extract ? ii.entries.get(frpm) : ii.entries.remove(frpm);
             if (e == null) {
                 // FAIL -> WireletProcessingException????
                 throw new RuntimeException();
@@ -126,7 +125,7 @@ public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
         /** {@inheritDoc} */
         @Override
         public void process(ProvideAllFromOtherInjector ii) {
-            for (ServiceBuild<?> e : ii.entries.values()) {
+            for (ServiceBuild e : ii.entries.values()) {
                 action.accept(e.toService());
             }
         }

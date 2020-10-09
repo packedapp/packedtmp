@@ -31,16 +31,15 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 /**
  *
  */
-public class SourceMemberServiceBuild<T> extends ServiceBuild<T> {
+public class SourceMemberServiceBuild extends ServiceBuild {
 
     private final Dependant dependant;
 
     /** If constant, the region index to store it in */
     public final int regionIndex;
 
-    @SuppressWarnings("unchecked")
     public SourceMemberServiceBuild(ServiceBuildManager im, ComponentNodeConfiguration compConf, Dependant dependant, Key<?> key, boolean isConst) {
-        super(im, compConf.configSite(), (Key<T>) key);
+        super(im, compConf.configSite(), key);
         this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;
     }
@@ -65,11 +64,11 @@ public class SourceMemberServiceBuild<T> extends ServiceBuild<T> {
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService<T> newRuntimeNode(ServiceInstantiationContext context) {
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantRuntimeService<>(this, context.region, regionIndex);
+            return new ConstantRuntimeService(this, context.region, regionIndex);
         } else {
-            return new PrototypeRuntimeService<>(this, context.region, dependencyAccessor());
+            return new PrototypeRuntimeService(this, context.region, dependencyAccessor());
         }
     }
 
