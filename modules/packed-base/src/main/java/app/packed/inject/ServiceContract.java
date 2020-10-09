@@ -103,16 +103,6 @@ public final class ServiceContract {
         this.provides = s == null ? Set.of() : Set.copyOf(s);
     }
 
-    /**
-     * Creates a new builder that can be used to create a new service contract. Using this contract as the base.
-     * 
-     * @return the new builder
-     */
-    // copy, change, ...
-    public ServiceContract.Builder builder() {
-        return new ServiceContract.Builder(this);
-    }
-
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
@@ -212,12 +202,20 @@ public final class ServiceContract {
     }
 
     /**
+     * Creates a new builder that can be used to create a new service contract. Using this contract as the base.
+     * 
+     * @return the new builder
+     */
+    public ServiceContract.Builder update() { // copy, change, ...
+        return new ServiceContract.Builder(this);
+    }
+
+    /**
      * Returns a new service contract builder.
      * 
      * @return a new service contract builder
      */
-    // or just builder(); Ja det syntes jeg
-    public static ServiceContract.Builder newContract() {
+    public static ServiceContract.Builder builder() {
         return new ServiceContract.Builder();
     }
 

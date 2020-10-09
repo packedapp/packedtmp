@@ -35,7 +35,7 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.util.LookupUtil;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedDownstreamServiceWirelet extends ServiceWirelet {
+public abstract class PackedDownstreamServiceWirelet extends OldServiceWirelet {
 
     /** A VarHandle that can access ServiceExtension#sm. */
     private static final VarHandle VH_SERVICE_EXTENSION_NODE = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ServiceExtension.class, "sbm",

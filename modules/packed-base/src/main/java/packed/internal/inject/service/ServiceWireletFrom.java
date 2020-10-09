@@ -15,31 +15,33 @@
  */
 package packed.internal.inject.service;
 
-import static java.util.Objects.requireNonNull;
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.LinkedHashSet;
-
+import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.component.Wirelet;
+import app.packed.container.ExtensionMember;
+import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.build.ServiceBuild;
 
 /**
  *
  */
-public class Wrapper {
+@ExtensionMember(ServiceExtension.class)
+public abstract class ServiceWireletFrom extends Wirelet {
 
-    private ServiceBuild build;
+    public abstract void process(Context context);
 
-    void resolve(ServiceBuild b) {
-        if (build != null) {
-            LinkedHashSet<ServiceBuild> hs = b.sm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
-            hs.add(b); // might be added multiple times, hence we use a Set, but add existing first
-            hs.add(build);
-        } else {
-            this.build = b;
+    static class Context {
+
+        Map<Key<?>, ServiceBuild> services = new HashMap<>();
+
+        @Nullable
+        final ServiceExportManager m;
+
+        Context(@Nullable ServiceExportManager m) {
+            this.m = m;
         }
-    }
-
-    public ServiceBuild getSingle() {
-        requireNonNull(build);
-        return build;
     }
 }

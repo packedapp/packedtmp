@@ -70,7 +70,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
-    final WireletPack wirelets;
+    public final WireletPack wirelets;
 
     /** The modifiers of this configuration. */
     final int modifiers;

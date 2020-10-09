@@ -29,7 +29,7 @@ import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
 
 /** The common superclass for upstream service wirelets. */
-public abstract class PackedUpstreamInjectionWirelet extends ServiceWirelet {
+public abstract class PackedUpstreamInjectionWirelet extends OldServiceWirelet {
 
     /**
      * Processes an imported injector.

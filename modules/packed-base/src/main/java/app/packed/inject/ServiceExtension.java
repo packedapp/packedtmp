@@ -218,7 +218,7 @@ public final class ServiceExtension extends Extension {
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return sbm.hasExports() ? sbm.exports().exportsAsServiceRegistry() : null;
+        return sbm.newExportedServiceRegistry();
     }
 
     /**

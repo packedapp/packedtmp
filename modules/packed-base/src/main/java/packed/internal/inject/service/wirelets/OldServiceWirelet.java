@@ -21,7 +21,7 @@ import app.packed.inject.ServiceExtension;
 /**
  *
  */
-public abstract class ServiceWirelet extends Wirelet {
+public abstract class OldServiceWirelet extends Wirelet {
 
     /**
      * Process this wirelet.

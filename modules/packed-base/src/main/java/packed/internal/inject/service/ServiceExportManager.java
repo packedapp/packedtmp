@@ -66,7 +66,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
      * @param sm
      *            the extension node this export manager belongs to
      */
-    public ServiceExportManager(ServiceBuildManager sm) {
+    ServiceExportManager(ServiceBuildManager sm) {
         this.sm = requireNonNull(sm);
     }
 

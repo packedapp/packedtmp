@@ -18,9 +18,8 @@ package packed.internal.inject.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
@@ -31,12 +30,14 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
+import app.packed.inject.ServiceRegistry;
 import app.packed.service.Injector;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ExportedServiceBuild;
@@ -67,14 +68,14 @@ public final class ServiceBuildManager {
     @Nullable
     private ServiceExportManager exporter;
 
+    /** All explicit added build entries. */
+    private final ArrayList<ServiceBuild> localServices = new ArrayList<>();
+
     /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, Wrapper> resolvedServices = new LinkedHashMap<>();
-
-    /** All explicit added build entries. */
-    private final ArrayList<ServiceBuild> unresolvedServices = new ArrayList<>();
 
     /**
      * @param container
@@ -86,7 +87,7 @@ public final class ServiceBuildManager {
 
     public void addAssembly(ServiceBuild a) {
         requireNonNull(a);
-        unresolvedServices.add(a);
+        localServices.add(a);
     }
 
     public void checkExportConfigurable() {
@@ -133,35 +134,50 @@ public final class ServiceBuildManager {
         return e;
     }
 
-    public boolean hasExports() {
-        return exporter != null;
+    @Nullable
+    public ServiceRegistry newExportedServiceRegistry() {
+        return exporter == null ? null : exporter.exportsAsServiceRegistry();
     }
 
+    /**
+     * Creates a service contract for this manager.
+     * 
+     * @return a service contract for this manager
+     */
     public ServiceContract newServiceContract() {
-        ServiceContract.Builder b = ServiceContract.newContract();
+        ServiceContract.Builder builder = ServiceContract.builder();
+
+        // Any exports
         if (exporter != null) {
             for (ExportedServiceBuild n : exporter) {
-                b.provides(n.key());
+                builder.provides(n.key());
             }
         }
+
+        // Any requirements
         if (dependencies != null && dependencies.requirements != null) {
             for (Requirement r : dependencies.requirements.values()) {
                 if (r.isOptional) {
-                    b.optional(r.key);
+                    builder.optional(r.key);
                 } else {
-                    b.requires(r.key);
+                    builder.requires(r.key);
                 }
             }
         }
-        return b.build();
+
+        return builder.build();
     }
 
     public ServiceLocator newServiceLocator(ComponentNode comp, RuntimeRegion region) {
-        LinkedHashMap<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
+        Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (var e : exports()) {
-            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
+        if (exporter != null) {
+            for (ServiceBuild e : exporter) {
+                runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
+            }
         }
+
+        runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
         PackedShellDriver<?> psd = (PackedShellDriver<?>) container.compConf.assembly().shellDriver();
@@ -183,19 +199,8 @@ public final class ServiceBuildManager {
 
     public <T> ServiceBuild provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
         ServiceBuild e = new SourceInstanceServiceBuild(this, compConf, key);
-        unresolvedServices.add(e);
+        localServices.add(e);
         return e;
-    }
-
-    private void resolve0(Collection<? extends ServiceBuild> buildEntries) {
-        for (ServiceBuild entry : buildEntries) {
-            Wrapper existing = resolvedServices.putIfAbsent(entry.key(), new Wrapper(entry));
-            if (existing != null) {
-                LinkedHashSet<ServiceBuild> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing.getSingle()); // might be added multiple times, hence we use a Set, but add existing first
-                hs.add(entry);
-            }
-        }
     }
 
     // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
@@ -206,47 +211,61 @@ public final class ServiceBuildManager {
 
     // Lazy laver den...
 
-    public void resolveLocal() {
-        // First process provided entries, then any entries added via provideAll
-        resolve0(unresolvedServices);
+    public void resolve() {
+        // First we take all locally defined services
+        for (ServiceBuild entry : localServices) {
+            resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(entry);
+        }
 
+        // Then we take any provideAll() services
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromOtherInjector fromInjector : provideAll) {
-                resolve0(fromInjector.entries.values());
+                for (ServiceBuild entry : fromInjector.entries.values()) {
+                    resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(entry);
+                }
             }
         }
 
+        // Process exports from any children (imports are processed later)
         if (container.children != null) {
             for (ContainerBuild c : container.children) {
                 ServiceBuildManager child = c.getServiceManager();
 
-                // Get Wirelets
-                for (ExportedServiceBuild a : child.exports()) {
-                    // System.out.println("EXPORT " + a);
+                WireletPack wp = c.compConf.wirelets;
+                List<ServiceWireletFrom> wirelets = wp == null ? null : wp.receiveAll(ServiceWireletFrom.class);
+                if (wirelets != null) {
+                    ServiceWireletFrom.Context context = new ServiceWireletFrom.Context(exporter);
+                    for (ServiceWireletFrom f : wirelets) {
+                        f.process(context);
+                    }
 
-                    // Skal vi wrappe den????
-                    resolvedServices.put(a.key(), new Wrapper(a));
+                } else if (child.exporter != null) {
+                    for (ExportedServiceBuild a : child.exporter) {
+                        resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(a);
+                    }
                 }
             }
         }
+
+        // We now know every resolved service within the container
+        // Either a local one or one exported by a child
 
         if (em != null) {
             InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
         }
 
+        // Process own exports
         if (exporter != null) {
             exporter.resolve();
         }
-        // Run through all linked containers...
-        // Apply any wirelets to exports, and take
-
         // Add error messages if any nodes with the same key have been added multiple times
 
-        // also lets try and resolve children
+        // Process imports to children
         if (container.children != null) {
             for (ContainerBuild c : container.children) {
                 ServiceBuildManager m = c.getServiceManager();
+
                 ServiceRequirementsManager srm = m.dependencies;
                 if (srm != null) {
                     for (Requirement r : srm.requirements.values()) {
@@ -262,8 +281,10 @@ public final class ServiceBuildManager {
         }
     }
 
+    /** A service locator wrapping all exported services. */
     private static final class ExportedServiceLocator extends AbstractServiceLocator {
 
+        /** The root component */
         private final ComponentNode component;
 
         /** All services that this injector provides. */

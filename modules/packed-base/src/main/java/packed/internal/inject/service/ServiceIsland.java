@@ -26,12 +26,16 @@ import packed.internal.container.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
-/** A utility class that can find cycles in a dependency graph. */
-
+/**
+ * This class services two important purposes:
+ * 
+ * Finds dependency circles
+ * 
+ * Calls {@link Dependant#onAllDependenciesResolved(RegionBuild)}
+ */
 // New algorithm
 
 // resolve + create id for each node
-
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
 public final class ServiceIsland {
@@ -42,20 +46,19 @@ public final class ServiceIsland {
      * @throws BuildException
      *             if a dependency cycle was detected
      */
-
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public static void finish(RegionBuild region, ContainerBuild im) {
-        DependencyCycle c = dependencyCyclesFind(region, im);
+    public static void finish(RegionBuild region, ContainerBuild container) {
+        DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(RegionBuild region, ContainerBuild im) {
+    private static DependencyCycle dependencyCyclesFind(RegionBuild region, ContainerBuild container) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
-        return dependencyCyclesFind(stack, dependencies, region, im);
+        return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
     private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, RegionBuild region,
@@ -68,6 +71,7 @@ public final class ServiceIsland {
                 }
             }
         }
+
         if (container.children != null) {
             for (ContainerBuild c : container.children) {
                 dependencyCyclesFind(stack, dependencies, region, c);
@@ -97,7 +101,6 @@ public final class ServiceIsland {
             stack.push(injectable);
             for (int i = 0; i < deps.length; i++) {
                 DependencyProvider dependency = deps[i];
-
                 if (dependency != null) {
                     Dependant next = dependency.dependant();
                     if (next != null) {
@@ -124,7 +127,8 @@ public final class ServiceIsland {
 
             stack.pop();
         }
-        injectable.onResolveSuccess(region);
+        // Hvis vi analysere skal vi ikke lave det her...
+        injectable.onAllDependenciesResolved(region);
         return null;
     }
 

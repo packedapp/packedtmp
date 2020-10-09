@@ -171,7 +171,8 @@ public class Dependant {
         return false;
     }
 
-    public void onResolveSuccess(RegionBuild region) {
+    // All dependencies have been successfully resolved
+    public void onAllDependenciesResolved(RegionBuild region) {
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way

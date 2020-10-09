@@ -120,7 +120,7 @@ public final class ContainerBuild {
 
         // Resolve local services
         if (sbm != null) {
-            sbm.resolveLocal();
+            sbm.resolve();
         }
 
         for (Dependant i : dependants) {
