@@ -21,5 +21,18 @@ import packed.internal.inject.service.build.ServiceBuild;
  *
  */
 public class Wrapper {
-    ServiceBuild build;
+
+    public final ServiceBuild build;
+
+    Wrapper() {
+        this.build = null;
+    }
+
+    Wrapper(ServiceBuild build) {
+        this.build = build;
+    }
+
+    void addChildExport(ServiceBuild b) {
+
+    }
 }

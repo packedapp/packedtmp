@@ -179,7 +179,8 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
                 ServiceBuild entryToExport = entry.exportedEntry;
                 boolean export = true;
                 if (entryToExport == null) {
-                    entryToExport = sm.resolvedServices.get(entry.exportAsKey);
+                    Wrapper wrapper = sm.resolvedServices.get(entry.exportAsKey);
+                    entryToExport = wrapper == null ? null : wrapper.build;
                     if (entryToExport == null) {
                         sm.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                         export = false;
@@ -208,7 +209,8 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
         }
 
         if (exportAll != null) {
-            for (ServiceBuild e : sm.resolvedServices.values()) {
+            for (Wrapper w : sm.resolvedServices.values()) {
+                ServiceBuild e = w.build;
                 if (!resolvedExports.containsKey(e.key())) {
                     resolvedExports.put(e.key(), new ExportedServiceBuild(sm, e, exportAll));
                 }

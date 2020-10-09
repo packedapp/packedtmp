@@ -71,7 +71,7 @@ public final class ServiceBuildManager {
     private ArrayList<ProvideAllFromOtherInjector> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, ServiceBuild> resolvedServices = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, Wrapper> resolvedServices = new LinkedHashMap<>();
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceBuild> unresolvedServices = new ArrayList<>();
@@ -187,12 +187,12 @@ public final class ServiceBuildManager {
         return e;
     }
 
-    private void resolve0(ContainerBuild im, LinkedHashMap<Key<?>, ServiceBuild> resolvedServices, Collection<? extends ServiceBuild> buildEntries) {
+    private void resolve0(Collection<? extends ServiceBuild> buildEntries) {
         for (ServiceBuild entry : buildEntries) {
-            ServiceBuild existing = resolvedServices.putIfAbsent(entry.key(), entry);
+            Wrapper existing = resolvedServices.putIfAbsent(entry.key(), new Wrapper(entry));
             if (existing != null) {
                 LinkedHashSet<ServiceBuild> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
+                hs.add(existing.build); // might be added multiple times, hence we use a Set, but add existing first
                 hs.add(entry);
             }
         }
@@ -208,12 +208,12 @@ public final class ServiceBuildManager {
 
     public void resolveLocal() {
         // First process provided entries, then any entries added via provideAll
-        resolve0(container, resolvedServices, unresolvedServices);
+        resolve0(unresolvedServices);
 
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromOtherInjector fromInjector : provideAll) {
-                resolve0(container, resolvedServices, fromInjector.entries.values());
+                resolve0(fromInjector.entries.values());
             }
         }
 
@@ -226,8 +226,7 @@ public final class ServiceBuildManager {
                     // System.out.println("EXPORT " + a);
 
                     // Skal vi wrappe den????
-
-                    resolvedServices.putIfAbsent(a.key(), a);
+                    resolvedServices.put(a.key(), new Wrapper(a));
                 }
             }
         }
@@ -251,17 +250,16 @@ public final class ServiceBuildManager {
                 ServiceRequirementsManager srm = m.dependencies;
                 if (srm != null) {
                     for (Requirement r : srm.requirements.values()) {
-                        ServiceBuild sa = resolvedServices.get(r.key);
-                        if (resolvedServices.containsKey(r.key)) {
+                        Wrapper sa = resolvedServices.get(r.key);
+                        if (sa != null) {
                             for (FromInjectable i : r.list) {
-                                i.i.setDependencyProvider(i.dependencyIndex, sa);
+                                i.i.setDependencyProvider(i.dependencyIndex, sa.build);
                             }
                         }
                     }
                 }
             }
         }
-
     }
 
     private static final class ExportedServiceLocator extends AbstractServiceLocator {

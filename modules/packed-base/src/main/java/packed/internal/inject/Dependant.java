@@ -34,6 +34,7 @@ import packed.internal.component.source.SourceModelMember;
 import packed.internal.component.source.SourceModelMethod;
 import packed.internal.component.source.SourceModelMethod.RunAt;
 import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.Wrapper;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceMemberServiceBuild;
 import packed.internal.sidecar.RuntimeRegionInvoker;
@@ -228,7 +229,8 @@ public class Dependant {
                 }
                 if (sbm != null) {
                     if (e == null) {
-                        e = sbm.resolvedServices.get(sd.key());
+                        Wrapper wrapper = sbm.resolvedServices.get(sd.key());
+                        e = wrapper == null ? null : wrapper.build;
                     }
 
                     sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);
