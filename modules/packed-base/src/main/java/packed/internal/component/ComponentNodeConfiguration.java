@@ -104,7 +104,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** The configuration site of this component. */
     private final ConfigSite configSite;
 
-    boolean finalState = false;
+    boolean isClosed = false;
 
     int nameState;
 
@@ -310,7 +310,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
-        if (finalState) {
+        if (isClosed) {
             throw new IllegalStateException("This component can no longer be configured");
         }
     }
@@ -333,7 +333,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         if (container != null) {
             container.close(region);
         }
-        finalState = true;
+        isClosed = true;
     }
 
     /** {@inheritDoc} */

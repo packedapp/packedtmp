@@ -25,11 +25,11 @@ import packed.internal.classscan.OpenClass;
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
  * object, and one using whatever power a module descriptor has given us.
  */
-interface SourceModelLookup {
+abstract class SourceModelLookup {
 
-    SourceModel modelOf(Class<?> sourceType);
+    abstract SourceModel modelOf(Class<?> sourceType);
 
-    OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
+    abstract OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives);
 
-    MethodHandle toMethodHandle(Factory<?> factory);
+    abstract MethodHandle toMethodHandle(Factory<?> factory);
 }

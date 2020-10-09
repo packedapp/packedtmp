@@ -29,8 +29,9 @@ import packed.internal.util.LookupValue;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a realm, typically based on a subclass of {@link Bundle}. */
-final class RealmModel implements SourceModelLookup {
+final class RealmModel extends SourceModelLookup {
 
+    /** Calls package-private method Factory.toMethodHandle(Lookup). */
     private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
             MethodHandle.class, Lookup.class);
 
@@ -60,11 +61,11 @@ final class RealmModel implements SourceModelLookup {
     private volatile SourceModelLookup defaultLookup;
 
     /** A cache of lookup values, in 99 % of all cases this will hold no more than 1 value. */
-    private final LookupValue<PerLookup> lookups = new LookupValue<>() {
+    private final LookupValue<ExplicitLookup> lookups = new LookupValue<>() {
 
         @Override
-        protected PerLookup computeValue(Lookup lookup) {
-            return new PerLookup(RealmModel.this, lookup);
+        protected ExplicitLookup computeValue(Lookup lookup) {
+            return new ExplicitLookup(RealmModel.this, lookup);
         }
     };
 
@@ -75,10 +76,22 @@ final class RealmModel implements SourceModelLookup {
      *            the source type
      */
     private RealmModel(Class<? extends Bundle<?>> realmType) {
-        this.type = realmType;
+        this.type = requireNonNull(realmType);
     }
 
     private final Class<?> type;
+
+    private MethodHandles.Lookup cachedLookup;
+
+    private MethodHandles.Lookup lookup() {
+        // Making a lookup for the realm.
+        MethodHandles.Lookup l = cachedLookup;
+        if (l == null) {
+            l = MethodHandles.lookup();
+            l = cachedLookup = l.in(type);
+        }
+        return l;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -89,14 +102,13 @@ final class RealmModel implements SourceModelLookup {
     /** {@inheritDoc} */
     @Override
     public OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
-        return new OpenClass(MethodHandles.lookup(), clazz, registerNatives);
+        return new OpenClass(lookup(), clazz, registerNatives);
     }
 
     @Override
     public MethodHandle toMethodHandle(Factory<?> factory) {
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
         try {
-            return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup);
+            return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -132,25 +144,25 @@ final class RealmModel implements SourceModelLookup {
         return MODEL_CACHE.get(sourceType);
     }
 
-    /** A component lookup class wrapping a {@link Lookup} object. */
-    private static final class PerLookup implements SourceModelLookup {
+    /** A realm that makes use of a explicitly registered lookup object, for example, via ContainerBundle#lookup(Lookup). */
+    private static final class ExplicitLookup extends SourceModelLookup {
 
         /** A cache of component class descriptors. */
         private final ClassValue<SourceModel> components = new ClassValue<>() {
 
             @Override
             protected SourceModel computeValue(Class<?> type) {
-                return SourceModel.newInstance(parent, PerLookup.this.newClassProcessor(type, true));
+                return SourceModel.newInstance(realm, ExplicitLookup.this.newClassProcessor(type, true));
             }
         };
 
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
 
-        private final RealmModel parent;
+        private final RealmModel realm;
 
-        private PerLookup(RealmModel parent, Lookup lookup) {
-            this.parent = requireNonNull(parent);
+        private ExplicitLookup(RealmModel realm, Lookup lookup) {
+            this.realm = requireNonNull(realm);
             this.lookup = requireNonNull(lookup);
         }
 

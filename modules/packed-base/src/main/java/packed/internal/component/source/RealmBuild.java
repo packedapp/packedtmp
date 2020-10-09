@@ -36,11 +36,9 @@ public final class RealmBuild {
     public ComponentNodeConfiguration compConf;
 
     /** The current component lookup object, updated via {@link #lookup(Lookup)} */
-    // useFor future components...
-    // We need to support some way to
     private SourceModelLookup lookup;
 
-    /** A container model. */
+    /** The model of this realm. */
     private final RealmModel model;
 
     public final PackedBuildContext pac;
