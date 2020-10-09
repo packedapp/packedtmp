@@ -21,14 +21,11 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.component.PackedBuildContext;
 
 /**
  *
  */
 public final class RealmBuild {
-
-    public final PackedBuildContext buildContext;
 
     /** The current lookup object, updated via {@link #lookup(Lookup)} */
     RealmLookup lookup;
@@ -36,12 +33,11 @@ public final class RealmBuild {
     /** The model of this realm. */
     private final RealmModel model;
 
-    @Nullable
-    public ComponentNodeConfiguration rootComponent;
+    public final ComponentNodeConfiguration rootComponent;
 
-    public RealmBuild(PackedBuildContext buildContext, Class<?> type) {
-        this.buildContext = requireNonNull(buildContext);
+    public RealmBuild(Class<?> type, ComponentNodeConfiguration rootComponent) {
         this.lookup = this.model = RealmModel.of(type);
+        this.rootComponent = requireNonNull(rootComponent);
     }
 
     public void close() {

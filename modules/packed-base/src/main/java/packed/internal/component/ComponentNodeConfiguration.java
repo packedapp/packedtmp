@@ -116,6 +116,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
+    final PackedBuildContext build;
+
     /**
      * Creates a new instance of this class
      * 
@@ -124,20 +126,21 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param parent
      *            the parent of the component
      */
-    ComponentNodeConfiguration(RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentNodeConfiguration parent,
-            @Nullable WireletPack wirelets) {
+    ComponentNodeConfiguration(PackedBuildContext build, Class<?> newRealm, PackedComponentDriver<?> driver, ConfigSite configSite,
+            @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
         this.extension = null; // Extensions use another constructor
 
+        this.build = requireNonNull(build);
         this.wirelets = wirelets;
         int mod = driver.modifiers;
         if (parent == null) {
             this.region = new RegionBuild(); // Root always needs a nodestore
 
-            mod = mod | realm.buildContext.modifiers;
+            mod = mod | build.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
-            if (realm.buildContext.modifiers().isGuest()) {
+            if (build.modifiers().isGuest()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
             }
@@ -147,10 +150,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         this.modifiers = mod;
 
         // Setup Realm
-        this.realm = requireNonNull(realm);
-        if (realm.rootComponent == null) {
-            realm.rootComponent = this;
-        }
+        this.realm = newRealm == null ? parent.realm : new RealmBuild(newRealm, this);
 
         // Setup Container
         if (modifiers().isContainer()) {
@@ -186,13 +186,13 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      */
     public ComponentNodeConfiguration(ComponentNodeConfiguration parent, ExtensionModel model) {
         super(parent);
+        this.build = parent.build;
         this.configSite = parent.configSite();
         this.container = null;
         this.memberOfContainer = parent.container;
         this.extension = new ExtensionBuild(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = new RealmBuild(parent.assembly(), model.type());
-        realm.rootComponent = this;
+        this.realm = new RealmBuild(model.type(), this);
         this.region = parent.region;
         this.source = null;
         this.wirelets = null;
@@ -305,7 +305,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     /** {@inheritDoc} */
     @Override
     public PackedBuildContext assembly() {
-        return realm.buildContext;
+        return build;
     }
 
     /** {@inheritDoc} */
@@ -380,20 +380,19 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         ConfigSite cs = ConfigSite.UNKNOWN;
 
         // Create a new realm, since the bundle is 'foreign' code
-        RealmBuild r = new RealmBuild(assembly(), bundle.getClass());
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
 
         // Create the new component
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(r, driver, cs, parent, wp);
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(build, bundle.getClass(), driver, cs, parent, wp);
 
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
 
-        // Close the realm, no further configuration of it is possible after Bundle::configure has been invoked
-        r.close();
+        // Close the the linked realm, no further configuration of it is possible after Bundle::configure has been invoked
+        compConf.realm.close();
     }
 
     /** {@inheritDoc} */
@@ -558,7 +557,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentNodeConfiguration parent = extension == null ? this : treeParent;
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(realm, d, configSite, parent, wp);
+        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(build, null, d, configSite, parent, wp);
         return d.toConfiguration(compConf);
     }
 
