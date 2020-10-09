@@ -230,7 +230,7 @@ public class Dependant {
                 if (sbm != null) {
                     if (e == null) {
                         Wrapper wrapper = sbm.resolvedServices.get(sd.key());
-                        e = wrapper == null ? null : wrapper.build;
+                        e = wrapper == null ? null : wrapper.getSingle();
                     }
 
                     sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);

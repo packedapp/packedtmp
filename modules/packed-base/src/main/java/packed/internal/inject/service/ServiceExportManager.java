@@ -177,19 +177,16 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
                 ServiceBuild entryToExport = entry.exportedEntry;
-                boolean export = true;
                 if (entryToExport == null) {
                     Wrapper wrapper = sm.resolvedServices.get(entry.exportAsKey);
-                    entryToExport = wrapper == null ? null : wrapper.build;
+                    entryToExport = wrapper == null ? null : wrapper.getSingle();
                     if (entryToExport == null) {
                         sm.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
-                        export = false;
-                    } else {
-                        entry.exportedEntry = entryToExport;
                     }
+                    entry.exportedEntry = entryToExport;
                 }
 
-                if (export) {
+                if (entry.exportedEntry != null) {
                     ExportedServiceBuild existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
                         LinkedHashSet<ExportedServiceBuild> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
@@ -210,7 +207,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
 
         if (exportAll != null) {
             for (Wrapper w : sm.resolvedServices.values()) {
-                ServiceBuild e = w.build;
+                ServiceBuild e = w.getSingle();
                 if (!resolvedExports.containsKey(e.key())) {
                     resolvedExports.put(e.key(), new ExportedServiceBuild(sm, e, exportAll));
                 }

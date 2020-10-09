@@ -192,7 +192,7 @@ public final class ServiceBuildManager {
             Wrapper existing = resolvedServices.putIfAbsent(entry.key(), new Wrapper(entry));
             if (existing != null) {
                 LinkedHashSet<ServiceBuild> hs = errorManager().failingDuplicateProviders.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
-                hs.add(existing.build); // might be added multiple times, hence we use a Set, but add existing first
+                hs.add(existing.getSingle()); // might be added multiple times, hence we use a Set, but add existing first
                 hs.add(entry);
             }
         }
@@ -253,7 +253,7 @@ public final class ServiceBuildManager {
                         Wrapper sa = resolvedServices.get(r.key);
                         if (sa != null) {
                             for (FromInjectable i : r.list) {
-                                i.i.setDependencyProvider(i.dependencyIndex, sa.build);
+                                i.i.setDependencyProvider(i.dependencyIndex, sa.getSingle());
                             }
                         }
                     }
