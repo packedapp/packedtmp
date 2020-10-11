@@ -61,12 +61,6 @@ public @interface ConnectExtension {
 
 class Sidecar extends MethodSidecar {
 
-    @Override
-    protected void bootstrap(BootstrapContext context) {
-        // getExtensiontype
-        // // ConnectExtension can only be used on classes that have ExtensionMember
-    }
-
     @Provide
     ComponentRelation cr() {
         throw new UnsupportedOperationException();

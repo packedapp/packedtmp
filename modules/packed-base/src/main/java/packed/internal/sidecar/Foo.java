@@ -76,15 +76,11 @@ class TestIt extends MethodSidecar {
     @Override
     protected void configure() {
         provideInvoker();
-        System.out.println("CONF");
-    }
-
-    @Override
-    protected void bootstrap(BootstrapContext context) {
-        if (context.method().isDefault()) {
-            context.disable();
+        if (method().isDefault()) {
+            disable();
         }
-        context.attach(context.method().getName());
+        attach(method().getName());
+        System.out.println("CONF");
     }
 
     @OnInitialize

@@ -41,6 +41,8 @@ public abstract class SidecarModel<T> {
 
     private final Object instance;
 
+    public final MethodHandle constructor;
+
     /**
      * Creates a new model.
      * 
@@ -48,7 +50,8 @@ public abstract class SidecarModel<T> {
      *            the builder.
      */
     protected SidecarModel(Builder<T> builder) {
-        this.instance = requireNonNull(builder.instance);
+        this.instance = builder.instance;
+        this.constructor = requireNonNull(builder.constructor);
     }
 
     public Object instance() {
@@ -69,12 +72,14 @@ public abstract class SidecarModel<T> {
         /** A var handle for setting the configuration's object */
         private final VarHandle vhConfiguration;
 
+        private MethodHandle constructor;
+
         // If we get a shared Sidecar we can have a single MethodHandle configure
         Builder(VarHandle vh, MethodHandle configure, Class<?> implementation) {
             this.vhConfiguration = requireNonNull(vh);
             this.mhConfigure = requireNonNull(configure);
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
-
+            constructor = ib.build();
             // validate extension
         }
 
@@ -90,7 +95,6 @@ public abstract class SidecarModel<T> {
             // concurrent usage of this bundle.
             // Don't think it makes sense to register
 
-            MethodHandle constructor = ib.build();
             try {
                 instance = constructor.invoke();
             } catch (Throwable e) {

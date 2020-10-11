@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -104,12 +103,9 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
                 Provide ap = m.getAnnotation(Provide.class);
                 if (ap != null) {
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    if (!Modifier.isStatic(m.getModifiers())) {
-                        mh = mh.bindTo(instance);
-                    }
                     SidecarContextDependencyProvider.Builder b = new SidecarContextDependencyProvider.Builder(m, mh);
                     if (providing.putIfAbsent(b.key, b) != null) {
-                        throw new InternalExtensionException("Multiple methods on " + instance.getClass() + " that provide " + b.key);
+                        throw new InternalExtensionException("Multiple methods on " + oc.type() + " that provide " + b.key);
                     }
                 }
 
@@ -119,9 +115,6 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
                         throw new IllegalStateException(oc.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                     }
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    if (!Modifier.isStatic(m.getModifiers())) {
-                        mh = mh.bindTo(instance);
-                    }
 
                     onInitialize = mh;
                 }

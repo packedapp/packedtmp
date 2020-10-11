@@ -28,7 +28,8 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import packed.internal.sidecar.MethodSidecarModel;
+import app.packed.sidecar.FieldSidecar.BootstrapContext;
+import packed.internal.component.source.SourceModelMethod;
 import packed.internal.sidecar.SidecarModel;
 
 /**
@@ -38,7 +39,7 @@ public abstract class MethodSidecar {
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private MethodSidecarModel.Builder configuration;
+    private SourceModelMethod.Builder configuration;
 
     protected void bootstrap(BootstrapContext context) {}
 
@@ -47,8 +48,8 @@ public abstract class MethodSidecar {
      * 
      * @return this sidecar's builder object
      */
-    private MethodSidecarModel.Builder configuration() {
-        MethodSidecarModel.Builder c = configuration;
+    private SourceModelMethod.Builder configuration() {
+        SourceModelMethod.Builder c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -70,105 +71,110 @@ public abstract class MethodSidecar {
      *             if called from outside of {@link #configure()}
      */
     protected final void provideInvoker() {
-        configuration().provideInvoker();
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * A context object that is provided to {@link MethodSidecar#bootstrap(BootstrapContext)} when the method is
-     * bootstrapped.
+     * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
+     * 
+     * @return any extension the source is a member of of
      */
-    public interface BootstrapContext {
+    public final Optional<Class<? extends Extension>> extensionMember() {
+        return configuration().extensionMember();
+    }
 
-        /**
-         * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
-         * 
-         * @return any extension the source is a member of of
-         */
-        Optional<Class<? extends Extension>> extensionMember();
+    protected final <T> void attach(Class<T> key, T instance) {
+        attach(Key.of(key), instance);
+    }
 
-        default <T> void attach(Class<T> key, T instance) {
-            attach(Key.of(key), instance);
-        }
+    public final <T> void attach(Key<T> key, T instance) {}
 
-        default <T> void attach(Key<T> key, T instance) {}
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public final void attach(Object instance) {
+        requireNonNull(instance, "instance is null");
+        attach((Class) instance.getClass(), instance);
+    }
 
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        default void attach(Object instance) {
-            requireNonNull(instance, "instance is null");
-            attach((Class) instance.getClass(), instance);
-        }
+    /** Disables the sidecar. No reference to it will be maintained at runtime. */
+    public final void disable() {
+        configuration.disable();
+    }
 
-        /** Disables the sidecar. No reference to it will be maintained at runtime. */
-        void disable();
+    /**
+     * Returns an annotated element from the method that is being bootstrapped.
+     * 
+     * @see AnnotatedElement#getAnnotation(Class)
+     */
+    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return configuration.getAnnotation(annotationClass);
+    }
 
-        /**
-         * Returns an annotated element from the method that is being bootstrapped.
-         * 
-         * @see AnnotatedElement#getAnnotation(Class)
-         */
-        <T extends Annotation> T getAnnotation(Class<T> annotationClass);
+    /**
+     * Returns the method that is being bootstrapped.
+     * 
+     * @return the method that is being bootstrapped
+     */
+    public final Method method() {
+        return configuration.method();
+    }
 
-        /**
-         * Returns the method that is being bootstrapped.
-         * 
-         * @return the method that is being bootstrapped
-         */
-        Method method();
+    /**
+     * Register the result of invoking the method as a service.
+     * <p>
+     * Methods that Cannot create invokers.
+     * 
+     * @param isConstant
+     *            whether or not the service is constant. Constants are always eagerly computed at initialization time
+     * @see #registerAsService(boolean, Class)
+     * @see #registerAsService(boolean, Key)
+     * @throws IllegalStateException
+     *             if any invokers have already been registered for the sidecar.
+     */
+    // Multiple invocations???? Failure, multi services???
+    // Multi services... I think you need to register multiple sidecars
+    public final void registerAsService(boolean isConstant) {
+        configuration().registerAsService(isConstant);
+    }
 
-        /**
-         * Register the result of invoking the method as a service.
-         * <p>
-         * Methods that Cannot create invokers.
-         * 
-         * @param isConstant
-         *            whether or not the service is constant. Constants are always eagerly computed at initialization time
-         * @see #registerAsService(boolean, Class)
-         * @see #registerAsService(boolean, Key)
-         * @throws IllegalStateException
-         *             if any invokers have already been registered for the sidecar.
-         */
-        // Multiple invocations???? Failure, multi services???
-        // Multi services... I think you need to register multiple sidecars
-        void registerAsService(boolean isConstant);
+    public final void registerAsService(boolean isConstant, Class<?> key) {
+        registerAsService(isConstant, Key.of(key));
+    }
 
-        default void registerAsService(boolean isConstant, Class<?> key) {
-            registerAsService(isConstant, Key.of(key));
-        }
+    public final void registerAsService(boolean isConstant, Key<?> key) {
+        configuration().registerAsService(isConstant, key);
+    }
 
-        void registerAsService(boolean isConstant, Key<?> key);
+    public final MethodType type() {
+        // Taenker den er opdateret
+        return null;
+    }
 
-        default MethodType type() {
-            // Taenker den er opdateret
-            return null;
-        }
+    // MethodHandle must take
+    public final void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
+        // Kunne maaske godt taenke mig noget tekst???
+        // Skal vi have en klasse??
+        // Naar vi skal have et visuelt overblik engang?
+        // Maaske er det nok at kunne se sidecaren...
 
-        // MethodHandle must take
-        default void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
-            // Kunne maaske godt taenke mig noget tekst???
-            // Skal vi have en klasse??
-            // Naar vi skal have et visuelt overblik engang?
-            // Maaske er det nok at kunne se sidecaren...
+        // Vi kan jo sende aben videre til andre sidecars. Saa tror ogsaa
+        // vi skal kunne transformere variablen...
 
-            // Vi kan jo sende aben videre til andre sidecars. Saa tror ogsaa
-            // vi skal kunne transformere variablen...
+        // VarTransformer // add annotations, set type literal, remove annotations
 
-            // VarTransformer // add annotations, set type literal, remove annotations
+        // Altsaa det er jo fuldstaendig som method handle... Vi har behov for de samme ting...
+        // insert, drop, ...
+        // Ved ikke om vi supporter multiple variable transformers...
 
-            // Altsaa det er jo fuldstaendig som method handle... Vi har behov for de samme ting...
-            // insert, drop, ...
-            // Ved ikke om vi supporter multiple variable transformers...
+        // Must take existing class value as single parameter
+        // and injections as subsequent values
+        // Har vi behov for at kunne aendre noget ved typen
+    }
 
-            // Must take existing class value as single parameter
-            // and injections as subsequent values
-            // Har vi behov for at kunne aendre noget ved typen
-        }
+    public final void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
+        // Must take class value
+    }
 
-        default void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
-            // Must take class value
-        }
+    public final void forEachUnbound(Consumer<? super VariableBinder> action) {
 
-        default void forEachUnbound(Consumer<? super VariableBinder> action) {
-
-        }
     }
 }

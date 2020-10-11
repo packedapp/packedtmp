@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +31,7 @@ import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.OpenClass;
+import packed.internal.component.source.SourceModelMethod;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.LookupUtil;
 
@@ -54,7 +54,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
 
     /** A VarHandle that can access MethodSidecar#configuration. */
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
-            "configuration", MethodSidecarModel.Builder.class);
+            "configuration", SourceModelMethod.Builder.class);
 
     public final Map<Key<?>, SidecarContextDependencyProvider> keys;
 
@@ -96,18 +96,14 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         /** {@inheritDoc} */
         @Override
         protected MethodSidecarModel build() {
-            super.configure();
             OpenClass oc = ib.oc();
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
                 if (ap != null) {
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    if (!Modifier.isStatic(m.getModifiers())) {
-                        mh = mh.bindTo(instance);
-                    }
                     SidecarContextDependencyProvider.Builder b = new SidecarContextDependencyProvider.Builder(m, mh);
                     if (providing.putIfAbsent(b.key, b) != null) {
-                        throw new InternalExtensionException("Multiple methods on " + instance.getClass() + " that provide " + b.key);
+                        throw new InternalExtensionException("Multiple methods on " + oc.type() + " that provide " + b.key);
                     }
                 }
 
@@ -117,10 +113,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
                         throw new IllegalStateException(oc.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                     }
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    if (!Modifier.isStatic(m.getModifiers())) {
-                        mh = mh.bindTo(instance);
-                    }
-
                     onInitialize = mh;
                 }
             });

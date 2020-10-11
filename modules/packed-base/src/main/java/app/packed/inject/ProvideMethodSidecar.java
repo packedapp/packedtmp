@@ -22,8 +22,7 @@ final class ProvideMethodSidecar extends MethodSidecar {
 
     /** {@inheritDoc} */
     @Override
-    protected void bootstrap(BootstrapContext context) {
-        Provide p = context.getAnnotation(Provide.class);
-        context.registerAsService(p.constant());
+    protected void configure() {
+        registerAsService(getAnnotation(Provide.class).constant());
     }
 }

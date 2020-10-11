@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -49,8 +50,12 @@ import packed.internal.util.ThrowableUtil;
 public class SourceModelMethod extends SourceModelMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "bootstrap",
-            void.class, MethodSidecar.BootstrapContext.class);
+    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
+            void.class);
+
+    /** A VarHandle that can access MethodSidecar#configuration. */
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
+            "configuration", SourceModelMethod.Builder.class);
 
     /** A direct method handle to the method. */
     public final MethodHandle directMethodHandle;
@@ -105,11 +110,12 @@ public class SourceModelMethod extends SourceModelMember {
                     shared = new Shared(source, method);
                 }
                 Builder builder = new Builder(model, shared);
-                try {
-                    MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                }
+                builder.configure();
+//                try {
+//                    MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
+//                } catch (Throwable e) {
+//                    throw ThrowableUtil.orUndeclared(e);
+//                }
                 if (!builder.disable) {
                     SourceModelMethod smm = new SourceModelMethod(builder);
                     shared.source.methods.add(smm);
@@ -119,7 +125,7 @@ public class SourceModelMethod extends SourceModelMember {
     }
 
     /** A builder. */
-    public static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
+    public static final class Builder extends SourceModelMember.Builder {
 
         /** The method, if exposed to end-users. */
         @Nullable
@@ -139,8 +145,27 @@ public class SourceModelMethod extends SourceModelMember {
             this.unsafeMethod = shared.methodUnsafe;
         }
 
-        /** {@inheritDoc} */
-        @Override
+        private void configure() {
+            // We perform a compare and exchange with configuration. Guarding against
+            // concurrent usage of this bundle.
+            // Don't think it makes sense to register
+            Object instance;
+            try {
+                instance = model.constructor.invoke();
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+
+            VH_METHOD_SIDECAR_CONFIGURATION.set(instance, this);
+            try {
+                MH_METHOD_SIDECAR_CONFIGURE.invoke(instance); // Invokes sidecar#configure()
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            } finally {
+                VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
+            }
+        }
+
         public Method method() {
             Method m = exposedMethod;
             if (m == null) {
@@ -159,29 +184,21 @@ public class SourceModelMethod extends SourceModelMember {
             return m;
         }
 
-        /** {@inheritDoc} */
-        @Override
         public void registerAsService(boolean isConstant) {
             provideAsConstant = isConstant;
             provideAsKey = Key.fromMethodReturnType(unsafeMethod);
         }
 
-        /** {@inheritDoc} */
-        @Override
         public void registerAsService(boolean isConstant, Key<?> key) {
             provideAsConstant = isConstant;
             // Check assignable.
             provideAsKey = key;
         }
 
-        /** {@inheritDoc} */
-        @Override
         public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
             return unsafeMethod.getAnnotation(annotationClass);
         }
 
-        /** {@inheritDoc} */
-        @Override
         public Optional<Class<? extends Extension>> extensionMember() {
             return Optional.ofNullable(shared.source.extensionType);
         }
