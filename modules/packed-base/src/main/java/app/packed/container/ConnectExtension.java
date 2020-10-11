@@ -20,8 +20,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.component.ComponentRelation;
+import app.packed.inject.Provide;
+import app.packed.sidecar.ActivateMethodSidecar;
+import app.packed.sidecar.MethodSidecar;
+
 /**
- * A class cannot define more than one method annotated with {@link ComponentLinked}.
+ * A class cannot define more than one method annotated with {@link ConnectExtension}.
+ * 
+ * And allows extensions to connect across container boundaries both at build-time and at runtime.
+ * 
  * <p>
  * This annotation can be used on subclasses of {@link Extension} or any singleton services that is annotated with
  * {@link ExtensionMember}. In which case the extension can be injected
@@ -29,8 +37,12 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 
-// Problemet er lidt sidecars....
-public @interface ComponentLinked {
+// Problemet er lidt sidecars.... Hvorfor???
+
+// Giver det mening at have en for components???? Maaske bare en alm listener???
+// 
+@ActivateMethodSidecar(allowInvoke = true, sidecar = MethodSidecar.class)
+public @interface ConnectExtension {
 
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its
@@ -45,6 +57,20 @@ public @interface ComponentLinked {
     boolean onlyDirectLink() default false;// onlyDirectLink
 
     // boolean crossArtifacts default ???
+}
+
+class Sidecar extends MethodSidecar {
+
+    @Override
+    protected void bootstrap(BootstrapContext context) {
+        // getExtensiontype
+        // // ConnectExtension can only be used on classes that have ExtensionMember
+    }
+
+    @Provide
+    ComponentRelation cr() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 // Altsaa det fx. hvis vi ikke har naaet at starte... 

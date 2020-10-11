@@ -18,14 +18,13 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.component.Wirelet;
-import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
+import packed.internal.inject.service.WireletFromContext;
+import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
@@ -52,42 +51,26 @@ public final class ServiceWirelets {
     /** No instantiation. */
     private ServiceWirelets() {}
 
-    public static Wirelet restrict(ServiceContract contract) {
+    public static Wirelet from(Consumer<? super ServiceTransformer> action) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Wirelet addQualifierFrom(Class<? extends Annotation> qualifier, Object value) {
+    public static <T> Wirelet fromAddQualifier(Class<? extends Annotation> qualifier, Object value) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Wirelet map(Class<T> from, Class<? super T> to) {
-        return map(Key.of(from), Key.of(to));
+    public static <T> Wirelet fromMap(Class<T> from, Class<? super T> to) {
+        // Skal vi checke????
+        return fromMap(Key.of(from), Key.of(to));
     }
 
-    public static <T> Wirelet map(Key<T> from, Key<? super T> to) {
+    public static <T> Wirelet fromMap(Key<T> from, Key<? super T> to) {
         // Changes the key of an entry (String -> @Left String
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Wirelet mapAll(Function<Service, ? super Key<?>> mapper) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> Wirelet mapAllFrom(Function<Service, ? super Key<?>> mapper) {
-        mapAll(s -> s.key().withName("foo"));
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> Wirelet mapFrom(Class<T> from, Class<? super T> to) {
-        return mapFrom(Key.of(from), Key.of(to));
-    }
-
-    public static <T> Wirelet mapFrom(Key<T> from, Key<? super T> to) {
-        // Changes the key of an entry (String -> @Left String
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet peek(Consumer<? super ServiceRegistry> action) {
+    public static <T> Wirelet fromMapAll(Function<Service, ? super Key<?>> mapper) {
+        fromMapAll(s -> s.key().withName("foo"));
         throw new UnsupportedOperationException();
     }
 
@@ -105,53 +88,26 @@ public final class ServiceWirelets {
      * This method is typically TODO before after import events
      * 
      * @param action
-     *            the action to perform for each service descriptor
+     *            the action to perform
      * @return a peeking wirelet
      */
-    public static Wirelet peekFrom(Consumer<? super ServiceRegistry> action) {
+    public static Wirelet fromPeek(Consumer<? super ServiceRegistry> action) {
+        requireNonNull(action, "action is null");
+        return new ServiceWireletFrom() {
+            /** {@inheritDoc} */
+            @Override
+            protected void process(WireletFromContext context) {
+                context.peek(this, action);
+            }
+        };
+    }
+
+    public static Wirelet restrict(ServiceContract contract) {
         throw new UnsupportedOperationException();
-    }
-
-    public static <T> Wirelet provide(Class<T> key, T instance) {
-        return provide(Key.of(key), instance);
-    }
-
-    public static <T> Wirelet provide(Key<T> key, T instance) {
-        return new PackedDownstreamServiceWirelet.ProvideInstance(key, instance);
-    }
-
-    /**
-     * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
-     * service of the specific type as a requirement.
-     * <p>
-     * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
-     * 
-     * @param instance
-     *            the service to provide
-     * @return a wirelet that will provide the specified service
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static Wirelet provide(Object instance) {
-        requireNonNull(instance, "instance is null");
-        return provide((Class) instance.getClass(), instance);
     }
 }
 
 class ServiceWireletsSandbox {
-
-    public static Wirelet disable() {
-        // ServiceContract.EMPTY
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet disableImports() {
-        // Hmm hvorfor
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet disableExports() {
-        throw new UnsupportedOperationException();
-    }
 
     // Ideen er at vi kan aendre om ting er constants...
     // F.eks. hvis vi gerne vil cache noget??
@@ -165,6 +121,20 @@ class ServiceWireletsSandbox {
         throw new UnsupportedOperationException();
     }
 
+    public static Wirelet disable() {
+        // ServiceContract.EMPTY
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet disableExports() {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet disableImports() {
+        // Hmm hvorfor
+        throw new UnsupportedOperationException();
+    }
+
     public static Wirelet unconstanfy(Key<?> key) {
         throw new UnsupportedOperationException();
     }
@@ -172,56 +142,4 @@ class ServiceWireletsSandbox {
     public static Wirelet unconstanfyTo(Key<?> key) {
         throw new UnsupportedOperationException();
     }
-}
-
-class ZBadIdeas {
-
-    // Taenker det bliver lidt noget rod... fordi ServiceLocator er auto aktiverende...
-    // Men maa lave en selection hvis man har behov for det...
-    public static Wirelet exposeServiceLocator() {
-        return exposeServiceLocator(Key.of(ServiceLocator.class));
-    }
-
-    public static Wirelet exposeServiceLocator(Key<? extends ServiceLocator> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Service transformere er saa meget lettere....
-    // at bruge...
-    // Det store problem er incoming hvor hvis vi laver bulk operations.
-    // Saa bliver vi noedt til at tracke alle
-    public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
-        // Must only provide ServiceWirelets...
-        compute(e -> {
-            if (e.isPresent(String.class)) {
-                return Optional.of(ServiceWirelets.map(String.class, CharSequence.class));
-            }
-            return Optional.empty();
-        });
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet compute(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
-        // Must only provide ServiceWirelets...
-        compute(f -> f.isPresent(String.class), e -> ServiceWirelets.map(String.class, CharSequence.class));
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet computeFrom(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
-        // Must only provide ServiceWirelets...
-        compute(e -> {
-            if (e.isPresent(String.class)) {
-                return Optional.of(ServiceWirelets.map(String.class, CharSequence.class));
-            }
-            return Optional.empty();
-        });
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet computeFrom(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
-        // Must only provide ServiceWirelets...
-        compute(f -> f.isPresent(String.class), e -> ServiceWirelets.map(String.class, CharSequence.class));
-        throw new UnsupportedOperationException();
-    }
-
 }

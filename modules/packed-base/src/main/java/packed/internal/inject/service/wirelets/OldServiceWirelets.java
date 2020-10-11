@@ -18,7 +18,6 @@ package packed.internal.inject.service.wirelets;
 import java.time.ZoneId;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,7 +26,6 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
-import app.packed.inject.Service;
 import app.packed.service.Injector;
 
 //Syntes det giver mening kun at prefixe have upstream....
@@ -88,35 +86,6 @@ public final class OldServiceWirelets {
 //    public static Wirelet mapUpstream(Mapper<?, ?> mapper) {
 //        throw new UnsupportedOperationException();
 //    }
-
-    /**
-     * This method exists mainly to support debugging, where you want to see which services are available at a particular
-     * place in a the pipeline: <pre>
-     * {@code 
-     * Injector injector = some injector to import;
-     *
-     * Injector.of(c -> {
-     *   c.importAll(injector, DownstreamServiceWirelets.peek(e -> System.out.println("Importing service " + e.getKey())));
-     * });}
-     * </pre>
-     * <p>
-     * This method is typically TODO before after import events
-     * 
-     * @param action
-     *            the action to perform for each service descriptor
-     * @return a peeking wirelet
-     */
-    // I think it should be a set or some kind instead of a consumer
-
-    // An immutable thingy of some kind...
-    // Taenker vi godt vil foresporge om nogle ting
-    public static Wirelet peekFrom(Consumer<? super Service> action) {
-        return new PackedUpstreamInjectionWirelet.PeekFrom(action);
-    }
-
-    public static Wirelet peekTo(Consumer<? super Service> action) {
-        return new PackedDownstreamServiceWirelet.PeekDownstreamWirelet(action);
-    }
 
     // public static <T> Wirelet provideMapped(Factory<T> Key<T> type, T service) {
     // throw new UnsupportedOperationException();

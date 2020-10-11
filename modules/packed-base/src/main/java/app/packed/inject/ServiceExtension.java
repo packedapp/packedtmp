@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
@@ -322,6 +323,11 @@ public final class ServiceExtension extends Extension {
     // Do we need a separate one for exports?
     // And what about requirements?
     public ServiceRegistry services() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Den eneste ting er at vi ikke kan tilfoeje flere exports...
+    public ServiceRegistry transformExports(Consumer<? super ServiceTransformer> transformation) {
         throw new UnsupportedOperationException();
     }
 

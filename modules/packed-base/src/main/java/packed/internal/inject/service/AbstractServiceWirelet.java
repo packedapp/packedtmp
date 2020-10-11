@@ -15,33 +15,23 @@
  */
 package packed.internal.inject.service;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.ExtensionMember;
 import app.packed.inject.ServiceExtension;
-import packed.internal.inject.service.build.ServiceBuild;
 
 /**
  *
  */
+
+// Grunden til jeg gerne vil lave en enkelt er at der er nogle wirelets
+// Der kun er to, nogle der er from og nogle der er begge dele...
+// F.eks. contracts...
+
 @ExtensionMember(ServiceExtension.class)
-public abstract class ServiceWireletFrom extends Wirelet {
+public abstract class AbstractServiceWirelet extends Wirelet {
 
-    public abstract void process(Context context);
+    protected void processTo(ServiceBuildManager m) {}
 
-    static class Context {
+    protected void processFrom(ServiceBuildManager m) {}
 
-        Map<Key<?>, ServiceBuild> services = new HashMap<>();
-
-        @Nullable
-        final ServiceExportManager m;
-
-        Context(@Nullable ServiceExportManager m) {
-            this.m = m;
-        }
-    }
 }

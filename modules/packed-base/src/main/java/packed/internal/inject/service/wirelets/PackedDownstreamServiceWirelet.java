@@ -21,15 +21,12 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.LinkedHashMap;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.container.ExtensionMember;
-import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.util.LookupUtil;
@@ -71,40 +68,6 @@ public abstract class PackedDownstreamServiceWirelet extends OldServiceWirelet {
         @Override
         public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService> newServices) {
             newServices.keySet().removeAll(set);
-        }
-    }
-
-    /** A wirelet for {@link OldServiceWirelets#peekFrom(Consumer)}. */
-    @ExtensionMember(ServiceExtension.class)
-    public static class PeekDownstreamWirelet extends PackedDownstreamServiceWirelet {
-
-        /** The peek action to execute. */
-        private final Consumer<? super Service> action;
-
-        /**
-         * Creates a new downstream peek wirelet.
-         * 
-         * @param action
-         *            the peek action to execute
-         */
-        public PeekDownstreamWirelet(Consumer<? super Service> action) {
-            this.action = requireNonNull(action, "action is null");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void process(ServiceExtension extension) {
-            for (ExportedServiceBuild e : fromExtension(extension).exports()) {
-                action.accept(e.toService());
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void process(ConfigSite cs, LinkedHashMap<Key<?>, RuntimeService> newServices) {
-            for (var s : newServices.values()) {
-                action.accept(s);
-            }
         }
     }
 

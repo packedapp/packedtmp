@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -40,6 +41,7 @@ import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
+import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceInstanceServiceBuild;
@@ -235,9 +237,13 @@ public final class ServiceBuildManager {
                 WireletPack wp = c.compConf.wirelets;
                 List<ServiceWireletFrom> wirelets = wp == null ? null : wp.receiveAll(ServiceWireletFrom.class);
                 if (wirelets != null) {
-                    ServiceWireletFrom.Context context = new ServiceWireletFrom.Context(exporter);
+                    WireletFromContext context = new WireletFromContext(wirelets, child.exporter);
                     for (ServiceWireletFrom f : wirelets) {
                         f.process(context);
+                    }
+
+                    for (Entry<Key<?>, ServiceBuild> a : context.services.entrySet()) {
+                        resolvedServices.computeIfAbsent(a.getKey(), k -> new Wrapper()).resolve(a.getValue());
                     }
 
                 } else if (child.exporter != null) {

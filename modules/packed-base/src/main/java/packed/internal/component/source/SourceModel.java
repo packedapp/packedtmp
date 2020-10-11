@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
+import app.packed.container.Extension;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.container.ExtensionModel;
 import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
@@ -118,6 +120,8 @@ public final class SourceModel {
 
         final Map<Key<?>, SidecarContextDependencyProvider> sourceContexts = new HashMap<>();
 
+        final Class<? extends Extension> extensionType;
+
         /**
          * Creates a new component model builder
          * 
@@ -128,6 +132,7 @@ public final class SourceModel {
         private Builder(RealmModel realm, OpenClass cp) {
             this.realm = requireNonNull(realm);
             this.cp = requireNonNull(cp);
+            this.extensionType = ExtensionModel.getAnyExtensionMember(cp.type());
         }
 
         /**

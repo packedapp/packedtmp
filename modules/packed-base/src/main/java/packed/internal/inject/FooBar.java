@@ -15,8 +15,11 @@
  */
 package packed.internal.inject;
 
+import app.packed.base.Key;
+import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
@@ -29,7 +32,7 @@ public class FooBar extends BaseBundle {
         install(NeedsString.class);
         provideInstance(123L);
 
-        link(new Child());
+        link(new Child(), ServiceWirelets.fromPeek(e -> System.out.println("Exporting " + e.keys())));
     }
 
     public static class NeedsString {
@@ -48,6 +51,8 @@ public class FooBar extends BaseBundle {
         @Override
         protected void configure() {
             provide(ChildServ.class).export();
+            installInstance("asdasd").exportAs(new Key<@Named("Fooo") String>() {});
+            installInstance("asdasd").exportAs(new Key<@Named("dFooo") String>() {});
         }
     }
 

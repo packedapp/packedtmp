@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.service;
 
-import app.packed.sidecar.FieldSidecar;
+import app.packed.base.Key;
 
-/** A field sidecar for {@link Provide}. */
-final class ProvideFieldSidecar extends FieldSidecar {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void bootstrap(BootstrapContext context) {
-        Provide p = context.getAnnotation(Provide.class);
-        context.provideAsService(p.constant());
-    }
+/**
+ *
+ */
+// Ideen er man laver en per key
+// IDK hvorfor ikke bare mappe en eksisterende noegle til sig selv...
+interface ServiceDecorator<T> {
+    Key<T> key();
 }

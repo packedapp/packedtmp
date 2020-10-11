@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import app.packed.component.App;
 import app.packed.component.Image;
 import app.packed.container.BaseBundle;
-import app.packed.container.ComponentLinked;
+import app.packed.container.ConnectExtension;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionSetup;
 
@@ -85,7 +85,7 @@ public class Z4 extends BaseBundle {
 
         final int ai = i.getAndIncrement();
 
-        @ComponentLinked
+        @ConnectExtension
         public void linked(E child) {
             // System.out.println("Linked child " + child);
         }

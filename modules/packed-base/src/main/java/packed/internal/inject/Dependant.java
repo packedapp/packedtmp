@@ -139,6 +139,7 @@ public class Dependant {
             // We create a new method that a
             for (int i = 0; i < providers.length; i++) {
                 DependencyProvider dp = providers[i];
+                requireNonNull(dp);
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X

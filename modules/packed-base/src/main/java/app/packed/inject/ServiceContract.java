@@ -70,7 +70,7 @@ import packed.internal.inject.service.ServiceBuildManager;
 
 // This class is typically used at container level.
 
-// provides -> exports???
+// provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
 @ExtensionMember(ServiceExtension.class)
 public final class ServiceContract {
 

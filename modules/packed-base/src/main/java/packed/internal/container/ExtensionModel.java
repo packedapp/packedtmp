@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.WireletConsume;
-import app.packed.container.ComponentLinked;
+import app.packed.container.ConnectExtension;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -92,7 +92,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
-    /** A method handle to an optional method annotated with {@link ComponentLinked} on the extension. */
+    /** A method handle to an optional method annotated with {@link ConnectExtension} on the extension. */
     @Nullable
     final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
 
@@ -421,11 +421,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         protected void onMethod(Method m) {
-            ComponentLinked da = m.getAnnotation(ComponentLinked.class);
+            ConnectExtension da = m.getAnnotation(ConnectExtension.class);
             if (da != null) {
                 if (linked != null) {
                     throw new IllegalStateException(
-                            "Multiple methods annotated with " + ComponentLinked.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
+                            "Multiple methods annotated with " + ConnectExtension.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
                 callbackOnlyDirectChildren = da.onlyDirectLink();

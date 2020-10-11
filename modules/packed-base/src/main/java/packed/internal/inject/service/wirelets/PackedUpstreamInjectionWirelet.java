@@ -18,12 +18,10 @@ package packed.internal.inject.service.wirelets;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
-import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
@@ -102,38 +100,6 @@ public abstract class PackedUpstreamInjectionWirelet extends OldServiceWirelet {
             // Kan vi smide ProvideAllFromInjector in i pipelinen???
 
             throw new UnsupportedOperationException();
-        }
-    }
-
-    /** A wirelet for {@link OldServiceWirelets#peekFrom(Consumer)}. */
-    @ExtensionMember(ServiceExtension.class)
-    public static class PeekFrom extends PackedUpstreamInjectionWirelet {
-
-        /** The peek action to execute. */
-        private final Consumer<? super Service> action;
-
-        /**
-         * Creates a new upstream peek wirelet.
-         * 
-         * @param action
-         *            the peek action to execute
-         */
-        public PeekFrom(Consumer<? super Service> action) {
-            this.action = requireNonNull(action, "action is null");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void process(ProvideAllFromOtherInjector ii) {
-            for (ServiceBuild e : ii.entries.values()) {
-                action.accept(e.toService());
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        protected void process(ServiceExtension extension) {
-            // TODO Auto-generated method stub
         }
     }
 }

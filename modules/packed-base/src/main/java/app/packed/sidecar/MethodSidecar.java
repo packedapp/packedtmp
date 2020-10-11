@@ -22,10 +22,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.container.Extension;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarModel;
 
@@ -69,6 +71,8 @@ public abstract class MethodSidecar {
     }
 
     public interface BootstrapContext {
+
+        Optional<Class<? extends Extension>> extensionMember();
 
         default <T> void attach(Class<T> key, T instance) {
             attach(Key.of(key), instance);

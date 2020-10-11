@@ -21,9 +21,11 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.container.Extension;
 import app.packed.sidecar.MethodSidecar;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;
@@ -64,6 +66,7 @@ public class SourceModelMethod extends SourceModelMember {
         this.directMethodHandle = requireNonNull(builder.shared.direct());
     }
 
+    @Override
     public DependencyProvider[] createProviders() {
         DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
         // System.out.println("RESOLVING " + directMethodHandle);
@@ -175,6 +178,12 @@ public class SourceModelMethod extends SourceModelMember {
         @Override
         public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
             return unsafeMethod.getAnnotation(annotationClass);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Class<? extends Extension>> extensionMember() {
+            return Optional.ofNullable(shared.source.extensionType);
         }
     }
 
