@@ -28,7 +28,6 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.sidecar.FieldSidecar.BootstrapContext;
 import packed.internal.component.source.SourceModelMethod;
 import packed.internal.sidecar.SidecarModel;
 
@@ -40,8 +39,6 @@ public abstract class MethodSidecar {
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
     private SourceModelMethod.Builder configuration;
-
-    protected void bootstrap(BootstrapContext context) {}
 
     /**
      * Returns this sidecar's builder object.

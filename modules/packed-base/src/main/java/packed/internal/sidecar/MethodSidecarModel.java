@@ -17,8 +17,6 @@ package packed.internal.sidecar;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,9 +29,7 @@ import app.packed.sidecar.Invoker;
 import app.packed.sidecar.MethodSidecar;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.OpenClass;
-import packed.internal.component.source.SourceModelMethod;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.util.LookupUtil;
 
 /** A model of a {@link MethodSidecar}. */
 public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
@@ -47,14 +43,6 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
             return ams == null ? null : new Builder(ams).build();
         }
     };
-
-    /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
-            void.class);
-
-    /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
-            "configuration", SourceModelMethod.Builder.class);
 
     public final Map<Key<?>, SidecarContextDependencyProvider> keys;
 
@@ -90,7 +78,7 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         private final HashMap<Key<?>, SidecarContextDependencyProvider.Builder> providing = new HashMap<>();
 
         Builder(ActivateMethodSidecar ams) {
-            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, ams.sidecar());
+            super(ams.sidecar());
         }
 
         /** {@inheritDoc} */

@@ -52,8 +52,12 @@ import packed.internal.util.ThrowableUtil;
 public class SourceModelField extends SourceModelMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_FIELD_SIDECAR_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldSidecar.class, "bootstrap",
-            void.class, FieldSidecar.BootstrapContext.class);
+    private static final MethodHandle MH_FIELD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldSidecar.class, "configure",
+            void.class);
+
+    /** A VarHandle that can access MethodSidecar#configuration. */
+    private static final VarHandle VH_FIELD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldSidecar.class, "builder",
+            SourceModelField.Builder.class);
 
     /** A direct method handle to the method. */
     public final VarHandle directMethodHandle;
@@ -83,12 +87,8 @@ public class SourceModelField extends SourceModelMember {
                 if (varHandle == null) {
                     varHandle = source.cp.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 }
-                Builder builder = new Builder(field);
-                try {
-                    MH_FIELD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                }
+                Builder builder = new Builder(model, field);
+                builder.configure();
                 if (!builder.disable) {
                     SourceModelField smm = new SourceModelField(builder, field, model, varHandle);
                     source.fields.add(smm);
@@ -97,6 +97,7 @@ public class SourceModelField extends SourceModelMember {
         }
     }
 
+    @Override
     public DependencyProvider[] createProviders() {
         DependencyProvider[] providers = new DependencyProvider[Modifier.isStatic(field.getModifiers()) ? 0 : 1];
         // System.out.println("RESOLVING " + directMethodHandle);
@@ -126,36 +127,51 @@ public class SourceModelField extends SourceModelMember {
         return MethodHandleUtil.getFromField(field, directMethodHandle);
     }
 
-    private static final class Builder extends SourceModelMember.Builder implements FieldSidecar.BootstrapContext {
+    public static final class Builder extends SourceModelMember.Builder {
         final Field field;
+        final FieldSidecarModel model;
 
-        Builder(Field field) {
+        Builder(FieldSidecarModel model, Field field) {
+            this.model = model;
             this.field = field;
         }
 
-        /** {@inheritDoc} */
-        @Override
+        private void configure() {
+            // We perform a compare and exchange with configuration. Guarding against
+            // concurrent usage of this bundle.
+            // Don't think it makes sense to register
+            Object instance;
+            try {
+                instance = model.constructor.invoke();
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+
+            VH_FIELD_SIDECAR_CONFIGURATION.set(instance, this);
+            try {
+                MH_FIELD_SIDECAR_CONFIGURE.invoke(instance); // Invokes sidecar#configure()
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            } finally {
+                VH_FIELD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
+            }
+        }
+
         public Field field() {
             return field;
         }
 
-        @Override
         public void provideAsService(boolean isConstant) {
             provideAsService(isConstant, Key.fromField(field()));
         }
 
-        @Override
         public void provideAsService(boolean isConstant, Key<?> key) {
             provideAsConstant = isConstant;
             provideAsKey = key;
         }
 
-        /** {@inheritDoc} */
-        @Override
         public void set(Object argument) {}
 
-        /** {@inheritDoc} */
-        @Override
         public void checkWritable() {}
     }
 

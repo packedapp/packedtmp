@@ -19,10 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 
 import packed.internal.classscan.InstantiatorBuilder;
-import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -39,8 +37,6 @@ import packed.internal.util.ThrowableUtil;
 //
 public abstract class SidecarModel<T> {
 
-    private final Object instance;
-
     public final MethodHandle constructor;
 
     /**
@@ -50,12 +46,7 @@ public abstract class SidecarModel<T> {
      *            the builder.
      */
     protected SidecarModel(Builder<T> builder) {
-        this.instance = builder.instance;
         this.constructor = requireNonNull(builder.constructor);
-    }
-
-    public Object instance() {
-        return instance;
     }
 
     /** A builder for a sidecar model. */
@@ -66,18 +57,10 @@ public abstract class SidecarModel<T> {
         /** The sidecar instance. */
         protected Object instance;
 
-        /** A method handle that can call the sidecar's configure method. */
-        private final MethodHandle mhConfigure;
-
-        /** A var handle for setting the configuration's object */
-        private final VarHandle vhConfiguration;
-
         private MethodHandle constructor;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
-        Builder(VarHandle vh, MethodHandle configure, Class<?> implementation) {
-            this.vhConfiguration = requireNonNull(vh);
-            this.mhConfigure = requireNonNull(configure);
+        Builder(Class<?> implementation) {
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
             constructor = ib.build();
             // validate extension
@@ -89,26 +72,5 @@ public abstract class SidecarModel<T> {
          * @return the new sidecar model
          */
         protected abstract SidecarModel<T> build();
-
-        protected final void configure() {
-            // We perform a compare and exchange with configuration. Guarding against
-            // concurrent usage of this bundle.
-            // Don't think it makes sense to register
-
-            try {
-                instance = constructor.invoke();
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-
-            vhConfiguration.set(instance, this);
-            try {
-                mhConfigure.invoke(instance); // Invokes sidecar#configure()
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            } finally {
-                vhConfiguration.set(instance, null); // clears the configuration
-            }
-        }
     }
 }

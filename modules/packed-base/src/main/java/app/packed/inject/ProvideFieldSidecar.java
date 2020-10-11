@@ -22,8 +22,7 @@ final class ProvideFieldSidecar extends FieldSidecar {
 
     /** {@inheritDoc} */
     @Override
-    protected void bootstrap(BootstrapContext context) {
-        Provide p = context.getAnnotation(Provide.class);
-        context.provideAsService(p.constant());
+    protected void configure() {
+        provideAsService(getAnnotation(Provide.class).constant());
     }
 }

@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.sidecar.FieldSidecarModel;
+import packed.internal.component.source.SourceModelField;
 import packed.internal.sidecar.SidecarModel;
 
 /**
@@ -38,20 +38,15 @@ public abstract class FieldSidecar {
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
     @Nullable
-    private FieldSidecarModel.Builder builder;
-
-    // IDK about throwing an exception? //throws ReflectiveOperationException
-    protected void bootstrap(BootstrapContext context) {
-
-    }
+    private SourceModelField.Builder builder;
 
     /**
      * Returns this sidecar's builder object.
      * 
      * @return this sidecar's builder object
      */
-    private FieldSidecarModel.Builder builder() {
-        FieldSidecarModel.Builder c = builder;
+    private SourceModelField.Builder builder() {
+        SourceModelField.Builder c = builder;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         }
@@ -69,58 +64,67 @@ public abstract class FieldSidecar {
      * @throws IllegalStateException
      *             if called from outside of {@link #configure()}
      */
-    protected final void provideInvoker() {
-        builder().provideInvoker();
+    protected final void provideInvoker() {}
+
+    protected final <T> void attach(Class<T> key, T instance) {
+        attach(Key.of(key), instance);
     }
 
-    public interface BootstrapContext {
+    protected final <T> void attach(Key<T> key, T instance) {}
 
-        default <T> void attach(Class<T> key, T instance) {
-            attach(Key.of(key), instance);
-        }
-
-        default <T> void attach(Key<T> key, T instance) {}
-
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        default void attach(Object instance) {
-            requireNonNull(instance, "instance is null");
-            attach((Class) instance.getClass(), instance);
-        }
-
-        /** Disables the sidecar for the particular method. No further processing will be done. */
-        void disable();
-
-        default <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return field().getAnnotation(annotationClass);
-        }
-
-        default Optional<Key<?>> key() {
-            return null;
-        }
-
-        Field field();
-
-        /**
-         * Sets the field to the specified argument.
-         * 
-         * @param argument
-         *            the argument to set
-         * @throws UnsupportedOperationException
-         *             if {@link ActivateFieldSidecar#allowSet()} is false
-         * @throws ClassCastException
-         *             if the specified argument is not assignable to the field
-         */
-        void set(Object argument);
-
-        default void provideAsService(boolean isConstant) {}
-
-        default void provideAsService(boolean isConstant, Class<?> key) {}
-
-        default void provideAsService(boolean isConstant, Key<?> key) {}
-
-        /**
-         * 
-         */
-        void checkWritable();
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void attach(Object instance) {
+        requireNonNull(instance, "instance is null");
+        attach((Class) instance.getClass(), instance);
     }
+
+    /** Disables the sidecar for the particular method. No further processing will be done. */
+    protected final void disable() {
+
+    }
+
+    protected final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return field().getAnnotation(annotationClass);
+    }
+
+    protected final Optional<Key<?>> key() {
+        return null;
+    }
+
+    protected final Field field() {
+        return builder().field();
+    }
+
+    /**
+     * Sets the field to the specified argument.
+     * 
+     * @param argument
+     *            the argument to set
+     * @throws UnsupportedOperationException
+     *             if {@link ActivateFieldSidecar#allowSet()} is false
+     * @throws ClassCastException
+     *             if the specified argument is not assignable to the field
+     */
+    protected final void set(Object argument) {
+        builder().set(argument);
+    }
+
+    protected final void provideAsService(boolean isConstant) {
+        builder().provideAsService(isConstant);
+    }
+
+    protected final void provideAsService(boolean isConstant, Class<?> key) {
+        provideAsService(isConstant, Key.of(key));
+
+    }
+
+    protected final void provideAsService(boolean isConstant, Key<?> key) {
+        builder().provideAsService(isConstant, key);
+    }
+
+    /**
+     * 
+     */
+    protected final void checkWritable() {}
+
 }

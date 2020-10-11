@@ -17,8 +17,6 @@ package packed.internal.sidecar;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +30,6 @@ import app.packed.sidecar.Invoker;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.util.LookupUtil;
 
 /**
  *
@@ -48,14 +45,6 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
             return afs == null ? null : new Builder(afs).build();
         }
     };
-
-    /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldSidecar.class, "configure",
-            void.class);
-
-    /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldSidecar.class, "builder",
-            FieldSidecarModel.Builder.class);
 
     public final Map<Key<?>, SidecarContextDependencyProvider> keys;
 
@@ -91,13 +80,12 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
         private final HashMap<Key<?>, SidecarContextDependencyProvider.Builder> providing = new HashMap<>();
 
         Builder(ActivateFieldSidecar afs) {
-            super(VH_METHOD_SIDECAR_CONFIGURATION, MH_METHOD_SIDECAR_CONFIGURE, afs.sidecar());
+            super(afs.sidecar());
         }
 
         /** {@inheritDoc} */
         @Override
         protected FieldSidecarModel build() {
-            super.configure();
             OpenClass oc = ib.oc();
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
