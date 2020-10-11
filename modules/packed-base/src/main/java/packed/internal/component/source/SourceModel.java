@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentNodeConfiguration;
@@ -120,6 +121,8 @@ public final class SourceModel {
 
         final Map<Key<?>, SidecarContextDependencyProvider> sourceContexts = new HashMap<>();
 
+        /** */
+        @Nullable
         final Class<? extends Extension> extensionType;
 
         /**

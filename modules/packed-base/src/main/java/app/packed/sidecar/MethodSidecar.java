@@ -55,6 +55,9 @@ public abstract class MethodSidecar {
         return c;
     }
 
+    /**
+     * Configures the the sidecar
+     */
     protected void configure() {}
 
     protected final void disableServiceInjection() {
@@ -70,8 +73,17 @@ public abstract class MethodSidecar {
         configuration().provideInvoker();
     }
 
+    /**
+     * A context object that is provided to {@link MethodSidecar#bootstrap(BootstrapContext)} when the method is
+     * bootstrapped.
+     */
     public interface BootstrapContext {
 
+        /**
+         * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
+         * 
+         * @return any extension the source is a member of of
+         */
         Optional<Class<? extends Extension>> extensionMember();
 
         default <T> void attach(Class<T> key, T instance) {

@@ -119,7 +119,7 @@ public class SourceModelMethod extends SourceModelMember {
     }
 
     /** A builder. */
-    private static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
+    public static final class Builder extends SourceModelMember.Builder implements MethodSidecar.BootstrapContext {
 
         /** The method, if exposed to end-users. */
         @Nullable
