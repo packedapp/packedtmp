@@ -18,6 +18,7 @@ package packed.internal.sidecar;
 /**
  *
  */
+// A method on a sidecar
 public class SidecarMethod {
 
 }

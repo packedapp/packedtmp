@@ -65,6 +65,10 @@ class Sidecar extends MethodSidecar {
     ComponentRelation cr() {
         throw new UnsupportedOperationException();
     }
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {}
 }
 
 // Altsaa det fx. hvis vi ikke har naaet at starte... 

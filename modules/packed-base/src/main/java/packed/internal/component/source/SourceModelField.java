@@ -140,12 +140,7 @@ public class SourceModelField extends SourceModelMember {
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
             // Don't think it makes sense to register
-            Object instance;
-            try {
-                instance = model.constructor.invoke();
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+            Object instance = model.newSidecar();
 
             VH_FIELD_SIDECAR_CONFIGURATION.set(instance, this);
             try {

@@ -131,13 +131,13 @@ public class SourceModelMethod extends SourceModelMember {
         @Nullable
         private Method exposedMethod;
 
-        private final Method unsafeMethod;
-
         /** The sidecar model. */
         private final MethodSidecarModel model;
 
         /** The shared context. */
         private final Shared shared;
+
+        private final Method unsafeMethod;
 
         Builder(MethodSidecarModel model, Shared shared) {
             this.shared = requireNonNull(shared);
@@ -149,12 +149,7 @@ public class SourceModelMethod extends SourceModelMember {
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this bundle.
             // Don't think it makes sense to register
-            Object instance;
-            try {
-                instance = model.constructor.invoke();
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
+            Object instance = model.newSidecar();
 
             VH_METHOD_SIDECAR_CONFIGURATION.set(instance, this);
             try {
@@ -166,10 +161,25 @@ public class SourceModelMethod extends SourceModelMember {
             }
         }
 
-        public Method method() {
+        public Optional<Class<? extends Extension>> extensionMember() {
+            return Optional.ofNullable(shared.source.extensionType);
+        }
+
+        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            return unsafeMethod.getAnnotation(annotationClass);
+        }
+
+        /**
+         * Returns a method that can safely be shared with end-users.
+         * 
+         * @return a method that can safely be shared with end-users
+         */
+        public Method methodSafe() {
             Method m = exposedMethod;
             if (m == null) {
                 // We want to avoid sharing method instances between multiple sidecar methods
+                // But we allow the method that we have been created to be used with exactly one sidecar
+                // If we have additional sidecars the needs a method instance we clone it
                 if (shared.isMethodUsed) {
                     try {
                         m = exposedMethod = unsafeMethod.getDeclaringClass().getDeclaredMethod(unsafeMethod.getName(), unsafeMethod.getParameterTypes());
@@ -184,6 +194,15 @@ public class SourceModelMethod extends SourceModelMember {
             return m;
         }
 
+        /**
+         * Returns a method that should not be shared with end-users.
+         * 
+         * @return a method that should not be shared with end-users
+         */
+        public Method methodUnsafe() {
+            return unsafeMethod;
+        }
+
         public void registerAsService(boolean isConstant) {
             provideAsConstant = isConstant;
             provideAsKey = Key.fromMethodReturnType(unsafeMethod);
@@ -193,14 +212,6 @@ public class SourceModelMethod extends SourceModelMember {
             provideAsConstant = isConstant;
             // Check assignable.
             provideAsKey = key;
-        }
-
-        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return unsafeMethod.getAnnotation(annotationClass);
-        }
-
-        public Optional<Class<? extends Extension>> extensionMember() {
-            return Optional.ofNullable(shared.source.extensionType);
         }
     }
 

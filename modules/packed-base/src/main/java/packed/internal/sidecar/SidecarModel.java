@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import packed.internal.classscan.InstantiatorBuilder;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -37,7 +38,7 @@ import packed.internal.classscan.InstantiatorBuilder;
 //
 public abstract class SidecarModel<T> {
 
-    public final MethodHandle constructor;
+    private final MethodHandle constructor;
 
     /**
      * Creates a new model.
@@ -49,13 +50,18 @@ public abstract class SidecarModel<T> {
         this.constructor = requireNonNull(builder.constructor);
     }
 
+    public final Object newSidecar() {
+        try {
+            return constructor.invoke();
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
     /** A builder for a sidecar model. */
     static abstract class Builder<T> {
 
         final InstantiatorBuilder ib;
-
-        /** The sidecar instance. */
-        protected Object instance;
 
         private MethodHandle constructor;
 

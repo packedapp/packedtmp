@@ -26,7 +26,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.FieldSidecar;
-import app.packed.sidecar.Invoker;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -71,9 +70,7 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
     }
 
     /** A builder for method sidecar. */
-    public final static class Builder extends SidecarModel.Builder<FieldSidecar> {
-
-        Class<?> invoker;
+    private final static class Builder extends SidecarModel.Builder<FieldSidecar> {
 
         private MethodHandle onInitialize;
 
@@ -103,19 +100,11 @@ public class FieldSidecarModel extends SidecarModel<FieldSidecar> {
                         throw new IllegalStateException(oc.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                     }
                     MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-
                     onInitialize = mh;
                 }
             });
 
             return new FieldSidecarModel(this);
-        }
-
-        public void provideInvoker() {
-            if (invoker != null) {
-                throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
-            }
-            invoker = Object.class;
         }
     }
 }

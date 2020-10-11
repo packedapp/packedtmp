@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.inject.Factory;
 import packed.internal.component.source.SourceModelField;
 import packed.internal.sidecar.SidecarModel;
 
@@ -58,13 +59,6 @@ public abstract class FieldSidecar {
     protected final void disableServiceInjection() {
         // syntes den er enabled by default
     }
-
-    /**
-     * 
-     * @throws IllegalStateException
-     *             if called from outside of {@link #configure()}
-     */
-    protected final void provideInvoker() {}
 
     protected final <T> void attach(Class<T> key, T instance) {
         attach(Key.of(key), instance);
@@ -127,4 +121,21 @@ public abstract class FieldSidecar {
      */
     protected final void checkWritable() {}
 
+    Class<?> invoker;
+
+    /**
+     * 
+     * @throws IllegalStateException
+     *             if called from outside of {@link #configure()}
+     */
+    protected final void provideInvoker() {
+        if (invoker != null) {
+            throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
+        }
+        invoker = Object.class;
+    }
+
+    static Factory<?> findFactory(String name) {
+        throw new UnsupportedOperationException();
+    }
 }

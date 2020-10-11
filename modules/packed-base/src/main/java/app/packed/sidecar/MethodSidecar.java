@@ -40,6 +40,18 @@ public abstract class MethodSidecar {
     @Nullable
     private SourceModelMethod.Builder configuration;
 
+    protected final <T> void attach(Class<T> key, T instance) {
+        attach(Key.of(key), instance);
+    }
+
+    protected final <T> void attach(Key<T> key, T instance) {}
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected final void attach(Object instance) {
+        requireNonNull(instance, "instance is null");
+        attach((Class) instance.getClass(), instance);
+    }
+
     /**
      * Returns this sidecar's builder object.
      * 
@@ -56,10 +68,47 @@ public abstract class MethodSidecar {
     /**
      * Configures the the sidecar
      */
-    protected void configure() {}
+    protected abstract void configure();
+
+    /** Disables the sidecar. No reference to it will be maintained at runtime. */
+    protected final void disable() {
+        configuration.disable();
+    }
 
     protected final void disableServiceInjection() {
         // syntes den er enabled by default
+    }
+
+    /**
+     * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
+     * 
+     * @return any extension the source is a member of of
+     */
+    // It is basically whether or not the declaring class is annotated with AnnotatedMember
+    protected final Optional<Class<? extends Extension>> extensionMember() {
+        return configuration().extensionMember();
+    }
+
+    protected final void forEachUnbound(Consumer<? super VariableBinder> action) {
+
+    }
+
+    /**
+     * Returns an annotated element from the method that is being bootstrapped.
+     * 
+     * @see AnnotatedElement#getAnnotation(Class)
+     */
+    protected final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return configuration.methodUnsafe().getAnnotation(annotationClass);
+    }
+
+    /**
+     * Returns the method that is being bootstrapped.
+     * 
+     * @return the method that is being bootstrapped
+     */
+    protected final Method method() {
+        return configuration.methodSafe();
     }
 
     /**
@@ -69,50 +118,6 @@ public abstract class MethodSidecar {
      */
     protected final void provideInvoker() {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
-     * 
-     * @return any extension the source is a member of of
-     */
-    public final Optional<Class<? extends Extension>> extensionMember() {
-        return configuration().extensionMember();
-    }
-
-    protected final <T> void attach(Class<T> key, T instance) {
-        attach(Key.of(key), instance);
-    }
-
-    public final <T> void attach(Key<T> key, T instance) {}
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public final void attach(Object instance) {
-        requireNonNull(instance, "instance is null");
-        attach((Class) instance.getClass(), instance);
-    }
-
-    /** Disables the sidecar. No reference to it will be maintained at runtime. */
-    public final void disable() {
-        configuration.disable();
-    }
-
-    /**
-     * Returns an annotated element from the method that is being bootstrapped.
-     * 
-     * @see AnnotatedElement#getAnnotation(Class)
-     */
-    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return configuration.getAnnotation(annotationClass);
-    }
-
-    /**
-     * Returns the method that is being bootstrapped.
-     * 
-     * @return the method that is being bootstrapped
-     */
-    public final Method method() {
-        return configuration.method();
     }
 
     /**
@@ -129,25 +134,20 @@ public abstract class MethodSidecar {
      */
     // Multiple invocations???? Failure, multi services???
     // Multi services... I think you need to register multiple sidecars
-    public final void registerAsService(boolean isConstant) {
+    protected final void registerAsService(boolean isConstant) {
         configuration().registerAsService(isConstant);
     }
 
-    public final void registerAsService(boolean isConstant, Class<?> key) {
+    protected final void registerAsService(boolean isConstant, Class<?> key) {
         registerAsService(isConstant, Key.of(key));
     }
 
-    public final void registerAsService(boolean isConstant, Key<?> key) {
+    protected final void registerAsService(boolean isConstant, Key<?> key) {
         configuration().registerAsService(isConstant, key);
     }
 
-    public final MethodType type() {
-        // Taenker den er opdateret
-        return null;
-    }
-
     // MethodHandle must take
-    public final void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
+    protected final void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
         // Kunne maaske godt taenke mig noget tekst???
         // Skal vi have en klasse??
         // Naar vi skal have et visuelt overblik engang?
@@ -167,11 +167,12 @@ public abstract class MethodSidecar {
         // Har vi behov for at kunne aendre noget ved typen
     }
 
-    public final void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
+    protected final void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
         // Must take class value
     }
 
-    public final void forEachUnbound(Consumer<? super VariableBinder> action) {
-
+    protected final MethodType type() {
+        // Taenker den er opdateret
+        return null;
     }
 }
