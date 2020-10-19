@@ -76,7 +76,7 @@ import packed.internal.util.LookupUtil;
  *            The type of the single dependency that this factory takes
  * @param <R>
  *            the type of objects this factory constructs
- * @see Factory0
+ * @see Factory
  * @see Factory2
  */
 public abstract class Factory1<T, R> extends Factory<R> {

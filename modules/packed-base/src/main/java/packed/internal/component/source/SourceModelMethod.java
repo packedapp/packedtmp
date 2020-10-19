@@ -39,15 +39,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-// run on initialize
-// run on start
-// run on stop
-
-// En per annotering
-
-// Altsaa alle source metoder skal jo resolves paa assembly time
-
-public class SourceModelMethod extends SourceModelMember {
+public final class SourceModelMethod extends SourceModelMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
     private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
@@ -58,9 +50,9 @@ public class SourceModelMethod extends SourceModelMember {
             "configuration", SourceModelMethod.Builder.class);
 
     /** A direct method handle to the method. */
-    public final MethodHandle directMethodHandle;
+    private final MethodHandle directMethodHandle;
 
-    public final Method method;
+    private final Method method;
 
     public final MethodSidecarModel model;
 
@@ -110,12 +102,9 @@ public class SourceModelMethod extends SourceModelMember {
                     shared = new Shared(source, method);
                 }
                 Builder builder = new Builder(model, shared);
+
                 builder.configure();
-//                try {
-//                    MH_METHOD_SIDECAR_BOOTSTRAP.invoke(model.instance(), builder);
-//                } catch (Throwable e) {
-//                    throw ThrowableUtil.orUndeclared(e);
-//                }
+
                 if (!builder.disable) {
                     SourceModelMethod smm = new SourceModelMethod(builder);
                     shared.source.methods.add(smm);
@@ -177,9 +166,12 @@ public class SourceModelMethod extends SourceModelMember {
         public Method methodSafe() {
             Method m = exposedMethod;
             if (m == null) {
-                // We want to avoid sharing method instances between multiple sidecar methods
-                // But we allow the method that we have been created to be used with exactly one sidecar
-                // If we have additional sidecars the needs a method instance we clone it
+                // We want to avoid sharing the method instance between multiple sidecars
+                // Because one sidecar might invoke #setAccessible(true) which would allow
+                // another sidecar unchecked access to invoke the method.
+                // Internally we never call #setAccessible(true) so we can share the method
+                // freely with exactly one sidecar. However, is the method requested by more
+                // than 1 sidecar we need to create a new method instance.
                 if (shared.isMethodUsed) {
                     try {
                         m = exposedMethod = unsafeMethod.getDeclaringClass().getDeclaredMethod(unsafeMethod.getName(), unsafeMethod.getParameterTypes());
@@ -203,12 +195,12 @@ public class SourceModelMethod extends SourceModelMember {
             return unsafeMethod;
         }
 
-        public void registerAsService(boolean isConstant) {
+        public void serviceRegister(boolean isConstant) {
             provideAsConstant = isConstant;
             provideAsKey = Key.fromMethodReturnType(unsafeMethod);
         }
 
-        public void registerAsService(boolean isConstant, Key<?> key) {
+        public void serviceRegister(boolean isConstant, Key<?> key) {
             provideAsConstant = isConstant;
             // Check assignable.
             provideAsKey = key;
@@ -227,9 +219,11 @@ public class SourceModelMethod extends SourceModelMember {
      */
     private static class Shared {
 
+        /** A direct method handle to the method (lazily computed). */
+        @Nullable
         private MethodHandle directMethodHandle;
 
-        /** Whether or not {@link #methodUnsafe} has been exposed to users. */
+        /** Keeps track of whether or not we have exposed {@link #methodUnsafe} to an end-user. */
         private boolean isMethodUsed;
 
         /** The method we are processing. */

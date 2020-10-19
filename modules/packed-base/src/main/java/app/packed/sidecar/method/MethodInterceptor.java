@@ -13,28 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.sidecar.method;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodType;
 
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-public @interface ActivateMethodSidecar {
+public interface MethodInterceptor {
 
-    /** Whether or not the sidecar is allow to invoke the method. */
-    boolean allowInvoke() default false;
+    default MethodType sourceType() {
+        throw new UnsupportedOperationException();
+    }
 
-    /** The sidecar that is activated. */
-    Class<? extends MethodSidecar> sidecar();
+    void source(MethodHandle mh);
+
+    /**
+     * The method handle to invoke or intercept.
+     * 
+     * @return the method handle to invoke or intercept
+     */
+    MethodHandle target();
+
+    default MethodType targetType() {
+        return target().type();
+    }
 }
-// invoke...
-// provide, but someone else invokes
+// source changes as we

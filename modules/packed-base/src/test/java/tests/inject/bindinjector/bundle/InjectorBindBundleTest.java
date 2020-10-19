@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.component.Wirelet;
 import app.packed.container.BaseBundle;
-import app.packed.inject.Factory0;
+import app.packed.inject.Factory;
 import app.packed.service.Injector;
 
 /**
@@ -87,7 +87,7 @@ public class InjectorBindBundleTest {
         BaseBundle b = new BaseBundle() {
             @Override
             protected void configure() {
-                providePrototype(new Factory0<>(al::incrementAndGet) {});
+                providePrototype(new Factory<>(al::incrementAndGet) {});
                 export(Long.class);
             }
         };

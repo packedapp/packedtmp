@@ -15,6 +15,8 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.stream.Stream;
 
 /**
@@ -75,6 +77,28 @@ public interface Provider<T> {
     }
 }
 
+/** An implementation of {@link Provider} that returns the instance on every invocation. */
+final class ProviderConstant<T> implements Provider<T> {
+
+    /** The constant to provide on every invocation. */
+    private final T constant;
+
+    ProviderConstant(T constant) {
+        this.constant = requireNonNull(constant, "constant is null");
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public T provide() {
+        return constant;
+    }
+}
 // default Provider<T> lazyConstant() {
 //    if (isConstant()) {
 //        return this;

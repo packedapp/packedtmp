@@ -99,6 +99,7 @@ public abstract class FieldSidecar {
      * @throws ClassCastException
      *             if the specified argument is not assignable to the field
      */
+    // Get if static field...
     protected final void set(Object argument) {
         builder().set(argument);
     }

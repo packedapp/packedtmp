@@ -15,8 +15,6 @@
  */
 package packed.internal.sidecar;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
@@ -26,16 +24,6 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-/// Taget fra noget gammel kode
-// 1. Look for class annotations, that changes the packlet system model
-
-// 2. Look for packlet class annotations... Can change the "model"
-
-// 3. Constructor needs to take 1+2 into consideration
-
-// 3. Look for field and member annotations taking 1+2 into consideration
-
-//
 public abstract class SidecarModel<T> {
 
     private final MethodHandle constructor;
@@ -47,7 +35,7 @@ public abstract class SidecarModel<T> {
      *            the builder.
      */
     protected SidecarModel(Builder<T> builder) {
-        this.constructor = requireNonNull(builder.constructor);
+        this.constructor = builder.ib.build();
     }
 
     public final Object newSidecar() {
@@ -63,12 +51,9 @@ public abstract class SidecarModel<T> {
 
         final InstantiatorBuilder ib;
 
-        private MethodHandle constructor;
-
         // If we get a shared Sidecar we can have a single MethodHandle configure
         Builder(Class<?> implementation) {
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
-            constructor = ib.build();
             // validate extension
         }
 

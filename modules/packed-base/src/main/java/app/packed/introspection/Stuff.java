@@ -19,7 +19,6 @@ import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
-import app.packed.inject.Factory0;
 import app.packed.inject.Factory2;
 
 /**
@@ -41,7 +40,7 @@ public class Stuff extends BaseBundle {
         install(f);
         install(ff);
         provideInstance(-123123);
-        providePrototype(new Factory0<Long>(System::nanoTime) {});
+        providePrototype(new Factory<Long>(System::nanoTime) {});
     }
 
     public static void main(String[] args) {

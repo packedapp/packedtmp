@@ -17,6 +17,8 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -29,6 +31,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -53,13 +56,24 @@ import packed.internal.util.MethodHandleUtil;
  * <p>
  * This class does not expose any methods that actually create new objects, this is all hidden in the internals of
  * Packed. This might change in the future, but for now users can only create factories, and not consume their output.
+ * <p>
+ * A {@link Factory} type that uses a {@link Supplier} to provide instances.
+ * <p>
+ * This class is typically used like this:
  * 
- * @apiNote In the future, if the Java language permits, {@link Factory} may become a {@code sealed} interface, which
- *          would prohibit subclassing except by explicitly permitted types.
+ * <pre> {@code Factory<Long> f = new Factory<>(System::currentTimeMillis) {};}</pre>
+ * <p>
+ * In this example we create a new class that extends Factory0 is order to capture information about the suppliers type
+ * variable (in this case {@code Long}). Thereby circumventing the limitations of Java's type system for retaining type
+ * information at runtime.
+ * <p>
+ * Qualifier annotations can be used if they have {@link ElementType#TYPE_USE} in their {@link Target}:
+ * 
+ * <pre> {@code Factory<Long> f = new Factory<@SomeQualifier Long>(() -> 1L) {};}</pre>
+ * 
  */
 // Its friend the abstract class Procedure... like Factory but no return..
 // Then move it to base...
-
 // Not a Function because it takes annotations...
 public abstract class Factory<T> {
 
@@ -83,6 +97,9 @@ public abstract class Factory<T> {
         }
     };
 
+    /** A method handle for invoking {@link #create(Supplier, Class)}. */
+    private static final MethodHandle CREATE = LookupUtil.lookupStatic(MethodHandles.lookup(), "create", Object.class, Supplier.class, Class.class);
+
     /**
      * A cache of factories used by {@link #of(TypeLiteral)}. This cache is only used by subclasses of TypeLiteral, never
      * literals that are manually constructed.
@@ -102,6 +119,8 @@ public abstract class Factory<T> {
 
     private final Key<T> key;
 
+    private final MethodHandle methodHandle;
+
     /** The type of objects this factory creates. */
     private final TypeLiteral<T> typeLiteral;
 
@@ -113,12 +132,33 @@ public abstract class Factory<T> {
     Factory() {
         this.typeLiteral = (TypeLiteral<T>) CACHE.get(getClass());
         this.key = Key.fromTypeLiteral(typeLiteral);
+        this.methodHandle = null;
+    }
+
+    /**
+     * Creates a new factory, that use the specified supplier to provide values.
+     *
+     * @param supplier
+     *            the supplier that will provide the actual values. The supplier should never return null, but should
+     *            instead throw a relevant exception if unable to provide a value
+     * @throws FactoryException
+     *             if the type variable R could not be determined. Or if R does not represent a valid key, for example,
+     *             {@link Optional}
+     */
+    @SuppressWarnings("unchecked")
+    protected Factory(Supplier<? extends T> supplier) {
+        requireNonNull(supplier, "supplier is null");
+        this.typeLiteral = (TypeLiteral<T>) CACHE.get(getClass());
+        this.key = Key.fromTypeLiteral(typeLiteral);
+        MethodHandle mh = CREATE.bindTo(supplier).bindTo(rawType()); // (Supplier, Class)Object -> ()Object
+        this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // ()Object -> ()R
     }
 
     private Factory(TypeLiteral<T> typeLiteralOrKey) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
         this.key = Key.fromTypeLiteral(typeLiteral);
+        this.methodHandle = null;
     }
 
     /**
@@ -192,7 +232,9 @@ public abstract class Factory<T> {
     }
 
     // taenker vi laver den her public og saa bare caster...
-    abstract List<DependencyDescriptor> dependencies();
+    List<DependencyDescriptor> dependencies() {
+        return List.of();
+    }
 
     /**
      * The key under which If this factory is registered as a service. This method returns the (default) key that will be
@@ -294,6 +336,15 @@ public abstract class Factory<T> {
         return typeLiteral().rawType();
     }
 
+    /**
+     * @param lookup
+     *            a lookup that can be used to unreflect fields, constructors or methods.
+     * @return a new method handle
+     */
+    MethodHandle toMethodHandle(Lookup lookup) {
+        return methodHandle;
+    }
+
 //    final boolean needsLookup() {
     // Needs Realm?
 
@@ -306,13 +357,6 @@ public abstract class Factory<T> {
 //        // Maa betyde om man skal
 //        return false;
 //    }
-
-    /**
-     * @param lookup
-     *            a lookup that can be used to unreflect fields, constructors or methods.
-     * @return a new method handle
-     */
-    abstract MethodHandle toMethodHandle(Lookup lookup);
 
     /**
      * Returns the type of the type of objects this factory provide.
@@ -437,6 +481,26 @@ public abstract class Factory<T> {
                         + " but returned a " + value.getClass().getName() + " instance");
             }
         }
+    }
+
+    /**
+     * Supplies a value.
+     * 
+     * @param <T>
+     *            the type of value supplied
+     * @param supplier
+     *            the supplier that supplies the actual value
+     * @param expectedType
+     *            the type we expect the supplier to return
+     * @return the value that was supplied by the specified supplier
+     * @throws FactoryException
+     *             if the created value is null or not assignable to the raw type of the factory
+     */
+    @SuppressWarnings("unused") // only invoked via #CREATE
+    private static <T> T create(Supplier<? extends T> supplier, Class<?> expectedType) {
+        T value = supplier.get();
+        checkReturnValue(expectedType, value, supplier);
+        return value;
     }
 
     /**
@@ -753,12 +817,6 @@ public abstract class Factory<T> {
 
         /** {@inheritDoc} */
         @Override
-        public List<DependencyDescriptor> dependencies() {
-            return List.of();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         MethodHandle toMethodHandle(Lookup ignore) {
             return MethodHandles.constant(instance.getClass(), instance);
         }
@@ -933,44 +991,6 @@ public abstract class Factory<T> {
 //// Required/Optional - Key - Variable?
 //// Requirement
 //
-//// FactoryDescriptor.of(Factory f) <--- in devtools???
-//
-//@Override
-//public final <S> Factory<T> bind(Key<S> key, @Nullable S instance) {
-//  throw new UnsupportedOperationException();
-//}
-//
-///** {@inheritDoc} */
-//@Override
-//@SuppressWarnings({ "rawtypes", "unchecked" })
-//public final Factory<T> bind(Object instance) {
-//  requireNonNull(instance, "instance is null");
-//  return bind((Class) instance.getClass(), instance);
-//
-//  // someExtension()
-//  // install(Factory.of(Foo.class).withArgument(this))).
-//
-//  // There is going to be some automatic support for injecting extensions into
-//  // services installed by them. We are just not quite there yet.
-//  // Will bind to any assignable parameter...
-//}
-//
-///** {@inheritDoc} */
-//@Override
-//public final <S> Factory<T> bindSupplier(Class<S> key, Supplier<?> supplier) {
-//  // Altsaa vi kan vel bruge et andet factory????
-//  // En mulig usecase f.eks. for Factory1 er at kunne mappe dependencies...
-//  // f.eks. fra Foo(CardReader) -> new Factory0<
-//  // new Factory0<>(e->e);
-//  // withArgumentSupplier
-//  throw new UnsupportedOperationException();
-//}
-//
-///** {@inheritDoc} */
-//@Override
-//public final <S> Factory<T> bindSupplier(Key<S> key, Supplier<?> supplier) {
-//  throw new UnsupportedOperationException();
-//}
 
 // Problemet med at fjerne ting fra #variables() er at saa bliver index'et lige pludselig aendret.
 // F.eks. for dooo(String x, String y)

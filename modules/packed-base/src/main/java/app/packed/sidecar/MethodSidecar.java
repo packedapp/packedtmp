@@ -34,6 +34,10 @@ import packed.internal.sidecar.SidecarModel;
 /**
  * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
  */
+// implements AnnotatedElement
+
+// Skal metoderne vaere protected????
+// Ikke hvis man skal kunne specificere den til extensions...
 public abstract class MethodSidecar {
 
     /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
@@ -50,6 +54,10 @@ public abstract class MethodSidecar {
     protected final void attach(Object instance) {
         requireNonNull(instance, "instance is null");
         attach((Class) instance.getClass(), instance);
+    }
+
+    protected final void bindParameterMh(int index, MethodHandle mh) {
+
     }
 
     /**
@@ -73,10 +81,6 @@ public abstract class MethodSidecar {
     /** Disables the sidecar. No reference to it will be maintained at runtime. */
     protected final void disable() {
         configuration.disable();
-    }
-
-    protected final void disableServiceInjection() {
-        // syntes den er enabled by default
     }
 
     /**
@@ -120,32 +124,6 @@ public abstract class MethodSidecar {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Register the result of invoking the method as a service.
-     * <p>
-     * Methods that Cannot create invokers.
-     * 
-     * @param isConstant
-     *            whether or not the service is constant. Constants are always eagerly computed at initialization time
-     * @see #registerAsService(boolean, Class)
-     * @see #registerAsService(boolean, Key)
-     * @throws IllegalStateException
-     *             if any invokers have already been registered for the sidecar.
-     */
-    // Multiple invocations???? Failure, multi services???
-    // Multi services... I think you need to register multiple sidecars
-    protected final void registerAsService(boolean isConstant) {
-        configuration().registerAsService(isConstant);
-    }
-
-    protected final void registerAsService(boolean isConstant, Class<?> key) {
-        registerAsService(isConstant, Key.of(key));
-    }
-
-    protected final void registerAsService(boolean isConstant, Key<?> key) {
-        configuration().registerAsService(isConstant, key);
-    }
-
     // MethodHandle must take
     protected final void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
         // Kunne maaske godt taenke mig noget tekst???
@@ -169,6 +147,36 @@ public abstract class MethodSidecar {
 
     protected final void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
         // Must take class value
+    }
+
+    protected final void serviceInjectionDisable() {
+        // syntes den er enabled by default
+    }
+
+    /**
+     * Register the result of invoking the method as a service.
+     * <p>
+     * Methods that Cannot create invokers.
+     * 
+     * @param isConstant
+     *            whether or not the service is constant. Constants are always eagerly computed at initialization time
+     * @see #serviceRegister(boolean, Class)
+     * @see #serviceRegister(boolean, Key)
+     * @throws IllegalStateException
+     *             if any invokers have already been registered for the sidecar.
+     */
+    // Multiple invocations???? Failure, multi services???
+    // Multi services... I think you need to register multiple sidecars
+    protected final void serviceRegister(boolean isConstant) {
+        configuration().serviceRegister(isConstant);
+    }
+
+    protected final void serviceRegister(boolean isConstant, Class<?> key) {
+        serviceRegister(isConstant, Key.of(key));
+    }
+
+    protected final void serviceRegister(boolean isConstant, Key<?> key) {
+        configuration().serviceRegister(isConstant, key);
     }
 
     protected final MethodType type() {

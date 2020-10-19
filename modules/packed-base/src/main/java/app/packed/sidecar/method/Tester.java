@@ -13,29 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.sidecar.method;
 
-import static java.util.Objects.requireNonNull;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 
-/** An implementation of {@link Provider} that returns the instance on every invocation. */
-final class ProviderConstant<T> implements Provider<T> {
+/**
+ *
+ */
+public class Tester extends InterceptingMethodSidecar {
 
-    /** The constant to provide on every invocation. */
-    private final T constant;
+    public void intercept(MethodHandle m) {
 
-    ProviderConstant(T constant) {
-        this.constant = requireNonNull(constant, "constant is null");
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return true;
-    }
+    protected void configure() {
 
-    /** {@inheritDoc} */
-    @Override
-    public T provide() {
-        return constant;
+        MethodHandle mh = MethodHandles.filterReturnValue(handle(), null);
+        intercept(mh);
     }
 }

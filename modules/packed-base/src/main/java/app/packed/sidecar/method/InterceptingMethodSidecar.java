@@ -13,16 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.sidecar.method;
 
-import app.packed.sidecar.FieldSidecar;
+import java.lang.invoke.MethodHandle;
 
-/** A field sidecar for {@link Provide}. */
-final class ProvideFieldSidecar extends FieldSidecar {
+import app.packed.base.Key;
 
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        provideAsService(getAnnotation(Provide.class).constant());
+/**
+ *
+ */
+public abstract class InterceptingMethodSidecar extends AbstractMethodSidecar {
+
+    public final int inject(Class<?> key) {
+        return 0;
+    }
+
+    public final int inject(Key<?> key) {
+        return 0; // int = parameter
+    }
+
+    public final int storeInstance(Class<?> type) {
+        return 0;
+    }
+
+    public final MethodHandle handle() {
+        throw new UnsupportedOperationException();
     }
 }

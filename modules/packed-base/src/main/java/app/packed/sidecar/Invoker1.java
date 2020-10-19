@@ -40,7 +40,7 @@ import app.packed.base.Nullable;
 // Generalt supportere vi jo ikke generiske typer....
 // Maaske skal vi have
 // @Accessor(ignoreParentTypes = false)
-public interface TemplateInvoker<T> {
+public interface Invoker1<T> {
 
     /**
      * Invokes the underlying member.
@@ -83,7 +83,7 @@ public interface TemplateInvoker<T> {
      *            the method handle target
      * @return stuff
      */
-    static <T> TemplateInvoker<T> of(MethodHandles.Lookup lookup, Class<T> templateType, MethodHandle target) {
+    static <T> Invoker1<T> of(MethodHandles.Lookup lookup, Class<T> templateType, MethodHandle target) {
         throw new UnsupportedOperationException();
     }
 }

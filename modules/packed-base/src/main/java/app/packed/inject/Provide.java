@@ -24,6 +24,8 @@ import java.lang.annotation.Target;
 import app.packed.container.ExtensionMember;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.ActivateMethodSidecar;
+import app.packed.sidecar.FieldSidecar;
+import app.packed.sidecar.MethodSidecar;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -95,4 +97,24 @@ public @interface Provide {
      * @return whether or not the provided value is a constant
      */
     boolean constant() default false;
+}
+
+/** A field sidecar for {@link Provide}. */
+final class ProvideFieldSidecar extends FieldSidecar {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        provideAsService(getAnnotation(Provide.class).constant());
+    }
+}
+
+/** A method sidecar for {@link Provide}. */
+final class ProvideMethodSidecar extends MethodSidecar {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void configure() {
+        serviceRegister(getAnnotation(Provide.class).constant());
+    }
 }

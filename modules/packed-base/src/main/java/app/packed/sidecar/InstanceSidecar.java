@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.sidecar;
 
-import app.packed.sidecar.MethodSidecar;
+/**
+ *
+ */
+abstract class InstanceSidecar {
 
-/** A method sidecar for {@link Provide}. */
-final class ProvideMethodSidecar extends MethodSidecar {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void configure() {
-        registerAsService(getAnnotation(Provide.class).constant());
-    }
 }

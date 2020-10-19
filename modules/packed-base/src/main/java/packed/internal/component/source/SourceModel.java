@@ -91,7 +91,7 @@ public final class SourceModel {
         requireNonNull(source);
         Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {
-        compConf.memberOfContainer.addInjectable(i);
+        compConf.memberOfContainer.addDependant(i);
         // }
     }
 

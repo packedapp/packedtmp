@@ -13,28 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+package app.packed.sidecar.method;
 
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-public @interface ActivateMethodSidecar {
+public class InvokingMethodSidecar {
 
-    /** Whether or not the sidecar is allow to invoke the method. */
-    boolean allowInvoke() default false;
-
-    /** The sidecar that is activated. */
-    Class<? extends MethodSidecar> sidecar();
 }
-// invoke...
-// provide, but someone else invokes

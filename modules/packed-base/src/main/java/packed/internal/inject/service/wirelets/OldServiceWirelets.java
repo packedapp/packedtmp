@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.Factory0;
 import app.packed.inject.Factory1;
 import app.packed.service.Injector;
 
@@ -93,7 +92,7 @@ public final class OldServiceWirelets {
 
     // Hmmm, syntes egentlig ikke man kan bruge den her...
     // IDK
-    public static <T> Wirelet provide(Factory0<T> factory) {
+    public static <T> Wirelet provide(Factory<T> factory) {
         throw new UnsupportedOperationException();
     }
 

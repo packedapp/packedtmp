@@ -97,7 +97,7 @@ public final class SourceBuild implements DependencyProvider {
         if (s.instance != null) {
             compConf.region.constants.add(s);
         } else if (s.dependant != null) {
-            compConf.memberOfContainer.addInjectable(s.dependant);
+            compConf.memberOfContainer.addDependant(s.dependant);
         }
 
         // Apply any sidecars

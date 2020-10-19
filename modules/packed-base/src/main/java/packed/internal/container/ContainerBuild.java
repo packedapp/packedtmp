@@ -62,7 +62,7 @@ public final class ContainerBuild {
     @Nullable
     private ServiceBuildManager sbm;
 
-    private ArrayList<ExtensionBuild> tmpExtension;
+    private ArrayList<ExtensionBuild> tmpExtensions;
 
     /**
      * Creates a new container
@@ -72,6 +72,7 @@ public final class ContainerBuild {
      */
     public ContainerBuild(ComponentNodeConfiguration compConf) {
         this.compConf = requireNonNull(compConf);
+
         this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
         if (parent != null) {
             parent.runPredContainerChildren();
@@ -86,23 +87,17 @@ public final class ContainerBuild {
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
      * 
-     * @param injectable
+     * @param dependant
      *            the injectable to add
      */
-    public void addInjectable(Dependant injectable) {
-        dependants.add(requireNonNull(injectable));
+    public void addDependant(Dependant dependant) {
+        dependants.add(requireNonNull(dependant));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
         // I virkeligheden vil vi bare gerne checke at om man
         // har ting der ikke kan resolves via contexts
-        if (sbm == null && !injectable.dependencies.isEmpty()) {
+        if (sbm == null && !dependant.dependencies.isEmpty()) {
             useExtension(ServiceExtension.class);
-        }
-    }
-
-    void checkNoChildContainers() {
-        if (children != null) {
-            throw new IllegalStateException();
         }
     }
 
@@ -145,9 +140,9 @@ public final class ContainerBuild {
     }
 
     /**
-     * Returns a set view of the extension registered with this container.
+     * Returns an unmodifiable view of the extension registered with this container.
      * 
-     * @return a set view of the extension registered with this container
+     * @return a unmodifiable view of the extension registered with this container
      */
     public Set<Class<? extends Extension>> extensionView() {
         return Collections.unmodifiableSet(extensions.keySet());
@@ -218,9 +213,9 @@ public final class ContainerBuild {
             ea.preContainerChildren();
         }
 
-        while (tmpExtension != null) {
-            ArrayList<ExtensionBuild> te = tmpExtension;
-            tmpExtension = null;
+        while (tmpExtensions != null) {
+            ArrayList<ExtensionBuild> te = tmpExtensions;
+            tmpExtensions = null;
             for (ExtensionBuild ea : te) {
                 ea.preContainerChildren();
             }
@@ -266,9 +261,9 @@ public final class ContainerBuild {
             extensions.put(extensionType, extension);
 
             if (hasRunPreContainerChildren) {
-                ArrayList<ExtensionBuild> l = tmpExtension;
+                ArrayList<ExtensionBuild> l = tmpExtensions;
                 if (l == null) {
-                    l = tmpExtension = new ArrayList<>();
+                    l = tmpExtensions = new ArrayList<>();
                 }
                 l.add(extension);
             }
