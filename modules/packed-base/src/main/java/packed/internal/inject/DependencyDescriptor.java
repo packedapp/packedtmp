@@ -41,7 +41,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
-import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.introspection.PackedParameterDescriptor;
@@ -52,7 +51,7 @@ import packed.internal.util.TypeUtil;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
- * method. In which case the parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling
+ * method. In which case the parameter (represented by a {@link PackedParameterDescriptor}) can be obtained by calling
  * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
  * instance of. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */

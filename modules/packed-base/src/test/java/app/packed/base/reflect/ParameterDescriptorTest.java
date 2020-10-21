@@ -23,10 +23,10 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
-import app.packed.introspection.ParameterDescriptor;
 import packed.internal.base.reflect.InternalParameterDescriptorTest;
+import packed.internal.introspection.PackedParameterDescriptor;
 
-/** Tests {@link ParameterDescriptor}, most of the test are in {@link InternalParameterDescriptorTest}. */
+/** Tests {@link PackedParameterDescriptor}, most of the test are in {@link InternalParameterDescriptorTest}. */
 public class ParameterDescriptorTest {
 
     public void someMethod(@Nullable Map<String, List<?>> s) {}
@@ -34,7 +34,7 @@ public class ParameterDescriptorTest {
     @Test
     public void from() throws Exception {
         // Parameter p = ParameterDescriptorTest.class.getMethod("someMethod", Map.class).getParameters()[0];
-        npe(() -> ParameterDescriptor.from(null), "parameter");
+        npe(() -> PackedParameterDescriptor.from(null), "parameter");
         // assertThat(ParameterDescriptor.of(p).newParameter()).isEqualTo(p);
     }
 }

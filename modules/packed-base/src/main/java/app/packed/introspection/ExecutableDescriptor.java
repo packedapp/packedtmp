@@ -1,7 +1,5 @@
 package app.packed.introspection;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -19,24 +17,6 @@ import java.lang.reflect.Method;
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 public interface ExecutableDescriptor extends AnnotatedElement, MemberDescriptor {
-
-    /**
-     * Returns {@code "constructor"} for a {@link ConstructorDescriptor} or {@code "method"} for a {@link MethodDescriptor}.
-     *
-     * @return the descriptor type
-     */
-    // rename to descriptorName???
-    String descriptorTypeName();
-
-    ParameterDescriptor getParameter(int index);
-
-    /**
-     * Returns an array of parameter mirrors of the executable.
-     *
-     * @return an array of parameter mirrors of the executable
-     */
-    // TODO fix
-    ParameterDescriptor[] getParametersUnsafe();
 
     Class<?>[] getParameterTypes();
 
@@ -76,17 +56,4 @@ public interface ExecutableDescriptor extends AnnotatedElement, MemberDescriptor
     // If we have a non method based version....
     // We can use Lookup.find(xxxxx)
     MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
-
-    /**
-     * Returns a executable descriptor representing the specified executable.
-     *
-     * @param executable
-     *            the executable for which to return a descriptor for
-     * @return the descriptor
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    static ExecutableDescriptor from(Executable executable) {
-        requireNonNull(executable, "executable is null");
-        return executable instanceof Constructor ? ConstructorDescriptor.from((Constructor) executable) : MethodDescriptor.from((Method) executable);
-    }
 }

@@ -22,7 +22,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 
 import app.packed.introspection.ExecutableDescriptor;
-import app.packed.introspection.ParameterDescriptor;
 import packed.internal.util.ReflectionUtil;
 
 /** The default implementation of {@link ExecutableDescriptor}. */
@@ -63,11 +62,6 @@ public abstract class PackedExecutableDescriptor implements ExecutableDescriptor
     public Class<?>[] getParameterTypes() {
         return executable.getParameterTypes();
     }
-
-    /** {@inheritDoc} */
-
-    @Override
-    public abstract String descriptorTypeName();
 
     /** {@inheritDoc} */
     @Override
@@ -117,18 +111,8 @@ public abstract class PackedExecutableDescriptor implements ExecutableDescriptor
         return executable.getModifiers();
     }
 
-    /** {@inheritDoc} */
-    // TODO fix
-    @Override
     public final PackedParameterDescriptor[] getParametersUnsafe() {
         return parameters;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final ParameterDescriptor getParameter(int index) {
-        // TODO range check
-        return parameters[index];
     }
 
     /** {@inheritDoc} */

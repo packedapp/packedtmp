@@ -28,9 +28,7 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.MethodDescriptor;
-import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.util.ReflectionUtil;
 
@@ -39,10 +37,8 @@ import packed.internal.util.ReflectionUtil;
  * <p>
  * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
  * 
- * @apiNote In the future, if the Java language permits, {@link ParameterDescriptor} may become a {@code sealed}
- *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-public final class PackedParameterDescriptor implements VariableDescriptor, ParameterDescriptor {
+public final class PackedParameterDescriptor implements VariableDescriptor {
 
     /** The executable that declares the parameter. */
     private final PackedExecutableDescriptor declaringExecutable;
@@ -162,8 +158,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
         return parameter.hashCode();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public int index() {
         return index;
     }
@@ -182,12 +176,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
 
     /** {@inheritDoc} */
     @Override
-    public boolean isVarArgs() {
-        return parameter.isVarArgs();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public String toString() {
         return parameter.toString();
     }
@@ -199,12 +187,12 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
      *            the parameter to create a descriptor for
      * @return a new parameter descriptor
      */
-    public static ParameterDescriptor from(Parameter parameter) {
+    public static PackedParameterDescriptor from(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
 
         PackedExecutableDescriptor em;
         if (parameter.getDeclaringExecutable() instanceof Constructor) {
-            em = (PackedExecutableDescriptor) ConstructorDescriptor.from((Constructor<?>) parameter.getDeclaringExecutable());
+            em = new PackedConstructorDescriptor<>((Constructor<?>) parameter.getDeclaringExecutable());
         } else {
             em = (PackedExecutableDescriptor) MethodDescriptor.from((Method) parameter.getDeclaringExecutable());
         }

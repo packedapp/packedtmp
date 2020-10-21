@@ -29,9 +29,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
 import app.packed.inject.sandbox.Injector;
-import app.packed.introspection.ParameterDescriptor;
+import packed.internal.introspection.PackedParameterDescriptor;
 
-/** Tests {@link ParameterDescriptor}. */
+/** Tests {@link PackedParameterDescriptor}. */
 public class InternalParameterDescriptorTest {
 
     static Method M = Arrays.stream(InternalParameterDescriptorTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("someMethod")).findFirst().get();
@@ -40,15 +40,15 @@ public class InternalParameterDescriptorTest {
 
     @Test
     public void ofParameter() throws Exception {
-        npe(() -> ParameterDescriptor.from((Parameter) null), "parameter");
+        npe(() -> PackedParameterDescriptor.from((Parameter) null), "parameter");
 
-        ParameterDescriptor ipd = ParameterDescriptor.from(P1);
+        PackedParameterDescriptor ipd = PackedParameterDescriptor.from(P1);
 
         assertThat(ipd.descriptorTypeName()).isEqualTo("parameter");
 
         assertThat(ipd).isEqualTo(ipd);
-        assertThat(ipd).isEqualTo(ParameterDescriptor.from(P1));
-        assertThat(ipd).isNotEqualTo(ParameterDescriptor.from(P2));
+        assertThat(ipd).isEqualTo(PackedParameterDescriptor.from(P1));
+        assertThat(ipd).isNotEqualTo(PackedParameterDescriptor.from(P2));
 
         assertThat(ipd).isNotEqualTo("");
 

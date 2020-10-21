@@ -30,7 +30,6 @@ import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import app.packed.introspection.ParameterDescriptor;
 import packed.internal.container.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
@@ -97,7 +96,7 @@ public final class ServiceRequirementsManager {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
                                 AnnotatedVariable vd = dependency.variable().orElse(null);
-                                int pindex = vd instanceof ParameterDescriptor ? ((ParameterDescriptor) vd).index() : -1;
+                                int pindex = vd instanceof PackedParameterDescriptor ? ((PackedParameterDescriptor) vd).index() : -1;
                                 if (j == pindex) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {

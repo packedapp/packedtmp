@@ -22,10 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 
-import app.packed.introspection.ConstructorDescriptor;
-
-/** The default implementation of {@link ConstructorDescriptor}. */
-public final class PackedConstructorDescriptor<T> extends PackedExecutableDescriptor implements ConstructorDescriptor<T> {
+public final class PackedConstructorDescriptor<T> extends PackedExecutableDescriptor {
 
     /** The constructor that is being mirrored. */
     private final Constructor<?> constructor;
@@ -39,12 +36,6 @@ public final class PackedConstructorDescriptor<T> extends PackedExecutableDescri
     public PackedConstructorDescriptor(Constructor<?> constructor) {
         super(requireNonNull(constructor, "constructor is null"));
         this.constructor = constructor;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String descriptorTypeName() {
-        return "constructor";
     }
 
     /** {@inheritDoc} */

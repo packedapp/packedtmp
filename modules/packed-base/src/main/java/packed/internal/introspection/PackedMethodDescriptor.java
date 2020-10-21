@@ -61,12 +61,6 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
 
     /** {@inheritDoc} */
     @Override
-    public String descriptorTypeName() {
-        return "method";
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean equals(@Nullable Object obj) {
         // return obj == this || (obj instanceof MethodDescriptor d && d.method.equals(method));
         if (obj == this) {
