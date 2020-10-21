@@ -44,8 +44,6 @@ import app.packed.base.TypeToken;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.introspection.PackedExecutableDescriptor;
-import packed.internal.introspection.PackedFieldDescriptor;
 import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
@@ -221,13 +219,14 @@ public final class DependencyDescriptor implements OldVariable {
      */
     public Optional<Member> member() {
         // MemberDescriptor???
-        if (variable instanceof PackedFieldDescriptor) {
-            return Optional.of(((PackedFieldDescriptor) variable).copyField());
-        } else if (variable instanceof PackedParameterDescriptor) {
-            return Optional.of(((PackedExecutableDescriptor) ((PackedParameterDescriptor) variable).getDeclaringExecutable()).copyExecutable());
-        } else {
-            return Optional.empty();
-        }
+        return Optional.empty();
+//        if (variable instanceof PackedFieldDescriptor) {
+//            return Optional.of(((PackedFieldDescriptor) variable).copyField());
+//        } else if (variable instanceof PackedParameterDescriptor) {
+//            return Optional.of(((PackedExecutableDescriptor) ((PackedParameterDescriptor) variable).getDeclaringExecutable()).copyExecutable());
+//        } else {
+//            return Optional.empty();
+//        }
     }
 
     /** {@inheritDoc} */
