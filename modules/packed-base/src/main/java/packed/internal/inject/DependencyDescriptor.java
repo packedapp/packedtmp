@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
@@ -41,10 +42,11 @@ import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
 import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
+import packed.internal.introspection.PackedExecutableDescriptor;
+import packed.internal.introspection.PackedFieldDescriptor;
 import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
@@ -218,12 +220,12 @@ public final class DependencyDescriptor implements OldVariable {
      *         member.
      * @see #variable()
      */
-    public Optional<MemberDescriptor> member() {
+    public Optional<Member> member() {
         // MemberDescriptor???
-        if (variable instanceof FieldDescriptor) {
-            return Optional.of(((FieldDescriptor) variable));
-        } else if (variable instanceof ParameterDescriptor) {
-            return Optional.of(((ParameterDescriptor) variable).getDeclaringExecutable());
+        if (variable instanceof PackedFieldDescriptor) {
+            return Optional.of(((PackedFieldDescriptor) variable).copyField());
+        } else if (variable instanceof PackedParameterDescriptor) {
+            return Optional.of(((PackedExecutableDescriptor) ((PackedParameterDescriptor) variable).getDeclaringExecutable()).copyExecutable());
         } else {
             return Optional.empty();
         }
@@ -256,7 +258,6 @@ public final class DependencyDescriptor implements OldVariable {
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
-     * @see #member()
      */
     public Optional<AnnotatedVariable> variable() {
         return Optional.ofNullable(variable);

@@ -15,6 +15,7 @@
  */
 package app.packed.inject;
 
+import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.base.AnnotatedVariable;
@@ -23,7 +24,6 @@ import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 
 /**
@@ -147,7 +147,7 @@ public interface ProvisionContext {
      */
     // Altsaa taenker man laver en special annotation.
     @Deprecated
-    Optional<MemberDescriptor> targetMember();
+    Optional<Member> targetMember();
 
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this

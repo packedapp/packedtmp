@@ -23,6 +23,7 @@ import java.lang.reflect.Parameter;
 
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.ParameterDescriptor;
+import packed.internal.util.ReflectionUtil;
 
 /** The default implementation of {@link ExecutableDescriptor}. */
 public abstract class PackedExecutableDescriptor implements ExecutableDescriptor {
@@ -51,6 +52,10 @@ public abstract class PackedExecutableDescriptor implements ExecutableDescriptor
             this.parameters[i] = new PackedParameterDescriptor(this, parameters[i], i);
         }
         this.parameterTypes = executable.getParameterTypes();
+    }
+
+    public Executable copyExecutable() {
+        return ReflectionUtil.copy(executable);
     }
 
     /** {@inheritDoc} */

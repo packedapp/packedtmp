@@ -34,6 +34,7 @@ import packed.internal.inject.DependencyProvider;
 import packed.internal.sidecar.MethodSidecarModel;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.ReflectionUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -173,11 +174,7 @@ public final class SourceModelMethod extends SourceModelMember {
                 // freely with exactly one sidecar. However, is the method requested by more
                 // than 1 sidecar we need to create a new method instance.
                 if (shared.isMethodUsed) {
-                    try {
-                        m = exposedMethod = unsafeMethod.getDeclaringClass().getDeclaredMethod(unsafeMethod.getName(), unsafeMethod.getParameterTypes());
-                    } catch (NoSuchMethodException e) {
-                        throw new IllegalStateException(e);
-                    }
+                    m = exposedMethod = ReflectionUtil.copy(unsafeMethod);
                 } else {
                     m = exposedMethod = unsafeMethod;
                     shared.isMethodUsed = true;

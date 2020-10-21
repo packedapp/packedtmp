@@ -17,6 +17,7 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.base.AnnotatedVariable;
@@ -26,7 +27,6 @@ import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.sandbox.Injector;
-import app.packed.introspection.MemberDescriptor;
 
 /** Implementation of {@link ProvisionContext}. */
 public final class PackedProvisionContext implements ProvisionContext {
@@ -79,7 +79,7 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<MemberDescriptor> targetMember() {
+    public Optional<Member> targetMember() {
         return dependency.member();
     }
 

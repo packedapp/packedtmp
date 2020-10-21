@@ -30,6 +30,7 @@ import java.util.Optional;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.introspection.FieldDescriptor;
+import packed.internal.util.ReflectionUtil;
 
 /** The default implementation of {@link FieldDescriptor}. */
 public final class PackedFieldDescriptor implements FieldDescriptor {
@@ -51,6 +52,10 @@ public final class PackedFieldDescriptor implements FieldDescriptor {
     @Override
     public String descriptorTypeName() {
         return "field";
+    }
+
+    public Field copyField() {
+        return ReflectionUtil.copy(field);
     }
 
     /** {@inheritDoc} */
