@@ -28,7 +28,6 @@ import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +37,6 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 
 import app.packed.base.TypeToken.CanonicalizedTypeLiteral;
-import app.packed.introspection.ParameterDescriptor;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
@@ -383,12 +381,12 @@ public abstract class Key<T> {
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
-    public static Key<?> fromParameter(Parameter parameter) {
-        requireNonNull(parameter, "parameter is null");
-        TypeToken<?> tl = TypeToken.fromParameter(parameter).box();
-        Annotation[] annotation = QualifierHelper.findQualifier(parameter.getAnnotations());
-        return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
-    }
+//    public static Key<?> fromParameter(Parameter parameter) {
+//        requireNonNull(parameter, "parameter is null");
+//        TypeToken<?> tl = TypeToken.fromParameter(parameter).box();
+//        Annotation[] annotation = QualifierHelper.findQualifier(parameter.getAnnotations());
+//        return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
+//    }
 
     /**
      * Returns a key with no qualifier and the same type as this instance.
@@ -429,8 +427,6 @@ public abstract class Key<T> {
     public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeToken<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
-        assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof TypeToken
-                || source instanceof Class);
 
         typeLiteral = typeLiteral.box();
         if (TypeUtil.isOptionalType(typeLiteral.rawType())) {

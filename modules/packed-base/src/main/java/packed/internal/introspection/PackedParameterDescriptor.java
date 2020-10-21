@@ -29,10 +29,10 @@ import java.util.Optional;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.introspection.ConstructorDescriptor;
-import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
+import packed.internal.util.ReflectionUtil;
 
 /**
  * A parameter descriptor.
@@ -130,12 +130,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
     @Override
     public Class<?> getDeclaringClass() {
         return parameter.getDeclaringExecutable().getDeclaringClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ExecutableDescriptor getDeclaringExecutable() {
-        return ExecutableDescriptor.from(parameter.getDeclaringExecutable());
     }
 
     /** {@inheritDoc} */
@@ -243,7 +237,8 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
     /** {@inheritDoc} */
     @Override
     public TypeToken<?> type() {
-        return TypeToken.fromParameter(parameter);
+        Type t = ReflectionUtil.getParameterizedType(parameter, index);
+        return TypeToken.fromType(t);
     }
 }
 //

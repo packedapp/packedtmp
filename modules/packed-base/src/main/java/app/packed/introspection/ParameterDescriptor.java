@@ -15,13 +15,6 @@ import packed.internal.introspection.PackedParameterDescriptor;
 public interface ParameterDescriptor extends VariableDescriptor {
 
     /**
-     * Returns the executable that defines the parameter.
-     * 
-     * @return the executable that defines the parameter
-     */
-    ExecutableDescriptor getDeclaringExecutable();
-
-    /**
      * Returns the index of the parameter.
      *
      * @return the index of the parameter

@@ -19,6 +19,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 
 /**
  *
@@ -57,5 +60,15 @@ public final class ReflectionUtil {
 
     public static String typeOf(Executable e) {
         return e instanceof Method ? "method" : "constructor";
+    }
+
+    public static Type getParameterizedType(Parameter parameter, int index) {
+        // Workaround for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
+        Class<?> dc = parameter.getDeclaringExecutable().getDeclaringClass();
+        if (index > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
+            return parameter.getDeclaringExecutable().getGenericParameterTypes()[index - 1];
+        } else {
+            return parameter.getParameterizedType();
+        }
     }
 }

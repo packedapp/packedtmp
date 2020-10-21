@@ -17,7 +17,6 @@ package packed.internal.base.reflect;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static testutil.assertj.Assertions.npe;
-import static testutil.stubs.TypeStubs.LIST_WILDCARD;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
@@ -29,7 +28,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.ParameterDescriptor;
 
@@ -62,18 +60,17 @@ public class InternalParameterDescriptorTest {
 
     public void someMethod(@Nullable Map<String, List<?>> s, int f) {}
 
-    /** {@link #test1()} and {@link #test2()} should both */
-    @Test
-    public void test1() throws Exception {
-        class Tmpx<T> {
-            @SuppressWarnings("unused")
-            Tmpx(List<?> l) {}
-        }
-        // Tmpx is a non-static class so first parameter is TypeLiteralTest
-        assertThat(LIST_WILDCARD).isEqualTo(TypeToken.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).type());
-    }
+//    /** {@link #test1()} and {@link #test2()} should both */
+//    @Test
+//    public void test1() throws Exception {
+//        class Tmpx<T> {
+//            @SuppressWarnings("unused")
+//            Tmpx(List<?> l) {}
+//        }
+//        // Tmpx is a non-static class so first parameter is TypeLiteralTest
+//        assertThat(LIST_WILDCARD).isEqualTo(TypeToken.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).type());
+//    }
 
-    /** {@link #test1()} and {@link #test2()} should both */
     @Test
     public void test2() {
         class X {}
