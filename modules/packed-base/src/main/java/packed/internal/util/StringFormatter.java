@@ -29,8 +29,6 @@ import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.introspection.MethodDescriptor;
-
 /** A utility class with various formatting routines. */
 public final class StringFormatter {
 
@@ -161,14 +159,6 @@ public final class StringFormatter {
 
     public static String format(Method method) {
         return format(method.getDeclaringClass()) + "#" + method.getName() + "(" + format(method.getParameterTypes()) + ")";
-    }
-
-    public static String format(MethodDescriptor method) {
-        return format(method.getDeclaringClass()) + "#" + method.getName() + "(" + format(method.getParameterTypes()) + ")";
-    }
-
-    public static String formatShortWithParameters(MethodDescriptor m) {
-        return m.getDeclaringClass().getSimpleName() + "#" + m.getName() + "(" + formatSimple(m.getParameterTypes()) + ")";
     }
 
     public static String formatShortWithParameters(Method m) {

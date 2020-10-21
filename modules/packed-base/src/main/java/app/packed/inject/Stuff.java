@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.introspection;
+package app.packed.inject;
 
 import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
-import app.packed.inject.Factory;
-import app.packed.inject.Factory2;
 
 /**
  *

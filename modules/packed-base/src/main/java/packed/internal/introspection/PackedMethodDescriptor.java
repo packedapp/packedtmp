@@ -27,15 +27,12 @@ import java.util.Arrays;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.introspection.MethodDescriptor;
 import packed.internal.util.StringFormatter;
 
 /**
  * Provides information about a method, such as its name, parameters, annotations. Unlike {@link Method} this class is
  * immutable, and can be be freely shared.
  * 
- * @apiNote In the future, if the Java language permits, {@link MethodDescriptor} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
  */
 // Refac using
 // https://docs.oracle.com/en/java/javase/11/docs/api/java.compiler/javax/lang/model/element/ExecutableElement.html
@@ -43,7 +40,7 @@ import packed.internal.util.StringFormatter;
 // Hmm kan vi lave nogle build steps, hvor vi f.eks. bruger ASM istedet for Java reflection.
 // Saaledes at vi undgaar at lave annotations proxies....
 // DVS vi har ikke en metode i maven...
-public final class PackedMethodDescriptor extends PackedExecutableDescriptor implements MethodDescriptor {
+public final class PackedMethodDescriptor extends PackedExecutableDescriptor {
 
     /** The method that is being mirrored (private to avoid exposing). */
     private final Method method;
@@ -75,8 +72,6 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
         return Key.fromMethodReturnType(method);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Type getGenericReturnType() {
         return method.getGenericReturnType();
     }
@@ -93,16 +88,12 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
         return method.hashCode();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public boolean isStatic() {
         return Modifier.isStatic(getModifiers());
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean overrides(MethodDescriptor supeer) {
-        PackedMethodDescriptor pmd = (PackedMethodDescriptor) supeer;
+    public boolean overrides(PackedMethodDescriptor supeer) {
+        PackedMethodDescriptor pmd = supeer;
         if (methodOverrides(this.method, pmd.method)) {
             if (getName().equals(supeer.getName())) {
                 return Arrays.equals(parameterTypes, pmd.parameterTypes);
@@ -111,14 +102,10 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
         return false;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?> returnType() {
         return method.getReturnType();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public TypeToken<?> returnTypeLiteral() {
         return TypeToken.fromMethodReturnType(method);
     }
@@ -136,8 +123,6 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
         return lookup.unreflect(method);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException {
         return lookup.unreflectSpecial(method, specialCaller);
     }
@@ -155,18 +140,10 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
                 || sub.getDeclaringClass().getPackage().equals(supeer.getDeclaringClass().getPackage());
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final boolean isNullableReturnType() {
         return isAnnotationPresent(Nullable.class);
     }
 
-    public static PackedMethodDescriptor cast(MethodDescriptor md) {
-        return (PackedMethodDescriptor) md;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isDefault() {
         return isDefault();
     }

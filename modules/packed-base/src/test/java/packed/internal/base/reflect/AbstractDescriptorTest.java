@@ -23,8 +23,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 
-import app.packed.introspection.MemberDescriptor;
-
 /**
  *
  */
@@ -51,7 +49,7 @@ abstract class AbstractDescriptorTest {
         assertThat(expected.isAnnotationPresent(a)).isEqualTo(actual.isAnnotationPresent(a));
     }
 
-    static void validateMember(Member expected, MemberDescriptor actual) {
+    static void validateMember(Member expected, Member actual) {
         assertThat(expected.getDeclaringClass()).isSameAs(actual.getDeclaringClass());
         assertThat(expected.getModifiers()).isEqualTo(actual.getModifiers());
         assertThat(expected.getName()).isEqualTo(actual.getName());

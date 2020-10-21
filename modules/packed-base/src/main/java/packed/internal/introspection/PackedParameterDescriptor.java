@@ -26,10 +26,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.introspection.MethodDescriptor;
-import app.packed.introspection.VariableDescriptor;
 import packed.internal.util.ReflectionUtil;
 
 /**
@@ -38,7 +37,7 @@ import packed.internal.util.ReflectionUtil;
  * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
  * 
  */
-public final class PackedParameterDescriptor implements VariableDescriptor {
+public final class PackedParameterDescriptor implements AnnotatedVariable {
 
     /** The executable that declares the parameter. */
     private final PackedExecutableDescriptor declaringExecutable;
@@ -69,8 +68,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor {
         return declaringExecutable.executable;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public String descriptorTypeName() {
         return "parameter";
     }
@@ -122,26 +119,18 @@ public final class PackedParameterDescriptor implements VariableDescriptor {
         return parameter.getDeclaredAnnotationsByType(annotationClass);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?> getDeclaringClass() {
         return parameter.getDeclaringExecutable().getDeclaringClass();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public int getModifiers() {
         return parameter.getModifiers();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public String getName() {
         return parameter.getName();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Type getParameterizedType() {
         Class<?> dc = getDeclaringClass();
         // Workaround for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
@@ -168,8 +157,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor {
         return parameter.isAnnotationPresent(annotationClass);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public boolean isNamePresent() {
         return parameter.isNamePresent();
     }
@@ -194,7 +181,7 @@ public final class PackedParameterDescriptor implements VariableDescriptor {
         if (parameter.getDeclaringExecutable() instanceof Constructor) {
             em = new PackedConstructorDescriptor<>((Constructor<?>) parameter.getDeclaringExecutable());
         } else {
-            em = (PackedExecutableDescriptor) MethodDescriptor.from((Method) parameter.getDeclaringExecutable());
+            em = new PackedMethodDescriptor((Method) parameter.getDeclaringExecutable());
         }
 
         // parameter.index is not visible, so we need to iterate through all parameters to find the right one

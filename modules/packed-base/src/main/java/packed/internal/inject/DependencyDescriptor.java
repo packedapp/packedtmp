@@ -41,7 +41,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
-import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
@@ -123,7 +122,7 @@ public final class DependencyDescriptor implements OldVariable {
 
     /** The variable of this dependency. */
     @Nullable
-    private final VariableDescriptor variable;
+    private final PackedParameterDescriptor variable;
 
     final Type type;
 
@@ -137,7 +136,7 @@ public final class DependencyDescriptor implements OldVariable {
      * @param variable
      *            an optional field or parameter
      */
-    private DependencyDescriptor(Type type, Key<?> key, Optionality optionality, @Nullable VariableDescriptor variable) {
+    private DependencyDescriptor(Type type, Key<?> key, Optionality optionality, @Nullable PackedParameterDescriptor variable) {
         this.type = requireNonNull(type);
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
@@ -341,7 +340,7 @@ public final class DependencyDescriptor implements OldVariable {
     }
 
     public static <T> DependencyDescriptor fromVariable(Parameter parameter) {
-        VariableDescriptor desc = PackedParameterDescriptor.from(parameter);
+        PackedParameterDescriptor desc = PackedParameterDescriptor.from(parameter);
         requireNonNull(desc, "variable is null");
         TypeToken<?> tl = desc.type();
 

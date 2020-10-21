@@ -18,14 +18,14 @@ package packed.internal.introspection;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 
-import app.packed.introspection.ExecutableDescriptor;
 import packed.internal.util.ReflectionUtil;
 
-/** The default implementation of {@link ExecutableDescriptor}. */
-public abstract class PackedExecutableDescriptor implements ExecutableDescriptor {
+public abstract class PackedExecutableDescriptor implements AnnotatedElement, Member {
 
     /** The executable */
     final Executable executable;
@@ -57,13 +57,10 @@ public abstract class PackedExecutableDescriptor implements ExecutableDescriptor
         return ReflectionUtil.copy(executable);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?>[] getParameterTypes() {
         return executable.getParameterTypes();
     }
 
-    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return executable.getAnnotation(annotationClass);
@@ -127,22 +124,16 @@ public abstract class PackedExecutableDescriptor implements ExecutableDescriptor
         return executable.isSynthetic();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final boolean isVarArgs() {
         return executable.isVarArgs();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public final int parameterCount() {
         return parameters.length;
     }
 
-    /** {@inheritDoc} */
     // If we have a non method based version....
     // We can use Lookup.find(xxxxx)
-    @Override
     public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
 
 }
