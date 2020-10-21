@@ -207,20 +207,6 @@ public final class PackedFieldDescriptor implements FieldDescriptor {
         return new PackedFieldDescriptor(field);
     }
 
-    /**
-     * Makes sure the specified descriptor is a packed field descriptor.
-     * 
-     * @param descriptor
-     *            the descriptor
-     * @return the internal descriptor
-     */
-    public static PackedFieldDescriptor from(FieldDescriptor descriptor) {
-        if (!(descriptor instanceof PackedFieldDescriptor)) {
-            throw new ClassCastException("Custom implementations of " + FieldDescriptor.class.getSimpleName() + " are not supported");
-        }
-        return (PackedFieldDescriptor) descriptor;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Optional<String> name() {

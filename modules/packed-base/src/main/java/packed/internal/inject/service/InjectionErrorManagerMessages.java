@@ -16,6 +16,7 @@
 package packed.internal.inject.service;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -24,7 +25,6 @@ import java.util.stream.Collectors;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
-import app.packed.introspection.MethodDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
@@ -94,7 +94,7 @@ public final class InjectionErrorManagerMessages {
 
             /** {@inheritDoc} */
             @Override
-            public void visitAnnotatedMethod(ConfigSite configSite, MethodDescriptor method, Annotation annotation) {
+            public void visitAnnotatedMethod(ConfigSite configSite, Method method, Annotation annotation) {
                 sb.append(" via annotated method @");
                 sb.append(annotation.annotationType().getSimpleName());
                 sb.append(" ");

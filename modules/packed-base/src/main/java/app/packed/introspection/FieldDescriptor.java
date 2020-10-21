@@ -8,7 +8,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Optional;
 
 import packed.internal.introspection.PackedFieldDescriptor;
 
@@ -117,15 +116,15 @@ public interface FieldDescriptor extends VariableDescriptor, MemberDescriptor {
     static FieldDescriptor from(Field field) {
         return PackedFieldDescriptor.from(field);
     }
-
-    static Optional<FieldDescriptor> tryFind(Class<?> clazz, String fieldName) {
-        requireNonNull(clazz, "clazz is null");
-        requireNonNull(fieldName, "fieldName is null");
-        try {
-            Field field = clazz.getDeclaredField(fieldName);
-            return Optional.of(from(field));
-        } catch (NoSuchFieldException e) {
-            return Optional.empty();
-        }
-    }
+//
+//    static Optional<FieldDescriptor> tryFind(Class<?> clazz, String fieldName) {
+//        requireNonNull(clazz, "clazz is null");
+//        requireNonNull(fieldName, "fieldName is null");
+//        try {
+//            Field field = clazz.getDeclaredField(fieldName);
+//            return Optional.of(from(field));
+//        } catch (NoSuchFieldException e) {
+//            return Optional.empty();
+//        }
+//    }
 }

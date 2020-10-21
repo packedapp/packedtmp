@@ -17,10 +17,9 @@ package app.packed.config;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.nio.file.Path;
-
-import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MethodDescriptor;
 
 /**
  * A visitor for the various {@link ConfigSite config sites} that are supported. This visitor can be used to get details
@@ -38,7 +37,7 @@ public interface ConfigSiteVisitor {
      * @param annotation
      *            the annotation value
      */
-    default void visitAnnotatedField(ConfigSite configSite, FieldDescriptor field, Annotation annotation) {}
+    default void visitAnnotatedField(ConfigSite configSite, Field field, Annotation annotation) {}
 
     /**
      * Visits a config site created from an annotated method.
@@ -50,7 +49,7 @@ public interface ConfigSiteVisitor {
      * @param annotation
      *            the annotation value
      */
-    default void visitAnnotatedMethod(ConfigSite configSite, MethodDescriptor method, Annotation annotation) {}
+    default void visitAnnotatedMethod(ConfigSite configSite, Method method, Annotation annotation) {}
 
     /**
      * Visits a config site created from an annotated type.

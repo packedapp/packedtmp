@@ -41,7 +41,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
-import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
 import packed.internal.errorhandling.ErrorMessageBuilder;
@@ -57,7 +56,7 @@ import packed.internal.util.TypeUtil;
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
  * method. In which case the parameter (represented by a {@link ParameterDescriptor}) can be obtained by calling
  * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
- * instance of {@link FieldDescriptor}. Dependencies can be optional in which case {@link #isOptional()} returns true.
+ * instance of. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
 // Declaring class for use with Type Variables???
 // Det her er ogsaa en Const..
@@ -252,9 +251,6 @@ public final class DependencyDescriptor implements OldVariable {
     /**
      * The variable (field or parameter) from which this dependency originates. Or an empty {@link Optional} if this
      * dependency was not created from a variable.
-     * <p>
-     * If this dependency was created from a field this method will return a {@link FieldDescriptor}. If this dependency was
-     * created from a parameter this method will return a {@link ParameterDescriptor}.
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.

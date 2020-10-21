@@ -20,13 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Attribute;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import app.packed.introspection.FieldDescriptor;
 import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.config.ConfigSiteSupport;
 
@@ -170,7 +170,7 @@ public interface ConfigSite {
         return new ConfigSiteSupport.StackFrameConfigSite(null, operation, stackFrame);
     }
 
-    static ConfigSite fromAnnotatedField(String operation, FieldDescriptor field, Annotation annotation) {
+    static ConfigSite fromAnnotatedField(String operation, Field field, Annotation annotation) {
         return new ConfigSiteSupport.AnnotatedFieldConfigSite(null, operation, field, annotation);
     }
 

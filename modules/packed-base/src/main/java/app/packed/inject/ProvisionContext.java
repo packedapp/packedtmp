@@ -23,8 +23,6 @@ import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.inject.sandbox.Injector;
-import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.ParameterDescriptor;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
@@ -152,9 +150,6 @@ public interface ProvisionContext {
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
      * dependency was not created from a variable.
-     * <p>
-     * If this dependency was created from a field the returned optional will contain a {@link FieldDescriptor}. If this
-     * dependency was created from a parameter the returned optional will contain a {@link ParameterDescriptor}.
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.

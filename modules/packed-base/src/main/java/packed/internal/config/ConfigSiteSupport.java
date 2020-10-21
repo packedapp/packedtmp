@@ -20,14 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
-import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.MethodDescriptor;
 
 /** The various implements of {@link ConfigSite}. */
 public interface ConfigSiteSupport {
@@ -65,7 +65,7 @@ public interface ConfigSiteSupport {
         private final Annotation annotation;
 
         /** The annotated field. */
-        private final FieldDescriptor field;
+        private final Field field;
 
         /** The operation */
         private final String operation;
@@ -74,7 +74,7 @@ public interface ConfigSiteSupport {
         @Nullable
         private final ConfigSite parent;
 
-        public AnnotatedFieldConfigSite(@Nullable ConfigSite parent, String operation, FieldDescriptor field, Annotation annotation) {
+        public AnnotatedFieldConfigSite(@Nullable ConfigSite parent, String operation, Field field, Annotation annotation) {
             this.parent = parent;
             this.operation = requireNonNull(operation, "operation is null");
             this.field = requireNonNull(field, "field is null");
@@ -125,7 +125,7 @@ public interface ConfigSiteSupport {
         private final Annotation annotation;
 
         /** The annotated method. */
-        private final MethodDescriptor method;
+        private final Method method;
 
         /** The operation */
         private final String operation;
@@ -134,7 +134,7 @@ public interface ConfigSiteSupport {
         @Nullable
         private final ConfigSite parent;
 
-        public AnnotatedMethodConfigSite(@Nullable ConfigSite parent, String operation, MethodDescriptor method, Annotation annotation) {
+        public AnnotatedMethodConfigSite(@Nullable ConfigSite parent, String operation, Method method, Annotation annotation) {
             this.parent = parent;
             this.operation = requireNonNull(operation, "operation is null");
             this.method = requireNonNull(method, "method is null");
