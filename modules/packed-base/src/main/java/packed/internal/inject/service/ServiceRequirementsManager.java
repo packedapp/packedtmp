@@ -34,7 +34,6 @@ import packed.internal.container.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.util.ReflectionUtil;
 
 /**

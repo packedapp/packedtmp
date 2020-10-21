@@ -42,15 +42,15 @@ import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
 import packed.internal.errorhandling.ErrorMessageBuilder;
-import packed.internal.introspection.PackedParameterDescriptor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.QualifierHelper;
+import packed.internal.util.ReflectionUtil;
 import packed.internal.util.TypeUtil;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
- * method. In which case the parameter (represented by a {@link PackedParameterDescriptor}) can be obtained by calling
+ * method. In which case the parameter (represented by a {@link Parameter}) can be obtained by calling
  * {@link #variable()}. A descriptor can also be created from a field, in which case {@link #variable()} returns an
  * instance of. Dependencies can be optional in which case {@link #isOptional()} returns true.
  */
@@ -122,7 +122,7 @@ public final class DependencyDescriptor implements OldVariable {
 
     /** The variable of this dependency. */
     @Nullable
-    private final PackedParameterDescriptor variable;
+    private final Parameter variable;
 
     final Type type;
 
@@ -136,7 +136,7 @@ public final class DependencyDescriptor implements OldVariable {
      * @param variable
      *            an optional field or parameter
      */
-    private DependencyDescriptor(Type type, Key<?> key, Optionality optionality, @Nullable PackedParameterDescriptor variable) {
+    private DependencyDescriptor(Type type, Key<?> key, Optionality optionality, @Nullable Parameter variable) {
         this.type = requireNonNull(type);
         this.key = requireNonNull(key, "key is null");
         this.optionality = requireNonNull(optionality);
@@ -253,7 +253,8 @@ public final class DependencyDescriptor implements OldVariable {
      *         variable.
      */
     public Optional<AnnotatedVariable> variable() {
-        return Optional.ofNullable(variable);
+        return Optional.empty();
+        // return Optional.ofNullable(variable);
     }
 
     /**
@@ -286,13 +287,13 @@ public final class DependencyDescriptor implements OldVariable {
         case 0:
             return List.of();
         case 1:
-            return List.of(fromVariable(parameters[0]));
+            return List.of(fromVariable(parameters[0], 0));
         case 2:
-            return List.of(fromVariable(parameters[0]), fromVariable(parameters[1]));
+            return List.of(fromVariable(parameters[0], 0), fromVariable(parameters[1], 1));
         default:
             DependencyDescriptor[] sd = new DependencyDescriptor[parameters.length];
             for (int i = 0; i < sd.length; i++) {
-                sd[i] = fromVariable(parameters[i]);
+                sd[i] = fromVariable(parameters[i], i);
             }
             return List.of(sd);
         }
@@ -339,12 +340,14 @@ public final class DependencyDescriptor implements OldVariable {
         return List.copyOf(result);
     }
 
-    public static <T> DependencyDescriptor fromVariable(Parameter parameter) {
-        PackedParameterDescriptor desc = PackedParameterDescriptor.from(parameter);
-        requireNonNull(desc, "variable is null");
-        TypeToken<?> tl = desc.type();
+    public static <T> DependencyDescriptor fromVariable(Parameter parameter, int index) {
+        requireNonNull(parameter, "variable is null");
 
-        Annotation[] qualifiers = QualifierHelper.findQualifier(desc.getAnnotations());
+        Type getParameterizedType = ReflectionUtil.getParameterizedType(parameter, index);
+
+        TypeToken<?> tl = TypeToken.fromType(getParameterizedType);
+
+        Annotation[] qualifiers = QualifierHelper.findQualifier(parameter.getAnnotations());
 
         // Illegal
         // Optional<Optional*>
@@ -362,7 +365,7 @@ public final class DependencyDescriptor implements OldVariable {
             tl = tl.box();
         } else if (rawType == Optional.class) {
             optionallaity = Optionality.OPTIONAL;
-            Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
+            Type cl = ((ParameterizedType) getParameterizedType).getActualTypeArguments()[0];
             tl = BasePackageAccess.base().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
                 throw new InvalidDeclarationException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl));
@@ -378,7 +381,7 @@ public final class DependencyDescriptor implements OldVariable {
             tl = TypeToken.of(Double.class);
         }
 
-        if (desc.isAnnotationPresent(Nullable.class)) {
+        if (parameter.isAnnotationPresent(Nullable.class)) {
             if (optionallaity != null) {
                 // TODO fix name() to something more readable
                 throw new InvalidDeclarationException(
@@ -392,9 +395,9 @@ public final class DependencyDescriptor implements OldVariable {
             optionallaity = Optionality.REQUIRED;
         }
         // TL is free from Optional
-        Key<?> key = Key.fromTypeLiteralNullableAnnotation(desc, tl, qualifiers);
+        Key<?> key = Key.fromTypeLiteralNullableAnnotation(parameter, tl, qualifiers);
 
-        return new DependencyDescriptor(desc.getParameterizedType(), key, optionallaity, desc);
+        return new DependencyDescriptor(getParameterizedType, key, optionallaity, parameter);
     }
 
     /**

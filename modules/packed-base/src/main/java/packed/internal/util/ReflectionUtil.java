@@ -72,3 +72,26 @@ public final class ReflectionUtil {
         }
     }
 }
+// Method Overrides
+//public boolean overrides(PackedMethodDescriptor supeer) {
+//    PackedMethodDescriptor pmd = supeer;
+//    if (methodOverrides(this.method, pmd.method)) {
+//        if (method.getName().equals(supeer.method.getName())) {
+//            return Arrays.equals(parameterTypes, pmd.parameterTypes);
+//        }
+//    }
+//    return false;
+//}
+//
+///**
+// * Returns true if a overrides b. Assumes signatures of a and b are the same and a's declaring class is a subclass of
+// * b's declaring class.
+// */
+//private static boolean methodOverrides(Method sub, Method supeer) {
+//    int modifiers = supeer.getModifiers();
+//    if (Modifier.isPrivate(modifiers)) {
+//        return false;
+//    }
+//    return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers)
+//            || sub.getDeclaringClass().getPackage().equals(supeer.getDeclaringClass().getPackage());
+//}

@@ -109,7 +109,7 @@ class MethodHandleBuilderHelper {
 
         for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
-            DependencyDescriptor sd = DependencyDescriptor.fromVariable(p);
+            DependencyDescriptor sd = DependencyDescriptor.fromVariable(p, i);
             Class<?> askingForType = sd.key().typeLiteral().rawType();
             MethodHandleBuilder.AnnoClassEntry anno = find(aa, p);
 

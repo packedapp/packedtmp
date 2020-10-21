@@ -13,14 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.introspection;
-
-import static java.util.Objects.requireNonNull;
+package packed.internal.inject.service;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -40,7 +36,7 @@ import packed.internal.util.ReflectionUtil;
 public final class PackedParameterDescriptor implements AnnotatedVariable {
 
     /** The executable that declares the parameter. */
-    private final PackedExecutableDescriptor declaringExecutable;
+    private final Executable executableUnsafe;
 
     /** The index of the parameter. */
     private final int index;
@@ -51,21 +47,21 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
     /**
      * Creates a new descriptor
      *
-     * @param declaringExecutable
+     * @param executableUnsafe
      *            the executable that declares the parameter
      * @param parameter
      *            the parameter
      * @param index
      *            the index of the parameter
      */
-    PackedParameterDescriptor(PackedExecutableDescriptor declaringExecutable, Parameter parameter, int index) {
-        this.declaringExecutable = declaringExecutable;
+    PackedParameterDescriptor(Executable executableUnsafe, Parameter parameter, int index) {
+        this.executableUnsafe = executableUnsafe;
         this.parameter = parameter;
         this.index = index;
     }
 
     public Executable unsafeExecutable() {
-        return declaringExecutable.executable;
+        return executableUnsafe;
     }
 
     public String descriptorTypeName() {
@@ -135,7 +131,7 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
         Class<?> dc = getDeclaringClass();
         // Workaround for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
         if (index() > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
-            return declaringExecutable.executable.getGenericParameterTypes()[index() - 1];
+            return executableUnsafe.getGenericParameterTypes()[index() - 1];
         } else {
             return parameter.getParameterizedType();
         }
@@ -165,37 +161,6 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
     @Override
     public String toString() {
         return parameter.toString();
-    }
-
-    /**
-     * Creates a new parameter descriptor from the specified parameter.
-     *
-     * @param parameter
-     *            the parameter to create a descriptor for
-     * @return a new parameter descriptor
-     */
-    public static PackedParameterDescriptor from(Parameter parameter) {
-        requireNonNull(parameter, "parameter is null");
-
-        PackedExecutableDescriptor em;
-        Executable e = parameter.getDeclaringExecutable();
-        if (e instanceof Constructor) {
-            em = new PackedConstructorDescriptor<>((Constructor<?>) e);
-        } else {
-            em = new PackedMethodDescriptor((Method) e);
-        }
-
-        // parameter.index is not visible, so we need to iterate through all parameters to find the right one
-        if (e.getParameterCount() == 1) {
-            return em.getParametersUnsafe()[0];
-        } else {
-            for (PackedParameterDescriptor p : em.getParametersUnsafe()) {
-                if (p.parameter.equals(parameter)) {
-                    return p;
-                }
-            }
-        }
-        throw new IllegalStateException("Could not find parameter " + parameter);// We should never get to here
     }
 
     /** {@inheritDoc} */
