@@ -159,18 +159,6 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> getType() {
-        return parameter.getType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TypeToken<?> getTypeLiteral() {
-        return TypeToken.fromParameter(parameter);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         return parameter.hashCode();
     }

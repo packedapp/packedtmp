@@ -126,18 +126,6 @@ public final class PackedFieldDescriptor implements FieldDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> getType() {
-        return field.getType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public TypeToken<?> getTypeLiteral() {
-        return TypeToken.fromField(field);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         return field.hashCode();
     }

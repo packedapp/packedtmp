@@ -44,7 +44,7 @@ public class PackedFieldDescriptorTest extends AbstractDescriptorTest {
         validateMember(f, d);
         assertThat(d.descriptorTypeName()).isEqualTo("field");// always field
         assertThat(d.getParameterizedType()).isEqualTo(f.getGenericType());
-        assertThat(d.getType()).isEqualTo(f.getType());
+        assertThat(d.rawType()).isEqualTo(f.getType());
 
         assertThat(d.hashCode()).isEqualTo(f.hashCode());
         assertThat(d.isNamePresent()).isTrue();

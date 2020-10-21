@@ -20,7 +20,6 @@ import java.util.List;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.inject.Provide;
-import app.packed.introspection.VariableDescriptor;
 import app.packed.sidecar.VariableSidecar;
 
 /**
@@ -48,12 +47,6 @@ public final class WireletSidecar extends VariableSidecar {
 
     // Assembly
     /// Vi extracter WireletTyper
-
-    public Context doo(VariableDescriptor var) {
-        // if wirelet annotated with extension member... VarDesc must have the same
-        // ProvideContext
-        throw new UnsupportedOperationException();
-    }
 
     @Provide
     public Object provide(ComponentConfiguration cc, Context context) {

@@ -15,7 +15,6 @@
  */
 package app.packed.introspection;
 
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
@@ -24,8 +23,6 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import app.packed.base.AnnotatedVariable;
-import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
@@ -34,7 +31,7 @@ import app.packed.base.TypeToken;
  * @apiNote In the future, if the Java language permits, {@link VariableDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-public interface VariableDescriptor extends AnnotatedElement, AnnotatedVariable {
+public interface VariableDescriptor extends AnnotatedVariable {
 
     /**
      * Returns the type of element, is typically used for error messages.
@@ -86,26 +83,6 @@ public interface VariableDescriptor extends AnnotatedElement, AnnotatedVariable 
     Type getParameterizedType();
 
     /**
-     * Returns a class that identifies the type of the variable.
-     *
-     * @return a class that identifies the type of the variable
-     * @see Parameter#getType()
-     * @see Field#getType()
-     */
-    // TODO rename to type
-    Class<?> getType();
-
-    /**
-     * Returns a type literal that identifies the generic type of the variable.
-     *
-     * @return a type literal that identifies the generic type of the variable
-     * @see Parameter#getParameterizedType()
-     * @see Field#getGenericType()
-     */
-    // TODO rename typeLiteral
-    TypeToken<?> getTypeLiteral();
-
-    /**
      * Returns true if the variable has a name.
      * <p>
      * This is always true for field variables. For parameter variables it depends on {@link Parameter#isNamePresent()}.
@@ -116,16 +93,6 @@ public interface VariableDescriptor extends AnnotatedElement, AnnotatedVariable 
      * @see Field#getName()
      */
     boolean isNamePresent();
-
-    /**
-     * Returns whether or not a {@link Nullable} annotation is present on the variable.
-     * 
-     * @return true if a nullable annotation is present, otherwise false
-     */
-    @Override
-    default boolean isNullable() {
-        return isAnnotationPresent(Nullable.class);
-    }
 }
 
 // Vi har droppet index

@@ -348,7 +348,7 @@ public final class DependencyDescriptor implements OldVariable {
     public static <T> DependencyDescriptor fromVariable(Parameter parameter) {
         VariableDescriptor desc = PackedParameterDescriptor.from(parameter);
         requireNonNull(desc, "variable is null");
-        TypeToken<?> tl = desc.getTypeLiteral();
+        TypeToken<?> tl = desc.type();
 
         Annotation[] qualifiers = QualifierHelper.findQualifier(desc.getAnnotations());
 
