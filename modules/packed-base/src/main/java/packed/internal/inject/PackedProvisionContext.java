@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
@@ -26,7 +27,6 @@ import app.packed.container.Extension;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.MemberDescriptor;
-import app.packed.introspection.VariableDescriptor;
 
 /** Implementation of {@link ProvisionContext}. */
 public final class PackedProvisionContext implements ProvisionContext {
@@ -85,7 +85,7 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> targetVariable() {
+    public Optional<AnnotatedVariable> targetVariable() {
         return dependency.variable();
     }
 

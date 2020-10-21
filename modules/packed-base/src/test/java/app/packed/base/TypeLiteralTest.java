@@ -414,6 +414,5 @@ public class TypeLiteralTest {
     class MyTypeLiteral<T> extends TypeToken<T> {}
     assertThatThrownBy(() -> new MyTypeLiteral() {})
         .hasMessageStartingWith("Cannot determine type variable <T> for TypeToken<T> on class " + TypeLiteralTest.class.getCanonicalName());
-
   }
 }

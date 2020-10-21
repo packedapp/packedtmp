@@ -23,6 +23,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 
@@ -33,7 +34,7 @@ import app.packed.base.TypeToken;
  * @apiNote In the future, if the Java language permits, {@link VariableDescriptor} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-public interface VariableDescriptor extends AnnotatedElement {
+public interface VariableDescriptor extends AnnotatedElement, AnnotatedVariable {
 
     /**
      * Returns the type of element, is typically used for error messages.
@@ -121,6 +122,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * 
      * @return true if a nullable annotation is present, otherwise false
      */
+    @Override
     default boolean isNullable() {
         return isAnnotationPresent(Nullable.class);
     }

@@ -34,7 +34,7 @@ import packed.internal.component.variable.ParameterVariable;
  * constructed.
  */
 // javadoc from AnnotatedTypeVariable
-public interface AnnotatedVariable extends AnnotatedElement {
+public interface AnnotatedVariable extends AnnotatedElement, OldVariable {
 
     /**
      * Returns whether or not a {@link Nullable} annotation is present on the variable.
@@ -57,6 +57,7 @@ public interface AnnotatedVariable extends AnnotatedElement {
      * 
      * @return the raw type of the variable
      */
+    @Override
     Class<?> rawType();
 
     default Optional<?> source() {

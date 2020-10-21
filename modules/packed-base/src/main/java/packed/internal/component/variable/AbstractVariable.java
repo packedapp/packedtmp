@@ -21,13 +21,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
 import app.packed.base.AnnotatedVariable;
+import app.packed.base.OldVariable;
+import packed.internal.inject.DependencyDescriptor;
 
 /**
  *
  */
-public abstract class AbstractVariable implements AnnotatedVariable {
+public abstract class AbstractVariable implements AnnotatedVariable, OldVariable {
 
     final AnnotatedElement e;
+
+    public DependencyDescriptor descriptor;
 
     AbstractVariable(AnnotatedElement e) {
         this.e = requireNonNull(e);

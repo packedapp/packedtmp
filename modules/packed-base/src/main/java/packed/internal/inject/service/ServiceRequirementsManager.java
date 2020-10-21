@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
@@ -30,7 +31,6 @@ import app.packed.inject.ServiceExtension;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
-import app.packed.introspection.VariableDescriptor;
 import packed.internal.container.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
@@ -94,7 +94,7 @@ public final class ServiceRequirementsManager {
                         if (dependencies.size() > 1) {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
-                                VariableDescriptor vd = dependency.variable().orElse(null);
+                                AnnotatedVariable vd = dependency.variable().orElse(null);
                                 int pindex = vd instanceof ParameterDescriptor ? ((ParameterDescriptor) vd).index() : -1;
                                 if (j == pindex) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
@@ -106,7 +106,7 @@ public final class ServiceRequirementsManager {
                         } else {
                             sb.append(dependency.key().toString());
                             sb.append(" ");
-                            sb.append(dependency.variable().get().getName());
+                            sb.append(dependency.variable().get().name());
                         }
                         sb.append(")");
                     }

@@ -25,6 +25,7 @@ import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
@@ -225,5 +226,23 @@ public final class PackedFieldDescriptor implements FieldDescriptor {
             throw new ClassCastException("Custom implementations of " + FieldDescriptor.class.getSimpleName() + " are not supported");
         }
         return (PackedFieldDescriptor) descriptor;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> name() {
+        return Optional.of(field.getName());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> rawType() {
+        return field.getType();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TypeToken<?> type() {
+        return TypeToken.fromField(field);
     }
 }

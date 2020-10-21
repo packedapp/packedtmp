@@ -34,6 +34,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -257,7 +258,7 @@ public final class DependencyDescriptor implements OldVariable {
      *         variable.
      * @see #member()
      */
-    public Optional<VariableDescriptor> variable() {
+    public Optional<AnnotatedVariable> variable() {
         return Optional.ofNullable(variable);
     }
 
@@ -303,18 +304,6 @@ public final class DependencyDescriptor implements OldVariable {
         }
     }
 
-    /**
-     * Returns the type of the specified field as a key.
-     * 
-     * @param field
-     *            the field to return a type literal for
-     * @return the type literal for the field
-     * @see Field#getGenericType()
-     */
-    public static DependencyDescriptor fromField(FieldDescriptor field) {
-        return fromVariable(field);
-    }
-
     public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
         Type type = TypeVariableExtractor.of(baseClass, baseClassTypeVariableIndex).extract(actualClass);
 
@@ -356,11 +345,8 @@ public final class DependencyDescriptor implements OldVariable {
         return List.copyOf(result);
     }
 
-    public static <T> DependencyDescriptor fromVariable(Parameter desc) {
-        return fromVariable(PackedParameterDescriptor.from(desc));
-    }
-
-    public static <T> DependencyDescriptor fromVariable(VariableDescriptor desc) {
+    public static <T> DependencyDescriptor fromVariable(Parameter parameter) {
+        VariableDescriptor desc = PackedParameterDescriptor.from(parameter);
         requireNonNull(desc, "variable is null");
         TypeToken<?> tl = desc.getTypeLiteral();
 
@@ -385,7 +371,7 @@ public final class DependencyDescriptor implements OldVariable {
             Type cl = ((ParameterizedType) desc.getParameterizedType()).getActualTypeArguments()[0];
             tl = BasePackageAccess.base().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
-                throw new InvalidDeclarationException(ErrorMessageBuilder.of(desc).cannot("have multiple layers of optionals such as " + cl));
+                throw new InvalidDeclarationException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl));
             }
         } else if (rawType == OptionalLong.class) {
             optionallaity = Optionality.OPTIONAL_LONG;
@@ -402,7 +388,7 @@ public final class DependencyDescriptor implements OldVariable {
             if (optionallaity != null) {
                 // TODO fix name() to something more readable
                 throw new InvalidDeclarationException(
-                        ErrorMessageBuilder.of(desc).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
+                        ErrorMessageBuilder.of(parameter).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
                                 .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
             }
             optionallaity = Optionality.OPTIONAL_NULLABLE;

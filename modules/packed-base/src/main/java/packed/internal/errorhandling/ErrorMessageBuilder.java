@@ -18,9 +18,7 @@ package packed.internal.errorhandling;
 import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.AnnotatedElement;
-
-import app.packed.introspection.FieldDescriptor;
-import app.packed.introspection.VariableDescriptor;
+import java.lang.reflect.Parameter;
 
 /**
  *
@@ -76,11 +74,9 @@ public final class ErrorMessageBuilder implements CharSequence {
         return emb;
     }
 
-    public static ErrorMessageBuilder of(VariableDescriptor vd) {
+    public static ErrorMessageBuilder of(Parameter p) {
         ErrorMessageBuilder emb = new ErrorMessageBuilder();
-        if (vd instanceof FieldDescriptor) {
-            emb.sb.append("field " + vd.getName());
-        }
+        emb.sb.append("parameter " + p.getName());
         return emb;
     }
 }

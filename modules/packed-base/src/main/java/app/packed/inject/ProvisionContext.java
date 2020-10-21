@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import java.util.Optional;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.container.Extension;
@@ -24,7 +25,6 @@ import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.ParameterDescriptor;
-import app.packed.introspection.VariableDescriptor;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
@@ -160,7 +160,7 @@ public interface ProvisionContext {
      *         variable.
      * @see #targetMember()
      */
-    Optional<VariableDescriptor> targetVariable();// Should match Var...-> VarDescriptor-> VariableDescriptor
+    Optional<AnnotatedVariable> targetVariable();// Should match Var...-> VarDescriptor-> VariableDescriptor
 }
 // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
 // Includes any qualifier...

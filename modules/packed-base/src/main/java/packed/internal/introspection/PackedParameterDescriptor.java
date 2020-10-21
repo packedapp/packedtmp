@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
@@ -232,6 +233,24 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
             }
         }
         throw new IllegalStateException("Could not find parameter " + parameter);// We should never get to here
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<String> name() {
+        return Optional.of(parameter.getName());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Class<?> rawType() {
+        return parameter.getType();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public TypeToken<?> type() {
+        return TypeToken.fromParameter(parameter);
     }
 }
 //
