@@ -17,6 +17,8 @@ package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,13 +30,13 @@ import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import app.packed.introspection.ExecutableDescriptor;
-import app.packed.introspection.MethodDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.container.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
+import packed.internal.introspection.PackedParameterDescriptor;
+import packed.internal.util.ReflectionUtil;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.
@@ -84,11 +86,11 @@ public final class ServiceRequirementsManager {
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
-                        ExecutableDescriptor ed = ((ParameterDescriptor) dependency.variable().get()).getDeclaringExecutable();
-                        sb.append(ed.descriptorTypeName()).append(": ");
+                        Executable ed = ((PackedParameterDescriptor) dependency.variable().get()).unsafeExecutable();
+                        sb.append(ReflectionUtil.typeOf(ed)).append(": ");
                         sb.append(ed.getDeclaringClass().getCanonicalName());
-                        if (ed instanceof MethodDescriptor) {
-                            sb.append("#").append(((MethodDescriptor) ed).getName());
+                        if (ed instanceof Method) {
+                            sb.append("#").append(((Method) ed).getName());
                         }
                         sb.append("(");
                         if (dependencies.size() > 1) {

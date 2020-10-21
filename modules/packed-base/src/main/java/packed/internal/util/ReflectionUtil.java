@@ -54,4 +54,8 @@ public final class ReflectionUtil {
             throw new IllegalStateException(e);
         }
     }
+
+    public static String typeOf(Executable e) {
+        return e instanceof Method ? "method" : "constructor";
+    }
 }

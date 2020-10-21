@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -66,6 +67,10 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
         this.declaringExecutable = declaringExecutable;
         this.parameter = parameter;
         this.index = index;
+    }
+
+    public Executable unsafeExecutable() {
+        return declaringExecutable.executable;
     }
 
     /** {@inheritDoc} */
