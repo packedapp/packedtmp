@@ -22,7 +22,7 @@ import app.packed.container.BaseBundle;
 /**
  *
  */
-public class Stuff extends BaseBundle {
+class Stuff extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

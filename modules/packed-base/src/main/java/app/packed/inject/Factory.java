@@ -590,21 +590,23 @@ public abstract class Factory<T> {
 
     /**
      * Creates a new factory that uses the specified constructor to create new instances. Compared to the simpler
-     * {@link #fromConstructor(Constructor)} method this method takes a type literal that can be used to create factories
-     * with a generic signature:
+     * {@link #ofConstructor(Constructor)} method this method takes a type literal that can be used to create factories with
+     * a generic signature:
      *
-     * <pre>
-     * Factory<List<String>> f = Factory.fromConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
-     * });
-     * </pre>
      *
+     * 
      * @param constructor
      *            the constructor used from creating an instance
      * @param type
      *            a type literal
      * @return the new factory
-     * @see #of(Constructor)
+     * @see #ofConstructor(Constructor)
      */
+
+//    * <pre>
+//    * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
+//    * });
+//    * </pre>
     @SuppressWarnings("javadoc")
     public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
         requireNonNull(constructor, "constructor is null");
