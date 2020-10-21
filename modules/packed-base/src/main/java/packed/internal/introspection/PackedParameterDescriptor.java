@@ -178,14 +178,15 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
         requireNonNull(parameter, "parameter is null");
 
         PackedExecutableDescriptor em;
-        if (parameter.getDeclaringExecutable() instanceof Constructor) {
-            em = new PackedConstructorDescriptor<>((Constructor<?>) parameter.getDeclaringExecutable());
+        Executable e = parameter.getDeclaringExecutable();
+        if (e instanceof Constructor) {
+            em = new PackedConstructorDescriptor<>((Constructor<?>) e);
         } else {
-            em = new PackedMethodDescriptor((Method) parameter.getDeclaringExecutable());
+            em = new PackedMethodDescriptor((Method) e);
         }
 
         // parameter.index is not visible, so we need to iterate through all parameters to find the right one
-        if (em.parameterCount() == 1) {
+        if (e.getParameterCount() == 1) {
             return em.getParametersUnsafe()[0];
         } else {
             for (PackedParameterDescriptor p : em.getParametersUnsafe()) {

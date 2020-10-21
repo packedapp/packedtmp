@@ -18,8 +18,6 @@ package packed.internal.introspection;
 import static java.util.Objects.requireNonNull;
 import static packed.internal.util.StringFormatter.format;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
 
 public final class PackedConstructorDescriptor<T> extends PackedExecutableDescriptor {
@@ -40,51 +38,7 @@ public final class PackedConstructorDescriptor<T> extends PackedExecutableDescri
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (obj instanceof PackedConstructorDescriptor) {
-            return ((PackedConstructorDescriptor<?>) obj).constructor.equals(constructor);
-        }
-        return false;
-    }
-
-    @Override
-    public String getName() {
-        return constructor.getName();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int hashCode() {
-        return constructor.hashCode();
-    }
-//
-//    /**
-//     * Returns a new constructor.
-//     *
-//     * @return a new constructor
-//     */
-//    @SuppressWarnings("unchecked")
-//    Constructor<T> newConstructor() {
-//        Class<?> declaringClass = constructor.getDeclaringClass();
-//        try {
-//            return (Constructor<T>) declaringClass.getConstructor(parameterTypes);
-//        } catch (NoSuchMethodException e) {
-//            throw new InternalErrorException("constructor", constructor, e);// We should never get to here
-//        }
-//    }
-
-    /** {@inheritDoc} */
-    @Override
     public String toString() {
         return format(constructor);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle unreflect(Lookup lookup) throws IllegalAccessException {
-        requireNonNull(lookup, "lookup is null");
-        return lookup.unreflectConstructor(constructor);
     }
 }

@@ -15,26 +15,18 @@
  */
 package packed.internal.introspection;
 
-import java.lang.annotation.Annotation;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
 import java.lang.reflect.Parameter;
 
 import packed.internal.util.ReflectionUtil;
 
-public abstract class PackedExecutableDescriptor implements AnnotatedElement, Member {
+public abstract class PackedExecutableDescriptor {
 
     /** The executable */
     final Executable executable;
 
     /** An array of the parameter descriptor for this executable */
     private final PackedParameterDescriptor[] parameters;
-
-    /** The parameter types of the executable. */
-    final Class<?>[] parameterTypes;
 
     /**
      * Creates a new descriptor from the specified executable.
@@ -50,90 +42,14 @@ public abstract class PackedExecutableDescriptor implements AnnotatedElement, Me
         for (int i = 0; i < parameters.length; i++) {
             this.parameters[i] = new PackedParameterDescriptor(this, parameters[i], i);
         }
-        this.parameterTypes = executable.getParameterTypes();
+
     }
 
     public Executable copyExecutable() {
         return ReflectionUtil.copy(executable);
     }
 
-    public Class<?>[] getParameterTypes() {
-        return executable.getParameterTypes();
-    }
-
-    @Override
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return executable.getAnnotation(annotationClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Annotation[] getAnnotations() {
-        return executable.getAnnotations();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return executable.getAnnotationsByType(annotationClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return executable.getDeclaredAnnotation(annotationClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Annotation[] getDeclaredAnnotations() {
-        return executable.getDeclaredAnnotations();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return executable.getDeclaredAnnotationsByType(annotationClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Class<?> getDeclaringClass() {
-        return executable.getDeclaringClass();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int getModifiers() {
-        return executable.getModifiers();
-    }
-
     public final PackedParameterDescriptor[] getParametersUnsafe() {
         return parameters;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        return executable.isAnnotationPresent(annotationClass);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean isSynthetic() {
-        return executable.isSynthetic();
-    }
-
-    public final boolean isVarArgs() {
-        return executable.isVarArgs();
-    }
-
-    public final int parameterCount() {
-        return parameters.length;
-    }
-
-    // If we have a non method based version....
-    // We can use Lookup.find(xxxxx)
-    public abstract MethodHandle unreflect(MethodHandles.Lookup lookup) throws IllegalAccessException;
-
 }

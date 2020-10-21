@@ -17,16 +17,11 @@ package packed.internal.introspection;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -44,6 +39,8 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor {
 
     /** The method that is being mirrored (private to avoid exposing). */
     private final Method method;
+    /** The parameter types of the executable. */
+    final Class<?>[] parameterTypes;
 
     /**
      * Creates a new InternalMethodDescriptor from the specified method.
@@ -54,6 +51,7 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor {
     public PackedMethodDescriptor(Method method) {
         super(requireNonNull(method, "method is null"));
         this.method = method;
+        this.parameterTypes = method.getParameterTypes();
     }
 
     /** {@inheritDoc} */
@@ -68,63 +66,26 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor {
         return false;
     }
 
-    public Key<?> fromMethodReturnType() {
-        return Key.fromMethodReturnType(method);
-    }
-
-    public Type getGenericReturnType() {
-        return method.getGenericReturnType();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName() {
-        return method.getName();
-    }
-
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return method.hashCode();
     }
 
-    public boolean isStatic() {
-        return Modifier.isStatic(getModifiers());
-    }
-
     public boolean overrides(PackedMethodDescriptor supeer) {
         PackedMethodDescriptor pmd = supeer;
         if (methodOverrides(this.method, pmd.method)) {
-            if (getName().equals(supeer.getName())) {
+            if (method.getName().equals(supeer.method.getName())) {
                 return Arrays.equals(parameterTypes, pmd.parameterTypes);
             }
         }
         return false;
     }
 
-    public Class<?> returnType() {
-        return method.getReturnType();
-    }
-
-    public TypeToken<?> returnTypeLiteral() {
-        return TypeToken.fromMethodReturnType(method);
-    }
-
     /** {@inheritDoc} */
     @Override
     public String toString() {
         return StringFormatter.format(method);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle unreflect(Lookup lookup) throws IllegalAccessException {
-        requireNonNull(lookup, "lookup is null");
-        return lookup.unreflect(method);
-    }
-
-    public MethodHandle unreflectSpecial(Lookup lookup, Class<?> specialCaller) throws IllegalAccessException {
-        return lookup.unreflectSpecial(method, specialCaller);
     }
 
     /**
@@ -138,14 +99,6 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor {
         }
         return Modifier.isPublic(modifiers) || Modifier.isProtected(modifiers)
                 || sub.getDeclaringClass().getPackage().equals(supeer.getDeclaringClass().getPackage());
-    }
-
-    public final boolean isNullableReturnType() {
-        return isAnnotationPresent(Nullable.class);
-    }
-
-    public boolean isDefault() {
-        return isDefault();
     }
 }
 //
