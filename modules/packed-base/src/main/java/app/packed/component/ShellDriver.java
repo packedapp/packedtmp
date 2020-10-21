@@ -21,7 +21,7 @@ import java.util.function.Function;
 
 import app.packed.guest.Guest;
 import app.packed.inject.ServiceLocator;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedShellDriver;

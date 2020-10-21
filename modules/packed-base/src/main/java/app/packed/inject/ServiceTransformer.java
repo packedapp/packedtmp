@@ -22,29 +22,28 @@ import app.packed.base.Key;
 
 /**
  *
- * A service transformer is
- *
+ * An interface supporting transformation of any number of services.
  * 
+ * @apiNote In the future, if the Java language permits, {@link ServiceTransformer} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
-
-// Vil sige at hvert skridt i wirelets transfomration.
-// Skal resultere i unikke keys
-
-// Det er jo mere eller mindre...
-// de her compute ting
-// Tror altsaa bedre jeg kan lide den end wirelets...
-
-// ServiceComputer... nah
 public interface ServiceTransformer extends ServiceRegistry {
 
-    ServiceTransformer remove(Key<?>... keys);
+}
 
-    ServiceTransformer retain(Key<?>... keys);
+interface ZFrom {
+    // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
+    // If the specified factory has itself as a variable.
+    <T> ServiceTransformer decorate(Class<T> key, Function<T, T> comp);
 
-    ServiceTransformer retain(Predicate<? super Service> predicate);
+    ServiceTransformer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
-    ServiceTransformer retain(Iterable<? super Key<?>> keys);
+    ServiceTransformer map(Factory<?> factory, int... resolveInternally);
+
+    // Otherwise they are completed resolved instream...
+    ServiceTransformer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+
+    Service mapService(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // Hvis eager ikke er godt nok. Saa smid det i en future task...
     // constantify
@@ -52,16 +51,31 @@ public interface ServiceTransformer extends ServiceRegistry {
     //
     // String containerName();
 
-    // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
-    // If the specified factory has itself as a variable.
-    <T> ServiceTransformer decorate(Class<T> key, Function<T, T> comp);
+    /**
+     * <p>
+     * Keys for which a corresponding service is not present, are ignored.
+     * 
+     * @param keys
+     *            the keys that should be removed
+     * @return this transformer
+     */
+    ServiceTransformer remove(Class<?>... keys);
 
-    ServiceTransformer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    ServiceTransformer remove(Key<?>... keys);
 
-    Service mapService(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    ServiceTransformer remove(Predicate<? super Service> predicate);
 
-    ServiceTransformer map(Factory<?> factory, int... resolveInternally);
+    ServiceTransformer retain(Iterable<? super Key<?>> keys);
 
-    // Otherwise they are completed resolved instream...
-    ServiceTransformer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+    ServiceTransformer retain(Key<?>... keys);
 }
+//Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
+
+//Vil sige at hvert skridt i wirelets transfomration.
+//Skal resultere i unikke keys
+
+//Det er jo mere eller mindre...
+//de her compute ting
+//Tror altsaa bedre jeg kan lide den end wirelets...
+
+//ServiceComputer... nah

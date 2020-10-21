@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.service;
-
-import app.packed.container.ContainerBundle;
+package app.packed.inject.sandbox;
 
 /**
  *
  */
-// Specielt lavet til at lave injectors.
-abstract class InjectorBundle extends ContainerBundle {
+// Ideen er lidt at vi tilfoejer
 
+// Bundle.provide(T extends ProvideableConfiguration)
+
+// Saa vi ikke behover altid at koere 
+// wire(driver, class).provide();
+interface ProvidableConfiguration<T> {
+    T provide();
 }

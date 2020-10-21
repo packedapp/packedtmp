@@ -25,7 +25,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.introspection.ConstructorDescriptor;
 import app.packed.introspection.ExecutableDescriptor;
 import app.packed.introspection.MethodDescriptor;
@@ -164,8 +164,8 @@ public final class PackedParameterDescriptor implements VariableDescriptor, Para
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<?> getTypeLiteral() {
-        return TypeLiteral.fromParameter(parameter);
+    public TypeToken<?> getTypeLiteral() {
+        return TypeToken.fromParameter(parameter);
     }
 
     /** {@inheritDoc} */

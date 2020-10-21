@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.inject.Provide;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
 import testutil.stubs.annotation.StringQualifier;
 
 /**

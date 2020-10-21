@@ -16,6 +16,7 @@
 package app.packed.inject;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -27,7 +28,7 @@ import app.packed.base.Attribute;
 import app.packed.base.Key;
 
 /**
- * A selection of service where each service provide instances of a similar type.
+ * A specialization of {@link ServiceLocator} where all service instances have a common super type{@code <S>}.
  */
 //ServiceSelector?
 
@@ -48,6 +49,10 @@ import app.packed.base.Key;
 
 public interface ServiceSelection<S> extends ServiceLocator {
 
+    <T extends Collection<? super S>> T addTo(T collection);
+
+    void putIntoTo(Collection<? super S> collection);
+
     void forEachInstance(Consumer<? super S> action);
 
     void forEachProvider(Consumer<? super Provider<S>> action);
@@ -60,12 +65,8 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     Stream<Provider<S>> providers();
 
-    <T> ServiceSelection<S> selectOnAttribute(Attribute<T> attribute, Predicate<? super T> filter);
-
-    // Only those services which has the s
-    ServiceSelection<S> selectOnQualifier(Class<? extends Annotation> qualifier);
-
-    <T extends Annotation> ServiceSelection<S> selectOnQualifier(Class<? extends T> qualifier, Predicate<? super T> filter);
+    // select(Foo.class).withName()
+    // select().withName()
 
     Stream<Map.Entry<Service, S>> serviceInstances();
 
@@ -87,6 +88,18 @@ public interface ServiceSelection<S> extends ServiceLocator {
     Map<Service, S> toMapServiceInstances();
 
     Map<Service, Provider<S>> toMapServiceProviders();
+
+    <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);
+
+    // Only those services which has the s
+    // has a qualifier
+    ServiceSelection<S> withName(String name);
+
+    ServiceSelection<S> withQualifier(Annotation qualifier);
+
+    ServiceSelection<S> withQualifier(Class<? extends Annotation> qualifier);
+
+    <T extends Annotation> ServiceSelection<S> withQualifier(Class<? extends T> qualifier, Predicate<? super T> filter);
 }
 //It is not a set... Because we might have multiple instances of the same type...
 //Det er hellere ikke rigtig en collection fordi vi laver maaske nye instanser hver gang...

@@ -257,7 +257,7 @@ public class KeyTest {
 
     @Test
     public <S> void toKey() {
-        TypeLiteral<Integer> tl1 = TypeLiteral.of(Integer.class);
+        TypeToken<Integer> tl1 = TypeToken.of(Integer.class);
 
         Key<Integer> k1 = Key.fromTypeLiteral(tl1);
         Key<Integer> k2 = Key.fromTypeLiteral(TL_INTEGER);
@@ -270,18 +270,18 @@ public class KeyTest {
         assertThat(k2.hasQualifier()).isFalse();
 
         // Optional
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<Optional<Integer>>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
                 .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<OptionalInt>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<OptionalInt>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
                 .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<OptionalLong>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<OptionalLong>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
                 .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeLiteral<OptionalDouble>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<OptionalDouble>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
                 .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
 
         // We need to use this old fashion way because of
         try {
-            Key.fromTypeLiteral(new TypeLiteral<List<S>>() {});
+            Key.fromTypeLiteral(new TypeToken<List<S>>() {});
             fail("should have failed");
         } catch (InvalidDeclarationException e) {
             assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");

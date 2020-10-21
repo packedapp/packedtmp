@@ -22,11 +22,11 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
 
 /**
  * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
@@ -40,7 +40,7 @@ public class FieldStaticTest {
         MixedFieldsInstantiable.test(c -> c.provideInstance(new MixedFieldsInstantiable()));
         MixedFieldsInstantiable.test(c -> c.provide(MixedFieldsInstantiable.class));
         MixedFieldsInstantiable.test(c -> c.provide(Factory.of(MixedFieldsInstantiable.class)));
-        MixedFieldsInstantiable.test(c -> c.provide(Factory.of(new TypeLiteral<MixedFieldsInstantiable>() {})));
+        MixedFieldsInstantiable.test(c -> c.provide(Factory.of(new TypeToken<MixedFieldsInstantiable>() {})));
     }
 
     /** Tests prototype {@link Provide#constant()} on static fields. */
@@ -48,7 +48,7 @@ public class FieldStaticTest {
     public void providePrototype() {
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(MixedFieldsNoInstantiation.class));
         MixedFieldsNoInstantiation.test(c -> c.providePrototype(Factory.of(MixedFieldsNoInstantiation.class)));
-        MixedFieldsNoInstantiation.test(c -> c.providePrototype(Factory.of(new TypeLiteral<MixedFieldsNoInstantiation>() {})));
+        MixedFieldsNoInstantiation.test(c -> c.providePrototype(Factory.of(new TypeToken<MixedFieldsNoInstantiation>() {})));
     }
 
     /** A helper class that can be instantiated. */

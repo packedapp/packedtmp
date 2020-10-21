@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Attribute;
 import app.packed.base.TreePath;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.container.Extension;
 
 /**
@@ -30,9 +30,9 @@ import app.packed.container.Extension;
 public class ComponentAttributes {
 
     // Save this on TypeLiteral??
-    static final TypeLiteral<Class<?>> _CLASS = new TypeLiteral<Class<?>>() {};
-    static final TypeLiteral<Class<? extends Extension>> _EXTENSION = new TypeLiteral<Class<? extends Extension>>() {};
-    static final TypeLiteral<TypeLiteral<?>> _TYPE_LITERAL = new TypeLiteral<TypeLiteral<?>>() {};
+    static final TypeToken<Class<?>> _CLASS = new TypeToken<Class<?>>() {};
+    static final TypeToken<Class<? extends Extension>> _EXTENSION = new TypeToken<Class<? extends Extension>>() {};
+    static final TypeToken<TypeToken<?>> _TYPE_LITERAL = new TypeToken<TypeToken<?>>() {};
 
     /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
     public static final Attribute<Class<?>> SOURCE_TYPE = Attribute.of(MethodHandles.lookup(), "source-type", _CLASS);
@@ -53,13 +53,13 @@ public class ComponentAttributes {
     // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
     /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
     static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
-            new TypeLiteral<Class<? extends Bundle<?>>>() {});
+            new TypeToken<Class<? extends Bundle<?>>>() {});
 
     /**
      * 
      * @see ComponentModifier#FUNCTION
      */
-    public static final Attribute<TypeLiteral<?>> FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", _TYPE_LITERAL);
+    public static final Attribute<TypeToken<?>> FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", _TYPE_LITERAL);
 
     // When something is created from an image, it will have the image path set
     // What Aboun generation?? MAYBE an IMAGE_GENERATION as well?? Or maybe Image names are never reused???

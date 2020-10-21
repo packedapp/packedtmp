@@ -13,26 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.internal.inject.service;
 
-import java.lang.reflect.AnnotatedElement;
-import java.util.Optional;
+import java.util.Map;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.Key;
+import app.packed.inject.Service;
+import packed.internal.inject.service.runtime.AbstractServiceRegistry;
 
 /**
  *
  */
-public interface Variable extends AnnotatedElement {
+public class WireletFromTransformer extends AbstractServiceRegistry {
 
-    Optional<String> name();
-
-    TypeLiteral<?> type();
-
-    Class<?> rawType();
+    /** {@inheritDoc} */
+    @Override
+    protected Map<Key<?>, Service> services() {
+        return null;
+    }
 }
-// TypeVariable
-// Field
-// Parameter
-// Synthetic
-// Transformed

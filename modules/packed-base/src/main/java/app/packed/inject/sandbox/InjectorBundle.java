@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tck.injectorconfigurator.of;
+package app.packed.inject.sandbox;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import org.junit.jupiter.api.Test;
-
-import app.packed.inject.sandbox.Injector;
+import app.packed.container.ContainerBundle;
 
 /**
  *
  */
-public class InjectorServicesTest {
-
-    @Test
-    public void services() {
-        assertThat(Injector.configure(c -> {}).stream()).isEmpty();
-    }
+// Specielt lavet til at lave injectors.
+abstract class InjectorBundle extends ContainerBundle {
 
 }

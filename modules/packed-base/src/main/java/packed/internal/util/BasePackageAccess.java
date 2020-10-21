@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 
 /** A mechanism for calling package private methods in public packages without using reflection. */
 public final class BasePackageAccess {
@@ -79,13 +79,13 @@ public final class BasePackageAccess {
     private static class BaseSingletonHolder {
 
         /** The singleton instance. */
-        private static final AppPackedBaseAccess INSTANCE = singleton(AppPackedBaseAccess.class, TypeLiteral.class);
+        private static final AppPackedBaseAccess INSTANCE = singleton(AppPackedBaseAccess.class, TypeToken.class);
     }
 
     /** A support class for calling package private methods in the app.packed.base package. */
     public interface AppPackedBaseAccess {
 
-        boolean isCanonicalized(TypeLiteral<?> typeLiteral);
+        boolean isCanonicalized(TypeToken<?> typeLiteral);
 
         Key<?> toKeyNullableQualifier(Type type, @Nullable Annotation[] qualifier);
 
@@ -96,7 +96,7 @@ public final class BasePackageAccess {
          *            the type to convert
          * @return the type literal
          */
-        TypeLiteral<?> toTypeLiteral(Type type);
+        TypeToken<?> toTypeLiteral(Type type);
     }
 
 }

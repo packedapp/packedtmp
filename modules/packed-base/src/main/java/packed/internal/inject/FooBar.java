@@ -19,7 +19,7 @@ import app.packed.base.Key;
 import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
-import app.packed.inject.ServiceWirelets;
+import app.packed.inject.sandbox.OldServiceWirelets;
 
 /**
  *
@@ -32,7 +32,7 @@ public class FooBar extends BaseBundle {
         install(NeedsString.class);
         provideInstance(123L);
 
-        link(new Child(), ServiceWirelets.fromPeek(e -> System.out.println("Exporting " + e.keys())));
+        link(new Child(), OldServiceWirelets.fromPeek(e -> System.out.println("Exporting " + e.keys())));
     }
 
     public static class NeedsString {

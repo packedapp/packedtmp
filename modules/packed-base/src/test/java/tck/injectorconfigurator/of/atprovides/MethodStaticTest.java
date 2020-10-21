@@ -22,11 +22,11 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
 
 /** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {
@@ -37,7 +37,7 @@ public class MethodStaticTest {
         MixedMethodsInstantiable.test(c -> c.provideInstance(new MixedMethodsInstantiable()));
         MixedMethodsInstantiable.test(c -> c.provide(MixedMethodsInstantiable.class));
         MixedMethodsInstantiable.test(c -> c.provide(Factory.of(MixedMethodsInstantiable.class)));
-        MixedMethodsInstantiable.test(c -> c.provide(Factory.of(new TypeLiteral<MixedMethodsInstantiable>() {})));
+        MixedMethodsInstantiable.test(c -> c.provide(Factory.of(new TypeToken<MixedMethodsInstantiable>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on static methods. */
@@ -54,7 +54,7 @@ public class MethodStaticTest {
     public void providePrototype() {
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(MixedMethodsNoInstantiation.class));
         MixedMethodsNoInstantiation.test(c -> c.providePrototype(Factory.of(MixedMethodsNoInstantiation.class)));
-        MixedMethodsNoInstantiation.test(c -> c.providePrototype(Factory.of(new TypeLiteral<MixedMethodsNoInstantiation>() {})));
+        MixedMethodsNoInstantiation.test(c -> c.providePrototype(Factory.of(new TypeToken<MixedMethodsNoInstantiation>() {})));
     }
 
     /** A helper class that can be instantiated. */

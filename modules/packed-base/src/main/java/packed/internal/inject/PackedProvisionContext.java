@@ -24,9 +24,9 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.inject.ProvisionContext;
+import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.VariableDescriptor;
-import app.packed.service.Injector;
 
 /** Implementation of {@link ProvisionContext}. */
 public final class PackedProvisionContext implements ProvisionContext {
@@ -45,13 +45,13 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> component() {
+    public Optional<Component> targetComponent() {
         return Optional.ofNullable(component);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Class<? extends Extension>> extension() {
+    public Optional<Class<? extends Extension>> targetExtension() {
         return Optional.empty();
     }
 
@@ -79,13 +79,13 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<MemberDescriptor> requestingMember() {
+    public Optional<MemberDescriptor> targetMember() {
         return dependency.member();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Optional<VariableDescriptor> requestingVariable() {
+    public Optional<VariableDescriptor> targetVariable() {
         return dependency.variable();
     }
 

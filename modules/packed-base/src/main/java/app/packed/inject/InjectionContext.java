@@ -15,8 +15,10 @@
  */
 package app.packed.inject;
 
+import java.util.List;
 import java.util.Set;
 
+import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
 
 /**
@@ -52,10 +54,15 @@ public interface InjectionContext {
      * 
      * @return an immutable set of keys that are available for injection at the injection site
      */
+    // maybe this is more context. And the use a ServiceRegistry to get services
+    // The returned set does not include services that are available...
+    // Inject an instance of ServiceRegistry to see those...
     Set<Key<?>> keys();
 
     default void printDependencyTree() {
         // Det er jo bare en trae af ServiceDependency
+
+        // ResolvedVariable -> Status Unresolved but Optional.
 
         // InjectableDependency?
 
@@ -93,6 +100,10 @@ public interface InjectionContext {
     // The reason for why this key is here
     // Could also do codepath...
     default String reason(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    default List<AnnotatedVariable> variables() {
         throw new UnsupportedOperationException();
     }
 }

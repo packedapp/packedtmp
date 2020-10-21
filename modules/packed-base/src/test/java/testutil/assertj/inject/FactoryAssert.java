@@ -18,7 +18,7 @@ package testutil.assertj.inject;
 import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 
 /**
@@ -43,7 +43,7 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
         return is(Key.of(type));
     }
 
-    public FactoryAssert<T> is(TypeLiteral<?> type) {
+    public FactoryAssert<T> is(TypeToken<?> type) {
         return is(Key.fromTypeLiteral(type));
     }
 
@@ -53,7 +53,7 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
         if (!key.equals(type)) {
             failWithMessage("\nExpecting key of type '%s' but was '%s'", key, type);
         }
-        TypeLiteral<?> typeLiteral = actual.typeLiteral();
+        TypeToken<?> typeLiteral = actual.typeLiteral();
         if (!typeLiteral.equals(key.typeLiteral())) {
             failWithMessage("\nExpecting TypeLiteral of type '%s' but was '%s'", key.typeLiteral(), typeLiteral);
         }

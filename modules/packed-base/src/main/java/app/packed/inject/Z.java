@@ -15,27 +15,24 @@
  */
 package app.packed.inject;
 
-import java.util.function.Consumer;
-
-import app.packed.component.Wirelet;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
- * containers.
+ *
  */
-public final class ServiceWirelets {
+class Z {
 
-    /** No instantiation. */
-    private ServiceWirelets() {}
+    public static void main(ServiceLocator sl) {
 
-    public static Wirelet to(Consumer<? super ServiceTransformer> transformer) {
-        throw new UnsupportedOperationException();
+        List<CharSequence> l = new ArrayList<>();
+        sl.select(String.class).forEachInstance(i -> l.add(i));
+        Map<Integer, String> m = new HashMap<>();
+        sl.select(String.class).forEachServiceInstance((s, st) -> m.put(s.attributes().keys().size(), st));
+
+        sl.select(String.class).addTo(l); // er sgu lidt grimt
+
     }
-
-    public static Wirelet from(Consumer<? super ServiceTransformer> transformer) {
-        throw new UnsupportedOperationException();
-    }
-
-    // restrict contract
-    // provide <-- easy access
 }

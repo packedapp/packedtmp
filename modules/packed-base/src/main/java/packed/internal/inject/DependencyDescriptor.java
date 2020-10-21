@@ -38,7 +38,7 @@ import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.ParameterDescriptor;
@@ -362,7 +362,7 @@ public final class DependencyDescriptor implements OldVariable {
 
     public static <T> DependencyDescriptor fromVariable(VariableDescriptor desc) {
         requireNonNull(desc, "variable is null");
-        TypeLiteral<?> tl = desc.getTypeLiteral();
+        TypeToken<?> tl = desc.getTypeLiteral();
 
         Annotation[] qualifiers = QualifierHelper.findQualifier(desc.getAnnotations());
 
@@ -389,13 +389,13 @@ public final class DependencyDescriptor implements OldVariable {
             }
         } else if (rawType == OptionalLong.class) {
             optionallaity = Optionality.OPTIONAL_LONG;
-            tl = TypeLiteral.of(Long.class);
+            tl = TypeToken.of(Long.class);
         } else if (rawType == OptionalInt.class) {
             optionallaity = Optionality.OPTIONAL_INT;
-            tl = TypeLiteral.of(Integer.class);
+            tl = TypeToken.of(Integer.class);
         } else if (rawType == OptionalDouble.class) {
             optionallaity = Optionality.OPTIONAL_DOUBLE;
-            tl = TypeLiteral.of(Double.class);
+            tl = TypeToken.of(Double.class);
         }
 
         if (desc.isAnnotationPresent(Nullable.class)) {
@@ -432,7 +432,7 @@ public final class DependencyDescriptor implements OldVariable {
     public static DependencyDescriptor of(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifier()) {
-            TypeLiteral<?> tl = key.typeLiteral();
+            TypeToken<?> tl = key.typeLiteral();
             if (tl.type() == tl.rawType()) {
                 return CLASS_CACHE.get(tl.rawType());
             }
@@ -443,7 +443,7 @@ public final class DependencyDescriptor implements OldVariable {
     public static DependencyDescriptor ofOptional(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!key.hasQualifier()) {
-            TypeLiteral<?> tl = key.typeLiteral();
+            TypeToken<?> tl = key.typeLiteral();
             if (tl.type() == tl.rawType()) {
                 return CLASS_CACHE.get(tl.rawType());
             }

@@ -29,9 +29,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
+import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.ParameterDescriptor;
-import app.packed.service.Injector;
 
 /** Tests {@link ParameterDescriptor}. */
 public class InternalParameterDescriptorTest {
@@ -70,7 +70,7 @@ public class InternalParameterDescriptorTest {
             Tmpx(List<?> l) {}
         }
         // Tmpx is a non-static class so first parameter is TypeLiteralTest
-        assertThat(LIST_WILDCARD).isEqualTo(TypeLiteral.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).type());
+        assertThat(LIST_WILDCARD).isEqualTo(TypeToken.fromParameter(Tmpx.class.getDeclaredConstructors()[0].getParameters()[1]).type());
     }
 
     /** {@link #test1()} and {@link #test2()} should both */

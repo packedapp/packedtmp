@@ -120,7 +120,7 @@ public final class TypeUtil {
      * @param addTo
      *            the set to add each variable to
      * @param type
-     *            the type to analyze
+     *            the type to analyse
      */
     private static void findTypeVariableNames0(LinkedHashSet<String> addTo, Type type) {
         if (type instanceof ParameterizedType) {

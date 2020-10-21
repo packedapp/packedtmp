@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.inject.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,12 +24,15 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.component.Wirelet;
+import app.packed.inject.Service;
+import app.packed.inject.ServiceLocator;
+import app.packed.inject.ServiceRegistry;
 import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 
 /**
  *
  */
-public class ServiceToWirelets {
+public class ServiceWireletsTo {
 
     public static <T> Wirelet map(Class<T> from, Class<? super T> to) {
         return map(Key.of(from), Key.of(to));
@@ -82,8 +85,8 @@ class ZBadIdeas {
     public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
         // Must only provide ServiceWirelets...
         compute(e -> {
-            if (e.isPresent(String.class)) {
-                return Optional.of(ServiceToWirelets.map(String.class, CharSequence.class));
+            if (e.contains(String.class)) {
+                return Optional.of(ServiceWireletsTo.map(String.class, CharSequence.class));
             }
             return Optional.empty();
         });
@@ -92,15 +95,15 @@ class ZBadIdeas {
 
     public static Wirelet compute(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
         // Must only provide ServiceWirelets...
-        compute(f -> f.isPresent(String.class), e -> ServiceToWirelets.map(String.class, CharSequence.class));
+        compute(f -> f.contains(String.class), e -> ServiceWireletsTo.map(String.class, CharSequence.class));
         throw new UnsupportedOperationException();
     }
 
     public static Wirelet computeFrom(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
         // Must only provide ServiceWirelets...
         compute(e -> {
-            if (e.isPresent(String.class)) {
-                return Optional.of(ServiceToWirelets.map(String.class, CharSequence.class));
+            if (e.contains(String.class)) {
+                return Optional.of(ServiceWireletsTo.map(String.class, CharSequence.class));
             }
             return Optional.empty();
         });
@@ -109,7 +112,7 @@ class ZBadIdeas {
 
     public static Wirelet computeFrom(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
         // Must only provide ServiceWirelets...
-        compute(f -> f.isPresent(String.class), e -> ServiceToWirelets.map(String.class, CharSequence.class));
+        compute(f -> f.contains(String.class), e -> ServiceWireletsTo.map(String.class, CharSequence.class));
         throw new UnsupportedOperationException();
     }
 

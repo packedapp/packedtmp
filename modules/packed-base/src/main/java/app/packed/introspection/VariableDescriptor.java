@@ -24,7 +24,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 
 /**
  * A shared superclass for the common functionality of class variables (static {@link Field fields}), instance variables
@@ -102,7 +102,7 @@ public interface VariableDescriptor extends AnnotatedElement {
      * @see Field#getGenericType()
      */
     // TODO rename typeLiteral
-    TypeLiteral<?> getTypeLiteral();
+    TypeToken<?> getTypeLiteral();
 
     /**
      * Returns true if the variable has a name.

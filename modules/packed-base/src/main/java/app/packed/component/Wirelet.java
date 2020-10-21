@@ -16,8 +16,8 @@
 package app.packed.component;
 
 import app.packed.container.ContainerBundle;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.wirelet.InternalWirelet;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;

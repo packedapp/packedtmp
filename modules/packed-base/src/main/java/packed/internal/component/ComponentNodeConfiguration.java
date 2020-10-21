@@ -46,7 +46,7 @@ import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
-import app.packed.service.ExportedServiceConfiguration;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;

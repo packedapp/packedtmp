@@ -86,7 +86,7 @@ public abstract class Factory1<T, R> extends Factory<R> {
             Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    static final ClassValue<List<DependencyDescriptor>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
+    static final ClassValue<List<DependencyDescriptor>> FACTORY1_DEPENDENCY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -114,7 +114,7 @@ public abstract class Factory1<T, R> extends Factory<R> {
      */
     protected Factory1(Function<? super T, ? extends R> function) {
         requireNonNull(function, "function is null");
-        this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
+        this.dependencies = FACTORY1_DEPENDENCY_CACHE.get(getClass());
 
         Class<?> ret = rawType();
         Class<?> param = dependencies.get(0).rawType();

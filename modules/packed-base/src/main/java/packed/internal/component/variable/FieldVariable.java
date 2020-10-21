@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 
 /**
  *
@@ -51,7 +51,7 @@ public final class FieldVariable extends AbstractVariable {
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<?> type() {
+    public TypeToken<?> type() {
         throw new UnsupportedOperationException();
     }
 }

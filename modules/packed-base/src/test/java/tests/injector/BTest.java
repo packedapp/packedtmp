@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import app.packed.config.ConfigSite;
 import app.packed.container.BaseBundle;
 import app.packed.inject.Service;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 
 /**
  *

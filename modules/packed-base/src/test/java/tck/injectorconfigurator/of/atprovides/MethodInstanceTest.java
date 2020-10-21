@@ -26,11 +26,11 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
 
 /** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
@@ -41,7 +41,7 @@ public class MethodInstanceTest {
         MixedMethods.test(c -> c.provideInstance(new MixedMethods()));
         MixedMethods.test(c -> c.provide(MixedMethods.class));
         MixedMethods.test(c -> c.provide(Factory.of(MixedMethods.class)));
-        MixedMethods.test(c -> c.provide(Factory.of(new TypeLiteral<MixedMethods>() {})));
+        MixedMethods.test(c -> c.provide(Factory.of(new TypeToken<MixedMethods>() {})));
     }
 
     // /** Tests lazy {@link Provide2#instantionMode()} on instance methods. */

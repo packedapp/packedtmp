@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import packed.internal.introspection.PackedMethodDescriptor;
 
 /**
@@ -51,7 +51,7 @@ public interface MethodDescriptor extends ExecutableDescriptor {
      * @return a type literal that identifies the generic type return type of the method
      * @see Method#getGenericReturnType()
      */
-    TypeLiteral<?> returnTypeLiteral();
+    TypeToken<?> returnTypeLiteral();
 
     /**
      * Produces a method handle for the underlying method.

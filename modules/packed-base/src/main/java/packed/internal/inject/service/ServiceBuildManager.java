@@ -32,7 +32,7 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceRegistry;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;

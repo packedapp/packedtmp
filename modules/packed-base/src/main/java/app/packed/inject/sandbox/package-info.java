@@ -8,4 +8,4 @@
 /**
  * This package provides a simple service and dependency injection framework.
  */
-package app.packed.service;
+package app.packed.inject.sandbox;

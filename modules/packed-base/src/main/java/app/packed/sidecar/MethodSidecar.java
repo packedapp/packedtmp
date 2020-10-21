@@ -167,6 +167,8 @@ public abstract class MethodSidecar {
      */
     // Multiple invocations???? Failure, multi services???
     // Multi services... I think you need to register multiple sidecars
+
+    // Move to a special place on ServiceExtension... IDK
     protected final void serviceRegister(boolean isConstant) {
         configuration().serviceRegister(isConstant);
     }

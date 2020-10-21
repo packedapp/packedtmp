@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
@@ -39,13 +39,13 @@ public class InjectorHasService {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        assertThat(i.isPresent(A.class)).isTrue();
-        assertThat(i.isPresent(new Key<A>() {})).isTrue();
-        assertThat(i.isPresent(new Key<@Left A>() {})).isTrue();
+        assertThat(i.contains(A.class)).isTrue();
+        assertThat(i.contains(new Key<A>() {})).isTrue();
+        assertThat(i.contains(new Key<@Left A>() {})).isTrue();
 
-        assertThat(i.isPresent(B.class)).isFalse();
-        assertThat(i.isPresent(new Key<B>() {})).isFalse();
-        assertThat(i.isPresent(new Key<@Right A>() {})).isFalse();
+        assertThat(i.contains(B.class)).isFalse();
+        assertThat(i.contains(new Key<B>() {})).isFalse();
+        assertThat(i.contains(new Key<@Right A>() {})).isFalse();
 
     }
 }

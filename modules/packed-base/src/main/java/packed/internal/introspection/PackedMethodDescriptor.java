@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.introspection.MethodDescriptor;
 import packed.internal.util.StringFormatter;
 
@@ -125,8 +125,8 @@ public final class PackedMethodDescriptor extends PackedExecutableDescriptor imp
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<?> returnTypeLiteral() {
-        return TypeLiteral.fromMethodReturnType(method);
+    public TypeToken<?> returnTypeLiteral() {
+        return TypeToken.fromMethodReturnType(method);
     }
 
     /** {@inheritDoc} */

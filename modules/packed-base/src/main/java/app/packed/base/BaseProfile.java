@@ -21,6 +21,8 @@ package app.packed.base;
 // Can install a single
 // or via command line spec packed.base.profile = ....
 // Er det den her maade vi laver packed explorer paa?? Og 
+// Profile vs Environment
+// One of them you can have multiple of, the other one only a single
 class BaseProfile {
 
 }

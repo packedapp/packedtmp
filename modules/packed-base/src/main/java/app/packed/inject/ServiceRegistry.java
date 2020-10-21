@@ -20,20 +20,50 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
+import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.util.PackedAttributeHolderStream;
 
 /**
- * An immutable collection of services each having a unique {@link Service#key() key}.
+ * A collection of services each having a unique {@link Service#key() key}.
  * <p>
- * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain any methods to acquire
- * actual service instances.
+ * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain methods to acquire actual
+ * service instances.
  */
+// Auto activating... Hvis man har den som parameter...
+// Use ServiceRegistry if you want information, use 
 public interface ServiceRegistry extends Iterable<Service> {
+
+    /**
+     * Returns whether or not this registry contains a service with the specified key.
+     *
+     * @param key
+     *            key whose presence in this registry is to be tested
+     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
+     * @see #contains(Key)
+     */
+    default boolean contains(Class<?> key) {
+        return contains(Key.of(key));
+    }
+
+    /**
+     * Returns whether or not this registry contains a service with the specified key.
+     *
+     * @param key
+     *            key whose presence in this registry is to be tested
+     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
+     * @see #contains(Class)
+     */
+    default boolean contains(Key<?> key) {
+        return findService(key).isPresent();
+    }
 
     /**
      * Finds and returns a service with the specified key if present. Otherwise return {@link Optional#empty()}.
@@ -57,7 +87,12 @@ public interface ServiceRegistry extends Iterable<Service> {
      */
     default Optional<Service> findService(Key<?> key) {
         requireNonNull(key, "key is null");
-        return stream().filter(d -> d.key().equals(key)).findFirst();
+        for (Service s : this) {
+            if (s.key().equals(key)) {
+                return Optional.of(s);
+            }
+        }
+        return Optional.empty();
     }
 
     /**
@@ -66,31 +101,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return true if this registry contains at least 1 service, otherwise false
      */
     default boolean isEmpty() {
-        return keys().isEmpty();
-    }
-
-    /**
-     * Returns whether or not a service with the specified key is present in this registry.
-     *
-     * @param key
-     *            key whose presence in this registry is to be tested
-     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
-     * @see #isPresent(Key)
-     */
-    default boolean isPresent(Class<?> key) {
-        return isPresent(Key.of(key));
-    }
-
-    /**
-     * Returns whether or not a service with the specified key is present in this registry.
-     *
-     * @param key
-     *            key whose presence in this registry is to be tested
-     * @return {@code true} if a service with the specified key is present in this registry. Otherwise {@code false}
-     * @see #isPresent(Class)
-     */
-    default boolean isPresent(Key<?> key) {
-        return keys().contains(key);
+        return size() == 0;
     }
 
     /** {@inheritDoc} */
@@ -101,6 +112,8 @@ public interface ServiceRegistry extends Iterable<Service> {
 
     /**
      * Returns a set containing the keys of every service in this registry.
+     * <p>
+     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code Set} returned.
      * 
      * @return a set containing the keys of every service in this registry
      */
@@ -122,26 +135,39 @@ public interface ServiceRegistry extends Iterable<Service> {
      *
      * @return a unordered {@code Stream} of all services in this registry
      */
-    AttributedElementStream<Service> stream(); // Rename to services????
+    // services???, instances()
+    default AttributedElementStream<Service> stream() {
+        return new PackedAttributeHolderStream<>(StreamSupport.stream(spliterator(), false));
+    }
 
     /**
      * Returns a list of every service in this registry in any order.
+     * <p>
+     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code List} returned.
      * 
      * @return a list of every service in this registry in any order
      */
     default List<Service> toList() {
         return stream().collect(Collectors.toList());
     }
+
+    /**
+     * Returns a map (indexed by its key) of every service in this registry in any order.
+     * <p>
+     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code List} returned.
+     * 
+     * @return a map of every service in this registry in any order
+     */
+    default Map<Key<?>, Service> toMap() {
+        return stream().collect(Collectors.toMap(s -> s.key(), s -> s));
+    }
+
+    /**
+     * Returns an empty service registry.
+     * 
+     * @return an empty service registry
+     */
+    static ServiceRegistry of() {
+        return PackedInjector.EMPTY_SERVICE_LOCATOR;
+    }
 }
-//
-///**
-// * Returns a service contract for this registry. The returned service contract will contain all the keys of this
-// * registry via {@link ServiceContract#provides()}.
-// * 
-// * @return a service contract containing the services of this registry
-// */
-//// Jeg er ikke sikker paa vi vil have den her...
-//// Den er ret forvirrende naar vi brugere service transofmer
-//default ServiceContract contract() {
-//    return ServiceContract.newContract(c -> stream().forEach(s -> c.provides(s.key())));
-//}

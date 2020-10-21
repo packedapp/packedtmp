@@ -18,7 +18,7 @@ package testutil.assertj.inject;
 import org.assertj.core.api.AbstractAssert;
 
 import app.packed.base.Key;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 
 /**
@@ -51,7 +51,7 @@ public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAs
     // return this;
     // }
 
-    public InternalFunctionAssert<T> is(TypeLiteral<?> type) {
+    public InternalFunctionAssert<T> is(TypeToken<?> type) {
         return is(Key.fromTypeLiteral(type));
     }
 

@@ -46,7 +46,7 @@ public class DependencyTest {
 
         @Test
         public void fromTypeAttribute() {
-            DependencyDescriptor opString = DependencyDescriptor.fromTypeVariable(new TypeLiteral<Optional<String>>() {}.getClass(), TypeLiteral.class, 0);
+            DependencyDescriptor opString = DependencyDescriptor.fromTypeVariable(new TypeToken<Optional<String>>() {}.getClass(), TypeToken.class, 0);
             assertThat(opString).keyIs(String.class);
         }
     }
@@ -61,7 +61,7 @@ public class DependencyTest {
             // assertThat(new Dependency<OptionalInt>() {}).keyIs(new Dependency<Optional<Integer>>() {}.getKey());
 
             // fromTypeParameter
-            DependencyDescriptor opInt = DependencyDescriptor.fromTypeVariable(new TypeLiteral<OptionalInt>() {}.getClass(), TypeLiteral.class, 0);
+            DependencyDescriptor opInt = DependencyDescriptor.fromTypeVariable(new TypeToken<OptionalInt>() {}.getClass(), TypeToken.class, 0);
             assertThat(opInt).isOptionalInt();
 
             // Annotated

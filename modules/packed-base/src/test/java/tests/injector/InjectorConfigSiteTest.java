@@ -26,11 +26,11 @@ import java.util.Map.Entry;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.component.BeanConfiguration;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import packed.internal.config.ConfigSiteInjectOperations;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -66,7 +66,7 @@ public class InjectorConfigSiteTest {
             binding0(conf.provide(A.class));
             binding0(conf.provide(Factory.of(B.class)));
             binding0(conf.provideInstance(C0));
-            binding0(conf.provideInstance(TypeLiteral.of(D.class)));
+            binding0(conf.provideInstance(TypeToken.of(D.class)));
             // binding0(conf.provide(E.class).lazy());
             // binding0(conf.provide(Factory.findInjectable(F.class)).lazy());
             // binding0(conf.provideInstance(TypeLiteral.of(G.class)).lazy());

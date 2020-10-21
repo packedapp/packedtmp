@@ -17,22 +17,22 @@ package packed.internal.component.variable;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 
 /**
  *
  */
 public final class TypeVariableVariable extends AbstractVariable {
 
-    final Field p;
+    final TypeVariable<?> p;
 
     /**
      * @param e
      */
-    public TypeVariableVariable(Field e) {
+    public TypeVariableVariable(TypeVariable<?> e) {
         super(e);
         this.p = requireNonNull(e);
     }
@@ -46,12 +46,12 @@ public final class TypeVariableVariable extends AbstractVariable {
     /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
-        return p.getType();
+        return p.getGenericDeclaration().getClass();
     }
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<?> type() {
+    public TypeToken<?> type() {
         throw new UnsupportedOperationException();
     }
 }

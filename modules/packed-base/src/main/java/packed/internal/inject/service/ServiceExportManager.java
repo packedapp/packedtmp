@@ -28,7 +28,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
-import app.packed.service.ExportedServiceConfiguration;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceRegistry;

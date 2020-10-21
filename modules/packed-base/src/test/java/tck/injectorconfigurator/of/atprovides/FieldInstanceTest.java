@@ -26,11 +26,11 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.InvalidDeclarationException;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {
@@ -41,7 +41,7 @@ public class FieldInstanceTest {
         MixedFields.test(c -> c.provideInstance(new MixedFields()));
         MixedFields.test(c -> c.provide(MixedFields.class));
         MixedFields.test(c -> c.provide(Factory.of(MixedFields.class)));
-        MixedFields.test(c -> c.provide(Factory.of(new TypeLiteral<MixedFields>() {})));
+        MixedFields.test(c -> c.provide(Factory.of(new TypeToken<MixedFields>() {})));
     }
 
     // /** Tests lazy {@link Provide#instantionMode()} on instance fields. */

@@ -24,10 +24,10 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceExtension;
-import app.packed.service.ExportedServiceConfiguration;
-import app.packed.service.Injector;
-import app.packed.service.InjectorAssembler;
-import app.packed.service.PrototypeConfiguration;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.InjectorAssembler;
+import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.statemachine.OnStart;
 
 /**

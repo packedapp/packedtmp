@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Attribute;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 
 /**
  *
@@ -33,9 +33,9 @@ public class PackedAttribute<T> implements Attribute<T> {
     private final Class<?> owner;
 
     private final Class<?> rawType;
-    private final TypeLiteral<T> typeLiteral;
+    private final TypeToken<T> typeLiteral;
 
-    private PackedAttribute(Class<?> owner, String name, Class<?> rawType, TypeLiteral<T> typeLiteral) {
+    private PackedAttribute(Class<?> owner, String name, Class<?> rawType, TypeToken<T> typeLiteral) {
         this.owner = requireNonNull(owner, "owner is null");
         this.name = requireNonNull(name, "name is null");
         this.rawType = requireNonNull(rawType, "rawType is null");
@@ -69,7 +69,7 @@ public class PackedAttribute<T> implements Attribute<T> {
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<T> typeLiteral() {
+    public TypeToken<T> typeLiteral() {
         return typeLiteral;
     }
 
@@ -78,7 +78,7 @@ public class PackedAttribute<T> implements Attribute<T> {
         return owner.getSimpleName() + ":" + name;
     }
 
-    public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeLiteral<T> type, Option<?>[] options) {
+    public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeToken<T> type, Option<?>[] options) {
         requireNonNull(lookup, "lookup is null");
         requireNonNull(name, "name is null");
         requireNonNull(type, "type is null");
@@ -99,7 +99,7 @@ public class PackedAttribute<T> implements Attribute<T> {
         return pa;
     }
 
-    public static <T> Attribute<T> of(Lookup lookup, String name, TypeLiteral<T> type, Option<?>[] options) {
+    public static <T> Attribute<T> of(Lookup lookup, String name, TypeToken<T> type, Option<?>[] options) {
         return of(lookup, name, type.rawType(), type, options);
     }
 

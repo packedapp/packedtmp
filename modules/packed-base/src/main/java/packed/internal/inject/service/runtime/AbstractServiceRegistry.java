@@ -71,13 +71,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isPresent(Class<?> key) {
-        return isPresent(Key.of(key));
+    public final boolean contains(Class<?> key) {
+        return contains(Key.of(key));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final boolean isPresent(Key<?> key) {
+    public final boolean contains(Key<?> key) {
         requireNonNull(key, "key is null");
         return services().containsKey(key);
     }

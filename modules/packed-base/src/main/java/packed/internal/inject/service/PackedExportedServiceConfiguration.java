@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
-import app.packed.service.ExportedServiceConfiguration;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 
 /**

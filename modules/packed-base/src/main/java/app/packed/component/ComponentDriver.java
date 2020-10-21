@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.container.BaseBundle;
 import packed.internal.component.PackedComponentDriver;
 
@@ -79,7 +79,7 @@ public interface ComponentDriver<C> {
         return PackedComponentDriver.of(lookup, configurationType, options);
     }
 
-    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeLiteral<? extends C> configurationType, Option... options) {
+    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeToken<? extends C> configurationType, Option... options) {
         throw new UnsupportedOperationException();
     }
 

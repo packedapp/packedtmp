@@ -30,7 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteSupport;
 import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;

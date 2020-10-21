@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.inject.Service;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;

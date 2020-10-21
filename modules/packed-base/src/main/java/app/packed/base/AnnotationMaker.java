@@ -25,7 +25,11 @@ import java.lang.invoke.MethodHandles;
 // er vi ved at vaere klar til app.packed.util
 // TreePath
 // Maaske de descriptors...
-public class AnnotationMaker<T extends Annotation> {
+public final class AnnotationMaker<T extends Annotation> {
+
+    AnnotationMaker() {
+
+    }
 
     /**
      * Returns the annotation type this maker wraps.

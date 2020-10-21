@@ -18,7 +18,7 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.component.ComponentDriver.Option;
 
 /**
@@ -46,13 +46,13 @@ public interface ComponentFunctionDriver<C, F> {
      */
     ComponentDriver<C> bind(F function);
 
-    static <C, F> ComponentFunctionDriver<C, F> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, TypeLiteral<? extends F> driverType,
+    static <C, F> ComponentFunctionDriver<C, F> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, TypeToken<? extends F> driverType,
             Option... options) {
         throw new UnsupportedOperationException();
     }
 
     public static void main(String[] args) {
-        of(null, MyWebConf.class, new TypeLiteral<Supplier<String>>() {});
+        of(null, MyWebConf.class, new TypeToken<Supplier<String>>() {});
     }
 }
 

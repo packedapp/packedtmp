@@ -24,7 +24,7 @@ import app.packed.config.ConfigSite;
 import app.packed.container.ContainerBundle;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.service.ExportedServiceConfiguration;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
 /**
  * Component configuration context objects used by {@link ComponentConfiguration}.

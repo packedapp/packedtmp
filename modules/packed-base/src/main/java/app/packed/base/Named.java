@@ -23,9 +23,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key.Qualifier;
 
-/**
- * A {@link Qualifier} that holds a single generic string.
- */
+/** A {@link Qualifier} that holds a generic string. */
 @Retention(RetentionPolicy.RUNTIME)
 @Key.Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })

@@ -27,7 +27,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 import app.packed.introspection.FieldDescriptor;
 
 /** The default implementation of {@link FieldDescriptor}. */
@@ -131,8 +131,8 @@ public final class PackedFieldDescriptor implements FieldDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public TypeLiteral<?> getTypeLiteral() {
-        return TypeLiteral.fromField(field);
+    public TypeToken<?> getTypeLiteral() {
+        return TypeToken.fromField(field);
     }
 
     /** {@inheritDoc} */

@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.build.ServiceBuild;

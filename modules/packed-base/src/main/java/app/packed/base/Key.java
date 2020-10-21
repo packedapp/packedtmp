@@ -37,7 +37,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.base.TypeLiteral.CanonicalizedTypeLiteral;
+import app.packed.base.TypeToken.CanonicalizedTypeLiteral;
 import app.packed.introspection.ParameterDescriptor;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.QualifierHelper;
@@ -83,7 +83,7 @@ public abstract class Key<T> {
         /** {@inheritDoc} */
         @Override
         protected Key<?> computeValue(Class<?> implementation) {
-            return Key.fromTypeLiteral(TypeLiteral.of(implementation).box());
+            return Key.fromTypeLiteral(TypeToken.of(implementation).box());
         }
     };
 
@@ -235,7 +235,7 @@ public abstract class Key<T> {
      * 
      * @return the generic type of this key
      */
-    public final TypeLiteral<T> typeLiteral() {
+    public final TypeToken<T> typeLiteral() {
         return typeLiteral;
     }
 
@@ -330,7 +330,7 @@ public abstract class Key<T> {
 
     // Takes any qualifier annotation on the typeLiteral
     // withQualifier(new TypeLiteral<@Named("dddd") Void>() {});
-    final Key<T> withQualifier(TypeLiteral<Void> typeLiteral) {
+    final Key<T> withQualifier(TypeToken<Void> typeLiteral) {
         throw new UnsupportedOperationException();
     }
 
@@ -356,7 +356,7 @@ public abstract class Key<T> {
      */
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     public static Key<?> fromField(Field field) {
-        TypeLiteral<?> tl = TypeLiteral.fromField(field).box(); // checks null
+        TypeToken<?> tl = TypeToken.fromField(field).box(); // checks null
         Annotation[] annotation = QualifierHelper.findQualifier(field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
@@ -378,14 +378,14 @@ public abstract class Key<T> {
         if (method.getReturnType() == void.class) {
             throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
-        TypeLiteral<?> tl = TypeLiteral.fromMethodReturnType(method).box();
+        TypeToken<?> tl = TypeToken.fromMethodReturnType(method).box();
         Annotation[] annotation = QualifierHelper.findQualifier(method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
     public static Key<?> fromParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
-        TypeLiteral<?> tl = TypeLiteral.fromParameter(parameter).box();
+        TypeToken<?> tl = TypeToken.fromParameter(parameter).box();
         Annotation[] annotation = QualifierHelper.findQualifier(parameter.getAnnotations());
         return fromTypeLiteralNullableAnnotation(parameter, tl, annotation);
     }
@@ -402,7 +402,7 @@ public abstract class Key<T> {
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
      *             specified type literal it not free from type parameters
      */
-    public static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral) {
+    public static <T> Key<T> fromTypeLiteral(TypeToken<T> typeLiteral) {
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, (Annotation[]) null);
     }
 
@@ -420,16 +420,16 @@ public abstract class Key<T> {
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
      *             qualifier type is not annotated with {@link Qualifier}.
      */
-    public static <T> Key<T> fromTypeLiteral(TypeLiteral<T> typeLiteral, Annotation qualifier) {
+    public static <T> Key<T> fromTypeLiteral(TypeToken<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierHelper.checkQualifierAnnotationPresent(qualifier);
         return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
-    public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeLiteral<T> typeLiteral, Annotation... qualifier) {
+    public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeToken<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
-        assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof TypeLiteral
+        assert (source instanceof Field || source instanceof Method || source instanceof ParameterDescriptor || source instanceof TypeToken
                 || source instanceof Class);
 
         typeLiteral = typeLiteral.box();
@@ -444,7 +444,7 @@ public abstract class Key<T> {
     }
 
     public static <T> Key<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
-        TypeLiteral<?> t = TypeLiteral.fromTypeVariable(subClass, superClass, parameterIndex);
+        TypeToken<?> t = TypeToken.fromTypeVariable(subClass, superClass, parameterIndex);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
@@ -489,7 +489,7 @@ public abstract class Key<T> {
      * @return a key of the specified type with the specified qualifier
      */
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
-        return Key.fromTypeLiteral(TypeLiteral.of(type).box(), qualifier);
+        return Key.fromTypeLiteral(TypeToken.of(type).box(), qualifier);
     }
 
     /** See {@link CanonicalizedTypeLiteral}. */

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceExtension;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;

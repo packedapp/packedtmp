@@ -106,7 +106,7 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      * 
      * @return the type literal of this attribute
      */
-    TypeLiteral<T> typeLiteral();
+    TypeToken<T> typeLiteral();
 
     /**
      * Creates a new attribute.
@@ -126,11 +126,11 @@ public interface Attribute<T> /* extends AttributeHolder */ {
     @SafeVarargs
     static <T> Attribute<T> of(Lookup lookup, String name, Class<T> type, Option<T>... options) {
         requireNonNull(type, "type is null");
-        return of(lookup, name, TypeLiteral.of(type), options);
+        return of(lookup, name, TypeToken.of(type), options);
     }
 
     @SafeVarargs
-    static <T> Attribute<T> of(Lookup lookup, String name, TypeLiteral<T> type, Option<T>... options) {
+    static <T> Attribute<T> of(Lookup lookup, String name, TypeToken<T> type, Option<T>... options) {
         requireNonNull(type, "type is null");
         return PackedAttribute.of(lookup, name, type.rawType(), type, options);
     }

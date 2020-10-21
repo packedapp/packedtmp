@@ -25,8 +25,9 @@ import app.packed.base.Key;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- * A service locator interface that can be used to manually look up service instances.
+ * A service locator is an immutable collection of services that allows for accessing services instances.
  */
+// Auto activating... Hvis man har den som parameter
 public interface ServiceLocator extends ServiceRegistry {
 
     /**
@@ -96,9 +97,15 @@ public interface ServiceLocator extends ServiceRegistry {
         }
     }
 
+    // may define any qualifiers
+    default <T> ServiceSelection<T> select(Class<T> key) {
+        // May define additional qualifiers
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a service selection with all of the services in this locator with a {@link Key} whose {@link Key#rawType()}
-     * is assignable to the specified service type.
+     * is {@link Class#isAssignableFrom(Class) assignable} to the specified type.
      * <p>
      * Primitive types will automatically be boxed if specified.
      * 
@@ -108,7 +115,9 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see Key#rawType()
      */
     // Hmm kan vi sige noget om actual type som vi producere???
-    default <T> ServiceSelection<T> select(Class<T> serviceType) {
+
+    default <T> ServiceSelection<T> select(Key<T> key) {
+        // May define additional qualifiers
         throw new UnsupportedOperationException();
     }
 
@@ -119,6 +128,15 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     default ServiceSelection<Object> selectAll() {
         throw new UnsupportedOperationException();
+    }
+
+    // Maybe select assignable
+    default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
+    default ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
+        return this;
     }
 
     /**
@@ -133,7 +151,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a service for the specified key
      * @throws NoSuchElementException
      *             if no service with the specified key exist
-     * @see #isPresent(Class)
+     * @see #contains(Class)
      */
     default <T> T use(Class<T> key) {
         return use(Key.of(key));
@@ -183,6 +201,9 @@ public interface ServiceLocator extends ServiceRegistry {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
 }
+// toRegistry...
+// or ServiceRegistry.copyOf(); Not a copy.. a view where you cannot access the instance.
+
 //* @throws IllegalStateException
 //*             if a service with the specified key exist, but the service is not ready to be consumed yet. For example,
 //*             if injecting an injector into a constructor of a service and then using the injector to try and access

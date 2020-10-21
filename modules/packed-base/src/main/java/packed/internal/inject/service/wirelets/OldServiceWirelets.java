@@ -25,7 +25,7 @@ import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
-import app.packed.service.Injector;
+import app.packed.inject.sandbox.Injector;
 
 //Syntes det giver mening kun at prefixe have upstream....
 //Eller evt mapTo, og mapFrom.... ddd.mapTo og ma

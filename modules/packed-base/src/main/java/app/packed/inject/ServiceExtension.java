@@ -29,10 +29,10 @@ import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
-import app.packed.service.ExportedServiceConfiguration;
-import app.packed.service.Injector;
-import app.packed.service.PrototypeConfiguration;
-import app.packed.service.ServiceAttributes;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import app.packed.inject.sandbox.Injector;
+import app.packed.inject.sandbox.PrototypeConfiguration;
+import app.packed.inject.sandbox.ServiceAttributes;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ContainerBuild;
@@ -316,12 +316,10 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Returns a view of the services that are currently available within the container.
+     * Returns an unmodifiable view of the services that are currently available within the container.
      * 
-     * @return a view of the services that are currently available within the container
+     * @return a unmodifiable view of the services that are currently available within the container
      */
-    // Do we need a separate one for exports?
-    // And what about requirements?
     public ServiceRegistry services() {
         throw new UnsupportedOperationException();
     }
@@ -365,6 +363,9 @@ public final class ServiceExtension extends Extension {
         /* package-private */ Sub(Class<? extends Extension> extensionType) {
             this.extensionType = requireNonNull(extensionType, "extensionType is null");
         }
+    }
+
+    final class SidecarHelper {
 
     }
 }

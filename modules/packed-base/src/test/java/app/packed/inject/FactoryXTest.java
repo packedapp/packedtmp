@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeLiteral;
+import app.packed.base.TypeToken;
 
 /** Tests {@link Factory}. */
 public class FactoryXTest {
@@ -44,11 +44,11 @@ public class FactoryXTest {
     @Test
     public void listIntegerFactory0() {
         Factory<List<Integer>> f = new Factory<>(() -> List.of(1)) {};
-        checkThat(f).is(new TypeLiteral<List<Integer>>() {});
+        checkThat(f).is(new TypeToken<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
 
         f = new Intermediate<>(() -> List.of(1)) {};
-        checkThat(f).is(new TypeLiteral<List<Integer>>() {});
+        checkThat(f).is(new TypeToken<List<Integer>>() {});
         checkThat(f).hasNoDependencies();
     }
 

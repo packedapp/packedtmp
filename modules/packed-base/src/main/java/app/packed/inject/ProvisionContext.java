@@ -20,11 +20,11 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.container.Extension;
+import app.packed.inject.sandbox.Injector;
 import app.packed.introspection.FieldDescriptor;
 import app.packed.introspection.MemberDescriptor;
 import app.packed.introspection.ParameterDescriptor;
 import app.packed.introspection.VariableDescriptor;
-import app.packed.service.Injector;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
@@ -61,44 +61,6 @@ import app.packed.service.Injector;
 public interface ProvisionContext {
 
     /**
-     * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
-     * {@link Injector#use(Class)}.
-     * 
-     * @return the component that is requesting the component, or an empty optional if not a component.
-     */
-    // What to do at configuration time.... We probably don't have a component at that point...
-
-    // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
-    // Det er bare f.eks. til at debugge...
-    Optional<Component> component();
-
-    /**
-     * If the requester party is part of an {@link Extension}. Returns the type of extension that is requesting an instance.
-     * Otherwise false.
-     * <p>
-     * 
-     * @return who wants this shit
-     * 
-     * @apiNote This method is only relevant for extension developers.
-     */
-    Optional<Class<? extends Extension>> extension();
-
-    /**
-     * The class that is being provided a value to. Or {@link Optional#empty()} if a lookup
-     * 
-     * @return stuff
-     */
-    default Optional<Class<?>> injectingInto() {
-        // RequestingClass
-        // RequestingMember
-        // RequestingVariable
-
-        // Requester, if used for dependency injection....
-        // Her er det taenkt som den oprindelig klasse... sans mappers...sans composites
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Returns whether or the instance is being injected. For example, into a field, method, constructor.
      *
      * @return whether or the instance is being injected
@@ -106,18 +68,8 @@ public interface ProvisionContext {
     boolean isInjection();
 
     /**
-     * Returns the key of the service that needs to be provided.
-     *
-     * @return the key of the service that needs to be provided
-     */
-    // Maaske den bare skal vaere separat.... Hvis vi gerne vil bruge ProvideContext for prime.
-    // Saa er det jo noedvendig ikke noget der hedder key...
-
-    // Og vi ved vel aerlig talt hvilken noegle vi er.....
-    // Key<?> key();
-
-    /**
-     * Returns whether the instance is being provided via a lookup. Typically via {@link ServiceLocator}.
+     * Returns whether or not an instance is requested via a {@link ServiceLocator}. Instances that are requested via a
+     * service locator always returns empty for all optionals (maybe not extension...)
      *
      * @return whether the instance is being provided via a lookup
      * @see ServiceLocator#use(Class)
@@ -136,16 +88,66 @@ public interface ProvisionContext {
     boolean isOptional();
 
     /**
+     * The class that is being provided a value to. Or {@link Optional#empty()} if a lookup
+     * 
+     * @return stuff
+     */
+    default Optional<Class<?>> targetClass() {
+        // RequestingClass
+        // RequestingMember
+        // RequestingVariable
+
+        // Requester, if used for dependency injection....
+        // Her er det taenkt som den oprindelig klasse... sans mappers...sans composites
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the key of the service that needs to be provided.
+     *
+     * @return the key of the service that needs to be provided
+     */
+    // Maaske den bare skal vaere separat.... Hvis vi gerne vil bruge ProvideContext for prime.
+    // Saa er det jo noedvendig ikke noget der hedder key...
+
+    // Og vi ved vel aerlig talt hvilken noegle vi er.....
+    // Key<?> key();
+
+    /**
+     * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
+     * {@link Injector#use(Class)}.
+     * 
+     * @return the component that is requesting the component, or an empty optional if not a component.
+     */
+    // What to do at configuration time.... We probably don't have a component at that point...
+
+    // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
+    // Det er bare f.eks. til at debugge...
+    Optional<Component> targetComponent();
+
+    /**
+     * If the requester party is part of an {@link Extension}. Returns the type of extension that is requesting an instance.
+     * Otherwise false.
+     * <p>
+     * 
+     * @return who wants this shit
+     * 
+     * @apiNote This method is only relevant for extension developers.
+     */
+    Optional<Class<? extends Extension>> targetExtension();
+
+    /**
      * The member (field, method or constructor) for which this dependency was created. Or an empty {@link Optional} if this
      * dependency was not created from a member.
      * <p>
      * 
      * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         member.
-     * @see #requestingVariable()
+     * @see #targetVariable()
      */
     // Altsaa taenker man laver en special annotation.
-    Optional<MemberDescriptor> requestingMember();
+    @Deprecated
+    Optional<MemberDescriptor> targetMember();
 
     /**
      * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
@@ -156,9 +158,9 @@ public interface ProvisionContext {
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
-     * @see #requestingMember()
+     * @see #targetMember()
      */
-    Optional<VariableDescriptor> requestingVariable();// Should match Var...-> VarDescriptor-> VariableDescriptor
+    Optional<VariableDescriptor> targetVariable();// Should match Var...-> VarDescriptor-> VariableDescriptor
 }
 // Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
 // Includes any qualifier...

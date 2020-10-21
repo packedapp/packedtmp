@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import app.packed.inject.Variable;
+import app.packed.base.AnnotatedVariable;
 
 /**
  *
  */
-public abstract class AbstractVariable implements Variable {
+public abstract class AbstractVariable implements AnnotatedVariable {
 
     final AnnotatedElement e;
 
