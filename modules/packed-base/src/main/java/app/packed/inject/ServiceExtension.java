@@ -25,14 +25,12 @@ import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentFactoryDriver;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
-import packed.internal.component.wirelet.WireletList;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.container.ContainerBuild;
 import packed.internal.container.ExtensionBuild;
@@ -216,19 +214,17 @@ public final class ServiceExtension extends Extension {
      * 
      * @param locator
      *            the locator to provide services from
-     * @param wirelets
-     *            any wirelets used to filter and transform the provided services
      * @throws IllegalArgumentException
      *             if specifying wirelets that are not defined via {@link ServiceWirelets}
      */
-    public void provideAll(ServiceLocator locator, Wirelet... wirelets) {
+    public void provideAll(ServiceLocator locator) {
         requireNonNull(locator, "injector is null");
         if (!(locator instanceof PackedInjector)) {
             throw new IllegalArgumentException(
                     "Custom implementations of Injector are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        sbm.provideFromInjector((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
+        sbm.provideFromInjector((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
     }
 
     // Will install a ServiceStatelessConfiguration...

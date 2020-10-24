@@ -46,6 +46,10 @@ public interface ServiceTransformer extends ServiceRegistry {
     // will be resolved against the realm in which the wirelet is being used
     // if used on root. Must use Factory#withMethodHandle unless public exposed to everyone\
     // will decorate a service injected as itself
+    default void provideAll(ServiceLocator locator) {
+        throw new UnsupportedOperationException();
+    }
+
     default void provide(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }

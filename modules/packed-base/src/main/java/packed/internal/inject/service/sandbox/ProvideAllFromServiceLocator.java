@@ -20,18 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import app.packed.inject.sandbox.Injector;
-import packed.internal.component.wirelet.WireletList;
+import app.packed.inject.ServiceLocator;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.PackedInjector;
-import packed.internal.inject.service.wirelets.PackedUpstreamInjectionWirelet;
 
-/** Represents an injector that used via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-public final class ProvideAllFromOtherInjector {
+/** Represents an injector that used via {@link ServiceExtension#provideAll(ServiceLocator)}. */
+public final class ProvideAllFromServiceLocator {
 
     /** The injector builder from where the service will be provided. */
     public final ServiceBuildManager node;
@@ -55,10 +52,8 @@ public final class ProvideAllFromOtherInjector {
      *            the config site of the import
      * @param injector
      *            the injector that is being imported
-     * @param wirelets
-     *            any wirelets used when importing the injector
      */
-    public ProvideAllFromOtherInjector(ServiceBuildManager node, ConfigSite configSite, PackedInjector injector, WireletList wirelets) {
+    public ProvideAllFromServiceLocator(ServiceBuildManager node, ConfigSite configSite, PackedInjector injector) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);
@@ -68,6 +63,5 @@ public final class ProvideAllFromOtherInjector {
         });
 
         // process wirelets for filtering/transformations
-        wirelets.forEach(PackedUpstreamInjectionWirelet.class, w -> w.process(this));
     }
 }

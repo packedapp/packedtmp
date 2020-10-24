@@ -18,25 +18,24 @@ package packed.internal.inject.service.sandbox;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
 import app.packed.inject.ServiceExtension;
-import app.packed.inject.sandbox.Injector;
+import app.packed.inject.ServiceLocator;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/** An entry specifically used for {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
+/** An entry specifically used for {@link ServiceExtension#provideAll(ServiceLocator)}. */
 final class FromOtherInjectorServiceBuild extends ServiceBuild {
 
     /** The entry from the 'imported' injector. */
     private final RuntimeService entry;
 
     /** A wrapper for the 'imported' injector. */
-    final ProvideAllFromOtherInjector fromInjector; // not used currently
+    final ProvideAllFromServiceLocator fromInjector; // not used currently
 
-    FromOtherInjectorServiceBuild(ProvideAllFromOtherInjector fromInjector, RuntimeService entry) {
+    FromOtherInjectorServiceBuild(ProvideAllFromServiceLocator fromInjector, RuntimeService entry) {
         super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), entry.key());
         this.entry = entry;
         this.fromInjector = fromInjector;

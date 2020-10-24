@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.inject.ProvisionContext;
-import app.packed.inject.sandbox.Injector;
+import app.packed.inject.ServiceLocator;
 
 /** Implementation of {@link ProvisionContext}. */
 public final class PackedProvisionContext implements ProvisionContext {
@@ -112,7 +112,7 @@ public final class PackedProvisionContext implements ProvisionContext {
     /**
      * Returns a new injection site for the specified injector and key.
      * <p>
-     * This method is used to create injection site for methods such as {@link Injector#use(Key)}.
+     * This method is used to create injection site for methods such as {@link ServiceLocator#use(Key)}.
      * 
      * @param key
      *            the for which injection is requested

@@ -28,7 +28,7 @@ import packed.internal.component.wirelet.WireletList;
  * up your program. connect, wire, instantiate, debug your applications.
  * 
  * A wiring operation is a piece of glue code that wire bundles and/or runtimes together, through operations such as
- * {@link ServiceExtension#provideAll(ServiceLocator, Wirelet...)} or
+ * {@link ServiceExtension#provideAll(ServiceLocator)} or
  * <p>
  * As a rule of thumb wirelets are evaluated in order. For example, Wirelet.name("ffff"), Wirelet.name("sdsdsd"). Will
  * first the change the name to ffff, and then change it to sdsds. Maybe an example with.noStart + start_await it

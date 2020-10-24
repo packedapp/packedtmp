@@ -180,13 +180,6 @@ public interface Injector extends ServiceLocator {
     }
 }
 
-// default Injector spawn(Wirelet... wirelets) {
-// spawn = new injector + import...
-// // Fucking ConfigSite...
-// // if (wir)
-// throw new UnsupportedOperationException();
-// }
-
 /** An artifact driver for creating {@link App} instances. */
 final class InjectorArtifactHelper {
 

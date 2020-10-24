@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
@@ -37,7 +36,6 @@ import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
@@ -49,7 +47,7 @@ import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
+import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
  *
@@ -73,8 +71,8 @@ public final class ServiceBuildManager {
     /** All explicit added build entries. */
     private final ArrayList<ServiceBuild> localServices = new ArrayList<>();
 
-    /** All injectors added via {@link ServiceExtension#provideAll(Injector, Wirelet...)}. */
-    private ArrayList<ProvideAllFromOtherInjector> provideAll;
+    /** All injectors added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
+    private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, Wrapper> resolvedServices = new LinkedHashMap<>();
@@ -190,9 +188,9 @@ public final class ServiceBuildManager {
         }
     }
 
-    public void provideFromInjector(PackedInjector injector, ConfigSite configSite, WireletList wirelets) {
-        ProvideAllFromOtherInjector pi = new ProvideAllFromOtherInjector(this, configSite, injector, wirelets);
-        ArrayList<ProvideAllFromOtherInjector> p = provideAll;
+    public void provideFromInjector(PackedInjector injector, ConfigSite configSite) {
+        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, configSite, injector);
+        ArrayList<ProvideAllFromServiceLocator> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);
         }
@@ -222,7 +220,7 @@ public final class ServiceBuildManager {
         // Then we take any provideAll() services
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
-            for (ProvideAllFromOtherInjector fromInjector : provideAll) {
+            for (ProvideAllFromServiceLocator fromInjector : provideAll) {
                 for (ServiceBuild entry : fromInjector.entries.values()) {
                     resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(entry);
                 }

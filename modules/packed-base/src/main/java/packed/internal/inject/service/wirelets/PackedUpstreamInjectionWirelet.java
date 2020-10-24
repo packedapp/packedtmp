@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.container.ExtensionMember;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.inject.service.sandbox.ProvideAllFromOtherInjector;
+import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /** The common superclass for upstream service wirelets. */
 public abstract class PackedUpstreamInjectionWirelet extends OldServiceWirelet {
@@ -35,7 +35,7 @@ public abstract class PackedUpstreamInjectionWirelet extends OldServiceWirelet {
      * @param ii
      *            the imported injector to process
      */
-    public abstract void process(ProvideAllFromOtherInjector ii);
+    public abstract void process(ProvideAllFromServiceLocator ii);
 
     @ExtensionMember(ServiceExtension.class)
     public static class FilterOnKey extends PackedUpstreamInjectionWirelet {
@@ -48,7 +48,7 @@ public abstract class PackedUpstreamInjectionWirelet extends OldServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ProvideAllFromOtherInjector ii) {
+        public void process(ProvideAllFromServiceLocator ii) {
             for (Key<?> key : set) {
                 ii.entries.remove(key);
             }
@@ -80,7 +80,7 @@ public abstract class PackedUpstreamInjectionWirelet extends OldServiceWirelet {
 
         /** {@inheritDoc} */
         @Override
-        public void process(ProvideAllFromOtherInjector ii) {
+        public void process(ProvideAllFromServiceLocator ii) {
             if (ii.entries.containsKey(to)) {
                 throw new RuntimeException();
             }

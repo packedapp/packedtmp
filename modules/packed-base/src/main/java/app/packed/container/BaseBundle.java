@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceExtension;
@@ -203,8 +202,8 @@ public abstract class BaseBundle extends ContainerBundle {
         return service().providePrototype(factory);
     }
 
-    protected final void provideAll(ServiceLocator locator, Wirelet... wirelets) {
-        service().provideAll(locator, wirelets);
+    protected final void provideAll(ServiceLocator locator) {
+        service().provideAll(locator);
     }
 
     /**

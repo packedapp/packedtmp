@@ -25,7 +25,6 @@ import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory1;
-import app.packed.inject.sandbox.Injector;
 
 //Syntes det giver mening kun at prefixe have upstream....
 //Eller evt mapTo, og mapFrom.... ddd.mapTo og ma
@@ -93,19 +92,6 @@ public final class OldServiceWirelets {
     // Hmmm, syntes egentlig ikke man kan bruge den her...
     // IDK
     public static <T> Wirelet provide(Factory<T> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a wirelet that will provide all services that the specified injector provides
-     * 
-     * @param injector
-     *            the injector to provide services from
-     * @param wirelets
-     *            for transforming and or restricting services
-     * @return stuff
-     */
-    public static Wirelet provideAll(Injector injector, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

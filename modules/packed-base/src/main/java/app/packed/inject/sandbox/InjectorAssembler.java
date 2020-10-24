@@ -30,6 +30,7 @@ import app.packed.container.BaseBundle;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceLocator;
 import packed.internal.inject.service.wirelets.OldServiceWirelets;
 
 /**
@@ -206,8 +207,6 @@ public final class InjectorAssembler extends Assembler {
      * 
      * @param injector
      *            the injector to import services from
-     * @param wirelets
-     *            any number of stages that restricts or transforms the services that are imported
      * @throws IllegalArgumentException
      *             if the specified wirelet are not all wirelets from {@link OldServiceWirelets} or combinations (via
      *             {@link Wirelet#combine(Wirelet, Wirelet) combinations} thereof
@@ -215,8 +214,8 @@ public final class InjectorAssembler extends Assembler {
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
     // Er ikke sikker paa vi skal have wirelets her....
     // Hvis det er noedvendigt saa maa man lave en ny injector taenker jeg....
-    public void provideAll(Injector injector, Wirelet... wirelets) {
-        extension().provideAll(injector, wirelets);
+    public void provideAll(ServiceLocator injector) {
+        extension().provideAll(injector);
     }
 
     /**
