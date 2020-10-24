@@ -15,9 +15,9 @@
  */
 package app.packed.service.sandbox;
 
+import app.packed.block.BaseBundle;
+import app.packed.block.Extension;
 import app.packed.component.App;
-import app.packed.container.BaseBundle;
-import app.packed.container.Extension;
 import app.packed.inject.Inject;
 
 /**

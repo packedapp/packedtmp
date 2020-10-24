@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
-import app.packed.guest.Guest;
+import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.service.ServiceBuildManager;
@@ -43,7 +43,7 @@ public final class PackedInitializationContext {
     public static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "component", Component.class);
 
     /** A MethodHandle for invoking {@link #guest()}. */
-    public static final MethodHandle MH_GUEST = LookupUtil.lookupVirtual(MethodHandles.lookup(), "guest", Guest.class);
+    public static final MethodHandle MH_GUEST = LookupUtil.lookupVirtual(MethodHandles.lookup(), "guest", Container.class);
 
     /** A MethodHandle for invoking {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
@@ -68,7 +68,7 @@ public final class PackedInitializationContext {
         return component;
     }
 
-    public Guest guest() {
+    public Container guest() {
         if (component.hasModifier(ComponentModifier.GUEST)) {
             return component.region.guest();
         }

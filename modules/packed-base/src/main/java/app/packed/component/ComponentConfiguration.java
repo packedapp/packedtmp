@@ -23,8 +23,8 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import app.packed.base.TreePath;
+import app.packed.block.Extension;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.config.ConfigSiteSupport;

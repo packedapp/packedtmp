@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.container;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -40,31 +40,31 @@ import app.packed.component.Wirelet;
 // Taenker ikke en Guest har attributer direkte. Udover componenten..
 // Taenker heller ikke ServiceRegistry
 
-public interface Guest {
+public interface Container {
 
     /**
      * Blocks until the object has reached the requested state, or the current thread is interrupted, whichever happens
      * first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method will
+     * attempting to wait on the {@link ContainerState#RUNNING} state and the object has already been stopped. This method will
      * return immediately with true.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(GuestState, long, TimeUnit)
+     * @see #await(ContainerState, long, TimeUnit)
      * @see #state()
      */
-    void await(GuestState state) throws InterruptedException;
+    void await(ContainerState state) throws InterruptedException;
 
     /**
      * Blocks until the object has reached the requested state, or the timeout occurs, or the current thread is interrupted,
      * whichever happens first.
      * <p>
      * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link GuestState#RUNNING} state and the object has already been stopped. This method will
+     * attempting to wait on the {@link ContainerState#RUNNING} state and the object has already been stopped. This method will
      * return immediately with true.
      *
      * @param state
@@ -77,10 +77,10 @@ public interface Guest {
      *         reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(GuestState)
+     * @see #await(ContainerState)
      * @see #state()
      */
-    boolean await(GuestState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Returns the current state of the guest.
@@ -89,19 +89,19 @@ public interface Guest {
      * 
      * @return the current state of the guest
      */
-    GuestState state();
+    ContainerState state();
 
     /**
      * Returns a snapshot of the guests current state.
      * 
      * @return a snapshot of the guests current state
      */
-    default GuestExtendedState snapshotState() {
+    default ContainerExtendedState snapshotState() {
         throw new UnsupportedOperationException();
     }
 
     // app.guest().start(); I think that is cool, no need to move this method to App for now
-    Guest start();
+    Container start();
 
     // startInterruptable
 
@@ -109,7 +109,7 @@ public interface Guest {
     // Men hvad skal man bruge gaest til??? awaitX
     <T> CompletableFuture<T> startAsync(T result);
 
-    Guest stop(StopOption... options);
+    Container stop(StopOption... options);
 
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,

@@ -16,10 +16,10 @@
 package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
+import app.packed.block.BaseBundle;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 

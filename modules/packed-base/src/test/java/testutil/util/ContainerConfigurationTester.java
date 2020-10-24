@@ -22,22 +22,22 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.TreePath;
+import app.packed.block.BaseBundle;
+import app.packed.block.BlockConfiguration;
+import app.packed.block.Extension;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.BaseBundle;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
 
 /**
  *
  */
 public class ContainerConfigurationTester {
 
-    private final ContainerConfiguration cc;
+    private final BlockConfiguration cc;
 
-    public ContainerConfigurationTester(ContainerConfiguration cc) {
+    public ContainerConfigurationTester(BlockConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
@@ -48,7 +48,7 @@ public class ContainerConfigurationTester {
     /**
      * @return the cc
      */
-    public ContainerConfiguration configuration() {
+    public BlockConfiguration configuration() {
         return cc;
     }
 

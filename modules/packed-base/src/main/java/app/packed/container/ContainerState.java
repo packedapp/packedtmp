@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.container;
 
 /**
- * An enum containing all valid states of a {@link Guest}.
+ * An enum containing all valid states of a {@link Container}.
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
@@ -40,7 +40,7 @@ package app.packed.guest;
 // TODO jeg tror vi meget bedre kan beskrive det her naar vi har fundet ud af det med state machines
 // Fx, hvad vil det sige at stoppe?? Det vil sige at terminere alle state machines der koere ind i den.
 // Managed Resource
-public enum GuestState {
+public enum ContainerState {
 
     /**
      * The initial state of a guest. This state is typically used for reading and validating the configuration of the guest.
@@ -54,13 +54,13 @@ public enum GuestState {
     /**
      * This state indicates that the guest has completed the {@link #INITIALIZING} phase successfully.
      * <p>
-     * The guest will remain in this state until it is started. For example, by the user calling {@link Guest#start()}.
+     * The guest will remain in this state until it is started. For example, by the user calling {@link Container#start()}.
      * After which the guest will transition to the {@link #STARTING} state.
      */
     INITIALIZED,
 
     /**
-     * Indicates that the guest has been started, for example, by the user calling {@link Guest#start()}. However, all
+     * Indicates that the guest has been started, for example, by the user calling {@link Container#start()}. However, all
      * components have not yet completed startup. When all components have been properly started the container will
      * transition to the {@link #RUNNING} state. If any component fails to start up properly. The container will
      * automatically shutdown and move to the {@link #STOPPING} phase.
@@ -69,8 +69,8 @@ public enum GuestState {
 
     /**
      * The guest is running normally. The guest will remain in this state until it is shutdown, for example, by the user
-     * calling {@link Guest#stop(app.packed.guest.Guest.StopOption...)}. After which it will transition to the
-     * {@link #STOPPING} state.
+     * calling {@link Container#stop(Container.StopOption...)}. After which it will transition to the {@link #STOPPING}
+     * state.
      */
     RUNNING,
 
@@ -90,8 +90,8 @@ public enum GuestState {
      *            the states to test against
      * @return true if the guest is in any of the specified states, otherwise false
      */
-    public boolean isAnyOf(GuestState... states) {
-        for (GuestState s : states) {
+    public boolean isAnyOf(ContainerState... states) {
+        for (ContainerState s : states) {
             if (s == this) {
                 return true;
             }

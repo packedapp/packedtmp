@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.sandbox.Injector;
+import packed.internal.inject.service.sandbox.Injector;
 
 /** The default implementation of {@link Injector}. */
 public final class PackedInjector extends AbstractServiceLocator implements Injector {

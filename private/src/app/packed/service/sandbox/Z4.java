@@ -18,12 +18,12 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import app.packed.block.BaseBundle;
+import app.packed.block.ConnectExtension;
+import app.packed.block.Extension;
+import app.packed.block.ExtensionSetup;
 import app.packed.component.App;
 import app.packed.component.Image;
-import app.packed.container.BaseBundle;
-import app.packed.container.ConnectExtension;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionSetup;
 
 /**
  *

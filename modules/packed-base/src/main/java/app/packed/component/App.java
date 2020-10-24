@@ -20,9 +20,9 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
-import app.packed.guest.Guest;
-import app.packed.guest.GuestState;
-import app.packed.guest.GuestWirelets;
+import app.packed.container.Container;
+import app.packed.container.ContainerState;
+import app.packed.container.ContainerWirelets;
 import app.packed.inject.ServiceLocator;
 
 /**
@@ -59,7 +59,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * 
      * @return this application's guest.
      */
-    Guest guest();
+    Container guest();
 
     /**
      * Returns the name of this application.
@@ -145,13 +145,13 @@ public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
      * Build and start a new application using the specified bundle. The state of the returned application is
-     * {@link GuestState#RUNNING}.
+     * {@link ContainerState#RUNNING}.
      * <p>
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use {@link GuestWirelets#lazyStart()}. Which will return an application in the
-     * {@link GuestState#INITIALIZED} phase instead.
+     * process you can use {@link ContainerWirelets#lazyStart()}. Which will return an application in the
+     * {@link ContainerState#INITIALIZED} phase instead.
      * 
      * @param bundle
      *            the bundle to use for creating the application

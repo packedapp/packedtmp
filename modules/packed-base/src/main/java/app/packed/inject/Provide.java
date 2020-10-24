@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.ExtensionMember;
+import app.packed.block.ExtensionMember;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.FieldSidecar;

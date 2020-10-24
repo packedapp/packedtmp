@@ -15,7 +15,7 @@
  */
 package app.packed.component;
 
-import app.packed.container.ContainerBundle;
+import app.packed.block.BlockBundle;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedComponentModifierSet;
@@ -132,7 +132,7 @@ public abstract class Wirelet {
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * Overriding any default naming scheme, or any name that might already have been set, for example, via
-     * {@link ContainerBundle#setName(String)}.
+     * {@link BlockBundle#setName(String)}.
      * 
      * @param name
      *            the name of the component

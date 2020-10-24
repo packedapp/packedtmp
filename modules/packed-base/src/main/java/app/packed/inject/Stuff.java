@@ -16,8 +16,8 @@
 package app.packed.inject;
 
 import app.packed.base.Named;
+import app.packed.block.BaseBundle;
 import app.packed.component.App;
-import app.packed.container.BaseBundle;
 
 /**
  *

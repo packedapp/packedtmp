@@ -19,12 +19,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.guest.Guest;
+import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.sandbox.Injector;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedShellDriver;
+import packed.internal.inject.service.sandbox.Injector;
 
 /**
  * Shell drivers are responsible for creating new shell instances, for example, instances of {@link App}.
@@ -89,7 +89,7 @@ public interface ShellDriver<S> {
      * <p>
      * The specified implementation can have the following types injected.
      * 
-     * If the specified implementation implements {@link AutoCloseable} a {@link Guest} can also be injected.
+     * If the specified implementation implements {@link AutoCloseable} a {@link Container} can also be injected.
      * <p>
      * Fields and methods are not processed.
      * 
@@ -112,7 +112,7 @@ public interface ShellDriver<S> {
         ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
         ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
         if (isGuest) {
-            ib.addKey(Guest.class, PackedInitializationContext.MH_GUEST, 0);
+            ib.addKey(Container.class, PackedInitializationContext.MH_GUEST, 0);
         }
         MethodHandle mh = ib.build();
         return new PackedShellDriver<>(isGuest, mh);

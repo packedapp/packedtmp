@@ -20,9 +20,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.TreePath;
+import app.packed.block.BlockBundle;
+import app.packed.block.Extension;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerBundle;
-import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
@@ -78,7 +78,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return an unmodifiable view of the extensions that are currently used
      * 
-     * @see ContainerBundle#extensions()
+     * @see BlockBundle#extensions()
      */
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> containerExtensions();

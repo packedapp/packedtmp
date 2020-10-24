@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeToken;
-import app.packed.container.BaseBundle;
+import app.packed.block.BaseBundle;
 import packed.internal.component.PackedComponentDriver;
 
 /**

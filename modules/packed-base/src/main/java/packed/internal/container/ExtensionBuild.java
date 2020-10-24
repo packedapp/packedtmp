@@ -23,15 +23,15 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
+import app.packed.block.Extension;
+import app.packed.block.ExtensionConfiguration;
+import app.packed.block.Extension.Subtension;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.Extension;
-import app.packed.container.Extension.Subtension;
-import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.util.LookupUtil;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.container;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,7 +24,7 @@ import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import app.packed.guest.Guest.StopOption;
+import app.packed.container.Container.StopOption;
 
 /**
  * Wirelets that can be used when wiring guest. For example, via {@link App#of(Bundle, Wirelet...)}.
@@ -40,7 +40,7 @@ import app.packed.guest.Guest.StopOption;
 // Det er jo en slags state machine historik...
 // Maaske noget generisks???
 
-public interface GuestWirelets {
+public interface ContainerWirelets {
 
     // * The returned application will lazily start itself when needed. For example, on first invocation of
     // * {@link #use(Class)}.
@@ -95,7 +95,7 @@ public interface GuestWirelets {
 
     // Runnig on the initializaiob/starting/stopping thread
 
-    static Wirelet on(GuestState state, Runnable task) {
+    static Wirelet on(ContainerState state, Runnable task) {
         throw new UnsupportedOperationException();
     }
 
@@ -107,7 +107,7 @@ public interface GuestWirelets {
     // Fremmede traade der kalder ind paa os naar vi bygger.
 
     // Runtime.addShutdownHook will be invoked immediatly before
-    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Guest.StopOption... options) {
+    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Container.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
@@ -118,16 +118,16 @@ public interface GuestWirelets {
      *
      * @see Runtime#addShutdownHook(Thread)
      */
-    static Wirelet shutdownHook(Guest.StopOption... options) {
+    static Wirelet shutdownHook(Container.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
     // excludes start?? IDK
-    static Wirelet timeToRun(Duration duration, Guest.StopOption... options) {
+    static Wirelet timeToRun(Duration duration, Container.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet timeToLive(Duration duration, Guest.StopOption... options) {
+    static Wirelet timeToLive(Duration duration, Container.StopOption... options) {
         // Duration is from Running transitioning...
         // Shuts down container normally
         throw new UnsupportedOperationException();
@@ -155,7 +155,7 @@ public interface GuestWirelets {
 
     // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
-    static Wirelet timeToLive(long timeout, TimeUnit unit, Guest.StopOption... options) {
+    static Wirelet timeToLive(long timeout, TimeUnit unit, Container.StopOption... options) {
         return timeToLive(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 

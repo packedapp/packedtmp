@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.inject.sandbox.Injector;
-import app.packed.inject.sandbox.InjectorAssembler;
+import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.inject.service.sandbox.InjectorAssembler;
 
 /** Tests {@link Provide#constant()} on static methods. */
 public class MethodStaticTest {

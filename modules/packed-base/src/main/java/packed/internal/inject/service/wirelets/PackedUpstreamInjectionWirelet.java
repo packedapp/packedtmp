@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.container.ExtensionMember;
+import app.packed.block.ExtensionMember;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;

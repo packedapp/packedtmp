@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.block.BaseBundle;
 import app.packed.component.ComponentDriver.Option;
-import app.packed.container.BaseBundle;
 import app.packed.inject.Factory;
 
 /**

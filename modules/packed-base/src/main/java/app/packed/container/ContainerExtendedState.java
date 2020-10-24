@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.container;
 
 import java.util.Optional;
 
@@ -40,21 +40,21 @@ import java.util.Optional;
 
 // GuestDetailedState
 // GuestStateDetails
-public interface GuestExtendedState {
+public interface ContainerExtendedState {
 
     /**
      * Returns the current state.
      * 
      * @return the current state
      */
-    GuestState actual(); // actual is maybe better???
+    ContainerState actual(); // actual is maybe better???
 
     /**
      * Returns the desired state of the guest.
      * 
      * @return the desired state of the guest
      */
-    GuestState desired();
+    ContainerState desired();
 
     boolean isFailed();
 

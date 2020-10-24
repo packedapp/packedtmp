@@ -18,7 +18,7 @@ package packed.internal.errorhandling;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import app.packed.container.InternalExtensionException;
+import app.packed.block.InternalExtensionException;
 import packed.internal.util.ThrowableUtil;
 
 /**

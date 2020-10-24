@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.container;
 
 /**
  *
@@ -23,7 +23,7 @@ package app.packed.guest;
 /// RunFailedException <- See execute fungere daaerlig here
 
 /// StartupFailedException();
-public class GuestStartException extends RuntimeException {
+public class ContainerStartException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.block;
 
 import static java.util.Objects.requireNonNull;
 
@@ -35,8 +35,8 @@ import app.packed.inject.Factory;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
- * {@link ContainerConfiguration} available via {@link #configuration()}.
+ * around {@link BlockConfiguration}. Delegating every invocation in the class to an instance of
+ * {@link BlockConfiguration} available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
@@ -53,11 +53,11 @@ import app.packed.inject.Factory;
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
 
-public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
+public abstract class BlockBundle extends Bundle<BlockConfiguration> {
 
     /** Creates a new ContainerBundle. */
-    protected ContainerBundle() {
-        super(ContainerConfiguration.driver());
+    protected BlockBundle() {
+        super(BlockConfiguration.driver());
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * 
      * @throws IllegalStateException
      *             if {@link #configure()} has been invoked
-     * @see ContainerConfiguration#checkConfigurable()
+     * @see BlockConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -76,7 +76,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * Returns the configuration site of this bundle.
      * 
      * @return the configuration site of this bundle
-     * @see ContainerConfiguration#configSite()
+     * @see BlockConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
         return configuration().configSite();
@@ -86,7 +86,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * Returns an unmodifiable view of the extensions that have been configured so far.
      * 
      * @return an unmodifiable view of the extensions that have been configured so far
-     * @see ContainerConfiguration#extensions()
+     * @see BlockConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -102,7 +102,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see ContainerConfiguration#setName(String)
+     * @see BlockConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -167,7 +167,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see ContainerConfiguration#link(Bundle, Wirelet...)
+     * @see BlockConfiguration#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
@@ -189,7 +189,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see ContainerConfiguration#path()
+     * @see BlockConfiguration#path()
      */
     protected final TreePath path() {
         return configuration().path();
@@ -207,7 +207,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see ContainerConfiguration#setName(String)
+     * @see BlockConfiguration#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -231,7 +231,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #configure()}
-     * @see ContainerConfiguration#use(Class)
+     * @see BlockConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

@@ -20,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
 import app.packed.base.Nullable;
-import app.packed.guest.Guest;
-import app.packed.guest.GuestState;
+import app.packed.container.Container;
+import app.packed.container.ContainerState;
 
 /**
  *
@@ -36,16 +36,16 @@ import app.packed.guest.GuestState;
 
 // Extra data... Startup/Initialization exception
 
-public class PackedGuest implements Guest {
+public class PackedGuest implements Container {
 
     final Sync sync = new Sync();
 
-    static final int I_INITIALIZING = GuestState.INITIALIZING.ordinal();
-    static final int I_INITIALIZED = GuestState.INITIALIZED.ordinal();
-    static final int I_STARTING = GuestState.STARTING.ordinal();
-    static final int I_RUNNING = GuestState.RUNNING.ordinal();
-    static final int I_STOPPING = GuestState.STOPPING.ordinal();
-    static final int I_TERMINATED = GuestState.TERMINATED.ordinal();
+    static final int I_INITIALIZING = ContainerState.INITIALIZING.ordinal();
+    static final int I_INITIALIZED = ContainerState.INITIALIZED.ordinal();
+    static final int I_STARTING = ContainerState.STARTING.ordinal();
+    static final int I_RUNNING = ContainerState.RUNNING.ordinal();
+    static final int I_STOPPING = ContainerState.STOPPING.ordinal();
+    static final int I_TERMINATED = ContainerState.TERMINATED.ordinal();
 
     // Hmm, maybe not
     @Nullable
@@ -59,7 +59,7 @@ public class PackedGuest implements Guest {
 
     /** {@inheritDoc} */
     @Override
-    public Guest start() {
+    public Container start() {
         return this;
     }
 
@@ -71,7 +71,7 @@ public class PackedGuest implements Guest {
 
     /** {@inheritDoc} */
     @Override
-    public GuestState state() {
+    public ContainerState state() {
         throw new UnsupportedOperationException();
 
     }
@@ -86,7 +86,7 @@ public class PackedGuest implements Guest {
 
     /** {@inheritDoc} */
     @Override
-    public Guest stop(StopOption... options) {
+    public Container stop(StopOption... options) {
         return null;
     }
 
@@ -98,11 +98,11 @@ public class PackedGuest implements Guest {
 
     /** {@inheritDoc} */
     @Override
-    public void await(GuestState state) throws InterruptedException {}
+    public void await(ContainerState state) throws InterruptedException {}
 
     /** {@inheritDoc} */
     @Override
-    public boolean await(GuestState state, long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException {
         return false;
     }
 

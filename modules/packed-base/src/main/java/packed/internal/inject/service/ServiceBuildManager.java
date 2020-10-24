@@ -31,7 +31,6 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceRegistry;
-import app.packed.inject.sandbox.Injector;
 import packed.internal.component.ComponentNode;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;
@@ -47,6 +46,7 @@ import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
+import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /**

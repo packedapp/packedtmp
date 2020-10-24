@@ -30,8 +30,8 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.block.ExtensionMember;
 import app.packed.component.Wirelet;
-import app.packed.container.ExtensionMember;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;

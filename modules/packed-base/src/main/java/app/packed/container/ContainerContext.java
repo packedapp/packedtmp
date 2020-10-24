@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
+package app.packed.container;
 
 import app.packed.base.TreePath;
 import app.packed.component.Component;
@@ -34,7 +34,7 @@ import app.packed.component.ComponentModifierSet;
 
 // Altsaa eneste problem er. Vil vi virkelig gerne have
 // At f.eks. extensions kan stoppe en container de er deployet i???
-public interface GuestContext {
+public interface ContainerContext {
 
     TreePath path();
 

@@ -17,9 +17,9 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.container.Extension;
-import app.packed.container.Extension.Subtension;
-import app.packed.container.InternalExtensionException;
+import app.packed.block.Extension;
+import app.packed.block.InternalExtensionException;
+import app.packed.block.Extension.Subtension;
 
 /**
  *

@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.guest.Guest;
+import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
 
 /** The default implementation of {@link App}. */
@@ -18,7 +18,7 @@ final class PackedApp implements App {
     private final Component component;
 
     /** The guest that manages the lifecycle. */
-    private final Guest guest;
+    private final Container guest;
 
     /** All services that are available for the user. */
     private final ServiceLocator services;
@@ -33,7 +33,7 @@ final class PackedApp implements App {
      * @param guest
      *            the guest
      */
-    private PackedApp(Component component, ServiceLocator services, Guest guest) {
+    private PackedApp(Component component, ServiceLocator services, Container guest) {
         this.component = requireNonNull(component);
         this.guest = requireNonNull(guest);
         this.services = requireNonNull(services);
@@ -47,7 +47,7 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public Guest guest() {
+    public Container guest() {
         return guest;
     }
 

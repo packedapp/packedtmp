@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.block;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,12 +25,12 @@ import app.packed.inject.Provide;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.sandbox.InjectorAssembler;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.statemachine.OnStart;
+import packed.internal.inject.service.sandbox.InjectorAssembler;
 
 /**
- * A convenience extension of {@link ContainerBundle} which contains shortcut access to common functionality defined by
+ * A convenience extension of {@link BlockBundle} which contains shortcut access to common functionality defined by
  * the various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
@@ -62,7 +62,7 @@ import app.packed.statemachine.OnStart;
 // og hvilke metoder fra disse extensions vi har med
 // Maaske vi i virkeligheden skal hava ContainerBundle
 // Og saa sige at folk skal laere derfra
-public abstract class BaseBundle extends ContainerBundle {
+public abstract class BaseBundle extends BlockBundle {
 
     protected final void requireGuest() {
         // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...

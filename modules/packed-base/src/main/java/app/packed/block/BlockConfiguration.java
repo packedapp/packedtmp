@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.block;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -33,12 +33,12 @@ import packed.internal.component.ComponentNodeConfiguration;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link ContainerBundle} or {@link BaseBundle}.
+ * extending {@link BlockBundle} or {@link BaseBundle}.
  */
-public final class ContainerConfiguration extends ComponentConfiguration {
+public final class BlockConfiguration extends ComponentConfiguration {
 
     /** A driver that create container components. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
+    private static final ComponentDriver<BlockConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), BlockConfiguration.class,
             Option.container());
 
     /**
@@ -47,7 +47,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @param context
      *            the component configuration context
      */
-    private ContainerConfiguration(ComponentConfigurationContext context) {
+    private BlockConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
 
@@ -57,7 +57,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @return an unmodifiable view of the extensions that are currently used
      * 
      * @see #use(Class)
-     * @see ContainerBundle#extensions()
+     * @see BlockBundle#extensions()
      */
     public Set<Class<? extends Extension>> extensions() {
         return context.containerExtensions();
@@ -86,7 +86,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see ContainerBundle#install(Factory)
+     * @see BlockBundle#install(Factory)
      */
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
         return wire(BeanConfiguration.driver(), factory);
@@ -98,7 +98,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerBundle#installInstance(Object)
+     * @see BlockBundle#installInstance(Object)
      */
     public <T> BeanConfiguration<T> installInstance(T instance) {
         return wireInstance(BeanConfiguration.driver(), instance);
@@ -140,7 +140,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerConfiguration setName(String name) {
+    public BlockConfiguration setName(String name) {
         super.setName(name);
         return this;
     }
@@ -172,7 +172,7 @@ public final class ContainerConfiguration extends ComponentConfiguration {
      * 
      * @return the default driver for containers
      */
-    public static ComponentDriver<ContainerConfiguration> driver() {
+    public static ComponentDriver<BlockConfiguration> driver() {
         return DRIVER;
     }
 }

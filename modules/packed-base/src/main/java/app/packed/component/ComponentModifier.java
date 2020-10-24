@@ -17,8 +17,8 @@ package app.packed.component;
 
 import java.lang.reflect.Modifier;
 
+import app.packed.block.Extension;
 import app.packed.cli.Main;
-import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
 /**

@@ -27,7 +27,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.container.Extension;
+import app.packed.block.Extension;
 
 /**
  *

@@ -13,15 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.guest;
 
 /**
- *
+ * Provides a simple component based framework. And extensions
  */
-// En for koersel af annotation for startup/shutdown??? og initialize
-// 
-public class GuestAttributes {
-    // Map<State, Duration>???
-
-    // Shutdown timings... Describtion of GuestWirelets
-}
+package app.packed.block;

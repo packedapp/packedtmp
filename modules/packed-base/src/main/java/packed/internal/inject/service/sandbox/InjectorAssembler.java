@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package packed.internal.inject.service.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,16 +21,17 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
+import app.packed.block.BaseBundle;
+import app.packed.block.BlockConfiguration;
 import app.packed.component.Assembler;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
-import app.packed.container.BaseBundle;
-import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
+import app.packed.inject.sandbox.PrototypeConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -44,7 +45,7 @@ import app.packed.inject.ServiceLocator;
 public final class InjectorAssembler extends Assembler {
 
     /** The configuration we delegate all calls to. */
-    private final ContainerConfiguration configuration;
+    private final BlockConfiguration configuration;
 
     private boolean initialized;
 
@@ -54,7 +55,7 @@ public final class InjectorAssembler extends Assembler {
      * @param configuration
      *            the configuration to wrap
      */
-    InjectorAssembler(ContainerConfiguration configuration) {
+    InjectorAssembler(BlockConfiguration configuration) {
         this.configuration = requireNonNull(configuration, "configuration is null");
     }
 
@@ -63,7 +64,7 @@ public final class InjectorAssembler extends Assembler {
      * 
      * @return the container configuration that was used to create this configurator
      */
-    private ContainerConfiguration configuration() {
+    private BlockConfiguration configuration() {
         return configuration;
     }
 

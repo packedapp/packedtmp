@@ -18,7 +18,7 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import app.packed.container.BaseBundle;
+import app.packed.block.BaseBundle;
 import packed.internal.component.BundleHelper;
 import packed.internal.component.PackedComponentDriver;
 

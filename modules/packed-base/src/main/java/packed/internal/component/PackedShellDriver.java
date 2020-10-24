@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.block.Extension;
 import app.packed.component.Assembler;
 import app.packed.component.Bundle;
 import app.packed.component.Component;
@@ -31,7 +32,6 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 

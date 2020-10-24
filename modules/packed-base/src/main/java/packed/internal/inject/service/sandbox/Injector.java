@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package packed.internal.inject.service.sandbox;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.block.BlockConfiguration;
 import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
@@ -25,7 +26,6 @@ import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.container.ContainerConfiguration;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
@@ -159,7 +159,7 @@ public interface Injector extends ServiceLocator {
     // interface ArtifactConfigurator() {}
     // configure()
     static Injector configure(CustomConfigurator<? super InjectorAssembler> configurator, Wirelet... wirelets) {
-        return driver().configure(ContainerConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
+        return driver().configure(BlockConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
     }
 
     /**
