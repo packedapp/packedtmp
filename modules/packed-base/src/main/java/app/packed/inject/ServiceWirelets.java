@@ -108,6 +108,13 @@ public final class ServiceWirelets {
     // provide <-- easy access
 }
 
+class XIdeasContract {
+
+    public static Wirelet restrict(ServiceContract contract) {
+        throw new UnsupportedOperationException();
+    }
+}
+
 // A common pattern of x(class...), x(key...), xIf(Predicate), XAll()
 class ServiceWSandbox {
     // anchor all unused services that are exported from a child
@@ -160,7 +167,4 @@ class ServiceWSandbox {
 
     // exportTransitive
 
-    public static Wirelet restrict(ServiceContract contract) {
-        throw new UnsupportedOperationException();
-    }
 }

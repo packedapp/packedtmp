@@ -50,6 +50,10 @@ public interface ServiceTransformer extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
+    default void provideInstance(Object instance) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Changes the key of an existing service. This method is typically used to add or remove {@link Qualifier qualifiers}.
      * <p>

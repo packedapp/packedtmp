@@ -17,32 +17,21 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.Option;
-import java.lang.StackWalker.StackFrame;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.Injector;
-import packed.internal.component.wirelet.WireletList;
-import packed.internal.config.ConfigSiteSupport;
-import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
 
 /** The default implementation of {@link Injector}. */
 public final class PackedInjector extends AbstractServiceLocator implements Injector {
 
     /** An empty service locator. */
     public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
-
-    /** A stack walker used from {@link #spawn(Wirelet...)}. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** The configuration site of this injector. */
     private final ConfigSite configSite;
@@ -90,27 +79,26 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
         return (Map) entries;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Injector spawn(Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            return this;
-        }
-        ConfigSite cs = ConfigSite.UNKNOWN;
-        if (!ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == PackedInjector.class).findFirst());
-            cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
-        }
-        LinkedHashMap<Key<?>, RuntimeService> newServices = new LinkedHashMap<>(entries);
-        WireletList wl = WireletList.ofAll(wirelets);
-        ConfigSite ccs = cs;
-        wl.forEach(PackedDownstreamServiceWirelet.class, w -> w.process(ccs, newServices));
-        // TODO Auto-generated method stub
-        return new PackedInjector(cs, newServices);
-    }
 }
-
+///** {@inheritDoc} */
+//@Override
+//public Injector spawn(Wirelet... wirelets) {
+//    requireNonNull(wirelets, "wirelets is null");
+//    if (wirelets.length == 0) {
+//        return this;
+//    }
+//    ConfigSite cs = ConfigSite.UNKNOWN;
+//    if (!ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> f.getDeclaringClass() == PackedInjector.class).findFirst());
+//        cs = sf.isPresent() ? configSite.thenStackFrame("Injector.Spawn", sf.get()) : ConfigSite.UNKNOWN;
+//    }
+//    LinkedHashMap<Key<?>, RuntimeService> newServices = new LinkedHashMap<>(entries);
+//    WireletList wl = WireletList.ofAll(wirelets);
+//    ConfigSite ccs = cs;
+//    wl.forEach(PackedDownstreamServiceWirelet.class, w -> w.process(ccs, newServices));
+//    // TODO Auto-generated method stub
+//    return new PackedInjector(cs, newServices);
+//}
 //protected final void injectMembers(OldAtInjectGroup descriptor, Object instance, @Nullable Component component) {
 //// Inject fields
 //if (!descriptor.fields.isEmpty()) {

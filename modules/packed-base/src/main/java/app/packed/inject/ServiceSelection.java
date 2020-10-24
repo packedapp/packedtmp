@@ -27,7 +27,13 @@ import app.packed.base.Attribute;
 import app.packed.base.Key;
 
 /**
- * A specialization of {@link ServiceLocator} where all service instances have a common super type{@code <S>}.
+ * A specialization of {@link ServiceLocator} where all service instances have a common super type {@code <S>}.
+ * Instances of this interface are normally created via the various select methods on ServiceLocator.
+ * 
+ * @see ServiceLocator#select(Class)
+ * @see ServiceLocator#select(Key)
+ * @see ServiceLocator#selectAll()
+ * @see ServiceLocator#selectAssignableTo(Class)
  */
 //ServiceSelector?
 
@@ -44,8 +50,6 @@ import app.packed.base.Key;
 
 // Hmm hvordan haandtere vi Injector????
 // Vi bliver noedt til ogsaa at have den paa plads..
-// 
-
 public interface ServiceSelection<S> extends ServiceLocator {
 
     <T extends Collection<? super S>> T addTo(T collection);
@@ -98,7 +102,3 @@ public interface ServiceSelection<S> extends ServiceLocator {
 }
 //It is not a set... Because we might have multiple instances of the same type...
 //Det er hellere ikke rigtig en collection fordi vi laver maaske nye instanser hver gang...
-
-interface X {
-    // Foerhen havde vi
-}

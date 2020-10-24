@@ -136,20 +136,6 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    /**
-     * Creates a new injector by specifying the downstream wirelets. Transform
-     * <p>
-     * Returns <code>this</code> if no wirelets are specified.
-     * 
-     * @param wirelets
-     *            wirelets
-     * @return the new injector
-     */
-    // Skal vi tage en Consumer<?>???? Saa faar vi en klasse med som kan sige noget om man er..
-    // Det er taenkt paa en maade paa at alle Artifacts har et module de høre til...
-    // Alternativet, er at man overtager
-    Injector spawn(Wirelet... wirelets);
-
     static Image<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }

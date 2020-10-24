@@ -135,14 +135,16 @@ public interface ServiceLocator extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
+    // Must be open to xyz
     default ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
+        // consumeren capture
         return this;
     }
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
-     * a service with the specified key. The semantics method is identical to {@link #findInstance(Class)} except that an exception
-     * is thrown instead of returning if the service does not exist.
+     * a service with the specified key. The semantics method is identical to {@link #findInstance(Class)} except that an
+     * exception is thrown instead of returning if the service does not exist.
      *
      * @param <T>
      *            the type of service to return
