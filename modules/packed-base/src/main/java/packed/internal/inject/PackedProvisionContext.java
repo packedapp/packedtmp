@@ -45,14 +45,8 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> targetComponent() {
-        return Optional.ofNullable(component);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Class<? extends Extension>> targetExtension() {
-        return Optional.empty();
+    public boolean isConstant() {
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -75,6 +69,24 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     public Key<?> key() {
         return dependency.key();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<?>> targetClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Component> targetComponent() {
+        return Optional.ofNullable(component);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<? extends Extension>> targetExtension() {
+        return Optional.empty();
     }
 
     /** {@inheritDoc} */

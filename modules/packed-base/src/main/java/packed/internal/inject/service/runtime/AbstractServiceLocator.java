@@ -36,7 +36,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
 
     /** {@inheritDoc} */
     @Override
-    public final <T> Optional<T> find(Key<T> key) {
+    public final <T> Optional<T> findInstance(Key<T> key) {
         requireNonNull(key, "key is null");
         RuntimeService s = getService(key);
         if (s == null) {

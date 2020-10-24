@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.component.App;
 import app.packed.component.Wirelet;
-import app.packed.inject.Service;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceRegistry;
-import app.packed.inject.ServiceTransformer;
 import packed.internal.inject.service.WireletFromContext;
 import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 
@@ -52,18 +50,10 @@ import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 
 // It is illegal to have multiple services with the same key at any part
 // of the pipeline.
-public final class OldServiceWirelets {
+final class ServiceWireletsOld {
 
     /** No instantiation. */
-    private OldServiceWirelets() {}
-
-    public static Wirelet to(Consumer<? super ServiceTransformer> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Wirelet from(Consumer<? super ServiceTransformer> action) {
-        throw new UnsupportedOperationException();
-    }
+    private ServiceWireletsOld() {}
 
     public static <T> Wirelet fromAddQualifier(Class<? extends Annotation> qualifier, Object value) {
         throw new UnsupportedOperationException();
@@ -112,9 +102,6 @@ public final class OldServiceWirelets {
         };
     }
 
-    public static Wirelet restrict(ServiceContract contract) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 class ServiceWireletsSandbox {
@@ -154,6 +141,74 @@ class ServiceWireletsSandbox {
     }
 
     public static Wirelet unconstanfyTo(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+}
+
+class ZBadIdeasx {
+
+    public static Wirelet peek(Consumer<? super ServiceRegistry> action) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet map(Class<T> from, Class<? super T> to) {
+        return map(Key.of(from), Key.of(to));
+    }
+
+    public static <T> Wirelet map(Key<T> from, Key<? super T> to) {
+        // Changes the key of an entry (String -> @Left String
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> Wirelet mapAll(Function<Service, ? super Key<?>> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Service transformere er saa meget lettere....
+    // at bruge...
+    // Det store problem er incoming hvor hvis vi laver bulk operations.
+    // Saa bliver vi noedt til at tracke alle
+    public static Wirelet compute(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
+        // Must only provide ServiceWirelets...
+        compute(e -> {
+            if (e.contains(String.class)) {
+                return Optional.of(map(String.class, CharSequence.class));
+            }
+            return Optional.empty();
+        });
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet compute(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
+        // Must only provide ServiceWirelets...
+        compute(f -> f.contains(String.class), e -> map(String.class, CharSequence.class));
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet computeFrom(Function<? super ServiceRegistry, ? extends Optional<? extends Wirelet>> function) {
+        // Must only provide ServiceWirelets...
+        compute(e -> {
+            if (e.contains(String.class)) {
+                return Optional.of(map(String.class, CharSequence.class));
+            }
+            return Optional.empty();
+        });
+        throw new UnsupportedOperationException();
+    }
+
+    public static Wirelet computeFrom(Predicate<? super ServiceRegistry> filter, Function<? super ServiceRegistry, Wirelet> function) {
+        // Must only provide ServiceWirelets...
+        compute(f -> f.contains(String.class), e -> map(String.class, CharSequence.class));
+        throw new UnsupportedOperationException();
+    }
+
+    // Taenker det bliver lidt noget rod... fordi ServiceLocator er auto aktiverende...
+    // Men maa lave en selection hvis man har behov for det...
+    public static Wirelet exposeServiceLocator() {
+        return exposeServiceLocator(Key.of(ServiceLocator.class));
+    }
+
+    public static Wirelet exposeServiceLocator(Key<? extends ServiceLocator> key) {
         throw new UnsupportedOperationException();
     }
 }

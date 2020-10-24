@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -53,13 +52,9 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     void putIntoTo(Collection<? super S> collection);
 
-    void forEachInstance(Consumer<? super S> action);
+    void forEachInstance(BiConsumer<? super Service, ? super S> action);
 
-    void forEachProvider(Consumer<? super Provider<S>> action);
-
-    void forEachServiceInstance(BiConsumer<? super Service, ? super S> action);
-
-    void forEachServiceProvider(BiConsumer<? super Service, ? super Provider<S>> action);
+    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
 
     Stream<S> instances();
 
@@ -77,9 +72,9 @@ public interface ServiceSelection<S> extends ServiceLocator {
      * 
      * @return an immutable list containing a provided service instance for every service in this selection in any order
      */
-    List<S> toListInstances();
+    List<S> toInstanceList();
 
-    List<Provider<S>> toListProviders();
+    List<Provider<S>> toProviderList();
 
     Map<Key<? extends S>, S> toMapKeyInstances();
 
@@ -103,3 +98,7 @@ public interface ServiceSelection<S> extends ServiceLocator {
 }
 //It is not a set... Because we might have multiple instances of the same type...
 //Det er hellere ikke rigtig en collection fordi vi laver maaske nye instanser hver gang...
+
+interface X {
+    // Foerhen havde vi
+}

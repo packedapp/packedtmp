@@ -45,13 +45,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     /** {@inheritDoc} */
     @Override
-    public final Optional<Service> findService(Class<?> key) {
-        return findService(Key.of(key));
+    public final Optional<Service> find(Class<?> key) {
+        return find(Key.of(key));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final Optional<Service> findService(Key<?> key) {
+    public final Optional<Service> find(Key<?> key) {
         requireNonNull(key, "key is null");
         Service s = services().get(key);
         return Optional.ofNullable(s);

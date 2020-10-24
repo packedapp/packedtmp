@@ -42,8 +42,8 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return an optional containing the service instance if present, or an empty optional if not present
      * @see #use(Class)
      */
-    default <T> Optional<T> find(Class<T> key) {
-        return find(Key.of(key));
+    default <T> Optional<T> findInstance(Class<T> key) {
+        return findInstance(Key.of(key));
     }
 
     /**
@@ -58,7 +58,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return an optional containing the service instance if present, or an empty optional if not present
      * @see #use(Class)
      */
-    <T> Optional<T> find(Key<T> key);
+    <T> Optional<T> findInstance(Key<T> key);
 
     default <T> Optional<Provider<T>> findProvider(Class<T> key) {
         return findProvider(Key.of(key));
@@ -89,7 +89,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the action to be performed, if a service with the specified key is present
      */
     default <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
-        Optional<T> t = find(key);
+        Optional<T> t = findInstance(key);
         requireNonNull(action, "action is null");
         if (t.isPresent()) {
             T tt = t.get();
@@ -141,7 +141,7 @@ public interface ServiceLocator extends ServiceRegistry {
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
-     * a service with the specified key. The semantics method is identical to {@link #find(Class)} except that an exception
+     * a service with the specified key. The semantics method is identical to {@link #findInstance(Class)} except that an exception
      * is thrown instead of returning if the service does not exist.
      *
      * @param <T>
@@ -185,7 +185,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *             if no service with the specified key exist
      */
     default <T> T use(Key<T> key) {
-        Optional<T> t = find(key);
+        Optional<T> t = findInstance(key);
         if (!t.isPresent()) {
             throw new NoSuchElementException("A service with the specified key could not be found, key = " + key);
         }

@@ -19,7 +19,8 @@ import app.packed.base.Key;
 import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.container.BaseBundle;
-import app.packed.inject.sandbox.OldServiceWirelets;
+import app.packed.inject.ServiceContract;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
@@ -32,16 +33,21 @@ public class FooBar extends BaseBundle {
         install(NeedsString.class);
         provideInstance(123L);
 
-        link(new Child(), OldServiceWirelets.fromPeek(e -> System.out.println("Exporting " + e.keys())));
+        link(new Child(), ServiceWirelets.from(e -> {
+            System.out.println("Exporting " + e.keys());
+            e.rekey(Key.of(String.class), new Key<@Named("foo") String>() {});
+            System.out.println("Exporting " + e.keys());
+        }));
     }
 
     public static class NeedsString {
-        public NeedsString(ChildServ string) {
+        public NeedsString(ChildServ string, @Named("foo") String s) {
             System.out.println("GOt " + string);
         }
     }
 
     public static void main(String[] args) {
+        System.out.println(ServiceContract.of(new Child()));
         App.of(new FooBar());
     }
 

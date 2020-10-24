@@ -423,17 +423,6 @@ public final class DependencyDescriptor implements OldVariable {
         return new DependencyDescriptor(key.typeLiteral().type(), key, Optionality.REQUIRED, null);
     }
 
-    public static DependencyDescriptor ofOptional(Key<?> key) {
-        requireNonNull(key, "key is null");
-        if (!key.hasQualifier()) {
-            TypeToken<?> tl = key.typeLiteral();
-            if (tl.type() == tl.rawType()) {
-                return CLASS_CACHE.get(tl.rawType());
-            }
-        }
-        return new DependencyDescriptor(key.typeLiteral().type(), key, Optionality.OPTIONAL_NULLABLE, null);
-    }
-
     private enum Optionality {
         REQUIRED {
             @Override

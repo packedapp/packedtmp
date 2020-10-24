@@ -28,7 +28,7 @@ import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#find(Class)} and {@link Injector#find(Key)}. */
+/** Test {@link Injector#findInstance(Class)} and {@link Injector#findInstance(Key)}. */
 public class InjectorHasService {
 
     @Test

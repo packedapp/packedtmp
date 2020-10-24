@@ -35,9 +35,6 @@ import packed.internal.util.ReflectionUtil;
  */
 public final class PackedParameterDescriptor implements AnnotatedVariable {
 
-    /** The executable that declares the parameter. */
-    private final Executable executableUnsafe;
-
     /** The index of the parameter. */
     private final int index;
 
@@ -47,25 +44,18 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
     /**
      * Creates a new descriptor
      *
-     * @param executableUnsafe
-     *            the executable that declares the parameter
      * @param parameter
      *            the parameter
      * @param index
      *            the index of the parameter
      */
-    PackedParameterDescriptor(Executable executableUnsafe, Parameter parameter, int index) {
-        this.executableUnsafe = executableUnsafe;
+    PackedParameterDescriptor(Parameter parameter, int index) {
         this.parameter = parameter;
         this.index = index;
     }
 
     public Executable unsafeExecutable() {
-        return executableUnsafe;
-    }
-
-    public String descriptorTypeName() {
-        return "parameter";
+        return parameter.getDeclaringExecutable();
     }
 
     /** {@inheritDoc} */
@@ -131,7 +121,7 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
         Class<?> dc = getDeclaringClass();
         // Workaround for https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8213278
         if (index() > 0 && (dc.isLocalClass() || (dc.isMemberClass() && !Modifier.isStatic(dc.getModifiers())))) {
-            return executableUnsafe.getGenericParameterTypes()[index() - 1];
+            return parameter.getDeclaringExecutable().getGenericParameterTypes()[index() - 1];
         } else {
             return parameter.getParameterizedType();
         }
@@ -182,17 +172,3 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
         return TypeToken.fromType(t);
     }
 }
-//
-/// **
-// * Creates a new {@link Parameter} corresponding to this descriptor.
-// * <p>
-// * This method always creates a new parameter to avoid giving access to the underlying mutable {@link Executable
-// * Parameter#getDeclaringExecutable()}.
-// *
-// * @return a new parameter
-// */
-// Parameter newParameter() {
-// // Parameter is immutable, but it contains a reference to its declaring executable exposed via
-// // Parameter#getDeclaringExecutable. So we need to create a new copy
-// return declaringExecutable.newExecutable().getParameters()[index];
-// }

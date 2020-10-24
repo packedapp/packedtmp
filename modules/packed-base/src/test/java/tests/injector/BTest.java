@@ -31,7 +31,7 @@ public class BTest {
     public static void main(String[] args) {
         Injector i = Injector.create(new MyBundle());
 
-        i.findService(PrivateImplementation.class).get().attribute(ConfigSite.ATTRIBUTE).print();
+        i.find(PrivateImplementation.class).get().attribute(ConfigSite.ATTRIBUTE).print();
 
         System.out.println(String.class.getModule().getDescriptor());
 

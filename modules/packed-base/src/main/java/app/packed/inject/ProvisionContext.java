@@ -27,7 +27,6 @@ import app.packed.inject.sandbox.Injector;
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
  * 
- * 
  * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
  * service being requested.
  * 
@@ -59,17 +58,31 @@ import app.packed.inject.sandbox.Injector;
 public interface ProvisionContext {
 
     /**
-     * Returns whether or the instance is being injected. For example, into a field, method, constructor.
-     *
+     * Returns weather or not the provided instance will be treated as a constant.
+     * <p>
+     * The runtime may choose to create
+     * 
+     * @return whether or not the provided instance will be treated as a constant
+     * 
+     * @see Provide#constant()
+     */
+    boolean isConstant();
+
+    /**
+     * Returns whether or the instance is being injected into, for example, a field, method, constructor.
+     * <p>
+     * This method always returns the opposite of {@link #isLookup()}
+     * 
      * @return whether or the instance is being injected
      */
     boolean isInjection();
 
     /**
-     * Returns whether or not an instance is requested via a {@link ServiceLocator}. Instances that are requested via a
-     * service locator always returns empty for all optionals (maybe not extension...)
+     * Returns whether or not the instance was requested via a {@link ServiceLocator} or one of its subclasses.
      *
      * @return whether the instance is being provided via a lookup
+     * @see ServiceLocator#findInstance(Class)
+     * @see ServiceLocator#findInstance(Key)
      * @see ServiceLocator#use(Class)
      * @see ServiceLocator#use(Key)
      */
@@ -86,30 +99,13 @@ public interface ProvisionContext {
     boolean isOptional();
 
     /**
-     * The class that is being provided a value to. Or {@link Optional#empty()} if a lookup
+     * If the provisioning is part of an injection and not a {@link #isConstant() constant}. Returns the type of class that
+     * the provided instance is being injected into. If the provisioning is part of a lookup returns
+     * {@link Optional#empty()}.
      * 
-     * @return stuff
+     * @return any class that is being provisioned
      */
-    default Optional<Class<?>> targetClass() {
-        // RequestingClass
-        // RequestingMember
-        // RequestingVariable
-
-        // Requester, if used for dependency injection....
-        // Her er det taenkt som den oprindelig klasse... sans mappers...sans composites
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the key of the service that needs to be provided.
-     *
-     * @return the key of the service that needs to be provided
-     */
-    // Maaske den bare skal vaere separat.... Hvis vi gerne vil bruge ProvideContext for prime.
-    // Saa er det jo noedvendig ikke noget der hedder key...
-
-    // Og vi ved vel aerlig talt hvilken noegle vi er.....
-    // Key<?> key();
+    Optional<Class<?>> targetClass();
 
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
@@ -117,15 +113,11 @@ public interface ProvisionContext {
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
-    // What to do at configuration time.... We probably don't have a component at that point...
-
-    // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
-    // Det er bare f.eks. til at debugge...
-    Optional<Component> targetComponent();
+    Optional<Component> targetComponent(); // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
 
     /**
-     * If the requester party is part of an {@link Extension}. Returns the type of extension that is requesting an instance.
-     * Otherwise false.
+     * If the requester party is part of an {@link Extension} and not a constant. Returns the type of extension that is
+     * requesting an instance. Otherwise false.
      * <p>
      * 
      * @return who wants this shit
@@ -144,164 +136,16 @@ public interface ProvisionContext {
      * @see #targetVariable()
      */
     // Altsaa taenker man laver en special annotation.
-    @Deprecated
     Optional<Member> targetMember();
 
     /**
-     * The variable (field or parameter) for which this dependency was created. Or an empty {@link Optional} if this
-     * dependency was not created from a variable.
+     * Returns the variable, typically a field or parameter, if it can be determined. The variable (field or parameter) for
+     * which this dependency was created. Or an empty {@link Optional} if this dependency was not created from a variable.
+     * <p>
+     * Returns empty is provisioning is done via service locator. Or if the provided instance is shared
      * 
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
-     * @see #targetMember()
      */
-    Optional<AnnotatedVariable> targetVariable();// Should match Var...-> VarDescriptor-> VariableDescriptor
+    Optional<AnnotatedVariable> targetVariable();
 }
-// Vi tager alle annotations med...@SystemProperty(fff) @Foo String xxx
-// Includes any qualifier...
-// AnnotatedElement memberAnnotations();
-
-// Hvad hvis det ikke er en direkte extension der forsporger???
-// Men f.eks. et eller andet inde i en Bundle som er installeret
-// som en extension...
-// I sidste ende er det jo hvor den ender op der er vigtigt (target class)
-
-//Taenker den 
-
-//Rename to ProvidesHelper, then we can save Context for other stuff. And say helper is always used for additional
-
-//InjectionSite.. Is a bit misleasing because of Injector.get();
-//DependencyRequest
-
-//ProvidesContext, ProvisionContext
-
-//Generic Dependency @SystemProperty, ServiceRequest
-
-//qualifier
-
-//What need injection (Dependency)
-//who needs the injection (Which service)
-
-//Should use composition
-
-//Jeg syntes ikke ProvidesHelper
-
-//Jeg er tilboejetil til at lave dependency til en final klasse...
-//Og saa lave den optional paa Provides
-//Dependency -> Only for Injection. use() <- er ikke en dependency men du kan bruge ProvidesHelper
-//Hvad med Factory<@Cool String, Foo> Det ville jeg sige var en dependency.
-//Saa Dependency har en ElementType of
-//ElementType[] types = new ElementType[] { ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD,
-//ElementType.PARAMETER };
-//Type
-//Hahaha, what about @RequiredService.. har maaske ikke noget med dependencies at goere...
-
-//--------------------------------------------------------------------------------------
-//Altsaa vi skal supporte Dependency paa alt hvad vi kan laver til et factory udfra...
-//---
-//Hmmmmmm det aendrer tingene lidt, eller maaske....
-
-//DependencyDescriptor -> klasse
-//ProvidesHelper Interface. maaske de samme metoder som dependency...
-
-//Primaere grund er at vi kan bruge Optional<Dependency>
-//Som bedre angiver brug af use()
-
-//Hvordan virker InjectorTransformer, eller hvad den nu hedder... Den er ikke en service, men en slags transformer.
-//Ville ikke give mening at have den som en dependency... Vi processere altid en ting af gangen....
-//Provides, for singleton service burde smide Unsupported operation for dependency. Det her object giver faktisk ikke
-//mening
-//for singleton services. Alle metoder burde smide UnsupportedOperationException...
-//Du burde kunne faa ProvidesHelper injected i din klasse ogsaa....
-//@Provides(many = true, as = Logger.class) ... ahh does qualifiers...not so pretty
-//public class MyLogger {
-/// MyLogger(ProvidesHelper p)
-//} Saa kan vi klare AOP ogsaa. Hvilket er rigtig svaert
-
-//ProvidesManyContext... A object that helps
-//Does not make sense for singletons... med mindre vi har saaden noget som exportAs()
-//ServiceContext <- Permanent [exported(), Set<Key<?>> exportedAs(), String[] usesByChildContainers
-//ProvisionContext <- One time
-
-//ProvisionContext (used with Provide), InjectionContext (used with Inject)
-
-//provide(String.class).via(h->"fooo");
-//Hmm provide("Goo").via() giver ingen mening..
-
-//provide(MyService).from(MyServiceImpl.class)
-//provide(MyServiceImpl).as(MyService.class)
-
-//ServiceRequest... Somebody is requesting a service...
-
-//Kan not be used with singletons...
-
-//ConfigSite???? <- Use unknown for service locator...
-
-//ComponentPath
-//ConfigSite
-
-//Den eneste grund til vi ikke sletter denne, er for request traces....
-//Detailed Logging....
-//(@PrintResolving SomeService)
-////Kunne vi tage en enum????
-////NO_DEBUG, DEBUG_LOOK_IN_THREADLOCAL
-
-//Interface vs Class..
-//Interface because we might want an implementation with meta data internally...
-//PackedPrototypeRequest that every entry will read, and log stuff.
-
-//ServiceUsageSite, ProtetypeUsageSite
-
-//ProvideContext <- Used together with Provide.....
-//But not if Singleton.....
-
-//Maaske er Component bare en separate injection???
-//Men saa skal vi have ComponentContext.component()
-
-//Kan den bruges paa sidecars??? SidecarProvide maaske....
-//ProvideLocal? Føler lidt at grunden til vi ikke kan bruge annoteringer
-//Som vi vil paa sidecars er pga Provide...
-//F.eks. Schedule boer jo fungere praecis som var den paa componenten...
-
-//ProvisionContext (If we have InjectionContext)
-//ProvisionPrototypeContext
-
-//Uses attributes????? I Think it may better support it...
-
-//@ProvideNonConstantContext
-//PrototypeProvideContext
-
-//Eller ogsaa kan den bruges altid og saa
-//er det bare BaseExtension der staar som requestor...
-
-//Altsaa en slags hvorfor bliver jeg instantieret....
-
-//Og kan vi ikke bare smide den paa InjectionContext????
-//Ville nu vaere fedt at adskille taenker jeg.
-//Den ene er debugging og den her kan vaere useful 
-//paa runtime
-
-//Det er ogsaa bare alle informationer vi bliver noedt til at at gemme i InjectionContext....
-
-//ProvideContext(), ProvideServiceContext
-
-//Altsaa taenker vi ogsaa kan bruge den til constanter...
-//Saa er der bare tom for alt..
-//static ProvideContext of(Dependency dependency) {
-//  return new ProvideContextImpl(dependency, null);
-//}
-//
-//static ProvideContext of(Dependency dependency, Component componenent) {
-//  return new ProvideContextImpl(dependency, requireNonNull(componenent, "component is null"));
-//}
-
-//
-///**
-//* If this helper class is created as the result of needing dependency injection. This method returns an empty optional
-//* if used from methods such as {@link App#use(Class)}.
-//* 
-//* @return any dependency this class might have
-//*/
-//default Optional<Dependency> dependency() {
-// throw new UnsupportedOperationException();
-//}

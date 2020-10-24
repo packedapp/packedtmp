@@ -90,7 +90,7 @@ public final class ServiceExtension extends Extension {
         this.sbm = container.newServiceManagerFromServiceExtension();
     }
 
-    public void bindAllChildServices() {
+    public void anchorAllChildExports() {
 
     }
 
@@ -107,16 +107,6 @@ public final class ServiceExtension extends Extension {
      */
     public <T> ExportedServiceConfiguration<T> export(Class<T> key) {
         return export(Key.of(key));
-    }
-
-    // Vi venter med den...
-    // Altsaa det er jo kun services den kan exportere...
-    // Altsaa vi kan jo have nogle
-    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
-        // Exports a service by mapping an existing service
-        // Eneste problem er nu har vi exported services som ikke er services...
-        // Men det er vel ikke anderledes end install(X).provide();
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -174,8 +164,6 @@ public final class ServiceExtension extends Extension {
     // Ignores other exports
     // interacts with other exports in some way
     /**
-     * 
-     * 
      * <ul>
      * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
      * ignored.</li>
@@ -288,6 +276,7 @@ public final class ServiceExtension extends Extension {
     // It is kind of bindAllExplicit
     // Fail if child services provide these???
     // Maybe not
+    // public void <T> requireOptionally(Class<T> t, Factory<> alternative) {
     public void requireOptionally(Class<?>... keys) {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
@@ -315,17 +304,15 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    /**
-     * Returns an unmodifiable view of the services that are currently available within the container.
-     * 
-     * @return a unmodifiable view of the services that are currently available within the container
-     */
-    public ServiceRegistry services() {
-        throw new UnsupportedOperationException();
-    }
-
     // Den eneste ting er at vi ikke kan tilfoeje flere exports...
-    public ServiceRegistry transformExports(Consumer<? super ServiceTransformer> transformation) {
+    /**
+     * Performs a final transformation of any services that are exported.
+     * 
+     * @param transformer
+     *            transforms the services
+     */
+    // finalizeExports()
+    public void transformExports(Consumer<? super ServiceTransformer> transformer) {
         throw new UnsupportedOperationException();
     }
 
@@ -372,12 +359,24 @@ public final class ServiceExtension extends Extension {
 
 class ZExtraFunc {
 
+    /**
+     * Returns an unmodifiable view of the services that are currently available within the container.
+     * 
+     * @return a unmodifiable view of the services that are currently available within the container
+     */
+    ServiceRegistry services() {
+        // Problemet er vel at vi resolver her...
+        throw new UnsupportedOperationException();
+    }
     // Skal vi ogsaa supportere noget paa tvaers af bundles???
     // Det er vel en slags Wirelet
     // CycleBreaker(SE, ...);
     // CycleBreaker(SE, ...);
 
     // Maaske er det her mere injection then service
+
+    // Vi vil gerne tilfoejer
+//    protected ExportedServiceConfiguration<ServiceSelection> addSelectin(Function<>) {}
 
     protected void addAlias(Class<?> existing, Class<?> newKey) {}
 
@@ -395,6 +394,16 @@ class ZExtraFunc {
 //        // Eller kan bruge det...
 //        throw new UnsupportedOperationException();
 //    }
+
+    // Vi venter med den...
+    // Altsaa det er jo kun services den kan exportere...
+    // Altsaa vi kan jo have nogle
+    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
+        // Exports a service by mapping an existing service
+        // Eneste problem er nu har vi exported services som ikke er services...
+        // Men det er vel ikke anderledes end install(X).provide();
+        throw new UnsupportedOperationException();
+    }
 
     <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
         // Hmm maaske vi skal kalde den noget andet...

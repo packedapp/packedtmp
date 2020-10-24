@@ -28,7 +28,7 @@ import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#find(Class)} and {@link Injector#find(Key)}. */
+/** Test {@link Injector#findInstance(Class)} and {@link Injector#findInstance(Key)}. */
 public class InjectorGetTest {
 
     @Test
@@ -39,16 +39,16 @@ public class InjectorGetTest {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        assertThat(i.find(A.class).get()).isInstanceOf(A.class);
-        assertThat(i.find(new Key<A>() {}).get()).isInstanceOf(A.class);
-        assertThat(i.find(new Key<A>() {}).get()).isSameAs(i.find(A.class).get());
+        assertThat(i.findInstance(A.class).get()).isInstanceOf(A.class);
+        assertThat(i.findInstance(new Key<A>() {}).get()).isInstanceOf(A.class);
+        assertThat(i.findInstance(new Key<A>() {}).get()).isSameAs(i.findInstance(A.class).get());
 
-        assertThat(i.find(new Key<@Left A>() {}).get()).isInstanceOf(A.class);
+        assertThat(i.findInstance(new Key<@Left A>() {}).get()).isInstanceOf(A.class);
 
-        assertThat(i.find(new Key<A>() {}).get()).isNotSameAs(i.find(new Key<@Left A>() {}).get());
+        assertThat(i.findInstance(new Key<A>() {}).get()).isNotSameAs(i.findInstance(new Key<@Left A>() {}).get());
 
-        assertThat(i.find(B.class)).isEmpty();
-        assertThat(i.find(new Key<@Left B>() {})).isEmpty();
-        assertThat(i.find(new Key<@Right A>() {})).isEmpty();
+        assertThat(i.findInstance(B.class)).isEmpty();
+        assertThat(i.findInstance(new Key<@Left B>() {})).isEmpty();
+        assertThat(i.findInstance(new Key<@Right A>() {})).isEmpty();
     }
 }

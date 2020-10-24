@@ -28,6 +28,8 @@ import packed.internal.sidecar.VariableSidecarModel.VariableSidecarConfiguration
 /**
  *
  */
+// subtype of
+// annotated with (non-qualifier)
 public abstract class VariableSidecar {
 
     /** A sidecar configurations object. Updated by {@link SidecarModel.Builder}. */

@@ -29,7 +29,7 @@ import testutil.stubs.Letters.B;
 import testutil.stubs.annotation.Left;
 import testutil.stubs.annotation.Right;
 
-/** Test {@link Injector#findService(Class)} and {@link Injector#findService(Key)}. */
+/** Test {@link Injector#find(Class)} and {@link Injector#find(Key)}. */
 public class InjectorGetDescriptorTest {
 
     @Test
@@ -40,20 +40,20 @@ public class InjectorGetDescriptorTest {
             c.provide(A.class).as(new Key<@Left A>() {});
         });
 
-        Service a = i.findService(A.class).get();
+        Service a = i.find(A.class).get();
 
         // TODO configSite
         assertThat(a.key()).isEqualTo(Key.of(A.class));
         // assertThat(a.tags()).isEmpty();
 
-        Service aLeft = i.findService(new Key<@Left A>() {}).get();
+        Service aLeft = i.find(new Key<@Left A>() {}).get();
         // TODO configSite
         assertThat(aLeft.key()).isEqualTo(new Key<@Left A>() {});
         // assertThat(aLeft.tags()).isEmpty();
 
-        assertThat(i.findService(B.class)).isEmpty();
-        assertThat(i.findService(new Key<@Left B>() {})).isEmpty();
-        assertThat(i.findService(new Key<@Right A>() {})).isEmpty();
+        assertThat(i.find(B.class)).isEmpty();
+        assertThat(i.find(new Key<@Left B>() {})).isEmpty();
+        assertThat(i.find(new Key<@Right A>() {})).isEmpty();
 
     }
 }

@@ -38,7 +38,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * service instances.
  */
 // Auto activating... Hvis man har den som parameter...
-// Use ServiceRegistry if you want information, use 
+// Use ServiceRegistry if you want information, use
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
@@ -62,7 +62,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @see #contains(Class)
      */
     default boolean contains(Key<?> key) {
-        return findService(key).isPresent();
+        return find(key).isPresent();
     }
 
     /**
@@ -71,10 +71,10 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @param key
      *            the key to find a service for
      * @return the service, or empty if no service with the specified key exist
-     * @see #findService(Key)
+     * @see #find(Key)
      */
-    default Optional<Service> findService(Class<?> key) {
-        return findService(Key.of(key));
+    default Optional<Service> find(Class<?> key) {
+        return find(Key.of(key));
     }
 
     /**
@@ -83,9 +83,9 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @param key
      *            the key to find a service for
      * @return the service, or empty if no service with the specified key exist
-     * @see #findService(Class)
+     * @see #find(Class)
      */
-    default Optional<Service> findService(Key<?> key) {
+    default Optional<Service> find(Key<?> key) {
         requireNonNull(key, "key is null");
         for (Service s : this) {
             if (s.key().equals(key)) {
@@ -136,6 +136,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return a unordered {@code Stream} of all services in this registry
      */
     // services???, instances()
+    // ServiceRegistry services() -> services().services()
     default AttributedElementStream<Service> stream() {
         return new PackedAttributeHolderStream<>(StreamSupport.stream(spliterator(), false));
     }
@@ -163,9 +164,9 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns an empty service registry.
+     * Returns a service registry with no services.
      * 
-     * @return an empty service registry
+     * @return a service registry with no services.
      */
     static ServiceRegistry of() {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;

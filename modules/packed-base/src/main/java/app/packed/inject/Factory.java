@@ -607,7 +607,6 @@ public abstract class Factory<T> {
 //    * Factory<List<String>> f = Factory.ofConstructor(ArrayList.class.getConstructor(), new TypeLiteral<List<String>>() {
 //    * });
 //    * </pre>
-    @SuppressWarnings("javadoc")
     public static <T> Factory<T> ofConstructor(Constructor<?> constructor, TypeToken<T> type) {
         requireNonNull(constructor, "constructor is null");
         // TODO we probably need to validate the type literal here

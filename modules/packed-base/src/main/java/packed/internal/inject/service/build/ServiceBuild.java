@@ -89,6 +89,12 @@ public abstract class ServiceBuild implements DependencyProvider {
         return new PackedService(key, configSite, isConstant());
     }
 
+    public ServiceBuild rekeyAs(Key<?> key) {
+        // NewKey must be compatible with type
+        RekeyServiceBuild esb = new RekeyServiceBuild(this, key, configSite);
+        return esb;
+    }
+
     // cacher runtime noden...
     public final RuntimeService toRuntimeEntry(ServiceInstantiationContext context) {
         return context.transformers.computeIfAbsent(this, k -> {
