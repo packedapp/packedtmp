@@ -35,12 +35,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     boolean contains(ComponentModifier modifier);
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#BLOCK} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */
     default boolean isContainer() {
-        return contains(ComponentModifier.CONTAINER);
+        return contains(ComponentModifier.BLOCK);
     }
 
     /**
@@ -61,12 +61,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     // boolean containsAll(Collection<ComponentModifier> c);
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */
     default boolean isGuest() {
-        return contains(ComponentModifier.GUEST);
+        return contains(ComponentModifier.CONTAINER);
     }
 
     /**
@@ -79,7 +79,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#GUEST} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */
@@ -97,7 +97,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#BLOCK} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */

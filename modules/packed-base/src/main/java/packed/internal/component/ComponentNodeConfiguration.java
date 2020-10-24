@@ -142,7 +142,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
             if (build.modifiers().isGuest()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
-                mod = PackedComponentModifierSet.add(mod, ComponentModifier.GUEST);
+                mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINER);
             }
         } else {
             this.region = driver.modifiers().isGuest() ? new RegionBuild() : parent.region;

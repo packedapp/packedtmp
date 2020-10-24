@@ -27,9 +27,9 @@ import app.packed.component.Wirelet;
 import app.packed.container.Container.StopOption;
 
 /**
- * Wirelets that can be used when wiring guest. For example, via {@link App#of(Bundle, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link App#of(Bundle, Wirelet...)}.
  * <p>
- * All wirelets on this class requires the {@link ComponentModifier#GUEST} modifier on the component being wired.
+ * All wirelets on this class requires the {@link ComponentModifier#CONTAINER} modifier on the component being wired.
  */
 
 //Runables -> InVirtualThread

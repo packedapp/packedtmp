@@ -92,14 +92,14 @@ public enum ComponentModifier {
      * <li>Are never sourced???.</li>
      * </ul>
      */
-    CONTAINER,
+    BLOCK,
 
     /**
      * Indicates that the component is a part of an extension.
      * <p>
      * Components with this modifier:
      * <ul>
-     * <li>Always has a parent component with the {@link #CONTAINER} modifier set.</li>
+     * <li>Always has a parent component with the {@link #BLOCK} modifier set.</li>
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime in a system if it is part of an {@link Image}.</li>
      * <li>Never has any other modifiers set.</li>
@@ -134,7 +134,7 @@ public enum ComponentModifier {
      * the type of the extension the component represents.</li>
      * </ul>
      */
-    GUEST,
+    CONTAINER,
 
     /**
      * Indicates that the components wraps a single abstract method (SAM).
@@ -204,7 +204,7 @@ public enum ComponentModifier {
      * <ul>
      * <li>Always have the {@link #SYSTEM} modifier set as well.</li>
      * <li>Never has a parent component (is root).</li>
-     * <li>Never has any components with the {@link #HOST} or {@link #GUEST} modifier set.</li>
+     * <li>Never has any components with the {@link #HOST} modifier set.</li>
      * </ul>
      * A system is always either stable or a guest.
      */

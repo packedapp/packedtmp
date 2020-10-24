@@ -69,7 +69,7 @@ public final class PackedInitializationContext {
     }
 
     public Container guest() {
-        if (component.hasModifier(ComponentModifier.GUEST)) {
+        if (component.hasModifier(ComponentModifier.CONTAINER)) {
             return component.region.guest();
         }
         throw new UnsupportedOperationException("This component does not have a guest");

@@ -36,7 +36,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      **/
     @Override
     default void close() {
-        guest().stop();
+        container().stop();
     }
 
     /**
@@ -53,13 +53,11 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Returns the guest.
-     * <p>
-     * Calling this method will never effect the state of the app.
+     * Returns the container this app wraps.
      * 
-     * @return this application's guest.
+     * @return this application's container.
      */
-    Container guest();
+    Container container();
 
     /**
      * Returns the name of this application.
@@ -143,6 +141,10 @@ public interface App extends AutoCloseable, ComponentDelegate {
         return driver().newImage(bundle, wirelets);
     }
 
+    static App of(Bundle<?> bundle) {
+        return driver().newShell(bundle);
+    }
+
     /**
      * Build and start a new application using the specified bundle. The state of the returned application is
      * {@link ContainerState#RUNNING}.
@@ -163,10 +165,6 @@ public interface App extends AutoCloseable, ComponentDelegate {
      */
     static App of(Bundle<?> bundle, Wirelet... wirelets) {
         return driver().newShell(bundle, wirelets);
-    }
-
-    static App of(Bundle<?> bundle) {
-        return driver().newShell(bundle);
     }
 }
 //

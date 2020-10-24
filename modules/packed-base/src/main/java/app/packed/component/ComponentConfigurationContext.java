@@ -88,7 +88,7 @@ public interface ComponentConfigurationContext {
      * @param extensionType
      * @return the extension
      * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#CONTAINER} modifier
+     *             if the component does not have the {@link ComponentModifier#BLOCK} modifier
      */
     <T extends Extension> T containerUse(Class<T> extensionType);
 

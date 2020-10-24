@@ -43,12 +43,12 @@ import app.packed.component.Wirelet;
 public interface Container {
 
     /**
-     * Blocks until the object has reached the requested state, or the current thread is interrupted, whichever happens
+     * Blocks until the container has reached the specified state, or the current thread is interrupted, whichever happens
      * first.
      * <p>
-     * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link ContainerState#RUNNING} state and the object has already been stopped. This method will
-     * return immediately with true.
+     * If the container has already reached or passed the specified state this method returns immediately. For example, if
+     * attempting to wait on the {@link ContainerState#RUNNING} state and the container has already been stopped. This
+     * method will return immediately.
      *
      * @param state
      *            the state to wait on
@@ -60,12 +60,12 @@ public interface Container {
     void await(ContainerState state) throws InterruptedException;
 
     /**
-     * Blocks until the object has reached the requested state, or the timeout occurs, or the current thread is interrupted,
-     * whichever happens first.
+     * Blocks until the container has reached the requested state, or the timeout occurs, or the current thread is
+     * interrupted, whichever happens first.
      * <p>
-     * If the object has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link ContainerState#RUNNING} state and the object has already been stopped. This method will
-     * return immediately with true.
+     * If the container has already reached or passed the specified state this method returns immediately with. For example,
+     * if attempting to wait on the {@link ContainerState#RUNNING} state and the object has already been stopped. This
+     * method will return immediately with true.
      *
      * @param state
      *            the state to wait on
@@ -73,8 +73,8 @@ public interface Container {
      *            the maximum time to wait
      * @param unit
      *            the time unit of the timeout argument
-     * @return true if this object is in (or has already passed) the specified state and false if the timeout elapsed before
-     *         reaching the state
+     * @return {@code true} if this container is in (or has already passed) the specified state and {@code false} if the
+     *         timeout elapsed before reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
      * @see #await(ContainerState)
@@ -83,24 +83,28 @@ public interface Container {
     boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
-     * Returns the current state of the guest.
+     * Returns the current state of the container.
      * <p>
      * Calling this method will never block the current thread.
      * 
-     * @return the current state of the guest
+     * @return the current state of the container
      */
     ContainerState state();
 
     /**
-     * Returns a snapshot of the guests current state.
+     * Returns a snapshot of the container's current state.
      * 
-     * @return a snapshot of the guests current state
+     * @return a snapshot of the container's current state
      */
     default ContainerExtendedState snapshotState() {
         throw new UnsupportedOperationException();
     }
 
     // app.guest().start(); I think that is cool, no need to move this method to App for now
+
+    /**
+     * @return this container
+     */
     Container start();
 
     // startInterruptable

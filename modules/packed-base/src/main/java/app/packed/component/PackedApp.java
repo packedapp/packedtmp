@@ -47,7 +47,7 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public Container guest() {
+    public Container container() {
         return guest;
     }
 

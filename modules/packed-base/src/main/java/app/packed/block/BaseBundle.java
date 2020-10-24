@@ -30,8 +30,8 @@ import app.packed.statemachine.OnStart;
 import packed.internal.inject.service.sandbox.InjectorAssembler;
 
 /**
- * A convenience extension of {@link BlockBundle} which contains shortcut access to common functionality defined by
- * the various extension available in this module.
+ * A convenience extension of {@link BlockBundle} which contains shortcut access to common functionality defined by the
+ * various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -62,6 +62,9 @@ import packed.internal.inject.service.sandbox.InjectorAssembler;
 // og hvilke metoder fra disse extensions vi har med
 // Maaske vi i virkeligheden skal hava ContainerBundle
 // Og saa sige at folk skal laere derfra
+// CommonBundle, StarterBundle
+// GoBundle
+// Base is fine....
 public abstract class BaseBundle extends BlockBundle {
 
     protected final void requireGuest() {

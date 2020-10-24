@@ -55,7 +55,7 @@ public final class RuntimeComponentModel {
     }
 
     public boolean isContainer() {
-        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CONTAINER);
+        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.BLOCK);
     }
 
     static RuntimeComponentModel of(ComponentNodeConfiguration context) {
