@@ -42,15 +42,15 @@ import app.packed.container.Container.StopOption;
 
 public interface ContainerWirelets {
 
-    // * The returned application will lazily start itself when needed. For example, on first invocation of
-    // * {@link #use(Class)}.
-    static Wirelet lazyStart() {
-        throw new UnsupportedOperationException();
-    }
-
     // after which the guest will be shutdown normally
     static Wirelet deadline(Instant deadline, StopOption... options) {
         // Shuts down container normally
+        throw new UnsupportedOperationException();
+    }
+
+    // * The returned application will lazily start itself when needed. For example, on first invocation of
+    // * {@link #use(Class)}.
+    static Wirelet lazyStart() {
         throw new UnsupportedOperationException();
     }
 
@@ -106,24 +106,24 @@ public interface ContainerWirelets {
     // Foerend vi er fuldt initialiseret. Da vi ikke supportere
     // Fremmede traade der kalder ind paa os naar vi bygger.
 
-    // Runtime.addShutdownHook will be invoked immediatly before
-    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Container.StopOption... options) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
-     * Returns a wirelet that will stop a guest
+     * Returns a wirelet that will install a shutdown hook.
      * 
-     * @return the new wirelet
+     * @return a shutdown hook wirelet
      *
      * @see Runtime#addShutdownHook(Thread)
      */
     static Wirelet shutdownHook(Container.StopOption... options) {
-        throw new UnsupportedOperationException();
+        return shutdownHook(r -> new Thread(r), options);
     }
 
-    // excludes start?? IDK
-    static Wirelet timeToRun(Duration duration, Container.StopOption... options) {
+    /**
+     * @param threadFactory
+     * @param options
+     * @return a shutdown hook wirelet
+     * @see Runtime#addShutdownHook(Thread)
+     */
+    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Container.StopOption... options) {
         throw new UnsupportedOperationException();
     }
 
@@ -157,6 +157,11 @@ public interface ContainerWirelets {
 
     static Wirelet timeToLive(long timeout, TimeUnit unit, Container.StopOption... options) {
         return timeToLive(Duration.of(timeout, unit.toChronoUnit()), options);
+    }
+
+    // excludes start?? IDK
+    static Wirelet timeToRun(Duration duration, Container.StopOption... options) {
+        throw new UnsupportedOperationException();
     }
 
 //    private static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {

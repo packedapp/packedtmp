@@ -20,7 +20,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentModifierSet;
 
 /**
- * Available to all components within a guest.
+ * Available to all components within a container.
  */
 //Available to all guests... The top level component only though...
 // And I think stereotypes can remove it for their surragate objects.   
@@ -30,10 +30,13 @@ import app.packed.component.ComponentModifierSet;
 
 // Guest Context er kun noget med start/stop, restart osv at goere...
 
+// Den er svaer at smide paa componenten selv, da vi kan koere container-freee.
+// Men maaske smider de saa bare UOE.
+
 // Ideen var at man kunne injecte den i componenter...
 
 // Altsaa eneste problem er. Vil vi virkelig gerne have
-// At f.eks. extensions kan stoppe en container de er deployet i???
+// At f.eks. extensions kan stoppe en container de er deployet i??? IDK
 public interface ContainerContext {
 
     TreePath path();
@@ -50,7 +53,7 @@ public interface ContainerContext {
      * 
      * @return the guest component
      */
-    Component guest();
+    Component container();
 }
 //info
 

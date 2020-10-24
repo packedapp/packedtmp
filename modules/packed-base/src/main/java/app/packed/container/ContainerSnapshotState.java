@@ -40,7 +40,11 @@ import java.util.Optional;
 
 // GuestDetailedState
 // GuestStateDetails
-public interface ContainerExtendedState {
+
+// transitions
+// multi dimensional
+
+public interface ContainerSnapshotState {
 
     /**
      * Returns the current state.

@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import app.packed.base.Nullable;
-import app.packed.block.Extension;
-import app.packed.block.InternalExtensionException;
+import app.packed.cube.Extension;
+import app.packed.cube.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.RegionBuild;

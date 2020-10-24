@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Attribute;
 import app.packed.base.TreePath;
 import app.packed.base.TypeToken;
-import app.packed.block.Extension;
+import app.packed.cube.Extension;
 
 /**
  *

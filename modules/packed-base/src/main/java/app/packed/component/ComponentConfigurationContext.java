@@ -20,9 +20,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.TreePath;
-import app.packed.block.BlockBundle;
-import app.packed.block.Extension;
 import app.packed.config.ConfigSite;
+import app.packed.cube.CubeBundle;
+import app.packed.cube.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
@@ -78,7 +78,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return an unmodifiable view of the extensions that are currently used
      * 
-     * @see BlockBundle#extensions()
+     * @see CubeBundle#extensions()
      */
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> containerExtensions();
@@ -88,7 +88,7 @@ public interface ComponentConfigurationContext {
      * @param extensionType
      * @return the extension
      * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#BLOCK} modifier
+     *             if the component does not have the {@link ComponentModifier#CUBE} modifier
      */
     <T extends Extension> T containerUse(Class<T> extensionType);
 

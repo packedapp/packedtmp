@@ -21,7 +21,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeToken;
-import app.packed.block.BaseBundle;
+import app.packed.cube.BaseBundle;
 import packed.internal.component.PackedComponentDriver;
 
 /**
@@ -118,7 +118,7 @@ public interface ComponentDriver<C> {
          * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          * 
          * @return stuff
-         * @see ComponentModifier#BLOCK
+         * @see ComponentModifier#CUBE
          */
         static Option container() {
             return PackedComponentDriver.OptionImpl.CONTAINER;
@@ -141,7 +141,7 @@ public interface ComponentDriver<C> {
         }
 
         static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.BLOCK), "This component can only be wired to a container");
+            return validateParent(c -> c.hasModifier(ComponentModifier.CUBE), "This component can only be wired to a container");
         }
 
         // The parent + the driver

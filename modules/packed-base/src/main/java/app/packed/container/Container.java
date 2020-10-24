@@ -96,7 +96,7 @@ public interface Container {
      * 
      * @return a snapshot of the container's current state
      */
-    default ContainerExtendedState snapshotState() {
+    default ContainerSnapshotState snapshotState() {
         throw new UnsupportedOperationException();
     }
 

@@ -40,6 +40,8 @@ package app.packed.container;
 // TODO jeg tror vi meget bedre kan beskrive det her naar vi har fundet ud af det med state machines
 // Fx, hvad vil det sige at stoppe?? Det vil sige at terminere alle state machines der koere ind i den.
 // Managed Resource
+
+// Status vs State...
 public enum ContainerState {
 
     /**

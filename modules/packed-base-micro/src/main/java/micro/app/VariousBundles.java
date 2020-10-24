@@ -15,9 +15,9 @@
  */
 package micro.app;
 
-import app.packed.block.BaseBundle;
 import app.packed.component.App;
 import app.packed.component.Image;
+import app.packed.cube.BaseBundle;
 
 /**
  *

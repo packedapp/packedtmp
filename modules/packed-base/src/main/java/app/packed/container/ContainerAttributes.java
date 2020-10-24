@@ -20,7 +20,7 @@ package app.packed.container;
  */
 // En for koersel af annotation for startup/shutdown??? og initialize
 // 
-public class ContainerAttributes {
+class ContainerAttributes {
     // Map<State, Duration>???
 
     // Shutdown timings... Describtion of GuestWirelets

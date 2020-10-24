@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.block.BaseBundle;
-import app.packed.block.Extension;
 import app.packed.component.App;
+import app.packed.cube.BaseBundle;
+import app.packed.cube.Extension;
 import packed.internal.container.Packlet;
 import testutil.util.AbstractArtifactTest;
 

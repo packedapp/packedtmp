@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.block;
+package app.packed.cube;
 
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.block.Extension.Subtension;
+import app.packed.cube.Extension.Subtension;
 import packed.internal.container.ExtensionModel;
 
 /**

@@ -24,7 +24,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.block.Extension;
+import app.packed.cube.Extension;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.ExtensionModel;

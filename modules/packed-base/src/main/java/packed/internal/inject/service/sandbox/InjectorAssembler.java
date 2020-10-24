@@ -21,13 +21,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
-import app.packed.block.BaseBundle;
-import app.packed.block.BlockConfiguration;
 import app.packed.component.Assembler;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Bundle;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
+import app.packed.cube.BaseBundle;
+import app.packed.cube.CubeConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
@@ -45,7 +45,7 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 public final class InjectorAssembler extends Assembler {
 
     /** The configuration we delegate all calls to. */
-    private final BlockConfiguration configuration;
+    private final CubeConfiguration configuration;
 
     private boolean initialized;
 
@@ -55,7 +55,7 @@ public final class InjectorAssembler extends Assembler {
      * @param configuration
      *            the configuration to wrap
      */
-    InjectorAssembler(BlockConfiguration configuration) {
+    InjectorAssembler(CubeConfiguration configuration) {
         this.configuration = requireNonNull(configuration, "configuration is null");
     }
 
@@ -64,7 +64,7 @@ public final class InjectorAssembler extends Assembler {
      * 
      * @return the container configuration that was used to create this configurator
      */
-    private BlockConfiguration configuration() {
+    private CubeConfiguration configuration() {
         return configuration;
     }
 

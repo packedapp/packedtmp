@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.block.Extension;
+import app.packed.cube.Extension;
 import packed.internal.component.source.SourceModelMethod;
 import packed.internal.sidecar.SidecarModel;
 

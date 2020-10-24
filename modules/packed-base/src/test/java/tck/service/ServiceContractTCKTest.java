@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.block.BaseBundle;
 import app.packed.component.ComponentSystem;
+import app.packed.cube.BaseBundle;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import testutil.stubs.Letters.A;

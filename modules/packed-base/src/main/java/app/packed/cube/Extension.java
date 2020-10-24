@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.block;
+package app.packed.cube;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
@@ -37,7 +37,7 @@ import packed.internal.config.ConfigSiteSupport;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseBundle#use(Class)} or {@link BlockConfiguration#use(Class)}.
+ * example, {@link BaseBundle#use(Class)} or {@link CubeConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
@@ -45,7 +45,7 @@ import packed.internal.config.ConfigSiteSupport;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
- * do not try an manually instantiate it, but instead use {@link BlockConfiguration#use(Class)}. It is also
+ * do not try an manually instantiate it, but instead use {@link CubeConfiguration#use(Class)}. It is also
  * recommended that the extension itself is declared final.
  */
 
@@ -226,7 +226,7 @@ public abstract class Extension {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BlockConfiguration#installInstance(Object)
+     * @see CubeConfiguration#installInstance(Object)
      */
     protected final <T> BeanConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
@@ -261,7 +261,7 @@ public abstract class Extension {
      * Only extension types that have been explicitly registered using {@link ExtensionSetup#dependencies()} or
      * {@link ExtensionSetup#optionalDependencies()} may be specified as arguments to this method.
      * <p>
-     * Invoking this method is similar to calling {@link BlockConfiguration#use(Class)}. However, this method also keeps
+     * Invoking this method is similar to calling {@link CubeConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
      * 

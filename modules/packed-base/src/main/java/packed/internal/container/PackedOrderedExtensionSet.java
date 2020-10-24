@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.block.Extension;
-import app.packed.block.OrderedExtensionSet;
+import app.packed.cube.Extension;
+import app.packed.cube.OrderedExtensionSet;
 
 /** Immutable implementation of {@link OrderedExtensionSet}. */
 public final class PackedOrderedExtensionSet implements OrderedExtensionSet {

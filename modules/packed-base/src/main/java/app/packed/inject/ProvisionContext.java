@@ -20,8 +20,8 @@ import java.util.Optional;
 
 import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
-import app.packed.block.Extension;
 import app.packed.component.Component;
+import app.packed.cube.Extension;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.

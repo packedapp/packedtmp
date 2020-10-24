@@ -19,6 +19,6 @@ package app.packed.statemachine;
  *
  */
 // Maaske er det i state machine alligevel...
-public class ManagedClosable {
+class ManagedClosable {
 
 }

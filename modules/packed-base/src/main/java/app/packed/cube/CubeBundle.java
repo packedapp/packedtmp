@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.block;
+package app.packed.cube;
 
 import static java.util.Objects.requireNonNull;
 
@@ -35,8 +35,8 @@ import app.packed.inject.Factory;
 
 /**
  * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link BlockConfiguration}. Delegating every invocation in the class to an instance of
- * {@link BlockConfiguration} available via {@link #configuration()}.
+ * around {@link CubeConfiguration}. Delegating every invocation in the class to an instance of
+ * {@link CubeConfiguration} available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
@@ -53,11 +53,11 @@ import app.packed.inject.Factory;
 // Kunne godt have nogle lifecycle metoder man kunne overskrive.
 // F.eks. at man vil validere noget
 
-public abstract class BlockBundle extends Bundle<BlockConfiguration> {
+public abstract class CubeBundle extends Bundle<CubeConfiguration> {
 
     /** Creates a new ContainerBundle. */
-    protected BlockBundle() {
-        super(BlockConfiguration.driver());
+    protected CubeBundle() {
+        super(CubeConfiguration.driver());
     }
 
     /**
@@ -66,7 +66,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * 
      * @throws IllegalStateException
      *             if {@link #configure()} has been invoked
-     * @see BlockConfiguration#checkConfigurable()
+     * @see CubeConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -76,7 +76,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * Returns the configuration site of this bundle.
      * 
      * @return the configuration site of this bundle
-     * @see BlockConfiguration#configSite()
+     * @see CubeConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
         return configuration().configSite();
@@ -86,7 +86,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * Returns an unmodifiable view of the extensions that have been configured so far.
      * 
      * @return an unmodifiable view of the extensions that have been configured so far
-     * @see BlockConfiguration#extensions()
+     * @see CubeConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -102,7 +102,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see BlockConfiguration#setName(String)
+     * @see CubeConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -167,7 +167,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see BlockConfiguration#link(Bundle, Wirelet...)
+     * @see CubeConfiguration#link(Bundle, Wirelet...)
      */
     protected final void link(Bundle<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
@@ -189,7 +189,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see BlockConfiguration#path()
+     * @see CubeConfiguration#path()
      */
     protected final TreePath path() {
         return configuration().path();
@@ -207,7 +207,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see BlockConfiguration#setName(String)
+     * @see CubeConfiguration#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -231,7 +231,7 @@ public abstract class BlockBundle extends Bundle<BlockConfiguration> {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #configure()}
-     * @see BlockConfiguration#use(Class)
+     * @see CubeConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

@@ -31,16 +31,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.block.ConnectExtension;
-import app.packed.block.Extension;
-import app.packed.block.ExtensionConfiguration;
-import app.packed.block.ExtensionDescriptor;
-import app.packed.block.ExtensionMember;
-import app.packed.block.ExtensionSetup;
-import app.packed.block.InternalExtensionException;
-import app.packed.block.OrderedExtensionSet;
-import app.packed.block.Extension.Subtension;
 import app.packed.component.WireletConsume;
+import app.packed.cube.ConnectExtensions;
+import app.packed.cube.Extension;
+import app.packed.cube.ExtensionConfiguration;
+import app.packed.cube.ExtensionDescriptor;
+import app.packed.cube.ExtensionMember;
+import app.packed.cube.ExtensionSetup;
+import app.packed.cube.InternalExtensionException;
+import app.packed.cube.OrderedExtensionSet;
+import app.packed.cube.Extension.Subtension;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.classscan.OpenClass;
@@ -92,7 +92,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
-    /** A method handle to an optional method annotated with {@link ConnectExtension} on the extension. */
+    /** A method handle to an optional method annotated with {@link ConnectExtensions} on the extension. */
     @Nullable
     final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
 
@@ -421,11 +421,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         protected void onMethod(Method m) {
-            ConnectExtension da = m.getAnnotation(ConnectExtension.class);
+            ConnectExtensions da = m.getAnnotation(ConnectExtensions.class);
             if (da != null) {
                 if (linked != null) {
                     throw new IllegalStateException(
-                            "Multiple methods annotated with " + ConnectExtension.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
+                            "Multiple methods annotated with " + ConnectExtensions.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
                 }
                 linked = m;
                 callbackOnlyDirectChildren = da.onlyDirectLink();

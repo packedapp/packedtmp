@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.block;
+package app.packed.cube;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -26,7 +26,7 @@ import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.MethodSidecar;
 
 /**
- * A class cannot define more than one method annotated with {@link ConnectExtension}.
+ * A class cannot define more than one method annotated with {@link ConnectExtensions}.
  * 
  * And allows extensions to connect across container boundaries both at build-time and at runtime.
  * 
@@ -40,9 +40,12 @@ import app.packed.sidecar.MethodSidecar;
 // Problemet er lidt sidecars.... Hvorfor???
 
 // Giver det mening at have en for components???? Maaske bare en alm listener???
-// 
+//
+
+// ExtensionLinker???
+
 @ActivateMethodSidecar(allowInvoke = true, sidecar = MethodSidecar.class)
-public @interface ConnectExtension {
+public @interface ConnectExtensions {
 
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its

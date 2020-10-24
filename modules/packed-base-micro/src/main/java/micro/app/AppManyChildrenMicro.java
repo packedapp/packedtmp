@@ -28,8 +28,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.block.BaseBundle;
 import app.packed.component.App;
+import app.packed.cube.BaseBundle;
 
 /**
  *

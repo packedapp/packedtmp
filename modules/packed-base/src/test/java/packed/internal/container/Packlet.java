@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.block.BlockBundle;
-import app.packed.block.Extension;
+import app.packed.cube.CubeBundle;
+import app.packed.cube.Extension;
 
 /**
  * An annotation indicating that the runtime must install one or more extensions of annotated type requires
@@ -39,8 +39,8 @@ import app.packed.block.Extension;
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
  * 
  * <p>
- * This annotation cannot be used on subclasses of {@link BlockBundle} as we want to avoid situations where some
- * extensions are added via class annotations and others via {@link BlockBundle#configure()}. Giving the false
+ * This annotation cannot be used on subclasses of {@link CubeBundle} as we want to avoid situations where some
+ * extensions are added via class annotations and others via {@link CubeBundle#configure()}. Giving the false
  * impression to users that only annotations added via this annotation is used
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })

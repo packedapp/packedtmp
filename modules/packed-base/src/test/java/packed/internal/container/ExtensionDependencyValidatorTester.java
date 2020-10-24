@@ -15,7 +15,7 @@
  */
 package packed.internal.container;
 
-import app.packed.block.Extension;
+import app.packed.cube.Extension;
 
 /**
  *

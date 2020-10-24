@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.block;
+package app.packed.cube;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,6 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
-import app.packed.block.Extension.Subtension;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
 import app.packed.component.Bundle;
@@ -34,6 +33,7 @@ import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.cube.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.container.ExtensionBuild;
@@ -102,7 +102,7 @@ public interface ExtensionConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BlockConfiguration#installInstance(Object)
+     * @see CubeConfiguration#installInstance(Object)
      */
     <T> BeanConfiguration<T> installInstance(T instance);
 
@@ -138,7 +138,7 @@ public interface ExtensionConfiguration {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link BlockConfiguration#use(Class)}. However, this method checks that only
+     * This method works similar to {@link CubeConfiguration#use(Class)}. However, this method checks that only
      * extensions that have been declared as dependencies via {@link ExtensionSetup#dependencies()} are specified. This is
      * done in order to make sure that no extensions ever depend on each other.
      * 
@@ -153,7 +153,7 @@ public interface ExtensionConfiguration {
      * @throws UnsupportedOperationException
      *             if the specified extension type is not specified via {@link ExtensionSetup} on this extension.
      * 
-     * @see BlockConfiguration#use(Class)
+     * @see CubeConfiguration#use(Class)
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 

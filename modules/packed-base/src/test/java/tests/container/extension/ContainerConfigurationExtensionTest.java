@@ -22,14 +22,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.block.BlockConfiguration;
-import app.packed.block.Extension;
+import app.packed.cube.CubeConfiguration;
+import app.packed.cube.Extension;
 import testutil.util.AbstractArtifactTest;
 
-/** Tests {@link BlockConfiguration#extensions()} and {@link BlockConfiguration#use(Class)}. */
+/** Tests {@link CubeConfiguration#extensions()} and {@link CubeConfiguration#use(Class)}. */
 public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
 
-    /** Tests basic use of {@link BlockConfiguration#use(Class)}. */
+    /** Tests basic use of {@link CubeConfiguration#use(Class)}. */
     @Test
     public void use() {
         appOf(e -> e.use(TestExtension1.class, i -> {
@@ -41,7 +41,7 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
         }));
     }
 
-    /** Tests basic use of {@link BlockConfiguration#extensions()}. */
+    /** Tests basic use of {@link CubeConfiguration#extensions()}. */
     @Test
     public void extensions() {
         appOf(e -> {
@@ -57,13 +57,13 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
 
     /**
      * Tests what happens if people try to use any of the extension methods outside of the configure of the defining bundle.
-     * We allow invoking {@link BlockConfiguration#extensions()} and allow {@link BlockConfiguration#use(Class)} for
-     * extension that have already been installed. Calling {@link BlockConfiguration#use(Class)} with an extension that
+     * We allow invoking {@link CubeConfiguration#extensions()} and allow {@link CubeConfiguration#use(Class)} for
+     * extension that have already been installed. Calling {@link CubeConfiguration#use(Class)} with an extension that
      * have not previously been installed will throw an {@link IllegalStateException}.
      */
     @Test
     public void unconfigurable() {
-        AtomicReference<BlockConfiguration> r = new AtomicReference<>();
+        AtomicReference<CubeConfiguration> r = new AtomicReference<>();
 
         // Test empty
         appOf(e -> r.set(e.configuration()));

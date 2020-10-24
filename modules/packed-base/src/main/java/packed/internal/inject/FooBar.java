@@ -17,8 +17,8 @@ package packed.internal.inject;
 
 import app.packed.base.Key;
 import app.packed.base.Named;
-import app.packed.block.BaseBundle;
 import app.packed.component.App;
+import app.packed.cube.BaseBundle;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceWirelets;
 

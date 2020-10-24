@@ -23,8 +23,8 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.block.ExtensionMember;
 import app.packed.config.ConfigSite;
+import app.packed.cube.ExtensionMember;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;

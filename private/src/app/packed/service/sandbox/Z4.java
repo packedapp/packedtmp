@@ -18,12 +18,12 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.block.BaseBundle;
-import app.packed.block.ConnectExtension;
-import app.packed.block.Extension;
-import app.packed.block.ExtensionSetup;
 import app.packed.component.App;
 import app.packed.component.Image;
+import app.packed.cube.BaseBundle;
+import app.packed.cube.ConnectExtensions;
+import app.packed.cube.Extension;
+import app.packed.cube.ExtensionSetup;
 
 /**
  *
@@ -85,7 +85,7 @@ public class Z4 extends BaseBundle {
 
         final int ai = i.getAndIncrement();
 
-        @ConnectExtension
+        @ConnectExtensions
         public void linked(E child) {
             // System.out.println("Linked child " + child);
         }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.block;
+package app.packed.cube;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
