@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RUNTIME)
 @Target({ ElementType.PARAMETER, ElementType.FIELD, ElementType.TYPE })
-public @interface Composite {}
+@interface Composite {}
 
 // If this annotation is used on a field
 // Tror kun vi tillader den paa en klasse...

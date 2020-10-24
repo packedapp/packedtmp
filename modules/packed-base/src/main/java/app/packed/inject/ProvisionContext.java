@@ -22,7 +22,6 @@ import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
 import app.packed.component.Component;
 import app.packed.container.Extension;
-import app.packed.inject.sandbox.Injector;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
@@ -109,7 +108,7 @@ public interface ProvisionContext {
 
     /**
      * Return the component that is requesting a service. Or an empty optional otherwise, for example, when used via
-     * {@link Injector#use(Class)}.
+     * {@link ServiceLocator#use(Class)}.
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */

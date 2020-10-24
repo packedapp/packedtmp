@@ -24,8 +24,8 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.sandbox.Injector;
 import app.packed.inject.sandbox.InjectorAssembler;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.statemachine.OnStart;
@@ -51,8 +51,7 @@ import app.packed.statemachine.OnStart;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates {@link Injector} instances using
- * .</li>
+ * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates injector instances using .</li>
  * <li><b>{@link BaseBundle}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
@@ -204,8 +203,8 @@ public abstract class BaseBundle extends ContainerBundle {
         return service().providePrototype(factory);
     }
 
-    protected final void provideAll(Injector injector, Wirelet... wirelets) {
-        service().provideAll(injector, wirelets);
+    protected final void provideAll(ServiceLocator locator, Wirelet... wirelets) {
+        service().provideAll(locator, wirelets);
     }
 
     /**

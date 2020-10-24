@@ -30,7 +30,6 @@ import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.sandbox.Injector;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
 import packed.internal.component.wirelet.WireletList;
@@ -39,7 +38,6 @@ import packed.internal.container.ContainerBuild;
 import packed.internal.container.ExtensionBuild;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
-import packed.internal.inject.service.wirelets.OldServiceWirelets;
 
 /**
  * This extension provides functionality for exposing and consuming services.
@@ -211,26 +209,26 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Imports all the services from the specified injector and make each service available to other services in the
-     * injector being build.
+     * Imports all the services from the specified locator and make each service available to other services in the injector
+     * being build.
      * <p>
      * Wirelets can be used to transform and filter the services from the specified injector.
      * 
-     * @param injector
-     *            the injector to import services from
+     * @param locator
+     *            the locator to provide services from
      * @param wirelets
      *            any wirelets used to filter and transform the provided services
      * @throws IllegalArgumentException
-     *             if specifying wirelets that are not defined via {@link OldServiceWirelets}
+     *             if specifying wirelets that are not defined via {@link ServiceWirelets}
      */
-    public void provideAll(Injector injector, Wirelet... wirelets) {
-        requireNonNull(injector, "injector is null");
-        if (!(injector instanceof PackedInjector)) {
+    public void provideAll(ServiceLocator locator, Wirelet... wirelets) {
+        requireNonNull(locator, "injector is null");
+        if (!(locator instanceof PackedInjector)) {
             throw new IllegalArgumentException(
-                    "Custom implementations of Injector are currently not supported, injector type = " + injector.getClass().getName());
+                    "Custom implementations of Injector are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        sbm.provideFromInjector((PackedInjector) injector, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
+        sbm.provideFromInjector((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL), WireletList.ofAll(wirelets));
     }
 
     // Will install a ServiceStatelessConfiguration...
