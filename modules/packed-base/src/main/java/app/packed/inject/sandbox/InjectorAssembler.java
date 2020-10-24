@@ -31,7 +31,6 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.service.wirelets.OldServiceWirelets;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -207,9 +206,6 @@ public final class InjectorAssembler extends Assembler {
      * 
      * @param injector
      *            the injector to import services from
-     * @throws IllegalArgumentException
-     *             if the specified wirelet are not all wirelets from {@link OldServiceWirelets} or combinations (via
-     *             {@link Wirelet#combine(Wirelet, Wirelet) combinations} thereof
      */
     // maybe bindAll()... Syntes man burde hedde det samme som Bindable()
     // Er ikke sikker paa vi skal have wirelets her....

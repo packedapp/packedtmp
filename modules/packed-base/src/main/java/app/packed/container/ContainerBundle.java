@@ -161,7 +161,7 @@ public abstract class ContainerBundle extends Bundle<ContainerConfiguration> {
     }
 
     /**
-     * Links the specified bundle as a child to this bundle.
+     * A special type of wiring. That Links the specified bundle as a child to this bundle.
      * 
      * @param bundle
      *            the bundle to link

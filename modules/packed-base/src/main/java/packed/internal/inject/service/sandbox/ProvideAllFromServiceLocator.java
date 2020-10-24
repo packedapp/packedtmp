@@ -61,7 +61,5 @@ public final class ProvideAllFromServiceLocator {
         injector.forEachEntry(e -> {
             entries.put(e.key(), new FromOtherInjectorServiceBuild(this, e));
         });
-
-        // process wirelets for filtering/transformations
     }
 }
