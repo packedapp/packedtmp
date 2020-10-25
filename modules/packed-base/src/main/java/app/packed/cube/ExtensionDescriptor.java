@@ -54,11 +54,10 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * The returned set includes all optional dependencies specified via {@link ExtensionSetup#optionalDependencies()} that
      * could be successfully resolved.
      * 
-     * @return any other extensions this extension depends on
+     * @return any other extensions this extension directly depends on
      */
-    // Set<Class<? extends Extension>> dependencies();
-    // Set<ExtensionDescriptor> dependencyDescriptors();
-    OrderedExtensionSet dependencies();
+    // Maybe Set<ExtensionDescriptor> dependencyDescriptors();
+    Set<Class<? extends Extension>> dependencies();
 
     /**
      * Returns the extension's depth.

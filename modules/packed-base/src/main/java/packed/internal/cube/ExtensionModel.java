@@ -42,7 +42,6 @@ import app.packed.cube.ExtensionDescriptor;
 import app.packed.cube.ExtensionMember;
 import app.packed.cube.ExtensionSetup;
 import app.packed.cube.InternalExtensionException;
-import app.packed.cube.OrderedExtensionSet;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.classscan.OpenClass;
@@ -186,8 +185,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public OrderedExtensionSet dependencies() {
-        return dependencies;
+    public Set<Class<? extends Extension>> dependencies() {
+        return Set.copyOf(dependencies.extensions);
     }
 
     /** {@inheritDoc} */

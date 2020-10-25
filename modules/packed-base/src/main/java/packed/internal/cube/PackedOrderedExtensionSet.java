@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.cube.Extension;
-import app.packed.cube.OrderedExtensionSet;
 
 /** Immutable implementation of {@link OrderedExtensionSet}. */
 public final class PackedOrderedExtensionSet implements OrderedExtensionSet {
@@ -33,7 +32,7 @@ public final class PackedOrderedExtensionSet implements OrderedExtensionSet {
     public static final PackedOrderedExtensionSet EMPTY = new PackedOrderedExtensionSet(List.of());
 
     /** The extension types this set contains */
-    private final List<Class<? extends Extension>> extensions;
+    final List<Class<? extends Extension>> extensions;
 
     public PackedOrderedExtensionSet(List<Class<? extends Extension>> extensions) {
         this.extensions = requireNonNull(extensions);

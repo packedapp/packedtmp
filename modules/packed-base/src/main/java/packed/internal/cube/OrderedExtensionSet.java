@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package packed.internal.cube;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import packed.internal.cube.PackedOrderedExtensionSet;
+import app.packed.cube.Extension;
+import app.packed.cube.ExtensionDescriptor;
 
 //Class vs Descriptor
 // toClassList();, toDescriptorList();c
