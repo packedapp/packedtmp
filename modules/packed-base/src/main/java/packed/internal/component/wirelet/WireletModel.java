@@ -18,7 +18,7 @@ package packed.internal.component.wirelet;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.cube.Extension;
-import packed.internal.container.ExtensionModel;
+import packed.internal.cube.ExtensionModel;
 
 public final class WireletModel {
 

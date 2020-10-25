@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.cube.Extension;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.container.ExtensionModel;
+import packed.internal.cube.ExtensionModel;
 import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 

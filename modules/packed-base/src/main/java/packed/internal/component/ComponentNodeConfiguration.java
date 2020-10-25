@@ -57,9 +57,9 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.container.ContainerBuild;
-import packed.internal.container.ExtensionBuild;
-import packed.internal.container.ExtensionModel;
+import packed.internal.cube.ContainerBuild;
+import packed.internal.cube.ExtensionBuild;
+import packed.internal.cube.ExtensionModel;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */

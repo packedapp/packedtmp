@@ -26,7 +26,7 @@ import java.lang.reflect.Member;
 /**
  *
  */
-abstract class AbstractDescriptorTest {
+abstract class AnnotatedElementTest {
 
     static void validateAnnotatedElement(AnnotatedElement expected, AnnotatedElement actual) {
 

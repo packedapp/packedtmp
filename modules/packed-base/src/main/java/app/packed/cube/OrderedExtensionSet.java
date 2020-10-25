@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import packed.internal.container.PackedOrderedExtensionSet;
+import packed.internal.cube.PackedOrderedExtensionSet;
 
 //Class vs Descriptor
 // toClassList();, toDescriptorList();c

@@ -36,7 +36,7 @@ import app.packed.config.ConfigSite;
 import app.packed.cube.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
-import packed.internal.container.ExtensionBuild;
+import packed.internal.cube.ExtensionBuild;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into

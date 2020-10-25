@@ -36,7 +36,7 @@ import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.container.ContainerBuild;
+import packed.internal.cube.ContainerBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 import packed.internal.inject.service.build.ExportedServiceBuild;

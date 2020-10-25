@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.cube;
 
 import static java.util.Objects.requireNonNull;
 
@@ -79,6 +79,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     final MethodHandle bundleBuilderMethod;
 
+    /** A method handle for creating a new sidecar instance. */
+    protected final MethodHandle mhConstructor;
+
     /** The direct dependencies of this extension. */
     private final PackedOrderedExtensionSet dependencies;
 
@@ -97,7 +100,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A method handle to an optional method annotated with {@link ConnectExtensions} on the extension. */
     @Nullable
-    final MethodHandle extensionLinkedToAncestorExtension; // will have an extensionLinkedToAncestorService in the future
+    final MethodHandle mhExtensionLinked; // will have an extensionLinkedToAncestorService in the future
 
     /** A unique id of the extension. */
     final int id; // We don't currently use it...
@@ -123,8 +126,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *            the builder for this model
      */
     private ExtensionModel(Builder builder) {
-        this.type = builder.sidecarType;
-        this.constructor = builder.constructor;
+        this.type = builder.extensionType;
+        this.mhConstructor = builder.mhConstructor;
         this.id = builder.id;
         this.depth = builder.depth;
 
@@ -137,13 +140,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.nameComponent = "." + nameSimple;
 
         this.bundleBuilderMethod = builder.builderMethod;
-        this.extensionLinkedToAncestorExtension = builder.li;
+        this.mhExtensionLinked = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;
     }
-
-    /** A method handle for creating a new sidecar instance. */
-    protected final MethodHandle constructor;
 
     /** {@inheritDoc} */
     @Override
@@ -212,7 +212,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     Extension newInstance(ExtensionBuild context) {
         try {
-            return (Extension) constructor.invokeExact(context);
+            return (Extension) mhConstructor.invokeExact(context);
         } catch (Throwable e) {
             throw new InternalExtensionException("Extension (" + nameSimple + ")  could not be created", e);
         }
@@ -220,6 +220,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     public ProvidableAttributeModel pam() {
         return pam;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<Class<? extends Subtension>> subtensionType() {
+        return null;
     }
 
     /**
@@ -276,6 +282,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A builder of {@link ExtensionModel}. */
     static final class Builder {
+
         /**  */
         private static ClassValue<?> OPTIONALS = new ClassValue<>() {
 
@@ -316,16 +323,21 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
         };
 
-        /** Meta data about the extension sidecar. */
+        private MethodHandle builderMethod;
 
         // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;
+
+        /** A method handle used to create new extension instances. */
+        private MethodHandle mhConstructor;
 
         /** A set of extension this extension depends on. */
         private Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
         /** The depth of the extension relative to other extensions. */
         private int depth;
+
+        private final Class<? extends Extension> extensionType;
 
         private final int id;
 
@@ -345,44 +357,21 @@ public final class ExtensionModel implements ExtensionDescriptor {
          *            the type of extension we are building a model for
          */
         Builder(Class<? extends Extension> extensionType, Loader loader, int id) {
-            this.sidecarType = requireNonNull(extensionType);
+            this.extensionType = requireNonNull(extensionType);
             this.loader = requireNonNull(loader);
             this.id = id;
         }
 
-        public MethodHandle builderMethod;
-
-        /** The constructor used to create a new extension instance. */
-        MethodHandle constructor;
-
-        protected final Class<? extends Extension> sidecarType;
-
-        protected OpenClass prep(MethodHandleBuilder spec) {
-            OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
-
-            Constructor<?> constructor = FindInjectableConstructor.findConstructorIAE(sidecarType);
-            if (Modifier.isPublic(constructor.getModifiers()) && Modifier.isPublic(sidecarType.getModifiers())) {
-                throw new InternalExtensionException(
-                        "Extensions that are defined as public classes, must have a non-public constructor, extensionType = " + sidecarType);
-            }
-            this.constructor = cp.resolve(spec, constructor);
-            cp.findMethods(m -> {
-                onMethod(m);
-            });
-
-            return cp;
-        }
-
         private void addDependency(Class<? extends Extension> dependencyType) {
-            if (dependencyType == sidecarType) {
-                throw new InternalExtensionException("Extension " + sidecarType + " cannot depend on itself via " + ExtensionSetup.class);
+            if (dependencyType == extensionType) {
+                throw new InternalExtensionException("Extension " + extensionType + " cannot depend on itself via " + ExtensionSetup.class);
             }
             ExtensionModel model = Loader.load(dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
             dependencies.add(dependencyType);
         }
 
-        protected void addExtensionContextElements(MethodHandleBuilder builder, int index) {
+        private void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
             builder.addAnnoClassMapper(WireletConsume.class, ExtensionBuild.MH_FIND_WIRELET, index);
         }
@@ -394,24 +383,19 @@ public final class ExtensionModel implements ExtensionDescriptor {
          */
         ExtensionModel build() {
             // See if the extension is annotated with @ExtensionSidecar
-            ExtensionSetup em = sidecarType.getAnnotation(ExtensionSetup.class);
+            ExtensionSetup em = extensionType.getAnnotation(ExtensionSetup.class);
             if (em != null) {
                 for (Class<? extends Extension> dependencyType : em.dependencies()) {
                     addDependency(dependencyType);
                 }
                 if (em.optionalDependencies().length > 0) {
-                    for (Class<? extends Extension> dependencyType : resolveOptional(sidecarType)) {
+                    for (Class<? extends Extension> dependencyType : resolveOptional(extensionType)) {
                         addDependency(dependencyType);
                     }
                 }
             }
 
-            // I Would love to get rid of CONV
-
-            MethodHandleBuilder mhbConstructor = MethodHandleBuilder.of(Extension.class, ExtensionBuild.class);
-            addExtensionContextElements(mhbConstructor, 0);
-
-            OpenClass cp = prep(mhbConstructor);
+            OpenClass cp = scanClass();
             this.pam = ProvidableAttributeModel.analyse(cp);
 
             if (linked != null) {
@@ -422,23 +406,40 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 addExtensionContextElements(iss, 1);
 
                 // The child's extension instance
-                iss.addKey(sidecarType, 2); // should perform an implicit cast
+                iss.addKey(extensionType, 2); // should perform an implicit cast
 
                 li = iss.build(cp, linked);
             }
             return new ExtensionModel(this);
         }
 
-        protected void onMethod(Method m) {
-            ConnectExtensions da = m.getAnnotation(ConnectExtensions.class);
-            if (da != null) {
-                if (linked != null) {
-                    throw new IllegalStateException(
-                            "Multiple methods annotated with " + ConnectExtensions.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
-                }
-                linked = m;
-                callbackOnlyDirectChildren = da.onlyDirectLink();
+        protected OpenClass scanClass() {
+            MethodHandleBuilder spec = MethodHandleBuilder.of(Extension.class, ExtensionBuild.class);
+            addExtensionContextElements(spec, 0);
+            OpenClass cp = new OpenClass(MethodHandles.lookup(), extensionType, true);
+
+            // Find constructor and create method handle
+            Constructor<?> constructor = FindInjectableConstructor.findConstructor(extensionType, s -> new InternalExtensionException(s));
+            if (Modifier.isPublic(constructor.getModifiers()) && Modifier.isPublic(extensionType.getModifiers())) {
+                throw new InternalExtensionException(
+                        "Extensions that are defined as public classes, must have a non-public constructor. As end-users should never instantiate them themself, extensionType = "
+                                + extensionType);
             }
+            this.mhConstructor = cp.resolve(spec, constructor);
+
+            cp.findMethods(m -> {
+                ConnectExtensions ce = m.getAnnotation(ConnectExtensions.class);
+                if (ce != null) {
+                    if (linked != null) {
+                        throw new IllegalStateException(
+                                "Multiple methods annotated with " + ConnectExtensions.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
+                    }
+                    linked = m;
+                    callbackOnlyDirectChildren = ce.onlyDirectLink();
+                }
+            });
+
+            return cp;
         }
 
         @SuppressWarnings("unchecked")
@@ -526,11 +527,5 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 GLOBAL_LOCK.unlock();
             }
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Class<? extends Subtension>> subtensionType() {
-        return null;
     }
 }

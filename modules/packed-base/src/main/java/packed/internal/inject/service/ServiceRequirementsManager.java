@@ -30,7 +30,7 @@ import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import packed.internal.container.ContainerBuild;
+import packed.internal.cube.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;

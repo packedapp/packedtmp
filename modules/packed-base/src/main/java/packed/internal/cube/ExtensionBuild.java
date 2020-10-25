@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.container;
+package packed.internal.cube;
 
 import static java.util.Objects.requireNonNull;
 
@@ -297,7 +297,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
         // of the extensions existence. This is done first in order to let the remaining steps use any
         // information set by the parent or ancestor.
-        if (model.extensionLinkedToAncestorExtension != null) {
+        if (model.mhExtensionLinked != null) {
             ExtensionBuild parentExtension = null;
             ContainerBuild parent = container.parent;
             if (!model.extensionLinkedDirectChildrenOnly) {
@@ -313,7 +313,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
             // If not just parent link keep checking up until root/
             if (parentExtension != null) {
                 try {
-                    model.extensionLinkedToAncestorExtension.invokeExact(parentExtension.instance, assembly, extension);
+                    model.mhExtensionLinked.invokeExact(parentExtension.instance, assembly, extension);
                 } catch (Throwable e1) {
                     throw ThrowableUtil.orUndeclared(e1);
                 }

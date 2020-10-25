@@ -22,7 +22,7 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import packed.internal.component.RegionBuild;
-import packed.internal.container.ContainerBuild;
+import packed.internal.cube.ContainerBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
