@@ -180,6 +180,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
                         + "ClassLoader(this) = " + type.getClassLoader() + ", ClassLoader(other) = " + m.type.getClassLoader());
     }
 
+    boolean isDirectDependency(Class<? extends Extension> extensionType) {
+        return dependencies.contains(extensionType);
+    }
+
     /** {@inheritDoc} */
     @Override
     public OrderedExtensionSet dependencies() {

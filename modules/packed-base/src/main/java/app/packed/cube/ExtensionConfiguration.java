@@ -105,6 +105,8 @@ public interface ExtensionConfiguration {
 
     /**
      * Returns whether or not the extension is part of an {@link Image}.
+     * <p>
+     * This can be used to clean up data structures that was only remember that people might still inspect the image
      * 
      * @return whether or not the extension is part of an image
      */

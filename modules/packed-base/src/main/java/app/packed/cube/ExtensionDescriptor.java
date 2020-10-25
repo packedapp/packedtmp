@@ -56,6 +56,8 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * 
      * @return any other extensions this extension depends on
      */
+    // Set<Class<? extends Extension>> dependencies();
+    // Set<ExtensionDescriptor> dependencyDescriptors();
     OrderedExtensionSet dependencies();
 
     /**

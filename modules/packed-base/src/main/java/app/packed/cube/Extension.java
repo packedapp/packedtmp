@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.component.BuildContext;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.BuildContext;
 import app.packed.component.Bundle;
 import app.packed.component.Image;
 import app.packed.config.ConfigSite;
@@ -30,7 +30,7 @@ import app.packed.inject.Factory;
 import packed.internal.config.ConfigSiteSupport;
 
 /**
- * All config Extensions are the main way that function primary way to add features to Packed.
+ * Extensions are the primary way to add features to Packed.
  * 
  * For example, allows you to extend the basic functionality of containers.
  * <p>
@@ -45,8 +45,8 @@ import packed.internal.config.ConfigSiteSupport;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
- * do not try an manually instantiate it, but instead use {@link CubeConfiguration#use(Class)}. It is also
- * recommended that the extension itself is declared final.
+ * do not try an manually instantiate it, but instead use {@link CubeConfiguration#use(Class)}. It is also recommended
+ * that the extension itself is declared final.
  */
 
 // Step1
@@ -287,6 +287,9 @@ public abstract class Extension {
     // Problemet er den funcking constructor...
     // Er rimlig sikker paa at inline klasser altid er statiske...
 
+    // HMMM, hvis vi faar public constructor ligesom records
+    // giver det jo ingen mening. IDK
+
     /**
      * There are no annotations that make sense for this class
      * 
@@ -308,32 +311,6 @@ public abstract class Extension {
     }
 
 }
-
-// Was ImageTrim -> But when to call it
-
-// When creating an image.
-// This can be used to clean up data structures that was only
-// remember that people might still inspect the image
-// The default implementation does nothing
-
-// Der er ikke rigtig en let maade at finde ud af om man er et image???
-// AssemblyContext viser jo bare hvad roden er....
-// Men hvis man nu er deployet paa configurations tidspunktet
-// paa en eller anden host... SessionImage er et godt eksempel
-
-// Maaske skal vi hellere have en isImage()....
-// og saa kan folk selv trimme ting i en onFinish() callback metode
-// Eller hvornaar de nu vil..
-
-//* 
-//* @apiNote Original this method was protected. But extension is really the only sidecar that works this way. So to
-//*          streamline with other sidecars we only allow it to be dependency injected into subclasses.
-// TODO fix with actual annotation type
-//throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. As an alternative "
-//      + Extension.class.getSimpleName() + "#onAdd(action) can used to perform initialization");
-// Er lidt tilhaenger af initialize()... istedet for annoteringer
-// Annoteringer er gode for ikke abstract basis klasser
-//
 // final void runWithLookup(Lookup lookup, Runnable runnable) {
 // // Extensions bliver bare noedt til at vaere aabne for
 //

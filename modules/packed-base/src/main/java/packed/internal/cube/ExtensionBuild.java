@@ -257,13 +257,13 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         // We can use a simple bitmap here as well... But we need to move this method to PEC.
         // And then look up the context before we can check.
 
-        if (!model.dependencies().contains(extensionType)) {
-            // We allow an extension to use itself, alternative would be to throw an exception, but for what reason?
-            if (extensionType == instance().getClass()) { // extension() checks for constructor
+        if (!model.isDirectDependency(extensionType)) {
+            // We allow an extension to use itself, alternative would be to throw an exception, but why?
+            if (extensionType == instance().getClass()) {
                 return (T) instance;
             }
 
-            throw new UnsupportedOperationException("The specified extension type is not among the dependencies of " + model.type().getSimpleName()
+            throw new UnsupportedOperationException("The specified extension type is not among the direct dependencies of " + model.type().getSimpleName()
                     + ", extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
         }
         return (T) container.useExtension(extensionType, this).instance;
