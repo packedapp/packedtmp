@@ -20,10 +20,10 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
-import app.packed.container.Container;
-import app.packed.container.ContainerState;
-import app.packed.container.ContainerWirelets;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.Container;
+import app.packed.state.ContainerState;
+import app.packed.state.ContainerWirelets;
 
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.

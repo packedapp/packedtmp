@@ -20,8 +20,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
-import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.Container;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.util.LookupUtil;

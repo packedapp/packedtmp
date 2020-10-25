@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.state;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -24,7 +24,7 @@ import app.packed.component.App;
 import app.packed.component.Bundle;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import app.packed.container.Container.StopOption;
+import app.packed.state.Container.StopOption;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link App#of(Bundle, Wirelet...)}.
