@@ -15,7 +15,6 @@
  */
 package app.packed.component;
 
-import app.packed.cube.CubeBundle;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedComponentModifierSet;
@@ -118,7 +117,15 @@ public abstract class Wirelet {
         return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
     }
 
-    public static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
+    // will invoke the specified runnable if the wirelet cannot be processed
+    // could be Wirelet.orElseRun(Runnable)...
+    // orElseIgnore();
+    // andThen()
+    public static Wirelet ignoreUnhandled(Wirelet wirelet, Runnable orElseRun) {
+        return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
+    }
+
+    static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
         // Ideen er lidt at vi kan bruge den til at teste ting vi wrapper...
         // Eftersom folk kan smide dem i forskellige wrapper wirelets
         // such as combine and ignoreUnceceived
@@ -132,7 +139,7 @@ public abstract class Wirelet {
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * Overriding any default naming scheme, or any name that might already have been set, for example, via
-     * {@link CubeBundle#setName(String)}.
+     * {@link AbstractComponentConfiguration#setName(String)}.
      * 
      * @param name
      *            the name of the component

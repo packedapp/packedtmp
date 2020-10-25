@@ -33,6 +33,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.cube.ExtensionMember;
 import app.packed.inject.Service;
+import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.inject.ServiceTransformer;
@@ -77,6 +78,12 @@ public final class WireletFromContext implements ServiceTransformer {
 
     /** {@inheritDoc} */
     @Override
+    public <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Optional<Service> find(Key<?> key) {
         requireNonNull(key, "key is null");
         ServiceBuild sb = forRead().get(key);
@@ -102,6 +109,10 @@ public final class WireletFromContext implements ServiceTransformer {
         checkCurrent(wirelet);
         action.accept(AbstractServiceRegistry.copyOf(services));
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> void provideInstance(Key<T> key, T instance) {}
 
     /** {@inheritDoc} */
     @Override
@@ -181,24 +192,22 @@ public final class WireletFromContext implements ServiceTransformer {
 
     /** {@inheritDoc} */
     @Override
-    public int size() {
-        return forRead().size();
-    }
-
-    @ExtensionMember(ServiceExtension.class)
-    public static abstract class ServiceWireletFrom extends Wirelet {
-        protected abstract void process(WireletFromContext context);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void retain(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction) {
+    public int size() {
+        return forRead().size();
+    }
+
+    public ServiceContract childContract() {
         throw new UnsupportedOperationException();
+    }
+
+    @ExtensionMember(ServiceExtension.class)
+    public static abstract class ServiceWireletFrom extends Wirelet {
+        protected abstract void process(WireletFromContext context);
     }
 }

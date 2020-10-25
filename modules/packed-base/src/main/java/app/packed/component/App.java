@@ -30,8 +30,10 @@ import app.packed.inject.ServiceLocator;
 public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
-     * Closes the app (synchronously). Calling this method is equivalent to calling {@code container.stop()}, but this
+     * Closes the app (synchronously). Calling this method is equivalent to calling {@code container().stop()}, but this
      * method is here in order to support try-with resources via {@link AutoCloseable}.
+     * 
+     * @see Container#stop(Container.StopOption...)
      **/
     @Override
     default void close() {

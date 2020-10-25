@@ -22,17 +22,6 @@ import java.util.stream.Stream;
 import app.packed.cube.Extension;
 import app.packed.cube.ExtensionDescriptor;
 
-//Class vs Descriptor
-// toClassList();, toDescriptorList();c
-// Graph<ExtensionDescriptor, Void>
-// Does ED only contain actual used dependencies????
-// IDK... Maybe we only have classes???
-// Problem is we need to retain info about inter extension
-// relationships at runtime.
-
-// specials --> ExtensionX before ExtensionY
-// Altsaa hvad hvis vi explicit laver en order fx via BaeExtension???
-
 /**
  * An set of extensions ordered by {@link ExtensionDescriptor#depth()} and {@link ExtensionDescriptor#fullName()}.
  * 

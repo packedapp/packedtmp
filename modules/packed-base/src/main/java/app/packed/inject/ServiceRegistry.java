@@ -37,8 +37,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain methods to acquire actual
  * service instances.
  */
-// Auto activating... Hvis man har den som parameter...
-// Use ServiceRegistry if you want information, use
+// Auto activating... Hvis man har den som parameter...// Use ServiceRegistry if you want information, use
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
@@ -155,18 +154,18 @@ public interface ServiceRegistry extends Iterable<Service> {
     /**
      * Returns a map (indexed by its key) of every service in this registry in any order.
      * <p>
-     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code List} returned.
+     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code Map} returned.
      * 
-     * @return a map of every service in this registry in any order
+     * @return a map of every service in this registry in no particular order
      */
     default Map<Key<?>, Service> toMap() {
         return stream().collect(Collectors.toMap(s -> s.key(), s -> s));
     }
 
     /**
-     * Returns a service registry with no services.
+     * Returns an empty service registry.
      * 
-     * @return a service registry with no services.
+     * @return an empty service registry.
      */
     static ServiceRegistry of() {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;

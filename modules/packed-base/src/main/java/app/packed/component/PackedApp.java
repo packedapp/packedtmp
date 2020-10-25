@@ -16,10 +16,10 @@ final class PackedApp implements App {
     /** The system component. */
     private final Component component;
 
-    /** The guest that manages the lifecycle. */
-    private final Container guest;
+    /** The app's container. */
+    private final Container container;
 
-    /** All services that are available for the user. */
+    /** The app's service locator. */
     private final ServiceLocator services;
 
     /**
@@ -29,12 +29,12 @@ final class PackedApp implements App {
      *            the service component
      * @param services
      *            the exported services
-     * @param guest
-     *            the guest
+     * @param container
+     *            the container
      */
-    private PackedApp(Component component, ServiceLocator services, Container guest) {
+    private PackedApp(Component component, ServiceLocator services, Container container) {
         this.component = requireNonNull(component);
-        this.guest = requireNonNull(guest);
+        this.container = requireNonNull(container);
         this.services = requireNonNull(services);
     }
 
@@ -47,7 +47,7 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public Container container() {
-        return guest;
+        return container;
     }
 
     /** {@inheritDoc} */
@@ -58,6 +58,6 @@ final class PackedApp implements App {
 
     @Override
     public String toString() {
-        return "App[" + guest.start() + "] " + path();
+        return "App[state = " + container.state() + "] " + path();
     }
 }

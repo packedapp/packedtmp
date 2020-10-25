@@ -19,27 +19,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 
 /**
  * A container instance.
  */
-
 // Restarting a guest actually means terminated an existing guest. And starting a new one.
-
 // Component, Service = Describes something, Guest also controls something...
 // I would imagine we want something to iterate over all state machines...
-
 // StateMachine
-
 // host facing
 // Maybe GuestController.... And guest can be a view/readable thingy
 
 // External facing...
-
 // Taenker ikke en Guest har attributer direkte. Udover componenten..
 // Taenker heller ikke ServiceRegistry
-
 public interface Container {
 
     /**
@@ -83,6 +78,31 @@ public interface Container {
     boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
+     * Returns a snapshot of the container's current state.
+     * 
+     * @return a snapshot of the container's current state
+     */
+    default ContainerSnapshotState snapshotState() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Starts and awaits the container if it has not already been started.
+     * <p>
+     * Normally, there is no need to call this methods since most methods on the container will lazily start the container
+     * whenever it is needed. For example, invoking use will automatically start the container if it has not already been
+     * started by another action.
+     * 
+     * @return this container
+     * @see #startAsync(Object)
+     */
+    Container start();
+
+    <T> CompletableFuture<T> startAsync(T result);
+
+    // startInterruptable, awaitInterruptable()
+
+    /**
      * Returns the current state of the container.
      * <p>
      * Calling this method will never block the current thread.
@@ -92,53 +112,34 @@ public interface Container {
     ContainerState state();
 
     /**
-     * Returns a snapshot of the container's current state.
+     * Stops the container.
      * 
-     * @return a snapshot of the container's current state
-     */
-    default ContainerSnapshotState snapshotState() {
-        throw new UnsupportedOperationException();
-    }
-
-    // app.guest().start(); I think that is cool, no need to move this method to App for now
-
-    /**
+     * @param options
+     *            optional stop options
      * @return this container
+     * @see #stopAsync(Object, StopOption...)
      */
-    Container start();
-
-    // startInterruptable
-
-    // Altsaa vi kan godt lave en version med Guest..
-    // Men hvad skal man bruge gaest til??? awaitX
-    <T> CompletableFuture<T> startAsync(T result);
-
     Container stop(StopOption... options);
+
+    default CompletableFuture<Void> stopAsync(StopOption... options) {
+        return stopAsync(null, new StopOption[] {});
+    }
 
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
      * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
-     *
+     * 
+     * @param <T>
+     *            the type of result in case of success
+     * @param result
+     *            the result the completable future
      * @param options
      *            optional guest stop options
      * @return a future that can be used to query whether the application has completed shutdown (terminated). Or is still
      *         in the process of being shut down
+     * @see #stop(StopOption...)
      */
-    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
-
-    // Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
-
-    // Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
-    // Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre
-    // settings???? StopOption.restart(Wirelet... wirelets)
-    // Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
-//    public interface GuestStartOption {
-//
-//        // LifecycleTransition
-//        static GuestStartOption reason(String reason) {
-//            throw new UnsupportedOperationException();
-//        }
-//    }
+    <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
     // ContainerStopOption????
     // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
@@ -156,6 +157,8 @@ public interface Container {
     // ER HELT SIKKER IKKE EN DEL AF LIFECYCLE VIL JEG MENE
     // Som udgangspunkt er det noget med Guest og goere..
     // Med mindre instanser lige pludselig kan bruge det.
+
+    /** Various options that can be used when stopping a container. */
     public interface StopOption {
 
         static StopOption erroneous(Supplier<Throwable> cause) {
@@ -223,9 +226,6 @@ public interface Container {
 //Muligheder -> build... instantiate... create... initialize
 
 //Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
-
-//Maaske build,,, you build an artifact...
-
 ///**
 //* Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
 //* methods on the container will lazily start the container whenever it is needed. For example, invoking
@@ -241,13 +241,17 @@ public interface Container {
 //* of starting up. Can also be used to retrieve any exception that might have prevented the container in
 //* starting properly
 //*/
+
+// Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
+
+// Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
+// Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre
+// settings???? StopOption.restart(Wirelet... wirelets)
+// Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
+//public interface GuestStartOption {
 //
-//
-////Ved ikke om CompletableFuture giver mening. Hvis App returnere initialize() betyder det jo
-////at vi maa have nogle metoder vi kan afvente state paa...
-//static CompletableFuture<App> startAsync(Assembly source, Wirelet... wirelets) {
-// // initialize().startAsync()
-// // Why return CompletableFuture???
-// PackedApp app = (PackedApp) driver().initialize(source, wirelets);
-// return app.startAsync(app);
+//    // LifecycleTransition
+//    static GuestStartOption reason(String reason) {
+//        throw new UnsupportedOperationException();
+//    }
 //}

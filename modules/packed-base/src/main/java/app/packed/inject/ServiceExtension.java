@@ -38,7 +38,11 @@ import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- * This extension provides functionality for exposing and consuming services.
+ * The main configuration point for services.
+ * <p>
+ * This extension provides the following functionality:
+ * 
+ * is extension provides functionality for exposing and consuming services.
  * 
  * 
  */
@@ -160,6 +164,9 @@ public final class ServiceExtension extends Extension {
     // Ignores other exports
     // interacts with other exports in some way
     /**
+     * Exports all internal services.
+     * <p>
+     * 
      * <ul>
      * <li><b>Service already exported.</b> The service that have already been exported (under any key) are always
      * ignored.</li>

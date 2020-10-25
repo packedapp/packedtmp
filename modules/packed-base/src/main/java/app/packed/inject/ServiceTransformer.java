@@ -15,6 +15,8 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.NoSuchElementException;
@@ -41,6 +43,10 @@ public interface ServiceTransformer extends ServiceRegistry {
 
     <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
+    default void provide(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
     // will override any existing service
     // will be a constant if every single dependency is a constant
     // will be resolved against the realm in which the wirelet is being used
@@ -50,12 +56,25 @@ public interface ServiceTransformer extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
-    default void provide(Factory<?> factory) {
-        throw new UnsupportedOperationException();
+    default <T> void provideInstance(Class<T> key, T instance) {
+        provideInstance(Key.of(key), instance);
     }
 
+    <T> void provideInstance(Key<T> key, T instance);
+
+    /**
+     * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
+     * service of the specific type as a requirement.
+     * <p>
+     * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
+     * 
+     * @param instance
+     *            the service to provide
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     default void provideInstance(Object instance) {
-        throw new UnsupportedOperationException();
+        requireNonNull(instance, "instance is null");
+        provideInstance((Class) instance.getClass(), instance);
     }
 
     /**
@@ -235,6 +254,13 @@ interface ZBadIdeas extends ServiceTransformer {
     // Nah make an AtomicReference... og sa lambda capture
     Object attachment();
 
+    ServiceTransformer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+
+    // JPMS-> Record must be readable for Packed
+    // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
+    // Man maa lave noget midlertigt hulumhej, som ma saa remover
+    ServiceTransformer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+
     /**
      * A version of
      * 
@@ -249,14 +275,7 @@ interface ZBadIdeas extends ServiceTransformer {
         rekey(Key.of(existingKey), Key.of(newKey));
     }
 
-    ServiceTransformer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
-
     ServiceTransformer retainIf(Iterable<? super Key<?>> keys);
-
-    // JPMS-> Record must be readable for Packed
-    // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
-    // Man maa lave noget midlertigt hulumhej, som ma saa remover
-    ServiceTransformer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
 
 }
 

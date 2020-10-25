@@ -25,7 +25,8 @@ import app.packed.base.Key;
 import app.packed.component.Wirelet;
 import packed.internal.inject.service.WireletFromContext;
 import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
-import packed.internal.inject.service.wirelets.PackedDownstreamServiceWirelet;
+import packed.internal.inject.service.WireletToContext;
+import packed.internal.inject.service.WireletToContext.ServiceWireletTo;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
@@ -60,7 +61,7 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that ddd when a container is linked.
+     * Returns a wirelet that will call the specified action with the service contract of the cube that is being linked.
      * <p>
      * This wirelet is processed at the linkage site.
      * 
@@ -68,8 +69,14 @@ public final class ServiceWirelets {
      *            the action to perform
      * @return a wirelet
      */
-    public static Wirelet peekContract(Consumer<? extends ServiceContract> action) {
-        throw new UnsupportedOperationException();
+    public static Wirelet peekContract(Consumer<? super ServiceContract> action) {
+        requireNonNull(action, "action is null");
+        return new ServiceWireletFrom() {
+            @Override
+            protected void process(WireletFromContext context) {
+                action.accept(context.childContract());
+            }
+        };
     }
 
     public static <T> Wirelet provide(Class<T> key, T instance) {
@@ -77,11 +84,13 @@ public final class ServiceWirelets {
     }
 
     public static <T> Wirelet provide(Key<T> key, T instance) {
-        return new PackedDownstreamServiceWirelet.ProvideInstance(key, instance);
+        requireNonNull(key, "key is null");
+        requireNonNull(instance, "instance is null");
+        return to(t -> t.provideInstance(key, instance));
     }
 
     /**
-     * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
+     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a
      * service of the specific type as a requirement.
      * <p>
      * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
@@ -89,6 +98,7 @@ public final class ServiceWirelets {
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
+     * @see ServiceTransformer#provideInstance(Object)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Wirelet provide(Object instance) {
@@ -97,22 +107,27 @@ public final class ServiceWirelets {
     }
 
     public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
-        throw new UnsupportedOperationException();
+        requireNonNull(transformer, "transformer is null");
+        return new ServiceWireletTo() {
+            @Override
+            protected void process(WireletToContext context) {
+                transformer.accept(context, context.childContract());
+            }
+        };
     }
 
     public static Wirelet to(Consumer<? super ServiceTransformer> transformer) {
-        throw new UnsupportedOperationException();
+        requireNonNull(transformer, "transformer is null");
+        return new ServiceWireletTo() {
+            @Override
+            protected void process(WireletToContext context) {
+                transformer.accept(context);
+            }
+        };
     }
 
     // restrict contract
     // provide <-- easy access
-}
-
-class XIdeasContract {
-
-    public static Wirelet restrict(ServiceContract contract) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 // A common pattern of x(class...), x(key...), xIf(Predicate), XAll()
@@ -166,5 +181,11 @@ class ServiceWSandbox {
     // Typically used for containers that aggregate child containers
 
     // exportTransitive
+}
 
+class XIdeasContract {
+
+    public static Wirelet restrict(ServiceContract contract) {
+        throw new UnsupportedOperationException();
+    }
 }

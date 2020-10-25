@@ -24,6 +24,7 @@ import packed.internal.inject.service.build.ServiceBuild;
 /**
  *
  */
+// En wrapper der goer at vi kan delay lidt det at smide exceptiosn for dublicate keys.
 public class Wrapper {
 
     private ServiceBuild build;
