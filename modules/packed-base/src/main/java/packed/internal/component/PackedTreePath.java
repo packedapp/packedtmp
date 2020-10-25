@@ -145,7 +145,7 @@ public final class PackedTreePath implements TreePath {
 
     }
 
-    static TreePath of(ComponentNode component) {
+    static TreePath of(PackedComponent component) {
         int depth = component.depth();
         switch (depth) {
         case 0:
@@ -154,7 +154,7 @@ public final class PackedTreePath implements TreePath {
             return new PackedTreePath(component.name());
         default:
             String[] paths = new String[depth];
-            ComponentNode acc = component;
+            PackedComponent acc = component;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name();
                 acc = acc.parent;

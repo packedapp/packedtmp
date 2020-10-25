@@ -49,7 +49,7 @@ public final class PackedInitializationContext {
     public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
 
     /** The component node we are building. */
-    ComponentNode component;
+    PackedComponent component;
 
     private final WireletPack wirelets;
     final ComponentBuild root;
@@ -114,7 +114,7 @@ public final class PackedInitializationContext {
         if (root.modifiers().isGuest()) {
             PackedContainer.initializeAndStart(root, pic);
         } else {
-            new ComponentNode(null, root, pic);
+            new PackedComponent(null, root, pic);
         }
         return pic;
     }
@@ -124,7 +124,7 @@ public final class PackedInitializationContext {
         if (root.modifiers().isGuest()) {
             PackedContainer.initializeAndStart(root, pic);
         } else {
-            new ComponentNode(null, root, pic);
+            new PackedComponent(null, root, pic);
         }
         return pic;
     }

@@ -54,7 +54,8 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceProvideAs();
 public interface ComponentConfigurationContext {
 
-    BuildContext assembly();
+    // Hmmmmmm, build() is normally something else
+    BuildContext build();
 
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
@@ -81,7 +82,7 @@ public interface ComponentConfigurationContext {
      * @see CubeBundle#extensions()
      */
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
-    Set<Class<? extends Extension>> containerExtensions();
+    Set<Class<? extends Extension>> cubeExtensions();
 
     /**
      * @param <T>
@@ -90,7 +91,7 @@ public interface ComponentConfigurationContext {
      * @throws UnsupportedOperationException
      *             if the component does not have the {@link ComponentModifier#CUBE} modifier
      */
-    <T extends Extension> T containerUse(Class<T> extensionType);
+    <T extends Extension> T cubeUse(Class<T> extensionType);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is
@@ -170,16 +171,6 @@ public interface ComponentConfigurationContext {
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
-
-    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bindInstance(instance);
-        return wire(cd, wirelets);
-    }
-
     /**
      * Wires a new child component using the specified driver
      * 
@@ -192,4 +183,14 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+
+    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bind(implementation);
+        return wire(cd, wirelets);
+    }
+
+    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindInstance(instance);
+        return wire(cd, wirelets);
+    }
 }

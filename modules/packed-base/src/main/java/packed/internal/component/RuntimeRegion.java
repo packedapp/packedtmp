@@ -66,7 +66,7 @@ public final class RuntimeRegion {
         return (PackedContainer) store[0];
     }
 
-    ServiceLocator serviceRegistry(ComponentNode node) {
+    ServiceLocator serviceRegistry(PackedComponent node) {
         return (ServiceLocator) store[node.modifiers().isGuest() ? 1 : 0];
     }
 

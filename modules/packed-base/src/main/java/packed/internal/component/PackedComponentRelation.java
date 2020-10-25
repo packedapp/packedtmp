@@ -29,13 +29,13 @@ public final class PackedComponentRelation implements ComponentRelation {
 
     private final int distance;
 
-    private final ComponentNode from;
+    private final PackedComponent from;
 
-    private final ComponentNode lcd;
+    private final PackedComponent lcd;
 
-    private final ComponentNode to;
+    private final PackedComponent to;
 
-    public PackedComponentRelation(ComponentNode from, ComponentNode to, int distance, ComponentNode lcd) {
+    public PackedComponentRelation(PackedComponent from, PackedComponent to, int distance, PackedComponent lcd) {
         this.from = from;
         this.to = to;
         this.distance = distance;
@@ -77,7 +77,7 @@ public final class PackedComponentRelation implements ComponentRelation {
             Component[] components = new Component[distance];
 
             int i = 0;
-            ComponentNode pc = from;
+            PackedComponent pc = from;
             while (pc != lcd) {
                 components[i++] = pc;
             }
@@ -105,11 +105,11 @@ public final class PackedComponentRelation implements ComponentRelation {
         return to;
     }
 
-    public static ComponentRelation find(ComponentNode from, Component to) {
-        return relation(from, (ComponentNode) to);
+    public static ComponentRelation find(PackedComponent from, Component to) {
+        return relation(from, (PackedComponent) to);
     }
 
-    private static ComponentRelation relation(ComponentNode from, ComponentNode to) {
+    private static ComponentRelation relation(PackedComponent from, PackedComponent to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.region == to.region) {
@@ -117,8 +117,8 @@ public final class PackedComponentRelation implements ComponentRelation {
                 return new PackedComponentRelation(from, to, 0, from);
             }
 
-            ComponentNode f = from;
-            ComponentNode t = to;
+            PackedComponent f = from;
+            PackedComponent t = to;
             int distance = 0;
 
             if (fd > td) {

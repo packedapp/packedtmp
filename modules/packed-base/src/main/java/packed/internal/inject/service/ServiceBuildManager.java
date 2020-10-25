@@ -31,7 +31,7 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceRegistry;
-import packed.internal.component.ComponentNode;
+import packed.internal.component.PackedComponent;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
@@ -168,7 +168,7 @@ public final class ServiceBuildManager {
         return builder.build();
     }
 
-    public ServiceLocator newServiceLocator(ComponentNode comp, RuntimeRegion region) {
+    public ServiceLocator newServiceLocator(PackedComponent comp, RuntimeRegion region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         if (exporter != null) {
@@ -180,7 +180,7 @@ public final class ServiceBuildManager {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedShellDriver<?> psd = (PackedShellDriver<?>) container.compConf.assembly().shellDriver();
+        PackedShellDriver<?> psd = (PackedShellDriver<?>) container.compConf.build().shellDriver();
         if (Injector.class.isAssignableFrom(psd.shellRawType())) {
             return new PackedInjector(comp.configSite(), runtimeEntries);
         } else {
@@ -289,12 +289,12 @@ public final class ServiceBuildManager {
     private static final class ExportedServiceLocator extends AbstractServiceLocator {
 
         /** The root component */
-        private final ComponentNode component;
+        private final PackedComponent component;
 
         /** All services that this injector provides. */
         private final Map<Key<?>, RuntimeService> services;
 
-        private ExportedServiceLocator(ComponentNode component, Map<Key<?>, RuntimeService> services) {
+        private ExportedServiceLocator(PackedComponent component, Map<Key<?>, RuntimeService> services) {
             this.services = requireNonNull(services);
             this.component = requireNonNull(component);
         }

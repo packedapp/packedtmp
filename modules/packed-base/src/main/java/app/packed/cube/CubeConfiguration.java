@@ -60,7 +60,7 @@ public final class CubeConfiguration extends ComponentConfiguration {
      * @see CubeBundle#extensions()
      */
     public Set<Class<? extends Extension>> extensions() {
-        return context.containerExtensions();
+        return context.cubeExtensions();
     }
 
     /**
@@ -164,7 +164,7 @@ public final class CubeConfiguration extends ComponentConfiguration {
     // Mest taenkt hvis vi faa hurtig metoder for attributes.
     // a.la. cc.with(
     public <T extends Extension> T use(Class<T> extensionType) {
-        return context.containerUse(extensionType);
+        return context.cubeUse(extensionType);
     }
 
     /**

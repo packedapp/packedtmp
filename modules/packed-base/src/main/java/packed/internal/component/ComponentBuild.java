@@ -75,7 +75,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     /** The modifiers of this configuration. */
     final int modifiers;
 
-    /* *************** ASSEMBLIES **************** */
+    /* *************** Builds **************** */
 
     /** The region this component is a part of. */
     public final RegionBuild region;
@@ -126,8 +126,8 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentBuild(PackedBuildContext build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite,
-            @Nullable ComponentBuild parent, @Nullable WireletPack wirelets) {
+    ComponentBuild(PackedBuildContext build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentBuild parent,
+            @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
         this.extension = null; // Extensions use another constructor
@@ -275,7 +275,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            PackedShellDriver<?> psd = (PackedShellDriver<?>) assembly().shellDriver();
+            PackedShellDriver<?> psd = (PackedShellDriver<?>) build().shellDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, psd.shellRawType());
         }
         return dam;
@@ -304,7 +304,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public PackedBuildContext assembly() {
+    public PackedBuildContext build() {
         return build;
     }
 
@@ -595,14 +595,14 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> containerExtensions() {
+    public Set<Class<? extends Extension>> cubeExtensions() {
         checkHasContainer();
         return cube.extensionView();
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Extension> T containerUse(Class<T> extensionType) {
+    public <T extends Extension> T cubeUse(Class<T> extensionType) {
         checkHasContainer();
         return cube.useExtension(extensionType);
     }

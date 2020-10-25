@@ -42,7 +42,7 @@ public final class RegionBuild {
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
-    RuntimeRegion newRegion(PackedInitializationContext pic, ComponentNode root) {
+    RuntimeRegion newRegion(PackedInitializationContext pic, PackedComponent root) {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though

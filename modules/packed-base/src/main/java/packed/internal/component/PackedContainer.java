@@ -78,7 +78,7 @@ public class PackedContainer implements Container {
 
     static void initializeAndStart(ComponentBuild component, PackedInitializationContext pic) {
         // initialize
-        new ComponentNode(null, component, pic);
+        new PackedComponent(null, component, pic);
 
         // TODO should check guest.delayStart wirelet
         pic.guest().start();
