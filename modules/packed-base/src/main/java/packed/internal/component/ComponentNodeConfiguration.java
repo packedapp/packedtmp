@@ -251,7 +251,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         if (extension != null) {
             dam.addValue(ComponentAttributes.EXTENSION_MEMBER, extension.extensionType());
-            ProvidableAttributeModel pam = extension.model().pam();
+            ProvidableAttributeModel pam = extension.model().attributes();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
                     Extension ex = extension.instance();

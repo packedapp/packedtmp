@@ -30,8 +30,8 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.cube.Extension;
-import app.packed.cube.ExtensionConfiguration;
 import app.packed.cube.Extension.Subtension;
+import app.packed.cube.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentNodeConfiguration;
 import packed.internal.util.LookupUtil;
@@ -97,7 +97,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     @Override
     public void checkConfigurable() {
         if (isConfigured) {
-            throw new IllegalStateException("This extension (" + model.nameSimple + ") is no longer configurable");
+            throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
         }
     }
 
@@ -189,7 +189,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     public Extension instance() {
         Extension e = instance;
         if (e == null) {
-            throw new IllegalStateException("Cannot call this method from the constructor of " + model.nameSimple);
+            throw new IllegalStateException("Cannot call this method from the constructor of " + model.name());
         }
         return e;
     }

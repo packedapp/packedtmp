@@ -135,7 +135,7 @@ public final class SourceModel {
         private Builder(RealmModel realm, OpenClass cp) {
             this.realm = requireNonNull(realm);
             this.cp = requireNonNull(cp);
-            this.extensionType = ExtensionModel.getAnyExtensionMember(cp.type());
+            this.extensionType = ExtensionModel.getExtensionMemberOf(cp.type());
         }
 
         /**

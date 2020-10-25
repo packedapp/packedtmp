@@ -54,7 +54,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A cache of extension models. */
-    private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
+    private static final ClassValue<ExtensionModel> EXTENSIONS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -77,12 +77,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     };
 
-    final MethodHandle bundleBuilderMethod;
-
-    /** A method handle for creating a new sidecar instance. */
-    protected final MethodHandle mhConstructor;
-
-    /** The direct dependencies of this extension. */
+    /** The direct dependencies of the extension. */
     private final PackedOrderedExtensionSet dependencies;
 
     /**
@@ -98,25 +93,29 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
+    /** A unique id of the extension. */
+    final int id; // We don't currently use it...
+
+    /** A method handle for creating a new extension instance. type = (ExtensionBuild)Extension. */
+    private final MethodHandle mhConstructor;
+
     /** A method handle to an optional method annotated with {@link ConnectExtensions} on the extension. */
     @Nullable
     final MethodHandle mhExtensionLinked; // will have an extensionLinkedToAncestorService in the future
-
-    /** A unique id of the extension. */
-    final int id; // We don't currently use it...
 
     /** The default component name of the extension. */
     public final String nameComponent;
 
     /** The canonical name of the extension. Used when needing to deterministically sort extensions. */
-    final String nameFull;
+    private final String nameFull;
 
     /** The simple name of the extension, as returned by {@link Class#getSimpleName()}. */
-    final String nameSimple;
+    private final String nameSimple;
 
-    /** Any attributes defined on the extension. */
-    private final ProvidableAttributeModel pam;
+    /** A model of any attributes defined on the extension type. */
+    private final ProvidableAttributeModel pam;// Nullable??
 
+    /** The type of extension this instance models. */
     private final Class<? extends Extension> type;
 
     /**
@@ -130,7 +129,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.mhConstructor = builder.mhConstructor;
         this.id = builder.id;
         this.depth = builder.depth;
-
         // All direct dependencies of this extension
         this.dependencies = PackedOrderedExtensionSet.of(builder.dependencies);
 
@@ -139,10 +137,18 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.nameSimple = type.getSimpleName();
         this.nameComponent = "." + nameSimple;
 
-        this.bundleBuilderMethod = builder.builderMethod;
         this.mhExtensionLinked = builder.li;
         this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
         this.pam = builder.pam;
+    }
+
+    /**
+     * Returns a model of any attributes the extension defines.
+     * 
+     * @return a model of any attributes the extension defines
+     */
+    public ProvidableAttributeModel attributes() {
+        return pam;
     }
 
     /** {@inheritDoc} */
@@ -167,19 +173,14 @@ public final class ExtensionModel implements ExtensionDescriptor {
             return 0;
         }
 
-        // Same fullname and but loaded with two different classloaders.
-        // We don't allow this
+        // Same canonical name and depth but loaded with two different class loaders.
+        // We do not support this
         throw new IllegalArgumentException(
-                "Cannot compare two extensions with the same depth '" + depth + "' and fullname '" + nameFull + "' but loaded by different classloaders. "
+                "Cannot compare two extensions with the same depth '" + depth + "' and fullname '" + nameFull + "' but loaded by different class loaders. "
                         + "ClassLoader(this) = " + type.getClassLoader() + ", ClassLoader(other) = " + m.type.getClassLoader());
-
     }
 
-    /**
-     * Returns a set of all the direct dependencies of this extension as specified via {@link ExtensionSetup}.
-     * 
-     * @return a set of all the direct dependencies of this extension
-     */
+    /** {@inheritDoc} */
     @Override
     public OrderedExtensionSet dependencies() {
         return dependencies;
@@ -218,21 +219,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     }
 
-    public ProvidableAttributeModel pam() {
-        return pam;
-    }
-
     /** {@inheritDoc} */
     @Override
     public Optional<Class<? extends Subtension>> subtensionType() {
         return null;
     }
 
-    /**
-     * Returns the extension type of this model.
-     * 
-     * @return the extension type of this model
-     */
+    /** {@inheritDoc} */
     @Override
     public Class<? extends Extension> type() {
         return type;
@@ -255,7 +248,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *             {@link ExtensionMember#value()}
      */
     @Nullable
-    public static Class<? extends Extension> getAnyExtensionMember(Class<?> type) {
+    public static Class<? extends Extension> getExtensionMemberOf(Class<?> type) {
         ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
@@ -263,7 +256,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 throw new InternalExtensionException("The extension " + eType + " and type " + type + " must be defined in the same module, was "
                         + eType.getModule() + " and " + type.getModule());
             }
-            of(eType); // Make sure the extension is valid
+            of(eType); // Make sure a valid model for the extension has been created
             return eType;
         }
         return null;
@@ -275,15 +268,17 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @param extensionType
      *            the type of extension to return a model for
      * @return an extension model for the specified extension type
+     * @throws InternalExtensionException
+     *             if a valid model could not be created
      */
     public static ExtensionModel of(Class<? extends Extension> extensionType) {
-        return MODELS.get(extensionType);
+        return EXTENSIONS.get(extensionType);
     }
 
     /** A builder of {@link ExtensionModel}. */
-    static final class Builder {
+    private static final class Builder {
 
-        /**  */
+        /** A class value that contains optional dependencies of an extension. */
         private static ClassValue<?> OPTIONALS = new ClassValue<>() {
 
             @Override
@@ -323,13 +318,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
         };
 
-        private MethodHandle builderMethod;
-
         // Whether or not it is only children... Or all ancestors
         private boolean callbackOnlyDirectChildren;
-
-        /** A method handle used to create new extension instances. */
-        private MethodHandle mhConstructor;
 
         /** A set of extension this extension depends on. */
         private Set<Class<? extends Extension>> dependencies = new HashSet<>();
@@ -347,6 +337,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         /** The loader used to load the extension. */
         private final Loader loader;
+
+        /** A method handle used to create new extension instances. */
+        private MethodHandle mhConstructor;
 
         private ProvidableAttributeModel pam;
 
@@ -381,6 +374,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * 
          * @return the extension model
          */
+        @SuppressWarnings("unchecked")
         ExtensionModel build() {
             // See if the extension is annotated with @ExtensionSidecar
             ExtensionSetup em = extensionType.getAnnotation(ExtensionSetup.class);
@@ -389,7 +383,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
                     addDependency(dependencyType);
                 }
                 if (em.optionalDependencies().length > 0) {
-                    for (Class<? extends Extension> dependencyType : resolveOptional(extensionType)) {
+                    Object result = OPTIONALS.get(extensionType);
+                    if (!(result instanceof List)) {
+                        return ThrowableUtil.throwReturn((Throwable) result);
+                    }
+                    for (Class<? extends Extension> dependencyType : (List<Class<? extends Extension>>) result) {
                         addDependency(dependencyType);
                     }
                 }
@@ -440,15 +438,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
             });
 
             return cp;
-        }
-
-        @SuppressWarnings("unchecked")
-        private static List<Class<? extends Extension>> resolveOptional(Class<?> extensionType) {
-            Object result = OPTIONALS.get(extensionType);
-            if (result instanceof List) {
-                return (List<Class<? extends Extension>>) result;
-            }
-            return ThrowableUtil.throwReturn((Throwable) result);
         }
     }
 
