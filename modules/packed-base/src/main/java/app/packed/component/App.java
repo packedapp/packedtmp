@@ -19,7 +19,6 @@ import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
 import app.packed.base.TreePath;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Container;
 import app.packed.state.ContainerState;
@@ -31,25 +30,12 @@ import app.packed.state.ContainerWirelets;
 public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
-     * Closes the app (synchronously). Calling this method is equivalent to calling {@code app.stop()}, but this method is
-     * here in order to support try-with resources via {@link AutoCloseable}.
+     * Closes the app (synchronously). Calling this method is equivalent to calling {@code container.stop()}, but this
+     * method is here in order to support try-with resources via {@link AutoCloseable}.
      **/
     @Override
     default void close() {
         container().stop();
-    }
-
-    /**
-     * Returns the configuration site of this application.
-     * <p>
-     * If this application was created from an {@link Image image}, this method will return the site where the image was
-     * created. Unless the AI.Wiring option is used when construction the application.
-     * 
-     * @return the configuration site of this application
-     */
-    // Altsaa vil vi have den her????
-    default ConfigSite configSite() {
-        return component().configSite();
     }
 
     /**
@@ -62,12 +48,10 @@ public interface App extends AutoCloseable, ComponentDelegate {
     /**
      * Returns the name of this application.
      * <p>
-     * The returned name is identical to the name of the application's top component.
-     * <p>
-     * If no name is explicitly set when creating the application, the runtime will generate a name. If the applications has
-     * siblings the name is guaranteed to be unique among them.
+     * The returned name is identical to the name of the application's component.
      * 
      * @return the name of this application
+     * @see Component#name()
      */
     default String name() {
         return component().name();

@@ -42,7 +42,6 @@ public class AppTest {
 
         assertThat(app).isNotNull();
         assertThat(app.name()).isNotNull();
-        assertThat(app.configSite()).isNotNull();
         assertThat(app.stream()).size().isEqualTo(1);
 
         CubeConfiguration cc = requireNonNull(ar.get());
@@ -51,6 +50,5 @@ public class AppTest {
         assertThat(cc.extensions()).isEmpty();
 
         // Checks the config site of the app is the same as the config site of the configuration
-        assertThat(app.configSite()).isSameAs(cc.configSite());
     }
 }

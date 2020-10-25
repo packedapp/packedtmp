@@ -42,6 +42,14 @@ public interface Component extends AttributedElement, ComponentSystem {
      * 
      * @return the configuration site of this component
      */
+//    /**
+//     * Returns the configuration site of this application.
+//     * <p>
+//     * If this application was created from an {@link Image image}, this method will return the site where the image was
+//     * created. Unless the AI.Wiring option is used when construction the application.
+//     * 
+//     * @return the configuration site of this application
+//     */
     ConfigSite configSite();
 
     /**
