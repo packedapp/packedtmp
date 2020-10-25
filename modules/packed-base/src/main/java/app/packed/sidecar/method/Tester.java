@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 /**
  *
  */
-public class Tester extends InterceptingMethodSidecar {
+class Tester extends InterceptingMethodSidecar {
 
     public void intercept(MethodHandle m) {
 

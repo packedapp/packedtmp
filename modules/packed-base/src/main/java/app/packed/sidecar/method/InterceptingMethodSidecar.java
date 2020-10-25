@@ -22,7 +22,7 @@ import app.packed.base.Key;
 /**
  *
  */
-public abstract class InterceptingMethodSidecar extends AbstractMethodSidecar {
+abstract class InterceptingMethodSidecar extends AbstractMethodSidecar {
 
     public final int inject(Class<?> key) {
         return 0;

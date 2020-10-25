@@ -17,7 +17,7 @@ package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
 import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.cube.BaseBundle;
 import app.packed.inject.Factory;
@@ -36,7 +36,7 @@ import app.packed.inject.ServiceExtension;
  */
 //PrototypeServiceConfiguration??
 // Extends Stateless???
-public final class PrototypeConfiguration<T> extends ComponentConfiguration {
+public final class PrototypeConfiguration<T> extends AbstractComponentConfiguration {
 
     /**
      * Creates a new configuration object

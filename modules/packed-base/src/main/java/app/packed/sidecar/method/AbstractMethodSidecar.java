@@ -23,7 +23,7 @@ import java.lang.reflect.TypeVariable;
 /**
  *
  */
-public abstract class AbstractMethodSidecar implements GenericDeclaration, Member {
+abstract class AbstractMethodSidecar implements GenericDeclaration, Member {
 
     protected abstract void configure();
 

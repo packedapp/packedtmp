@@ -4,8 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.Container;
 
 /** The default implementation of {@link App}. */
 final class PackedApp implements App {

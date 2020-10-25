@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.container;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 import app.packed.component.Wirelet;
 
 /**
- * 
+ * A container instance.
  */
 
 // Restarting a guest actually means terminated an existing guest. And starting a new one.

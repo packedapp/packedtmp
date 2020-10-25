@@ -15,11 +15,7 @@
  */
 package packed.internal.component.wirelet;
 
-import java.util.List;
-
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.inject.Provide;
 import app.packed.sidecar.VariableSidecar;
 
 /**
@@ -48,14 +44,14 @@ public final class WireletSidecar extends VariableSidecar {
     // Assembly
     /// Vi extracter WireletTyper
 
-    @Provide
-    public Object provide(ComponentConfiguration cc, Context context) {
-        if (context.isList) {
-            return List.of();
-        } else {
-            return null;
-        }
-    }
+//    @Provide
+//    public Object provide(ComponentConfiguration cc, Context context) {
+//        if (context.isList) {
+//            return List.of();
+//        } else {
+//            return null;
+//        }
+//    }
 
     static class Context {
         boolean isList;

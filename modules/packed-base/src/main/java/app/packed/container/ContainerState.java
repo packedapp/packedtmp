@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.container;
 
 /**
  * An enum containing all valid states of a {@link Container}.

@@ -22,7 +22,7 @@ import app.packed.cube.Extension;
 /**
  *
  */
-public class Xxx extends BaseBundle {
+class Xxx extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override

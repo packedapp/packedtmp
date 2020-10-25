@@ -29,33 +29,13 @@ import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 import packed.internal.config.ConfigSiteSupport;
 
-/** An abstract implementation of ComponentConfiguration that can be extended by extensions. */
-
-// Vil ikke afvise at vi dropper interface ComponentConfiguration...
-// Og omdoeber denne til ComponentConfiguration
-
-// Tror det vil vaere rart i forbindelse f.eks. med at StackWalker...
-// At vi altid ved den er ComponentConfiguration...
-
-// Grunde til vi ikke har lyst til det....
-
-// F.eks. hvis vi gerne vil lave en immutable version...
-// Kunne have en clone()... som returnere en ny instans med en ny context...
-// Som fejler ved checkConfigurable....
-
-// Saa vi kun har en type...
-
-// Lad mig spoerge paa en anden maade.. Kan vi paa nogen maade forstille os at der kommer til at 
-// vaere flere implementation af en specific component configuration type...??? 
-// Det tror jeg ikke...
-
-// Men det er jo det samme med image... Det der er rart er jo at vi kan gemme implementeringen vaek
-// Men taenker dem der laver noget har den knyttet til en Extension??? som kan kalde en package
-// private constructor... Kan ikke forstille mig folk laver typer udenom en Extension
-// Eller vi har jo nok ComponentModel<Factory> -> ComponentModel<SingletonConfiguration>x
-
-// model.newConfiguration(ComponentContainerContext ccc) -> return new SingletonCC(ccc);
-public abstract class ComponentConfiguration {
+/**
+ * An abstract base class for creating component configuration classes. It is basically a thin wrapper on top of
+ * {@link ComponentConfigurationContext}.
+ * <p>
+ * Component configuration classes do not need to extend this class.
+ */
+public abstract class AbstractComponentConfiguration {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -69,7 +49,7 @@ public abstract class ComponentConfiguration {
      * @param context
      *            the component's configuration context
      */
-    protected ComponentConfiguration(ComponentConfigurationContext context) {
+    protected AbstractComponentConfiguration(ComponentConfigurationContext context) {
         this.context = requireNonNull(context, "context is null");
     }
 
@@ -204,7 +184,7 @@ public abstract class ComponentConfiguration {
      * @see #getName()
      * @see Component#name()
      */
-    public ComponentConfiguration setName(String name) {
+    public AbstractComponentConfiguration setName(String name) {
         context.setName(name);
         return this;
     }

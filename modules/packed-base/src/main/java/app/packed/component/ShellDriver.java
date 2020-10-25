@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.Container;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedShellDriver;

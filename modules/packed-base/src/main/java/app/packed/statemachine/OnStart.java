@@ -21,8 +21,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.component.App;
+import app.packed.container.ContainerState;
 import app.packed.inject.InjectionContext;
-import app.packed.state.ContainerState;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the

@@ -18,6 +18,6 @@ package app.packed.sidecar.method;
 /**
  *
  */
-public class InvokingMethodSidecar {
+class InvokingMethodSidecar {
 
 }

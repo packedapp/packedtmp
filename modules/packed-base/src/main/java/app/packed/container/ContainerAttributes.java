@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.container;
 
 /**
  *
  */
-//FailedToRuntException, ExecutionExceptionFailed
-// ExecutionExeception
-/// RunFailedException <- See execute fungere daaerlig here
+// En for koersel af annotation for startup/shutdown??? og initialize
+// 
+class ContainerAttributes {
+    // Map<State, Duration>???
 
-/// StartupFailedException();
-public class ContainerStartException extends RuntimeException {
-
-    /** */
-    private static final long serialVersionUID = 1L;
+    // Shutdown timings... Describtion of GuestWirelets
 }

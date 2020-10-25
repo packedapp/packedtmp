@@ -26,4 +26,14 @@ public interface Service extends AttributedElement {
      * @return the key that the service is registered with
      */
     Key<?> key();
+
+    /**
+     * Returns the raw type of the service.
+     * 
+     * @return the raw type of the service
+     * @see Key#rawType()
+     */
+    default Class<?> rawType() {
+        return key().rawType();
+    }
 }

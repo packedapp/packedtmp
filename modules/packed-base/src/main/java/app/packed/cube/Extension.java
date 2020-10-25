@@ -82,6 +82,9 @@ public abstract class Extension {
     // Maaske er en Extension et bundle
     private ExtensionConfiguration configuration; // = PEC.CONFIGURED
 
+    /** Create a new extension. */
+    protected Extension() {}
+
     /**
      * Invoked by the runtime immediately after the extension's constructor has returned successfully. Since most methods on
      * this class cannot be invoked from within the constructor. This method can be used to perform any post instantiation

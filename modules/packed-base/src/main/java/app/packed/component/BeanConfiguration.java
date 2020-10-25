@@ -29,7 +29,7 @@ import app.packed.inject.Factory;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public class BeanConfiguration<T> extends ComponentConfiguration {
+public final class BeanConfiguration<T> extends AbstractComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
     private static final ComponentInstanceDriver ICD = ComponentInstanceDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());

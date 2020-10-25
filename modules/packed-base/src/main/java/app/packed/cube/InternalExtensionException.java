@@ -18,7 +18,7 @@ package app.packed.cube;
 /**
  * An exception typically thrown by the runtime to indicate that an extension failed in some way.
  * <p>
- * If you encounter this exception as a user of some extension there is normally nothing you can do, except for
+ * If you encounter this exception as an end-user of an extension. There is normally nothing you can do, except for
  * reporting the error to the developer of the extension.
  */
 public class InternalExtensionException extends RuntimeException {

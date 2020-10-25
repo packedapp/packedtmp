@@ -23,7 +23,7 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.ComponentConfiguration;
+import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
@@ -35,7 +35,7 @@ import packed.internal.component.ComponentBuild;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link CubeBundle} or {@link BaseBundle}.
  */
-public final class CubeConfiguration extends ComponentConfiguration {
+public final class CubeConfiguration extends AbstractComponentConfiguration {
 
     /** A driver that create container components. */
     private static final ComponentDriver<CubeConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), CubeConfiguration.class,

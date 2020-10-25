@@ -42,16 +42,14 @@ public @interface ExtensionSetup {
      * @return extensions that the extension may use
      */
     // Should we use Sub instead??? Giver god mening.. Da man ikke kan depend paa extensions der ikke har en sub
+    // Eller det kan man maaske godt. Men kan bare ikke accesse noget via #use
     Class<? extends Extension>[] dependencies() default {};
 
     /**
      * Other extensions that an extension may use if they are present on the classpath or modulepath.
      * <p>
-     * The extension types will only be used if they can be resolved at runtime using
-     * {@link Class#forName(String, boolean, ClassLoader)} or a similar mechanism.
-     * <p>
-     * Checking whether or not an optional dependency is available is done exactly once when the extension is first used.
-     * Caching the result for future usage.
+     * The dependencies will be resolved at runtime using {@link Class#forName(String, boolean, ClassLoader)} or a similar
+     * mechanism. This is done exactly once when the extension is first used. Caching the result for future usage.
      * 
      * @return extensions that the extension may use if they are present on the classpath or modulepath
      */

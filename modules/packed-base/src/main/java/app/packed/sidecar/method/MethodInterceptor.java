@@ -21,7 +21,7 @@ import java.lang.invoke.MethodType;
 /**
  *
  */
-public interface MethodInterceptor {
+interface MethodInterceptor {
 
     default MethodType sourceType() {
         throw new UnsupportedOperationException();
