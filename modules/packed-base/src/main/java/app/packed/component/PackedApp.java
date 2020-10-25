@@ -8,7 +8,6 @@ import app.packed.inject.ServiceLocator;
 import app.packed.state.Container;
 
 /** The default implementation of {@link App}. */
-// Could be a really nice little record this one.
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */

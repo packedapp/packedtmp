@@ -62,8 +62,8 @@ public final class RuntimeRegion {
     }
 
     // Don't know
-    PackedGuest guest() {
-        return (PackedGuest) store[0];
+    PackedContainer guest() {
+        return (PackedContainer) store[0];
     }
 
     ServiceLocator serviceRegistry(ComponentNode node) {

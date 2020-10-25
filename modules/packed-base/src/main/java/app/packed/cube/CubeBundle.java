@@ -34,28 +34,18 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 
 /**
- * Bundles are the main source of configuration for containers and artifacts. Basically a bundle is just a thin wrapper
- * around {@link CubeConfiguration}. Delegating every invocation in the class to an instance of
- * {@link CubeConfiguration} available via {@link #configuration()}.
+ * Bundles are the main source of system configuration. Basically a bundle is just a thin wrapper around
+ * {@link CubeConfiguration}. Delegating every invocation in the class to an instance of {@link CubeConfiguration}
+ * available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
  * 
  * A generic bundle. Normally you would extend {@link BaseBundle}
  */
-
-// Nej der er ingen grund til at lave den concurrent. Som regel er det en ny instans...
-
-// Maybe introduce ContainerBundle()... Det jeg taenker er at introduce noget der f.eks. kan bruges i kotlin
-// saa man kan noget der minder om https://ktor.io
-// Altsaa en helt barebones bundle
-
-// Kunne godt have nogle lifecycle metoder man kunne overskrive.
-// F.eks. at man vil validere noget
-
 public abstract class CubeBundle extends Bundle<CubeConfiguration> {
 
-    /** Creates a new ContainerBundle. */
+    /** Creates a new bundle. */
     protected CubeBundle() {
         super(CubeConfiguration.driver());
     }

@@ -112,7 +112,7 @@ public final class PackedInitializationContext {
         // Hmmm Packed Guest bliver jo lavet der...
         // Maaske laver vi en PackedGuest og smider i PIC. som man saa kan steale...
         if (root.modifiers().isGuest()) {
-            PackedGuest.initializeAndStart(root, pic);
+            PackedContainer.initializeAndStart(root, pic);
         } else {
             new ComponentNode(null, root, pic);
         }
@@ -122,7 +122,7 @@ public final class PackedInitializationContext {
     public static PackedInitializationContext initializeFromImage(ComponentNodeConfiguration root, WireletPack wirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root, wirelets);
         if (root.modifiers().isGuest()) {
-            PackedGuest.initializeAndStart(root, pic);
+            PackedContainer.initializeAndStart(root, pic);
         } else {
             new ComponentNode(null, root, pic);
         }

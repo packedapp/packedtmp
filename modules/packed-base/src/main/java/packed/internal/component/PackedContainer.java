@@ -36,7 +36,7 @@ import app.packed.state.ContainerState;
 
 // Extra data... Startup/Initialization exception
 
-public class PackedGuest implements Container {
+public class PackedContainer implements Container {
 
     final Sync sync = new Sync();
 
@@ -49,11 +49,11 @@ public class PackedGuest implements Container {
 
     // Hmm, maybe not
     @Nullable
-    final PackedGuest parent;
+    final PackedContainer parent;
 
     volatile Object data;
 
-    PackedGuest(@Nullable PackedGuest parent) {
+    PackedContainer(@Nullable PackedContainer parent) {
         this.parent = parent;
     }
 

@@ -47,7 +47,7 @@ public final class RegionBuild {
 
         // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().isGuest()) {
-            region.store(0, new PackedGuest(null));
+            region.store(0, new PackedContainer(null));
         }
 
         // We start by storing all constant instances in the region array
