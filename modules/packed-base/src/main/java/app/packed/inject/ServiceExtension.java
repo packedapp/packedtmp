@@ -186,7 +186,7 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Creates a service contract for this extension.
+     * Expose a service contract as an attribute.
      * 
      * @return a service contract for this extension
      */
@@ -196,7 +196,7 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Returns any exported services. Or null if there are no exports.
+     * Exposes an immutable service registry of all exported services. Or null if there are no exports.
      * 
      * @return any exported services. Or null if there are no exports
      */

@@ -19,7 +19,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -34,16 +36,17 @@ import app.packed.base.Nullable;
 import app.packed.component.WireletConsume;
 import app.packed.cube.ConnectExtensions;
 import app.packed.cube.Extension;
+import app.packed.cube.Extension.Subtension;
 import app.packed.cube.ExtensionConfiguration;
 import app.packed.cube.ExtensionDescriptor;
 import app.packed.cube.ExtensionMember;
 import app.packed.cube.ExtensionSetup;
 import app.packed.cube.InternalExtensionException;
 import app.packed.cube.OrderedExtensionSet;
-import app.packed.cube.Extension.Subtension;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.classscan.OpenClass;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
@@ -356,7 +359,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         protected OpenClass prep(MethodHandleBuilder spec) {
             OpenClass cp = new OpenClass(MethodHandles.lookup(), sidecarType, true);
-            this.constructor = cp.findConstructor(spec);
+
+            Constructor<?> constructor = FindInjectableConstructor.findConstructorIAE(sidecarType);
+            if (Modifier.isPublic(constructor.getModifiers()) && Modifier.isPublic(sidecarType.getModifiers())) {
+                throw new InternalExtensionException(
+                        "Extensions that are defined as public classes, must have a non-public constructor, extensionType = " + sidecarType);
+            }
+            this.constructor = cp.resolve(spec, constructor);
             cp.findMethods(m -> {
                 onMethod(m);
             });

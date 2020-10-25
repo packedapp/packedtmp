@@ -86,6 +86,10 @@ public final class OpenClass {
         return new MethodHandleBuilderHelper(this, constructor, dim).find();
     }
 
+    public MethodHandle resolve(MethodHandleBuilder dim, Constructor<?> constructor) {
+        return new MethodHandleBuilderHelper(this, constructor, dim).find();
+    }
+
     public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
         OpenClassHelper.find(Object.class, type, methodConsumer, null);
     }

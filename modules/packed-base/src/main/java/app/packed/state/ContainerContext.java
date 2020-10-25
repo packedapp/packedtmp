@@ -37,6 +37,9 @@ import app.packed.component.ComponentModifierSet;
 
 // Altsaa eneste problem er. Vil vi virkelig gerne have
 // At f.eks. extensions kan stoppe en container de er deployet i??? IDK
+
+//ComponentContext.tryStop();
+//ComponentContext.stop();
 public interface ContainerContext {
 
     TreePath path();

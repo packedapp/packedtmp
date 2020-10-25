@@ -57,9 +57,9 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
 
     /**
      * Tests what happens if people try to use any of the extension methods outside of the configure of the defining bundle.
-     * We allow invoking {@link CubeConfiguration#extensions()} and allow {@link CubeConfiguration#use(Class)} for
-     * extension that have already been installed. Calling {@link CubeConfiguration#use(Class)} with an extension that
-     * have not previously been installed will throw an {@link IllegalStateException}.
+     * We allow invoking {@link CubeConfiguration#extensions()} and allow {@link CubeConfiguration#use(Class)} for extension
+     * that have already been installed. Calling {@link CubeConfiguration#use(Class)} with an extension that have not
+     * previously been installed will throw an {@link IllegalStateException}.
      */
     @Test
     public void unconfigurable() {
@@ -81,7 +81,11 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }
 
-    public static final class TestExtension1 extends Extension {}
+    public static final class TestExtension1 extends Extension {
+        TestExtension1() {}
+    }
 
-    public static final class TestExtension2 extends Extension {}
+    public static final class TestExtension2 extends Extension {
+        TestExtension2() {}
+    }
 }

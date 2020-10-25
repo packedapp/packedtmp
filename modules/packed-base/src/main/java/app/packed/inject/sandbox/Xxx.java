@@ -13,35 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.inject.sandbox;
 
-import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.cube.BaseBundle;
+import app.packed.cube.Extension;
 
 /**
  *
  */
-class Stuff extends BaseBundle {
+public class Xxx extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
     protected void configure() {
-        Factory<String> f = new Factory2<Long, Long, String>((l, i) -> "ffoo " + l + " " + i) {};
-        Factory<String> ff = new Factory2<Long, Long, @Named("foo") String>((l, i) -> "ffoo " + l + " " + i) {};
-        f = f.postConstruction(s -> System.out.println(s));
-        f = f.postConstruction(s -> System.out.println(s));
-        f = f.bind(3333L);
-        f = f.bind(2343L);
-        System.out.println();
-        ff = ff.postConstruction(s -> System.out.println(s));
-        install(f);
-        install(ff);
-        provideInstance(-123123);
-        providePrototype(new Factory<Long>(System::nanoTime) {});
+        use(MyEx.class);
     }
 
     public static void main(String[] args) {
-        App.of(new Stuff());
+        App.of(new Xxx());
+        System.out.println("Bye");
+    }
+
+    public static class MyEx extends Extension {
+        MyEx() {}
     }
 }
