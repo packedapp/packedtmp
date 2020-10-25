@@ -32,11 +32,11 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceRegistry;
 import packed.internal.component.ComponentNode;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.cube.ContainerBuild;
+import packed.internal.cube.CubeBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 import packed.internal.inject.service.build.ExportedServiceBuild;
@@ -55,7 +55,7 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 public final class ServiceBuildManager {
 
     /** The container this service manager is a part of. */
-    private final ContainerBuild container;
+    private final CubeBuild container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceRequirementsManager dependencies;
@@ -81,7 +81,7 @@ public final class ServiceBuildManager {
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceBuildManager(ContainerBuild container) {
+    public ServiceBuildManager(CubeBuild container) {
         this.container = requireNonNull(container);
     }
 
@@ -197,7 +197,7 @@ public final class ServiceBuildManager {
         p.add(pi);
     }
 
-    public <T> ServiceBuild provideSource(ComponentNodeConfiguration compConf, Key<T> key) {
+    public <T> ServiceBuild provideSource(ComponentBuild compConf, Key<T> key) {
         ServiceBuild e = new SourceInstanceServiceBuild(this, compConf, key);
         localServices.add(e);
         return e;
@@ -229,7 +229,7 @@ public final class ServiceBuildManager {
 
         // Process exports from any children (imports are processed later)
         if (container.children != null) {
-            for (ContainerBuild c : container.children) {
+            for (CubeBuild c : container.children) {
                 ServiceBuildManager child = c.getServiceManager();
 
                 WireletPack wp = c.compConf.wirelets;
@@ -267,7 +267,7 @@ public final class ServiceBuildManager {
 
         // Process imports to children
         if (container.children != null) {
-            for (ContainerBuild c : container.children) {
+            for (CubeBuild c : container.children) {
                 ServiceBuildManager m = c.getServiceManager();
 
                 ServiceRequirementsManager srm = m.dependencies;

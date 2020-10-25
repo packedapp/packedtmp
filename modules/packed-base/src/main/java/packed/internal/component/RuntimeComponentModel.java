@@ -45,7 +45,7 @@ public final class RuntimeComponentModel {
 
     final int modifiers;
 
-    RuntimeComponentModel(ComponentNodeConfiguration compConf) {
+    RuntimeComponentModel(ComponentBuild compConf) {
         this.depth = compConf.treeDepth;
         this.configSite = requireNonNull(compConf.configSite());
         // this.extension = context.extension();
@@ -58,7 +58,7 @@ public final class RuntimeComponentModel {
         return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CUBE);
     }
 
-    static RuntimeComponentModel of(ComponentNodeConfiguration context) {
+    static RuntimeComponentModel of(ComponentBuild context) {
         return new RuntimeComponentModel(context);
     }
 }

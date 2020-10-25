@@ -46,6 +46,7 @@ public interface BuildContext {
     // Instead of lets say the extension?
     void addError(ErrorMessage message);
 
+    // Whether or not we are building????
     default boolean isActive() {
         return true;
     }

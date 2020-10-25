@@ -29,7 +29,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
 import app.packed.inject.Factory;
 import app.packed.component.StatelessConfiguration;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -135,7 +135,7 @@ public final class CubeConfiguration extends ComponentConfiguration {
     // So child modules do not have the power of the lookup object.
 
     public void lookup(@Nullable Lookup lookup) {
-        ((ComponentNodeConfiguration) super.context).realm.lookup(lookup);
+        ((ComponentBuild) super.context).realm.lookup(lookup);
     }
 
     /** {@inheritDoc} */

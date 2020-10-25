@@ -26,7 +26,7 @@ import app.packed.base.TreePath;
 import app.packed.config.ConfigSite;
 import app.packed.cube.Extension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.config.ConfigSiteSupport;
 
 /** An abstract implementation of ComponentConfiguration that can be extended by extensions. */
@@ -168,7 +168,7 @@ public abstract class ComponentConfiguration {
      *            any wirelets
      */
     public final void link(Bundle<?> bundle, Wirelet... wirelets) {
-        ((ComponentNodeConfiguration) context).link(bundle, wirelets);
+        ((ComponentBuild) context).link(bundle, wirelets);
     }
 
     /**

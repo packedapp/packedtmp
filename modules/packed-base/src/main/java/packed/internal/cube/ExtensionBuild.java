@@ -33,7 +33,7 @@ import app.packed.cube.Extension;
 import app.packed.cube.Extension.Subtension;
 import app.packed.cube.ExtensionConfiguration;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -53,17 +53,17 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A VarHandle used by {@link #of(ContainerBuild, Class)} to access the field Extension#configuration. */
+    /** A VarHandle used by {@link #of(CubeBuild, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** This extension's component configuration. */
-    private final ComponentNodeConfiguration compConf;
+    private final ComponentBuild compConf;
 
     /** The container this extension belongs to. */
-    private final ContainerBuild container;
+    private final CubeBuild container;
 
-    /** The extension instance this assembly wraps, instantiated in {@link #of(ContainerBuild, Class)}. */
+    /** The extension instance this assembly wraps, instantiated in {@link #of(CubeBuild, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -81,7 +81,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
      * @param model
      *            a model of the extension.
      */
-    public ExtensionBuild(ComponentNodeConfiguration compConf, ExtensionModel model) {
+    public ExtensionBuild(ComponentBuild compConf, ExtensionModel model) {
         this.compConf = requireNonNull(compConf);
         this.container = requireNonNull(compConf.getMemberOfContainer());
         this.model = requireNonNull(model);
@@ -103,7 +103,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public void checkNoChildContainers() {
+    public void checkNoChildCubes() {
         if (container.children != null) {
             throw new IllegalStateException();
         }
@@ -130,13 +130,13 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
      * 
      * @return the configuration of the container the extension is registered in
      */
-    public ContainerBuild container() {
+    public CubeBuild container() {
         return container;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite containerConfigSite() {
+    public ConfigSite cubeConfigSite() {
         return container.compConf.configSite();
     }
 
@@ -284,10 +284,10 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
      *            the type of extension to initialize
      * @return the assembly of the extension
      */
-    static ExtensionBuild of(ContainerBuild container, Class<? extends Extension> extensionType) {
+    static ExtensionBuild of(CubeBuild container, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(container.compConf, model);
+        ComponentBuild compConf = new ComponentBuild(container.compConf, model);
         ExtensionBuild assembly = compConf.extension;
 
         // Creates a new extension instance and set extension.configuration = assembly
@@ -299,7 +299,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         // information set by the parent or ancestor.
         if (model.mhExtensionLinked != null) {
             ExtensionBuild parentExtension = null;
-            ContainerBuild parent = container.parent;
+            CubeBuild parent = container.parent;
             if (!model.extensionLinkedDirectChildrenOnly) {
                 while (parentExtension == null && parent != null) {
                     parentExtension = parent.getExtensionContext(extensionType);

@@ -16,11 +16,11 @@
 package app.packed.component;
 
 /**
- * These wirelets can only be used in the assembly phase of a component system.
+ * A collection of wirelets that can be specified when building a system.
  */
-// Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
 final class BuildWirelets {
-
+    /** Not for you. */
+    private BuildWirelets() {}
     // NO FAIL <--- maaske brugbart for analyse
 
     // fail on warnings.
@@ -51,4 +51,5 @@ final class BuildWirelets {
 
     // Disable Host <--- Nej, det er et ruleset....
 }
+//Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
 /// Interface with only static methods are

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
@@ -38,7 +38,7 @@ public class SourceMemberServiceBuild extends ServiceBuild {
     /** If constant, the region index to store it in */
     public final int regionIndex;
 
-    public SourceMemberServiceBuild(ServiceBuildManager im, ComponentNodeConfiguration compConf, Dependant dependant, Key<?> key, boolean isConst) {
+    public SourceMemberServiceBuild(ServiceBuildManager im, ComponentBuild compConf, Dependant dependant, Key<?> key, boolean isConst) {
         super(im, compConf.configSite(), key);
         this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;

@@ -32,7 +32,7 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
 import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.cube.ContainerBuild;
+import packed.internal.cube.CubeBuild;
 import packed.internal.cube.ExtensionBuild;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -70,7 +70,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public final class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
-    private final ContainerBuild container;
+    private final CubeBuild container;
 
     /** The service build manager. */
     private final ServiceBuildManager sbm;

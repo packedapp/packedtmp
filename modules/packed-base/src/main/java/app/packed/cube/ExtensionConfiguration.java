@@ -31,11 +31,12 @@ import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
+import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.cube.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.cube.ExtensionBuild;
 
 /**
@@ -69,21 +70,17 @@ public interface ExtensionConfiguration {
      */
     void checkConfigurable();
 
-    void checkNoChildContainers();
-
-    default void checkPreemble() {
-        // Ideen er at man kan checke at der ikke er blevet installeret boern...
-        // Men saa kan
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Checks that child cubes has been aded
+     */
+    void checkNoChildCubes();
 
     /**
      * Returns the config site of the container the extension is registered with.
      * 
      * @return the config site of the container the extension is registered with
      */
-    // Returns the config site of extension which is always identical to its container's config site
-    ConfigSite containerConfigSite(); // parent.configSite
+    ConfigSite cubeConfigSite();
 
     /**
      * Returns the type of extension this context wraps.
@@ -107,13 +104,22 @@ public interface ExtensionConfiguration {
     <T> BeanConfiguration<T> installInstance(T instance);
 
     /**
+     * Returns whether or not the extension is part of an {@link Image}.
+     * 
+     * @return whether or not the extension is part of an image
+     */
+    boolean isPartOfImage();
+
+    /**
      * Creates a new container with this extensions container as its parent by linking the specified bundle. The new
      * container will have this extension as owner. Thus will be hidden from normal view
+     * <p>
+     * The parent component of the linked bundle will have the cube of this extension as its parent.
      * 
      * @param bundle
      *            the bundle to link
      * @param wirelets
-     *            any wirelets
+     *            optional wirelets
      */
     void link(Bundle<?> bundle, Wirelet... wirelets);
 
@@ -125,22 +131,15 @@ public interface ExtensionConfiguration {
      */
     TreePath path();
 
-    /**
-     * Returns whether or not
-     * 
-     * @return ssdsd
-     */
-    boolean isPartOfImage();
-
     <E extends Subtension> E use(Class<E> extensionType);
 
     /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link CubeConfiguration#use(Class)}. However, this method checks that only
-     * extensions that have been declared as dependencies via {@link ExtensionSetup#dependencies()} are specified. This is
-     * done in order to make sure that no extensions ever depend on each other.
+     * This method works similar to {@link CubeConfiguration#use(Class)}. However, this method checks that only extensions
+     * that have been declared as dependencies via {@link ExtensionSetup#dependencies()} are specified. This is done in
+     * order to make sure that no extensions ever depend on each other.
      * 
      * @param <E>
      *            the type of extension to return
@@ -162,16 +161,6 @@ public interface ExtensionConfiguration {
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
-
-    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bindInstance(instance);
-        return wire(cd, wirelets);
-    }
-
     /**
      * Wires a new child component using the specified driver
      * 
@@ -185,8 +174,18 @@ public interface ExtensionConfiguration {
      */
     <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
+    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bind(implementation);
+        return wire(cd, wirelets);
+    }
+
+    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bindInstance(instance);
+        return wire(cd, wirelets);
+    }
+
     @Nullable
-    private static ExtensionBuild getExtensionAssembly(MethodHandles.Lookup lookup, Component component) {
+    private static ExtensionBuild getExtensionBuild(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "component is null");
 
         // lookup.lookupClass() must point to the extension that should be extracted
@@ -209,8 +208,8 @@ public interface ExtensionConfiguration {
                     "The specified component '" + component.path() + "' must have the Container modifier, modifiers = " + component.modifiers());
         }
 
-        ComponentNodeConfiguration compConf = ComponentNodeConfiguration.unadapt(lookup, component);
-        return compConf.container.getExtensionContext(extensionType);
+        ComponentBuild compConf = ComponentBuild.unadapt(lookup, component);
+        return compConf.cube.getExtensionContext(extensionType);
     }
 
     /**
@@ -236,7 +235,7 @@ public interface ExtensionConfiguration {
      */
     static Optional<ExtensionConfiguration> privateLookup(MethodHandles.Lookup caller, Component component) {
         requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(getExtensionAssembly(caller, component));
+        return Optional.ofNullable(getExtensionBuild(caller, component));
     }
 
     /**
@@ -258,8 +257,7 @@ public interface ExtensionConfiguration {
             throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
 
-        @Nullable
-        ExtensionBuild pec = getExtensionAssembly(lookup, component);
-        return pec == null ? Optional.empty() : Optional.of((T) pec.instance());
+        ExtensionBuild eb = getExtensionBuild(lookup, component);
+        return eb == null ? Optional.empty() : Optional.of((T) eb.instance());
     }
 }

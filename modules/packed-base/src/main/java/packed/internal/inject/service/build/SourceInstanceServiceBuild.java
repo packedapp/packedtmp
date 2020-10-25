@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
@@ -42,7 +42,7 @@ public final class SourceInstanceServiceBuild extends ServiceBuild {
      * @param compConf
      *            the component we provide for
      */
-    public SourceInstanceServiceBuild(ServiceBuildManager im, ComponentNodeConfiguration compConf, Key<?> key) {
+    public SourceInstanceServiceBuild(ServiceBuildManager im, ComponentBuild compConf, Key<?> key) {
         super(im, compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }

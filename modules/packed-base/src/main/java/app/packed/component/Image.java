@@ -40,15 +40,10 @@ import app.packed.cli.MainArgs;
  * @apiNote In the future, if the Java language permits, {@link Image} may become a {@code sealed} interface, which
  *          would prohibit subclassing except by explicitly permitted types.
  */
-// Hvis Guest == Closeable
-// Saa er et image noget andet...
-// AttributeHodelder, modifiers...
-
-// ImageAttribute -> What happens on use()
 public interface Image<A> extends ComponentDelegate {
 
     /**
-     * Is typically used from main methods
+     * A shortcut for using an image. Is typically used from main methods
      * 
      * List example
      * 

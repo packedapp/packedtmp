@@ -25,7 +25,7 @@ import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.RegionBuild;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.source.SourceBuild;
@@ -97,7 +97,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentNodeConfiguration compConf, SourceBuild source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentBuild compConf, SourceBuild source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new InvalidDeclarationException("Not okay)");
             }
-            ServiceBuildManager sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
+            ServiceBuildManager sbm = compConf.memberOfCube.getServiceManagerOrCreate();
             ServiceBuild sa = this.service = new SourceMemberServiceBuild(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {

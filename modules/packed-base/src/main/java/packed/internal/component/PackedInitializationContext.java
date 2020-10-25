@@ -52,9 +52,9 @@ public final class PackedInitializationContext {
     ComponentNode component;
 
     private final WireletPack wirelets;
-    final ComponentNodeConfiguration root;
+    final ComponentBuild root;
 
-    private PackedInitializationContext(ComponentNodeConfiguration root, WireletPack wirelets) {
+    private PackedInitializationContext(ComponentBuild root, WireletPack wirelets) {
         this.root = root;
         this.wirelets = wirelets;
     }
@@ -80,7 +80,7 @@ public final class PackedInitializationContext {
     // Check for any runtime wirelets that have been specified.
     // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
     // Maybe this can be written in PodInstantiationContext
-    String rootName(ComponentNodeConfiguration configuration) {
+    String rootName(ComponentBuild configuration) {
         String n = configuration.name;
         String ol = wirelets() == null ? null : wirelets().nameWirelet();
         if (ol != null) {
@@ -93,7 +93,7 @@ public final class PackedInitializationContext {
     }
 
     public ServiceLocator services() {
-        ServiceBuildManager sm = root.container.getServiceManager();
+        ServiceBuildManager sm = root.cube.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.region);
     }
 
@@ -107,7 +107,7 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static PackedInitializationContext initialize(ComponentNodeConfiguration root) {
+    public static PackedInitializationContext initialize(ComponentBuild root) {
         PackedInitializationContext pic = new PackedInitializationContext(root, root.wirelets);
         // Hmmm Packed Guest bliver jo lavet der...
         // Maaske laver vi en PackedGuest og smider i PIC. som man saa kan steale...
@@ -119,7 +119,7 @@ public final class PackedInitializationContext {
         return pic;
     }
 
-    public static PackedInitializationContext initializeFromImage(ComponentNodeConfiguration root, WireletPack wirelets) {
+    public static PackedInitializationContext initializeFromImage(ComponentBuild root, WireletPack wirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root, wirelets);
         if (root.modifiers().isGuest()) {
             PackedContainer.initializeAndStart(root, pic);

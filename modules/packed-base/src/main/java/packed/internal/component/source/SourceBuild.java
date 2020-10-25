@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.Dependant;
@@ -56,7 +56,7 @@ public final class SourceBuild implements DependencyProvider {
     @Nullable
     public ServiceBuild service;
 
-    private SourceBuild(ComponentNodeConfiguration compConf, int regionIndex, Object source) {
+    private SourceBuild(ComponentBuild compConf, int regionIndex, Object source) {
         this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
@@ -88,7 +88,7 @@ public final class SourceBuild implements DependencyProvider {
         }
     }
 
-    public static SourceBuild create(ComponentNodeConfiguration compConf, PackedComponentDriver<?> driver) {
+    public static SourceBuild create(ComponentBuild compConf, PackedComponentDriver<?> driver) {
         // Reserve a place in the regions runtime memory, if the component is a singleton
         int regionIndex = compConf.modifiers().isSingleton() ? compConf.region.reserve() : -1;
         // Create the source
@@ -97,7 +97,7 @@ public final class SourceBuild implements DependencyProvider {
         if (s.instance != null) {
             compConf.region.constants.add(s);
         } else if (s.dependant != null) {
-            compConf.memberOfContainer.addDependant(s.dependant);
+            compConf.memberOfCube.addDependant(s.dependant);
         }
 
         // Apply any sidecars
@@ -124,7 +124,7 @@ public final class SourceBuild implements DependencyProvider {
         return dependant;
     }
 
-    public ServiceBuild provide(ComponentNodeConfiguration compConf) {
+    public ServiceBuild provide(ComponentBuild compConf) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceBuild s = service;
         if (s == null) {
@@ -134,7 +134,7 @@ public final class SourceBuild implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = compConf.memberOfContainer.getServiceManagerOrCreate().provideSource(compConf, key);
+            s = service = compConf.memberOfCube.getServiceManagerOrCreate().provideSource(compConf, key);
         }
         return s;
     }

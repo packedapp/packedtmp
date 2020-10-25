@@ -104,7 +104,7 @@ public final class PackedBuildContext implements BuildContext {
      *            optional wirelets
      * @return the root component configuration node
      */
-    public static ComponentNodeConfiguration assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+    public static ComponentBuild assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
 
         // First we extract the component driver from the bundle
         PackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
@@ -116,7 +116,7 @@ public final class PackedBuildContext implements BuildContext {
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pac, new RealmBuild(bundle.getClass()), componentDriver, cs, null, wp);
+        ComponentBuild compConf = new ComponentBuild(pac, new RealmBuild(bundle.getClass()), componentDriver, cs, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
         BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
@@ -124,7 +124,7 @@ public final class PackedBuildContext implements BuildContext {
         return compConf;
     }
 
-    public static <C extends Assembler, D> ComponentNodeConfiguration configure(ShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C extends Assembler, D> ComponentBuild configure(ShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste
@@ -132,7 +132,7 @@ public final class PackedBuildContext implements BuildContext {
 
         PackedBuildContext pac = new PackedBuildContext(0, ad);
 
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(pac, new RealmBuild(consumer.getClass()), driver, cs, null, wp);
+        ComponentBuild compConf = new ComponentBuild(pac, new RealmBuild(consumer.getClass()), driver, cs, null, wp);
 
         D conf = driver.toConfiguration(compConf);
         C cc = requireNonNull(factory.apply(conf));

@@ -26,11 +26,11 @@ import packed.internal.component.PackedComponentDriver;
  * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component. This
  * class is primary used through one of its subclasses such as {@link BaseBundle}.
  * <p>
- * This class is not meant to be extended by ordinary users. But provides means for power users to extend the basic
- * functionality of Packed.
+ * This class is not meant to be directly extended by ordinary users. But provides means for power users to extend the
+ * basic functionality of Packed.
  * 
  * @param <C>
- *            the underlying configuration this bundle wraps
+ *            the underlying component configuration this bundle wraps
  */
 public abstract class Bundle<C> implements ComponentSystem {
 

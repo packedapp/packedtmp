@@ -27,21 +27,21 @@ import app.packed.base.Nullable;
 import app.packed.cube.Extension;
 import app.packed.cube.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.RegionBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.ServiceIsland;
 
 /** Contains data and logic relevant for containers. */
-public final class ContainerBuild {
+public final class CubeBuild {
 
     /** Child containers, lazy initialized */
     @Nullable
-    public ArrayList<ContainerBuild> children;
+    public ArrayList<CubeBuild> children;
 
     /** The component this container is a part of. */
-    public final ComponentNodeConfiguration compConf;
+    public final ComponentBuild compConf;
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
@@ -56,7 +56,7 @@ public final class ContainerBuild {
 
     /** Any parent container this container might have. */
     @Nullable
-    public final ContainerBuild parent;
+    public final CubeBuild parent;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
@@ -70,13 +70,13 @@ public final class ContainerBuild {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public ContainerBuild(ComponentNodeConfiguration compConf) {
+    public CubeBuild(ComponentBuild compConf) {
         this.compConf = requireNonNull(compConf);
 
         this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
         if (parent != null) {
             parent.runPredContainerChildren();
-            ArrayList<ContainerBuild> c = parent.children;
+            ArrayList<CubeBuild> c = parent.children;
             if (c == null) {
                 c = parent.children = new ArrayList<>();
             }
@@ -183,7 +183,7 @@ public final class ContainerBuild {
         if (b != null) {
             return b;
         }
-        ComponentNodeConfiguration cc = compConf.getParent();
+        ComponentBuild cc = compConf.getParent();
         while (cc != null) {
             if (cc.modifiers().isImage()) {
                 return isImage = Boolean.TRUE;

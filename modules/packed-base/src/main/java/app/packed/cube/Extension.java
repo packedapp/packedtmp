@@ -139,7 +139,7 @@ public abstract class Extension {
             return ConfigSite.UNKNOWN;
         }
         Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+        return sf.isPresent() ? configuration().cubeConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
     }
 
     /**
@@ -176,7 +176,7 @@ public abstract class Extension {
     }
 
     protected final void checkNoChildContainers() {
-        configuration().checkNoChildContainers();
+        configuration().checkNoChildCubes();
     }
 
     /**

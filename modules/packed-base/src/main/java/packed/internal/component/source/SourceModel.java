@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.cube.Extension;
 import packed.internal.classscan.OpenClass;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.cube.ExtensionModel;
 import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
@@ -76,7 +76,7 @@ public final class SourceModel {
         return s;
     }
 
-    public <T> void register(ComponentNodeConfiguration compConf, SourceBuild source) {
+    public <T> void register(ComponentBuild compConf, SourceBuild source) {
 
         for (SourceModelField f : fields) {
             registerMember(compConf, source, f);
@@ -87,11 +87,11 @@ public final class SourceModel {
         }
     }
 
-    private void registerMember(ComponentNodeConfiguration compConf, SourceBuild source, SourceModelMember m) {
+    private void registerMember(ComponentBuild compConf, SourceBuild source, SourceModelMember m) {
         requireNonNull(source);
         Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {
-        compConf.memberOfContainer.addDependant(i);
+        compConf.memberOfCube.addDependant(i);
         // }
     }
 

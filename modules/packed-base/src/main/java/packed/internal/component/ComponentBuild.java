@@ -57,13 +57,13 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.cube.ContainerBuild;
+import packed.internal.cube.CubeBuild;
 import packed.internal.cube.ExtensionBuild;
 import packed.internal.cube.ExtensionModel;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
-public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNodeConfiguration> implements ComponentConfigurationContext {
+public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implements ComponentConfigurationContext {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -85,11 +85,11 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** The container, if source Any container this component is part of. A container is part of it self. */
     @Nullable
-    public final ContainerBuild container;
+    public final CubeBuild cube;
 
     /** Any container this component is part of. A container is part of it self. */
     @Nullable
-    public final ContainerBuild memberOfContainer;
+    public final CubeBuild memberOfCube;
 
     /** Any extension that is attached to this component. */
     @Nullable
@@ -126,8 +126,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param parent
      *            the parent of the component
      */
-    ComponentNodeConfiguration(PackedBuildContext build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite,
-            @Nullable ComponentNodeConfiguration parent, @Nullable WireletPack wirelets) {
+    ComponentBuild(PackedBuildContext build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite,
+            @Nullable ComponentBuild parent, @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
         this.extension = null; // Extensions use another constructor
@@ -154,10 +154,10 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // Setup Container
         if (modifiers().isContainer()) {
-            this.memberOfContainer = this.container = new ContainerBuild(this);
+            this.memberOfCube = this.cube = new CubeBuild(this);
         } else {
-            this.container = null;
-            this.memberOfContainer = parent == null ? null : parent.memberOfContainer;
+            this.cube = null;
+            this.memberOfCube = parent == null ? null : parent.memberOfCube;
         }
 
         // Setup Guest
@@ -184,12 +184,12 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @param model
      *            the extension model
      */
-    public ComponentNodeConfiguration(ComponentNodeConfiguration parent, ExtensionModel model) {
+    public ComponentBuild(ComponentBuild parent, ExtensionModel model) {
         super(parent);
         this.build = parent.build;
         this.configSite = parent.configSite();
-        this.container = null;
-        this.memberOfContainer = parent.container;
+        this.cube = null;
+        this.memberOfCube = parent.cube;
         this.extension = new ExtensionBuild(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmBuild(model.type());
@@ -328,15 +328,15 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      */
     public void onRealmClose(RealmBuild realm) {
         // Closes all components in the same realm depth first
-        for (ComponentNodeConfiguration compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
+        for (ComponentBuild compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
             // child components with a different realm, has either already been closed, or will be closed elsewhere
             if (compConf.realm == realm) {
                 compConf.onRealmClose(realm);
             }
         }
 
-        if (container != null) {
-            container.close(region);
+        if (cube != null) {
+            cube.close(region);
         }
         isClosed = true;
     }
@@ -353,8 +353,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
      * @return the container this component is a part of
      */
     @Nullable
-    public ContainerBuild getMemberOfContainer() {
-        return memberOfContainer;
+    public CubeBuild getMemberOfContainer() {
+        return memberOfCube;
     }
 
     /** {@inheritDoc} */
@@ -385,10 +385,10 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
-        ComponentNodeConfiguration parent = extension == null ? this : treeParent;
+        ComponentBuild parent = extension == null ? this : treeParent;
 
         // Create the new component
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(build, new RealmBuild(bundle.getClass()), driver, cs, parent, wp);
+        ComponentBuild compConf = new ComponentBuild(build, new RealmBuild(bundle.getClass()), driver, cs, parent, wp);
 
         // Invoke Bundle::configure
         BundleHelper.configure(bundle, driver.toConfiguration(compConf));
@@ -404,7 +404,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     }
 
     @Nullable
-    public ComponentNodeConfiguration getParent() {
+    public ComponentBuild getParent() {
         return treeParent;
     }
 
@@ -413,7 +413,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     public TreePath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
-            ComponentNodeConfiguration p = treeParent;
+            ComponentBuild p = treeParent;
             while (p != null && ((p.nameState & anyPathMask) == 0)) {
                 p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
             }
@@ -484,7 +484,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         if (n == null) {
             if (source != null) {
                 n = source.model.defaultPrefix();
-            } else if (container != null) {
+            } else if (cube != null) {
                 // I think try and move some of this to ComponentNameWirelet
                 @Nullable
                 Class<?> source = realm.realmType();
@@ -558,8 +558,8 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
-        ComponentNodeConfiguration parent = extension == null ? this : treeParent;
-        ComponentNodeConfiguration compConf = new ComponentNodeConfiguration(build, realm, d, configSite, parent, wp);
+        ComponentBuild parent = extension == null ? this : treeParent;
+        ComponentBuild compConf = new ComponentBuild(build, realm, d, configSite, parent, wp);
 
         // We only close the component if linking a bundle (new realm)
         return d.toConfiguration(compConf);
@@ -567,7 +567,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     // This should only be called by special methods
     // We just take the lookup to make sure caller think twice before calling this method.
-    public static ComponentNodeConfiguration unadapt(Lookup caller, Component component) {
+    public static ComponentBuild unadapt(Lookup caller, Component component) {
         if (!(component instanceof ComponentAdaptor)) {
             throw new IllegalStateException("This method must be called before a component is instantiated");
         }
@@ -587,7 +587,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
 
     /** Checks that this component has a source. */
     private void checkHasContainer() {
-        if (container == null) {
+        if (cube == null) {
             throw new UnsupportedOperationException(
                     "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".CONTAINER modifier set");
         }
@@ -597,14 +597,14 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @Override
     public Set<Class<? extends Extension>> containerExtensions() {
         checkHasContainer();
-        return container.extensionView();
+        return cube.extensionView();
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Extension> T containerUse(Class<T> extensionType) {
         checkHasContainer();
-        return container.useExtension(extensionType);
+        return cube.useExtension(extensionType);
     }
 
     /** {@inheritDoc} */
@@ -627,7 +627,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) memberOfContainer.getServiceManagerOrCreate().exports().export(source.service,
+        return (ExportedServiceConfiguration<T>) memberOfCube.getServiceManagerOrCreate().exports().export(source.service,
                 captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
@@ -641,13 +641,13 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         source.provide(this).as(key);
     }
 
-    /** An adaptor of the {@link Component} interface from a {@link ComponentNodeConfiguration}. */
+    /** An adaptor of the {@link Component} interface from a {@link ComponentBuild}. */
     private static final class ComponentAdaptor implements Component {
 
         /** The component configuration to wrap. */
-        private final ComponentNodeConfiguration compConf;
+        private final ComponentBuild compConf;
 
-        private ComponentAdaptor(ComponentNodeConfiguration compConf) {
+        private ComponentAdaptor(ComponentBuild compConf) {
             this.compConf = requireNonNull(compConf);
         }
 
@@ -660,7 +660,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return compConf.toList(ComponentNodeConfiguration::adaptToComponent);
+            return compConf.toList(ComponentBuild::adaptToComponent);
         }
 
         /** {@inheritDoc} */
@@ -696,7 +696,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
         /** {@inheritDoc} */
         @Override
         public Optional<Component> parent() {
-            ComponentNodeConfiguration cc = compConf.treeParent;
+            ComponentBuild cc = compConf.treeParent;
             return cc == null ? Optional.empty() : Optional.of(cc.adaptToComponent());
         }
 
@@ -724,7 +724,7 @@ public final class ComponentNodeConfiguration extends OpenTreeNode<ComponentNode
             return new PackedComponentStream(stream0(compConf, true, PackedComponentStreamOption.of(options)));
         }
 
-        private Stream<Component> stream0(ComponentNodeConfiguration origin, boolean isRoot, PackedComponentStreamOption option) {
+        private Stream<Component> stream0(ComponentBuild origin, boolean isRoot, PackedComponentStreamOption option) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
             children(); // lazy calc
             @SuppressWarnings({ "unchecked", "rawtypes" })

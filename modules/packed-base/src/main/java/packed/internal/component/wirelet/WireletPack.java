@@ -23,7 +23,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.cube.Extension;
-import packed.internal.component.ComponentNodeConfiguration;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
@@ -121,7 +121,7 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack forImage(ComponentNodeConfiguration cnc, Wirelet... wirelets) {
+    public static WireletPack forImage(ComponentBuild cnc, Wirelet... wirelets) {
         return create(wirelets);
     }
 

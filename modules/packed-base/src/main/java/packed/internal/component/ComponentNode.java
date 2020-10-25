@@ -64,7 +64,7 @@ public final class ComponentNode implements Component {
      * @param configuration
      *            the configuration used to create this node
      */
-    ComponentNode(@Nullable ComponentNode parent, ComponentNodeConfiguration configuration, PackedInitializationContext pic) {
+    ComponentNode(@Nullable ComponentNode parent, ComponentBuild configuration, PackedInitializationContext pic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(configuration);
         if (parent == null) {
@@ -82,7 +82,7 @@ public final class ComponentNode implements Component {
             // Maybe ordered is the default...
             LinkedHashMap<String, ComponentNode> result = new LinkedHashMap<>(configuration.numberOfChildren());
 
-            for (ComponentNodeConfiguration cc = configuration.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
+            for (ComponentBuild cc = configuration.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 // We never carry over extensions into the runtime
                 if (cc.extension == null) {
                     ComponentNode ac = new ComponentNode(this, cc, pic);
