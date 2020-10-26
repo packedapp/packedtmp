@@ -17,6 +17,8 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.inject.ProvisionContext;
 import packed.internal.inject.service.build.ServiceBuild;
 
@@ -57,5 +59,11 @@ public final class DelegatingRuntimeService extends RuntimeService {
     @Override
     public boolean requiresPrototypeRequest() {
         return delegate.requiresPrototypeRequest();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        return delegate.dependencyAccessor();
     }
 }

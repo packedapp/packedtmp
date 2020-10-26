@@ -106,7 +106,7 @@ public interface ServiceRegistry extends Iterable<Service> {
     /** {@inheritDoc} */
     @Override
     default Iterator<Service> iterator() {
-        return stream().iterator();
+        return services().iterator();
     }
 
     /**
@@ -117,7 +117,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return a set containing the keys of every service in this registry
      */
     default Set<Key<?>> keys() {
-        return stream().map(e -> e.key()).collect(Collectors.toSet());
+        return services().map(e -> e.key()).collect(Collectors.toSet());
     }
 
     /**
@@ -136,7 +136,8 @@ public interface ServiceRegistry extends Iterable<Service> {
      */
     // services???, instances()
     // ServiceRegistry services() -> services().services()
-    default AttributedElementStream<Service> stream() {
+    // Giver god mening hvis vi har instances() i fx ServiceSelection
+    default AttributedElementStream<Service> services() {
         return new PackedAttributeHolderStream<>(StreamSupport.stream(spliterator(), false));
     }
 
@@ -147,8 +148,9 @@ public interface ServiceRegistry extends Iterable<Service> {
      * 
      * @return a list of every service in this registry in any order
      */
+    // Syntes vi returnere en immutable liste...
     default List<Service> toList() {
-        return stream().collect(Collectors.toList());
+        return services().collect(Collectors.toList());
     }
 
     /**
@@ -158,8 +160,9 @@ public interface ServiceRegistry extends Iterable<Service> {
      * 
      * @return a map of every service in this registry in no particular order
      */
+    // er asMap() bedre??? Nej men kan jo ikke bare indseatte services...
     default Map<Key<?>, Service> toMap() {
-        return stream().collect(Collectors.toMap(s -> s.key(), s -> s));
+        return services().collect(Collectors.toMap(s -> s.key(), s -> s));
     }
 
     /**

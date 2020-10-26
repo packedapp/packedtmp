@@ -63,4 +63,10 @@ public class PrototypeRuntimeService extends RuntimeService {
     public boolean requiresPrototypeRequest() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        return mh.bindTo(region);
+    }
 }

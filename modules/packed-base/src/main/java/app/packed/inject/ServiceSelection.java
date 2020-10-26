@@ -16,10 +16,10 @@
 package app.packed.inject;
 
 import java.lang.annotation.Annotation;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -52,10 +52,7 @@ import app.packed.base.TypeToken;
 // Hmm hvordan haandtere vi Injector????
 // Vi bliver noedt til ogsaa at have den paa plads..
 public interface ServiceSelection<S> extends ServiceLocator {
-
-    <T extends Collection<? super S>> T addTo(T collection);
-
-    void putIntoTo(Collection<? super S> collection);
+    void forEachInstance(Consumer<? super S> action);
 
     void forEachInstance(BiConsumer<? super Service, ? super S> action);
 
@@ -77,6 +74,7 @@ public interface ServiceSelection<S> extends ServiceLocator {
      * 
      * @return an immutable list containing a provided service instance for every service in this selection in any order
      */
+    // Tror vi skal fikse ServiceRegistry.toList();
     List<S> toInstanceList();
 
     List<Provider<S>> toProviderList();
@@ -103,3 +101,7 @@ public interface ServiceSelection<S> extends ServiceLocator {
 }
 //It is not a set... Because we might have multiple instances of the same type...
 //Det er hellere ikke rigtig en collection fordi vi laver maaske nye instanser hver gang...
+
+// <T extends Collection<? super S>> T addTo(T collection);
+
+// void putIntoTo(Collection<? super S> collection);

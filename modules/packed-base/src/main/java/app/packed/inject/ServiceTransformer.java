@@ -45,6 +45,11 @@ public interface ServiceTransformer extends ServiceRegistry {
 
     // prototype or constant...
     // Hvis vi skal bruge den som en Builder...
+
+    default void prototype(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
     default void provide(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }

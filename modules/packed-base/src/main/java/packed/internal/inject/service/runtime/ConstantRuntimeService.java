@@ -17,6 +17,9 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
@@ -66,5 +69,11 @@ public final class ConstantRuntimeService extends RuntimeService {
     @Override
     public boolean requiresPrototypeRequest() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        return MethodHandles.constant(key().rawType(), constant);
     }
 }

@@ -44,7 +44,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      * 
      * @return an immutable map containing all services
      */
-    protected abstract Map<Key<?>, Service> services();
+    protected abstract Map<Key<?>, Service> servicesX();
 
     /** {@inheritDoc} */
     @Override
@@ -56,20 +56,20 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     @Override
     public final Optional<Service> find(Key<?> key) {
         requireNonNull(key, "key is null");
-        Service s = services().get(key);
+        Service s = servicesX().get(key);
         return Optional.ofNullable(s);
     }
 
     /** {@inheritDoc} */
     @Override
     public final void forEach(Consumer<? super Service> action) {
-        services().values().forEach(action);
+        servicesX().values().forEach(action);
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean isEmpty() {
-        return services().isEmpty();
+        return servicesX().isEmpty();
     }
 
     /** {@inheritDoc} */
@@ -82,43 +82,43 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     @Override
     public final boolean contains(Key<?> key) {
         requireNonNull(key, "key is null");
-        return services().containsKey(key);
+        return servicesX().containsKey(key);
     }
 
     /** {@inheritDoc} */
     @Override
     public final Iterator<Service> iterator() {
-        return services().values().iterator();
+        return servicesX().values().iterator();
     }
 
     /** {@inheritDoc} */
     @Override
     public final Set<Key<?>> keys() {
-        return services().keySet();
+        return servicesX().keySet();
     }
 
     /** {@inheritDoc} */
     @Override
     public final int size() {
-        return services().size();
+        return servicesX().size();
     }
 
     /** {@inheritDoc} */
     @Override
     public final Spliterator<Service> spliterator() {
-        return services().values().spliterator();
+        return servicesX().values().spliterator();
     }
 
     /** {@inheritDoc} */
     @Override
-    public final AttributedElementStream<Service> stream() {
-        return new PackedAttributeHolderStream<>(services().values().stream());
+    public final AttributedElementStream<Service> services() {
+        return new PackedAttributeHolderStream<>(servicesX().values().stream());
     }
 
     /** {@inheritDoc} */
     @Override
     public final List<Service> toList() {
-        return List.copyOf(services().values());
+        return List.copyOf(servicesX().values());
     }
 
     /** {@inheritDoc} */
@@ -155,7 +155,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
         /** {@inheritDoc} */
         @Override
-        protected Map<Key<?>, Service> services() {
+        protected Map<Key<?>, Service> servicesX() {
             return services;
         }
     }

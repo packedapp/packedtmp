@@ -17,6 +17,7 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.inject.ProvisionContext;
@@ -66,5 +67,11 @@ public final class MappingRuntimeService extends RuntimeService {
     @Override
     public boolean requiresPrototypeRequest() {
         return delegate.requiresPrototypeRequest();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
     }
 }

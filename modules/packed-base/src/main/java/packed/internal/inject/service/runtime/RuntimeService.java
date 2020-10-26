@@ -17,6 +17,8 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
@@ -79,6 +81,9 @@ public abstract class RuntimeService implements Service {
     }
 
     public abstract boolean requiresPrototypeRequest();
+
+    // We need this to adapt to build time transformations
+    public abstract MethodHandle dependencyAccessor();
 
     /** {@inheritDoc} */
     @Override

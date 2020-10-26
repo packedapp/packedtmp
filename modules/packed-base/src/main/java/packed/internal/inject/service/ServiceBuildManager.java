@@ -318,7 +318,7 @@ public final class ServiceBuildManager {
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
-        protected Map<Key<?>, Service> services() {
+        protected Map<Key<?>, Service> servicesX() {
             return (Map) services;
         }
     }

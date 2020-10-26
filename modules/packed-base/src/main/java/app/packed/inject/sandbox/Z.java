@@ -34,7 +34,5 @@ class Z {
         Map<Integer, String> m = new HashMap<>();
         sl.select(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
 
-        sl.select(String.class).addTo(l); // er sgu lidt grimt
-
     }
 }

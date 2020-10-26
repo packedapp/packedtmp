@@ -39,12 +39,7 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
     /** All services that this injector provides. */
     private final Map<Key<?>, RuntimeService> entries;
 
-    /** The parent of this injector, or null if this is a top-level injector. */
-    @Nullable
-    final PackedInjector parent;
-
     public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService> services) {
-        this.parent = null;
         this.configSite = requireNonNull(configSite);
         this.entries = services;
     }
@@ -75,7 +70,7 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected Map<Key<?>, Service> services() {
+    protected Map<Key<?>, Service> servicesX() {
         return (Map) entries;
     }
 

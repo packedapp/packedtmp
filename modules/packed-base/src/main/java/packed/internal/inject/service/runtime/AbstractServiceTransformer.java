@@ -31,7 +31,7 @@ public abstract class AbstractServiceTransformer extends AbstractServiceRegistry
     Map<Key<?>, ServiceBuild> copy = new HashMap<>();
 
     @Override
-    protected Map<Key<?>, Service> services() {
+    protected Map<Key<?>, Service> servicesX() {
         return null;
     }
 

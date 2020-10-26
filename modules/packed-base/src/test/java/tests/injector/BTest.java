@@ -41,7 +41,7 @@ public class BTest {
             c.provideInstance("123");
         });
         System.out.println("");
-        for (Service d : i.stream().collect(Collectors.toList())) {
+        for (Service d : i.services().collect(Collectors.toList())) {
             System.out.println(d);
         }
 
