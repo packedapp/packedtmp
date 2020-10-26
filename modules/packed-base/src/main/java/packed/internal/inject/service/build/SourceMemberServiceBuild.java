@@ -39,7 +39,7 @@ public class SourceMemberServiceBuild extends ServiceBuild {
     public final int regionIndex;
 
     public SourceMemberServiceBuild(ServiceBuildManager im, ComponentBuild compConf, Dependant dependant, Key<?> key, boolean isConst) {
-        super(im, compConf.configSite(), key);
+        super(compConf.configSite(), key);
         this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;
     }

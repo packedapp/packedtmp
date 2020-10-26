@@ -43,6 +43,8 @@ public interface ServiceTransformer extends ServiceRegistry {
 
     <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
+    // prototype or constant...
+    // Hvis vi skal bruge den som en Builder...
     default void provide(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }

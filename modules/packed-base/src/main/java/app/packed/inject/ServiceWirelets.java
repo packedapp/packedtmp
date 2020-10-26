@@ -32,9 +32,9 @@ import packed.internal.inject.service.WireletToContext.ServiceWireletTo;
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
  * containers.
  * 
- * The wirelets returned by methods on this class can be grouped into two groups.
+ * Wirelets created by this class are processed in two separate occasions.
  * 
- * First pass wirelets are invoked at the child linkage site
+ * First pass wirelets are invoked at the wiring site
  * 
  * Second pass wirelets are invoked at the end of the configuration of the container
  * 
@@ -49,6 +49,32 @@ public final class ServiceWirelets {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * This method is similar to {@link #from(Consumer)} but it also provides the child's service contract.
+     * <p>
+     * The provided service contract is never effected by previous wirelet transformations.
+     * 
+     * @param transformer
+     *            the transformer
+     * @return the transforming wirelet
+     */
+    public static Wirelet from(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
+        requireNonNull(transformer, "transformer is null");
+        return new ServiceWireletFrom() {
+            @Override
+            protected void process(WireletFromContext context) {
+                transformer.accept(context, context.childContract());
+            }
+        };
+    }
+
+    /**
+     * Transforms the services
+     * 
+     * @param transformer
+     *            the transformer
+     * @return the transforming wirelet
+     */
     public static Wirelet from(Consumer<? super ServiceTransformer> transformer) {
         requireNonNull(transformer, "transformer is null");
         return new ServiceWireletFrom() {
@@ -61,9 +87,11 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that will call the specified action with the service contract of the cube that is being linked.
+     * Returns a wirelet that will invoke the specified action with the service contract of the cube that is being wired.
      * <p>
      * This wirelet is processed at the linkage site.
+     * <p>
+     * The contract being consumed is never effected by other wirelet transformations.
      * 
      * @param action
      *            the action to perform
@@ -71,12 +99,7 @@ public final class ServiceWirelets {
      */
     public static Wirelet peekContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
-        return new ServiceWireletFrom() {
-            @Override
-            protected void process(WireletFromContext context) {
-                action.accept(context.childContract());
-            }
-        };
+        return from((t, c) -> action.accept(c));
     }
 
     public static <T> Wirelet provide(Class<T> key, T instance) {
@@ -90,20 +113,19 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a
-     * service of the specific type as a requirement.
+     * Returns a wirelet that will provide the specified instance to the target cube. Iff the target cube has a service of
+     * the specific type as a requirement.
      * <p>
-     * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
+     * Invoking this method is identical to invoking {@code to(t -> t.provideInstance(instance))}.
      * 
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
      * @see ServiceTransformer#provideInstance(Object)
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public static Wirelet provide(Object instance) {
         requireNonNull(instance, "instance is null");
-        return provide((Class) instance.getClass(), instance);
+        return to(t -> t.provideInstance(instance));
     }
 
     public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
@@ -125,10 +147,17 @@ public final class ServiceWirelets {
             }
         };
     }
-
-    // restrict contract
-    // provide <-- easy access
 }
+
+/// 4 things we probably want to incorporate
+// contracts
+// transitive exports
+// transitive requirements
+// anchoring
+
+// Preview... <-- filter annotations with preview????
+// Fucking attributer jo... Service#Preview=true
+// 
 
 // A common pattern of x(class...), x(key...), xIf(Predicate), XAll()
 class ServiceWSandbox {
@@ -155,11 +184,10 @@ class ServiceWSandbox {
 
     //// Skal arbejde lidt paa det anchroring.
     //// og internerne services.
-    static Wirelet exportTransitive(Class<?>... keys) {
-        return exportTransitive(Key.of(keys));
-    }
+    // Altsaa de er jo lidt ligegyldige...
+    // Kan bruge extensionen
 
-    static Wirelet exportTransitive(Key<?>... keys) {
+    static Wirelet transitiveExportRequireAll() {
         throw new UnsupportedOperationException();
     }
 
@@ -171,10 +199,6 @@ class ServiceWSandbox {
         throw new UnsupportedOperationException();
     }
 
-    public static void main(String[] args) {
-        anchor(String.class);
-    }
-
     // Initial pass, final pass
 
     // But it will not anchor it...
@@ -183,9 +207,15 @@ class ServiceWSandbox {
     // exportTransitive
 }
 
-class XIdeasContract {
+class TDropped {
 
-    public static Wirelet restrict(ServiceContract contract) {
+    // Ideen er lidt at de ikke skal ind i containeren...
+    static Wirelet exportTransitive(Class<?>... keys) {
+        return exportTransitive(Key.of(keys));
+    }
+
+    static Wirelet exportTransitive(Key<?>... keys) {
         throw new UnsupportedOperationException();
     }
+
 }

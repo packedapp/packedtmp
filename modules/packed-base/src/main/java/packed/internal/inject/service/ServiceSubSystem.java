@@ -27,6 +27,8 @@ import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
 /**
+ * A service subsystem is one or more service extension that are all strongly connected
+ * 
  * This class services two important purposes:
  * 
  * Finds dependency circles
@@ -38,7 +40,7 @@ import packed.internal.inject.DependencyProvider;
 // resolve + create id for each node
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
-public final class ServiceIsland {
+public final class ServiceSubSystem {
 
     /**
      * Tries to find a dependency cycle.

@@ -22,10 +22,9 @@ import java.util.Optional;
 import app.packed.component.Component;
 import app.packed.component.ComponentRelation;
 
-/**
- *
- */
-public final class PackedComponentRelation implements ComponentRelation {
+/** Implementation of {@link ComponentRelation}. */
+// source + target vs from + to
+final class PackedComponentRelation implements ComponentRelation {
 
     private final int distance;
 
@@ -105,11 +104,7 @@ public final class PackedComponentRelation implements ComponentRelation {
         return to;
     }
 
-    public static ComponentRelation find(PackedComponent from, Component to) {
-        return relation(from, (PackedComponent) to);
-    }
-
-    private static ComponentRelation relation(PackedComponent from, PackedComponent to) {
+    static ComponentRelation relation(PackedComponent from, PackedComponent to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.region == to.region) {

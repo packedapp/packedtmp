@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
+import app.packed.base.TypeToken;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -97,9 +98,14 @@ public interface ServiceLocator extends ServiceRegistry {
         }
     }
 
+    // Vi har faktisk 3.
+    // Key Delen = Foo.class; (Ignores qualifiers)
+    // Key delend.rawType = Foo.class
+    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
+
     // may define any qualifiers
-    default <T> ServiceSelection<T> select(Class<T> key) {
-        // May define additional qualifiers
+    default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
+        // select(Number.class) will select @Named("foo") Number but not Integer
         throw new UnsupportedOperationException();
     }
 
@@ -115,8 +121,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see Key#rawType()
      */
     // Hmm kan vi sige noget om actual type som vi producere???
-
-    default <T> ServiceSelection<T> select(Key<T> key) {
+    default <T> ServiceSelection<T> select(TypeToken<T> key) {
         // May define additional qualifiers
         throw new UnsupportedOperationException();
     }
@@ -130,16 +135,24 @@ public interface ServiceLocator extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
-    // Maybe select assignable
+    // All whose raw type is equal to.. Don't know if it is
+    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // All whose raw type can be assigned to
     default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
         throw new UnsupportedOperationException();
     }
 
-    // Must be open to xyz
-    default ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
-        // consumeren capture
-        return this;
-    }
+    /**
+     * Creates a new service locator by transformation the service that this locator provides.
+     * 
+     * @param transformer
+     *            the transformer
+     * @return the new service locator
+     */
+    ServiceLocator transform(Consumer<ServiceTransformer> transformer);
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide

@@ -36,6 +36,9 @@ import packed.internal.util.PackedAttributeHolderStream;
 /** An abstract implementation of ServiceRegistry. */
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
+    /** An empty service registry */
+    public static final ServiceRegistry EMPTY = new CopyOfRegistry(Map.of());
+
     /**
      * Subclasses must extend this method and provide an immutable service map.
      * 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.sandbox;
+package packed.internal.inject.service.build;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,7 +25,6 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.MappingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -42,7 +41,7 @@ final class MappingServiceBuild extends ServiceBuild {
     private final Function<?, ?> function;
 
     MappingServiceBuild(ServiceBuildManager node, ConfigSite configSite, ServiceBuild entryToMap, Key<?> toKey, Function<?, ?> function) {
-        super(node, configSite, toKey);
+        super(configSite, toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
     }

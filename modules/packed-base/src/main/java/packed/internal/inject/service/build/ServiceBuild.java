@@ -35,7 +35,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class ServiceBuild implements DependencyProvider {
+public abstract class ServiceBuild implements DependencyProvider, Service {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -48,19 +48,27 @@ public abstract class ServiceBuild implements DependencyProvider {
     private Key<?> key;
 
     /** The service manager that this service belongs to. */
-    public final ServiceBuildManager sm;
+    public ServiceBuildManager sm;
 
-    public ServiceBuild(ServiceBuildManager sm, ConfigSite configSite, Key<?> key) {
-        this.sm = requireNonNull(sm);
+    public ServiceBuild(ConfigSite configSite, Key<?> key) {
         this.configSite = requireNonNull(configSite);
         this.key = requireNonNull(key);
     }
 
-    public void as(Key<?> key) {
+    public final void as(Key<?> key) {
+        if (isFrozen) {
+            throw new IllegalStateException("The key of the service can no longer be changed");
+        }
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
         this.key = requireNonNull(key, "key is null");
+    }
+
+    private boolean isFrozen;
+
+    public final void freeze() {
+        isFrozen = true;
     }
 
     /**
@@ -72,10 +80,12 @@ public abstract class ServiceBuild implements DependencyProvider {
         return configSite;
     }
 
+    @Override
     public final Key<?> key() {
         return key;
     }
 
+    @Override
     public abstract boolean isConstant();
 
     /**
@@ -86,6 +96,9 @@ public abstract class ServiceBuild implements DependencyProvider {
     protected abstract RuntimeService newRuntimeNode(ServiceInstantiationContext context);
 
     public final Service toService() {
+        if (isFrozen) {
+            return this;
+        }
         return new PackedService(key, configSite, isConstant());
     }
 

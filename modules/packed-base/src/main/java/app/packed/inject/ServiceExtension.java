@@ -80,7 +80,7 @@ public final class ServiceExtension extends Extension {
     private final ServiceBuildManager sbm;
 
     /**
-     * Should never be initialized by users.
+     * Invoked by the runtime to create a new service extension.
      * 
      * @param extension
      *            the configuration of the extension
@@ -90,6 +90,13 @@ public final class ServiceExtension extends Extension {
         this.sbm = container.newServiceManagerFromServiceExtension();
     }
 
+    /**
+     * 
+     * This method is typically used if you work with plugin structures. Where you do not now ahead of time what kind of
+     * services the plugins export.
+     * 
+     * {@link ServiceSelection}
+     */
     public void anchorAllChildExports() {
 
     }
@@ -216,19 +223,20 @@ public final class ServiceExtension extends Extension {
     /**
      * Imports all the services from the specified locator and make each service available to other services in the injector
      * being build.
-     * <p>
-     * Wirelets can be used to transform and filter the services from the specified injector.
      * 
      * @param locator
-     *            the locator to provide services from
+     *            the locator that provide services
      * @throws IllegalArgumentException
      *             if specifying wirelets that are not defined via {@link ServiceWirelets}
      */
+    // Det er lidt nederen at vi ikke kan builde ServiceLocator...
+    // ServiceTransformer -> ServiceLocator.Builder
+    // ServiceLocator
     public void provideAll(ServiceLocator locator) {
         requireNonNull(locator, "injector is null");
         if (!(locator instanceof PackedInjector)) {
-            throw new IllegalArgumentException(
-                    "Custom implementations of Injector are currently not supported, injector type = " + locator.getClass().getName());
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+                    + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
         sbm.provideFromInjector((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
@@ -241,6 +249,8 @@ public final class ServiceExtension extends Extension {
         return container.compConf.wire(prototype(), factory);
     }
 
+    // requires bliver automatisk anchoret...
+    // anchorAllChildExports-> requireAllChildExports();
     public void require(Class<?>... keys) {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
@@ -305,18 +315,6 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    // Den eneste ting er at vi ikke kan tilfoeje flere exports...
-    /**
-     * Performs a final transformation of any services that are exported.
-     * 
-     * @param transformer
-     *            transforms the services
-     */
-    // finalizeExports()
-    public void transformExports(Consumer<? super ServiceTransformer> transformer) {
-        throw new UnsupportedOperationException();
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
     public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
         return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PrototypeConfiguration.class);
@@ -359,6 +357,16 @@ public final class ServiceExtension extends Extension {
 }
 
 class ZExtraFunc {
+
+    /**
+     * Performs a transformation of any exported services.
+     * 
+     * @param transformer
+     *            transforms the exports
+     */
+    public void exportsTransform(Consumer<? super ServiceTransformer> transformer) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns an unmodifiable view of the services that are currently available within the container.

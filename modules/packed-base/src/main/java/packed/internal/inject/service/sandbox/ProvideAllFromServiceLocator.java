@@ -59,7 +59,8 @@ public final class ProvideAllFromServiceLocator {
         this.injector = requireNonNull(injector);
 
         injector.forEachEntry(e -> {
-            entries.put(e.key(), new FromOtherInjectorServiceBuild(this, e));
+            ConfigSite cs = configSite.withParent(e.configSite());
+            entries.put(e.key(), new RuntimeAdaptorServiceBuild(cs, e));
         });
     }
 }

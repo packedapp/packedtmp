@@ -54,7 +54,7 @@ public final class ExportedServiceBuild extends ServiceBuild {
      * @see ServiceExtension#export(Key)
      */
     public ExportedServiceBuild(ServiceBuildManager builder, Key<?> exportAsKey, ConfigSite configSite) {
-        super(builder, configSite, exportAsKey);
+        super(configSite, exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
 
@@ -67,8 +67,8 @@ public final class ExportedServiceBuild extends ServiceBuild {
      *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedServiceBuild(ServiceBuildManager builder, ServiceBuild entryToExport, ConfigSite configSite) {
-        super(builder, configSite, entryToExport.key());
+    public ExportedServiceBuild(ServiceBuild entryToExport, ConfigSite configSite) {
+        super(configSite, entryToExport.key());
         this.exportedEntry = entryToExport;
         this.exportAsKey = null;
         // Export of export, of export????

@@ -18,6 +18,7 @@ package packed.internal.inject.service.sandbox;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
+import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.Dependant;
@@ -27,18 +28,14 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(ServiceLocator)}. */
-final class FromOtherInjectorServiceBuild extends ServiceBuild {
+final class RuntimeAdaptorServiceBuild extends ServiceBuild {
 
     /** The entry from the 'imported' injector. */
     private final RuntimeService entry;
 
-    /** A wrapper for the 'imported' injector. */
-    final ProvideAllFromServiceLocator fromInjector; // not used currently
-
-    FromOtherInjectorServiceBuild(ProvideAllFromServiceLocator fromInjector, RuntimeService entry) {
-        super(fromInjector.node, fromInjector.configSite.withParent(entry.configSite()), entry.key());
+    RuntimeAdaptorServiceBuild(ConfigSite configSite, RuntimeService entry) {
+        super(configSite, entry.key());
         this.entry = entry;
-        this.fromInjector = fromInjector;
     }
 
     /** {@inheritDoc} */
@@ -63,5 +60,4 @@ final class FromOtherInjectorServiceBuild extends ServiceBuild {
     public boolean isConstant() {
         return false;
     }
-
 }

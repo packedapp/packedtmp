@@ -47,7 +47,7 @@ public final class RekeyServiceBuild extends ServiceBuild {
      * @see ServiceExtension#export(Key)
      */
     public RekeyServiceBuild(ServiceBuild s, Key<?> key, ConfigSite configSite) {
-        super(s.sm, configSite, key);
+        super(configSite, key);
         this.entryToRekey = s;
     }
 

@@ -57,32 +57,34 @@ public final class PackedComponent implements Component {
     final RuntimeRegion region;
 
     /**
-     * Creates a new component node.
+     * Creates a new component.
      * 
      * @param parent
      *            the parent component, iff this component has a parent.
-     * @param configuration
-     *            the configuration used to create this node
+     * @param compBuild
+     *            the component build used to create this node
+     * @param pic
+     *            initialization context
      */
-    PackedComponent(@Nullable PackedComponent parent, ComponentBuild configuration, PackedInitializationContext pic) {
+    PackedComponent(@Nullable PackedComponent parent, ComponentBuild compBuild, PackedInitializationContext pic) {
         this.parent = parent;
-        this.model = RuntimeComponentModel.of(configuration);
+        this.model = RuntimeComponentModel.of(compBuild);
         if (parent == null) {
             pic.component = this;
-            this.name = pic.rootName(configuration);
+            this.name = pic.rootName(compBuild);
         } else {
-            this.name = requireNonNull(configuration.name);
+            this.name = requireNonNull(compBuild.name);
         }
 
         // Vi opbygger structuren foerst...
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
         Map<String, PackedComponent> children = null;
-        if (configuration.treeFirstChild != null) {
+        if (compBuild.treeFirstChild != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(configuration.numberOfChildren());
+            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(compBuild.numberOfChildren());
 
-            for (ComponentBuild cc = configuration.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
+            for (ComponentBuild cc = compBuild.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 // We never carry over extensions into the runtime
                 if (cc.extension == null) {
                     PackedComponent ac = new PackedComponent(this, cc, pic);
@@ -104,8 +106,8 @@ public final class PackedComponent implements Component {
         // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
 
         // Vi create a new region is its the root, or if the component is a guest
-        if (parent == null || configuration.modifiers().isGuest()) {
-            this.region = configuration.region.newRegion(pic, this);
+        if (parent == null || compBuild.modifiers().isGuest()) {
+            this.region = compBuild.region.newRegion(pic, this);
         } else {
             this.region = parent.region;
         }
@@ -228,7 +230,8 @@ public final class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public ComponentRelation relationTo(Component other) {
-        return PackedComponentRelation.find(this, other);
+        requireNonNull(other, "other is null");
+        return PackedComponentRelation.relation(this, (PackedComponent) other);
     }
 
     /**

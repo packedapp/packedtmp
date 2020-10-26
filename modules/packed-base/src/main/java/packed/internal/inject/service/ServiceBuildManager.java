@@ -31,8 +31,8 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceRegistry;
-import packed.internal.component.PackedComponent;
 import packed.internal.component.ComponentBuild;
+import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
@@ -214,7 +214,7 @@ public final class ServiceBuildManager {
     public void resolve() {
         // First we take all locally defined services
         for (ServiceBuild entry : localServices) {
-            resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(entry);
+            resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
         }
 
         // Then we take any provideAll() services
@@ -222,7 +222,7 @@ public final class ServiceBuildManager {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromServiceLocator fromInjector : provideAll) {
                 for (ServiceBuild entry : fromInjector.entries.values()) {
-                    resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(entry);
+                    resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
                 }
             }
         }
@@ -241,12 +241,12 @@ public final class ServiceBuildManager {
                     }
 
                     for (Entry<Key<?>, ServiceBuild> a : context.services.entrySet()) {
-                        resolvedServices.computeIfAbsent(a.getKey(), k -> new Wrapper()).resolve(a.getValue());
+                        resolvedServices.computeIfAbsent(a.getKey(), k -> new Wrapper()).resolve(this, a.getValue());
                     }
 
                 } else if (child.exporter != null) {
                     for (ExportedServiceBuild a : child.exporter) {
-                        resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(a);
+                        resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }
                 }
             }
@@ -322,5 +322,4 @@ public final class ServiceBuildManager {
             return (Map) services;
         }
     }
-
 }

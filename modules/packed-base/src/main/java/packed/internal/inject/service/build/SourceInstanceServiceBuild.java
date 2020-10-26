@@ -43,7 +43,7 @@ public final class SourceInstanceServiceBuild extends ServiceBuild {
      *            the component we provide for
      */
     public SourceInstanceServiceBuild(ServiceBuildManager im, ComponentBuild compConf, Key<?> key) {
-        super(im, compConf.configSite(), key);
+        super(compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }
 

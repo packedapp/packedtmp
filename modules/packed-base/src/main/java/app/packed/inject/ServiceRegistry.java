@@ -28,7 +28,7 @@ import java.util.stream.StreamSupport;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
-import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.inject.service.runtime.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
@@ -168,6 +168,6 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return an empty service registry.
      */
     static ServiceRegistry of() {
-        return PackedInjector.EMPTY_SERVICE_LOCATOR;
+        return AbstractServiceRegistry.EMPTY;
     }
 }

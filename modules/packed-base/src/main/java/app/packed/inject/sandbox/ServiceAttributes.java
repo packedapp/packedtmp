@@ -26,6 +26,10 @@ import app.packed.inject.ServiceRegistry;
  *
  */
 // Attributes that are available on a Service, on a ServiceExtension, at Build time, atRuntime...
+
+// ServiceAttributes -> Services
+
+// ComponentAttributes -> Components
 public final class ServiceAttributes {
 
     private ServiceAttributes() {}

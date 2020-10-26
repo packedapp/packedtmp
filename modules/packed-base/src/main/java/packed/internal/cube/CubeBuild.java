@@ -31,7 +31,7 @@ import packed.internal.component.ComponentBuild;
 import packed.internal.component.RegionBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.ServiceIsland;
+import packed.internal.inject.service.ServiceSubSystem;
 
 /** Contains data and logic relevant for containers. */
 public final class CubeBuild {
@@ -135,7 +135,7 @@ public final class CubeBuild {
         // Do checks here
         boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
         if (!isIslandChild) {
-            ServiceIsland.finish(region, this);
+            ServiceSubSystem.finish(region, this);
         }
     }
 

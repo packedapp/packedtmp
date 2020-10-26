@@ -106,7 +106,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedServiceBuild(sm, entryToExport, configSite));
+        return export0(new ExportedServiceBuild(entryToExport, configSite));
     }
 
     /**
@@ -208,7 +208,7 @@ public final class ServiceExportManager implements Iterable<ExportedServiceBuild
             for (Wrapper w : sm.resolvedServices.values()) {
                 ServiceBuild e = w.getSingle();
                 if (!resolvedExports.containsKey(e.key())) {
-                    resolvedExports.put(e.key(), new ExportedServiceBuild(sm, e, exportAll));
+                    resolvedExports.put(e.key(), new ExportedServiceBuild(e, exportAll));
                 }
             }
         }

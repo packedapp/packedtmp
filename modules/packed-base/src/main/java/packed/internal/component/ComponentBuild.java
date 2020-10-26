@@ -83,19 +83,19 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     /** The realm this component is a part of. */
     public final RealmBuild realm;
 
-    /** The container, if source Any container this component is part of. A container is part of it self. */
+    /** A cube build if this component is an cube, otherwise null. */
     @Nullable
     public final CubeBuild cube;
 
-    /** Any container this component is part of. A container is part of it self. */
+    /** Any cube this component is part of. A cube is part of it self. */
     @Nullable
     public final CubeBuild memberOfCube;
 
-    /** Any extension that is attached to this component. */
+    /** An extension build if this component is an extension, otherwise null. */
     @Nullable
     public final ExtensionBuild extension;
 
-    /** Any source that is attached to this component. */
+    /** A source build if this component has a source, otherwise null. */
     @Nullable
     public final SourceBuild source;
 

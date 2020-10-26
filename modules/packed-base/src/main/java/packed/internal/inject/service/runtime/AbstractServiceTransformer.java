@@ -13,21 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service.sandbox;
+package packed.internal.inject.service.runtime;
 
-import app.packed.component.Wirelet;
-import app.packed.inject.ServiceExtension;
+import java.util.HashMap;
+import java.util.Map;
+
+import app.packed.base.Key;
+import app.packed.inject.Service;
+import app.packed.inject.ServiceTransformer;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /**
  *
  */
-public abstract class OldServiceWirelet extends Wirelet {
+public abstract class AbstractServiceTransformer extends AbstractServiceRegistry implements ServiceTransformer {
 
-    /**
-     * Process this wirelet.
-     * 
-     * @param extension
-     *            the extension
-     */
-    protected abstract void process(ServiceExtension extension);
+    Map<Key<?>, ServiceBuild> copy = new HashMap<>();
+
+    @Override
+    protected Map<Key<?>, Service> services() {
+        return null;
+    }
+
 }

@@ -26,6 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
+import app.packed.inject.ServiceTransformer;
 import packed.internal.inject.PackedProvisionContext;
 
 /** An abstract implementation of {@link ServiceLocator}. */
@@ -82,6 +83,12 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             T t = (T) s.forLocator(this);
             action.accept(t);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
