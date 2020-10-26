@@ -18,53 +18,52 @@ package packed.internal.inject.service.build;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.util.function.Function;
+import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.runtime.MappingRuntimeService;
+import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /**
- * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
+ *
  */
-final class MappingServiceBuild extends ServiceBuild {
+public final class ConstantServiceBuild extends ServiceBuild {
 
-    /** The entry that should be mapped. */
-    final ServiceBuild entryToMap;
+    private final Object instance;
 
-    /** The function to apply on the */
-    private final Function<?, ?> function;
-
-    MappingServiceBuild(ConfigSite configSite, ServiceBuild entryToMap, Key<?> toKey, Function<?, ?> function) {
-        super(configSite, toKey);
-        this.entryToMap = entryToMap;
-        this.function = requireNonNull(function, "function is null");
+    /**
+     * @param key
+     */
+    public ConstantServiceBuild(Key<?> key, Object instance) {
+        super(ConfigSite.UNKNOWN, key);
+        this.instance = requireNonNull(instance, "instance is null");
     }
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new MappingRuntimeService(this, entryToMap.toRuntimeEntry(context), function);
+    public @Nullable Dependant dependant() {
+        return null;
     }
 
-    @Override
-    @Nullable
-    public Dependant dependant() {
-        return entryToMap.dependant();
-    }
-
+    /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
+        return MethodHandles.constant(key().rawType(), instance);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return entryToMap.isConstant();
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
+        return new ConstantRuntimeService(configSite(), key(), instance);
     }
 }

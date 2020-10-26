@@ -17,6 +17,8 @@ package packed.internal.inject.service.build;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Function;
+
 import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.config.ConfigSite;
@@ -102,7 +104,11 @@ public abstract class ServiceBuild implements DependencyProvider, Service {
         return new PackedService(key, configSite, isConstant());
     }
 
-    public ServiceBuild rekeyAs(Key<?> key) {
+    public final ServiceBuild decorate(Function<?, ?> function) {
+        return new MappingServiceBuild(ConfigSite.UNKNOWN, this, key, function);
+    }
+
+    public final ServiceBuild rekeyAs(Key<?> key) {
         // NewKey must be compatible with type
         RekeyServiceBuild esb = new RekeyServiceBuild(this, key, configSite);
         return esb;

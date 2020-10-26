@@ -41,6 +41,16 @@ public interface ServiceTransformer extends ServiceRegistry {
         decorate(Key.of(key), decoratingFunction);
     }
 
+    /**
+     * @param <T>
+     *            the type of the service that should be decorated
+     * @param key
+     *            the key of the service that should be decorated
+     * @param decoratingFunction
+     *            the decoration function
+     * @throws NoSuchElementException
+     *             if a service with the specified key does not exist
+     */
     <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
     // prototype or constant...
@@ -67,6 +77,17 @@ public interface ServiceTransformer extends ServiceRegistry {
         provideInstance(Key.of(key), instance);
     }
 
+    /**
+     * <p>
+     * If an existing service with the specified key already exists this method will replace it.
+     * 
+     * @param <T>
+     *            the type
+     * @param key
+     *            the key
+     * @param instance
+     *            the instance
+     */
     <T> void provideInstance(Key<T> key, T instance);
 
     /**
@@ -183,18 +204,13 @@ public interface ServiceTransformer extends ServiceRegistry {
     void retain(Key<?>... keys);
 }
 
-interface Xincubator extends ServiceTransformer {
-
+// Various ideas on provide/rekey
+interface YIdeas extends ServiceTransformer {
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
     // Or maybe just methods...
     /// decorate(Foo.class, ServiceTransformer.CONSTAFY)
     /// decorate(Foo.class, ServiceTransformer.UNCONSTAFY)
-}
-
-// Various ideas on provide/rekey
-interface YIdeas extends ServiceTransformer {
-
     void addName(Function<Service, String> nameFunction);
 
     /**

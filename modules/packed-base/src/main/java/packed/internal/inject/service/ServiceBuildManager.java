@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -39,7 +38,6 @@ import packed.internal.component.wirelet.WireletPack;
 import packed.internal.cube.CubeBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
-import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceInstanceServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
@@ -149,7 +147,7 @@ public final class ServiceBuildManager {
 
         // Any exports
         if (exporter != null) {
-            for (ExportedServiceBuild n : exporter) {
+            for (ServiceBuild n : exporter) {
                 builder.provides(n.key());
             }
         }
@@ -227,7 +225,7 @@ public final class ServiceBuildManager {
             }
         }
 
-        // Process exports from any children (imports are processed later)
+        // Process exports from any children
         if (container.children != null) {
             for (CubeBuild c : container.children) {
                 ServiceBuildManager child = c.getServiceManager();
@@ -235,20 +233,17 @@ public final class ServiceBuildManager {
                 WireletPack wp = c.compConf.wirelets;
                 List<ServiceWireletFrom> wirelets = wp == null ? null : wp.receiveAll(ServiceWireletFrom.class);
                 if (wirelets != null) {
-                    WireletFromContext context = new WireletFromContext(wirelets, child.exporter);
                     for (ServiceWireletFrom f : wirelets) {
-                        f.process(context);
+                        f.process(child);
                     }
+                }
 
-                    for (Entry<Key<?>, ServiceBuild> a : context.services.entrySet()) {
-                        resolvedServices.computeIfAbsent(a.getKey(), k -> new Wrapper()).resolve(this, a.getValue());
-                    }
-
-                } else if (child.exporter != null) {
-                    for (ExportedServiceBuild a : child.exporter) {
+                if (child.exporter != null) {
+                    for (ServiceBuild a : child.exporter) {
                         resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }
                 }
+
             }
         }
 

@@ -15,9 +15,13 @@
  */
 package app.packed.inject.sandbox;
 
+import app.packed.base.Key;
+import app.packed.base.Named;
 import app.packed.component.App;
 import app.packed.cube.BaseBundle;
 import app.packed.cube.Extension;
+import app.packed.inject.Factory;
+import app.packed.inject.ServiceLocator;
 
 /**
  *
@@ -28,10 +32,23 @@ class Xxx extends BaseBundle {
     @Override
     protected void configure() {
         use(MyEx.class);
+        provideInstance("FooBar").export();
+        provide(new Factory<Long>(System::currentTimeMillis) {}).export();
     }
 
     public static void main(String[] args) {
-        App.of(new Xxx());
+        App a = App.of(new Xxx());
+        System.out.println(a.services().keys());
+        ServiceLocator l = a.services().transform(s -> {
+            s.provideInstance(123);
+            s.decorate(String.class, t -> t + t);
+            s.decorate(String.class, t -> t + t);
+            s.decorate(String.class, t -> t + t);
+            s.rekey(Key.of(Long.class), new Key<@Named("foo") Long>() {});
+        });
+        System.out.println(l.keys());
+        System.out.println(l.use(Integer.class));
+        System.out.println(l.use(String.class));
         System.out.println("Bye");
     }
 

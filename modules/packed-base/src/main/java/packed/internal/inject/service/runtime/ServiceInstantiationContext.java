@@ -31,6 +31,10 @@ public final class ServiceInstantiationContext {
 
     public final IdentityHashMap<ServiceBuild, RuntimeService> transformers = new IdentityHashMap<>();
 
+    public ServiceInstantiationContext() {
+        region = null;
+    }
+
     public ServiceInstantiationContext(RuntimeRegion region) {
         this.region = requireNonNull(region);
     }

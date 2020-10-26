@@ -37,7 +37,6 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.inject.ServiceTransformer;
-import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceRegistry;
 
@@ -57,9 +56,9 @@ public final class WireletFromContext implements ServiceTransformer {
         this.wirelets = requireNonNull(wirelets);
         this.m = m;
         if (m != null) {
-            for (ExportedServiceBuild a : m) {
-                services.put(a.key(), a);
-            }
+//            for (ExportedServiceBuild a : m) {
+//                services.put(a.key(), a);
+//            }
         }
     }
 
@@ -208,6 +207,6 @@ public final class WireletFromContext implements ServiceTransformer {
 
     @ExtensionMember(ServiceExtension.class)
     public static abstract class ServiceWireletFrom extends Wirelet {
-        protected abstract void process(WireletFromContext context);
+        protected abstract void process(ServiceBuildManager child);
     }
 }

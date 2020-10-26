@@ -17,17 +17,22 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.config.ConfigSite;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
+import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceTransformer;
 import packed.internal.inject.PackedProvisionContext;
+import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.sandbox.RuntimeAdaptorServiceBuild;
 
 /** An abstract implementation of {@link ServiceLocator}. */
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
@@ -88,7 +93,14 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     /** {@inheritDoc} */
     @Override
     public ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
-        throw new UnsupportedOperationException();
+        requireNonNull(transformer, "transformer is null");
+        HashMap<Key<?>, ServiceBuild> m = new HashMap<>();
+        for (Service s : servicesX().values()) {
+            m.put(s.key(), new RuntimeAdaptorServiceBuild(ConfigSite.UNKNOWN, (RuntimeService) s));
+        }
+        PackedServiceTransformer dst = new PackedServiceTransformer(m);
+        transformer.accept(dst);
+        return dst.toServiceLocator();
     }
 
     /** {@inheritDoc} */

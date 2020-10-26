@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.component.Wirelet;
-import packed.internal.inject.service.WireletFromContext;
+import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 import packed.internal.inject.service.WireletToContext;
 import packed.internal.inject.service.WireletToContext.ServiceWireletTo;
@@ -62,8 +62,8 @@ public final class ServiceWirelets {
         requireNonNull(transformer, "transformer is null");
         return new ServiceWireletFrom() {
             @Override
-            protected void process(WireletFromContext context) {
-                transformer.accept(context, context.childContract());
+            protected void process(ServiceBuildManager child) {
+                child.exports().transform(transformer);
             }
         };
     }
@@ -80,8 +80,8 @@ public final class ServiceWirelets {
         return new ServiceWireletFrom() {
             /** {@inheritDoc} */
             @Override
-            protected void process(WireletFromContext context) {
-                transformer.accept(context);
+            protected void process(ServiceBuildManager child) {
+                child.exports().transform(transformer);
             }
         };
     }

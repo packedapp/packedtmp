@@ -28,36 +28,37 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
 /** An entry specifically used for {@link ServiceExtension#provideAll(ServiceLocator)}. */
-final class RuntimeAdaptorServiceBuild extends ServiceBuild {
+public final class RuntimeAdaptorServiceBuild extends ServiceBuild {
 
     /** The entry from the 'imported' injector. */
     private final RuntimeService entry;
 
-    RuntimeAdaptorServiceBuild(ConfigSite configSite, RuntimeService entry) {
+    public RuntimeAdaptorServiceBuild(ConfigSite configSite, RuntimeService entry) {
         super(configSite, entry.key());
         this.entry = entry;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(this, entry);
     }
 
     @Override
     @Nullable
     public Dependant dependant() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
+        return entry.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
         return false;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
+        return new DelegatingRuntimeService(this, entry);
     }
 }
