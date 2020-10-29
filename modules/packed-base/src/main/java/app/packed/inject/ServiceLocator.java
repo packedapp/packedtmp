@@ -23,12 +23,14 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.sidecar.ActiveVariableSidecar;
 import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.inject.service.runtime.PackedServiceTransformer;
 
 /**
- * A service locator is an immutable collection of services that allows for accessing services instances.
+ * An immutable collection of instance providing services each having a unique {@link Service#key() key}.
  */
-// Auto activating... Hvis man har den som parameter
+@ActiveVariableSidecar
 public interface ServiceLocator extends ServiceRegistry {
 
     /**
@@ -135,18 +137,18 @@ public interface ServiceLocator extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
-    // All whose raw type is equal to.. Don't know if it is
-    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
-        throw new UnsupportedOperationException();
-    }
-
     // All whose raw type can be assigned to
     default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
         throw new UnsupportedOperationException();
     }
 
+    // All whose raw type is equal to.. Don't know if it is
+    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
-     * Creates a new service locator by transformation the service that this locator provides.
+     * Creates a new service locator by transformation of the service present in this locator.
      * 
      * @param transformer
      *            the transformer
@@ -214,6 +216,17 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     static ServiceLocator of() {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
+    }
+
+    /**
+     * Creates a new service locator by using the specified transformer.
+     * 
+     * @param transformer
+     *            the transformer used to create the locator
+     * @return a new service locator
+     */
+    static ServiceLocator of(Consumer<? super ServiceTransformer> transformer) {
+        return PackedServiceTransformer.of(transformer);
     }
 }
 // toRegistry...

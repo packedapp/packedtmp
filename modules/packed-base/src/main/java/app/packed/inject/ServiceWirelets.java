@@ -22,11 +22,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
-import packed.internal.inject.service.WireletToContext;
-import packed.internal.inject.service.WireletToContext.ServiceWireletTo;
+import packed.internal.inject.service.ServiceWirelet1stPass;
+import packed.internal.inject.service.ServiceWirelet2ndPass;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
@@ -60,7 +60,7 @@ public final class ServiceWirelets {
      */
     public static Wirelet from(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
         requireNonNull(transformer, "transformer is null");
-        return new ServiceWireletFrom() {
+        return new ServiceWirelet1stPass() {
             @Override
             protected void process(ServiceBuildManager child) {
                 child.exports().transform(transformer);
@@ -77,7 +77,7 @@ public final class ServiceWirelets {
      */
     public static Wirelet from(Consumer<? super ServiceTransformer> transformer) {
         requireNonNull(transformer, "transformer is null");
-        return new ServiceWireletFrom() {
+        return new ServiceWirelet1stPass() {
             /** {@inheritDoc} */
             @Override
             protected void process(ServiceBuildManager child) {
@@ -130,20 +130,20 @@ public final class ServiceWirelets {
 
     public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
         requireNonNull(transformer, "transformer is null");
-        return new ServiceWireletTo() {
+        return new ServiceWirelet2ndPass() {
             @Override
-            protected void process(WireletToContext context) {
-                transformer.accept(context, context.childContract());
+            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child) {
+                throw new UnsupportedOperationException();
             }
         };
     }
 
     public static Wirelet to(Consumer<? super ServiceTransformer> transformer) {
         requireNonNull(transformer, "transformer is null");
-        return new ServiceWireletTo() {
+        return new ServiceWirelet2ndPass() {
             @Override
-            protected void process(WireletToContext context) {
-                transformer.accept(context);
+            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child) {
+                throw new UnsupportedOperationException();
             }
         };
     }

@@ -17,14 +17,14 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -34,19 +34,38 @@ import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceTransformer;
 import packed.internal.inject.service.build.ConstantServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.sandbox.RuntimeAdaptorServiceBuild;
+import packed.internal.util.ForwardingMap;
+import packed.internal.util.ForwardingStrategy;
 
 /** Implementation of {@link ServiceTransformer}. */
-public class PackedServiceTransformer extends AbstractServiceRegistry implements ServiceTransformer {
+// Currently used
+// ServiceLocator.transform
+// ServiceLocator.of
+// Wirelet.toTransform
+public final class PackedServiceTransformer extends AbstractServiceRegistry implements ServiceTransformer {
 
     /** The services that we are transforming */
-    public final Map<Key<?>, ServiceBuild> services;
+    public final Map<Key<?>, AbstractService> services;
 
-    public PackedServiceTransformer(Map<Key<?>, ServiceBuild> services) {
-        this.services = requireNonNull(services);
+    private Map<Key<?>, Service> asMap;
+
+    @SuppressWarnings("unchecked")
+    private PackedServiceTransformer(Map<Key<?>, ? extends AbstractService> services) {
+        this.services = (Map<Key<?>, AbstractService>) requireNonNull(services);
     }
 
-    private ServiceBuild checkKeyExists(Key<?> key) {
-        ServiceBuild s = services.remove(key);
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public Map<Key<?>, Service> asMap() {
+        Map<Key<?>, Service> es;
+        // TODO fix map for remove
+        return (es = asMap) == null ? (asMap = new ForwardingMap<>((Map) services, new ForwardingStrategy())) : es;
+    }
+
+    private AbstractService checkKeyExists(Key<?> key) {
+        AbstractService s = services.remove(key);
         if (s == null) {
             throw new NoSuchElementException("No service with the specified key exists, key = " + key);
         }
@@ -87,9 +106,9 @@ public class PackedServiceTransformer extends AbstractServiceRegistry implements
     public void rekeyAll(Function<Service, @Nullable Key<?>> function) {
         requireNonNull(function, "function is null");
 
-        Map<Key<?>, ServiceBuild> newServices = new HashMap<>();
-        for (ServiceBuild s : services.values()) {
-            Key<?> key = function.apply(s.toService());
+        Map<Key<?>, AbstractService> newServices = new HashMap<>();
+        for (AbstractService s : services.values()) {
+            Key<?> key = function.apply(s);
             // If the function returns null we exclude the key
             if (key != null) {
                 Key<?> existing = s.key();
@@ -109,53 +128,62 @@ public class PackedServiceTransformer extends AbstractServiceRegistry implements
         services.putAll(newServices);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void remove(Key<?>... keys) {
-        requireNonNull(keys, "keys is null");
-        for (Key<?> k : keys) {
-            requireNonNull(k, "key in specified array is null");
-            services.remove(k);
-        }
+    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformer> transformer) {
+//        PackedServiceTransformer pst = new PackedServiceTransformer(services);
+//        public void transform(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
+//            if (resolvedExports == null) {
+//                resolvedExports = new LinkedHashMap<>();
+//            }
+//            transformer.accept(null, sm.newServiceContract());
+//        }
+
+        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        transformer.accept(dst);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void removeAll() {
-        services.clear();
+    public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
+            BiConsumer<? super ServiceTransformer, ? super T> transformer, T attachment) {
+
+        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        transformer.accept(dst, attachment);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void removeIf(Predicate<? super Service> filter) {
-        requireNonNull(filter, "filter is null");
-        for (Iterator<ServiceBuild> iterator = services.values().iterator(); iterator.hasNext();) {
-            ServiceBuild s = iterator.next();
-            if (filter.test(s.toService())) {
-                iterator.remove();
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void retain(Key<?>... keys) {
-        services.keySet().retainAll(List.of(keys));
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    @Override
-    protected Map<Key<?>, Service> servicesX() {
-        return (Map) services;
-    }
-
-    public ServiceLocator toServiceLocator() {
+    /**
+     * Creates a new service locator.
+     * 
+     * @return the new service locator
+     */
+    private ServiceLocator toServiceLocator() {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext();
-        for (ServiceBuild e : services.values()) {
-            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
+        for (AbstractService e : services.values()) {
+            runtimeEntries.put(e.key(), ((ServiceBuild) e).toRuntimeEntry(con));
         }
         return new PackedInjector(ConfigSite.UNKNOWN, runtimeEntries);
+    }
+
+    public static ServiceLocator transform(Consumer<? super ServiceTransformer> transformer, Collection<RuntimeService> services) {
+        requireNonNull(transformer, "transformer is null");
+        HashMap<Key<?>, ServiceBuild> m = new HashMap<>();
+        for (RuntimeService s : services) {
+            m.put(s.key(), new RuntimeAdaptorServiceBuild(ConfigSite.UNKNOWN, s));
+        }
+        PackedServiceTransformer dst = new PackedServiceTransformer(m);
+        transformer.accept(dst);
+        return dst.toServiceLocator();
+    }
+
+    /**
+     * Creates a new service locator from scratch by using the specified transformer.
+     * 
+     * @param transformer
+     *            the transformer used to create the locator
+     * @return a new service locator
+     */
+    public static ServiceLocator of(Consumer<? super ServiceTransformer> transformer) {
+        requireNonNull(transformer, "transformer is null");
+        PackedServiceTransformer psm = new PackedServiceTransformer(new HashMap<>());
+        transformer.accept(psm);
+        return psm.toServiceLocator();
     }
 }

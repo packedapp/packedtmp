@@ -16,15 +16,23 @@
 package app.packed.container;
 
 /**
- *
+ * Thrown when a container encountered an exception it could not be handled.
  */
-//FailedToRuntException, ExecutionExceptionFailed
-// ExecutionExeception
-/// RunFailedException <- See execute fungere daaerlig here
-
-/// StartupFailedException();
-public class ContainerStartException extends RuntimeException {
+public class ContainerPanicException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
+
 }
+
+//FailedToRuntException, ExecutionExceptionFailed
+//ExecutionExeception
+/// RunFailedException <- See execute fungere daaerlig here
+/// StartupFailedException();
+
+//Er sgu ogsaa en slags panicking.. Tror vi daekker den inde den
+//class ContainerStartException extends RuntimeException {
+//
+//    /** */
+//    private static final long serialVersionUID = 1L;
+//}

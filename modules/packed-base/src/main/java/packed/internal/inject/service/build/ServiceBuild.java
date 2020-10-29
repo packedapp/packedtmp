@@ -26,6 +26,7 @@ import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.runtime.AbstractService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -37,7 +38,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class ServiceBuild implements DependencyProvider, Service {
+public abstract class ServiceBuild extends AbstractService implements DependencyProvider, Service {
 
     /** The configuration site of this object. */
     private final ConfigSite configSite;
@@ -104,10 +105,12 @@ public abstract class ServiceBuild implements DependencyProvider, Service {
         return new PackedService(key, configSite, isConstant());
     }
 
-    public final ServiceBuild decorate(Function<?, ?> function) {
-        return new MappingServiceBuild(ConfigSite.UNKNOWN, this, key, function);
+    @Override
+    public final <T> ServiceBuild decorate(Function<? super T, ? extends T> decoratingFunction) {
+        return new MappingServiceBuild(ConfigSite.UNKNOWN, this, key, decoratingFunction);
     }
 
+    @Override
     public final ServiceBuild rekeyAs(Key<?> key) {
         // NewKey must be compatible with type
         RekeyServiceBuild esb = new RekeyServiceBuild(this, key, configSite);

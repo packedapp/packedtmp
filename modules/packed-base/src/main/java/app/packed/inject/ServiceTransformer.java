@@ -19,6 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -29,19 +31,16 @@ import app.packed.base.Nullable;
 import app.packed.component.Component;
 
 /**
- *
- * An interface supporting transformation of any number of services.
+ * Service transformers are typically use to to convert one set of services to another set of services.
  * 
  * @apiNote In the future, if the Java language permits, {@link ServiceTransformer} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 public interface ServiceTransformer extends ServiceRegistry {
 
-    default <T> void decorate(Class<T> key, Function<? super T, ? extends T> decoratingFunction) {
-        decorate(Key.of(key), decoratingFunction);
-    }
-
     /**
+     * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
+     * 
      * @param <T>
      *            the type of the service that should be decorated
      * @param key
@@ -50,7 +49,28 @@ public interface ServiceTransformer extends ServiceRegistry {
      *            the decoration function
      * @throws NoSuchElementException
      *             if a service with the specified key does not exist
+     * @see #decorate(Key, Function)
      */
+    default <T> void decorate(Class<T> key, Function<? super T, ? extends T> decoratingFunction) {
+        decorate(Key.of(key), decoratingFunction);
+    }
+
+    /**
+     * Decorates a service with the specified key using the specified decoration function.
+     * <p>
+     * If the service that is being decorated is constant. The function will be invoked at most
+     * 
+     * @param <T>
+     *            the type of the service that should be decorated
+     * @param key
+     *            the key of the service that should be decorated
+     * @param decoratingFunction
+     *            the decoration function
+     * @throws NoSuchElementException
+     *             if a service with the specified key does not exist
+     * @see #decorate(Class, Function)
+     */
+    // TODO must check return type..
     <T> void decorate(Key<T> key, Function<? super T, ? extends T> decoratingFunction);
 
     // prototype or constant...
@@ -183,7 +203,13 @@ public interface ServiceTransformer extends ServiceRegistry {
      * @param keys
      *            the keys of services that should be removed
      */
-    void remove(Key<?>... keys);
+    default void remove(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
+        for (Key<?> k : keys) {
+            requireNonNull(k, "key in specified array is null");
+            asMap().remove(k);
+        }
+    }
 
     /** Removes all services. */
     default void removeAll() {
@@ -195,17 +221,30 @@ public interface ServiceTransformer extends ServiceRegistry {
      *            a predicate which returns {@code true} for services to be removed
      * @see Collection#removeIf(Predicate)
      */
-    void removeIf(Predicate<? super Service> filter);
+    default void removeIf(Predicate<? super Service> filter) {
+        requireNonNull(filter, "filter is null");
+        for (Iterator<Service> iterator = iterator(); iterator.hasNext();) {
+            Service s = iterator.next();
+            if (filter.test(s)) {
+                iterator.remove();
+            }
+        }
+    }
 
     default void retain(Class<?>... keys) {
         retain(Key.of(keys));
     }
 
-    void retain(Key<?>... keys);
+    default void retain(Key<?>... keys) {
+        keys().retainAll(List.of(keys));
+    }
 }
 
 // Various ideas on provide/rekey
 interface YIdeas extends ServiceTransformer {
+
+    // alias()??
+
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
     // Or maybe just methods...

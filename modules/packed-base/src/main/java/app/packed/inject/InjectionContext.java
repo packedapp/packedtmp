@@ -31,8 +31,8 @@ import app.packed.base.Key;
  * <p>
  * we both need to check the type and the qualifier which must be readable by #visibility
  * <p>
- * <strong>Note:</strong> This class should only be used doing development, as it entails both performance and memory
- * overhead. As the runtime needs to retain detailed information about the dependency graph.
+ * <strong>Note:</strong> This class should only be used doing development. As the runtime needs to retain detailed
+ * information about the dependency graph that is normally only available at build time.
  * 
  * @apiNote In the future, if the Java language permits, {@link InjectionContext} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.

@@ -28,6 +28,7 @@ import java.util.stream.StreamSupport;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
+import app.packed.sidecar.ActiveVariableSidecar;
 import packed.internal.inject.service.runtime.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
@@ -36,8 +37,15 @@ import packed.internal.util.PackedAttributeHolderStream;
  * <p>
  * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain methods to acquire actual
  * service instances.
+ * <p>
+ * Unless otherwise specified instances of this interface are immutable collections. One notable exception is the
+ * {@link ServiceTransformer} interface. Which support mutation operations on the iterators returned by
+ * {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
+ * 
+ * <p>
+ * If used as an auto activating variable sidecar the registry injected will be an immutable
  */
-// Auto activating... Hvis man har den som parameter...// Use ServiceRegistry if you want information, use
+@ActiveVariableSidecar
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
@@ -156,14 +164,15 @@ public interface ServiceRegistry extends Iterable<Service> {
     /**
      * Returns a map (indexed by its key) of every service in this registry in any order.
      * <p>
+     * The returned map will never support insertions or updates.
+     * <p>
      * There are no guarantees on the mutability, serializability, or thread-safety of the {@code Map} returned.
      * 
      * @return a map of every service in this registry in no particular order
      */
     // er asMap() bedre??? Nej men kan jo ikke bare indseatte services...
-    default Map<Key<?>, Service> toMap() {
-        return services().collect(Collectors.toMap(s -> s.key(), s -> s));
-    }
+    // Det er jo ikke anderledes end keys() som ikke supportere
+    Map<Key<?>, Service> asMap();
 
     /**
      * Returns an empty service registry.

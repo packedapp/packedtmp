@@ -156,7 +156,7 @@ public abstract class Factory<T> {
      *             {@link Optional}
      */
     @SuppressWarnings("unchecked")
-    public Factory(Supplier<? extends T> supplier) {
+    protected Factory(Supplier<? extends T> supplier) {
         requireNonNull(supplier, "supplier is null");
         this.typeLiteral = (TypeToken<T>) CACHE.get(getClass());
         this.key = Key.fromTypeLiteral(typeLiteral);

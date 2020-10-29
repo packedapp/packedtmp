@@ -222,18 +222,17 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
         this.resolvedExports = (LinkedHashMap) resolvedExports;
     }
 
-    public void transform(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
+    public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
         if (resolvedExports == null) {
             resolvedExports = new LinkedHashMap<>();
         }
-        transformer.accept(new PackedServiceTransformer(resolvedExports), sm.newServiceContract());
+        PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
     }
 
     public void transform(Consumer<? super ServiceTransformer> transformer) {
         if (resolvedExports == null) {
             resolvedExports = new LinkedHashMap<>();
         }
-        transformer.accept(new PackedServiceTransformer(resolvedExports));
-        // invalidate the transformer...
+        PackedServiceTransformer.transformInplace(resolvedExports, transformer);
     }
 }

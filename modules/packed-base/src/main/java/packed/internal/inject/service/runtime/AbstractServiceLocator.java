@@ -17,39 +17,29 @@ package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Provider;
-import app.packed.inject.ProvisionContext;
-import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceTransformer;
-import packed.internal.inject.PackedProvisionContext;
-import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.inject.service.sandbox.RuntimeAdaptorServiceBuild;
 
 /** An abstract implementation of {@link ServiceLocator}. */
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
-
-    // /child [ss.BaseMyBundle] does not export a service with the specified key
-    protected abstract String failedToUseMessage(Key<?> key);
 
     /** {@inheritDoc} */
     @Override
     public final <T> Optional<T> findInstance(Key<T> key) {
         requireNonNull(key, "key is null");
-        RuntimeService s = getService(key);
+        RuntimeService s = (RuntimeService) asMap().get(key);
         if (s == null) {
             return Optional.empty();
         }
         @SuppressWarnings("unchecked")
-        T t = (T) s.forLocator(this);
+        T t = (T) s.getInstanceForLocator(this);
         return Optional.of(t);
     }
 
@@ -57,50 +47,33 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     @Override
     public final <T> Optional<Provider<T>> findProvider(Key<T> key) {
         requireNonNull(key, "key is null");
-        RuntimeService s = getService(key);
+        RuntimeService s = (RuntimeService) asMap().get(key);
         if (s == null) {
             return Optional.empty();
         }
-
-        Provider<T> provider;
-        if (s.isConstant()) {
-            @SuppressWarnings("unchecked")
-            T t = (T) s.forLocator(this);
-            provider = Provider.ofConstant(t);
-        } else {
-            ProvisionContext pc = PackedProvisionContext.of(key);
-            provider = new ServiceWrapperProvider<T>(s, pc);
-        }
+        @SuppressWarnings("unchecked")
+        Provider<T> provider = (Provider<T>) s.getProviderForLocator(this);
         return Optional.of(provider);
     }
-
-    @Nullable
-    protected abstract RuntimeService getService(Key<?> key);
 
     /** {@inheritDoc} */
     @Override
     public final <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
         requireNonNull(key, "key is null");
         requireNonNull(action, "action is null");
-        RuntimeService s = getService(key);
+        RuntimeService s = (RuntimeService) asMap().get(key);
         if (s != null) {
             @SuppressWarnings("unchecked")
-            T t = (T) s.forLocator(this);
+            T t = (T) s.getInstanceForLocator(this);
             action.accept(t);
         }
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
-        requireNonNull(transformer, "transformer is null");
-        HashMap<Key<?>, ServiceBuild> m = new HashMap<>();
-        for (Service s : servicesX().values()) {
-            m.put(s.key(), new RuntimeAdaptorServiceBuild(ConfigSite.UNKNOWN, (RuntimeService) s));
-        }
-        PackedServiceTransformer dst = new PackedServiceTransformer(m);
-        transformer.accept(dst);
-        return dst.toServiceLocator();
+        return PackedServiceTransformer.transform(transformer, (Collection) asMap().values());
     }
 
     /** {@inheritDoc} */
@@ -108,11 +81,14 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     @Override
     public final <T> T use(Key<T> key) {
         requireNonNull(key, "key is null");
-        RuntimeService s = getService(key);
+        RuntimeService s = (RuntimeService) asMap().get(key);
         if (s != null) {
-            return (T) s.forLocator(this);
+            return (T) s.getInstanceForLocator(this);
         }
-        String msg = failedToUseMessage(key);
+        String msg = useFailedMessage(key);
         throw new NoSuchElementException(msg);
     }
+
+    // /child [ss.BaseMyBundle] does not export a service with the specified key
+    protected abstract String useFailedMessage(Key<?> key);
 }

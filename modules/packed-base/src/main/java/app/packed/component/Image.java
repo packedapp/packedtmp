@@ -68,3 +68,11 @@ public interface Image<A> extends ComponentDelegate {
      */
     A use(Wirelet... wirelets);
 }
+
+class ImageWirelets {
+
+    // Kun aktuelt for system images, ikke for sub-system images
+    static Wirelet retainImage() {
+        throw new UnsupportedOperationException();
+    }
+}

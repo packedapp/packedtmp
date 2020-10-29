@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import packed.internal.inject.service.build.ServiceBuild;
 
@@ -41,6 +42,11 @@ public final class DelegatingRuntimeService extends RuntimeService {
     public DelegatingRuntimeService(ServiceBuild buildNode, RuntimeService delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
+    }
+
+    public DelegatingRuntimeService(RuntimeService rs, Key<?> key) {
+        super(rs.configSite(), key);
+        this.delegate = requireNonNull(rs);
     }
 
     /** {@inheritDoc} */

@@ -83,19 +83,17 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     Map<Key<? extends S>, Provider<S>> toMapKeyProviders();
 
-    Map<Service, S> toMapServiceInstances();
-
-    Map<Service, Provider<S>> toMapServiceProviders();
-
     <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);
 
     // Only those services which has the s
     // has a qualifier
-    ServiceSelection<S> withName(String name);
 
-    ServiceSelection<S> withQualifier(Annotation qualifier);
+    // does not support regexp
+    ServiceSelection<S> named(String name);
 
-    ServiceSelection<S> withQualifier(Class<? extends Annotation> qualifier);
+    ServiceSelection<S> qualifiedWith(Annotation qualifier);
+
+    ServiceSelection<S> qualifiedWith(Class<? extends Annotation> qualifier);
 
     <T extends Annotation> ServiceSelection<S> withQualifier(Class<? extends T> qualifier, Predicate<? super T> filter);
 }
@@ -105,3 +103,7 @@ public interface ServiceSelection<S> extends ServiceLocator {
 // <T extends Collection<? super S>> T addTo(T collection);
 
 // void putIntoTo(Collection<? super S> collection);
+// Service is a bad key
+//Map<Service, S> toMapServiceInstances();
+//
+//Map<Service, Provider<S>> toMapServiceProviders();

@@ -82,7 +82,7 @@ public interface Container {
      * 
      * @return a snapshot of the container's current state
      */
-    default ContainerSnapshotState snapshotState() {
+    default ContainerInfo snapshotState() {
         throw new UnsupportedOperationException();
     }
 
@@ -159,16 +159,25 @@ public interface Container {
     // Med mindre instanser lige pludselig kan bruge det.
 
     /** Various options that can be used when stopping a container. */
+    // Panic vs non-panic, a panic signals a non-normal shutdown
+
+    // interrupt vs non-interrupt
+    // forced - non-forced
+    //// Er kun aktuelt naar shutdown ikke foreloeber korrect...
+    // Den burde ikke have semantics indvirkning paa hvad der sker efter stop
+
     public interface StopOption {
 
-        static StopOption erroneous(Supplier<Throwable> cause) {
+        // panic()?
+        static StopOption panic(Supplier<Throwable> cause) {
             throw new UnsupportedOperationException();
         }
 
-        static StopOption erroneous(Throwable cause) {
+        static StopOption panic(Throwable cause) {
             throw new UnsupportedOperationException();
         }
 
+        // Forced = try and interrupt
         static StopOption forced() {
             throw new UnsupportedOperationException();
         }
@@ -179,6 +188,7 @@ public interface Container {
             throw new UnsupportedOperationException();
         }
 
+        // Er vel forced???
         static StopOption now() {
             // Now == shutdownNow();
             throw new UnsupportedOperationException();

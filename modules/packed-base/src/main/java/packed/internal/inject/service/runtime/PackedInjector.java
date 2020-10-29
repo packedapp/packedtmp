@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
@@ -52,7 +51,7 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
 
     /** {@inheritDoc} */
     @Override
-    protected String failedToUseMessage(Key<?> key) {
+    protected String useFailedMessage(Key<?> key) {
         return "No service with the specified key could be found, key = " + key;
     }
 
@@ -61,17 +60,10 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
     }
 
     /** {@inheritDoc} */
-    @Override
-    @Nullable
-    protected RuntimeService getService(Key<?> key) {
-        return entries.get(key);
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    protected Map<Key<?>, Service> servicesX() {
-        return (Map) entries;
+    public Map<Key<?>, Service> asMap() {
+        return (Map) entries; // services are immutable
     }
 
 }

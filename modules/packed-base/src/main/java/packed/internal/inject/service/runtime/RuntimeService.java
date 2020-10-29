@@ -18,18 +18,19 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
+import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
-import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.PackedProvisionContext;
 import packed.internal.inject.service.build.ServiceBuild;
 
 /** An entry that represents a service at runtime. */
-public abstract class RuntimeService implements Service {
+public abstract class RuntimeService extends AbstractService {
 
     /** The point where this entry was registered. */
     private final ConfigSite configSite;
@@ -56,11 +57,13 @@ public abstract class RuntimeService implements Service {
         return configSite;
     }
 
-    public Object forLocator(ServiceLocator locator) {
-        ProvisionContext pc = PackedProvisionContext.of(key);
-        Object t = getInstance(pc);
-        return t;
+    @Override
+    public <T> AbstractService decorate(Function<? super T, ? extends T> decoratingFunction) {
+        throw new UnsupportedOperationException();
     }
+
+    // We need this to adapt to build time transformations
+    public abstract MethodHandle dependencyAccessor();
 
     /**
      * Returns an instance.
@@ -71,6 +74,22 @@ public abstract class RuntimeService implements Service {
      */
     public abstract Object getInstance(@Nullable ProvisionContext request);
 
+    Object getInstanceForLocator(ServiceLocator locator) {
+        ProvisionContext pc = PackedProvisionContext.of(key);
+        Object t = getInstance(pc);
+        return t;
+    }
+
+    Provider<?> getProviderForLocator(ServiceLocator locator) {
+        if (isConstant()) {
+            Object t = getInstanceForLocator(locator);
+            return Provider.ofConstant(t);
+        } else {
+            ProvisionContext pc = PackedProvisionContext.of(key);
+            return new ServiceWrapperProvider<Object>(this, pc);
+        }
+    }
+
     @Override
     public abstract boolean isConstant();
 
@@ -80,10 +99,12 @@ public abstract class RuntimeService implements Service {
         return key;
     }
 
-    public abstract boolean requiresPrototypeRequest();
+    @Override
+    public AbstractService rekeyAs(Key<?> key) {
+        return new DelegatingRuntimeService(this, key);
+    }
 
-    // We need this to adapt to build time transformations
-    public abstract MethodHandle dependencyAccessor();
+    public abstract boolean requiresPrototypeRequest();
 
     /** {@inheritDoc} */
     @Override

@@ -39,12 +39,18 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     /** An empty service registry */
     public static final ServiceRegistry EMPTY = new CopyOfRegistry(Map.of());
 
-    /**
-     * Subclasses must extend this method and provide an immutable service map.
-     * 
-     * @return an immutable map containing all services
-     */
-    protected abstract Map<Key<?>, Service> servicesX();
+    /** {@inheritDoc} */
+    @Override
+    public final boolean contains(Class<?> key) {
+        return contains(Key.of(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean contains(Key<?> key) {
+        requireNonNull(key, "key is null");
+        return asMap().containsKey(key);
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -56,69 +62,56 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     @Override
     public final Optional<Service> find(Key<?> key) {
         requireNonNull(key, "key is null");
-        Service s = servicesX().get(key);
+        Service s = asMap().get(key);
         return Optional.ofNullable(s);
     }
 
     /** {@inheritDoc} */
     @Override
     public final void forEach(Consumer<? super Service> action) {
-        servicesX().values().forEach(action);
+        asMap().values().forEach(action);
     }
 
     /** {@inheritDoc} */
     @Override
     public final boolean isEmpty() {
-        return servicesX().isEmpty();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean contains(Class<?> key) {
-        return contains(Key.of(key));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final boolean contains(Key<?> key) {
-        requireNonNull(key, "key is null");
-        return servicesX().containsKey(key);
+        return asMap().isEmpty();
     }
 
     /** {@inheritDoc} */
     @Override
     public final Iterator<Service> iterator() {
-        return servicesX().values().iterator();
+        return asMap().values().iterator();
     }
 
     /** {@inheritDoc} */
     @Override
     public final Set<Key<?>> keys() {
-        return servicesX().keySet();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final int size() {
-        return servicesX().size();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Spliterator<Service> spliterator() {
-        return servicesX().values().spliterator();
+        return asMap().keySet();
     }
 
     /** {@inheritDoc} */
     @Override
     public final AttributedElementStream<Service> services() {
-        return new PackedAttributeHolderStream<>(servicesX().values().stream());
+        return new PackedAttributeHolderStream<>(asMap().values().stream());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final int size() {
+        return asMap().size();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Spliterator<Service> spliterator() {
+        return asMap().values().spliterator();
     }
 
     /** {@inheritDoc} */
     @Override
     public final List<Service> toList() {
-        return List.copyOf(servicesX().values());
+        return List.copyOf(asMap().values());
     }
 
     /** {@inheritDoc} */
@@ -155,8 +148,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
         /** {@inheritDoc} */
         @Override
-        protected Map<Key<?>, Service> servicesX() {
-            return services;
+        public Map<Key<?>, Service> asMap() {
+            return services; // services is immutable
         }
     }
 }

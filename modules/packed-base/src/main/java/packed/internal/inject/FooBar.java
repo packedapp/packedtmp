@@ -37,7 +37,17 @@ public class FooBar extends BaseBundle {
             System.out.println("Exporting " + e.keys());
             e.rekey(Key.of(String.class), new Key<@Named("foo") String>() {});
             System.out.println("Exporting " + e.keys());
+            e.decorate(Runnable.class, x -> new Runnable() {
+
+                @Override
+                public void run() {
+                    System.out.println("Before");
+                    x.run();
+                    System.out.println("After");
+                }
+            });
         }));
+        export(Runnable.class);
     }
 
     public static class NeedsString {
@@ -48,7 +58,8 @@ public class FooBar extends BaseBundle {
 
     public static void main(String[] args) {
         System.out.println(ServiceContract.of(new Child()));
-        App.of(new FooBar());
+        App a = App.of(new FooBar());
+        a.use(Runnable.class).run();
     }
 
     public static class Child extends BaseBundle {
@@ -59,6 +70,12 @@ public class FooBar extends BaseBundle {
             provide(ChildServ.class).export();
             installInstance("asdasd").exportAs(new Key<@Named("Fooo") String>() {});
             installInstance("asdasd").exportAs(new Key<@Named("dFooo") String>() {});
+            provideInstance(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("HMM");
+                }
+            }).as(Runnable.class).export();
         }
     }
 

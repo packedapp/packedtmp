@@ -113,6 +113,7 @@ public interface ContainerWirelets {
      *
      * @see Runtime#addShutdownHook(Thread)
      */
+    // StopOption.panic(()->throw new DooException());
     static Wirelet shutdownHook(Container.StopOption... options) {
         return shutdownHook(r -> new Thread(r), options);
     }

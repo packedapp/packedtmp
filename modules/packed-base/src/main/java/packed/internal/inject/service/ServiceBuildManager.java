@@ -37,7 +37,6 @@ import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.cube.CubeBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.WireletFromContext.ServiceWireletFrom;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceInstanceServiceBuild;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
@@ -231,9 +230,9 @@ public final class ServiceBuildManager {
                 ServiceBuildManager child = c.getServiceManager();
 
                 WireletPack wp = c.compConf.wirelets;
-                List<ServiceWireletFrom> wirelets = wp == null ? null : wp.receiveAll(ServiceWireletFrom.class);
+                List<ServiceWirelet1stPass> wirelets = wp == null ? null : wp.receiveAll(ServiceWirelet1stPass.class);
                 if (wirelets != null) {
-                    for (ServiceWireletFrom f : wirelets) {
+                    for (ServiceWirelet1stPass f : wirelets) {
                         f.process(child);
                     }
                 }
@@ -295,26 +294,22 @@ public final class ServiceBuildManager {
         }
 
         @Override
-        protected String failedToUseMessage(Key<?> key) {
+        protected String useFailedMessage(Key<?> key) {
             // /child [ss.BaseMyBundle] does not export a service with the specified key
 
             // FooBundle does not export a service with the key
             // It has an internal service. Maybe you forgot to export it()
             // Is that breaking encapsulation
-
+            // container.realm().realmType();
             return "'" + component.path() + "' does not export a service with the specified key, key = " + key;
-        }
-
-        @Override
-        @Nullable
-        protected RuntimeService getService(Key<?> key) {
-            return services.get(key);
         }
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
-        protected Map<Key<?>, Service> servicesX() {
-            return (Map) services;
+        public Map<Key<?>, Service> asMap() {
+            // as() + addAttribute on all services is disabled before we start the
+            // export process. So ServiceBuild can be considered as effectively final
+            return (Map) services; // TODO fix immutability
         }
     }
 }

@@ -34,6 +34,9 @@ import packed.internal.component.variable.ParameterVariable;
  * constructed.
  */
 // javadoc from AnnotatedTypeVariable
+
+// Vis ci skal supportere capture. Bliver vi noedt til at have <T> og en abstract klasse...
+
 public interface AnnotatedVariable extends AnnotatedElement, OldVariable {
 
     /**
