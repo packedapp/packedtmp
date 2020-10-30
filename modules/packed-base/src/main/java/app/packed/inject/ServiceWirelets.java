@@ -54,16 +54,16 @@ public final class ServiceWirelets {
      * <p>
      * The provided service contract is never effected by previous wirelet transformations.
      * 
-     * @param transformer
-     *            the transformer
+     * @param transformation
+     *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
-        requireNonNull(transformer, "transformer is null");
+    public static Wirelet from(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
+        requireNonNull(transformation, "transformer is null");
         return new ServiceWirelet1stPass() {
             @Override
             protected void process(ServiceBuildManager child) {
-                child.exports().transform(transformer);
+                child.exports().transform(transformation);
             }
         };
     }
@@ -71,17 +71,17 @@ public final class ServiceWirelets {
     /**
      * Transforms the services
      * 
-     * @param transformer
-     *            the transformer
+     * @param transformation
+     *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(Consumer<? super ServiceTransformer> transformer) {
-        requireNonNull(transformer, "transformer is null");
+    public static Wirelet from(Consumer<? super ServiceTransformation> transformation) {
+        requireNonNull(transformation, "transformer is null");
         return new ServiceWirelet1stPass() {
             /** {@inheritDoc} */
             @Override
             protected void process(ServiceBuildManager child) {
-                child.exports().transform(transformer);
+                child.exports().transform(transformation);
             }
         };
     }
@@ -121,14 +121,14 @@ public final class ServiceWirelets {
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
-     * @see ServiceTransformer#provideInstance(Object)
+     * @see ServiceTransformation#provideInstance(Object)
      */
     public static Wirelet provide(Object instance) {
         requireNonNull(instance, "instance is null");
         return to(t -> t.provideInstance(instance));
     }
 
-    public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
+    public static Wirelet to(BiConsumer<? super ServiceTransformation, ServiceContract> transformer) {
         requireNonNull(transformer, "transformer is null");
         return new ServiceWirelet2ndPass() {
             @Override
@@ -138,7 +138,7 @@ public final class ServiceWirelets {
         };
     }
 
-    public static Wirelet to(Consumer<? super ServiceTransformer> transformer) {
+    public static Wirelet to(Consumer<? super ServiceTransformation> transformer) {
         requireNonNull(transformer, "transformer is null");
         return new ServiceWirelet2ndPass() {
             @Override

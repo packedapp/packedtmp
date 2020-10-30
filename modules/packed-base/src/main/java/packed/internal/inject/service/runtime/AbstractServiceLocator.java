@@ -25,9 +25,13 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.inject.Provider;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.ServiceTransformer;
+import app.packed.inject.ServiceSelection;
+import app.packed.inject.ServiceTransformation;
 
-/** An abstract implementation of {@link ServiceLocator}. */
+/**
+ * An abstract implementation of {@link ServiceLocator}. {@link #asMap()} must always return an immutable map, with
+ * effectively immutable (frozen) services.
+ **/
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
 
     /** {@inheritDoc} */
@@ -70,9 +74,15 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     }
 
     /** {@inheritDoc} */
+    @Override
+    public final ServiceSelection<Object> selectAll() {
+        return new PackedServiceSelection<>(asMap());
+    }
+
+    /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
+    public final ServiceLocator transform(Consumer<ServiceTransformation> transformer) {
         return PackedServiceTransformer.transform(transformer, (Collection) asMap().values());
     }
 

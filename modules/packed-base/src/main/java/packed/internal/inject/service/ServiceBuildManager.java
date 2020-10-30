@@ -29,7 +29,6 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.ServiceRegistry;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedShellDriver;
@@ -63,7 +62,7 @@ public final class ServiceBuildManager {
 
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
-    private ServiceExportManager exporter;
+    private final ServiceExportManager exporter = new ServiceExportManager(this);
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceBuild> localServices = new ArrayList<>();
@@ -124,16 +123,7 @@ public final class ServiceBuildManager {
      * @return the service exporter for this builder
      */
     public ServiceExportManager exports() {
-        ServiceExportManager e = exporter;
-        if (e == null) {
-            e = exporter = new ServiceExportManager(this);
-        }
-        return e;
-    }
-
-    @Nullable
-    public ServiceRegistry newExportedServiceRegistry() {
-        return exporter == null ? null : exporter.exportsAsServiceRegistry();
+        return exporter;
     }
 
     /**
@@ -174,6 +164,7 @@ public final class ServiceBuildManager {
             }
         }
 
+        // make the entries immutable
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
@@ -309,7 +300,8 @@ public final class ServiceBuildManager {
         public Map<Key<?>, Service> asMap() {
             // as() + addAttribute on all services is disabled before we start the
             // export process. So ServiceBuild can be considered as effectively final
-            return (Map) services; // TODO fix immutability
+            return (Map) services;
         }
     }
+
 }

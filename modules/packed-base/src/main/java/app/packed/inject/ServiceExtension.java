@@ -217,7 +217,7 @@ public final class ServiceExtension extends Extension {
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return sbm.newExportedServiceRegistry();
+        return sbm.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -315,6 +315,16 @@ public final class ServiceExtension extends Extension {
         }
     }
 
+    /**
+     * Performs a transformation of any exported services. Final adjustments before services are visible a parent container.
+     * 
+     * @param transformer
+     *            transforms the exports
+     */
+    public void exportsTransform(Consumer<? super ServiceTransformation> transformer) {
+        sbm.exports().addExportTransformer(transformer);
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
     public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
         return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PrototypeConfiguration.class);
@@ -357,16 +367,6 @@ public final class ServiceExtension extends Extension {
 }
 
 class ZExtraFunc {
-
-    /**
-     * Performs a transformation of any exported services.
-     * 
-     * @param transformer
-     *            transforms the exports
-     */
-    public void exportsTransform(Consumer<? super ServiceTransformer> transformer) {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Returns an unmodifiable view of the services that are currently available within the container.

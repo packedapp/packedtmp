@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -31,7 +30,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
-import app.packed.inject.ServiceTransformer;
+import app.packed.inject.ServiceTransformation;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.inject.service.build.ExportedServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
@@ -60,7 +59,7 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
-    private LinkedHashMap<Key<?>, ServiceBuild> resolvedExports;
+    private final LinkedHashMap<Key<?>, ServiceBuild> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
     private final ServiceBuildManager sm;
@@ -153,16 +152,12 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
      */
     @Nullable
     public ServiceRegistry exportsAsServiceRegistry() {
-        return resolvedExports == null ? null : AbstractServiceRegistry.copyOf(resolvedExports);
+        return resolvedExports.isEmpty() ? null : AbstractServiceRegistry.copyOf(resolvedExports);
     }
 
     /** {@inheritDoc} */
     @Override
     public Iterator<ServiceBuild> iterator() {
-        if (resolvedExports == null) {
-            List<ServiceBuild> l = List.of();
-            return l.iterator();
-        }
         return resolvedExports.values().iterator();
     }
 
@@ -171,11 +166,9 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
      * {@link ServiceExtension#export(Key)}. We cannot do when they are called, as we allow export statements of entries at
      * any point, even before the
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void resolve() {
         // We could move unresolvedKeyedExports and duplicateExports in here. But keep them as fields
         // to have identical structure to ServiceProvidingManager
-        LinkedHashMap<Key<?>, ExportedServiceBuild> resolvedExports = new LinkedHashMap<>();
         // Process every exported build entry
         if (exportedEntries != null) {
             for (ExportedServiceBuild entry : exportedEntries) {
@@ -192,10 +185,9 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
                 }
 
                 if (entry.exportedEntry != null) {
-                    ExportedServiceBuild existing = resolvedExports.putIfAbsent(entry.key(), entry);
+                    ServiceBuild existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
-                        LinkedHashSet<ExportedServiceBuild> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(),
-                                m -> new LinkedHashSet<>());
+                        LinkedHashSet<ServiceBuild> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
                     }
@@ -218,21 +210,36 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
                 }
             }
         }
+        if (transformer != null) {
+            transform(transformer);
+        }
         // Finally, make the resolved exports visible.
-        this.resolvedExports = (LinkedHashMap) resolvedExports;
     }
 
-    public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
-        if (resolvedExports == null) {
-            resolvedExports = new LinkedHashMap<>();
-        }
+    public void transform(BiConsumer<? super ServiceTransformation, ? super ServiceContract> transformer) {
         PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
     }
 
-    public void transform(Consumer<? super ServiceTransformer> transformer) {
-        if (resolvedExports == null) {
-            resolvedExports = new LinkedHashMap<>();
-        }
+    /**
+     * Transforms the exported services using the specified transformer.
+     * 
+     * @param transformer
+     *            the transformer to use
+     */
+    public void transform(Consumer<? super ServiceTransformation> transformer) {
         PackedServiceTransformer.transformInplace(resolvedExports, transformer);
+    }
+
+    @Nullable
+    Consumer<? super ServiceTransformation> transformer;
+
+    /**
+     * @param transformer
+     */
+    public void addExportTransformer(Consumer<? super ServiceTransformation> transformer) {
+        if (this.transformer != null) {
+            throw new IllegalStateException("Can only set an export transformer once");
+        }
+        this.transformer = requireNonNull(transformer, "transformer is null");
     }
 }

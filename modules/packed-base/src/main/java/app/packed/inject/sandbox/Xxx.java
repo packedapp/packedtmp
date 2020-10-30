@@ -34,6 +34,9 @@ class Xxx extends BaseBundle {
         use(MyEx.class);
         provideInstance("FooBar").export();
         provide(new Factory<Long>(System::currentTimeMillis) {}).export();
+        service().exportsTransform(c -> {
+            c.decorate(Long.class, l -> -l);
+        });
     }
 
     public static void main(String[] args) {
@@ -49,6 +52,9 @@ class Xxx extends BaseBundle {
         System.out.println(l.keys());
         System.out.println(l.use(Integer.class));
         System.out.println(l.use(String.class));
+        System.out.println("---");
+        l.selectAll().forEachInstance(i -> System.out.println(i));
+        System.out.println("---");
         System.out.println("Bye");
     }
 

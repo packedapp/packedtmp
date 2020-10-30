@@ -33,10 +33,17 @@ import app.packed.component.Component;
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
  * 
- * @apiNote In the future, if the Java language permits, {@link ServiceTransformer} may become a {@code sealed}
+ * @apiNote In the future, if the Java language permits, {@link ServiceTransformation} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
+ * 
+ * @see ServiceLocator#transform(java.util.function.Consumer)
+ * @see ServiceLocator#of(java.util.function.Consumer)
+ * @see ServiceWirelets#to(java.util.function.Consumer)
+ * @see ServiceWirelets#from(java.util.function.Consumer)
+ * @see ServiceExtension#exportsTransform(java.util.function.Consumer)
  */
-public interface ServiceTransformer extends ServiceRegistry {
+// ServiceTransformation? (like action), was ServiceTransformer
+public interface ServiceTransformation extends ServiceRegistry {
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
@@ -76,19 +83,13 @@ public interface ServiceTransformer extends ServiceRegistry {
     // prototype or constant...
     // Hvis vi skal bruge den som en Builder...
 
-    default void prototype(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    default void provide(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
     // will override any existing service
     // will be a constant if every single dependency is a constant
     // will be resolved against the realm in which the wirelet is being used
     // if used on root. Must use Factory#withMethodHandle unless public exposed to everyone\
     // will decorate a service injected as itself
+
+    // addAll??? nogle af dem er jo prototypes.
     default void provideAll(ServiceLocator locator) {
         throw new UnsupportedOperationException();
     }
@@ -145,6 +146,8 @@ public interface ServiceTransformer extends ServiceRegistry {
      *             if a service with the specified key does not exist
      * @see #rekeyAll(Function)
      */
+    // service(Key).asFoo()????
+    // asFoo() laver jo en ny service....
     void rekey(Key<?> existingKey, Key<?> newKey); // Return the new service????
 
     /**
@@ -240,8 +243,69 @@ public interface ServiceTransformer extends ServiceRegistry {
     }
 }
 
+interface TProviding extends ServiceTransformation {
+
+    // som provide med constant er styret af det der kommer ind...
+    // in most situations you probably want to use this one
+
+    // auto figure out if constant or prototype
+
+    void map(Class<?> factory);
+
+    /**
+     * <p>
+     * If the specified factory does not have declare any variables. The new services will have default (constant) scope.
+     * 
+     * @param factory
+     * @throws IllegalStateException
+     *             if the specified factory has dependencies that cannot be resolved among available services.
+     */
+    void map(Factory<?> factory);
+
+    /* ------- */
+
+    void prototype(Class<?> factory);
+
+    void prototype(Factory<?> factory);
+
+    void provide(Class<?> factory);
+
+    void provide(Factory<?> factory);
+
+    void replace(Class<?> factory);
+
+    /**
+     * Similar to {@link #map(Factory)} except that it will automatically remove all dependencies of the factory once the
+     * mapping has finished.
+     * 
+     * @param factory
+     *            the factory
+     */
+    void replace(Factory<?> factory);
+}
+
+interface UNext extends ServiceTransformation {
+
+    // Den sidste der mangler er jo en maade at aendre attributer paa
+
+    // En hurtig ide var at returnere en mutable service et sted.
+    // Og saa tilfoeje attributer direkte
+
+    // Det ville ogsaa aabne op for
+
+    // serviceOf(Key).decorate();
+    // serviceOf(Key).as(); (rekey)
+
+    // Men ahh. retur typerne er jeg ikke saa vilde med..
+    // f.eks. decorate skal jo returnere den nye..
+    // men hvad saa med attributer...
+
+    // Vi har jo en en realm!!!!
+    // void addAttribute(Key, attributes);
+}
+
 // Various ideas on provide/rekey
-interface YIdeas extends ServiceTransformer {
+interface YIdeas extends ServiceTransformation {
 
     // alias()??
 
@@ -268,21 +332,13 @@ interface YIdeas extends ServiceTransformer {
         rekeyAll(s -> s.key().withQualifier(qualifier));
     }
 
-    // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
-    // If the specified factory has itself as a variable.
+    // provide(new Foo<>(e->e)); eller
+    // protoype(new Foo<>(e->e)); eller
+    // Det er jo sjaeldent man bare vil lave den til en konstant.
+    // Som regel vil man gerne argumentere den
+    default void constify(Key<?> key) {}
 
-    ServiceTransformer map(Factory<?> factory, int... resolveInternally);
-
-    // Otherwise they are completed resolved instream...
-    // I think I would rather have something like
-    // se.pushForChildExportTransformartion(Key... keys);
-
-    // Eller ogsaa skal vi have endnu en lag
-    // Foerend alle services bliver brugt....
-    // Syntes ikke den her fin
-    ServiceTransformer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
-
-    Service mapService(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    Service map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // Return the same name to avoid any rekeying
 
@@ -311,17 +367,31 @@ interface YIdeas extends ServiceTransformer {
 
 }
 
-interface ZBadIdeas extends ServiceTransformer {
+interface ZBadIdeas extends ServiceTransformation {
     // wirelets can communicate here???
     // Nah make an AtomicReference... og sa lambda capture
     Object attachment();
 
-    ServiceTransformer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    ServiceTransformation map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+
+    ServiceTransformation map(Factory<?> factory, int... resolveInternally);
+
+    // Eller ogsaa skal vi have endnu en lag
+    // Foerend alle services bliver brugt....
+    // Syntes ikke den her fin
+    ServiceTransformation mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
 
     // JPMS-> Record must be readable for Packed
     // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
     // Man maa lave noget midlertigt hulumhej, som ma saa remover
-    ServiceTransformer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+    ServiceTransformation multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+
+    // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
+    // If the specified factory has itself as a variable.
+
+    // Kunne kun bruges i forbindelse med wirelets eller exportTransformation
+    // Men folk maa kunne arbejde udenom paa en anden maade.
+    // f.eks. er det jo ikke noget problem for toWirelets.. der faar man alt.
 
     /**
      * A version of
@@ -337,7 +407,11 @@ interface ZBadIdeas extends ServiceTransformer {
         rekey(Key.of(existingKey), Key.of(newKey));
     }
 
-    ServiceTransformer retainIf(Iterable<? super Key<?>> keys);
+    // Otherwise they are completed resolved instream...
+    // I think I would rather have something like
+    // se.pushForChildExportTransformartion(Key... keys);
+
+    ServiceTransformation retainIf(Iterable<? super Key<?>> keys);
 
 }
 

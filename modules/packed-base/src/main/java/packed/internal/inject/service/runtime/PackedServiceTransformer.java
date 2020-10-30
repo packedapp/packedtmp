@@ -31,21 +31,25 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.ServiceTransformer;
+import app.packed.inject.ServiceTransformation;
 import packed.internal.inject.service.build.ConstantServiceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.sandbox.RuntimeAdaptorServiceBuild;
 import packed.internal.util.ForwardingMap;
 import packed.internal.util.ForwardingStrategy;
 
-/** Implementation of {@link ServiceTransformer}. */
+/** Implementation of {@link ServiceTransformation}. */
 // Currently used
 // ServiceLocator.transform
 // ServiceLocator.of
 // Wirelet.toTransform
-public final class PackedServiceTransformer extends AbstractServiceRegistry implements ServiceTransformer {
+// Wirelet.fromTransform
+// ServiceExtension.extensionTransform
+public final class PackedServiceTransformer extends AbstractServiceRegistry implements ServiceTransformation {
 
     /** The services that we are transforming */
+    // An alternative implementation would be to have a backing map and a filter
+    // However then asMap() would be difficult to implement.
     public final Map<Key<?>, AbstractService> services;
 
     private Map<Key<?>, Service> asMap;
@@ -128,7 +132,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         services.putAll(newServices);
     }
 
-    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformer> transformer) {
+    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformation> transformer) {
 //        PackedServiceTransformer pst = new PackedServiceTransformer(services);
 //        public void transform(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
 //            if (resolvedExports == null) {
@@ -142,7 +146,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
     }
 
     public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
-            BiConsumer<? super ServiceTransformer, ? super T> transformer, T attachment) {
+            BiConsumer<? super ServiceTransformation, ? super T> transformer, T attachment) {
 
         PackedServiceTransformer dst = new PackedServiceTransformer(services);
         transformer.accept(dst, attachment);
@@ -162,7 +166,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         return new PackedInjector(ConfigSite.UNKNOWN, runtimeEntries);
     }
 
-    public static ServiceLocator transform(Consumer<? super ServiceTransformer> transformer, Collection<RuntimeService> services) {
+    public static ServiceLocator transform(Consumer<? super ServiceTransformation> transformer, Collection<RuntimeService> services) {
         requireNonNull(transformer, "transformer is null");
         HashMap<Key<?>, ServiceBuild> m = new HashMap<>();
         for (RuntimeService s : services) {
@@ -180,7 +184,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
      *            the transformer used to create the locator
      * @return a new service locator
      */
-    public static ServiceLocator of(Consumer<? super ServiceTransformer> transformer) {
+    public static ServiceLocator of(Consumer<? super ServiceTransformation> transformer) {
         requireNonNull(transformer, "transformer is null");
         PackedServiceTransformer psm = new PackedServiceTransformer(new HashMap<>());
         transformer.accept(psm);

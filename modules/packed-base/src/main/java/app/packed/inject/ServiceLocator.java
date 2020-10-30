@@ -148,13 +148,13 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * Creates a new service locator by transformation of the service present in this locator.
+     * Creates a new service locator by transformation of the services in this locator.
      * 
-     * @param transformer
-     *            the transformer
+     * @param transformation
+     *            the transformation to perform
      * @return the new service locator
      */
-    ServiceLocator transform(Consumer<ServiceTransformer> transformer);
+    ServiceLocator transform(Consumer<ServiceTransformation> transformation);
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
@@ -225,7 +225,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transformer used to create the locator
      * @return a new service locator
      */
-    static ServiceLocator of(Consumer<? super ServiceTransformer> transformer) {
+    static ServiceLocator of(Consumer<? super ServiceTransformation> transformer) {
         return PackedServiceTransformer.of(transformer);
     }
 }

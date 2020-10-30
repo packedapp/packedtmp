@@ -18,7 +18,6 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,13 +30,14 @@ import app.packed.base.Key;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceRegistry;
 import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.util.CollectionUtil;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /** An abstract implementation of ServiceRegistry. */
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     /** An empty service registry */
-    public static final ServiceRegistry EMPTY = new CopyOfRegistry(Map.of());
+    public static final ServiceRegistry EMPTY = new ImmutableRegistry(Map.of());
 
     /** {@inheritDoc} */
     @Override
@@ -128,22 +128,23 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      * @return a new service registry
      */
     public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceBuild> map) {
-        LinkedHashMap<Key<?>, Service> l = new LinkedHashMap<Key<?>, Service>();
-        for (ServiceBuild e : map.values()) {
-            l.put(e.key(), e.toService());
-        }
-        return new CopyOfRegistry(l);
+        return new ImmutableRegistry(CollectionUtil.copyOf(map, b -> b.toService()));
     }
 
     /** The registry implementation returned by {@link #copyOf(Map)}. */
-    private static final class CopyOfRegistry extends AbstractServiceRegistry {
+    private static final class ImmutableRegistry extends AbstractServiceRegistry {
 
         /** The services that are wrapped */
         private final Map<Key<?>, Service> services;
 
-        private CopyOfRegistry(Map<Key<?>, Service> services) {
-            // TODO does not maintain order?
-            this.services = Map.copyOf(services); // We want the map to immutable
+        /**
+         * Creates a new immutable service registry.
+         * 
+         * @param services
+         *            the services that make of the registry
+         */
+        private ImmutableRegistry(Map<Key<?>, Service> services) {
+            this.services = Map.copyOf(services);
         }
 
         /** {@inheritDoc} */

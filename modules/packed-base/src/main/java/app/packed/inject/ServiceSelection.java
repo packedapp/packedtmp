@@ -52,18 +52,34 @@ import app.packed.base.TypeToken;
 // Hmm hvordan haandtere vi Injector????
 // Vi bliver noedt til ogsaa at have den paa plads..
 public interface ServiceSelection<S> extends ServiceLocator {
-    void forEachInstance(Consumer<? super S> action);
 
-    void forEachInstance(BiConsumer<? super Service, ? super S> action);
-
-    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
+    default void forEachInstance(Consumer<? super S> action) {
+        instances().forEach(action);
+    }
 
     Stream<S> instances();
 
-    Stream<Provider<S>> providers();
+    default void forEachInstance(BiConsumer<? super Service, ? super S> action) {
+        throw new UnsupportedOperationException();
+    }
+
+}
+
+interface Zandbox<S> extends ServiceSelection<S> {
+
+    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
+
+    // does not support regexp
+    ServiceSelection<S> named(String name);
 
     // select(Foo.class).withName()
     // select().withName()
+
+    Stream<Provider<S>> providers();
+
+    ServiceSelection<S> qualifiedWith(Annotation qualifier);
+
+    ServiceSelection<S> qualifiedWith(Class<? extends Annotation> qualifier);
 
     Stream<Map.Entry<Service, S>> serviceInstances();
 
@@ -77,23 +93,16 @@ public interface ServiceSelection<S> extends ServiceLocator {
     // Tror vi skal fikse ServiceRegistry.toList();
     List<S> toInstanceList();
 
-    List<Provider<S>> toProviderList();
-
     Map<Key<? extends S>, S> toMapKeyInstances();
-
-    Map<Key<? extends S>, Provider<S>> toMapKeyProviders();
-
-    <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);
 
     // Only those services which has the s
     // has a qualifier
 
-    // does not support regexp
-    ServiceSelection<S> named(String name);
+    Map<Key<? extends S>, Provider<S>> toMapKeyProviders();
 
-    ServiceSelection<S> qualifiedWith(Annotation qualifier);
+    List<Provider<S>> toProviderList();
 
-    ServiceSelection<S> qualifiedWith(Class<? extends Annotation> qualifier);
+    <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);
 
     <T extends Annotation> ServiceSelection<S> withQualifier(Class<? extends T> qualifier, Predicate<? super T> filter);
 }
