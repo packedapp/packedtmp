@@ -17,15 +17,15 @@ package packed.internal.inject;
 
 import app.packed.base.Key;
 import app.packed.base.Named;
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceWirelets;
 
 /**
  *
  */
-public class FooBar extends BaseBundle {
+public class FooBar extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
@@ -62,7 +62,7 @@ public class FooBar extends BaseBundle {
         a.use(Runnable.class).run();
     }
 
-    public static class Child extends BaseBundle {
+    public static class Child extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override

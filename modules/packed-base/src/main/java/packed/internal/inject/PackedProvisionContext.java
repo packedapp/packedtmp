@@ -23,8 +23,8 @@ import java.util.Optional;
 import app.packed.base.AnnotatedVariable;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.bundle.Extension;
 import app.packed.component.Component;
-import app.packed.cube.Extension;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
 

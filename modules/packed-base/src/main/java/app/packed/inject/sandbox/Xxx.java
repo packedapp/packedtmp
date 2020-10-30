@@ -17,16 +17,16 @@ package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
 import app.packed.base.Named;
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.Extension;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceLocator;
 
 /**
  *
  */
-class Xxx extends BaseBundle {
+class Xxx extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override

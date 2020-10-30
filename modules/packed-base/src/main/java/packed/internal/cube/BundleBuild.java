@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import app.packed.base.Nullable;
-import app.packed.cube.Extension;
-import app.packed.cube.InternalExtensionException;
+import app.packed.bundle.Extension;
+import app.packed.bundle.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.BuildtimeRegion;
@@ -34,11 +34,11 @@ import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.ServiceSubSystem;
 
 /** Contains data and logic relevant for containers. */
-public final class CubeBuild {
+public final class BundleBuild {
 
     /** Child containers, lazy initialized */
     @Nullable
-    public ArrayList<CubeBuild> children;
+    public ArrayList<BundleBuild> children;
 
     /** The component this container is a part of. */
     public final ComponentBuild compConf;
@@ -56,7 +56,7 @@ public final class CubeBuild {
 
     /** Any parent container this container might have. */
     @Nullable
-    public final CubeBuild parent;
+    public final BundleBuild parent;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
@@ -70,13 +70,13 @@ public final class CubeBuild {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public CubeBuild(ComponentBuild compConf) {
+    public BundleBuild(ComponentBuild compConf) {
         this.compConf = requireNonNull(compConf);
 
         this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
         if (parent != null) {
             parent.runPredContainerChildren();
-            ArrayList<CubeBuild> c = parent.children;
+            ArrayList<BundleBuild> c = parent.children;
             if (c == null) {
                 c = parent.children = new ArrayList<>();
             }
@@ -115,7 +115,7 @@ public final class CubeBuild {
 
         // Resolve local services
         if (sbm != null) {
-            sbm.resolve();
+            sbm.prepareDependants();
         }
 
         for (Dependant i : dependants) {

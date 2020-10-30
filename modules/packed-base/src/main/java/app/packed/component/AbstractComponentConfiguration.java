@@ -23,8 +23,8 @@ import java.lang.reflect.Modifier;
 import java.util.Optional;
 
 import app.packed.base.TreePath;
+import app.packed.bundle.Extension;
 import app.packed.config.ConfigSite;
-import app.packed.cube.Extension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 import packed.internal.config.ConfigSiteSupport;
@@ -100,13 +100,13 @@ public abstract class AbstractComponentConfiguration {
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
     }
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
      * <p>
-     * A component is typically only configurable inside of {@link Bundle#build()}.
+     * A component is typically only configurable inside of {@link Assembly#build()}.
      * 
      * @throws IllegalStateException
      *             if the component is no long configurable.
@@ -147,7 +147,7 @@ public abstract class AbstractComponentConfiguration {
      * @param wirelets
      *            any wirelets
      */
-    public final void link(Bundle<?> bundle, Wirelet... wirelets) {
+    public final void link(Assembly<?> bundle, Wirelet... wirelets) {
         ((ComponentBuild) context).link(bundle, wirelets);
     }
 

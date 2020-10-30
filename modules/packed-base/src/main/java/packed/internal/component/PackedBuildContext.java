@@ -22,7 +22,7 @@ import java.util.function.Function;
 import app.packed.base.Nullable;
 import app.packed.component.Assembler;
 import app.packed.component.BuildContext;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.ShellDriver;
@@ -104,7 +104,7 @@ public final class PackedBuildContext implements BuildContext {
      *            optional wirelets
      * @return the root component configuration node
      */
-    public static ComponentBuild assemble(Bundle<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+    public static ComponentBuild assemble(Assembly<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
 
         // First we extract the component driver from the bundle
         PackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);

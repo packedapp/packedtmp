@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package app.packed.bundle;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -33,12 +33,12 @@ import packed.internal.component.ComponentBuild;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link CubeBundle} or {@link BaseBundle}.
+ * extending {@link BundleAssembly} or {@link BaseAssembly}.
  */
-public final class CubeConfiguration extends AbstractComponentConfiguration {
+public final class BundleConfiguration extends AbstractComponentConfiguration {
 
     /** A driver that create container components. */
-    private static final ComponentDriver<CubeConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), CubeConfiguration.class,
+    private static final ComponentDriver<BundleConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), BundleConfiguration.class,
             Option.container());
 
     /**
@@ -47,7 +47,7 @@ public final class CubeConfiguration extends AbstractComponentConfiguration {
      * @param context
      *            the component configuration context
      */
-    private CubeConfiguration(ComponentConfigurationContext context) {
+    private BundleConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
 
@@ -57,7 +57,7 @@ public final class CubeConfiguration extends AbstractComponentConfiguration {
      * @return an unmodifiable view of the extensions that are currently used
      * 
      * @see #use(Class)
-     * @see CubeBundle#extensions()
+     * @see BundleAssembly#extensions()
      */
     public Set<Class<? extends Extension>> extensions() {
         return context.cubeExtensions();
@@ -86,7 +86,7 @@ public final class CubeConfiguration extends AbstractComponentConfiguration {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see CubeBundle#install(Factory)
+     * @see BundleAssembly#install(Factory)
      */
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
         return wire(BeanConfiguration.driver(), factory);
@@ -98,7 +98,7 @@ public final class CubeConfiguration extends AbstractComponentConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see CubeBundle#installInstance(Object)
+     * @see BundleAssembly#installInstance(Object)
      */
     public <T> BeanConfiguration<T> installInstance(T instance) {
         return wireInstance(BeanConfiguration.driver(), instance);
@@ -140,7 +140,7 @@ public final class CubeConfiguration extends AbstractComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public CubeConfiguration setName(String name) {
+    public BundleConfiguration setName(String name) {
         super.setName(name);
         return this;
     }
@@ -172,7 +172,7 @@ public final class CubeConfiguration extends AbstractComponentConfiguration {
      * 
      * @return the default driver for containers
      */
-    public static ComponentDriver<CubeConfiguration> driver() {
+    public static ComponentDriver<BundleConfiguration> driver() {
         return DRIVER;
     }
 }

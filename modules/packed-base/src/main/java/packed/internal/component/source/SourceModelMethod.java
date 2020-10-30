@@ -26,7 +26,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.cube.Extension;
+import app.packed.bundle.Extension;
 import app.packed.sidecar.MethodSidecar;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;

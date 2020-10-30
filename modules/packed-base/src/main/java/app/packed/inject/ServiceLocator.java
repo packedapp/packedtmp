@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.component.App;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentSystem;
 import app.packed.component.Wirelet;
 import app.packed.sidecar.ActiveVariableSidecar;
@@ -234,7 +234,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            optional wirelet
      * @return a new service locator
      */
-    static ServiceLocator of(Bundle<?> bundle, Wirelet... wirelets) {
+    static ServiceLocator of(Assembly<?> bundle, Wirelet... wirelets) {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
 

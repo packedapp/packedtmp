@@ -18,13 +18,13 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import app.packed.cube.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import packed.internal.component.BundleHelper;
 import packed.internal.component.PackedComponentDriver;
 
 /**
  * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component. This
- * class is primary used through one of its subclasses such as {@link BaseBundle}.
+ * class is primary used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * This class is not meant to be directly extended by ordinary users. But provides means for power users to extend the
  * basic functionality of Packed.
@@ -34,7 +34,7 @@ import packed.internal.component.PackedComponentDriver;
  */
 // Build eller Assembly. syntes ikke det skal hedde bundle mere...
 // you write build classes
-public abstract class Bundle<C> implements ComponentSystem {
+public abstract class Assembly<C> implements ComponentSystem {
 
     /**
      * The configuration of this bundle. This field is set via a VarHandle from {@link BundleHelper}.
@@ -61,7 +61,7 @@ public abstract class Bundle<C> implements ComponentSystem {
      * @param driver
      *            the driver to use for constructing this bundle's configuration object
      */
-    protected Bundle(ComponentDriver<? extends C> driver) {
+    protected Assembly(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
     }
 

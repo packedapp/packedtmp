@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.base.AttributedElementStream;
-import app.packed.cube.Extension;
+import app.packed.bundle.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**

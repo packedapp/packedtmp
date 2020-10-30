@@ -22,8 +22,8 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.cube.Extension;
-import app.packed.cube.InternalExtensionException;
+import app.packed.bundle.Extension;
+import app.packed.bundle.InternalExtensionException;
 
 /** Tests {@link ExtensionModel}. */
 public class ExtensionModelTest {

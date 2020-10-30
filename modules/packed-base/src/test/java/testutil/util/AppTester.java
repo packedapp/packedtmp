@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.component.App;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
 import app.packed.component.Image;
@@ -36,7 +36,7 @@ public class AppTester {
         this.app = requireNonNull(app);
     }
 
-    public AppTester(Bundle<?> source, Wirelet... wirelets) {
+    public AppTester(Assembly<?> source, Wirelet... wirelets) {
         this(App.of(source, wirelets));
     }
 
@@ -61,7 +61,7 @@ public class AppTester {
         return app.stream();
     }
 
-    public static AppTester of(Bundle<?> source, Wirelet... wirelets) {
+    public static AppTester of(Assembly<?> source, Wirelet... wirelets) {
         return new AppTester(App.of(source, wirelets));
     }
 }

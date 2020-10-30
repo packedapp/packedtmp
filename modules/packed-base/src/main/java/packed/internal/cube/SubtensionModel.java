@@ -17,9 +17,9 @@ package packed.internal.cube;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.cube.Extension;
-import app.packed.cube.InternalExtensionException;
-import app.packed.cube.Extension.Subtension;
+import app.packed.bundle.Extension;
+import app.packed.bundle.InternalExtensionException;
+import app.packed.bundle.Extension.Subtension;
 
 /**
  *

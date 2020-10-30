@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.cube.Extension;
-import app.packed.cube.ExtensionSetup;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionSetup;
 import testutil.util.AbstractArtifactTest;
 
 /**

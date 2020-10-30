@@ -28,8 +28,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
 
 /**
  *
@@ -47,7 +47,7 @@ public class AppManyChildrenMicro {
 
     @Benchmark
     public App manyChildren() {
-        return App.of(new BaseBundle() {
+        return App.of(new BaseAssembly() {
             @Override
             protected void build() {
                 for (int i = 0; i < size; i++) {
@@ -57,7 +57,7 @@ public class AppManyChildrenMicro {
         });
     }
 
-    static class TBundle extends BaseBundle {
+    static class TBundle extends BaseAssembly {
 
         final String name;
 

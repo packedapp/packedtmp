@@ -27,9 +27,9 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
 import app.packed.component.Image;
-import app.packed.cube.BaseBundle;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
 
@@ -41,13 +41,13 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final Image<App> INSTALL31 = App.imageOf(new BaseBundle() {
+    static final Image<App> INSTALL31 = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             // install(A.class);
             // install(NeedsA.class);
             for (int i = 0; i < 10; i++) {
-                link(new BaseBundle() {
+                link(new BaseAssembly() {
                     @Override
                     public void build() {
                         install(A.class);
@@ -58,23 +58,23 @@ public class ImageBigMicro {
         }
     });
 
-    static final Image<App> INSTALL253 = App.imageOf(new BaseBundle() {
+    static final Image<App> INSTALL253 = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             for (int i = 0; i < 4; i++) {
-                link(new BaseBundle() {
+                link(new BaseAssembly() {
                     @Override
                     public void build() {
                         install(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
-                            link(new BaseBundle() {
+                            link(new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     install(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
-                                        link(new BaseBundle() {
+                                        link(new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 install(A.class);
@@ -90,23 +90,23 @@ public class ImageBigMicro {
             }
         }
     });
-    static final Image<App> INSTALL253_NOS = App.imageOf(new BaseBundle() {
+    static final Image<App> INSTALL253_NOS = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             for (int i = 0; i < 4; i++) {
-                link(new BaseBundle() {
+                link(new BaseAssembly() {
                     @Override
                     public void build() {
                         installInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
-                            link(new BaseBundle() {
+                            link(new BaseAssembly() {
                                 @Override
                                 public void build() {
                                     installInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
-                                        link(new BaseBundle() {
+                                        link(new BaseAssembly() {
                                             @Override
                                             public void build() {
                                                 installInstance(new A());

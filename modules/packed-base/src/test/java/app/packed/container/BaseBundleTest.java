@@ -19,8 +19,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
 import testutil.util.AbstractArtifactTest;
 
 /** Various Bundle tests. */
@@ -29,7 +29,7 @@ public class BaseBundleTest extends AbstractArtifactTest {
     /** Tests that a bundle cannot be reused. */
     @Test
     public void notReusable() {
-        BaseBundle empty = new BaseBundle() {
+        BaseAssembly empty = new BaseAssembly() {
             @Override
             protected void build() {}
         };
@@ -41,7 +41,7 @@ public class BaseBundleTest extends AbstractArtifactTest {
     /** Tests that a bundle cannot be reused. */
     @Test
     public void cannotLinkSelf() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
                 link(this);

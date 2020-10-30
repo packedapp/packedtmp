@@ -20,9 +20,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.TreePath;
+import app.packed.bundle.BundleAssembly;
+import app.packed.bundle.Extension;
 import app.packed.config.ConfigSite;
-import app.packed.cube.CubeBundle;
-import app.packed.cube.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
@@ -60,7 +60,7 @@ public interface ComponentConfigurationContext {
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
      * <p>
-     * A component is typically only configurable inside of {@link Bundle#build()}.
+     * A component is typically only configurable inside of {@link Assembly#build()}.
      * 
      * @throws IllegalStateException
      *             if the component is no longer configurable.
@@ -79,7 +79,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return an unmodifiable view of the extensions that are currently used
      * 
-     * @see CubeBundle#extensions()
+     * @see BundleAssembly#extensions()
      */
     // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
     Set<Class<? extends Extension>> cubeExtensions();
@@ -117,7 +117,7 @@ public interface ComponentConfigurationContext {
      *          void return type.
      */
     // Why not just wire... or maybe link and linklist
-    void link(Bundle<?> bundle, Wirelet... wirelets);
+    void link(Assembly<?> bundle, Wirelet... wirelets);
 
     /**
      * Returns an immutable set containing all the modifiers of this component.

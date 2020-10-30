@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.Extension;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.Extension;
 import packed.internal.cube.Packlet;
 import testutil.util.AbstractArtifactTest;
 
@@ -37,7 +37,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceMethod() {
-        App.of(new BaseBundle() {
+        App.of(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -51,7 +51,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticField() {
-        App.of(new BaseBundle() {
+        App.of(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -63,7 +63,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceField() {
-        App.of(new BaseBundle() {
+        App.of(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -75,7 +75,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticMethod() {
-        App.of(new BaseBundle() {
+        App.of(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();

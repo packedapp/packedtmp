@@ -16,7 +16,7 @@
 package app.packed.cli;
 
 import app.packed.component.App;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerState;
 import app.packed.container.ContainerWirelets;
@@ -49,17 +49,17 @@ public class Main {
     // Wirelets-> til bundlen og ikke hosten...
 
     // Er maaske lidt mere til noget builder agtigt.
-    public static void restartable(Bundle<?> bundle, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> bundle, Wirelet... wirelets) {}
 
-    public static void restartable(Bundle<?> bundle, String[] args, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> bundle, String[] args, Wirelet... wirelets) {}
 
-    public static void restartable(Bundle<?> bundle, Object errorHandler, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> bundle, Object errorHandler, Wirelet... wirelets) {}
 
-    public static void restartable(Bundle<?> bundle, Object errorHandler, String[] args, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> bundle, Object errorHandler, String[] args, Wirelet... wirelets) {}
 
     // sync deamon???????
     // App.main(new Goo(), args);
-    public static void main(Bundle<?> bundle, String[] args, Wirelet... wirelets) {
+    public static void main(Assembly<?> bundle, String[] args, Wirelet... wirelets) {
         ComponentBuild node = PackedBuildContext.assemble(bundle, 0, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
         PackedInitializationContext.initialize(node);
     }
@@ -84,7 +84,7 @@ public class Main {
     // add exitOnEnter() <--- so useful for tests
     // exitable daemon...
     // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
-    public static void main(Bundle<?> bundle, Wirelet... wirelets) {
+    public static void main(Assembly<?> bundle, Wirelet... wirelets) {
         // TODO add ContainerWirelets.shutdownHook()
         ComponentBuild node = PackedBuildContext.assemble(bundle, 0, null, wirelets);
         PackedInitializationContext.initialize(node);

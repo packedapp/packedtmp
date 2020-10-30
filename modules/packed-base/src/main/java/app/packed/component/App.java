@@ -133,7 +133,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *            optional wirelets
      * @return a new app image
      */
-    static Image<App> imageOf(Bundle<?> bundle, Wirelet... wirelets) {
+    static Image<App> imageOf(Assembly<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
@@ -155,7 +155,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @throws RuntimeException
      *             if the application could not be created or started
      */
-    static App of(Bundle<?> bundle, Wirelet... wirelets) {
+    static App of(Assembly<?> bundle, Wirelet... wirelets) {
         return driver().newShell(bundle, wirelets);
     }
 }

@@ -17,8 +17,8 @@ package app.packed.component;
 
 import java.lang.reflect.Modifier;
 
+import app.packed.bundle.Extension;
 import app.packed.cli.Main;
-import app.packed.cube.Extension;
 import app.packed.inject.Factory;
 
 /**
@@ -163,7 +163,7 @@ public enum ComponentModifier {
 
     /**
      * Indicates that a component has a shell attached. For example, an application created via
-     * {@link App#of(Bundle, Wirelet...)} to create a shell.
+     * {@link App#of(Assembly, Wirelet...)} to create a shell.
      * <p>
      * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
      * users make

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,9 +23,10 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
+import app.packed.bundle.Extension.Subtension;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentDriver;
@@ -34,7 +35,6 @@ import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.cube.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 import packed.internal.cube.ExtensionBuild;
@@ -99,7 +99,7 @@ public interface ExtensionConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see CubeConfiguration#installInstance(Object)
+     * @see BundleConfiguration#installInstance(Object)
      */
     <T> BeanConfiguration<T> installInstance(T instance);
 
@@ -123,7 +123,7 @@ public interface ExtensionConfiguration {
      * @param wirelets
      *            optional wirelets
      */
-    void link(Bundle<?> bundle, Wirelet... wirelets);
+    void link(Assembly<?> bundle, Wirelet... wirelets);
 
     /**
      * Returns the component path of the extension. The path of the extension's container, can be obtained by calling
@@ -139,7 +139,7 @@ public interface ExtensionConfiguration {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link CubeConfiguration#use(Class)}. However, this method checks that only extensions
+     * This method works similar to {@link BundleConfiguration#use(Class)}. However, this method checks that only extensions
      * that have been declared as dependencies via {@link ExtensionSetup#dependencies()} are specified. This is done in
      * order to make sure that no extensions ever depend on each other.
      * 
@@ -154,7 +154,7 @@ public interface ExtensionConfiguration {
      * @throws UnsupportedOperationException
      *             if the specified extension type is not specified via {@link ExtensionSetup} on this extension.
      * 
-     * @see CubeConfiguration#use(Class)
+     * @see BundleConfiguration#use(Class)
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 

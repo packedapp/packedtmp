@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -34,7 +35,7 @@ import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.cube.CubeBuild;
+import packed.internal.cube.BundleBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceInstanceServiceBuild;
@@ -51,7 +52,7 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 public final class ServiceBuildManager {
 
     /** The container this service manager is a part of. */
-    private final CubeBuild container;
+    private final BundleBuild container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceRequirementsManager dependencies;
@@ -77,7 +78,7 @@ public final class ServiceBuildManager {
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceBuildManager(CubeBuild container) {
+    public ServiceBuildManager(BundleBuild container) {
         this.container = requireNonNull(container);
     }
 
@@ -199,7 +200,7 @@ public final class ServiceBuildManager {
 
     // Lazy laver den...
 
-    public void resolve() {
+    public void prepareDependants() {
         // First we take all locally defined services
         for (ServiceBuild entry : localServices) {
             resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
@@ -217,13 +218,13 @@ public final class ServiceBuildManager {
 
         // Process exports from any children
         if (container.children != null) {
-            for (CubeBuild c : container.children) {
+            for (BundleBuild c : container.children) {
                 ServiceBuildManager child = c.getServiceManager();
 
                 WireletPack wp = c.compConf.wirelets;
-                List<ServiceWirelet1stPass> wirelets = wp == null ? null : wp.receiveAll(ServiceWirelet1stPass.class);
+                List<Service1stPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service1stPassWirelet.class);
                 if (wirelets != null) {
-                    for (ServiceWirelet1stPass f : wirelets) {
+                    for (Service1stPassWirelet f : wirelets) {
                         f.process(child);
                     }
                 }
@@ -250,22 +251,46 @@ public final class ServiceBuildManager {
         }
         // Add error messages if any nodes with the same key have been added multiple times
 
-        // Process imports to children
+        // Process child requirements to children
         if (container.children != null) {
-            for (CubeBuild c : container.children) {
+            for (BundleBuild c : container.children) {
                 ServiceBuildManager m = c.getServiceManager();
+                if (m != null) {
+                    m.processIncomingPipelines(this);
+                }
+            }
+        }
+    }
 
-                // If Wirelets
+    private void processIncomingPipelines(@Nullable ServiceBuildManager parent) {
+        WireletPack wp = container.compConf.wirelets;
+        List<Service2ndPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service2ndPassWirelet.class);
 
-                ServiceRequirementsManager srm = m.dependencies;
-                if (srm != null) {
-                    for (Requirement r : srm.requirements.values()) {
-                        Wrapper sa = resolvedServices.get(r.key);
-                        if (sa != null) {
-                            for (FromInjectable i : r.list) {
-                                i.i.setDependencyProvider(i.dependencyIndex, sa.getSingle());
-                            }
-                        }
+        LinkedHashMap<Key<?>, ServiceBuild> map = new LinkedHashMap<>();
+        for (Entry<Key<?>, Wrapper> e : resolvedServices.entrySet()) {
+            if (!exports().contains(e.getKey())) {
+                map.put(e.getKey(), e.getValue().getSingle());
+            }
+        }
+
+        // Process wirelets
+        if (wirelets != null) {
+            // we need to remove all of the child's exports.
+
+            for (Service2ndPassWirelet f : wirelets) {
+                f.process(parent, this, map);
+            }
+        }
+
+        // If Processere wirelets...
+
+        ServiceRequirementsManager srm = dependencies;
+        if (srm != null) {
+            for (Requirement r : srm.requirements.values()) {
+                ServiceBuild sa = map.get(r.key);
+                if (sa != null) {
+                    for (FromInjectable i : r.list) {
+                        i.i.setDependencyProvider(i.dependencyIndex, sa);
                     }
                 }
             }

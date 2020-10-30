@@ -21,11 +21,11 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 
-/** A model of a realm, typically based on a subclass of {@link Bundle}. */
+/** A model of a realm, typically based on a subclass of {@link Assembly}. */
 final class RealmModel extends RealmLookup {
 
     /** A cache of realm models. */
@@ -54,7 +54,7 @@ final class RealmModel extends RealmLookup {
         }
     };
 
-    /** The realm type, typically a subclass of {@link Bundle}. */
+    /** The realm type, typically a subclass of {@link Assembly}. */
     final Class<?> type;
 
     /**

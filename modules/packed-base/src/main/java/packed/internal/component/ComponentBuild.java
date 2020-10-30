@@ -34,7 +34,8 @@ import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
-import app.packed.component.Bundle;
+import app.packed.bundle.Extension;
+import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
@@ -45,7 +46,6 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.cube.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
@@ -57,7 +57,7 @@ import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.cube.CubeBuild;
+import packed.internal.cube.BundleBuild;
 import packed.internal.cube.ExtensionBuild;
 import packed.internal.cube.ExtensionModel;
 import packed.internal.util.ThrowableUtil;
@@ -85,11 +85,11 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** A cube build if this component is an cube, otherwise null. */
     @Nullable
-    public final CubeBuild cube;
+    public final BundleBuild cube;
 
     /** Any cube this component is part of. A cube is part of it self. */
     @Nullable
-    public final CubeBuild memberOfCube;
+    public final BundleBuild memberOfCube;
 
     /** An extension build if this component is an extension, otherwise null. */
     @Nullable
@@ -154,7 +154,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
         // Setup Container
         if (modifiers().isContainer()) {
-            this.memberOfCube = this.cube = new CubeBuild(this);
+            this.memberOfCube = this.cube = new BundleBuild(this);
         } else {
             this.cube = null;
             this.memberOfCube = parent == null ? null : parent.memberOfCube;
@@ -299,7 +299,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
     }
 
     /** {@inheritDoc} */
@@ -353,7 +353,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
      * @return the container this component is a part of
      */
     @Nullable
-    public CubeBuild getMemberOfContainer() {
+    public BundleBuild getMemberOfContainer() {
         return memberOfCube;
     }
 
@@ -374,7 +374,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     // loop situations, for example, if a bundle recursively links itself which fails by throwing
     // java.lang.StackOverflowError instead of an infinite loop.
     @Override
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
+    public void link(Assembly<?> bundle, Wirelet... wirelets) {
         // Get the driver from the bundle
         PackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
 
@@ -488,7 +488,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
                 // I think try and move some of this to ComponentNameWirelet
                 @Nullable
                 Class<?> source = realm.realmType();
-                if (Bundle.class.isAssignableFrom(source)) {
+                if (Assembly.class.isAssignableFrom(source)) {
                     String nnn = source.getSimpleName();
                     if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
                         nnn = nnn.substring(0, nnn.length() - 6);

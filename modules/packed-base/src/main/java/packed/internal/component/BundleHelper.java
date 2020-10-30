@@ -21,30 +21,30 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** Helper class to access non-public members in {@link Bundle}. */
+/** Helper class to access non-public members in {@link Assembly}. */
 public final class BundleHelper {
 
     public static final BundleHelper BUNDLE_CONSUMED = new BundleHelper();
 
     /** A VarHandle that can access Bundle#configuration. */
-    private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Bundle.class, "configuration",
+    private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "configuration",
             Object.class);
 
-    /** A VarHandle used from {@link #getDriver(Bundle)} to access the driver field from a {@link Bundle}. */
-    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Bundle.class, "driver",
+    /** A VarHandle used from {@link #getDriver(Assembly)} to access the driver field from a {@link Assembly}. */
+    private static final VarHandle VH_BUNDLE_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
             PackedComponentDriver.class);
 
     /** A MethodHandle that can invoke Bundle#configure. */
-    private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Bundle.class, "build", void.class);
+    private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "build", void.class);
 
     /** No instances for you. */
     private BundleHelper() {}
 
-    public static void configure(Bundle<?> bundle, Object configuration) {
+    public static void configure(Assembly<?> bundle, Object configuration) {
         // We perform a compare and exchange with configuration. Guarding against
         // concurrent usage of this bundle.
 
@@ -84,7 +84,7 @@ public final class BundleHelper {
      * @return the specified bundle's component driver
      * @see #VH_BUNDLE_DRIVER
      */
-    public static <C> PackedComponentDriver<? extends C> getDriver(Bundle<C> bundle) {
+    public static <C> PackedComponentDriver<? extends C> getDriver(Assembly<C> bundle) {
         requireNonNull(bundle, "bundle is null");
         return (PackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(bundle);
     }

@@ -20,10 +20,6 @@ public interface Service extends AttributedElement {
      */
     boolean isConstant();
 
-    default ServiceMode mode() {
-        return isConstant() ? ServiceMode.CONSTANT : ServiceMode.PROTOYPE;
-    }
-
     /**
      * Returns the key that the service is registered with.
      *
@@ -32,7 +28,16 @@ public interface Service extends AttributedElement {
     Key<?> key();
 
     /**
-     * Returns the raw type of the service.
+     * Returns the mode of the service.
+     * 
+     * @return the mode of the service
+     */
+    default ServiceMode mode() {
+        return isConstant() ? ServiceMode.CONSTANT : ServiceMode.PROTOYPE;
+    }
+
+    /**
+     * Returns the raw type of the service. Actual service instances may be subclasses of the returned type.
      * 
      * @return the raw type of the service
      * @see Key#rawType()

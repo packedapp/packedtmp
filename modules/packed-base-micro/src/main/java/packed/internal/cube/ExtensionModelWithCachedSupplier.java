@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
 
 import app.packed.base.InaccessibleMemberException;
-import app.packed.cube.Extension;
+import app.packed.bundle.Extension;
 import packed.internal.util.StringFormatter;
 
 /**

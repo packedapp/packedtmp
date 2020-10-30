@@ -18,17 +18,17 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.ConnectExtensions;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionSetup;
 import app.packed.component.App;
 import app.packed.component.Image;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.ConnectExtensions;
-import app.packed.cube.Extension;
-import app.packed.cube.ExtensionSetup;
 
 /**
  *
  */
-public class Z4 extends BaseBundle {
+public class Z4 extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
@@ -50,7 +50,7 @@ public class Z4 extends BaseBundle {
         Thread.sleep(10000);
     }
 
-    static class MyChild extends BaseBundle {
+    static class MyChild extends BaseAssembly {
 
         final int maxDepth;
 

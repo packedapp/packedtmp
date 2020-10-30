@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package app.packed.bundle;
 
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
@@ -37,7 +37,7 @@ import packed.internal.config.ConfigSiteSupport;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseBundle#use(Class)} or {@link CubeConfiguration#use(Class)}.
+ * example, {@link BaseAssembly#use(Class)} or {@link BundleConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
@@ -45,7 +45,7 @@ import packed.internal.config.ConfigSiteSupport;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
- * do not try an manually instantiate it, but instead use {@link CubeConfiguration#use(Class)}. It is also recommended
+ * do not try an manually instantiate it, but instead use {@link BundleConfiguration#use(Class)}. It is also recommended
  * that the extension itself is declared final.
  */
 
@@ -163,7 +163,7 @@ public abstract class Extension {
 
         // Dvs ourContainerSource
         return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Bundle.class.isAssignableFrom(c));
+                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
     }
 
     /**
@@ -229,7 +229,7 @@ public abstract class Extension {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see CubeConfiguration#installInstance(Object)
+     * @see BundleConfiguration#installInstance(Object)
      */
     protected final <T> BeanConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
@@ -264,7 +264,7 @@ public abstract class Extension {
      * Only extension types that have been explicitly registered using {@link ExtensionSetup#dependencies()} or
      * {@link ExtensionSetup#optionalDependencies()} may be specified as arguments to this method.
      * <p>
-     * Invoking this method is similar to calling {@link CubeConfiguration#use(Class)}. However, this method also keeps
+     * Invoking this method is similar to calling {@link BundleConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
      * 

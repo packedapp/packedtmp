@@ -18,10 +18,10 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import app.packed.cube.BaseBundle;
 
 /**
  *
@@ -30,7 +30,7 @@ public class ImageTester {
 
     private final Image<App> image;
 
-    public ImageTester(BaseBundle source, Wirelet... wirelets) {
+    public ImageTester(BaseAssembly source, Wirelet... wirelets) {
         this(App.imageOf(source, wirelets));
     }
 

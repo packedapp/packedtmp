@@ -30,7 +30,7 @@ import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
-import packed.internal.cube.CubeBuild;
+import packed.internal.cube.BundleBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -66,7 +66,7 @@ public final class ServiceRequirementsManager {
 
     final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
 
-    public void checkForMissingDependencies(CubeBuild node) {
+    public void checkForMissingDependencies(BundleBuild node) {
         if (unresolvedRequirements != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (ServiceDependencyRequirement e : unresolvedRequirements) {

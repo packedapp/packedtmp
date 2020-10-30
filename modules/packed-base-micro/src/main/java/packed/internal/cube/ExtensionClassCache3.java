@@ -17,7 +17,7 @@ package packed.internal.cube;
 
 import java.util.function.Supplier;
 
-import app.packed.cube.Extension;
+import app.packed.bundle.Extension;
 
 /**
  * A cache of {@link Extension} implementations. Is mainly used for instantiating new instances of extensions.

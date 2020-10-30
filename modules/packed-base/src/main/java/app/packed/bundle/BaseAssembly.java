@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -30,7 +30,7 @@ import app.packed.statemachine.OnStart;
 import packed.internal.inject.service.sandbox.InjectorAssembler;
 
 /**
- * A convenience extension of {@link CubeBundle} which contains shortcut access to common functionality defined by the
+ * A convenience extension of {@link BundleAssembly} which contains shortcut access to common functionality defined by the
  * various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
@@ -50,8 +50,8 @@ import packed.internal.inject.service.sandbox.InjectorAssembler;
  * <p>
  * There are currently two types of bundles available:
  * <ul>
- * <li><b>{@link BaseBundle}</b> which bundles information about services, and creates injector instances using .</li>
- * <li><b>{@link BaseBundle}</b> which bundles information about both services and components, and creates container
+ * <li><b>{@link BaseAssembly}</b> which bundles information about services, and creates injector instances using .</li>
+ * <li><b>{@link BaseAssembly}</b> which bundles information about both services and components, and creates container
  * instances using .</li>
  * </ul>
  * 
@@ -65,7 +65,7 @@ import packed.internal.inject.service.sandbox.InjectorAssembler;
 // CommonBundle, StarterBundle
 // GoBundle
 // Base is fine....
-public abstract class BaseBundle extends CubeBundle {
+public abstract class BaseAssembly extends BundleAssembly {
 
     protected final void requireGuest() {
         // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...

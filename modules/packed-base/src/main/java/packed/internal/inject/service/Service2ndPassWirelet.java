@@ -13,8 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package packed.internal.inject.service;
+
+import java.util.Map;
+
+import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.bundle.ExtensionMember;
+import app.packed.component.Wirelet;
+import app.packed.inject.ServiceExtension;
+import packed.internal.inject.service.build.ServiceBuild;
 
 /**
- * Provides a simple component based framework. And extensions
+ *
  */
-package app.packed.cube;
+@ExtensionMember(ServiceExtension.class)
+public abstract class Service2ndPassWirelet extends Wirelet {
+    protected abstract void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child, Map<Key<?>, ServiceBuild> map);
+}

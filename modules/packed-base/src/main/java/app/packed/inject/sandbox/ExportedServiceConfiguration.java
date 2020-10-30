@@ -16,14 +16,14 @@
 package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
-import app.packed.cube.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.sandbox.InjectorAssembler;
 
 /**
  * A configuration object for an exported service. An instance of this interface is usually obtained by calling the
  * various provide or export methods located on {@link ServiceExtension}, {@link InjectorAssembler} or
- * {@link BaseBundle}.
+ * {@link BaseAssembly}.
  */
 public interface ExportedServiceConfiguration<T> {
 

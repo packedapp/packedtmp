@@ -15,9 +15,9 @@
  */
 package micro.app;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
 import app.packed.component.Image;
-import app.packed.cube.BaseBundle;
 
 /**
  *
@@ -29,15 +29,15 @@ public class VariousBundles {
     public static final Image<App> FIVE_CONTAINER_IMAGE = App.imageOf(fiveComponents());
     public static final Image<App> ONE_CONTAINER_IMAGE = App.imageOf(oneContainer());
 
-    public static BaseBundle empty() {
-        return new BaseBundle() {
+    public static BaseAssembly empty() {
+        return new BaseAssembly() {
             @Override
             protected void build() {}
         };
     }
 
-    public static BaseBundle oneComponent() {
-        return new BaseBundle() {
+    public static BaseAssembly oneComponent() {
+        return new BaseAssembly() {
 
             @Override
             public void build() {
@@ -46,8 +46,8 @@ public class VariousBundles {
         };
     }
 
-    public static BaseBundle fiveComponents() {
-        return new BaseBundle() {
+    public static BaseAssembly fiveComponents() {
+        return new BaseAssembly() {
 
             @Override
             public void build() {
@@ -60,12 +60,12 @@ public class VariousBundles {
         };
     }
 
-    public static BaseBundle oneContainer() {
-        return new BaseBundle() {
+    public static BaseAssembly oneContainer() {
+        return new BaseAssembly() {
 
             @Override
             public void build() {
-                link(new BaseBundle() {
+                link(new BaseAssembly() {
                     @Override
                     protected void build() {}
                 });

@@ -22,22 +22,22 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.TreePath;
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.Extension;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.CubeConfiguration;
-import app.packed.cube.Extension;
 
 /**
  *
  */
 public class ContainerConfigurationTester {
 
-    private final CubeConfiguration cc;
+    private final BundleConfiguration cc;
 
-    public ContainerConfigurationTester(CubeConfiguration cc) {
+    public ContainerConfigurationTester(BundleConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
@@ -48,7 +48,7 @@ public class ContainerConfigurationTester {
     /**
      * @return the cc
      */
-    public CubeConfiguration configuration() {
+    public BundleConfiguration configuration() {
         return cc;
     }
 
@@ -92,7 +92,7 @@ public class ContainerConfigurationTester {
         }
     }
 
-    public ContainerConfigurationTester link(BaseBundle child, Wirelet... wirelets) {
+    public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
         cc.link(child, wirelets);
         return this;
     }

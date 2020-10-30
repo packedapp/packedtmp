@@ -27,10 +27,10 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.Extension;
 import app.packed.component.App;
 import app.packed.component.Image;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.Extension;
 
 /**
  *
@@ -43,24 +43,24 @@ import app.packed.cube.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final Image<App> EMPTY = App.imageOf(new BaseBundle() {
+    static final Image<App> EMPTY = App.imageOf(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final Image<App> USE_EXTENSION = App.imageOf(new BaseBundle() {
+    static final Image<App> USE_EXTENSION = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final Image<App> INSTALL = App.imageOf(new BaseBundle() {
+    static final Image<App> INSTALL = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final Image<App> INSTALL_AUTO_ACTIVATE = App.imageOf(new BaseBundle() {
+    static final Image<App> INSTALL_AUTO_ACTIVATE = App.imageOf(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());

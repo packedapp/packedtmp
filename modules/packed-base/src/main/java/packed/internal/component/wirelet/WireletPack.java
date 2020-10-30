@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import app.packed.base.Nullable;
+import app.packed.bundle.Extension;
 import app.packed.component.Wirelet;
-import app.packed.cube.Extension;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponentDriver;
 

@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.Wirelet;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.Factory;
 import packed.internal.inject.service.sandbox.Injector;
 
@@ -36,19 +36,19 @@ public class InjectorBindBundleTest {
     /** Tests various null arguments. */
     @Test
     public void nullArguments() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
         };
 
-        npe(() -> Injector.configure(c -> c.link((BaseBundle) null)), "bundle");
+        npe(() -> Injector.configure(c -> c.link((BaseAssembly) null)), "bundle");
         npe(() -> Injector.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
     }
 
     /** Tests that we can import no services. */
     @Test
     public void cannotImportNonExposed() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
                 provideInstance("X");
@@ -65,7 +65,7 @@ public class InjectorBindBundleTest {
     @Test
     @Disabled // Link
     public void OneImport() {
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
                 provideInstance("X");
@@ -84,7 +84,7 @@ public class InjectorBindBundleTest {
     @Disabled // because of refactoring
     public void protoTypeImport() {
         AtomicLong al = new AtomicLong();
-        BaseBundle b = new BaseBundle() {
+        BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {
                 providePrototype(new Factory<>(al::incrementAndGet) {});

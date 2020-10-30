@@ -270,6 +270,15 @@ interface TProviding extends ServiceTransformation {
      * @throws IllegalStateException
      *             if the specified factory has dependencies that cannot be resolved among available services.
      */
+    // Hvis psedokode eksempel
+    // for every variable in factory {
+    // if get(var.key).mode == prototype) {
+    // return prototype(factory)
+    // }
+    // }
+    // return provide(factory;
+    //
+    // Kunne gode bruge en factory.resolveAsKeys(); fail on context thingies??? I think
     void map(Factory<?> factory);
 
     /* ------- */

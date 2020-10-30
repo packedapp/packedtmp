@@ -23,15 +23,15 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionConfiguration;
+import app.packed.bundle.Extension.Subtension;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.cube.Extension;
-import app.packed.cube.Extension.Subtension;
-import app.packed.cube.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 import packed.internal.util.LookupUtil;
@@ -53,7 +53,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A VarHandle used by {@link #of(CubeBuild, Class)} to access the field Extension#configuration. */
+    /** A VarHandle used by {@link #of(BundleBuild, Class)} to access the field Extension#configuration. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -61,9 +61,9 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     private final ComponentBuild compConf;
 
     /** The container this extension belongs to. */
-    private final CubeBuild container;
+    private final BundleBuild container;
 
-    /** The extension instance this assembly wraps, instantiated in {@link #of(CubeBuild, Class)}. */
+    /** The extension instance this assembly wraps, instantiated in {@link #of(BundleBuild, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -130,7 +130,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
      * 
      * @return the configuration of the container the extension is registered in
      */
-    public CubeBuild container() {
+    public BundleBuild container() {
         return container;
     }
 
@@ -202,7 +202,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
+    public void link(Assembly<?> bundle, Wirelet... wirelets) {
         compConf.link(bundle, wirelets);
     }
 
@@ -284,7 +284,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
      *            the type of extension to initialize
      * @return the assembly of the extension
      */
-    static ExtensionBuild of(CubeBuild container, Class<? extends Extension> extensionType) {
+    static ExtensionBuild of(BundleBuild container, Class<? extends Extension> extensionType) {
         // Create extension context and instantiate extension
         ExtensionModel model = ExtensionModel.of(extensionType);
         ComponentBuild compConf = new ComponentBuild(container.compConf, model);
@@ -299,7 +299,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         // information set by the parent or ancestor.
         if (model.mhExtensionLinked != null) {
             ExtensionBuild parentExtension = null;
-            CubeBuild parent = container.parent;
+            BundleBuild parent = container.parent;
             if (!model.extensionLinkedDirectChildrenOnly) {
                 while (parentExtension == null && parent != null) {
                     parentExtension = parent.getExtensionContext(extensionType);

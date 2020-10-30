@@ -57,7 +57,7 @@ public final class ComponentAnalyzer {
         } else if (s instanceof ComponentDelegate) {
             return ((ComponentDelegate) s).component();
         } else {
-            Bundle<?> bundle = (Bundle<?>) s;
+            Assembly<?> bundle = (Assembly<?>) s;
 
             // Assembles the system with the ComponentModifier.ANALYSIS modifier set
             ComponentBuild component = PackedBuildContext.assemble(bundle, PackedComponentModifierSet.I_ANALYSIS, null);

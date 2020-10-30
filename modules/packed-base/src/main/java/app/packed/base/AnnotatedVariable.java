@@ -37,6 +37,8 @@ import packed.internal.component.variable.ParameterVariable;
 
 // Vis ci skal supportere capture. Bliver vi noedt til at have <T> og en abstract klasse...
 
+// toKey(); <-- kunne bruges til fx wirelets
+// asKey();
 public interface AnnotatedVariable extends AnnotatedElement, OldVariable {
 
     /**

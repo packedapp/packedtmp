@@ -19,13 +19,13 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.ComponentDriver.Option;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.Factory;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
- * calling one of the install methods on, for example, {@link BaseBundle}.
+ * calling one of the install methods on, for example, {@link BaseAssembly}.
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */

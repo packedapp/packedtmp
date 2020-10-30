@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,7 @@ import java.util.Set;
 
 import app.packed.base.TreePath;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;
@@ -35,19 +35,19 @@ import app.packed.inject.Factory;
 
 /**
  * Bundles are the main source of system configuration. Basically a bundle is just a thin wrapper around
- * {@link CubeConfiguration}. Delegating every invocation in the class to an instance of {@link CubeConfiguration}
+ * {@link BundleConfiguration}. Delegating every invocation in the class to an instance of {@link BundleConfiguration}
  * available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
  * {@link IllegalStateException}.
  * 
- * A generic bundle. Normally you would extend {@link BaseBundle}
+ * A generic bundle. Normally you would extend {@link BaseAssembly}
  */
-public abstract class CubeBundle extends Bundle<CubeConfiguration> {
+public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
 
     /** Creates a new bundle. */
-    protected CubeBundle() {
-        super(CubeConfiguration.driver());
+    protected BundleAssembly() {
+        super(BundleConfiguration.driver());
     }
 
     /**
@@ -56,7 +56,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see CubeConfiguration#checkConfigurable()
+     * @see BundleConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -66,7 +66,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * Returns the configuration site of this bundle.
      * 
      * @return the configuration site of this bundle
-     * @see CubeConfiguration#configSite()
+     * @see BundleConfiguration#configSite()
      */
     protected final ConfigSite configSite() {
         return configuration().configSite();
@@ -76,7 +76,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * Returns an unmodifiable view of the extensions that have been configured so far.
      * 
      * @return an unmodifiable view of the extensions that have been configured so far
-     * @see CubeConfiguration#extensions()
+     * @see BundleConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -92,7 +92,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see CubeConfiguration#setName(String)
+     * @see BundleConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -122,7 +122,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see BaseBundle#install(Factory)
+     * @see BaseAssembly#install(Factory)
      */
     protected final <T> BeanConfiguration<T> install(Factory<T> factory) {
         return configuration().wire(BeanConfiguration.driver(factory));
@@ -157,9 +157,9 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see CubeConfiguration#link(Bundle, Wirelet...)
+     * @see BundleConfiguration#link(Assembly, Wirelet...)
      */
-    protected final void link(Bundle<?> bundle, Wirelet... wirelets) {
+    protected final void link(Assembly<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
     }
 
@@ -179,7 +179,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see CubeConfiguration#path()
+     * @see BundleConfiguration#path()
      */
     protected final TreePath path() {
         return configuration().path();
@@ -197,7 +197,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see CubeConfiguration#setName(String)
+     * @see BundleConfiguration#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -221,7 +221,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #build()}
-     * @see CubeConfiguration#use(Class)
+     * @see BundleConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

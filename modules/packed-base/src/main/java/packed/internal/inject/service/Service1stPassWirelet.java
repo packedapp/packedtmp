@@ -15,15 +15,15 @@
  */
 package packed.internal.inject.service;
 
+import app.packed.bundle.ExtensionMember;
 import app.packed.component.Wirelet;
-import app.packed.cube.ExtensionMember;
 import app.packed.inject.ServiceExtension;
 
 /**
  *
  */
 @ExtensionMember(ServiceExtension.class)
-public abstract class ServiceWirelet1stPass extends Wirelet {
+public abstract class Service1stPassWirelet extends Wirelet {
 
     protected abstract void process(ServiceBuildManager child);
 }

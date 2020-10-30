@@ -21,13 +21,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Key.Qualifier;
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.BundleConfiguration;
 import app.packed.component.Assembler;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.CubeConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
@@ -36,7 +36,7 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
  * {@link Injector#configure(CustomConfigurator, Wirelet...)}. This is thought of a alternative to using a
- * {@link BaseBundle}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
+ * {@link BaseAssembly}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
@@ -45,7 +45,7 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 public final class InjectorAssembler extends Assembler {
 
     /** The configuration we delegate all calls to. */
-    private final CubeConfiguration configuration;
+    private final BundleConfiguration configuration;
 
     private boolean initialized;
 
@@ -55,7 +55,7 @@ public final class InjectorAssembler extends Assembler {
      * @param configuration
      *            the configuration to wrap
      */
-    InjectorAssembler(CubeConfiguration configuration) {
+    InjectorAssembler(BundleConfiguration configuration) {
         this.configuration = requireNonNull(configuration, "configuration is null");
     }
 
@@ -64,7 +64,7 @@ public final class InjectorAssembler extends Assembler {
      * 
      * @return the container configuration that was used to create this configurator
      */
-    private CubeConfiguration configuration() {
+    private BundleConfiguration configuration() {
         return configuration;
     }
 
@@ -88,7 +88,7 @@ public final class InjectorAssembler extends Assembler {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public void link(Bundle<?> bundle, Wirelet... wirelets) {
+    public void link(Assembly<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
     }
 

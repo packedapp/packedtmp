@@ -21,13 +21,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import app.packed.component.App;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.container.Container.StopOption;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link App#of(Bundle, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link App#of(Assembly, Wirelet...)}.
  * <p>
  * All wirelets on this class requires the {@link ComponentModifier#CONTAINER} modifier on the component being wired.
  */

@@ -22,7 +22,7 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
 import packed.internal.component.BuildtimeRegion;
-import packed.internal.cube.CubeBuild;
+import packed.internal.cube.BundleBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
@@ -40,6 +40,9 @@ import packed.internal.inject.DependencyProvider;
 // resolve + create id for each node
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
+
+//TODO WE NEED TO CHECK INTRA BUNDLE REFERENCES
+// BitMap???
 public final class ServiceSubSystem {
 
     /**
@@ -49,14 +52,14 @@ public final class ServiceSubSystem {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public static void finish(BuildtimeRegion region, CubeBuild container) {
+    public static void finish(BuildtimeRegion region, BundleBuild container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(BuildtimeRegion region, CubeBuild container) {
+    private static DependencyCycle dependencyCyclesFind(BuildtimeRegion region, BundleBuild container) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
@@ -64,7 +67,7 @@ public final class ServiceSubSystem {
     }
 
     private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, BuildtimeRegion region,
-            CubeBuild container) {
+            BundleBuild container) {
         for (Dependant node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
@@ -75,7 +78,7 @@ public final class ServiceSubSystem {
         }
 
         if (container.children != null) {
-            for (CubeBuild c : container.children) {
+            for (BundleBuild c : container.children) {
                 dependencyCyclesFind(stack, dependencies, region, c);
             }
         }

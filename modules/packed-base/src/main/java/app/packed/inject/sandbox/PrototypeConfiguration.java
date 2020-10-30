@@ -16,10 +16,10 @@
 package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.Component;
 import app.packed.component.AbstractComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 
@@ -28,10 +28,10 @@ import app.packed.inject.ServiceExtension;
  * configuration of as service} and a .
  * <p>
  * An instance of this interface is usually obtained by calling one of the provide methods on {@link ServiceExtension}
- * or {@link BaseBundle}.
+ * or {@link BaseAssembly}.
  * 
- * @see BaseBundle#providePrototype(Class)
- * @see BaseBundle#providePrototype(Factory)
+ * @see BaseAssembly#providePrototype(Class)
+ * @see BaseAssembly#providePrototype(Factory)
  * @see ServiceExtension#providePrototype(Factory)
  */
 //PrototypeServiceConfiguration??

@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
+import app.packed.bundle.ExtensionMember;
 import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
 import app.packed.component.ComponentSystem;
-import app.packed.cube.ExtensionMember;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.service.ServiceBuildManager;
 

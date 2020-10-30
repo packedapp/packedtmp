@@ -21,12 +21,12 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeToken;
-import app.packed.cube.BaseBundle;
+import app.packed.bundle.BaseAssembly;
 import packed.internal.component.PackedComponentDriver;
 
 /**
  * Component drivers are responsible for configuring and creating new components. Every time you, for example, call
- * {@link BaseBundle#install(Class)} it actually dela
+ * {@link BaseAssembly#install(Class)} it actually dela
  * 
  * install a
  * 

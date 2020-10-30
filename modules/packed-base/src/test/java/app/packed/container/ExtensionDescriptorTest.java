@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Attribute;
 import app.packed.base.ExposeAttribute;
-import app.packed.cube.Extension;
-import app.packed.cube.ExtensionDescriptor;
-import app.packed.cube.ExtensionSetup;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionDescriptor;
+import app.packed.bundle.ExtensionSetup;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {

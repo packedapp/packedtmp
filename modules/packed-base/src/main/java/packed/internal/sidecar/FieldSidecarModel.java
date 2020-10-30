@@ -22,7 +22,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.cube.InternalExtensionException;
+import app.packed.bundle.InternalExtensionException;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.FieldSidecar;

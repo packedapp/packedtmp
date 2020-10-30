@@ -13,17 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
-
-import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
-import app.packed.cube.ExtensionMember;
-import app.packed.inject.ServiceExtension;
 
 /**
- *
+ * Provides a simple component based framework. And extensions
  */
-@ExtensionMember(ServiceExtension.class)
-public abstract class ServiceWirelet2ndPass extends Wirelet {
-    protected abstract void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child);
-}
+package app.packed.bundle;

@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import app.packed.cube.Extension;
-import app.packed.cube.InternalExtensionException;
+import app.packed.bundle.Extension;
+import app.packed.bundle.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
 /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cube;
+package app.packed.bundle;
 
 /**
  * An exception typically thrown by the runtime to indicate that an extension failed in some way.

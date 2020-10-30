@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import app.packed.cube.Extension;
-import app.packed.cube.ExtensionDescriptor;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionDescriptor;
 
 /**
  * An set of extensions ordered by {@link ExtensionDescriptor#depth()} and {@link ExtensionDescriptor#fullName()}.

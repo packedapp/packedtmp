@@ -16,15 +16,15 @@
 package app.packed.inject.sandbox;
 
 import app.packed.base.Named;
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 
 /**
  *
  */
-class Stuff extends BaseBundle {
+class Stuff extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Attribute;
 import app.packed.base.TreePath;
 import app.packed.base.TypeToken;
-import app.packed.cube.Extension;
+import app.packed.bundle.Extension;
 
 /**
  *
@@ -52,8 +52,8 @@ public class ComponentAttributes {
 
     // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
     /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
-    static final Attribute<Class<? extends Bundle<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
-            new TypeToken<Class<? extends Bundle<?>>>() {});
+    static final Attribute<Class<? extends Assembly<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
+            new TypeToken<Class<? extends Assembly<?>>>() {});
 
     /**
      * 

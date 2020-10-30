@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.ComponentSystem;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import testutil.stubs.Letters.A;
@@ -40,7 +40,7 @@ public class ServiceContractTCKTest {
     /** Tests that we return an empty contract even if we do not use {@link ServiceExtension}. */
     @Test
     public void empty1() {
-        check(ServiceContract.EMPTY, new BaseBundle() {
+        check(ServiceContract.EMPTY, new BaseAssembly() {
             @Override
             protected void build() {}
         });
@@ -49,7 +49,7 @@ public class ServiceContractTCKTest {
     /** Tests that we return an empty contract. */
     @Test
     public void empty2() {
-        check(ServiceContract.EMPTY, new BaseBundle() {
+        check(ServiceContract.EMPTY, new BaseAssembly() {
             @Override
             protected void build() {
                 use(ServiceExtension.class);
@@ -60,7 +60,7 @@ public class ServiceContractTCKTest {
     /** Tests that services that are not exported are not included. */
     @Test
     public void empty3() {
-        check(ServiceContract.EMPTY, new BaseBundle() {
+        check(ServiceContract.EMPTY, new BaseAssembly() {
             @Override
             protected void build() {
                 lookup(MethodHandles.lookup());
@@ -73,7 +73,7 @@ public class ServiceContractTCKTest {
     @Test
     public void provides() {
         ServiceContract expected = ServiceContract.newContract(b -> b.provides(A.class));
-        check(expected, new BaseBundle() {
+        check(expected, new BaseAssembly() {
             @Override
             protected void build() {
                 lookup(MethodHandles.lookup());
@@ -88,7 +88,7 @@ public class ServiceContractTCKTest {
     @Test
     public void requires() {
         ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
-        check(expected, new BaseBundle() {
+        check(expected, new BaseAssembly() {
             @Override
             protected void build() {
                 lookup(MethodHandles.lookup());
@@ -101,7 +101,7 @@ public class ServiceContractTCKTest {
     @Test
     public void optional() {
         ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class));
-        check(expected, new BaseBundle() {
+        check(expected, new BaseAssembly() {
             @Override
             protected void build() {
                 lookup(MethodHandles.lookup());
@@ -115,7 +115,7 @@ public class ServiceContractTCKTest {
     @Test
     public void requiresOverrideOptional() {
         ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
-        check(expected, new BaseBundle() {
+        check(expected, new BaseAssembly() {
             @Override
             protected void build() {
                 lookup(MethodHandles.lookup());
@@ -129,7 +129,7 @@ public class ServiceContractTCKTest {
     @Test
     public void all() {
         ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class).requires(B.class).provides(C.class));
-        check(expected, new BaseBundle() {
+        check(expected, new BaseAssembly() {
 
             @Override
             protected void build() {

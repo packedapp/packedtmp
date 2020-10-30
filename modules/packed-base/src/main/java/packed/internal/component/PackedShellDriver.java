@@ -22,8 +22,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
+import app.packed.bundle.Extension;
 import app.packed.component.Assembler;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifierSet;
@@ -31,7 +32,6 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
-import app.packed.cube.Extension;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
@@ -97,7 +97,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** {@inheritDoc} */
     @Override
-    public Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    public Image<S> newImage(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system with the ComponentModifier.IMAGE modifier added
         ComponentBuild component = PackedBuildContext.assemble(bundle, modifiers | I_IMAGE, this, wirelets);
 
@@ -107,7 +107,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** {@inheritDoc} */
     @Override
-    public S newShell(Bundle<?> bundle, Wirelet... wirelets) {
+    public S newShell(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system
         ComponentBuild component = PackedBuildContext.assemble(bundle, modifiers, this, wirelets);
 
@@ -221,7 +221,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         // }
     }
 
-    /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Bundle, Wirelet...)}. */
+    /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Assembly, Wirelet...)}. */
     private final class ShellImage implements Image<S> {
 
         /** The assembled image node. */

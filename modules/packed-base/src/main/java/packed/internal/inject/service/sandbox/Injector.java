@@ -18,14 +18,14 @@ package packed.internal.inject.service.sandbox;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.bundle.BundleConfiguration;
 import app.packed.component.App;
-import app.packed.component.Bundle;
+import app.packed.component.Assembly;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
-import app.packed.cube.CubeConfiguration;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
@@ -136,7 +136,7 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    static Image<Injector> newImage(Bundle<?> bundle, Wirelet... wirelets) {
+    static Image<Injector> newImage(Assembly<?> bundle, Wirelet... wirelets) {
         return driver().newImage(bundle, wirelets);
     }
 
@@ -159,7 +159,7 @@ public interface Injector extends ServiceLocator {
     // interface ArtifactConfigurator() {}
     // configure()
     static Injector configure(CustomConfigurator<? super InjectorAssembler> configurator, Wirelet... wirelets) {
-        return driver().configure(CubeConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
+        return driver().configure(BundleConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
     }
 
     /**
@@ -175,7 +175,7 @@ public interface Injector extends ServiceLocator {
      *             that requires a lifecycle
      */
     // Of er maaske fin. Saa understreger vi ligesom
-    static Injector create(Bundle<?> bundle, Wirelet... wirelets) {
+    static Injector create(Assembly<?> bundle, Wirelet... wirelets) {
         return driver().newShell(bundle, wirelets);
     }
 }

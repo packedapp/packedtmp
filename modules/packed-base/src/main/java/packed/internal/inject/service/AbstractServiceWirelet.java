@@ -15,8 +15,8 @@
  */
 package packed.internal.inject.service;
 
+import app.packed.bundle.ExtensionMember;
 import app.packed.component.Wirelet;
-import app.packed.cube.ExtensionMember;
 import app.packed.inject.ServiceExtension;
 
 /**

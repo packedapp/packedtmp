@@ -68,7 +68,7 @@ public interface ShellDriver<S> {
      * @throws BuildException
      *             if the system could not assembled properly
      */
-    Image<S> newImage(Bundle<?> bundle, Wirelet... wirelets);
+    Image<S> newImage(Assembly<?> bundle, Wirelet... wirelets);
 
     /**
      * Create a new shell (and its underlying system) using the specified bundle.
@@ -82,7 +82,7 @@ public interface ShellDriver<S> {
      *             if the system could not assembled properly
      */
     // Maaske kan vi laver en function der smider Throwable...
-    S newShell(Bundle<?> bundle, Wirelet... wirelets);
+    S newShell(Assembly<?> bundle, Wirelet... wirelets);
 
     /**
      * Creates a new shell driver.

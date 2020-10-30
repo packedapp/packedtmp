@@ -24,17 +24,17 @@ import java.util.function.Consumer;
 import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionConfiguration;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.config.ConfigSite;
-import app.packed.cube.Extension;
-import app.packed.cube.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
 import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.cube.CubeBuild;
+import packed.internal.cube.BundleBuild;
 import packed.internal.cube.ExtensionBuild;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -76,7 +76,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public final class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
-    private final CubeBuild container;
+    private final BundleBuild container;
 
     /** The service build manager. */
     private final ServiceBuildManager sbm;

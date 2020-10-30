@@ -18,8 +18,8 @@ package packed.internal.component.wirelet;
 import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
+import app.packed.bundle.Extension;
 import app.packed.component.Wirelet;
-import app.packed.cube.Extension;
 
 /**
  *

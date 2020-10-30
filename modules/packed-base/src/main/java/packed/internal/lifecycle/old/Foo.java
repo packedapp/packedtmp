@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.base.Named;
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.Invoker;
@@ -35,7 +35,7 @@ import app.packed.statemachine.OnInitialize;
 /**
  *
  */
-public class Foo extends BaseBundle {
+public class Foo extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override

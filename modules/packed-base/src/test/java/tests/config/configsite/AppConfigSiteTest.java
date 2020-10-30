@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
 import app.packed.component.Component;
-import app.packed.cube.BaseBundle;
 import packed.internal.config.ConfigSiteSupport;
 import testutil.util.ConfigSiteTestHelper;
 
@@ -37,7 +37,7 @@ public class AppConfigSiteTest {
             return;
         }
         StackFrame f1 = ConfigSiteTestHelper.caller();
-        App app = App.of(new BaseBundle() {
+        App app = App.of(new BaseAssembly() {
             @Override
             protected void build() {}
         });
@@ -57,7 +57,7 @@ public class AppConfigSiteTest {
         AtomicReference<StackFrame> ar = new AtomicReference<>();
 
         StackFrame f1 = ConfigSiteTestHelper.caller();
-        App app = App.of(new BaseBundle() {
+        App app = App.of(new BaseAssembly() {
             @Override
             protected void build() {
                 ar.set(ConfigSiteTestHelper.caller());
@@ -98,11 +98,11 @@ public class AppConfigSiteTest {
         AtomicReference<StackFrame> ar2 = new AtomicReference<>();
 
         StackFrame f1 = ConfigSiteTestHelper.caller();
-        App app = App.of(new BaseBundle() {
+        App app = App.of(new BaseAssembly() {
             @Override
             protected void build() {
                 ar1.set(ConfigSiteTestHelper.caller());
-                link(new BaseBundle() {
+                link(new BaseAssembly() {
                     @Override
                     public void build() {
                         setName("woo");

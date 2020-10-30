@@ -242,4 +242,8 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
         }
         this.transformer = requireNonNull(transformer, "transformer is null");
     }
+
+    public boolean contains(Key<?> key) {
+        return resolvedExports.containsKey(key);
+    }
 }

@@ -18,8 +18,8 @@ package tests.injector;
 import java.lang.invoke.MethodHandles;
 import java.util.stream.Collectors;
 
+import app.packed.bundle.BaseAssembly;
 import app.packed.config.ConfigSite;
-import app.packed.cube.BaseBundle;
 import app.packed.inject.Service;
 import packed.internal.inject.service.sandbox.Injector;
 
@@ -47,7 +47,7 @@ public class BTest {
 
     }
 
-    public static class MyBundle extends BaseBundle {
+    public static class MyBundle extends BaseAssembly {
 
         @Override
         protected void build() {
@@ -57,7 +57,7 @@ public class BTest {
         }
     }
 
-    public static class MyBundle4 extends BaseBundle {
+    public static class MyBundle4 extends BaseAssembly {
 
         @Override
         protected void build() {

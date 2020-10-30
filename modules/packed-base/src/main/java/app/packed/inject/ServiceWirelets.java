@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -24,9 +25,11 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
+import packed.internal.inject.service.Service1stPassWirelet;
+import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.ServiceBuildManager;
-import packed.internal.inject.service.ServiceWirelet1stPass;
-import packed.internal.inject.service.ServiceWirelet2ndPass;
+import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.runtime.PackedServiceTransformer;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
@@ -65,7 +68,7 @@ public final class ServiceWirelets {
      */
     public static Wirelet from(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
-        return new ServiceWirelet1stPass() {
+        return new Service1stPassWirelet() {
             @Override
             protected void process(ServiceBuildManager child) {
                 child.exports().transform(transformation);
@@ -82,7 +85,7 @@ public final class ServiceWirelets {
      */
     public static Wirelet from(Consumer<? super ServiceTransformation> transformation) {
         requireNonNull(transformation, "transformation is null");
-        return new ServiceWirelet1stPass() {
+        return new Service1stPassWirelet() {
             /** {@inheritDoc} */
             @Override
             protected void process(ServiceBuildManager child) {
@@ -135,20 +138,20 @@ public final class ServiceWirelets {
 
     public static Wirelet to(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
-        return new ServiceWirelet2ndPass() {
+        return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child) {
-                throw new UnsupportedOperationException();
+            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child, Map<Key<?>, ServiceBuild> map) {
+                PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
     }
 
     public static Wirelet to(Consumer<? super ServiceTransformation> transformation) {
         requireNonNull(transformation, "transformation is null");
-        return new ServiceWirelet2ndPass() {
+        return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child) {
-                throw new UnsupportedOperationException();
+            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child, Map<Key<?>, ServiceBuild> map) {
+                PackedServiceTransformer.transformInplace(map, transformation);
             }
         };
     }
@@ -160,7 +163,7 @@ public final class ServiceWirelets {
 // transitive requirements
 // anchoring
 
-// Preview... <-- filter annotations with preview????
+// Preview... <-- filter annotations with prΩeview????
 // Fucking attributer jo... Service#Preview=true
 // 
 

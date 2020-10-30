@@ -15,15 +15,15 @@
  */
 package app.packed.service.sandbox;
 
+import app.packed.bundle.BaseAssembly;
+import app.packed.bundle.Extension;
 import app.packed.component.App;
-import app.packed.cube.BaseBundle;
-import app.packed.cube.Extension;
 import app.packed.inject.Inject;
 
 /**
  *
  */
-public class Zzz extends BaseBundle {
+public class Zzz extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
