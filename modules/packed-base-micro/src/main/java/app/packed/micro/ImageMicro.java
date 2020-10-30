@@ -45,24 +45,24 @@ public class ImageMicro {
 
     static final Image<App> EMPTY = App.imageOf(new BaseBundle() {
         @Override
-        protected void configure() {}
+        protected void build() {}
     });
 
     static final Image<App> USE_EXTENSION = App.imageOf(new BaseBundle() {
         @Override
-        public void configure() {
+        public void build() {
             use(MyExtension.class);
         }
     });
     static final Image<App> INSTALL = App.imageOf(new BaseBundle() {
         @Override
-        public void configure() {
+        public void build() {
             installInstance("foo");
         }
     });
     static final Image<App> INSTALL_AUTO_ACTIVATE = App.imageOf(new BaseBundle() {
         @Override
-        public void configure() {
+        public void build() {
             installInstance(new MyStuff());
         }
     });

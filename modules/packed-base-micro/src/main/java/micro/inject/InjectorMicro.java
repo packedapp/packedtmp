@@ -79,7 +79,7 @@ public class InjectorMicro {
     static class SimpleInjector extends BaseBundle {
 
         @Override
-        public void configure() {
+        public void build() {
             ServiceExtension e = use(ServiceExtension.class);
             provideInstance("Hey");
             e.export(String.class);

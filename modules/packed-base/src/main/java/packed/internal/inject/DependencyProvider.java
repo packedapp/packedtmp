@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.RegionBuild;
+import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
@@ -46,7 +46,7 @@ public interface DependencyProvider {
      * 
      * 
      * 
-     * The returned method handle takes a single argument of type {@link RegionBuild}. And returns an instance of the
+     * The returned method handle takes a single argument of type {@link BuildtimeRegion}. And returns an instance of the
      * dependency.
      * <p>
      * If the instance is cached by the runtime. the returned method handle must uphold it

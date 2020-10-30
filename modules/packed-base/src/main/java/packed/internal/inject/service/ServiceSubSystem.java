@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
-import packed.internal.component.RegionBuild;
+import packed.internal.component.BuildtimeRegion;
 import packed.internal.cube.CubeBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
@@ -33,7 +33,7 @@ import packed.internal.inject.DependencyProvider;
  * 
  * Finds dependency circles
  * 
- * Calls {@link Dependant#onAllDependenciesResolved(RegionBuild)}
+ * Calls {@link Dependant#onAllDependenciesResolved(BuildtimeRegion)}
  */
 // New algorithm
 
@@ -49,21 +49,21 @@ public final class ServiceSubSystem {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public static void finish(RegionBuild region, CubeBuild container) {
+    public static void finish(BuildtimeRegion region, CubeBuild container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(RegionBuild region, CubeBuild container) {
+    private static DependencyCycle dependencyCyclesFind(BuildtimeRegion region, CubeBuild container) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, RegionBuild region,
+    private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, BuildtimeRegion region,
             CubeBuild container) {
         for (Dependant node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
@@ -97,7 +97,7 @@ public final class ServiceSubSystem {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private static DependencyCycle detectCycle(RegionBuild region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
+    private static DependencyCycle detectCycle(BuildtimeRegion region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
         DependencyProvider[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);

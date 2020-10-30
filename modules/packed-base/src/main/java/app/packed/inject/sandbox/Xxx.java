@@ -30,7 +30,7 @@ class Xxx extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void build() {
         use(MyEx.class);
         provideInstance("FooBar").export();
         provide(new Factory<Long>(System::currentTimeMillis) {}).export();

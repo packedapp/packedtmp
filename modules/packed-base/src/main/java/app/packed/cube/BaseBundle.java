@@ -210,7 +210,7 @@ public abstract class BaseBundle extends CubeBundle {
     }
 
     /**
-     * Binds the specified instance as a new service.
+     * Binds a new service constant to the specified instance.
      * <p>
      * The default key for the service will be {@code instance.getClass()}. If the type returned by
      * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
@@ -223,23 +223,7 @@ public abstract class BaseBundle extends CubeBundle {
      * @return a service configuration for the service
      */
     protected final <T> BeanConfiguration<T> provideInstance(T instance) {
-        return configuration().wireInstance(BeanConfiguration.driver(), instance).provide();
-    }
-
-    protected final void require(Class<?> key) {
-        service().require(Key.of(key));
-    }
-
-    protected final void require(Key<?>... keys) {
-        service().require(keys);
-    }
-
-    protected final void requireOptionally(Class<?> key) {
-        service().requireOptionally(Key.of(key));
-    }
-
-    protected final void requireOptionally(Key<?>... keys) {
-        service().requireOptionally(keys);
+        return service().provideInstance(instance);
     }
 
     /**
@@ -251,6 +235,24 @@ public abstract class BaseBundle extends CubeBundle {
         return use(ServiceExtension.class);
     }
 }
+
+// I don't think they are used that often...
+//protected final void require(Class<?> key) {
+//  service().require(Key.of(key));
+//}
+//
+//protected final void require(Key<?>... keys) {
+//  service().require(keys);
+//}
+//
+//protected final void requireOptionally(Class<?> key) {
+//  service().requireOptionally(Key.of(key));
+//}
+//
+//protected final void requireOptionally(Key<?>... keys) {
+//  service().requireOptionally(keys);
+//}
+
 ///**
 //* Prints the contract of the specified bundle.
 //* 

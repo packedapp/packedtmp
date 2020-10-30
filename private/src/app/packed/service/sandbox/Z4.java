@@ -32,7 +32,7 @@ public class Z4 extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void build() {
         install(Doo.class);
         use(E.class);
         link(new MyChild(20));
@@ -60,7 +60,7 @@ public class Z4 extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void build() {
             use(E.class);
             if (maxDepth > 0) {
                 int ni = ThreadLocalRandom.current().nextInt(6);

@@ -43,13 +43,13 @@ public class ImageBigMicro {
 
     static final Image<App> INSTALL31 = App.imageOf(new BaseBundle() {
         @Override
-        public void configure() {
+        public void build() {
             // install(A.class);
             // install(NeedsA.class);
             for (int i = 0; i < 10; i++) {
                 link(new BaseBundle() {
                     @Override
-                    public void configure() {
+                    public void build() {
                         install(A.class);
                         install(NeedsA.class);
                     }
@@ -60,23 +60,23 @@ public class ImageBigMicro {
 
     static final Image<App> INSTALL253 = App.imageOf(new BaseBundle() {
         @Override
-        public void configure() {
+        public void build() {
             for (int i = 0; i < 4; i++) {
                 link(new BaseBundle() {
                     @Override
-                    public void configure() {
+                    public void build() {
                         install(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
                             link(new BaseBundle() {
                                 @Override
-                                public void configure() {
+                                public void build() {
                                     install(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
                                         link(new BaseBundle() {
                                             @Override
-                                            public void configure() {
+                                            public void build() {
                                                 install(A.class);
                                                 install(NeedsA.class);
                                             }
@@ -92,23 +92,23 @@ public class ImageBigMicro {
     });
     static final Image<App> INSTALL253_NOS = App.imageOf(new BaseBundle() {
         @Override
-        public void configure() {
+        public void build() {
             for (int i = 0; i < 4; i++) {
                 link(new BaseBundle() {
                     @Override
-                    public void configure() {
+                    public void build() {
                         installInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
                             link(new BaseBundle() {
                                 @Override
-                                public void configure() {
+                                public void build() {
                                     installInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
                                         link(new BaseBundle() {
                                             @Override
-                                            public void configure() {
+                                            public void build() {
                                                 installInstance(new A());
                                                 installInstance(new NeedsA(new A()));
                                             }

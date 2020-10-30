@@ -31,7 +31,7 @@ public class BaseBundleTest extends AbstractArtifactTest {
     public void notReusable() {
         BaseBundle empty = new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void build() {}
         };
 
         App.of(empty);
@@ -43,7 +43,7 @@ public class BaseBundleTest extends AbstractArtifactTest {
     public void cannotLinkSelf() {
         BaseBundle b = new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 link(this);
             }
         };

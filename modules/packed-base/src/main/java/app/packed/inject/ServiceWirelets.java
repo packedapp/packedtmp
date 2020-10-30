@@ -32,11 +32,11 @@ import packed.internal.inject.service.ServiceWirelet2ndPass;
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
  * containers.
  * 
- * Wirelets created by this class are processed in two separate occasions.
+ * Service wirelets are processed in two stages.
  * 
- * First pass wirelets are invoked at the wiring site
+ * In the first stage which happens immediately after the container receiving the service wirelet has been wired.
  * 
- * Second pass wirelets are invoked at the end of the configuration of the container
+ * The second stage is at the end of the configuration of the container
  * 
  * Get some inspiration from streams
  */
@@ -50,16 +50,21 @@ public final class ServiceWirelets {
     }
 
     /**
-     * This method is similar to {@link #from(Consumer)} but it also provides the child's service contract.
+     * This method is similar to {@link #from(Consumer)} but also provides the service of the child.
      * <p>
-     * The provided service contract is never effected by previous wirelet transformations.
+     * This wirelet is processed in the 1st stage, immediately after a container has been linked.
+     * 
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">eager wirelet</a>.
+     * <p>
+     * The service contract provided to the consumer is never effected by previous wirelet transformations.
      * 
      * @param transformation
      *            the transformation to perform
      * @return the transforming wirelet
      */
     public static Wirelet from(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
-        requireNonNull(transformation, "transformer is null");
+        requireNonNull(transformation, "transformation is null");
         return new ServiceWirelet1stPass() {
             @Override
             protected void process(ServiceBuildManager child) {
@@ -76,7 +81,7 @@ public final class ServiceWirelets {
      * @return the transforming wirelet
      */
     public static Wirelet from(Consumer<? super ServiceTransformation> transformation) {
-        requireNonNull(transformation, "transformer is null");
+        requireNonNull(transformation, "transformation is null");
         return new ServiceWirelet1stPass() {
             /** {@inheritDoc} */
             @Override
@@ -91,7 +96,7 @@ public final class ServiceWirelets {
      * <p>
      * This wirelet is processed at the linkage site.
      * <p>
-     * The contract being consumed is never effected by other wirelet transformations.
+     * The contract being provided is never effected previous transformations, for example, via {@link #from(Consumer)}.
      * 
      * @param action
      *            the action to perform
@@ -128,8 +133,8 @@ public final class ServiceWirelets {
         return to(t -> t.provideInstance(instance));
     }
 
-    public static Wirelet to(BiConsumer<? super ServiceTransformation, ServiceContract> transformer) {
-        requireNonNull(transformer, "transformer is null");
+    public static Wirelet to(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
+        requireNonNull(transformation, "transformation is null");
         return new ServiceWirelet2ndPass() {
             @Override
             protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child) {
@@ -138,8 +143,8 @@ public final class ServiceWirelets {
         };
     }
 
-    public static Wirelet to(Consumer<? super ServiceTransformation> transformer) {
-        requireNonNull(transformer, "transformer is null");
+    public static Wirelet to(Consumer<? super ServiceTransformation> transformation) {
+        requireNonNull(transformation, "transformation is null");
         return new ServiceWirelet2ndPass() {
             @Override
             protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child) {

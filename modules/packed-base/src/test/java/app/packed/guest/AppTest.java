@@ -35,7 +35,7 @@ public class AppTest {
         AtomicReference<CubeConfiguration> ar = new AtomicReference<>();
         App app = App.of(new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 ar.set(configuration());
             }
         });

@@ -28,7 +28,7 @@ import app.packed.cube.Extension;
 import app.packed.cube.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentBuild;
-import packed.internal.component.RegionBuild;
+import packed.internal.component.BuildtimeRegion;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceBuildManager;
 import packed.internal.inject.service.ServiceSubSystem;
@@ -101,7 +101,7 @@ public final class CubeBuild {
         }
     }
 
-    public void close(RegionBuild region) {
+    public void close(BuildtimeRegion region) {
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }

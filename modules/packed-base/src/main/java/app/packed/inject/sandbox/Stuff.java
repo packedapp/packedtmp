@@ -28,7 +28,7 @@ class Stuff extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void build() {
         Factory<String> f = new Factory2<Long, Long, String>((l, i) -> "ffoo " + l + " " + i) {};
         Factory<String> ff = new Factory2<Long, Long, @Named("foo") String>((l, i) -> "ffoo " + l + " " + i) {};
         f = f.postConstruction(s -> System.out.println(s));

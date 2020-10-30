@@ -27,7 +27,7 @@ public class Zzz extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void build() {
         // service();
         provideInstance("sdasd");
         install(Foo.class);

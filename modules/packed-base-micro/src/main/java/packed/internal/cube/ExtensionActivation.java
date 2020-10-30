@@ -51,7 +51,7 @@ public class ExtensionActivation {
     public Image<App> empty() {
         BaseBundle b = new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void build() {}
         };
         return App.imageOf(b);
     }
@@ -60,7 +60,7 @@ public class ExtensionActivation {
     public Image<App> useExtension() {
         BaseBundle b = new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 use(MyExtension.class);
             }
         };
@@ -71,7 +71,7 @@ public class ExtensionActivation {
     public Image<App> install() {
         BaseBundle b = new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 installInstance("foo");
             }
         };
@@ -82,7 +82,7 @@ public class ExtensionActivation {
     public Image<App> newExtensionUseInstall() {
         BaseBundle b = new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 use(MyExtension.class);
                 installInstance("foo");
             }
@@ -94,7 +94,7 @@ public class ExtensionActivation {
     public Image<App> newExtensionAutoActivate() {
         BaseBundle b = new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 installInstance(new MyStuff());
             }
         };

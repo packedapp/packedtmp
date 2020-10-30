@@ -50,7 +50,7 @@ public class BTest {
     public static class MyBundle extends BaseBundle {
 
         @Override
-        protected void configure() {
+        protected void build() {
             super.lookup(MethodHandles.lookup());
             provide(Private.class);
             provide(PrivateImplementation.class);
@@ -60,7 +60,7 @@ public class BTest {
     public static class MyBundle4 extends BaseBundle {
 
         @Override
-        protected void configure() {
+        protected void build() {
             lookup(MethodHandles.lookup());
             provideInstance(123L);
         }

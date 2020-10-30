@@ -51,7 +51,7 @@ public class TetIt {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void build() {
             provide(Factory.ofInstance("Root"));
             provide(Factory.ofInstance("Child1"));
             provide(Factory.ofInstance("Child2"));

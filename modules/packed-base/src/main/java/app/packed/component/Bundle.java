@@ -32,6 +32,8 @@ import packed.internal.component.PackedComponentDriver;
  * @param <C>
  *            the underlying component configuration this bundle wraps
  */
+// Build eller Assembly. syntes ikke det skal hedde bundle mere...
+// you write build classes
 public abstract class Bundle<C> implements ComponentSystem {
 
     /**
@@ -66,11 +68,11 @@ public abstract class Bundle<C> implements ComponentSystem {
     /**
      * Returns the configuration object that this bundle wraps.
      * <p>
-     * This method must only be called from within the bounds of the {@link #configure()} method.
+     * This method must only be called from within the bounds of the {@link #build()} method.
      * 
      * @return the configuration object that this bundle wraps
      * @throws IllegalStateException
-     *             if called from outside of {@link #configure()}
+     *             if called from outside of {@link #build()}
      */
     @SuppressWarnings("unchecked")
     protected final C configuration() {
@@ -85,5 +87,5 @@ public abstract class Bundle<C> implements ComponentSystem {
     }
 
     /** Configures the bundle. This method should never be invoked directly by the user. */
-    protected abstract void configure();
+    protected abstract void build();
 }

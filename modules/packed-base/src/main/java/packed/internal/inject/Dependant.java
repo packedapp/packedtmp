@@ -26,7 +26,7 @@ import java.util.List;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentBuild;
-import packed.internal.component.RegionBuild;
+import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.source.SourceModel;
@@ -173,7 +173,7 @@ public class Dependant {
     }
 
     // All dependencies have been successfully resolved
-    public void onAllDependenciesResolved(RegionBuild region) {
+    public void onAllDependenciesResolved(BuildtimeRegion region) {
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way

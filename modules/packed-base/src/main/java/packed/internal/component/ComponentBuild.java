@@ -78,7 +78,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     /* *************** Builds **************** */
 
     /** The region this component is a part of. */
-    public final RegionBuild region;
+    public final BuildtimeRegion region;
 
     /** The realm this component is a part of. */
     public final RealmBuild realm;
@@ -136,7 +136,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         this.wirelets = wirelets;
         int mod = driver.modifiers;
         if (parent == null) {
-            this.region = new RegionBuild(); // Root always needs a nodestore
+            this.region = new BuildtimeRegion(); // Root always needs a nodestore
 
             mod = mod | build.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
@@ -145,7 +145,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINER);
             }
         } else {
-            this.region = driver.modifiers().isGuest() ? new RegionBuild() : parent.region;
+            this.region = driver.modifiers().isGuest() ? new BuildtimeRegion() : parent.region;
         }
         this.modifiers = mod;
 

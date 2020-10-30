@@ -49,7 +49,7 @@ public class AppManyChildrenMicro {
     public App manyChildren() {
         return App.of(new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 for (int i = 0; i < size; i++) {
                     link(new TBundle(Integer.toString(i)));
                 }
@@ -66,7 +66,7 @@ public class AppManyChildrenMicro {
         }
 
         @Override
-        protected void configure() {
+        protected void build() {
             setName(name);
         }
     }

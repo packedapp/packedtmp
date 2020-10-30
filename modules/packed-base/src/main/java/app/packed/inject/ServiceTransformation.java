@@ -33,6 +33,11 @@ import app.packed.component.Component;
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
  * 
+ * <p>
+ * Unlike, when for example create a service locator via ServiceExtension. Where the various methods do not need to be
+ * order. A service transformation requires that any dependencies are available whenever performing a transformation of
+ * some kind.
+ * 
  * @apiNote In the future, if the Java language permits, {@link ServiceTransformation} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  * 
@@ -90,10 +95,15 @@ public interface ServiceTransformation extends ServiceRegistry {
     // will decorate a service injected as itself
 
     // addAll??? nogle af dem er jo prototypes.
+    /**
+     * @param locator
+     *            the locator to provide services from
+     */
     default void provideAll(ServiceLocator locator) {
         throw new UnsupportedOperationException();
     }
 
+    // provide a constant via an instance
     default <T> void provideInstance(Class<T> key, T instance) {
         provideInstance(Key.of(key), instance);
     }

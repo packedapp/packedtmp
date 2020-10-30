@@ -23,7 +23,9 @@ import java.util.function.Consumer;
 
 import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
+import app.packed.base.Key.Qualifier;
 import app.packed.base.Nullable;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.config.ConfigSite;
 import app.packed.cube.Extension;
@@ -240,6 +242,23 @@ public final class ServiceExtension extends Extension {
         }
         checkConfigurable();
         sbm.provideFromInjector((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
+    }
+
+    /**
+     * Binds a new service constant to the specified instance.
+     * <p>
+     * The default key for the service will be {@code instance.getClass()}. If the type returned by
+     * {@code instance.getClass()} is annotated with a {@link Qualifier qualifier annotation}, the default key will have the
+     * qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param instance
+     *            the instance to bind
+     * @return a service configuration for the service
+     */
+    public <T> BeanConfiguration<T> provideInstance(T instance) {
+        return configuration().wireInstance(BeanConfiguration.driver(), instance).provide();
     }
 
     // Will install a ServiceStatelessConfiguration...

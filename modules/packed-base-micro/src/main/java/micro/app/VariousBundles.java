@@ -32,7 +32,7 @@ public class VariousBundles {
     public static BaseBundle empty() {
         return new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void build() {}
         };
     }
 
@@ -40,7 +40,7 @@ public class VariousBundles {
         return new BaseBundle() {
 
             @Override
-            public void configure() {
+            public void build() {
                 installInstance("foo");
             }
         };
@@ -50,7 +50,7 @@ public class VariousBundles {
         return new BaseBundle() {
 
             @Override
-            public void configure() {
+            public void build() {
                 installInstance("foo").setName("1");
                 installInstance("foo").setName("2");
                 installInstance("foo").setName("3");
@@ -64,10 +64,10 @@ public class VariousBundles {
         return new BaseBundle() {
 
             @Override
-            public void configure() {
+            public void build() {
                 link(new BaseBundle() {
                     @Override
-                    protected void configure() {}
+                    protected void build() {}
                 });
             }
         };

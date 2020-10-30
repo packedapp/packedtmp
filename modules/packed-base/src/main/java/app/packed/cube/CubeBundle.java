@@ -38,8 +38,8 @@ import app.packed.inject.Factory;
  * {@link CubeConfiguration}. Delegating every invocation in the class to an instance of {@link CubeConfiguration}
  * available via {@link #configuration()}.
  * <p>
- * A bundle instance can be used ({@link #configure()}) exactly once. Attempting to use it multiple times will fail with
- * an {@link IllegalStateException}.
+ * A bundle instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
+ * {@link IllegalStateException}.
  * 
  * A generic bundle. Normally you would extend {@link BaseBundle}
  */
@@ -51,11 +51,11 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
     }
 
     /**
-     * Checks that the {@link #configure()} method has not already been invoked. This is typically used to make sure that
-     * users of extensions does not try to configure the extension after it has been configured.
+     * Checks that the {@link #build()} method has not already been invoked. This is typically used to make sure that users
+     * of extensions does not try to configure the extension after it has been configured.
      * 
      * @throws IllegalStateException
-     *             if {@link #configure()} has been invoked
+     *             if {@link #build()} has been invoked
      * @see CubeConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
@@ -202,7 +202,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
      * @throws IllegalStateException
-     *             if called from outside {@link #configure()}
+     *             if called from outside {@link #build()}
      */
     protected final void setName(String name) {
         configuration().setName(name);
@@ -220,7 +220,7 @@ public abstract class CubeBundle extends Bundle<CubeConfiguration> {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if called from outside {@link #configure()}
+     *             if called from outside {@link #build()}
      * @see CubeConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {

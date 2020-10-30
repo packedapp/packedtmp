@@ -42,7 +42,7 @@ public class ServiceContractTCKTest {
     public void empty1() {
         check(ServiceContract.EMPTY, new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void build() {}
         });
     }
 
@@ -51,7 +51,7 @@ public class ServiceContractTCKTest {
     public void empty2() {
         check(ServiceContract.EMPTY, new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 use(ServiceExtension.class);
             }
         });
@@ -62,7 +62,7 @@ public class ServiceContractTCKTest {
     public void empty3() {
         check(ServiceContract.EMPTY, new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 lookup(MethodHandles.lookup());
                 provide(A.class);
             }
@@ -75,7 +75,7 @@ public class ServiceContractTCKTest {
         ServiceContract expected = ServiceContract.newContract(b -> b.provides(A.class));
         check(expected, new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 lookup(MethodHandles.lookup());
                 provide(A.class);
                 provide(B.class);
@@ -90,7 +90,7 @@ public class ServiceContractTCKTest {
         ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
         check(expected, new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsA.class); // TODO fix, this should work for install
                 provide(B.class);
@@ -103,7 +103,7 @@ public class ServiceContractTCKTest {
         ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class));
         check(expected, new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsAOptional.class);
                 provide(B.class);
@@ -117,7 +117,7 @@ public class ServiceContractTCKTest {
         ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
         check(expected, new BaseBundle() {
             @Override
-            protected void configure() {
+            protected void build() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsA.class);
                 provide(NeedsAOptional.class);
@@ -132,7 +132,7 @@ public class ServiceContractTCKTest {
         check(expected, new BaseBundle() {
 
             @Override
-            protected void configure() {
+            protected void build() {
                 lookup(MethodHandles.lookup());
                 provide(NeedsAOptional.class);
                 provide(NeedsB.class);

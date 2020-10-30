@@ -23,6 +23,10 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.component.App;
+import app.packed.component.Bundle;
+import app.packed.component.ComponentSystem;
+import app.packed.component.Wirelet;
 import app.packed.sidecar.ActiveVariableSidecar;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.PackedServiceTransformer;
@@ -219,14 +223,32 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * Creates a new service locator by using the specified transformer.
      * 
-     * @param transformer
-     *            the transformer used to create the locator
+     * <p>
+     * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSystem} so there are
+     * no ways to inspect it using the normal tools.
+     * 
+     * @param bundle
+     *            the bundle to use for construction
+     * @param wirelets
+     *            optional wirelet
      * @return a new service locator
      */
-    static ServiceLocator of(Consumer<? super ServiceTransformation> transformer) {
-        return PackedServiceTransformer.of(transformer);
+    static ServiceLocator of(Bundle<?> bundle, Wirelet... wirelets) {
+        return PackedInjector.EMPTY_SERVICE_LOCATOR;
+    }
+
+    /**
+     * Creates a new service locator by using a service transformation.
+     * <p>
+     * 
+     * 
+     * @param transformation
+     *            the transformation to use
+     * @return a new service locator
+     */
+    static ServiceLocator of(Consumer<? super ServiceTransformation> transformation) {
+        return PackedServiceTransformer.of(transformation);
     }
 }
 // toRegistry...

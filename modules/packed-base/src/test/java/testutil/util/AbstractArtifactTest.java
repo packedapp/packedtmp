@@ -30,7 +30,7 @@ public abstract class AbstractArtifactTest {
     public static BaseBundle emptyBundle() {
         return new BaseBundle() {
             @Override
-            protected void configure() {}
+            protected void build() {}
         };
     }
 
@@ -54,7 +54,7 @@ public abstract class AbstractArtifactTest {
         }
 
         @Override
-        public void configure() {
+        public void build() {
             ca.accept(new ContainerConfigurationTester(configuration()));
         }
     }

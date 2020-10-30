@@ -40,8 +40,8 @@ import app.packed.cube.Extension;
  * 
  * <p>
  * This annotation cannot be used on subclasses of {@link CubeBundle} as we want to avoid situations where some
- * extensions are added via class annotations and others via {@link CubeBundle#configure()}. Giving the false
- * impression to users that only annotations added via this annotation is used
+ * extensions are added via class annotations and others via {@link CubeBundle#build()}. Giving the false impression to
+ * users that only annotations added via this annotation is used
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)

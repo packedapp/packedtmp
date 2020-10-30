@@ -39,7 +39,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public void instanceMethod() {
         App.of(new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 assertThat(extensions()).isEmpty();
                 WithMethodInstance.invoked = false;
                 installInstance(new WithMethodInstance());
@@ -53,7 +53,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public void staticField() {
         App.of(new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 assertThat(extensions()).isEmpty();
                 installInstance(new WithFieldStatic());
                 assertThat(extensions()).containsExactlyInAnyOrder(MyExtension.class);
@@ -65,7 +65,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public void instanceField() {
         App.of(new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 assertThat(extensions()).isEmpty();
                 installInstance(new WithFieldInstance());
                 assertThat(extensions()).containsExactlyInAnyOrder(MyExtension.class);
@@ -77,7 +77,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
     public void staticMethod() {
         App.of(new BaseBundle() {
             @Override
-            public void configure() {
+            public void build() {
                 assertThat(extensions()).isEmpty();
                 WithMethodStatic.invoked = false;
                 installInstance(new WithMethodStatic());

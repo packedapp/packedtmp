@@ -39,7 +39,7 @@ public class Foo extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void build() {
         provideInstance("asdasdasd");
         provide(MyComp.class);
         System.out.println(extensions());

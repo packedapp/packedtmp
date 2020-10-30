@@ -20,6 +20,10 @@ public interface Service extends AttributedElement {
      */
     boolean isConstant();
 
+    default ServiceMode mode() {
+        return isConstant() ? ServiceMode.CONSTANT : ServiceMode.PROTOYPE;
+    }
+
     /**
      * Returns the key that the service is registered with.
      *

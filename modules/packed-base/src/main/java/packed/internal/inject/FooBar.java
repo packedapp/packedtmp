@@ -29,7 +29,7 @@ public class FooBar extends BaseBundle {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void build() {
         install(NeedsString.class);
         provideInstance(123L);
 
@@ -66,7 +66,7 @@ public class FooBar extends BaseBundle {
 
         /** {@inheritDoc} */
         @Override
-        protected void configure() {
+        protected void build() {
             provide(ChildServ.class).export();
             installInstance("asdasd").exportAs(new Key<@Named("Fooo") String>() {});
             installInstance("asdasd").exportAs(new Key<@Named("dFooo") String>() {});

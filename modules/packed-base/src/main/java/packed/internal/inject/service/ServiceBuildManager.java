@@ -255,6 +255,8 @@ public final class ServiceBuildManager {
             for (CubeBuild c : container.children) {
                 ServiceBuildManager m = c.getServiceManager();
 
+                // If Wirelets
+
                 ServiceRequirementsManager srm = m.dependencies;
                 if (srm != null) {
                     for (Requirement r : srm.requirements.values()) {
