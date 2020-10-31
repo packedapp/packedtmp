@@ -18,6 +18,7 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -32,12 +33,11 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
 
     /** The services that we wrap */
     // An alternative implementation would be to have a backing map and a filter
-    // However then asMap() would be difficult to implement.
+    // However then asMap() would be a lot of effort to implement.
     private final Map<Key<?>, RuntimeService> services;
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    PackedServiceSelection(Map<Key<?>, Service> services) {
-        this.services = (Map) requireNonNull(services);
+    PackedServiceSelection(Map<Key<?>, RuntimeService> services) {
+        this.services = requireNonNull(services);
     }
 
     /** {@inheritDoc} */
@@ -47,8 +47,21 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         return (Map) services;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public final void forEachInstance(Consumer<? super S> action) {
+    public void forEachInstance(BiConsumer<? super Service, ? super S> action) {
+        requireNonNull(action, "action is null");
+        for (RuntimeService s : services.values()) {
+            @SuppressWarnings("unchecked")
+            S instance = (S) s.getInstanceForLocator(this);
+            action.accept(s, instance);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void forEachInstance(Consumer<? super S> action) {
+        requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
             S instance = (S) s.getInstanceForLocator(this);

@@ -110,17 +110,12 @@ public interface ServiceLocator extends ServiceRegistry {
      * 
      * @return a service selection with all of the services in this locator
      */
-    ServiceSelection<Object> selectAll();
+    ServiceSelection<?> selectAll();
 
     default <T> ServiceSelection<T> selectMinimal(Class<T> key) {
         return selectMinimal(Key.of(key));
     }
 
-    // Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
-    // og saa faa den specificeret key.
-
-    // Kunne godt taenke mig at finde et godt navn.
-    // Naar en noegle er en super noegle???
     <T> ServiceSelection<T> selectMinimal(Key<T> key);
 
     /**
@@ -224,22 +219,12 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 }
 
+// Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
+// og saa faa den specificeret key.
+
+// Kunne godt taenke mig at finde et godt navn.
+// Naar en noegle er en super noegle???
 interface ZelectSandbox extends ServiceLocator {
-
-    // All whose raw type can be assigned to
-    default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
-        throw new UnsupportedOperationException();
-    }
-
-    // All whose raw type is equal to.. Don't know if it is
-    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Vi har faktisk 3.
-    // Key Delen = Foo.class; (Ignores qualifiers)
-    // Key delend.rawType = Foo.class
-    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
 
     // may define any qualifiers
     default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
@@ -261,6 +246,21 @@ interface ZelectSandbox extends ServiceLocator {
     // Hmm kan vi sige noget om actual type som vi producere???
     default <T> ServiceSelection<T> select(TypeToken<T> key) {
         // May define additional qualifiers
+        throw new UnsupportedOperationException();
+    }
+
+    // Vi har faktisk 3.
+    // Key Delen = Foo.class; (Ignores qualifiers)
+    // Key delend.rawType = Foo.class
+    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
+
+    // All whose raw type can be assigned to
+    default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // All whose raw type is equal to.. Don't know if it is
+    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
         throw new UnsupportedOperationException();
     }
 }

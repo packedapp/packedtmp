@@ -48,15 +48,16 @@ import app.packed.base.Key;
 // Vi bliver noedt til ogsaa at have den paa plads..
 public interface ServiceSelection<S> extends ServiceLocator {
 
-    default void forEachInstance(Consumer<? super S> action) {
-        instances().forEach(action);
-    }
+    void forEachInstance(BiConsumer<? super Service, ? super S> action);
 
+    void forEachInstance(Consumer<? super S> action);
+
+    /**
+     * Returns a stream of all instances in the selection.
+     * 
+     * @return a stream of all instances in the selection
+     */
     Stream<S> instances();
-
-    default void forEachInstance(BiConsumer<? super Service, ? super S> action) {
-        throw new UnsupportedOperationException();
-    }
 }
 
 interface Zandbox<S> extends ServiceSelection<S> {

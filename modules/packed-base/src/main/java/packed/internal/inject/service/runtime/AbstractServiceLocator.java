@@ -80,19 +80,20 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     }
 
     private <T> ServiceSelection<T> select(Predicate<? super Service> filter) {
-        HashMap<Key<?>, Service> m = new HashMap<>();
+        HashMap<Key<?>, RuntimeService> m = new HashMap<>();
         for (Service s : asMap().values()) {
             if (filter.test(s)) {
-                m.put(s.key(), s);
+                m.put(s.key(), (RuntimeService) s);
             }
         }
         return new PackedServiceSelection<>(Map.copyOf(m));
     }
 
     /** {@inheritDoc} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public final ServiceSelection<Object> selectAll() {
-        return new PackedServiceSelection<>(asMap());
+        return new PackedServiceSelection<>((Map) asMap());
     }
 
     /** {@inheritDoc} */
