@@ -29,6 +29,7 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
+import app.packed.inject.Factory;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceTransformation;
@@ -47,16 +48,21 @@ import packed.internal.util.ForwardingStrategy;
 // ServiceExtension.extensionTransform
 public final class PackedServiceTransformer extends AbstractServiceRegistry implements ServiceTransformation {
 
-    /** The services that we are transforming */
-    // An alternative implementation would be to have a backing map and a filter
-    // However then asMap() would be difficult to implement.
-    public final Map<Key<?>, AbstractService> services;
+    /** A lazily initialized map that is exposed via {@link #asMap}. */
+    private ForwardingMap<Key<?>, Service> asMap;
 
-    private Map<Key<?>, Service> asMap;
+    /** The services that we do in-place transformation of. */
+    private final Map<Key<?>, AbstractService> services;
 
     @SuppressWarnings("unchecked")
     private PackedServiceTransformer(Map<Key<?>, ? extends AbstractService> services) {
         this.services = (Map<Key<?>, AbstractService>) requireNonNull(services);
+    }
+
+    private void add(Factory<?> factory, boolean auto, boolean isConstant, boolean replace) {
+        requireNonNull(factory, "factory is null");
+        // Det er saa her hvor vi skal til at bruge en realm...
+        // Altsaa der er vel ingen grund til vi ikke checker allerede nu...
     }
 
     /** {@inheritDoc} */
@@ -64,7 +70,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
     @Override
     public Map<Key<?>, Service> asMap() {
         Map<Key<?>, Service> es;
-        // TODO fix map for remove
+        // TODO fix forwarding map for remove
         return (es = asMap) == null ? (asMap = new ForwardingMap<>((Map) services, new ForwardingStrategy())) : es;
     }
 
@@ -84,6 +90,24 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         services.put(key, checkKeyExists(key).decorate(decoratingFunction));
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public void map(Factory<?> factory) {
+        add(factory, true, false, false);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void prototype(Factory<?> factory) {
+        add(factory, false, false, false);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void provide(Factory<?> factory) {
+        add(factory, false, true, false);
+    }
+
     @Override
     public <T> void provideInstance(Key<T> key, T instance) {
         requireNonNull(key, "key is null");
@@ -98,9 +122,9 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         requireNonNull(existingKey, "existingKey is null");
         requireNonNull(newKey, "newKey is null");
         if (existingKey.equals(newKey)) {
-            throw new IllegalStateException("Cannot rekey the same key, key = " + existingKey);
+            throw new IllegalStateException("Cannot rekey to the same key, key = " + existingKey);
         } else if (services.containsKey(newKey)) {
-            throw new IllegalStateException("A service with newKey already exists, key = " + newKey);
+            throw new IllegalStateException("A service with newKey already exists, newKey = " + newKey);
         }
         services.put(newKey, checkKeyExists(existingKey).rekeyAs(newKey));
     }
@@ -110,6 +134,8 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
     public void rekeyAll(Function<Service, @Nullable Key<?>> function) {
         requireNonNull(function, "function is null");
 
+        // We don't replace in-map as we want to be able to swap keys.
+        // Which would not be possible if we did it in place.
         Map<Key<?>, AbstractService> newServices = new HashMap<>();
         for (AbstractService s : services.values()) {
             Key<?> key = function.apply(s);
@@ -122,34 +148,18 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
                 }
                 // Make sure that we do not end up with multiple services with the same key
                 if (newServices.putIfAbsent(key, s) != null) {
-                    throw new IllegalStateException("A service with key already exists, key = " + key);
+                    throw new IllegalStateException("Another service was already rekeyed to the same key, key = " + key);
                 }
             }
         }
-        // We replace in-map just in case somebody got the idea of storing
-        // ServiceRegistry#keys() somewhere
         services.clear();
         services.putAll(newServices);
     }
 
-    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformation> transformer) {
-//        PackedServiceTransformer pst = new PackedServiceTransformer(services);
-//        public void transform(BiConsumer<? super ServiceTransformer, ServiceContract> transformer) {
-//            if (resolvedExports == null) {
-//                resolvedExports = new LinkedHashMap<>();
-//            }
-//            transformer.accept(null, sm.newServiceContract());
-//        }
-
-        PackedServiceTransformer dst = new PackedServiceTransformer(services);
-        transformer.accept(dst);
-    }
-
-    public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
-            BiConsumer<? super ServiceTransformation, ? super T> transformer, T attachment) {
-
-        PackedServiceTransformer dst = new PackedServiceTransformer(services);
-        transformer.accept(dst, attachment);
+    /** {@inheritDoc} */
+    @Override
+    public void replace(Factory<?> factory) {
+        add(factory, true, false, true);
     }
 
     /**
@@ -157,7 +167,11 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
      * 
      * @return the new service locator
      */
-    private ServiceLocator toServiceLocator() {
+    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformation> transformation) {
+        requireNonNull(transformation, "transformation is null");
+        PackedServiceTransformer psm = new PackedServiceTransformer(services);
+        transformation.accept(psm);
+
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext();
         for (AbstractService e : services.values()) {
@@ -166,28 +180,23 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         return new PackedInjector(ConfigSite.UNKNOWN, runtimeEntries);
     }
 
-    public static ServiceLocator transform(Consumer<? super ServiceTransformation> transformer, Collection<RuntimeService> services) {
-        requireNonNull(transformer, "transformer is null");
+    public static ServiceLocator transform(Consumer<? super ServiceTransformation> transformation, Collection<RuntimeService> services) {
+        requireNonNull(transformation, "transformation is null");
         HashMap<Key<?>, ServiceBuild> m = new HashMap<>();
         for (RuntimeService s : services) {
             m.put(s.key(), new RuntimeAdaptorServiceBuild(ConfigSite.UNKNOWN, s));
         }
-        PackedServiceTransformer dst = new PackedServiceTransformer(m);
-        transformer.accept(dst);
-        return dst.toServiceLocator();
+        return toServiceLocator(m, transformation);
     }
 
-    /**
-     * Creates a new service locator from scratch by using the specified transformer.
-     * 
-     * @param transformer
-     *            the transformer used to create the locator
-     * @return a new service locator
-     */
-    public static ServiceLocator of(Consumer<? super ServiceTransformation> transformer) {
-        requireNonNull(transformer, "transformer is null");
-        PackedServiceTransformer psm = new PackedServiceTransformer(new HashMap<>());
-        transformer.accept(psm);
-        return psm.toServiceLocator();
+    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformation> transformer) {
+        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        transformer.accept(dst);
+    }
+
+    public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
+            BiConsumer<? super ServiceTransformation, ? super T> transformer, T attachment) {
+        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        transformer.accept(dst, attachment);
     }
 }

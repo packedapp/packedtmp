@@ -30,7 +30,7 @@ import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.ServiceSubSystem;
 
 /** Contains data and logic relevant for containers. */
@@ -60,7 +60,7 @@ public final class BundleBuild {
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private ServiceBuildManager sbm;
+    private ServiceComposer sbm;
 
     private ArrayList<ExtensionBuild> tmpExtensions;
 
@@ -165,12 +165,12 @@ public final class BundleBuild {
     }
 
     @Nullable
-    public ServiceBuildManager getServiceManager() {
+    public ServiceComposer getServiceManager() {
         return sbm;
     }
 
-    public ServiceBuildManager getServiceManagerOrCreate() {
-        ServiceBuildManager s = sbm;
+    public ServiceComposer getServiceManagerOrCreate() {
+        ServiceComposer s = sbm;
         if (s == null) {
             useExtension(ServiceExtension.class);
             s = sbm;
@@ -193,8 +193,8 @@ public final class BundleBuild {
         return isImage = Boolean.FALSE;
     }
 
-    public ServiceBuildManager newServiceManagerFromServiceExtension() {
-        return sbm = new ServiceBuildManager(this);
+    public ServiceComposer newServiceManagerFromServiceExtension() {
+        return sbm = new ServiceComposer(this);
     }
 
     private void runPredContainerChildren() {

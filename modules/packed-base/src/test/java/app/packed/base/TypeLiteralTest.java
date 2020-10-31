@@ -397,7 +397,7 @@ public class TypeLiteralTest {
                 .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
 
         Key<Integer> key = Key.fromTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
-        assertThat(key.typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(key.typeToken()).isEqualTo(TL_INTEGER);
         assertThat(key.qualifiers()).containsExactly(AnnotationInstances.NO_VALUE_QUALIFIER);
     }
 

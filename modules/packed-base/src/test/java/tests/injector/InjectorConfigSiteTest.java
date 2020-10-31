@@ -84,14 +84,14 @@ public class InjectorConfigSiteTest {
     /** A helper method for {@link #binding()}. */
     private void binding0(BeanConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
-        int index = sc.key().get().typeLiteral().rawType().getSimpleName().toString().charAt(0) - 'A';
+        int index = sc.key().get().rawType().getSimpleName().toString().charAt(0) - 'A';
         ConfigSite cs = sc.configSite();
         int line = sfCreate.getLineNumber();
         assertThat(cs).hasToString(sfCreate.toString().replace(":" + line, ":" + (line + index + 3)));
         assertThat(cs.operation()).isEqualTo(ConfigSiteInjectOperations.COMPONENT_INSTALL);
         assertThat(cs.hasParent()).isTrue();
         assertThat(cs.parent().get().toString()).isEqualTo(injectorCreate.toString());
-        sites.put(sc.key().get().typeLiteral().rawType(), cs);
+        sites.put(sc.key().get().rawType(), cs);
     }
 
     /**

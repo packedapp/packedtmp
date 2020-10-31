@@ -29,7 +29,7 @@ public class Wrapper {
 
     private ServiceBuild build;
 
-    void resolve(ServiceBuildManager sbm, ServiceBuild b) {
+    void resolve(ServiceComposer sbm, ServiceBuild b) {
         if (build != null) {
             LinkedHashSet<ServiceBuild> hs = sbm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
             hs.add(b); // might be added multiple times, hence we use a Set, but add existing first

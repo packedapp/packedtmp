@@ -49,4 +49,8 @@ public final class RealmBuild {
     public Class<?> realmType() {
         return model.type;
     }
+
+    public RealmLookup lookup() {
+        return lookup;
+    }
 }

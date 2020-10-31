@@ -110,7 +110,7 @@ class MethodHandleBuilderHelper {
         for (int i = 0; i < parameters.size(); i++) {
             Parameter p = parameters.get(i);
             DependencyDescriptor sd = DependencyDescriptor.fromVariable(p, i);
-            Class<?> askingForType = sd.key().typeLiteral().rawType();
+            Class<?> askingForType = sd.key().rawType();
             MethodHandleBuilder.AnnoClassEntry anno = find(aa, p);
 
             if (anno == null) {
@@ -139,7 +139,7 @@ class MethodHandleBuilderHelper {
                     } else {
                         // We use a provided value directly. Wrap it in an Optional if needed
 
-                        Class<?> actual = kk.typeLiteral().rawType();
+                        Class<?> actual = kk.rawType();
                         Class<?> expected = input.parameterType(entry.indexes[0]);
 
                         // Upcast if needed, I don't think we need to do this if we create an optional

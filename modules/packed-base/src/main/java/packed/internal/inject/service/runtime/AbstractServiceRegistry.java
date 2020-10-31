@@ -117,7 +117,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return services().toString();
+        return toList().toString();
     }
 
     /**

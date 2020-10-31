@@ -29,12 +29,11 @@ import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.Set;
 
 import app.packed.base.TypeToken.CanonicalizedTypeLiteral;
 import packed.internal.util.AnnotationUtil;
@@ -167,9 +166,9 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns whether or not this key has any qualifiers.
+     * Returns whether or not this key has at least one qualifier.
      * 
-     * @return whether or not this key has any qualifiers
+     * @return whether or not this key has at least one qualifier
      */
     public final boolean hasQualifier() {
         return qualifiers != null;
@@ -200,8 +199,22 @@ public abstract class Key<T> {
         return qualifiers == null && typeLiteral.type() == c;
     }
 
-    public final Collection<Annotation> qualifiers() {
-        return qualifiers == null ? List.of() : List.of(qualifiers);
+    /**
+     * Returns a set of any qualifiers that are present on the key.
+     * 
+     * @return a set of any qualifiers that are present on the key
+     */
+    public final Set<Annotation> qualifiers() {
+        return qualifiers == null ? Set.of() : Set.of(qualifiers);
+    }
+
+    /**
+     * Returns the raw type of the key.
+     * 
+     * @return the raw type of the key
+     */
+    public final Class<?> rawType() {
+        return typeLiteral.rawType();
     }
 
     /** {@inheritDoc} */
@@ -233,38 +246,8 @@ public abstract class Key<T> {
      * 
      * @return the generic type of this key
      */
-    public final TypeToken<T> typeLiteral() {
+    public final TypeToken<T> typeToken() {
         return typeLiteral;
-    }
-
-    public Class<?> rawType() {
-        return typeLiteral.rawType();
-    }
-
-    /**
-     * Calling this method will replace any existing qualifier.
-     * 
-     * @param name
-     *            the qualifier name
-     * @return the new key
-     */
-    public final Key<T> withName(String name) {
-        requireNonNull(name, "name is null");
-        return withQualifier(Named.MAKER.make(name));
-    }
-
-    /**
-     * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
-     * ({@code hasQualifier() == false}), returns this key.
-     * 
-     * @return this key with no qualifier
-     */
-    public final Key<T> withoutQualifiers() {
-        return qualifiers == null ? this : new CanonicalizedKey<>(typeLiteral, (Annotation[]) null);
-    }
-
-    public final Key<T> withoutName() {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -279,7 +262,10 @@ public abstract class Key<T> {
     // repeatable annotations??? forbidden? or overwrite.
     // We are not going to multiple qualifiers of the same type
     // Taenker det er er fint man ikke kan tilfoeje repeatable annoteringer...
-    public final Key<T> withQualifier(Annotation qualifier) {
+
+    // rename to with?
+    // with(Annotation... qualifiers) altsaa hvor tit har man brug for det?????
+    public final Key<T> with(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierHelper.checkQualifierAnnotationPresent(qualifier);
         if (qualifiers == null) {
@@ -299,6 +285,36 @@ public abstract class Key<T> {
         Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length + 1);
         an[an.length - 1] = qualifier;
         return new CanonicalizedKey<>(typeLiteral, an);
+    }
+
+    /**
+     * Calling this method will replace any existing qualifier.
+     * 
+     * @param name
+     *            the qualifier name
+     * @return the new key
+     */
+    public final Key<T> withName(String name) {
+        requireNonNull(name, "name is null");
+        return with(Named.MAKER.make(name));
+    }
+
+    public final Key<T> without(Class<? extends Annotation> qualifierType) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Key<T> withoutName() {
+        return without(Named.class);
+    }
+
+    /**
+     * Returns a key with no qualifier but retaining this key's type. If this key has no qualifier
+     * ({@code hasQualifier() == false}), returns this key.
+     * 
+     * @return this key with no qualifier
+     */
+    public final Key<T> withoutQualifiers() {
+        return qualifiers == null ? this : new CanonicalizedKey<>(typeLiteral, (Annotation[]) null);
     }
 
     /**

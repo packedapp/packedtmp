@@ -45,7 +45,7 @@ import app.packed.component.Component;
  * @see ServiceLocator#of(java.util.function.Consumer)
  * @see ServiceWirelets#to(java.util.function.Consumer)
  * @see ServiceWirelets#from(java.util.function.Consumer)
- * @see ServiceExtension#exportsTransform(java.util.function.Consumer)
+ * @see ServiceExtension#transformExports(java.util.function.Consumer)
  */
 // ServiceTransformation? (like action), was ServiceTransformer
 public interface ServiceTransformation extends ServiceRegistry {
@@ -87,12 +87,50 @@ public interface ServiceTransformation extends ServiceRegistry {
 
     // prototype or constant...
     // Hvis vi skal bruge den som en Builder...
-
     // will override any existing service
     // will be a constant if every single dependency is a constant
     // will be resolved against the realm in which the wirelet is being used
     // if used on root. Must use Factory#withMethodHandle unless public exposed to everyone\
     // will decorate a service injected as itself
+
+    default void map(Class<?> implementation) {
+        map(Factory.of(implementation));
+    }
+
+    /**
+     * <p>
+     * If the specified factory does not have declare any variables. The new services will have default (constant) scope.
+     * 
+     * @param factory
+     * @throws IllegalStateException
+     *             if the specified factory has dependencies that cannot be resolved among available services.
+     */
+    // Hvis psedokode eksempel
+    // for every variable in factory {
+    // if get(var.key).mode == prototype) {
+    // return prototype(factory)
+    // }
+    // }
+    // return provide(factory;
+    //
+    // Kunne gode bruge en factory.resolveAsKeys(); fail on context thingies??? I think
+
+    // som provide med constant er styret af det der kommer ind...
+    // in most situations you probably want to use this one
+
+    void map(Factory<?> factory);
+
+    default void prototype(Class<?> implementation) {
+        prototype(Factory.of(implementation));
+    }
+
+    void prototype(Factory<?> factory);
+
+    default void provide(Class<?> implementation) {
+        provide(Factory.of(implementation));
+    }
+
+    void provide(Factory<?> factory);
 
     // addAll??? nogle af dem er jo prototypes.
     /**
@@ -104,6 +142,18 @@ public interface ServiceTransformation extends ServiceRegistry {
     }
 
     // provide a constant via an instance
+    /**
+     * Provides a new constant service returning the specified instance on every request.
+     * 
+     * @param <T>
+     *            the type of the service being added
+     * @param key
+     *            the key of the service
+     * @param instance
+     *            the instance to return on every request
+     * @see #provideInstance(Key, Object)
+     * @see #provideInstance(Object)
+     */
     default <T> void provideInstance(Class<T> key, T instance) {
         provideInstance(Key.of(key), instance);
     }
@@ -125,7 +175,7 @@ public interface ServiceTransformation extends ServiceRegistry {
      * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
      * service of the specific type as a requirement.
      * <p>
-     * Invoking this method is identical to invoking {@code provide(service.getClass(), service)}.
+     * Invoking this method is identical to invoking {@code provideInstance(instance.getClass(), instance)}.
      * 
      * @param instance
      *            the service to provide
@@ -134,6 +184,20 @@ public interface ServiceTransformation extends ServiceRegistry {
     default void provideInstance(Object instance) {
         requireNonNull(instance, "instance is null");
         provideInstance((Class) instance.getClass(), instance);
+    }
+
+    /**
+     * A version of
+     * 
+     * @param existingKey
+     *            the key of an existing service
+     * @param newKey
+     *            the new key of the service
+     */
+    // How useful is this. It is only for downcasting
+    // don't really see many usecases
+    default void rekey(Class<?> existingKey, Class<?> newKey) {
+        rekey(Key.of(existingKey), Key.of(newKey));
     }
 
     /**
@@ -197,6 +261,8 @@ public interface ServiceTransformation extends ServiceRegistry {
         }
     }
 
+    // auto figure out if constant or prototype
+
     /**
      * <p>
      * Keys for which a corresponding service is not present, are ignored.
@@ -244,54 +310,9 @@ public interface ServiceTransformation extends ServiceRegistry {
         }
     }
 
-    default void retain(Class<?>... keys) {
-        retain(Key.of(keys));
+    default void replace(Class<?> implementation) {
+        replace(Factory.of(implementation));
     }
-
-    default void retain(Key<?>... keys) {
-        keys().retainAll(List.of(keys));
-    }
-}
-
-interface TProviding extends ServiceTransformation {
-
-    // som provide med constant er styret af det der kommer ind...
-    // in most situations you probably want to use this one
-
-    // auto figure out if constant or prototype
-
-    void map(Class<?> factory);
-
-    /**
-     * <p>
-     * If the specified factory does not have declare any variables. The new services will have default (constant) scope.
-     * 
-     * @param factory
-     * @throws IllegalStateException
-     *             if the specified factory has dependencies that cannot be resolved among available services.
-     */
-    // Hvis psedokode eksempel
-    // for every variable in factory {
-    // if get(var.key).mode == prototype) {
-    // return prototype(factory)
-    // }
-    // }
-    // return provide(factory;
-    //
-    // Kunne gode bruge en factory.resolveAsKeys(); fail on context thingies??? I think
-    void map(Factory<?> factory);
-
-    /* ------- */
-
-    void prototype(Class<?> factory);
-
-    void prototype(Factory<?> factory);
-
-    void provide(Class<?> factory);
-
-    void provide(Factory<?> factory);
-
-    void replace(Class<?> factory);
 
     /**
      * Similar to {@link #map(Factory)} except that it will automatically remove all dependencies of the factory once the
@@ -301,6 +322,29 @@ interface TProviding extends ServiceTransformation {
      *            the factory
      */
     void replace(Factory<?> factory);
+
+    default void retain(Class<?>... keys) {
+        retain(Key.of(keys));
+    }
+
+    default void retain(Key<?>... keys) {
+        keys().retainAll(List.of(keys));
+    }
+
+    default void qualifyAllWith(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        rekeyAll(s -> s.key().with(qualifier));
+    }
+
+    /**
+     * Rekey all service
+     * 
+     * @param name
+     */
+    default void qualifyAllWithName(String name) {
+        requireNonNull(name, "name is null");
+        rekeyAll(s -> s.key().withName(name));
+    }
 }
 
 interface UNext extends ServiceTransformation {
@@ -320,7 +364,17 @@ interface UNext extends ServiceTransformation {
     // men hvad saa med attributer...
 
     // Vi har jo en en realm!!!!
+
     // void addAttribute(Key, attributes);
+
+    // void addAttributeAll(Key, attributes);
+
+    //// Fcking Qualifier not an attribute
+    // void addAttributeName(Key, String name);
+    // void addAttributeNameAll(Key, String name);
+
+    public void qualifyWith(Key<?> k, Annotation qualifier);
+
 }
 
 // Various ideas on provide/rekey
@@ -348,7 +402,7 @@ interface YIdeas extends ServiceTransformation {
 
     // Maybe mirror key names
     default void addQualifierAll(Annotation qualifier) {
-        rekeyAll(s -> s.key().withQualifier(qualifier));
+        rekeyAll(s -> s.key().with(qualifier));
     }
 
     // provide(new Foo<>(e->e)); eller
@@ -412,20 +466,6 @@ interface ZBadIdeas extends ServiceTransformation {
     // Men folk maa kunne arbejde udenom paa en anden maade.
     // f.eks. er det jo ikke noget problem for toWirelets.. der faar man alt.
 
-    /**
-     * A version of
-     * 
-     * @param existingKey
-     *            the key of an existing service
-     * @param newKey
-     *            the new key of the service
-     */
-    // How useful is this. It is only for downcasting
-    // don't really see many usecases
-    default void rekey(Class<?> existingKey, Class<?> newKey) {
-        rekey(Key.of(existingKey), Key.of(newKey));
-    }
-
     // Otherwise they are completed resolved instream...
     // I think I would rather have something like
     // se.pushForChildExportTransformartion(Key... keys);
@@ -433,14 +473,3 @@ interface ZBadIdeas extends ServiceTransformation {
     ServiceTransformation retainIf(Iterable<? super Key<?>> keys);
 
 }
-
-//Altsaa størstedelen af wirelets kan jo bare wrappe saadan en....
-
-//Vil sige at hvert skridt i wirelets transfomration.
-//Skal resultere i unikke keys
-
-//Det er jo mere eller mindre...
-//de her compute ting
-//Tror altsaa bedre jeg kan lide den end wirelets...
-
-//ServiceComputer... nah

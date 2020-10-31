@@ -22,6 +22,7 @@ import app.packed.bundle.Extension;
 import app.packed.component.App;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceLocator;
+import packed.internal.inject.FooBar.NeedsString;
 
 /**
  *
@@ -34,7 +35,7 @@ class Xxx extends BaseAssembly {
         use(MyEx.class);
         provideInstance("FooBar").export();
         provide(new Factory<Long>(System::currentTimeMillis) {}).export();
-        service().exportsTransform(c -> {
+        service().transformExports(c -> {
             c.decorate(Long.class, l -> -l);
         });
     }
@@ -61,4 +62,14 @@ class Xxx extends BaseAssembly {
     public static class MyEx extends Extension {
         MyEx() {}
     }
+
+    static class FooAssembly extends BaseAssembly {
+
+        /** {@inheritDoc} */
+        @Override
+        protected void build() {
+            provide(NeedsString.class);
+        }
+    }
+
 }

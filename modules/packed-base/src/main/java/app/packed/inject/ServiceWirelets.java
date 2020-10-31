@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.runtime.PackedServiceTransformer;
 
@@ -70,7 +70,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             @Override
-            protected void process(ServiceBuildManager child) {
+            protected void process(ServiceComposer child) {
                 child.exports().transform(transformation);
             }
         };
@@ -88,7 +88,7 @@ public final class ServiceWirelets {
         return new Service1stPassWirelet() {
             /** {@inheritDoc} */
             @Override
-            protected void process(ServiceBuildManager child) {
+            protected void process(ServiceComposer child) {
                 child.exports().transform(transformation);
             }
         };
@@ -140,7 +140,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child, Map<Key<?>, ServiceBuild> map) {
+            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, ServiceBuild> map) {
                 PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
@@ -150,7 +150,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceBuildManager parent, ServiceBuildManager child, Map<Key<?>, ServiceBuild> map) {
+            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, ServiceBuild> map) {
                 PackedServiceTransformer.transformInplace(map, transformation);
             }
         };

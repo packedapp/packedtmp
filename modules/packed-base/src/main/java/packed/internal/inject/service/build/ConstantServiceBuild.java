@@ -33,14 +33,15 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public final class ConstantServiceBuild extends ServiceBuild {
 
-    private final Object instance;
+    /** The constant we are wrapping. */
+    private final Object constant;
 
     /**
      * @param key
      */
-    public ConstantServiceBuild(Key<?> key, Object instance) {
+    public ConstantServiceBuild(Key<?> key, Object constant) {
         super(ConfigSite.UNKNOWN, key);
-        this.instance = requireNonNull(instance, "instance is null");
+        this.constant = requireNonNull(constant, "constant is null");
     }
 
     /** {@inheritDoc} */
@@ -52,7 +53,7 @@ public final class ConstantServiceBuild extends ServiceBuild {
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return MethodHandles.constant(key().rawType(), instance);
+        return MethodHandles.constant(key().rawType(), constant);
     }
 
     /** {@inheritDoc} */
@@ -64,6 +65,6 @@ public final class ConstantServiceBuild extends ServiceBuild {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new ConstantRuntimeService(configSite(), key(), instance);
+        return new ConstantRuntimeService(configSite(), key(), constant);
     }
 }

@@ -28,7 +28,7 @@ import packed.internal.util.ThrowableUtil;
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
  * object, and one using whatever power a module descriptor has given us.
  */
-abstract class RealmLookup {
+public abstract class RealmLookup {
 
     /** Calls package-private method Factory.toMethodHandle(Lookup). */
     private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
@@ -55,7 +55,7 @@ abstract class RealmLookup {
         return new OpenClass(lookup(), clazz, registerNatives);
     }
 
-    final MethodHandle toMethodHandle(Factory<?> factory) {
+    public final MethodHandle toMethodHandle(Factory<?> factory) {
         try {
             return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
         } catch (Throwable e) {

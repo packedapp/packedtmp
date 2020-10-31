@@ -35,6 +35,8 @@ import app.packed.inject.ServiceSelection;
 final class PackedServiceSelection<S> extends AbstractServiceLocator implements ServiceSelection<S> {
 
     /** The services that we wrap */
+    // An alternative implementation would be to have a backing map and a filter
+    // However then asMap() would be difficult to implement.
     private final Map<Key<?>, RuntimeService> services;
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

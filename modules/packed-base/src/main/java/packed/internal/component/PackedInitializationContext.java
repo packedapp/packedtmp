@@ -23,7 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -93,7 +93,7 @@ public final class PackedInitializationContext {
     }
 
     public ServiceLocator services() {
-        ServiceBuildManager sm = root.cube.getServiceManager();
+        ServiceComposer sm = root.cube.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.region);
     }
 

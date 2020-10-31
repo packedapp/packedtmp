@@ -20,13 +20,15 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Key.Qualifier;
+import app.packed.base.Nullable;
 import app.packed.bundle.Extension;
 import app.packed.bundle.ExtensionConfiguration;
-import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.config.ConfigSite;
@@ -36,7 +38,7 @@ import app.packed.inject.sandbox.ServiceAttributes;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.cube.BundleBuild;
 import packed.internal.cube.ExtensionBuild;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -79,7 +81,7 @@ public final class ServiceExtension extends Extension {
     private final BundleBuild container;
 
     /** The service build manager. */
-    private final ServiceBuildManager sbm;
+    private final ServiceComposer sbm;
 
     /**
      * Invoked by the runtime to create a new service extension.
@@ -201,6 +203,24 @@ public final class ServiceExtension extends Extension {
         sbm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
+    public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
+
+    }
+
+    public void exportIf(Predicate<? super Service> filter) {
+        // Only anchrored services???
+    }
+
+    /**
+     * Performs a transformation of any exported services. Final adjustments before services are visible a parent container.
+     * 
+     * @param transformer
+     *            transforms the exports
+     */
+    public void transformExports(Consumer<? super ServiceTransformation> transformer) {
+        sbm.exports().addExportTransformer(transformer);
+    }
+
     /**
      * Expose a service contract as an attribute.
      * 
@@ -223,25 +243,21 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Imports all the services from the specified locator and make each service available to other services in the injector
-     * being build.
+     * Provides every service from the specified locator.
      * 
      * @param locator
-     *            the locator that provide services
+     *            the locator to provide services from
      * @throws IllegalArgumentException
-     *             if specifying wirelets that are not defined via {@link ServiceWirelets}
+     *             if the specified locator is not implemented by Packed
      */
-    // Det er lidt nederen at vi ikke kan builde ServiceLocator...
-    // ServiceTransformer -> ServiceLocator.Builder
-    // ServiceLocator
     public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "injector is null");
+        requireNonNull(locator, "locator is null");
         if (!(locator instanceof PackedInjector)) {
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        sbm.provideFromInjector((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
+        sbm.provideAll((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
     }
 
     /**
@@ -334,19 +350,13 @@ public final class ServiceExtension extends Extension {
         }
     }
 
-    /**
-     * Performs a transformation of any exported services. Final adjustments before services are visible a parent container.
-     * 
-     * @param transformer
-     *            transforms the exports
-     */
-    public void exportsTransform(Consumer<? super ServiceTransformation> transformer) {
-        sbm.exports().addExportTransformer(transformer);
-    }
-
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
     public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
         return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PrototypeConfiguration.class);
+    }
+
+    final class SidecarHelper {
+
     }
 
     /**
@@ -379,34 +389,16 @@ public final class ServiceExtension extends Extension {
             this.extensionType = requireNonNull(extensionType, "extensionType is null");
         }
     }
-
-    final class SidecarHelper {
-
-    }
 }
 
 class ZExtraFunc {
 
-    /**
-     * Returns an unmodifiable view of the services that are currently available within the container.
-     * 
-     * @return a unmodifiable view of the services that are currently available within the container
-     */
-    ServiceRegistry services() {
-        // Problemet er vel at vi resolver her...
-        throw new UnsupportedOperationException();
-    }
-    // Skal vi ogsaa supportere noget paa tvaers af bundles???
-    // Det er vel en slags Wirelet
-    // CycleBreaker(SE, ...);
-    // CycleBreaker(SE, ...);
+    protected void addAlias(Class<?> existing, Class<?> newKey) {}
 
     // Maaske er det her mere injection then service
 
     // Vi vil gerne tilfoejer
 //    protected ExportedServiceConfiguration<ServiceSelection> addSelectin(Function<>) {}
-
-    protected void addAlias(Class<?> existing, Class<?> newKey) {}
 
     protected void addAlias(Key<?> existing, Key<?> newKey) {}
 
@@ -416,29 +408,19 @@ class ZExtraFunc {
         throw new UnsupportedOperationException();
     }
 
-//    <S, U> void breakCycle(OP2<S, U> op) {
-//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
-//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
-//        // Eller kan bruge det...
-//        throw new UnsupportedOperationException();
-//    }
-
-    // Vi venter med den...
-    // Altsaa det er jo kun services den kan exportere...
-    // Altsaa vi kan jo have nogle
-    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
-        // Exports a service by mapping an existing service
-        // Eneste problem er nu har vi exported services som ikke er services...
-        // Men det er vel ikke anderledes end install(X).provide();
-        throw new UnsupportedOperationException();
-    }
-
     <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
         // Hmm maaske vi skal kalde den noget andet...
         // SingletonService kan sikkert sagtens extende den...
         // ProtoypeConfiguration has altid en noegle og ikek optional..
         throw new UnsupportedOperationException();
     }
+
+//    <S, U> void breakCycle(OP2<S, U> op) {
+//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
+//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
+//        // Eller kan bruge det...
+//        throw new UnsupportedOperationException();
+//    }
 
     <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
         // cycleBreaker
@@ -514,6 +496,30 @@ class ZExtraFunc {
 
         throw new UnsupportedOperationException();
     }
+
+    // Vi venter med den...
+    // Altsaa det er jo kun services den kan exportere...
+    // Altsaa vi kan jo have nogle
+    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
+        // Exports a service by mapping an existing service
+        // Eneste problem er nu har vi exported services som ikke er services...
+        // Men det er vel ikke anderledes end install(X).provide();
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns an unmodifiable view of the services that are currently available within the container.
+     * 
+     * @return a unmodifiable view of the services that are currently available within the container
+     */
+    ServiceRegistry services() {
+        // Problemet er vel at vi resolver her...
+        throw new UnsupportedOperationException();
+    }
+    // Skal vi ogsaa supportere noget paa tvaers af bundles???
+    // Det er vel en slags Wirelet
+    // CycleBreaker(SE, ...);
+    // CycleBreaker(SE, ...);
 
     // autoExport
 

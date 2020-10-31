@@ -44,7 +44,7 @@ import packed.internal.inject.service.runtime.PackedServiceTransformer;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ServiceExportManager implements Iterable<ServiceBuild> {
+public final class ServiceExportComposer implements Iterable<ServiceBuild> {
 
     /** The config site, if we export all entries. */
     @Nullable
@@ -62,7 +62,10 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
     private final LinkedHashMap<Key<?>, ServiceBuild> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
-    private final ServiceBuildManager sm;
+    private final ServiceComposer sm;
+
+    @Nullable
+    Consumer<? super ServiceTransformation> transformer;
 
     /**
      * Creates a new export manager.
@@ -70,8 +73,22 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceExportManager(ServiceBuildManager sm) {
+    ServiceExportComposer(ServiceComposer sm) {
         this.sm = requireNonNull(sm);
+    }
+
+    /**
+     * @param transformer
+     */
+    public void addExportTransformer(Consumer<? super ServiceTransformation> transformer) {
+        if (this.transformer != null) {
+            throw new IllegalStateException("Can only set an export transformer once");
+        }
+        this.transformer = requireNonNull(transformer, "transformer is null");
+    }
+
+    public boolean contains(Key<?> key) {
+        return resolvedExports.containsKey(key);
     }
 
     /**
@@ -228,22 +245,5 @@ public final class ServiceExportManager implements Iterable<ServiceBuild> {
      */
     public void transform(Consumer<? super ServiceTransformation> transformer) {
         PackedServiceTransformer.transformInplace(resolvedExports, transformer);
-    }
-
-    @Nullable
-    Consumer<? super ServiceTransformation> transformer;
-
-    /**
-     * @param transformer
-     */
-    public void addExportTransformer(Consumer<? super ServiceTransformation> transformer) {
-        if (this.transformer != null) {
-            throw new IllegalStateException("Can only set an export transformer once");
-        }
-        this.transformer = requireNonNull(transformer, "transformer is null");
-    }
-
-    public boolean contains(Key<?> key) {
-        return resolvedExports.containsKey(key);
     }
 }

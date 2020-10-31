@@ -118,22 +118,22 @@ public class KeyTest {
         npe(() -> Key.fromField((Field) null), "field");
 
         Field f = findField(Tmpx.class, "ok");
-        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromField(f).hasQualifier()).isFalse();
         assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
-        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromField(f).hasQualifier()).isTrue();
         assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
-        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromField(f).hasQualifier()).isFalse();
         assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
-        assertThat(Key.fromField(f).typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromField(f).hasQualifier()).isTrue();
         assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
@@ -198,22 +198,22 @@ public class KeyTest {
         npe(() -> Key.fromMethodReturnType((Method) null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
-        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
-        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
-        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
-        assertThat(Key.fromMethodReturnType(m).typeLiteral()).isEqualTo(TL_INTEGER);
+        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
         assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
@@ -239,14 +239,14 @@ public class KeyTest {
         assertThat(KEY_INTEGER_X.qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
     }
 
-    /** Tests {@link Key#typeLiteral()}. */
+    /** Tests {@link Key#typeToken()}. */
     @Test
     public void getTypeLiteral() {
-        assertThat(KEY_INT_OF.typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_INTEGER.typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_INTEGER_X.typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(KEY_LIST_WILDCARD.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KEY_LIST_WILDCARD_X.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_INT_OF.typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_INTEGER.typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_INTEGER_X.typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(KEY_LIST_WILDCARD.typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD_X.typeToken()).isEqualTo(TL_LIST_WILDCARD);
     }
 
     @Test
@@ -262,9 +262,9 @@ public class KeyTest {
         Key<Integer> k1 = Key.fromTypeLiteral(tl1);
         Key<Integer> k2 = Key.fromTypeLiteral(TL_INTEGER);
 
-        assertThat(k1.typeLiteral()).isSameAs(tl1);
-        assertThat(k2.typeLiteral()).isEqualTo(TL_INTEGER);
-        assertThat(k2.typeLiteral()).isNotSameAs(TL_INTEGER);
+        assertThat(k1.typeToken()).isSameAs(tl1);
+        assertThat(k2.typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(k2.typeToken()).isNotSameAs(TL_INTEGER);
 
         assertThat(k1.hasQualifier()).isFalse();
         assertThat(k2.hasQualifier()).isFalse();
@@ -323,13 +323,13 @@ public class KeyTest {
 
     @Test
     public void withQualifier() throws Exception {
-        npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
-        assertThat(KEY_INTEGER.withQualifier(AnnotationInstances.CHAR_QUALIFIER_X)).isEqualTo(KEY_INTEGER_X);
-        assertThat(KEY_INTEGER_X.withQualifier(AnnotationInstances.CHAR_QUALIFIER_Y)).isEqualTo(KEY_INTEGER_Y);
+        npe(() -> KEY_INTEGER.with((Annotation) null), "qualifier");
+        assertThat(KEY_INTEGER.with(AnnotationInstances.CHAR_QUALIFIER_X)).isEqualTo(KEY_INTEGER_X);
+        assertThat(KEY_INTEGER_X.with(AnnotationInstances.CHAR_QUALIFIER_Y)).isEqualTo(KEY_INTEGER_Y);
 
         // Tests that the annotation has a qualifier annotation.
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
-                () -> KEY_INTEGER.withQualifier(KeyTest.class.getDeclaredMethod("withQualifier").getAnnotations()[0]));
+                () -> KEY_INTEGER.with(KeyTest.class.getDeclaredMethod("withQualifier").getAnnotations()[0]));
         a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO check message
     }
@@ -337,14 +337,14 @@ public class KeyTest {
     /** Tests {@link Key#withoutQualifiers()}. */
     @Test
     public void withNoQualifier() {
-        npe(() -> KEY_INTEGER.withQualifier((Annotation) null), "qualifier");
+        npe(() -> KEY_INTEGER.with((Annotation) null), "qualifier");
         assertThat(KEY_INTEGER.withoutQualifiers()).isSameAs(KEY_INTEGER);
         assertThat(KEY_INTEGER_X.withoutQualifiers()).isEqualTo(KEY_INTEGER);
     }
 
     @Test
     public void typeParameters() {
-        assertThat(KEY_LIST_WILDCARD.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(KEY_LIST_WILDCARD_X.typeLiteral()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD.typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(KEY_LIST_WILDCARD_X.typeToken()).isEqualTo(TL_LIST_WILDCARD);
     }
 }

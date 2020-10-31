@@ -42,7 +42,7 @@ import packed.internal.util.ReflectionUtil;
  * @see ServiceExtension#require(Key...)
  * @see ServiceExtension#requireOptionally(Key...)
  */
-public final class ServiceRequirementsManager {
+public final class ServiceRequirementsComposer {
 
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or
@@ -99,7 +99,7 @@ public final class ServiceRequirementsManager {
                                 if (j == pindex) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {
-                                    sj.add(dependencies.get(j).key().typeLiteral().rawType().getSimpleName());
+                                    sj.add(dependencies.get(j).key().rawType().getSimpleName());
                                 }
                             }
                             sb.append(sj.toString());

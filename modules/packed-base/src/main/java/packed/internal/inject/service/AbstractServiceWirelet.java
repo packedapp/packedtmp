@@ -30,8 +30,8 @@ import app.packed.inject.ServiceExtension;
 @ExtensionMember(ServiceExtension.class)
 public abstract class AbstractServiceWirelet extends Wirelet {
 
-    protected void processTo(ServiceBuildManager m) {}
+    protected void processTo(ServiceComposer m) {}
 
-    protected void processFrom(ServiceBuildManager m) {}
+    protected void processFrom(ServiceComposer m) {}
 
 }

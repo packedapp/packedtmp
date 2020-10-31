@@ -49,13 +49,13 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 /**
  *
  */
-public final class ServiceBuildManager {
+public final class ServiceComposer {
 
-    /** The container this service manager is a part of. */
+    /** The bundle this service manager is a part of. */
     private final BundleBuild container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceRequirementsManager dependencies;
+    public ServiceRequirementsComposer dependencies;
 
     /** An error manager that is lazily initialized. */
     @Nullable
@@ -63,7 +63,7 @@ public final class ServiceBuildManager {
 
     /** A service exporter handles everything to do with exports of services. */
     @Nullable
-    private final ServiceExportManager exporter = new ServiceExportManager(this);
+    private final ServiceExportComposer exports = new ServiceExportComposer(this);
 
     /** All explicit added build entries. */
     private final ArrayList<ServiceBuild> localServices = new ArrayList<>();
@@ -78,7 +78,7 @@ public final class ServiceBuildManager {
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceBuildManager(BundleBuild container) {
+    public ServiceComposer(BundleBuild container) {
         this.container = requireNonNull(container);
     }
 
@@ -97,10 +97,10 @@ public final class ServiceBuildManager {
      * 
      * @return the dependency manager for this builder
      */
-    public ServiceRequirementsManager dependencies() {
-        ServiceRequirementsManager d = dependencies;
+    public ServiceRequirementsComposer dependencies() {
+        ServiceRequirementsComposer d = dependencies;
         if (d == null) {
-            d = dependencies = new ServiceRequirementsManager();
+            d = dependencies = new ServiceRequirementsComposer();
         }
         return d;
     }
@@ -119,12 +119,12 @@ public final class ServiceBuildManager {
     }
 
     /**
-     * Returns the {@link ServiceExportManager} for this builder.
+     * Returns the {@link ServiceExportComposer} for this builder.
      * 
      * @return the service exporter for this builder
      */
-    public ServiceExportManager exports() {
-        return exporter;
+    public ServiceExportComposer exports() {
+        return exports;
     }
 
     /**
@@ -136,8 +136,8 @@ public final class ServiceBuildManager {
         ServiceContract.Builder builder = ServiceContract.builder();
 
         // Any exports
-        if (exporter != null) {
-            for (ServiceBuild n : exporter) {
+        if (exports != null) {
+            for (ServiceBuild n : exports) {
                 builder.provides(n.key());
             }
         }
@@ -159,8 +159,8 @@ public final class ServiceBuildManager {
     public ServiceLocator newServiceLocator(PackedComponent comp, RuntimeRegion region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        if (exporter != null) {
-            for (ServiceBuild e : exporter) {
+        if (exports != null) {
+            for (ServiceBuild e : exports) {
                 runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
             }
         }
@@ -177,7 +177,9 @@ public final class ServiceBuildManager {
         }
     }
 
-    public void provideFromInjector(PackedInjector injector, ConfigSite configSite) {
+    public void provideAll(PackedInjector injector, ConfigSite configSite) {
+        // We add this immediately to resolved services, as their keys are immutable.
+
         ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, configSite, injector);
         ArrayList<ProvideAllFromServiceLocator> p = provideAll;
         if (provideAll == null) {
@@ -219,7 +221,7 @@ public final class ServiceBuildManager {
         // Process exports from any children
         if (container.children != null) {
             for (BundleBuild c : container.children) {
-                ServiceBuildManager child = c.getServiceManager();
+                ServiceComposer child = c.getServiceManager();
 
                 WireletPack wp = c.compConf.wirelets;
                 List<Service1stPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service1stPassWirelet.class);
@@ -229,8 +231,8 @@ public final class ServiceBuildManager {
                     }
                 }
 
-                if (child.exporter != null) {
-                    for (ServiceBuild a : child.exporter) {
+                if (child.exports != null) {
+                    for (ServiceBuild a : child.exports) {
                         resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }
                 }
@@ -246,15 +248,15 @@ public final class ServiceBuildManager {
         }
 
         // Process own exports
-        if (exporter != null) {
-            exporter.resolve();
+        if (exports != null) {
+            exports.resolve();
         }
         // Add error messages if any nodes with the same key have been added multiple times
 
         // Process child requirements to children
         if (container.children != null) {
             for (BundleBuild c : container.children) {
-                ServiceBuildManager m = c.getServiceManager();
+                ServiceComposer m = c.getServiceManager();
                 if (m != null) {
                     m.processIncomingPipelines(this);
                 }
@@ -262,20 +264,26 @@ public final class ServiceBuildManager {
         }
     }
 
-    private void processIncomingPipelines(@Nullable ServiceBuildManager parent) {
-        WireletPack wp = container.compConf.wirelets;
-        List<Service2ndPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service2ndPassWirelet.class);
+    private void processIncomingPipelines(@Nullable ServiceComposer parent) {
 
         LinkedHashMap<Key<?>, ServiceBuild> map = new LinkedHashMap<>();
-        for (Entry<Key<?>, Wrapper> e : resolvedServices.entrySet()) {
-            if (!exports().contains(e.getKey())) {
-                map.put(e.getKey(), e.getValue().getSingle());
+
+        if (parent != null) {
+            for (Entry<Key<?>, Wrapper> e : parent.resolvedServices.entrySet()) {
+                // we need to remove all of our exports.
+                if (!exports().contains(e.getKey())) {
+                    map.put(e.getKey(), e.getValue().getSingle());
+                }
             }
         }
 
+        System.out.println("HMMM " + map);
+        WireletPack wp = container.compConf.wirelets;
+        List<Service2ndPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service2ndPassWirelet.class);
+        System.out.println("WWW" + wp);
+
         // Process wirelets
         if (wirelets != null) {
-            // we need to remove all of the child's exports.
 
             for (Service2ndPassWirelet f : wirelets) {
                 f.process(parent, this, map);
@@ -284,7 +292,7 @@ public final class ServiceBuildManager {
 
         // If Processere wirelets...
 
-        ServiceRequirementsManager srm = dependencies;
+        ServiceRequirementsComposer srm = dependencies;
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
                 ServiceBuild sa = map.get(r.key);

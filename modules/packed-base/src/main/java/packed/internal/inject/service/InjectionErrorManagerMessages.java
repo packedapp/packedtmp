@@ -62,7 +62,7 @@ public final class InjectionErrorManagerMessages {
                 // String n = key.qualifier().map(ee -> "@" + ee.annotationType().getSimpleName() + " ").orElse("") +
                 // key.typeLiteral().toStringSimple();
             }
-            n += key.typeLiteral().toStringSimple();
+            n += key.typeToken().toStringSimple();
             String ss = e.getValue().stream().map(ee -> format(ee)).collect(Collectors.joining("\n  & "));
             // A service with the key <@Foo java.lang.Integer> is configured multiple places:/
             sb.append(nn + ") Multiple services registered with the same Key<" + n + ">:\n    ");
@@ -77,7 +77,7 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceBuildManager node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceComposer node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 

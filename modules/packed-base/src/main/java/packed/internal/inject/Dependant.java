@@ -25,15 +25,15 @@ import java.util.List;
 
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
-import packed.internal.component.ComponentBuild;
 import packed.internal.component.BuildtimeRegion;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.source.SourceModel;
 import packed.internal.component.source.SourceModelMember;
 import packed.internal.component.source.SourceModelMethod;
 import packed.internal.component.source.SourceModelMethod.RunAt;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.Wrapper;
 import packed.internal.inject.service.build.ServiceBuild;
 import packed.internal.inject.service.build.SourceMemberServiceBuild;
@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new InvalidDeclarationException("Not okay)");
             }
-            ServiceBuildManager sbm = compConf.memberOfCube.getServiceManagerOrCreate();
+            ServiceComposer sbm = compConf.memberOfCube.getServiceManagerOrCreate();
             ServiceBuild sa = this.service = new SourceMemberServiceBuild(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
@@ -132,6 +132,8 @@ public class Dependant {
             return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
         } else if (providers.length == 1) {
             requireNonNull(providers[0]);
+            System.out.println(providers[0].getClass());
+            System.out.println(providers[0].dependencyAccessor());
             return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, providers[0].dependencyAccessor());
         } else {
             mh = directMethodHandle;
@@ -217,7 +219,7 @@ public class Dependant {
         this.providers[providerIndex] = requireNonNull(p);
     }
 
-    public void resolve(ServiceBuildManager sbm) {
+    public void resolve(ServiceComposer sbm) {
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {

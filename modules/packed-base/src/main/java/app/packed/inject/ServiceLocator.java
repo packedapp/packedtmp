@@ -17,6 +17,7 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -248,7 +249,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a new service locator
      */
     static ServiceLocator of(Consumer<? super ServiceTransformation> transformation) {
-        return PackedServiceTransformer.of(transformation);
+        return PackedServiceTransformer.toServiceLocator(new HashMap<>(), transformation);
     }
 }
 // toRegistry...

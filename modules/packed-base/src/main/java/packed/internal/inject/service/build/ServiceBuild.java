@@ -25,7 +25,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.runtime.AbstractService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -51,7 +51,7 @@ public abstract class ServiceBuild extends AbstractService implements Dependency
     private Key<?> key;
 
     /** The service manager that this service belongs to. */
-    public ServiceBuildManager sm;
+    public ServiceComposer sm;
 
     public ServiceBuild(ConfigSite configSite, Key<?> key) {
         this.configSite = requireNonNull(configSite);

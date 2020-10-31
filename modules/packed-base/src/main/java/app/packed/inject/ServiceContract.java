@@ -30,7 +30,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
 import app.packed.component.ComponentSystem;
 import packed.internal.component.ComponentBuild;
-import packed.internal.inject.service.ServiceBuildManager;
+import packed.internal.inject.service.ServiceComposer;
 
 /**
  * A service contract details of a contractee.
@@ -243,7 +243,7 @@ public final class ServiceContract {
             throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
         }
         ComponentBuild compConf = ComponentBuild.unadapt(null, c);
-        ServiceBuildManager sm = compConf.cube.getServiceManager();
+        ServiceComposer sm = compConf.cube.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

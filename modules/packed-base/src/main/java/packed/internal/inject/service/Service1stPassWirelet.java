@@ -25,5 +25,5 @@ import app.packed.inject.ServiceExtension;
 @ExtensionMember(ServiceExtension.class)
 public abstract class Service1stPassWirelet extends Wirelet {
 
-    protected abstract void process(ServiceBuildManager child);
+    protected abstract void process(ServiceComposer child);
 }
