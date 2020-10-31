@@ -28,8 +28,8 @@ import app.packed.component.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.ServiceComposer;
-import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.inject.service.runtime.PackedServiceTransformer;
+import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
@@ -140,7 +140,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, ServiceBuild> map) {
+            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, BuildtimeService> map) {
                 PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
@@ -150,7 +150,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, ServiceBuild> map) {
+            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, BuildtimeService> map) {
                 PackedServiceTransformer.transformInplace(map, transformation);
             }
         };

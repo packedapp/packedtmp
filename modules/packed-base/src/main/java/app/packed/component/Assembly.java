@@ -34,6 +34,7 @@ import packed.internal.component.PackedComponentDriver;
  */
 // Build eller Assembly. syntes ikke det skal hedde bundle mere...
 // you write build classes
+// ComponentAssembly?
 public abstract class Assembly<C> implements ComponentSystem {
 
     /**

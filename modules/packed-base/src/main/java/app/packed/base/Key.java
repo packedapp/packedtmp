@@ -195,6 +195,19 @@ public abstract class Key<T> {
         return false;
     }
 
+    public final boolean hasQualifier(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        if (qualifiers == null) {
+            return false;
+        }
+        for (int i = 0; i < qualifiers.length; i++) {
+            if (qualifiers[i].equals(qualifier)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public final boolean isClassKey(Class<?> c) {
         return qualifiers == null && typeLiteral.type() == c;
     }
@@ -285,6 +298,21 @@ public abstract class Key<T> {
         Annotation[] an = Arrays.copyOf(qualifiers, qualifiers.length + 1);
         an[an.length - 1] = qualifier;
         return new CanonicalizedKey<>(typeLiteral, an);
+    }
+
+    public final boolean isSuperKeyOf(Key<?> key) {
+        requireNonNull(key, "key is null");
+        if (!typeLiteral.equals(key.typeLiteral)) {
+            return false;
+        }
+        if (qualifiers != null) {
+            for (Annotation a : qualifiers) {
+                if (!key.hasQualifier(a)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**

@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.inject.service.build.ExportedServiceBuild;
+import packed.internal.inject.service.build.ExportedBuildtimeService;
 
 /**
  * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
@@ -33,7 +33,7 @@ import packed.internal.inject.service.build.ExportedServiceBuild;
 public final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
-    private final ExportedServiceBuild entry;
+    private final ExportedBuildtimeService entry;
 
     /**
      * Creates a new service configuration object.
@@ -41,7 +41,7 @@ public final class PackedExportedServiceConfiguration<T> implements ExportedServ
      * @param entry
      *            the entry to export
      */
-    public PackedExportedServiceConfiguration(ExportedServiceBuild entry) {
+    public PackedExportedServiceConfiguration(ExportedBuildtimeService entry) {
         this.entry = requireNonNull(entry);
     }
 

@@ -40,7 +40,7 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
 
     public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService> services) {
         this.configSite = requireNonNull(configSite);
-        this.entries = services;
+        this.entries = Map.copyOf(services);
     }
 
     /** {@inheritDoc} */

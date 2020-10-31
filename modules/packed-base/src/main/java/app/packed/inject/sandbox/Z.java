@@ -30,9 +30,9 @@ class Z {
     public static void main(ServiceLocator sl) {
 
         List<CharSequence> l = new ArrayList<>();
-        sl.select(String.class).forEachInstance((s, i) -> l.add(i));
+        sl.selectMinimal(String.class).forEachInstance((s, i) -> l.add(i));
         Map<Integer, String> m = new HashMap<>();
-        sl.select(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
+        sl.selectMinimal(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
 
     }
 }

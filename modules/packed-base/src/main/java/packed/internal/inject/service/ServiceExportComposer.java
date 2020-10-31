@@ -32,10 +32,9 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.inject.ServiceTransformation;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.inject.service.build.ExportedServiceBuild;
-import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.inject.service.runtime.AbstractServiceRegistry;
-import packed.internal.inject.service.runtime.PackedServiceTransformer;
+import packed.internal.inject.service.build.ExportedBuildtimeService;
+import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.BuildtimeService;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -44,7 +43,7 @@ import packed.internal.inject.service.runtime.PackedServiceTransformer;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ServiceExportComposer implements Iterable<ServiceBuild> {
+public final class ServiceExportComposer implements Iterable<BuildtimeService> {
 
     /** The config site, if we export all entries. */
     @Nullable
@@ -55,11 +54,11 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
      * {@link ServiceExtension#export(Key)}.
      */
     @Nullable
-    private ArrayList<ExportedServiceBuild> exportedEntries;
+    private ArrayList<ExportedBuildtimeService> exportedEntries;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
-    private final LinkedHashMap<Key<?>, ServiceBuild> resolvedExports = new LinkedHashMap<>();
+    private final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
     private final ServiceComposer sm;
@@ -105,7 +104,7 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedServiceBuild(sm, key, configSite));
+        return export0(new ExportedBuildtimeService(sm, key, configSite));
     }
 
     /**
@@ -121,13 +120,13 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public <T> ExportedServiceConfiguration<T> export(ServiceBuild entryToExport, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(BuildtimeService entryToExport, ConfigSite configSite) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another bundle.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedServiceBuild(entryToExport, configSite));
+        return export0(new ExportedBuildtimeService(entryToExport, configSite));
     }
 
     /**
@@ -139,12 +138,12 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
      *            the build entry to export
      * @return a configuration object that can be exposed to the user
      */
-    private <T> PackedExportedServiceConfiguration<T> export0(ExportedServiceBuild entry) {
+    private <T> PackedExportedServiceConfiguration<T> export0(ExportedBuildtimeService entry) {
         // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
         // F.eks. hvis en extension publisher en service vi gerne vil exportere
         // Saa sker det maaske foerst naar den completer.
         // dvs efter bundle.configure() returnere
-        ArrayList<ExportedServiceBuild> e = exportedEntries;
+        ArrayList<ExportedBuildtimeService> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
         }
@@ -174,7 +173,7 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
 
     /** {@inheritDoc} */
     @Override
-    public Iterator<ServiceBuild> iterator() {
+    public Iterator<BuildtimeService> iterator() {
         return resolvedExports.values().iterator();
     }
 
@@ -188,10 +187,10 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
         // to have identical structure to ServiceProvidingManager
         // Process every exported build entry
         if (exportedEntries != null) {
-            for (ExportedServiceBuild entry : exportedEntries) {
+            for (ExportedBuildtimeService entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                ServiceBuild entryToExport = entry.exportedEntry;
+                BuildtimeService entryToExport = entry.exportedEntry;
                 if (entryToExport == null) {
                     Wrapper wrapper = sm.resolvedServices.get(entry.exportAsKey);
                     entryToExport = wrapper == null ? null : wrapper.getSingle();
@@ -202,9 +201,9 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
                 }
 
                 if (entry.exportedEntry != null) {
-                    ServiceBuild existing = resolvedExports.putIfAbsent(entry.key(), entry);
+                    BuildtimeService existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
-                        LinkedHashSet<ServiceBuild> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                        LinkedHashSet<BuildtimeService> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
                     }
@@ -221,9 +220,9 @@ public final class ServiceExportComposer implements Iterable<ServiceBuild> {
 
         if (exportAll != null) {
             for (Wrapper w : sm.resolvedServices.values()) {
-                ServiceBuild e = w.getSingle();
+                BuildtimeService e = w.getSingle();
                 if (!resolvedExports.containsKey(e.key())) {
-                    resolvedExports.put(e.key(), new ExportedServiceBuild(e, exportAll));
+                    resolvedExports.put(e.key(), new ExportedBuildtimeService(e, exportAll));
                 }
             }
         }

@@ -26,8 +26,8 @@ import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
 import packed.internal.config.ConfigSiteJoiner;
-import packed.internal.inject.service.build.ExportedServiceBuild;
-import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.ExportedBuildtimeService;
+import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -39,21 +39,21 @@ import packed.internal.util.StringFormatter;
 
 public final class InjectionErrorManagerMessages {
 
-    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<ServiceBuild>> dublicateNodes) {
+    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<BuildtimeService>> dublicateNodes) {
         ConfigSiteJoiner csj = new ConfigSiteJoiner();
 
         csj.prefix("    ", "  & ", "  & ");
         for (var e : dublicateNodes.entrySet()) {
             // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
 
-            csj.addAll(e.getValue().stream().map(ServiceBuild::configSite).collect(Collectors.toList()));
+            csj.addAll(e.getValue().stream().map(BuildtimeService::configSite).collect(Collectors.toList()));
         }
         StringBuilder sb = new StringBuilder();
 
         // create an instance sounds like something that should not be used in the build phase...
         sb.append("ServiceExtension failed");
         int nn = 1;
-        for (Map.Entry<Key<?>, LinkedHashSet<ServiceBuild>> e : dublicateNodes.entrySet()) {
+        for (Map.Entry<Key<?>, LinkedHashSet<BuildtimeService>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");
             Key<?> key = e.getKey();
             String n = "";
@@ -77,14 +77,14 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceComposer node, HashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceComposer node, HashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 
-    static String format(ServiceBuild e) {
+    static String format(BuildtimeService e) {
         // TODO FIX
         // Need to look in injectable and see if first dependency is SourceAssembly
-        ServiceBuild declaringEntry = e;
+        BuildtimeService declaringEntry = e;
 
         if (declaringEntry == null) {
             return e.configSite().toString();

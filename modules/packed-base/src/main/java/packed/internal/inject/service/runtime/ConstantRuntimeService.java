@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ProvisionContext;
 import packed.internal.component.RuntimeRegion;
-import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.BuildtimeService;
 
 /** An entry holding a constant. */
 public final class ConstantRuntimeService extends RuntimeService {
@@ -39,7 +39,7 @@ public final class ConstantRuntimeService extends RuntimeService {
      * @param service
      *            the build entry to create this entry from
      */
-    public ConstantRuntimeService(ServiceBuild service, RuntimeRegion region, int index) {
+    public ConstantRuntimeService(BuildtimeService service, RuntimeRegion region, int index) {
         super(service);
         this.constant = requireNonNull(region.getSingletonInstance(index));
     }

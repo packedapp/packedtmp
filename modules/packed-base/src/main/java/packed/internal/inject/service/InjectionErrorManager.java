@@ -19,8 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import app.packed.base.Key;
-import packed.internal.inject.service.build.ExportedServiceBuild;
-import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.ExportedBuildtimeService;
+import packed.internal.inject.service.build.BuildtimeService;
 
 /**
  * An error manager is lazily created when an the configuration of an injection manager fails
@@ -28,11 +28,11 @@ import packed.internal.inject.service.build.ServiceBuild;
 public class InjectionErrorManager {
 
     /** A map of multiple exports of the same key. */
-    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceBuild>> failingDuplicateExports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<BuildtimeService>> failingDuplicateExports = new LinkedHashMap<>();
 
     /** A map of all keyed exports where an entry matching the key could not be found. */
-    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceBuild>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
 
     /** A map of build entries that provide services with the same key. */
-    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceBuild>> failingDuplicateProviders = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, LinkedHashSet<BuildtimeService>> failingDuplicateProviders = new LinkedHashMap<>();
 }

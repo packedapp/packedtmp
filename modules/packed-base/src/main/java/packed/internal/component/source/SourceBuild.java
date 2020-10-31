@@ -28,7 +28,7 @@ import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.MethodHandleUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
@@ -54,7 +54,7 @@ public final class SourceBuild implements DependencyProvider {
 
     /** Whether or not this source is provided as a service. */
     @Nullable
-    public ServiceBuild service;
+    public BuildtimeService service;
 
     private SourceBuild(ComponentBuild compConf, int regionIndex, Object source) {
         this.regionIndex = regionIndex;
@@ -124,9 +124,9 @@ public final class SourceBuild implements DependencyProvider {
         return dependant;
     }
 
-    public ServiceBuild provide(ComponentBuild compConf) {
+    public BuildtimeService provide(ComponentBuild compConf) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        ServiceBuild s = service;
+        BuildtimeService s = service;
         if (s == null) {
             Key<?> key;
             if (instance != null) {

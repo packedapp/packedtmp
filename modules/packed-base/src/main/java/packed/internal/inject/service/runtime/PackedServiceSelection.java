@@ -26,12 +26,8 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceSelection;
 
 /**
- *
+ * Implementation of {@link ServiceSelection}.
  */
-// Er det et filter eller en selection????
-// Det er vel en slags filtered stream...
-// Eneste grund til vi ikke gider extende Stream interfaces
-// Er vi 
 final class PackedServiceSelection<S> extends AbstractServiceLocator implements ServiceSelection<S> {
 
     /** The services that we wrap */
@@ -72,5 +68,4 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     protected String useFailedMessage(Key<?> key) {
         return "No service with the specified key has been selected, key = " + key;
     }
-
 }

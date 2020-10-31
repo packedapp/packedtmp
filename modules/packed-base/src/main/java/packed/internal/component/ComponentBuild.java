@@ -51,15 +51,15 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
+import packed.internal.bundle.BundleBuild;
+import packed.internal.bundle.ExtensionBuild;
+import packed.internal.bundle.ExtensionModel;
 import packed.internal.component.source.RealmBuild;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.config.ConfigSiteInjectOperations;
 import packed.internal.config.ConfigSiteSupport;
-import packed.internal.cube.BundleBuild;
-import packed.internal.cube.ExtensionBuild;
-import packed.internal.cube.ExtensionModel;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */

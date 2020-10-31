@@ -21,7 +21,7 @@ import app.packed.component.App;
 /**
  *
  */
-public class Ddd extends BaseAssembly {
+class Ddd extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override

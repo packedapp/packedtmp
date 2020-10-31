@@ -18,15 +18,21 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.inject.Provider;
+import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceSelection;
 import app.packed.inject.ServiceTransformation;
+import packed.internal.inject.service.AbstractServiceRegistry;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 
 /**
  * An abstract implementation of {@link ServiceLocator}. {@link #asMap()} must always return an immutable map, with
@@ -73,10 +79,26 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         }
     }
 
+    private <T> ServiceSelection<T> select(Predicate<? super Service> filter) {
+        HashMap<Key<?>, Service> m = new HashMap<>();
+        for (Service s : asMap().values()) {
+            if (filter.test(s)) {
+                m.put(s.key(), s);
+            }
+        }
+        return new PackedServiceSelection<>(Map.copyOf(m));
+    }
+
     /** {@inheritDoc} */
     @Override
     public final ServiceSelection<Object> selectAll() {
         return new PackedServiceSelection<>(asMap());
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceSelection<T> selectMinimal(Key<T> key) {
+        return select(s -> key.isSuperKeyOf(s.key()));
     }
 
     /** {@inheritDoc} */

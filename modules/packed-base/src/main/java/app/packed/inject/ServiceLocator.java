@@ -29,8 +29,8 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentSystem;
 import app.packed.component.Wirelet;
 import app.packed.sidecar.ActiveVariableSidecar;
+import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.runtime.PackedInjector;
-import packed.internal.inject.service.runtime.PackedServiceTransformer;
 
 /**
  * An immutable collection of instance providing services each having a unique {@link Service#key() key}.
@@ -105,52 +105,23 @@ public interface ServiceLocator extends ServiceRegistry {
         }
     }
 
-    // Vi har faktisk 3.
-    // Key Delen = Foo.class; (Ignores qualifiers)
-    // Key delend.rawType = Foo.class
-    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
-
-    // may define any qualifiers
-    default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
-        // select(Number.class) will select @Named("foo") Number but not Integer
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a service selection with all of the services in this locator with a {@link Key} whose {@link Key#rawType()}
-     * is {@link Class#isAssignableFrom(Class) assignable} to the specified type.
-     * <p>
-     * Primitive types will automatically be boxed if specified.
-     * 
-     * @return a service selection with all of the services in this locator with a key whose raw type is assignable to the
-     *         specified service type
-     * @see Class#isAssignableFrom(Class)
-     * @see Key#rawType()
-     */
-    // Hmm kan vi sige noget om actual type som vi producere???
-    default <T> ServiceSelection<T> select(TypeToken<T> key) {
-        // May define additional qualifiers
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Returns a service selection with all of the services in this locator.
      * 
      * @return a service selection with all of the services in this locator
      */
-    default ServiceSelection<Object> selectAll() {
-        throw new UnsupportedOperationException();
+    ServiceSelection<Object> selectAll();
+
+    default <T> ServiceSelection<T> selectMinimal(Class<T> key) {
+        return selectMinimal(Key.of(key));
     }
 
-    // All whose raw type can be assigned to
-    default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
-        throw new UnsupportedOperationException();
-    }
+    // Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
+    // og saa faa den specificeret key.
 
-    // All whose raw type is equal to.. Don't know if it is
-    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
-        throw new UnsupportedOperationException();
-    }
+    // Kunne godt taenke mig at finde et godt navn.
+    // Naar en noegle er en super noegle???
+    <T> ServiceSelection<T> selectMinimal(Key<T> key);
 
     /**
      * Creates a new service locator by transformation of the services in this locator.
@@ -250,6 +221,47 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     static ServiceLocator of(Consumer<? super ServiceTransformation> transformation) {
         return PackedServiceTransformer.toServiceLocator(new HashMap<>(), transformation);
+    }
+}
+
+interface ZelectSandbox extends ServiceLocator {
+
+    // All whose raw type can be assigned to
+    default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // All whose raw type is equal to.. Don't know if it is
+    default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Vi har faktisk 3.
+    // Key Delen = Foo.class; (Ignores qualifiers)
+    // Key delend.rawType = Foo.class
+    // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
+
+    // may define any qualifiers
+    default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
+        // select(Number.class) will select @Named("foo") Number but not Integer
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a service selection with all of the services in this locator with a {@link Key} whose {@link Key#rawType()}
+     * is {@link Class#isAssignableFrom(Class) assignable} to the specified type.
+     * <p>
+     * Primitive types will automatically be boxed if specified.
+     * 
+     * @return a service selection with all of the services in this locator with a key whose raw type is assignable to the
+     *         specified service type
+     * @see Class#isAssignableFrom(Class)
+     * @see Key#rawType()
+     */
+    // Hmm kan vi sige noget om actual type som vi producere???
+    default <T> ServiceSelection<T> select(TypeToken<T> key) {
+        // May define additional qualifiers
+        throw new UnsupportedOperationException();
     }
 }
 // toRegistry...

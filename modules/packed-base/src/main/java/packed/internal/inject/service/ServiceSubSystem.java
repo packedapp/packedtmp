@@ -21,8 +21,8 @@ import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
+import packed.internal.bundle.BundleBuild;
 import packed.internal.component.BuildtimeRegion;
-import packed.internal.cube.BundleBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 

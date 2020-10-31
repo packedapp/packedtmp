@@ -127,14 +127,14 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * <p>
      * Once used the image will return an App in the started state. unless GuestWirelet.delayStart
      * 
-     * @param bundle
-     *            the bundle to use for creating the image
+     * @param assembly
+     *            the assembly to use for creating the image
      * @param wirelets
      *            optional wirelets
      * @return a new app image
      */
-    static Image<App> imageOf(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().newImage(bundle, wirelets);
+    static Image<App> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().newImage(assembly, wirelets);
     }
 
     /**
@@ -147,15 +147,15 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * process you can use {@link ContainerWirelets#lazyStart()}. Which will return an application in the
      * {@link ContainerState#INITIALIZED} phase instead.
      * 
-     * @param bundle
-     *            the bundle to use for creating the application
+     * @param assembly
+     *            the assembly to use for creating the application
      * @param wirelets
      *            optional wirelets
      * @return the new application
      * @throws RuntimeException
      *             if the application could not be created or started
      */
-    static App of(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().newShell(bundle, wirelets);
+    static App of(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().newShell(assembly, wirelets);
     }
 }

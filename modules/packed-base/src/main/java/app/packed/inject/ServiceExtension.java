@@ -35,9 +35,9 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
+import packed.internal.bundle.BundleBuild;
+import packed.internal.bundle.ExtensionBuild;
 import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.cube.BundleBuild;
-import packed.internal.cube.ExtensionBuild;
 import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 

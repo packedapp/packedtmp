@@ -373,13 +373,13 @@ interface UNext extends ServiceTransformation {
     // void addAttributeName(Key, String name);
     // void addAttributeNameAll(Key, String name);
 
-    public void qualifyWith(Key<?> k, Annotation qualifier);
-
 }
 
 // Various ideas on provide/rekey
 interface YIdeas extends ServiceTransformation {
+    public void qualifyWith(Class<?> k, Annotation qualifier);
 
+    public void qualifyWith(Key<?> k, Annotation qualifier);
     // alias()??
 
     // Ideas for consta fying things...
@@ -411,8 +411,6 @@ interface YIdeas extends ServiceTransformation {
     // Som regel vil man gerne argumentere den
     default void constify(Key<?> key) {}
 
-    Service map(Class<?> from, Class<?> to); // Make returned Service Configurable???
-
     // Return the same name to avoid any rekeying
 
     // Will fail if any over
@@ -441,8 +439,12 @@ interface YIdeas extends ServiceTransformation {
 }
 
 interface ZBadIdeas extends ServiceTransformation {
+
+    Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
+
     // wirelets can communicate here???
     // Nah make an AtomicReference... og sa lambda capture
+
     Object attachment();
 
     ServiceTransformation map(Class<?> from, Class<?> to); // Make returned Service Configurable???

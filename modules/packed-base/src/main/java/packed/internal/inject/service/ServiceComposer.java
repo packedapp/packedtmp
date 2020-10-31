@@ -30,15 +30,15 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
+import packed.internal.bundle.BundleBuild;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedShellDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.cube.BundleBuild;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.inject.service.build.SourceInstanceServiceBuild;
+import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.SourceInstanceBuildtimeService;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -66,7 +66,7 @@ public final class ServiceComposer {
     private final ServiceExportComposer exports = new ServiceExportComposer(this);
 
     /** All explicit added build entries. */
-    private final ArrayList<ServiceBuild> localServices = new ArrayList<>();
+    private final ArrayList<BuildtimeService> localServices = new ArrayList<>();
 
     /** All injectors added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
@@ -82,7 +82,7 @@ public final class ServiceComposer {
         this.container = requireNonNull(container);
     }
 
-    public void addAssembly(ServiceBuild a) {
+    public void addAssembly(BuildtimeService a) {
         requireNonNull(a);
         localServices.add(a);
     }
@@ -137,7 +137,7 @@ public final class ServiceComposer {
 
         // Any exports
         if (exports != null) {
-            for (ServiceBuild n : exports) {
+            for (BuildtimeService n : exports) {
                 builder.provides(n.key());
             }
         }
@@ -160,7 +160,7 @@ public final class ServiceComposer {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         if (exports != null) {
-            for (ServiceBuild e : exports) {
+            for (BuildtimeService e : exports) {
                 runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
             }
         }
@@ -188,8 +188,8 @@ public final class ServiceComposer {
         p.add(pi);
     }
 
-    public <T> ServiceBuild provideSource(ComponentBuild compConf, Key<T> key) {
-        ServiceBuild e = new SourceInstanceServiceBuild(this, compConf, key);
+    public <T> BuildtimeService provideSource(ComponentBuild compConf, Key<T> key) {
+        BuildtimeService e = new SourceInstanceBuildtimeService(this, compConf, key);
         localServices.add(e);
         return e;
     }
@@ -204,7 +204,7 @@ public final class ServiceComposer {
 
     public void prepareDependants() {
         // First we take all locally defined services
-        for (ServiceBuild entry : localServices) {
+        for (BuildtimeService entry : localServices) {
             resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
         }
 
@@ -212,7 +212,7 @@ public final class ServiceComposer {
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromServiceLocator fromInjector : provideAll) {
-                for (ServiceBuild entry : fromInjector.entries.values()) {
+                for (BuildtimeService entry : fromInjector.entries.values()) {
                     resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
                 }
             }
@@ -232,7 +232,7 @@ public final class ServiceComposer {
                 }
 
                 if (child.exports != null) {
-                    for (ServiceBuild a : child.exports) {
+                    for (BuildtimeService a : child.exports) {
                         resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }
                 }
@@ -266,7 +266,7 @@ public final class ServiceComposer {
 
     private void processIncomingPipelines(@Nullable ServiceComposer parent) {
 
-        LinkedHashMap<Key<?>, ServiceBuild> map = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, BuildtimeService> map = new LinkedHashMap<>();
 
         if (parent != null) {
             for (Entry<Key<?>, Wrapper> e : parent.resolvedServices.entrySet()) {
@@ -295,7 +295,7 @@ public final class ServiceComposer {
         ServiceRequirementsComposer srm = dependencies;
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
-                ServiceBuild sa = map.get(r.key);
+                BuildtimeService sa = map.get(r.key);
                 if (sa != null) {
                     for (FromInjectable i : r.list) {
                         i.i.setDependencyProvider(i.dependencyIndex, sa);
@@ -312,9 +312,9 @@ public final class ServiceComposer {
         private final PackedComponent component;
 
         /** All services that this injector provides. */
-        private final Map<Key<?>, RuntimeService> services;
+        private final Map<Key<?>, ? extends Service> services;
 
-        private ExportedServiceLocator(PackedComponent component, Map<Key<?>, RuntimeService> services) {
+        private ExportedServiceLocator(PackedComponent component, Map<Key<?>, ? extends Service> services) {
             this.services = requireNonNull(services);
             this.component = requireNonNull(component);
         }

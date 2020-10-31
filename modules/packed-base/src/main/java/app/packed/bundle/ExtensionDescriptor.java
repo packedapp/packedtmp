@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.bundle.Extension.Subtension;
-import packed.internal.cube.ExtensionModel;
+import packed.internal.bundle.ExtensionModel;
 
 /**
  * An extension descriptor.

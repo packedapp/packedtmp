@@ -22,7 +22,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.source.SourceBuild;
-import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**
@@ -32,7 +32,7 @@ import packed.internal.sidecar.SidecarContextDependencyProvider;
  * 
  * {@link SidecarContextDependencyProvider} for methods annotated with {@link Provide}
  * 
- * {@link ServiceBuild} a service of some kind
+ * {@link BuildtimeService} a service of some kind
  */
 public interface DependencyProvider {
 

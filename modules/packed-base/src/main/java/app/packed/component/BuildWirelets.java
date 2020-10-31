@@ -16,10 +16,14 @@
 package app.packed.component;
 
 /**
- * A collection of wirelets that can be specified when building a system.
+ * A set of wirelets that can be specified when building a system.
  */
+//Features
+// Debuggin
+// We could have app.packed.build package.
 final class BuildWirelets {
-    /** Not for you. */
+
+    /** Not for you my friend. */
     private BuildWirelets() {}
     // NO FAIL <--- maaske brugbart for analyse
 
@@ -29,6 +33,11 @@ final class BuildWirelets {
 
     // Additional to people overridding artifacts, bundles, ect.
     public static Wirelet checkRuleset(Object... ruleset) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Because it is just much easier than fiddling with loggers
+    public static Wirelet printDebug() {
         throw new UnsupportedOperationException();
     }
 

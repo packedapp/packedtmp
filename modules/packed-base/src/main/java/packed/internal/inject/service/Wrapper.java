@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.LinkedHashSet;
 
-import packed.internal.inject.service.build.ServiceBuild;
+import packed.internal.inject.service.build.BuildtimeService;
 
 /**
  *
@@ -27,11 +27,11 @@ import packed.internal.inject.service.build.ServiceBuild;
 // En wrapper der goer at vi kan delay lidt det at smide exceptiosn for dublicate keys.
 public class Wrapper {
 
-    private ServiceBuild build;
+    private BuildtimeService build;
 
-    void resolve(ServiceComposer sbm, ServiceBuild b) {
+    void resolve(ServiceComposer sbm, BuildtimeService b) {
         if (build != null) {
-            LinkedHashSet<ServiceBuild> hs = sbm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
+            LinkedHashSet<BuildtimeService> hs = sbm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
             hs.add(b); // might be added multiple times, hence we use a Set, but add existing first
             hs.add(build);
         } else {
@@ -39,7 +39,7 @@ public class Wrapper {
         }
     }
 
-    public ServiceBuild getSingle() {
+    public BuildtimeService getSingle() {
         requireNonNull(build);
         return build;
     }

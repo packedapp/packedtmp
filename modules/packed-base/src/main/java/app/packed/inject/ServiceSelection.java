@@ -25,18 +25,13 @@ import java.util.stream.Stream;
 
 import app.packed.base.Attribute;
 import app.packed.base.Key;
-import app.packed.base.TypeToken;
 
 /**
  * A specialization of {@link ServiceLocator} where all service instances have a common super type {@code <S>}.
  * Instances of this interface are normally created via the various select methods on ServiceLocator.
  * 
- * @see ServiceLocator#select(Class)
- * @see ServiceLocator#select(TypeToken)
  * @see ServiceLocator#selectAll()
- * @see ServiceLocator#selectAssignableTo(Class)
  */
-//ServiceSelector?
 
 // Metoder
 
@@ -62,7 +57,6 @@ public interface ServiceSelection<S> extends ServiceLocator {
     default void forEachInstance(BiConsumer<? super Service, ? super S> action) {
         throw new UnsupportedOperationException();
     }
-
 }
 
 interface Zandbox<S> extends ServiceSelection<S> {

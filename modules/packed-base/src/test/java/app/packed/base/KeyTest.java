@@ -291,7 +291,7 @@ public class KeyTest {
     /** Tests {@link Key#hasQualifier(Class)}. */
     @Test
     public void hasQualifierWith() {
-        npe(() -> KEY_INTEGER.hasQualifier(null), "qualifierType");
+        npe(() -> KEY_INTEGER.hasQualifier((Class<? extends Annotation>) null), "qualifierType");
 
         assertThat(KEY_INTEGER.hasQualifier(CharQualifier.class)).isFalse();
         assertThat(KEY_INTEGER_X.hasQualifier(CharQualifier.class)).isTrue();

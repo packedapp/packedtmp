@@ -19,17 +19,16 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
 import app.packed.sidecar.ActiveVariableSidecar;
-import packed.internal.inject.service.runtime.AbstractServiceRegistry;
+import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
@@ -41,12 +40,24 @@ import packed.internal.util.PackedAttributeHolderStream;
  * Unless otherwise specified instances of this interface are immutable collections. One notable exception is the
  * {@link ServiceTransformation} interface. Which support mutation operations on the iterators returned by
  * {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
- * 
+ * <p>
+ * Unless otherwise specified a service registry will not override hashCode/equals.
  * <p>
  * If used as an auto activating variable sidecar the registry injected will be an immutable
  */
 @ActiveVariableSidecar
 public interface ServiceRegistry extends Iterable<Service> {
+
+    /**
+     * Returns a map (indexed by its key) of every service in this registry in any order.
+     * <p>
+     * The retu But will never support insertions or updates.
+     * <p>
+     * There are no guarantees on the serializability, or thread-safety of the {@code Map} returned.
+     * 
+     * @return a map of every service in this registry in no particular order
+     */
+    Map<Key<?>, Service> asMap();
 
     /**
      * Returns whether or not this registry contains a service with the specified key.
@@ -69,7 +80,8 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @see #contains(Class)
      */
     default boolean contains(Key<?> key) {
-        return find(key).isPresent();
+        requireNonNull(key, "key is null");
+        return asMap().containsKey(key);
     }
 
     /**
@@ -94,12 +106,13 @@ public interface ServiceRegistry extends Iterable<Service> {
      */
     default Optional<Service> find(Key<?> key) {
         requireNonNull(key, "key is null");
-        for (Service s : this) {
-            if (s.key().equals(key)) {
-                return Optional.of(s);
-            }
-        }
-        return Optional.empty();
+        return Optional.ofNullable(asMap().get(key));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    default void forEach(Consumer<? super Service> action) {
+        asMap().values().forEach(action);
     }
 
     /**
@@ -108,13 +121,13 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return true if this registry contains at least 1 service, otherwise false
      */
     default boolean isEmpty() {
-        return size() == 0;
+        return asMap().isEmpty();
     }
 
     /** {@inheritDoc} */
     @Override
     default Iterator<Service> iterator() {
-        return services().iterator();
+        return asMap().values().iterator();
     }
 
     /**
@@ -125,7 +138,16 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return a set containing the keys of every service in this registry
      */
     default Set<Key<?>> keys() {
-        return services().map(e -> e.key()).collect(Collectors.toSet());
+        return asMap().keySet();
+    }
+
+    /**
+     * Returns a unordered {@code Stream} of all services in this registry.
+     *
+     * @return a unordered {@code Stream} of all services in this registry
+     */
+    default AttributedElementStream<Service> services() {
+        return new PackedAttributeHolderStream<>(asMap().values().stream());
     }
 
     /**
@@ -134,45 +156,14 @@ public interface ServiceRegistry extends Iterable<Service> {
      * @return the number of services in this registry
      */
     default int size() {
-        return keys().size();
+        return asMap().size();
     }
 
-    /**
-     * Returns a unordered {@code Stream} of all services in this registry.
-     *
-     * @return a unordered {@code Stream} of all services in this registry
-     */
-    // services???, instances()
-    // ServiceRegistry services() -> services().services()
-    // Giver god mening hvis vi har instances() i fx ServiceSelection
-    default AttributedElementStream<Service> services() {
-        return new PackedAttributeHolderStream<>(StreamSupport.stream(spliterator(), false));
+    /** {@inheritDoc} */
+    @Override
+    default Spliterator<Service> spliterator() {
+        return asMap().values().spliterator();
     }
-
-    /**
-     * Returns a list of every service in this registry in any order.
-     * <p>
-     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code List} returned.
-     * 
-     * @return a list of every service in this registry in any order
-     */
-    // Syntes vi returnere en immutable liste...
-    default List<Service> toList() {
-        return services().collect(Collectors.toList());
-    }
-
-    /**
-     * Returns a map (indexed by its key) of every service in this registry in any order.
-     * <p>
-     * The returned map will never support insertions or updates.
-     * <p>
-     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code Map} returned.
-     * 
-     * @return a map of every service in this registry in no particular order
-     */
-    // er asMap() bedre??? Nej men kan jo ikke bare indseatte services...
-    // Det er jo ikke anderledes end keys() som ikke supportere
-    Map<Key<?>, Service> asMap();
 
     /**
      * Returns an empty service registry.
@@ -183,3 +174,15 @@ public interface ServiceRegistry extends Iterable<Service> {
         return AbstractServiceRegistry.EMPTY;
     }
 }
+// Altsaa naar vi har en asMap() kan jeg ikke rigtig se hvad vi skal bruge toList() til
+///**
+//* Returns a list of every service in this registry in any order.
+//* <p>
+//* There are no guarantees on the mutability, serializability, or thread-safety of the {@code List} returned.
+//* 
+//* @return a list of every service in this registry in any order
+//*/
+//// Syntes vi returnere en immutable liste...
+//default List<Service> toList() {
+// return List.copyOf(asMap().values());
+//}

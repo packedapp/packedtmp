@@ -35,8 +35,8 @@ import packed.internal.component.source.SourceModelMethod;
 import packed.internal.component.source.SourceModelMethod.RunAt;
 import packed.internal.inject.service.ServiceComposer;
 import packed.internal.inject.service.Wrapper;
-import packed.internal.inject.service.build.ServiceBuild;
-import packed.internal.inject.service.build.SourceMemberServiceBuild;
+import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.SourceMemberBuildtimeService;
 import packed.internal.sidecar.RuntimeRegionInvoker;
 
 /**
@@ -62,7 +62,7 @@ import packed.internal.sidecar.RuntimeRegionInvoker;
 public class Dependant {
 
     @Nullable
-    private final SourceMemberServiceBuild service;
+    private final SourceMemberBuildtimeService service;
 
     MethodHandle buildMethodHandle;
 
@@ -106,7 +106,7 @@ public class Dependant {
                 throw new InvalidDeclarationException("Not okay)");
             }
             ServiceComposer sbm = compConf.memberOfCube.getServiceManagerOrCreate();
-            ServiceBuild sa = this.service = new SourceMemberServiceBuild(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
+            BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;

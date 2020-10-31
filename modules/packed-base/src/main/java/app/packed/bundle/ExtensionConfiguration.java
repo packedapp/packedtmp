@@ -36,8 +36,8 @@ import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
+import packed.internal.bundle.ExtensionBuild;
 import packed.internal.component.ComponentBuild;
-import packed.internal.cube.ExtensionBuild;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into

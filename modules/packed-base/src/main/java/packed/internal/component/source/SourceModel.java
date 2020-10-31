@@ -25,9 +25,9 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bundle.Extension;
+import packed.internal.bundle.ExtensionModel;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentBuild;
-import packed.internal.cube.ExtensionModel;
 import packed.internal.inject.Dependant;
 import packed.internal.sidecar.SidecarContextDependencyProvider;
 
