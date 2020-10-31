@@ -31,7 +31,6 @@ public class ServiceLocatorOfTest {
             c.provideInstance("FooBar");
             c.provideInstance(new Key<@Named("fpp") String>() {}, "FooBarsdf");
         });
-        System.out.println(sl.keys());
-        sl.keys().clear();
+        sl.keys().contains(Key.of(String.class));
     }
 }
