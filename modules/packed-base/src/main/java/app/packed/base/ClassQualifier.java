@@ -13,17 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.base;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * 
- * Unless otherwise specified, constant is the default mode.
+ *
  */
-public enum ServiceMode {
-    CONSTANT, PROTOYPE;
+// Ideen er lidt at vi definere en standard qualifier man kan bruge
+
+@Retention(RetentionPolicy.RUNTIME)
+@Key.Qualifier
+@Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
+@interface ClassQualifier {
+    Class<?> value();
 }
-//Teknisk set behoever vi ikke denne.
-//Og i lang tid klarede vi os med isConstant()
-//Men den er rigtig god for forstaaelsen og kunne linke til ting.
-//I hvad der uden tvivl bliver rigtigt svaert at forklare.
-// forskellen paa component og service scope

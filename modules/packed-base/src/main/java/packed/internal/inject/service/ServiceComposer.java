@@ -31,6 +31,7 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.bundle.BundleBuild;
+import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedShellDriver;
@@ -47,7 +48,9 @@ import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
- *
+ * A service composer is responsible for managing the services for a single bundle at build time. A
+ * {@link ServiceComposerTree} is responsible for managing 1 or more service composers that are directly connected and
+ * part of the same build.
  */
 public final class ServiceComposer {
 
@@ -62,7 +65,6 @@ public final class ServiceComposer {
     private InjectionErrorManager em;
 
     /** A service exporter handles everything to do with exports of services. */
-    @Nullable
     private final ServiceExportComposer exports = new ServiceExportComposer(this);
 
     /** All explicit added build entries. */
@@ -74,12 +76,27 @@ public final class ServiceComposer {
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, Wrapper> resolvedServices = new LinkedHashMap<>();
 
+    /** Any parent this composer might have. */
+    @Nullable
+    final ServiceComposer parent;
+
+    /** The composer tree this composer is a part of. */
+    final ServiceComposerTree tree;
+
     /**
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceComposer(BundleBuild container) {
+    public ServiceComposer(BundleBuild container, @Nullable ServiceComposer parent) {
         this.container = requireNonNull(container);
+        this.parent = parent;
+        this.tree = parent == null ? new ServiceComposerTree() : parent.tree;
+    }
+
+    public void close(BuildtimeRegion region) {
+        if (parent == null) {
+            tree.finish(region, container);
+        }
     }
 
     public void addAssembly(BuildtimeService a) {
@@ -159,10 +176,8 @@ public final class ServiceComposer {
     public ServiceLocator newServiceLocator(PackedComponent comp, RuntimeRegion region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        if (exports != null) {
-            for (BuildtimeService e : exports) {
-                runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
-            }
+        for (BuildtimeService e : exports) {
+            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
 
         // make the entries immutable

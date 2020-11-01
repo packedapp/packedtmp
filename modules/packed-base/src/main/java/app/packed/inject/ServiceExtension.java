@@ -81,7 +81,7 @@ public final class ServiceExtension extends Extension {
     private final BundleBuild container;
 
     /** The service build manager. */
-    private final ServiceComposer sbm;
+    private final ServiceComposer sc;
 
     /**
      * Invoked by the runtime to create a new service extension.
@@ -91,7 +91,7 @@ public final class ServiceExtension extends Extension {
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
         this.container = ((ExtensionBuild) extension).container();
-        this.sbm = container.newServiceManagerFromServiceExtension();
+        this.sc = container.newServiceManagerFromServiceExtension();
     }
 
     /**
@@ -100,9 +100,13 @@ public final class ServiceExtension extends Extension {
      * services the plugins export.
      * 
      * {@link ServiceSelection}
+     * 
+     * @see ServiceWirelets#anchorAll()
      */
-    public void anchorAllChildExports() {
+    public void anchorAll() {}
 
+    public void anchorIf(Predicate<? super Service> filter) {
+        // Only anchrored services???
     }
 
     /**
@@ -156,7 +160,7 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return sbm.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return sc.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();
@@ -200,7 +204,7 @@ public final class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        sbm.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        sc.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
@@ -212,23 +216,13 @@ public final class ServiceExtension extends Extension {
     }
 
     /**
-     * Performs a transformation of any exported services. Final adjustments before services are visible a parent container.
-     * 
-     * @param transformer
-     *            transforms the exports
-     */
-    public void transformExports(Consumer<? super ServiceTransformation> transformer) {
-        sbm.exports().addExportTransformer(transformer);
-    }
-
-    /**
      * Expose a service contract as an attribute.
      * 
      * @return a service contract for this extension
      */
     @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract exposeContract() {
-        return sbm.newServiceContract();
+        return sc.newServiceContract();
     }
 
     /**
@@ -239,7 +233,7 @@ public final class ServiceExtension extends Extension {
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return sbm.exports().exportsAsServiceRegistry();
+        return sc.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -257,7 +251,7 @@ public final class ServiceExtension extends Extension {
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        sbm.provideAll((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
+        sc.provideAll((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
     }
 
     /**
@@ -290,7 +284,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Class<?> key : keys) {
-            sbm.dependencies().require(Key.of(key), false, cs);
+            sc.dependencies().require(Key.of(key), false, cs);
         }
     }
 
@@ -315,7 +309,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            sbm.dependencies().require(key, false, cs);
+            sc.dependencies().require(key, false, cs);
         }
     }
 
@@ -327,7 +321,7 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Class<?> key : keys) {
-            sbm.dependencies().require(Key.of(key), true, cs);
+            sc.dependencies().require(Key.of(key), true, cs);
         }
     }
 
@@ -346,8 +340,18 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            sbm.dependencies().require(key, true, cs);
+            sc.dependencies().require(key, true, cs);
         }
+    }
+
+    /**
+     * Performs a transformation of any exported services. Final adjustments before services are visible a parent container.
+     * 
+     * @param transformer
+     *            transforms the exports
+     */
+    public void transformExports(Consumer<? super ServiceTransformation> transformer) {
+        sc.exports().addExportTransformer(transformer);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac

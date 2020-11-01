@@ -27,13 +27,16 @@ import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
 /**
- * A service subsystem is one or more service extension that are all strongly connected
+ * A service multi-composer is responsible for managing 1 or more {@link ServiceComposer service composers} that are
+ * directly connected and part of the same build.
+ * <p>
+ * This class server two main purposes:
  * 
- * This class services two important purposes:
+ * Finds dependency circles either within the same bundle or across bundles that are not in a parent-child relationship.
  * 
- * Finds dependency circles
- * 
- * Calls {@link Dependant#onAllDependenciesResolved(BuildtimeRegion)}
+ * Responsible for invoking the {@link Dependant#onAllDependenciesResolved(BuildtimeRegion)} callback for every
+ * {@link Dependant}. We do this here, because we guarantee that all dependants of a dependant are always invoked before
+ * the dependant itself.
  */
 // New algorithm
 
@@ -43,7 +46,7 @@ import packed.internal.inject.DependencyProvider;
 
 //TODO WE NEED TO CHECK INTRA BUNDLE REFERENCES
 // BitMap???
-public final class ServiceSubSystem {
+final class ServiceComposerTree {
 
     /**
      * Tries to find a dependency cycle.
@@ -52,7 +55,7 @@ public final class ServiceSubSystem {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public static void finish(BuildtimeRegion region, BundleBuild container) {
+    public void finish(BuildtimeRegion region, BundleBuild container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);

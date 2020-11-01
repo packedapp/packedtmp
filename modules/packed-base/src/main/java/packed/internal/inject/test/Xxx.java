@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package packed.internal.inject.test;
 
 import app.packed.base.Key;
 import app.packed.base.Named;

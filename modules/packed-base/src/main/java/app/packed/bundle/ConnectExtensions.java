@@ -35,6 +35,12 @@ import app.packed.sidecar.MethodSidecar;
  * {@link ExtensionMember}. In which case the extension can be injected
  */
 @Target(ElementType.METHOD)
+// TODO add Field + Parameter
+// Will just set for field... arg to parameter...
+
+// Virker jo ikke rigtig med runtime extension... men det maa vi kunne komme udenom
+// 2 metoder med nullable.... IDK
+// Syntes det ville vaere ret rart at faa den injected i den nye extension
 @Retention(RetentionPolicy.RUNTIME)
 
 // Problemet er lidt sidecars.... Hvorfor???

@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -186,6 +186,21 @@ public interface ServiceTransformation extends ServiceRegistry {
         provideInstance((Class) instance.getClass(), instance);
     }
 
+    default void qualifyAllWith(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        rekeyAll(s -> s.key().with(qualifier));
+    }
+
+    /**
+     * Rekey all service
+     * 
+     * @param name
+     */
+    default void qualifyAllWithName(String name) {
+        requireNonNull(name, "name is null");
+        rekeyAll(s -> s.key().withName(name));
+    }
+
     /**
      * A version of
      * 
@@ -199,6 +214,8 @@ public interface ServiceTransformation extends ServiceRegistry {
     default void rekey(Class<?> existingKey, Class<?> newKey) {
         rekey(Key.of(existingKey), Key.of(newKey));
     }
+
+    // auto figure out if constant or prototype
 
     /**
      * Changes the key of an existing service. This method is typically used to add or remove {@link Qualifier qualifiers}.
@@ -261,8 +278,6 @@ public interface ServiceTransformation extends ServiceRegistry {
         }
     }
 
-    // auto figure out if constant or prototype
-
     /**
      * <p>
      * Keys for which a corresponding service is not present, are ignored.
@@ -293,6 +308,30 @@ public interface ServiceTransformation extends ServiceRegistry {
     /** Removes all services. */
     default void removeAll() {
         keys().clear();
+    }
+
+    /**
+     * 
+     * @param c
+     *            the keys to remove
+     * @throws IllegalArgumentException
+     *             if the specified collection contain objects that are not instances of either {@link Key} or
+     *             {@link Class}.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    default void removeAll(Collection<?> c) {
+        requireNonNull(c, "c is null");
+        for (Object o : c) {
+            requireNonNull(o, "Specified collection contains a null");
+            if (o instanceof Key) {
+                asMap().remove(o);
+            } else if (o instanceof Class) {
+                asMap().remove(Key.of((Class) o));
+            } else {
+                throw new IllegalArgumentException(
+                        "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());
+            }
+        }
     }
 
     /**
@@ -328,22 +367,24 @@ public interface ServiceTransformation extends ServiceRegistry {
     }
 
     default void retain(Key<?>... keys) {
-        keys().retainAll(List.of(keys));
+        keys().retainAll(Set.of(keys));
     }
 
-    default void qualifyAllWith(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        rekeyAll(s -> s.key().with(qualifier));
-    }
-
-    /**
-     * Rekey all service
-     * 
-     * @param name
-     */
-    default void qualifyAllWithName(String name) {
-        requireNonNull(name, "name is null");
-        rekeyAll(s -> s.key().withName(name));
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    default void retainAll(Collection<?> c) {
+        requireNonNull(c, "c is null");
+        Object[] a = c.toArray();
+        for (int i = 0; i < a.length; i++) {
+            Object o = a[i];
+            requireNonNull(o, "Specified collection contains a null");
+            if (o instanceof Class) {
+                a[i] = Key.of((Class) o);
+            } else if (!(o instanceof Key)) {
+                throw new IllegalArgumentException(
+                        "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());
+            }
+        }
+        keys().retainAll(Set.of(a));
     }
 }
 
@@ -377,11 +418,6 @@ interface UNext extends ServiceTransformation {
 
 // Various ideas on provide/rekey
 interface YIdeas extends ServiceTransformation {
-    public void qualifyWith(Class<?> k, Annotation qualifier);
-
-    public void qualifyWith(Key<?> k, Annotation qualifier);
-    // alias()??
-
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
     // Or maybe just methods...
@@ -410,6 +446,11 @@ interface YIdeas extends ServiceTransformation {
     // Det er jo sjaeldent man bare vil lave den til en konstant.
     // Som regel vil man gerne argumentere den
     default void constify(Key<?> key) {}
+
+    public void qualifyWith(Class<?> k, Annotation qualifier);
+
+    public void qualifyWith(Key<?> k, Annotation qualifier);
+    // alias()??
 
     // Return the same name to avoid any rekeying
 
@@ -440,12 +481,10 @@ interface YIdeas extends ServiceTransformation {
 
 interface ZBadIdeas extends ServiceTransformation {
 
-    Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    Object attachment();
 
     // wirelets can communicate here???
     // Nah make an AtomicReference... og sa lambda capture
-
-    Object attachment();
 
     ServiceTransformation map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
@@ -455,6 +494,8 @@ interface ZBadIdeas extends ServiceTransformation {
     // Foerend alle services bliver brugt....
     // Syntes ikke den her fin
     ServiceTransformation mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+
+    Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // JPMS-> Record must be readable for Packed
     // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan

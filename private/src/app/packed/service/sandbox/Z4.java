@@ -82,6 +82,7 @@ public class Z4 extends BaseAssembly {
     static AtomicInteger i = new AtomicInteger();
 
     public static class E extends Extension {
+        E() {}
 
         final int ai = i.getAndIncrement();
 
@@ -108,6 +109,7 @@ public class Z4 extends BaseAssembly {
 
     @ExtensionSetup(dependencies = E.class)
     public static class F extends Extension {
+        F() {}
 
         @Override
         protected void add() {

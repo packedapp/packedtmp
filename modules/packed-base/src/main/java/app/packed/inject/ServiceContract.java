@@ -18,6 +18,7 @@ package app.packed.inject;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -285,6 +286,15 @@ public final class ServiceContract {
     // TODO I think we should have varargs.... for all methods....
     public static final class Builder {
 
+        private static final Integer OPTIONAL = 2;
+        private static final Integer PROVIDES = 3;
+        // I think we need to change this to 1 map
+        // We need to check that the 3 sets are disjoint.
+        // Med det samme istedet for til sidst
+        private static final Integer REQUIRES = 1;
+
+        private final HashMap<Key<?>, Integer> map = new HashMap<>();
+
         /** The provided services. */
         private HashSet<Key<?>> optional;
 
@@ -352,6 +362,26 @@ public final class ServiceContract {
             return new ServiceContract(this, opt);
         }
 
+        private void compute(int type, Key<?>... keys) {
+            requireNonNull(keys, "keys is null");
+            for (int i = 0; i < keys.length; i++) {
+                Key<?> key = keys[i];
+                requireNonNull(key, "Specified array of keys, contained a null at index " + i);
+                map.merge(key, type, (oldValue, newValue) -> {
+                    if (oldValue == newValue) {
+                        return oldValue;
+                    } else if (oldValue == PROVIDES) {
+                        throw new IllegalArgumentException();
+                        // fail because new is optional or provides
+                    } else if (newValue == PROVIDES) {
+                        throw new IllegalArgumentException("Cannot provide a key, when it is already part of the requirements, key = " + key);
+                        // fail because already optional or provides
+                    }
+                    return REQUIRES; // Includes "upgrade" from Optional->Requires
+                });
+            }
+        }
+
         public ServiceContract.Builder optional(Class<?>... keys) {
             return optional(Key.of(keys));
         }
@@ -364,7 +394,7 @@ public final class ServiceContract {
          * @return this builder
          */
         public ServiceContract.Builder optional(Key<?>... keys) {
-            requireNonNull(keys, "keys is null");
+            compute(OPTIONAL, keys);
             HashSet<Key<?>> s = optional;
             if (s == null) {
                 s = optional = new HashSet<>();
@@ -378,25 +408,12 @@ public final class ServiceContract {
         }
 
         public ServiceContract.Builder provides(Key<?>... keys) {
-            requireNonNull(keys, "keys is null");
+            compute(PROVIDES, keys);
             HashSet<Key<?>> s = provides;
             if (s == null) {
                 s = provides = new HashSet<>();
             }
             s.addAll(List.of(keys)); // also checks for null
-            return this;
-        }
-
-        /**
-         * @param contract
-         *            the contract to remove
-         * @return this builder
-         */
-        public ServiceContract.Builder remove(ServiceContract contract) {
-            requireNonNull(contract, "contract is null");
-            contract.optional.forEach(k -> removeOptional(k));
-            contract.provides.forEach(k -> removeProvides(k));
-            contract.requires.forEach(k -> removeRequires(k));
             return this;
         }
 
@@ -480,7 +497,7 @@ public final class ServiceContract {
          * @return this builder
          */
         public ServiceContract.Builder requires(Key<?>... keys) {
-            requireNonNull(keys, "keys is null");
+            compute(REQUIRES, keys);
             HashSet<Key<?>> s = requires;
             if (s == null) {
                 s = requires = new HashSet<>();
@@ -490,7 +507,19 @@ public final class ServiceContract {
         }
     }
 }
-
+///**
+//* @param contract
+//*            the contract to remove
+//* @return this builder
+//*/
+//// Den her giver ikke mening??
+//public ServiceContract.Builder remove(ServiceContract contract) {
+// requireNonNull(contract, "contract is null");
+// contract.optional.forEach(k -> removeOptional(k));
+// contract.provides.forEach(k -> removeProvides(k));
+// contract.requires.forEach(k -> removeRequires(k));
+// return this;
+//}
 ///**
 //* 
 //* @param contract

@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package packed.internal.inject.test;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import app.packed.inject.ServiceLocator;
 
 /**
- * 
- * Unless otherwise specified, constant is the default mode.
+ *
  */
-public enum ServiceMode {
-    CONSTANT, PROTOYPE;
+class Z {
+
+    public static void main(ServiceLocator sl) {
+
+        List<CharSequence> l = new ArrayList<>();
+        sl.selectMinimal(String.class).forEachInstance((s, i) -> l.add(i));
+        Map<Integer, String> m = new HashMap<>();
+        sl.selectMinimal(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
+
+    }
 }
-//Teknisk set behoever vi ikke denne.
-//Og i lang tid klarede vi os med isConstant()
-//Men den er rigtig god for forstaaelsen og kunne linke til ting.
-//I hvad der uden tvivl bliver rigtigt svaert at forklare.
-// forskellen paa component og service scope

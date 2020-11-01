@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import app.packed.inject.ServiceLocator;
+package app.packed.inject;
 
 /**
  *
  */
-class Z {
+public class SCTest {
 
-    public static void main(ServiceLocator sl) {
-
-        List<CharSequence> l = new ArrayList<>();
-        sl.selectMinimal(String.class).forEachInstance((s, i) -> l.add(i));
-        Map<Integer, String> m = new HashMap<>();
-        sl.selectMinimal(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
-
+    public static void main(String[] args) {
+        ServiceContract sc = ServiceContract.newContract(c -> {
+            c.optional(String.class).requires(String.class);
+        });
+        System.out.println(sc);
     }
 }

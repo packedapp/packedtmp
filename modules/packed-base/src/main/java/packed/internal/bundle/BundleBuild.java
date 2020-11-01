@@ -27,11 +27,10 @@ import app.packed.base.Nullable;
 import app.packed.bundle.Extension;
 import app.packed.bundle.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
-import packed.internal.component.ComponentBuild;
 import packed.internal.component.BuildtimeRegion;
+import packed.internal.component.ComponentBuild;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceComposer;
-import packed.internal.inject.service.ServiceSubSystem;
 
 /** Contains data and logic relevant for containers. */
 public final class BundleBuild {
@@ -127,16 +126,19 @@ public final class BundleBuild {
 
         if (sbm != null) {
             sbm.dependencies().checkForMissingDependencies(this);
+
+            sbm.close(region);
         }
 
         // TODO Check any contracts we might as well catch it early
 
         // If we form for a service island and is root of the island
         // Do checks here
-        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
-        if (!isIslandChild) {
-            ServiceSubSystem.finish(region, this);
-        }
+
+//        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
+//        if (!isIslandChild) {
+//            ServiceComposerTree.finish(region, this);
+//        }
     }
 
     /**
@@ -194,7 +196,7 @@ public final class BundleBuild {
     }
 
     public ServiceComposer newServiceManagerFromServiceExtension() {
-        return sbm = new ServiceComposer(this);
+        return sbm = new ServiceComposer(this, sbm);
     }
 
     private void runPredContainerChildren() {
