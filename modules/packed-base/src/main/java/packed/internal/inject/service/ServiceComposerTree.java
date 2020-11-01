@@ -55,21 +55,21 @@ final class ServiceComposerTree {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public void finish(BuildtimeRegion region, BundleBuild container) {
+    void finish(BuildtimeRegion region, BundleBuild container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private static DependencyCycle dependencyCyclesFind(BuildtimeRegion region, BundleBuild container) {
+    private DependencyCycle dependencyCyclesFind(BuildtimeRegion region, BundleBuild container) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private static DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, BuildtimeRegion region,
+    private DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, BuildtimeRegion region,
             BundleBuild container) {
         for (Dependant node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
@@ -103,7 +103,7 @@ final class ServiceComposerTree {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private static DependencyCycle detectCycle(BuildtimeRegion region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
+    private DependencyCycle detectCycle(BuildtimeRegion region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
         DependencyProvider[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);

@@ -72,7 +72,7 @@ public class ServiceContractTCKTest {
     /** Tests that exported services are part of the contract. */
     @Test
     public void provides() {
-        ServiceContract expected = ServiceContract.newContract(b -> b.provides(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.provides(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -87,7 +87,7 @@ public class ServiceContractTCKTest {
     /** Checks that registering a service */
     @Test
     public void requires() {
-        ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.requires(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -100,7 +100,7 @@ public class ServiceContractTCKTest {
 
     @Test
     public void optional() {
-        ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.optional(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -114,7 +114,7 @@ public class ServiceContractTCKTest {
     /** A service will never be both requires and optional. */
     @Test
     public void requiresOverrideOptional() {
-        ServiceContract expected = ServiceContract.newContract(b -> b.requires(A.class));
+        ServiceContract expected = ServiceContract.build(b -> b.requires(A.class));
         check(expected, new BaseAssembly() {
             @Override
             protected void build() {
@@ -128,7 +128,7 @@ public class ServiceContractTCKTest {
 
     @Test
     public void all() {
-        ServiceContract expected = ServiceContract.newContract(b -> b.optional(A.class).requires(B.class).provides(C.class));
+        ServiceContract expected = ServiceContract.build(b -> b.optional(A.class).requires(B.class).provides(C.class));
         check(expected, new BaseAssembly() {
 
             @Override

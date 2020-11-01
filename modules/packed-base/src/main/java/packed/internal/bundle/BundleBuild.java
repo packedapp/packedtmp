@@ -126,19 +126,9 @@ public final class BundleBuild {
 
         if (sbm != null) {
             sbm.dependencies().checkForMissingDependencies(this);
-
             sbm.close(region);
         }
-
         // TODO Check any contracts we might as well catch it early
-
-        // If we form for a service island and is root of the island
-        // Do checks here
-
-//        boolean isIslandChild = sbm != null && parent != null && parent.sbm != null;
-//        if (!isIslandChild) {
-//            ServiceComposerTree.finish(region, this);
-//        }
     }
 
     /**

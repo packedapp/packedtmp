@@ -78,10 +78,10 @@ public final class ServiceComposer {
 
     /** Any parent this composer might have. */
     @Nullable
-    final ServiceComposer parent;
+    private final ServiceComposer parent;
 
     /** The composer tree this composer is a part of. */
-    final ServiceComposerTree tree;
+    private final ServiceComposerTree tree;
 
     /**
      * @param container

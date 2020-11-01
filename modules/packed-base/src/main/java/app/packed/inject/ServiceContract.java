@@ -181,6 +181,7 @@ public final class ServiceContract {
         return requires;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -230,29 +231,19 @@ public final class ServiceContract {
      *            the build action to perform
      * @return the new contract
      */
-    // rename til build????
-    public static ServiceContract newContract(Consumer<? super ServiceContract.Builder> action) {
+    // rename til create????
+    public static ServiceContract build(Consumer<? super ServiceContract.Builder> action) {
         requireNonNull(action, "action is null");
         ServiceContract.Builder b = new ServiceContract.Builder();
         action.accept(b);
         return b.build();
     }
 
-    public static ServiceContract of(ComponentSystem s) {
-        Component c = ComponentAnalyzer.analyze(s);
-        if (!c.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
-        }
-        ComponentBuild compConf = ComponentBuild.unadapt(null, c);
-        ServiceComposer sm = compConf.cube.getServiceManager();
-        return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
-    }
-
     /**
      * Returns a service contract from the specified image. Or fails with {@link UnsupportedOperationException}. if the a
      * contract
      * 
-     * @param image
+     * @param system
      *            the image to return a contract for
      * @return the contract
      */
@@ -263,15 +254,14 @@ public final class ServiceContract {
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
 
-    /**
-     * Since an injector has already been initialized it always has no requirements.
-     * 
-     * @param serviceSet
-     *            the injector to return a contract for
-     * @return the service contract for an injector
-     */
-    public static ServiceContract of(ServiceRegistry serviceSet) {
-        return newContract(c -> serviceSet.keys().forEach(s -> c.provides(s)));
+    public static ServiceContract of(ComponentSystem system) {
+        Component c = ComponentAnalyzer.analyze(system);
+        if (!c.modifiers().isContainer()) {
+            throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
+        }
+        ComponentBuild compConf = ComponentBuild.unadapt(null, c);
+        ServiceComposer sm = compConf.cube.getServiceManager();
+        return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 
     /**
@@ -288,9 +278,6 @@ public final class ServiceContract {
 
         private static final Integer OPTIONAL = 2;
         private static final Integer PROVIDES = 3;
-        // I think we need to change this to 1 map
-        // We need to check that the 3 sets are disjoint.
-        // Med det samme istedet for til sidst
         private static final Integer REQUIRES = 1;
 
         private final HashMap<Key<?>, Integer> map = new HashMap<>();
@@ -417,8 +404,8 @@ public final class ServiceContract {
             return this;
         }
 
-        public ServiceContract.Builder removeOptional(Class<?>... keys) {
-            return removeOptional(Key.of(keys));
+        public ServiceContract.Builder remove(Class<?>... keys) {
+            return remove(Key.of(keys));
         }
 
         /**
@@ -426,46 +413,10 @@ public final class ServiceContract {
          *            the keys to remove
          * @return this builder
          */
-        public ServiceContract.Builder removeOptional(Key<?>... keys) {
+        // maybe just 1
+        public ServiceContract.Builder remove(Key<?>... keys) {
             requireNonNull(keys, "keys is null");
-            if (optional != null) {
-                optional.removeAll(List.of(keys));
-            }
-            return this;
-        }
-
-        public ServiceContract.Builder removeProvides(Class<?>... keys) {
-            return removeProvides(Key.of(keys));
-        }
-
-        /**
-         * @param keys
-         *            the keys to remove
-         * @return this builder
-         */
-        public ServiceContract.Builder removeProvides(Key<?>... keys) {
-            requireNonNull(keys, "keys is null");
-            if (provides != null) {
-                provides.removeAll(List.of(keys));
-            }
-            return this;
-        }
-
-        public ServiceContract.Builder removeRequires(Class<?>... keys) {
-            return removeRequires(Key.of(keys));
-        }
-
-        /**
-         * @param keys
-         *            the keys to remove
-         * @return this builder
-         */
-        public ServiceContract.Builder removeRequires(Key<?>... keys) {
-            requireNonNull(keys, "keys is null");
-            if (requires != null) {
-                requires.removeAll(List.of(keys));
-            }
-
+            map.keySet().removeAll(List.of(keys));
             return this;
         }
 
@@ -479,15 +430,6 @@ public final class ServiceContract {
         public ServiceContract.Builder requires(Class<?>... keys) {
             return requires(Key.of(keys));
         }
-
-        // return a view, the mutable set, or an immutable copy????
-        // Needs to be consistant with other builders.
-
-        // I think returning the mutable set is bad. Because people could put something that is not keys in it.
-        // And we would have to check.....
-
-        // That makes it a view, or an immutable copy.
-        // Taenker vi skal vaere konsekvent for buildere...
 
         /**
          * Adds the specified key to the list of required services.

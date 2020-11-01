@@ -21,7 +21,7 @@ package app.packed.inject;
 public class SCTest {
 
     public static void main(String[] args) {
-        ServiceContract sc = ServiceContract.newContract(c -> {
+        ServiceContract sc = ServiceContract.build(c -> {
             c.optional(String.class).requires(String.class);
         });
         System.out.println(sc);

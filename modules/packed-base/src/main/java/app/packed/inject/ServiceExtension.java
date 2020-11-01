@@ -109,6 +109,15 @@ public final class ServiceExtension extends Extension {
         // Only anchrored services???
     }
 
+    // Validates the outward facing contract
+    public void checkContract(Consumer<? super ServiceContract> validator) {
+
+    }
+
+    public void checkExactContract(ServiceContract sc) {
+        checkContract(ServiceContractChecker.exact(sc));
+    }
+
     /**
      * Exports a service of the specified type. See {@link #export(Key)} for details.
      * 

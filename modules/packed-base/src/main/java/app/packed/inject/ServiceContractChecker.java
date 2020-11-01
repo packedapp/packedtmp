@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package app.packed.inject;
 
 import java.util.function.Consumer;
-
-import app.packed.bundle.Extension;
-import app.packed.inject.ServiceContract;
 
 /**
  *
@@ -31,6 +28,8 @@ import app.packed.inject.ServiceContract;
 // Hvad hvis bare gerne vil checke at foo ikke er med..
 
 // ??? How does this play out with the generic validation framework??????
+
+// no class and ServiceContract.exactChecker
 public abstract class ServiceContractChecker implements Consumer<ServiceContract> {
 
     // checkNot
@@ -44,14 +43,3 @@ public abstract class ServiceContractChecker implements Consumer<ServiceContract
 // Vi var
 //implements ContractChecker (expected, actual)
 // Men maaske vil man gerne lave nogle andre checks...
-
-class ZExtension extends Extension {
-
-    void check(ServiceContractChecker check) {
-
-    }
-
-    void checkExact(ServiceContract sc) {
-        check(ServiceContractChecker.exact(sc));
-    }
-}

@@ -95,7 +95,11 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that will invoke the specified action with the service contract of the cube that is being wired.
+     * Returns a wirelet that will invoke the specified action with the service contract of the bundle that is being wired.
+     * The wirelet it typically use to check the contents of.
+     * 
+     * But it can also be used, for example, for debugging.
+     * 
      * <p>
      * This wirelet is processed at the linkage site.
      * <p>
@@ -105,7 +109,10 @@ public final class ServiceWirelets {
      *            the action to perform
      * @return a wirelet
      */
-    public static Wirelet peekContract(Consumer<? super ServiceContract> action) {
+    // was peekContract, but arguments were identical
+    // verifyContract throws Verification exception
+    // maybe even just verify... or validate
+    public static Wirelet checkContract(Consumer<? super ServiceContract> action) {
         requireNonNull(action, "action is null");
         return from((t, c) -> action.accept(c));
     }
