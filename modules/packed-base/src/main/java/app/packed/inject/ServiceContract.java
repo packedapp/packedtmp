@@ -213,15 +213,6 @@ public final class ServiceContract {
     }
 
     /**
-     * Returns a new service contract builder.
-     * 
-     * @return a new service contract builder
-     */
-    public static ServiceContract.Builder builder() {
-        return new ServiceContract.Builder();
-    }
-
-    /**
      * Creates a new service contract by performing the specified action on a new {@link ServiceContract.Builder } instance.
      * Usage:
      * 
@@ -237,6 +228,15 @@ public final class ServiceContract {
         ServiceContract.Builder b = new ServiceContract.Builder();
         action.accept(b);
         return b.build();
+    }
+
+    /**
+     * Returns a new service contract builder.
+     * 
+     * @return a new service contract builder
+     */
+    public static ServiceContract.Builder builder() {
+        return new ServiceContract.Builder();
     }
 
     /**
