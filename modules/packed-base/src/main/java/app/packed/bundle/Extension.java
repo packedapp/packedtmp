@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
+import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
-import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
@@ -178,14 +178,17 @@ public abstract class Extension {
         configuration().checkConfigurable();
     }
 
-    protected final void checkNoChildContainers() {
-        configuration().checkNoChildCubes();
+    protected final void isLeafBundle() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected final void checkIsLeafBundle() {
+        configuration().checkIsLeafBundle();
     }
 
     /**
-     * Invoked by the runtime when the configuration of the container is completed.
+     * Invoked by the runtime when the configuration of the bundle is completed.
      * <p>
-     * 
      */
     protected void complete() {}
 
@@ -240,6 +243,7 @@ public abstract class Extension {
      * 
      * @return true if the extension
      */
+    // isInImage(), isImageParticipant
     protected final boolean isPartOfImage() {
         return configuration().isPartOfImage();
     }
@@ -252,7 +256,7 @@ public abstract class Extension {
     // Invoked before the first child container
     // Invoke always, even if no child containers
     // If you have configuration that
-    protected void preChildContainers() {}
+    protected void preChildBundles() {}
 
     protected final <E extends Subtension> E use(Class<E> extensionType) {
         return configuration().use(extensionType);

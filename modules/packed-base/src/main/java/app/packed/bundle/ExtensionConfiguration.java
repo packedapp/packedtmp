@@ -73,7 +73,7 @@ public interface ExtensionConfiguration {
     /**
      * Checks that child cubes has been aded
      */
-    void checkNoChildCubes();
+    void checkIsLeafBundle();
 
     /**
      * Returns the config site of the container the extension is registered with.

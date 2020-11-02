@@ -222,7 +222,6 @@ public final class ServiceContract {
      *            the build action to perform
      * @return the new contract
      */
-    // rename til create????
     public static ServiceContract build(Consumer<? super ServiceContract.Builder> action) {
         requireNonNull(action, "action is null");
         ServiceContract.Builder b = new ServiceContract.Builder();

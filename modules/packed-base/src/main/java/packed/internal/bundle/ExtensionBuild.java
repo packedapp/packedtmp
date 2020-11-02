@@ -24,11 +24,11 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.base.TreePath;
 import app.packed.bundle.Extension;
-import app.packed.bundle.ExtensionConfiguration;
 import app.packed.bundle.Extension.Subtension;
+import app.packed.bundle.ExtensionConfiguration;
+import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildContext;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -46,9 +46,9 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     /** A MethodHandle for invoking {@link Extension#complete()}. */
     private static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "complete", void.class);
 
-    /** A MethodHandle for invoking {@link Extension#preChildContainers()}. */
+    /** A MethodHandle for invoking {@link Extension#preChildBundles()}. */
     private static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "preChildContainers", void.class);
+            "preChildBundles", void.class);
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -103,7 +103,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public void checkNoChildCubes() {
+    public void checkIsLeafBundle() {
         if (container.children != null) {
             throw new IllegalStateException();
         }

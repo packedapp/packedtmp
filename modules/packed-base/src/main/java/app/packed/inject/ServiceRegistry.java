@@ -34,6 +34,8 @@ import packed.internal.util.PackedAttributeHolderStream;
 /**
  * A collection of services each having a unique {@link Service#key() key}.
  * <p>
+ * defines 3 subclasses
+ * 
  * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain methods to acquire actual
  * service instances.
  * <p>
@@ -41,7 +43,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * {@link ServiceTransformation} interface. Which support mutation operations on the iterators returned by
  * {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
  * <p>
- * Unless otherwise specified a service registry will not override hashCode/equals.
+ * Unless otherwise specified a service registry never overrides hashCode/equals.
  * <p>
  * If used as an auto activating variable sidecar the registry injected will be an immutable
  */

@@ -102,7 +102,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void preChildContainers() {
+        protected void preChildBundles() {
             // System.out.println(ai + "E-PreChildContainers");
         }
     }
@@ -122,7 +122,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void preChildContainers() {
+        protected void preChildBundles() {
             System.out.println("F-PreChildContainers");
             useOld(E.class);
         }
