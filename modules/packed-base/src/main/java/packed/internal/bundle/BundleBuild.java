@@ -72,7 +72,7 @@ public final class BundleBuild {
     public BundleBuild(ComponentBuild compConf) {
         this.compConf = requireNonNull(compConf);
 
-        this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
+        this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfBundle();
         if (parent != null) {
             parent.runPredContainerChildren();
             ArrayList<BundleBuild> c = parent.children;

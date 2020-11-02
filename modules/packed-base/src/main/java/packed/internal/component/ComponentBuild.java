@@ -353,7 +353,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
      * @return the container this component is a part of
      */
     @Nullable
-    public BundleBuild getMemberOfContainer() {
+    public BundleBuild getMemberOfBundle() {
         return memberOfCube;
     }
 

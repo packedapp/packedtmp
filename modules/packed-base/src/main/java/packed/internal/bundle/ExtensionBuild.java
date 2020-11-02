@@ -57,24 +57,24 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
+    /** The bundle this extension is a part of. */
+    private final BundleBuild bundle;
+
     /** This extension's component configuration. */
     private final ComponentBuild compConf;
 
-    /** The container this extension belongs to. */
-    private final BundleBuild container;
-
-    /** The extension instance this assembly wraps, instantiated in {@link #of(BundleBuild, Class)}. */
+    /** The actual instance of the extension, instantiated in {@link #of(BundleBuild, Class)}. */
     @Nullable
     private Extension instance;
 
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** A model of the extension. */
+    /** A static model of the extension. */
     private final ExtensionModel model;
 
     /**
-     * Creates a new extension assembly.
+     * Creates a new instance of this class as part of creating the extension component.
      * 
      * @param compConf
      *            the component configuration that this extension belongs to
@@ -83,7 +83,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
      */
     public ExtensionBuild(ComponentBuild compConf, ExtensionModel model) {
         this.compConf = requireNonNull(compConf);
-        this.container = requireNonNull(compConf.getMemberOfContainer());
+        this.bundle = requireNonNull(compConf.getMemberOfBundle());
         this.model = requireNonNull(model);
     }
 
@@ -91,6 +91,15 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     @Override
     public BuildContext build() {
         return compConf.build();
+    }
+
+    /**
+     * Returns the bundle this extension is a part of.
+     * 
+     * @return the bundle this extension is a part of
+     */
+    public BundleBuild bundle() {
+        return bundle;
     }
 
     /** {@inheritDoc} */
@@ -104,7 +113,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     /** {@inheritDoc} */
     @Override
     public void checkIsLeafBundle() {
-        if (container.children != null) {
+        if (bundle.children != null) {
             throw new IllegalStateException();
         }
     }
@@ -115,29 +124,20 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         return -model.compareTo(c.model);
     }
 
-    /** The extension is completed once the realm the container is a part of is closed. */
+    /** The extension is completed once the realm the container is part of is closed. */
     void complete() {
         try {
             MH_EXTENSION_COMPLETE.invoke(instance);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
         }
         isConfigured = true;
-    }
-
-    /**
-     * Returns the configuration of the container the extension is registered in.
-     * 
-     * @return the configuration of the container the extension is registered in
-     */
-    public BundleBuild container() {
-        return container;
     }
 
     /** {@inheritDoc} */
     @Override
     public ConfigSite cubeConfigSite() {
-        return container.compConf.configSite();
+        return bundle.compConf.configSite();
     }
 
     /** {@inheritDoc} */
@@ -180,9 +180,9 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     }
 
     /**
-     * Returns the extension instance this configuration wraps.
+     * Returns the extension instance this class wraps.
      * 
-     * @return the extension instance this configuration wraps
+     * @return the extension instance this class wraps
      * @throws IllegalStateException
      *             if trying to call this method from the constructor of the extension
      */
@@ -197,7 +197,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return container.isPartOfImage();
+        return bundle.isPartOfImage();
     }
 
     /** {@inheritDoc} */
@@ -224,8 +224,8 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     void preContainerChildren() {
         try {
             MH_EXTENSION_PRE_CHILD_CONTAINERS.invoke(instance);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
         }
     }
 
@@ -266,7 +266,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
             throw new UnsupportedOperationException("The specified extension type is not among the direct dependencies of " + model.type().getSimpleName()
                     + ", extensionType = " + extensionType + ", valid dependencies = " + model.dependencies());
         }
-        return (T) container.useExtension(extensionType, this).instance;
+        return (T) bundle.useExtension(extensionType, this).instance;
     }
 
     /** {@inheritDoc} */
@@ -314,8 +314,8 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
             if (parentExtension != null) {
                 try {
                     model.mhExtensionLinked.invokeExact(parentExtension.instance, assembly, extension);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
+                } catch (Throwable t) {
+                    throw ThrowableUtil.orUndeclared(t);
                 }
             }
         }

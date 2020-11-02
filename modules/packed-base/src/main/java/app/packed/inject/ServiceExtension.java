@@ -90,7 +90,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.container = ((ExtensionBuild) extension).container();
+        this.container = ((ExtensionBuild) extension).bundle();
         this.sc = container.newServiceManagerFromServiceExtension();
     }
 
