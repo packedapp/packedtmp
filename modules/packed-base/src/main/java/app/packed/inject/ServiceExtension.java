@@ -78,10 +78,11 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public final class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
-    private final BundleBuild container;
+    // we use this for provideProtoype for now But should go away at some point
+    private final BundleBuild bundle;
 
     /** The service build manager. */
-    private final ServiceComposer sc;
+    private final ServiceComposer composer;
 
     /**
      * Invoked by the runtime to create a new service extension.
@@ -90,8 +91,8 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.container = ((ExtensionBuild) extension).bundle();
-        this.sc = container.newServiceManagerFromServiceExtension();
+        this.bundle = ((ExtensionBuild) extension).bundle();
+        this.composer = bundle.newServiceManagerFromServiceExtension();
     }
 
     /**
@@ -169,7 +170,7 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return sc.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return composer.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();
@@ -213,7 +214,7 @@ public final class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        sc.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        composer.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
     }
 
     public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
@@ -231,7 +232,7 @@ public final class ServiceExtension extends Extension {
      */
     @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract exposeContract() {
-        return sc.newServiceContract();
+        return composer.newServiceContract();
     }
 
     /**
@@ -242,7 +243,7 @@ public final class ServiceExtension extends Extension {
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return sc.exports().exportsAsServiceRegistry();
+        return composer.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -260,7 +261,7 @@ public final class ServiceExtension extends Extension {
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        sc.provideAll((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
+        composer.provideAll((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
     }
 
     /**
@@ -284,17 +285,13 @@ public final class ServiceExtension extends Extension {
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
     public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return container.compConf.wire(prototype(), factory);
+        return bundle.compConf.wire(prototype(), factory);
     }
 
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();
     public void require(Class<?>... keys) {
-        checkConfigurable();
-        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
-        for (Class<?> key : keys) {
-            sc.dependencies().require(Key.of(key), false, cs);
-        }
+        require(Key.of(keys));
     }
 
     /**
@@ -315,23 +312,16 @@ public final class ServiceExtension extends Extension {
      *            the key(s) to add
      */
     public void require(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            sc.dependencies().require(key, false, cs);
+            composer.dependencies().require(key, false, cs);
         }
     }
 
-    // It is kind of bindAllExplicit
-    // Fail if child services provide these???
-    // Maybe not
-    // public void <T> requireOptionally(Class<T> t, Factory<> alternative) {
     public void requireOptionally(Class<?>... keys) {
-        checkConfigurable();
-        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
-        for (Class<?> key : keys) {
-            sc.dependencies().require(Key.of(key), true, cs);
-        }
+        requireOptionally(Key.of(keys));
     }
 
     /**
@@ -345,11 +335,13 @@ public final class ServiceExtension extends Extension {
      *            the key(s) to add
      */
     // How does this work with child services...
+    // They will be consumed
     public void requireOptionally(Key<?>... keys) {
+        requireNonNull(keys, "keys is null");
         checkConfigurable();
         ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            sc.dependencies().require(key, true, cs);
+            composer.dependencies().require(key, true, cs);
         }
     }
 
@@ -360,7 +352,7 @@ public final class ServiceExtension extends Extension {
      *            transforms the exports
      */
     public void transformExports(Consumer<? super ServiceTransformation> transformer) {
-        sc.exports().addExportTransformer(transformer);
+        composer.exports().addExportTransformer(transformer);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
@@ -535,19 +527,5 @@ class ZExtraFunc {
     // CycleBreaker(SE, ...);
 
     // autoExport
-
-    /**
-     * 
-     * <p>
-     * Contracts should be set before exports
-     * 
-     * @param contract
-     * 
-     * @throws IllegalStateException
-     *             if any services have already been exported
-     */
-    public void useContract(ServiceContract contract) {
-
-    }
 
 }
