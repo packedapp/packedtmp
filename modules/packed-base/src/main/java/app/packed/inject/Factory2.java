@@ -42,7 +42,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
             Object.class, Object.class);
 
     /** A cache of extracted type variables and dependencies from subclasses of this class. */
-    private static final ClassValue<List<DependencyDescriptor>> TYPE_VARIABLE_CACHE = new ClassValue<>() {
+    private static final ClassValue<List<DependencyDescriptor>> DEPENDENCY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -70,7 +70,7 @@ public abstract class Factory2<T, U, R> extends Factory<R> {
      */
     protected Factory2(BiFunction<? super T, ? super U, ? extends R> function) {
         requireNonNull(function, "function is null");
-        this.dependencies = TYPE_VARIABLE_CACHE.get(getClass());
+        this.dependencies = DEPENDENCY_CACHE.get(getClass());
 
         Class<?> ret = rawType();
         Class<?> parem1 = dependencies.get(0).rawType();

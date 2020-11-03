@@ -17,7 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,7 +75,7 @@ import packed.internal.inject.service.ServiceComposer;
 public final class ServiceContract {
 
     /** A contract with no requirements and no services provided. */
-    public static final ServiceContract EMPTY = new ServiceContract(new Builder(), new HashSet<>());
+    public static final ServiceContract EMPTY = new ServiceContract(builder(), new HashSet<>(), new HashSet<>(), new HashSet<>());
 
     /** An immutable set of optional service keys. */
     private final Set<Key<?>> optional;
@@ -93,15 +92,10 @@ public final class ServiceContract {
      * @param builder
      *            the builder to create a service contract from
      */
-    private ServiceContract(ServiceContract.Builder builder, HashSet<Key<?>> optional) {
-        HashSet<Key<?>> s = builder.requires;
-        this.requires = s == null ? Set.of() : Set.copyOf(s);
-
-        s = optional;
-        this.optional = s == null ? Set.of() : Set.copyOf(s);
-
-        s = builder.provides;
-        this.provides = s == null ? Set.of() : Set.copyOf(s);
+    private ServiceContract(ServiceContract.Builder builder, HashSet<Key<?>> requires, HashSet<Key<?>> optional, HashSet<Key<?>> provides) {
+        this.requires = Set.copyOf(requires);
+        this.optional = Set.copyOf(optional);
+        this.provides = Set.copyOf(provides);
     }
 
     /** {@inheritDoc} */
@@ -224,7 +218,7 @@ public final class ServiceContract {
      */
     public static ServiceContract build(Consumer<? super ServiceContract.Builder> action) {
         requireNonNull(action, "action is null");
-        ServiceContract.Builder b = new ServiceContract.Builder();
+        ServiceContract.Builder b = new ServiceContract.Builder(null);
         action.accept(b);
         return b.build();
     }
@@ -235,7 +229,7 @@ public final class ServiceContract {
      * @return a new service contract builder
      */
     public static ServiceContract.Builder builder() {
-        return new ServiceContract.Builder();
+        return new ServiceContract.Builder(null);
     }
 
     /**
@@ -272,7 +266,6 @@ public final class ServiceContract {
      * <strong>Note that this builder is not synchronized.</strong> If multiple threads access a builder concurrently, and
      * at least one of the threads modifies the builder structurally, it <i>must</i> be synchronized externally.
      */
-    // TODO I think we should have varargs.... for all methods....
     public static final class Builder {
 
         private static final Integer OPTIONAL = 2;
@@ -281,18 +274,6 @@ public final class ServiceContract {
 
         private final HashMap<Key<?>, Integer> map = new HashMap<>();
 
-        /** The provided services. */
-        private HashSet<Key<?>> optional;
-
-        /** The provided services. */
-        private HashSet<Key<?>> provides;
-
-        /** The required services. */
-        private HashSet<Key<?>> requires;
-
-        /** Creates a new service contract builder */
-        private Builder() {}
-
         /**
          * Creates a new contract builder builder from an existing service contract.
          * 
@@ -300,55 +281,43 @@ public final class ServiceContract {
          *            the contract to create a contract builder builder from
          */
         private Builder(ServiceContract existing) {
-            requireNonNull(existing, "contract is null");
-            if (!existing.optional.isEmpty()) {
-                optional = new HashSet<>(existing.optional);
-            }
-            if (!existing.provides.isEmpty()) {
-                provides = new HashSet<>(existing.provides);
-            }
-            if (!existing.requires.isEmpty()) {
-                requires = new HashSet<>(existing.requires);
+            if (existing != null) {
+                existing.optional.forEach(k -> map.put(k, OPTIONAL));
+                existing.provides.forEach(k -> map.put(k, PROVIDES));
+                existing.requires.forEach(k -> map.put(k, REQUIRES));
             }
         }
 
         /**
          * Builds and returns a new service contract from this builder.
-         * <p>
-         * If there are keys that have both been added as a required and required optionally. The keys under required optionally
-         * will be removed.
+         * 
          * 
          * @return the new service contract
          * @throws IllegalStateException
          *             if any keys have been registered both as optional and required
          */
         public ServiceContract build() {
-            if ((optional == null || optional.isEmpty()) && (requires == null || requires.isEmpty()) && (provides == null || provides.isEmpty())) {
+            if (map.isEmpty()) {
                 return ServiceContract.EMPTY;
             }
 
-            // Remove optional keys that are also required.
-            HashSet<Key<?>> opt = optional;
-            if (optional != null && !optional.isEmpty() && requires != null && !requires.isEmpty()) {
-                ArrayList<Key<?>> duplicates = null;
-                for (Key<?> k : requires) {
-                    if (optional.contains(k)) {
-                        ArrayList<Key<?>> d = duplicates;
-                        if (d == null) {
-                            d = duplicates = new ArrayList<>(1);
-                        }
-                        d.add(k);
-                    }
+            HashSet<Key<?>> tmpOptional = new HashSet<>();
+            HashSet<Key<?>> tmpProvides = new HashSet<>();
+            HashSet<Key<?>> tmpRequires = new HashSet<>();
+
+            map.forEach((k, v) -> {
+                if (v == OPTIONAL) {
+                    tmpOptional.add(k);
+                } else if (v == PROVIDES) {
+                    tmpProvides.add(k);
+                } else {
+                    tmpRequires.add(k);
                 }
-                if (duplicates != null) {
-                    opt = new HashSet<>(optional);
-                    opt.removeAll(duplicates);
-                }
-            }
-            return new ServiceContract(this, opt);
+            });
+            return new ServiceContract(this, tmpOptional, tmpProvides, tmpRequires);
         }
 
-        private void compute(int type, Key<?>... keys) {
+        private Builder compute(int type, Key<?>... keys) {
             requireNonNull(keys, "keys is null");
             for (int i = 0; i < keys.length; i++) {
                 Key<?> key = keys[i];
@@ -366,6 +335,7 @@ public final class ServiceContract {
                     return REQUIRES; // Includes "upgrade" from Optional->Requires
                 });
             }
+            return this;
         }
 
         public ServiceContract.Builder optional(Class<?>... keys) {
@@ -380,27 +350,24 @@ public final class ServiceContract {
          * @return this builder
          */
         public ServiceContract.Builder optional(Key<?>... keys) {
-            compute(OPTIONAL, keys);
-            HashSet<Key<?>> s = optional;
-            if (s == null) {
-                s = optional = new HashSet<>();
-            }
-            s.addAll(List.of(keys)); // also checks for null
-            return this;
+            return compute(OPTIONAL, keys);
         }
 
         public ServiceContract.Builder provides(Class<?>... keys) {
             return provides(Key.of(keys));
         }
 
+        /**
+         * <p>
+         * If there are keys that have both been added as a required and required optionally. The keys under required optionally
+         * will be removed.
+         * 
+         * @param keys
+         *            the keys to add
+         * @return this builder
+         */
         public ServiceContract.Builder provides(Key<?>... keys) {
-            compute(PROVIDES, keys);
-            HashSet<Key<?>> s = provides;
-            if (s == null) {
-                s = provides = new HashSet<>();
-            }
-            s.addAll(List.of(keys)); // also checks for null
-            return this;
+            return compute(PROVIDES, keys);
         }
 
         public ServiceContract.Builder remove(Class<?>... keys) {
@@ -411,8 +378,8 @@ public final class ServiceContract {
          * @param keys
          *            the keys to remove
          * @return this builder
+         * @apiNote sin
          */
-        // maybe just 1
         public ServiceContract.Builder remove(Key<?>... keys) {
             requireNonNull(keys, "keys is null");
             map.keySet().removeAll(List.of(keys));
@@ -438,64 +405,7 @@ public final class ServiceContract {
          * @return this builder
          */
         public ServiceContract.Builder requires(Key<?>... keys) {
-            compute(REQUIRES, keys);
-            HashSet<Key<?>> s = requires;
-            if (s == null) {
-                s = requires = new HashSet<>();
-            }
-            s.addAll(List.of(keys)); // also checks for null
-            return this;
+            return compute(REQUIRES, keys);
         }
     }
 }
-///**
-//* @param contract
-//*            the contract to remove
-//* @return this builder
-//*/
-//// Den her giver ikke mening??
-//public ServiceContract.Builder remove(ServiceContract contract) {
-// requireNonNull(contract, "contract is null");
-// contract.optional.forEach(k -> removeOptional(k));
-// contract.provides.forEach(k -> removeProvides(k));
-// contract.requires.forEach(k -> removeRequires(k));
-// return this;
-//}
-///**
-//* 
-//* @param contract
-//*            the contract to remove
-//* @return this builder
-//*/
-//// Kan ikke se hvad den skal kunne bruges til????
-//public ServiceContract.Builder add(ServiceContract contract) {
-//  requireNonNull(contract, "contract is null");
-//  contract.optional.forEach(k -> addOptional(k));
-//  contract.provides.forEach(k -> addProvides(k));
-//  contract.requires.forEach(k -> addRequires(k));
-//  return this;
-//}
-
-//public static ServiceContract ofRequired(Class<?>... keys) {
-//return newContract(b -> List.of(keys).forEach(k -> b.requires(k)));
-//}
-//
-//public static ServiceContract ofRequired(Key<?>... keys) {
-//throw new UnsupportedOperationException();
-//}
-//
-//// Maaske from og of...
-//// Det er en lille smule forskel syntes jeg...
-//public static ServiceContract ofServices(Class<?>... keys) {
-//return newContract(c -> c.provides(keys).provides(keys));
-//}
-//
-//static ServiceContract ofServices(ServiceContract contract) {
-//// En contract, der kun inkludere provides services, men ikke requirements
-//return contract;
-//}
-// Vil syntes et view er fint???
-// Vi har ikke behov for views...
-//public Set<Key<?>> requires() {
-//    throw new UnsupportedOperationException();
-//}

@@ -85,6 +85,14 @@ public interface AnnotatedVariable extends AnnotatedElement, OldVariable {
         requireNonNull(parameter, "parameter is null");
         return new ParameterVariable(parameter);
     }
+
+    static AnnotatedVariable ofTypeVariable(Class<?> type, Class<?> baseType, int index) {
+        return ofTypeVariables(type, baseType, index)[0];
+    }
+
+    static AnnotatedVariable[] ofTypeVariables(Class<?> type, Class<?> baseType, int... variables) {
+        throw new UnsupportedOperationException();
+    }
 }
 // maybe just have Optional<?> source()
 
