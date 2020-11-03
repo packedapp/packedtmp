@@ -75,7 +75,7 @@ import packed.internal.inject.service.ServiceComposer;
 public final class ServiceContract {
 
     /** A contract with no requirements and no services provided. */
-    public static final ServiceContract EMPTY = new ServiceContract(builder(), new HashSet<>(), new HashSet<>(), new HashSet<>());
+    public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());
 
     /** An immutable set of optional service keys. */
     private final Set<Key<?>> optional;
@@ -87,15 +87,12 @@ public final class ServiceContract {
     private final Set<Key<?>> requires;
 
     /**
-     * Creates a new service contract from the specified builder.
-     * 
-     * @param builder
-     *            the builder to create a service contract from
+     * Creates a new service contract from the specified sets.
      */
-    private ServiceContract(ServiceContract.Builder builder, HashSet<Key<?>> requires, HashSet<Key<?>> optional, HashSet<Key<?>> provides) {
-        this.requires = Set.copyOf(requires);
-        this.optional = Set.copyOf(optional);
-        this.provides = Set.copyOf(provides);
+    private ServiceContract(Set<Key<?>> requires, Set<Key<?>> optional, Set<Key<?>> provides) {
+        this.requires = requireNonNull(requires);
+        this.optional = requireNonNull(optional);
+        this.provides = requireNonNull(provides);
     }
 
     /** {@inheritDoc} */
@@ -113,7 +110,7 @@ public final class ServiceContract {
     /** {@inheritDoc} */
     @Override
     public int hashCode() {
-        return optional.hashCode() + provides.hashCode() + requires.hashCode();
+        return optional.hashCode() + 31 * (provides.hashCode() + 31 * requires.hashCode());
     }
 
     /**
@@ -142,6 +139,15 @@ public final class ServiceContract {
 
     public boolean isEmpty() {
         return optional.isEmpty() && provides.isEmpty() && requires.isEmpty();
+    }
+
+    /**
+     * Creates a new builder that can be used to modify this contract. For example, by adding or removing keys.
+     * 
+     * @return the new builder
+     */
+    public ServiceContract.Builder modify() {
+        return new ServiceContract.Builder(this);
     }
 
     /**
@@ -195,15 +201,6 @@ public final class ServiceContract {
         }
         sb.append("\n}");
         return sb.toString();
-    }
-
-    /**
-     * Creates a new builder that can be used to create a new service contract. Using this contract as the base.
-     * 
-     * @return the new builder
-     */
-    public ServiceContract.Builder update() { // copy, change, ...
-        return new ServiceContract.Builder(this);
     }
 
     /**
@@ -268,9 +265,9 @@ public final class ServiceContract {
      */
     public static final class Builder {
 
-        private static final Integer OPTIONAL = 2;
-        private static final Integer PROVIDES = 3;
-        private static final Integer REQUIRES = 1;
+        private static final Integer OPTIONAL = 1;
+        private static final Integer PROVIDES = 2;
+        private static final Integer REQUIRES = 3;
 
         private final HashMap<Key<?>, Integer> map = new HashMap<>();
 
@@ -314,10 +311,10 @@ public final class ServiceContract {
                     tmpRequires.add(k);
                 }
             });
-            return new ServiceContract(this, tmpOptional, tmpProvides, tmpRequires);
+            return new ServiceContract(Set.copyOf(tmpOptional), Set.copyOf(tmpProvides), Set.copyOf(tmpRequires));
         }
 
-        private Builder compute(int type, Key<?>... keys) {
+        private Builder compute(Integer type, Key<?>... keys) {
             requireNonNull(keys, "keys is null");
             for (int i = 0; i < keys.length; i++) {
                 Key<?> key = keys[i];
