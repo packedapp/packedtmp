@@ -64,6 +64,22 @@ public abstract class Wirelet {
     }
 
     /**
+     * This
+     * 
+     * @param modifiers
+     */
+    protected void unhandled(ComponentModifierSet modifiers) {
+        // if package does not start with app.packed
+        // Did you remember to annotated with @ExtensionMember
+    }
+
+    // Skal vi tage en Component???
+    // Eller kan vi kun validere med modifiers...
+    protected final void validate() {
+
+    }
+
+    /**
      * Combines an array or wirelets
      * 
      * @param wirelets
@@ -93,14 +109,18 @@ public abstract class Wirelet {
     /**
      * Creates a wiring operation by composing a sequence of zero or more wiring operations.
      * 
-     * @param wirelet
+     * @param first
      *            stuff
-     * @param others
+     * @param last
      *            stuff
      * @return stuff
      */
-    public static Wirelet combine(Wirelet wirelet, Wirelet[] others) {
-        return WireletList.of(wirelet, others);
+    public static Wirelet combine(Wirelet first, Wirelet[] last) {
+        return WireletList.of(first, last);
+    }
+
+    public static Wirelet combine(Wirelet[] first, Wirelet... last) {
+        return WireletList.of(last, first);
     }
 
     /**
@@ -135,6 +155,11 @@ public abstract class Wirelet {
         throw new UnsupportedOperationException();
     }
 
+    // Altsaa den ville vaere god for MainArgsWirelet...
+    // Folk maa gerne smide en MainArgsWirelet ind.
+    // Vi kan nemlig ikke rigtig wrappe den.
+    // Da det ikke er en statisk metode.
+
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
@@ -148,17 +173,6 @@ public abstract class Wirelet {
     // String intrapolation?
     public static Wirelet named(String name) {
         return new ComponentNameWirelet(name);
-    }
-
-    // Skal vi tage en Component???
-    // Eller kan vi kun validere med modifiers...
-    protected final void validate() {
-
-    }
-
-    protected void unhandled(ComponentModifierSet modifiers) {
-        // if package does not start with app.packed
-        // Did you remember to annotated with @ExtensionMember
     }
 
 //    /**

@@ -20,7 +20,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import packed.internal.component.ComponentBuild;
+import packed.internal.component.PackedBuildContext;
+import packed.internal.component.PackedInitializationContext;
 
 /**
  * A container instance.
@@ -76,6 +80,11 @@ public interface Container {
      * @see #state()
      */
     boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException;
+
+    // start + await termination in the thread
+    default void execute() {
+
+    }
 
     /**
      * Returns a snapshot of the container's current state.
@@ -141,6 +150,11 @@ public interface Container {
      */
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
+    public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
+        ComponentBuild build = PackedBuildContext.assemble(assembly, 0, null, wirelets);
+        PackedInitializationContext.initialize(build);
+
+    }
     // ContainerStopOption????
     // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
     // Hehe, hvis actor ogsaa er en artifact... Saa

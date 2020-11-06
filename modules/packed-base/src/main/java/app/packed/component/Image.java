@@ -56,7 +56,7 @@ public interface Image<A> extends ComponentDelegate {
      * @return the result of using the image
      */
     default A use(String[] args, Wirelet... wirelets) {
-        return use(Wirelet.combine(MainArgs.wireletOf(args), wirelets));
+        return use(Wirelet.combine(MainArgs.of(args), wirelets));
     }
 
     /**

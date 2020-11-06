@@ -77,7 +77,6 @@ public final class SourceModel {
     }
 
     public <T> void register(ComponentBuild compConf, SourceBuild source) {
-
         for (SourceModelField f : fields) {
             registerMember(compConf, source, f);
         }
@@ -93,6 +92,9 @@ public final class SourceModel {
 //        if (i.hasUnresolved()) {
         compConf.memberOfCube.addDependant(i);
         // }
+        if (m.processor != null) {
+            m.processor.accept(compConf);
+        }
     }
 
     /**

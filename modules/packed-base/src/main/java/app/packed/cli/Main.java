@@ -17,12 +17,11 @@ package app.packed.cli;
 
 import app.packed.component.App;
 import app.packed.component.Assembly;
+import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.container.Container;
 import app.packed.container.ContainerState;
 import app.packed.container.ContainerWirelets;
-import packed.internal.component.ComponentBuild;
-import packed.internal.component.PackedBuildContext;
-import packed.internal.component.PackedInitializationContext;
 
 /**
  *
@@ -34,6 +33,8 @@ import packed.internal.component.PackedInitializationContext;
 // Maaske er det i virkeligheden en shell driver vi laver her...
 // Og bruger..Vi vil jo i virkeligheden gerne supporte at man ogsaa kan lave images
 
+// <Integer> <--- exit code
+
 // Har kun noget der executor.....
 // Og primaert mod at bliver kaldt fra main...
 
@@ -42,6 +43,41 @@ import packed.internal.component.PackedInitializationContext;
 public class Main {
 
     private Main() {}
+
+    public static void main(Assembly<?> bundle, String[] args, Wirelet... wirelets) {
+        Container.execute(bundle, Wirelet.combine(wirelets, MainArgs.of(args)));
+    }
+
+    /**
+     * This method will create and start an {@link App application} from the specified source. Blocking until the run state
+     * of the application is {@link ContainerState#TERMINATED}.
+     * <p>
+     * Entry point or run to termination
+     * <p>
+     * This method will automatically install a shutdown hook wirelet using
+     * {@link ContainerWirelets#shutdownHook(app.packed.container.Container.StopOption...)}.
+     * 
+     * @param assembly
+     *            the assembly to execute
+     * @param wirelets
+     *            wirelets
+     * @throws RuntimeException
+     *             if the application did not execute properly
+     * @see ContainerWirelets#shutdownHook(app.packed.container.Container.StopOption...)
+     */
+    public static void main(Assembly<?> assembly, Wirelet... wirelets) {
+        Container.execute(assembly, wirelets);
+    }
+
+    public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    // To shutdown hook or not...
+    // Maybe just delay it.
+}
+
+class Zandbox {
 
     // Laver et image, en host component og virker som main()
     // Paa en eller anden maade skal vi ogsaa kunne specificere en ErrorHandling strategy
@@ -59,34 +95,10 @@ public class Main {
 
     // sync deamon???????
     // App.main(new Goo(), args);
-    public static void main(Assembly<?> bundle, String[] args, Wirelet... wirelets) {
-        ComponentBuild node = PackedBuildContext.assemble(bundle, 0, null, Wirelet.combine(MainArgs.wireletOf(args), wirelets));
-        PackedInitializationContext.initialize(node);
-    }
 
-    /**
-     * This method will create and start an {@link App application} from the specified source. Blocking until the run state
-     * of the application is {@link ContainerState#TERMINATED}.
-     * <p>
-     * Entry point or run to termination
-     * <p>
-     * This method will automatically install a shutdown hook wirelet using
-     * {@link ContainerWirelets#shutdownHook(app.packed.container.Container.StopOption...)}.
-     * 
-     * @param bundle
-     *            the source of the application
-     * @param wirelets
-     *            wirelets
-     * @throws RuntimeException
-     *             if the application did not execute properly
-     * @see ContainerWirelets#shutdownHook(app.packed.container.Container.StopOption...)
-     */
-    // add exitOnEnter() <--- so useful for tests
-    // exitable daemon...
-    // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java3
-    public static void main(Assembly<?> bundle, Wirelet... wirelets) {
-        // TODO add ContainerWirelets.shutdownHook()
-        ComponentBuild node = PackedBuildContext.assemble(bundle, 0, null, wirelets);
-        PackedInitializationContext.initialize(node);
-    }
+    // If there is an executioner. it will sync else deamon
+
 }
+
+// main <-- installs CTRL
+// main.execute does not

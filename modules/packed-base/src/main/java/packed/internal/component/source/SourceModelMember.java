@@ -20,9 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Member;
 import java.util.List;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.source.SourceModelMethod.RunAt;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -43,10 +45,22 @@ public abstract class SourceModelMember {
     public final Key<?> provideAskey;
 
     @Nullable
+    public final Consumer<? super ComponentBuild> processor;
+
+    @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
     // Jeg tror man loeber alle parameterene igennem og ser om der
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
+
+    SourceModelMember(Builder builder, List<DependencyDescriptor> dependencies) {
+        this.dependencies = requireNonNull(dependencies);
+        this.provideAsConstant = builder.provideAsConstant;
+        this.provideAskey = builder.provideAsKey;
+        this.processor = builder.processor;
+    }
+
+    public abstract DependencyProvider[] createProviders();
 
     // Sidecar provideren tager i oevrigt RegionAssembly
     /**
@@ -60,18 +74,12 @@ public abstract class SourceModelMember {
 
     public abstract MethodHandle methodHandle();
 
-    SourceModelMember(Builder builder, List<DependencyDescriptor> dependencies) {
-        this.dependencies = requireNonNull(dependencies);
-        this.provideAsConstant = builder.provideAsConstant;
-        this.provideAskey = builder.provideAsKey;
-    }
-
-    public abstract DependencyProvider[] createProviders();
-
     static abstract class Builder {
 
         /** Disable the sidecar. */
         boolean disable;
+
+        Consumer<? super ComponentBuild> processor;
 
         /** If the member is being provided as a service whether or not it is constant. */
         boolean provideAsConstant;

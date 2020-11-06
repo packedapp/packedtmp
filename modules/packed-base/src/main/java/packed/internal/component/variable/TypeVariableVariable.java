@@ -25,7 +25,7 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class TypeVariableVariable extends AbstractVariable {
+public final class TypeVariableVariable extends AbstractAnnotatedVariable {
 
     final TypeVariable<?> p;
 
@@ -51,7 +51,7 @@ public final class TypeVariableVariable extends AbstractVariable {
 
     /** {@inheritDoc} */
     @Override
-    public TypeToken<?> type() {
+    public TypeToken<?> typeToken() {
         throw new UnsupportedOperationException();
     }
 }

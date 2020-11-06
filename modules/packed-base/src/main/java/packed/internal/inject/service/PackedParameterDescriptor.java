@@ -22,7 +22,7 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import app.packed.base.AnnotatedVariable;
+import app.packed.base.Variable;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import packed.internal.util.ReflectionUtil;
@@ -33,7 +33,7 @@ import packed.internal.util.ReflectionUtil;
  * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
  * 
  */
-public final class PackedParameterDescriptor implements AnnotatedVariable {
+public final class PackedParameterDescriptor implements Variable {
 
     /** The index of the parameter. */
     private final int index;
@@ -167,7 +167,7 @@ public final class PackedParameterDescriptor implements AnnotatedVariable {
 
     /** {@inheritDoc} */
     @Override
-    public TypeToken<?> type() {
+    public TypeToken<?> typeToken() {
         Type t = ReflectionUtil.getParameterizedType(parameter, index);
         return TypeToken.fromType(t);
     }

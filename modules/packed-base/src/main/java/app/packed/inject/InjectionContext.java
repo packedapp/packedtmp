@@ -18,7 +18,7 @@ package app.packed.inject;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.base.AnnotatedVariable;
+import app.packed.base.Variable;
 import app.packed.base.Key;
 
 /**
@@ -103,7 +103,7 @@ public interface InjectionContext {
         throw new UnsupportedOperationException();
     }
 
-    default List<AnnotatedVariable> variables() {
+    default List<Variable> variables() {
         throw new UnsupportedOperationException();
     }
 }

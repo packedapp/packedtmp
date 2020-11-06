@@ -39,13 +39,23 @@ import packed.internal.component.variable.ParameterVariable;
 
 // toKey(); <-- kunne bruges til fx wirelets
 // asKey();
-public interface AnnotatedVariable extends AnnotatedElement, OldVariable {
+
+// Concrete class extending TypeToken????
+
+// tror vi bliver noedt til at have specielle metoder for repeatable annotations
+
+public interface Variable extends AnnotatedElement, OldVariable {
+
+    // Variable addNullable(); intoOptional()
+    // lots of little transformations
 
     /**
      * Returns whether or not a {@link Nullable} annotation is present on the variable.
      * 
      * @return true if a nullable annotation is present, otherwise false
      */
+    // Hmm, now Nullable has a meaning. For example, factory.bind(null)
+    // would probably need to check it
     default boolean isNullable() {
         return isAnnotationPresent(Nullable.class);
     }
@@ -66,31 +76,32 @@ public interface AnnotatedVariable extends AnnotatedElement, OldVariable {
     Class<?> rawType();
 
     default Optional<?> source() {
+        // I'm not sure that we want that
         // Parameter, Field, Method (return type), Type Variable
         return Optional.empty();
     }
 
-    TypeToken<?> type();
+    TypeToken<?> typeToken();
 
-    static AnnotatedVariable ofField(Field field) {
+    static Variable ofField(Field field) {
         requireNonNull(field, "field is null");
         return new FieldVariable(field);
     }
 
-    static AnnotatedVariable ofMethodReturnType(Method method) {
+    static Variable ofMethodReturnType(Method method) {
         throw new UnsupportedOperationException();
     }
 
-    static AnnotatedVariable ofParameter(Parameter parameter) {
+    static Variable ofParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
         return new ParameterVariable(parameter);
     }
 
-    static AnnotatedVariable ofTypeVariable(Class<?> type, Class<?> baseType, int index) {
+    static Variable ofTypeVariable(Class<?> type, Class<?> baseType, int index) {
         return ofTypeVariables(type, baseType, index)[0];
     }
 
-    static AnnotatedVariable[] ofTypeVariables(Class<?> type, Class<?> baseType, int... variables) {
+    static Variable[] ofTypeVariables(Class<?> type, Class<?> baseType, int... variables) {
         throw new UnsupportedOperationException();
     }
 }

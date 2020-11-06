@@ -233,6 +233,7 @@ public abstract class Factory<T> {
      *            the argument to bind.
      * @return the new factory
      */
+    // bindConstant like sidecar???
     public final Factory<T> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
@@ -254,7 +255,6 @@ public abstract class Factory<T> {
      * @return the key under which this factory will be registered unless
      * @see #withKey(Key)
      */
-
     public final Key<T> key() {
         return key;
     }
@@ -344,6 +344,10 @@ public abstract class Factory<T> {
      */
     public final Class<?> rawType() {
         return typeLiteral().rawType();
+    }
+
+    boolean needsLookup() {
+        return false;
     }
 
     /**

@@ -125,6 +125,7 @@ public abstract class TypeToken<T> {
      * 
      * @return if this type literal is a primitive returns the boxed version, otherwise returns this
      */
+    // wrap instead of box
     @SuppressWarnings("unchecked")
     public final TypeToken<T> box() {
         // TODO fix for Valhalla? reference type, inline type...

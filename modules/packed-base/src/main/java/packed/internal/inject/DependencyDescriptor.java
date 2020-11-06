@@ -35,7 +35,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.base.AnnotatedVariable;
+import app.packed.base.Variable;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -252,7 +252,7 @@ public final class DependencyDescriptor implements OldVariable {
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
      */
-    public Optional<AnnotatedVariable> variable() {
+    public Optional<Variable> variable() {
         return Optional.empty();
         // return Optional.ofNullable(variable);
     }

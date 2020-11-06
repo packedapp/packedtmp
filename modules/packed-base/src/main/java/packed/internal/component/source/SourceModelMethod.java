@@ -23,11 +23,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bundle.Extension;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.AbstractMethodSidecar;
+import packed.internal.component.ComponentBuild;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -43,11 +45,11 @@ import packed.internal.util.ThrowableUtil;
 public final class SourceModelMethod extends SourceModelMember {
 
     /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodSidecar.class, "configure",
-            void.class);
+    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), AbstractMethodSidecar.class,
+            "configure", void.class);
 
     /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodSidecar.class,
+    private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), AbstractMethodSidecar.class,
             "configuration", SourceModelMethod.Builder.class);
 
     /** A direct method handle to the method. */
@@ -201,6 +203,15 @@ public final class SourceModelMethod extends SourceModelMember {
             provideAsConstant = isConstant;
             // Check assignable.
             provideAsKey = key;
+        }
+
+        public MethodHandle methodHandle() {
+            return shared.directMethodHandle;
+        }
+
+        public static void registerProcessor(AbstractMethodSidecar sidecar, Consumer<? super ComponentBuild> processor) {
+            Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
+            b.processor = processor;
         }
     }
 

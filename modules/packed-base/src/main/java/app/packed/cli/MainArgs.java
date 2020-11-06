@@ -15,6 +15,7 @@
  */
 package app.packed.cli;
 
+import app.packed.bundle.ExtensionMember;
 import app.packed.component.Wirelet;
 
 /**
@@ -23,17 +24,25 @@ import app.packed.component.Wirelet;
 
 // Kunne vaere fedt hvis man kunne gemme den...
 // Maaske har vi en CLI extension der kan gemme den...
-
 // Saa MainArgs er en Packlet??? IDK
 
-// extends Iterable<String>
-public final class MainArgs {
+// Tror det bliver en wirelet
+// Og saa tror den autoaktive
+// Saa behoever man heller ikke provide den op og ned
+// @ExtensionType (Det er ikke en service....)
+
+// Kraever vi har en cli extension...
+// Ved ikke rigtig hvad den skal...
+// CliExtension.addHelp();
+
+// Lidt speciel, maaske vi godt vil bibeholder @WireletConsume...
+// Saa kan vi baade faa den injected i extensionen. og brugerkode
+
+@ExtensionMember(CliExtension.class)
+public final class MainArgs extends Wirelet {
 
     public static MainArgs of(String... args) {
         throw new UnsupportedOperationException();
     }
-
-    public static Wirelet wireletOf(String... args) {
-        throw new UnsupportedOperationException();
-    }
 }
+// Er ikke en service, men en extension type

@@ -160,6 +160,27 @@ public interface ContainerWirelets {
         return timeToLive(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 
+    static void shutdownHooks() {
+        // https://www.baeldung.com/spring-boot-shutdown
+    }
+
+    // Teankt som en lille hjaelper metode
+    static Wirelet enterToStop() {
+        // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
+//        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
+//        try {
+//          System.out.println("Press ENTER to exit");
+//          System.in.read();
+//        } finally {
+//          system.terminate();
+//        }
+        throw new UnsupportedOperationException();
+    }
+
+    static Wirelet executeInThread() {
+        throw new UnsupportedOperationException();
+    }
+
     // excludes start?? IDK
     static Wirelet timeToRun(Duration duration, Container.StopOption... options) {
         throw new UnsupportedOperationException();

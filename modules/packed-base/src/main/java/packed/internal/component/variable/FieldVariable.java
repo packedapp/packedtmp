@@ -25,33 +25,33 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class FieldVariable extends AbstractVariable {
+public final class FieldVariable extends AbstractAnnotatedVariable {
 
-    final Field p;
+    final Field field;
 
     /**
      * @param e
      */
     public FieldVariable(Field e) {
         super(e);
-        this.p = requireNonNull(e);
+        this.field = requireNonNull(e);
     }
 
     /** {@inheritDoc} */
     @Override
     public Optional<String> name() {
-        return Optional.of(p.getName());
+        return Optional.of(field.getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
-        return p.getType();
+        return field.getType();
     }
 
     /** {@inheritDoc} */
     @Override
-    public TypeToken<?> type() {
-        throw new UnsupportedOperationException();
+    public TypeToken<?> typeToken() {
+        return TypeToken.fromField(field);
     }
 }

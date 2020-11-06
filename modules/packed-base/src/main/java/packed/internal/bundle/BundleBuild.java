@@ -267,4 +267,5 @@ public final class BundleBuild {
     public <T extends Extension> T useExtension(Class<T> extensionType) {
         return (T) useExtension(extensionType, null).instance();
     }
+
 }

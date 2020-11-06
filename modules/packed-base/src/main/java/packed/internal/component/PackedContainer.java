@@ -19,7 +19,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 
-import app.packed.base.Nullable;
 import app.packed.container.Container;
 import app.packed.container.ContainerState;
 
@@ -48,14 +47,10 @@ public class PackedContainer implements Container {
     static final int I_TERMINATED = ContainerState.TERMINATED.ordinal();
 
     // Hmm, maybe not
-    @Nullable
-    final PackedContainer parent;
+//    @Nullable
+//    final PackedContainer parent;
 
     volatile Object data;
-
-    PackedContainer(@Nullable PackedContainer parent) {
-        this.parent = parent;
-    }
 
     /** {@inheritDoc} */
     @Override

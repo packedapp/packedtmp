@@ -47,7 +47,7 @@ public final class BuildtimeRegion {
 
         // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().isGuest()) {
-            region.store(0, new PackedContainer(null));
+            region.store(0, new PackedContainer());
         }
 
         // We start by storing all constant instances in the region array
@@ -90,4 +90,5 @@ public final class BuildtimeRegion {
     public int reserve() {
         return nextIndex++;
     }
+
 }

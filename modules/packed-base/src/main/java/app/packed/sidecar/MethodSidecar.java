@@ -17,32 +17,22 @@ package app.packed.sidecar;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.bundle.Extension;
-import packed.internal.component.source.SourceModelMethod;
-import packed.internal.sidecar.SidecarModel;
 
 /**
- * Packed creates a single instance of a subclass and runs the {@link #configure()} method.
+ * Packed creates a single instance of a subclass per method and runs the {@link #configure()} method.
  */
+// Vi har ikke laengere 
+
 // implements AnnotatedElement
 
 // Skal metoderne vaere protected????
 // Ikke hvis man skal kunne specificere den til extensions...
-public abstract class MethodSidecar {
-
-    /** The builder of this sidecar. Updated by {@link SidecarModel.Builder}. */
-    @Nullable
-    private SourceModelMethod.Builder configuration;
+public abstract class MethodSidecar extends AbstractSemiFinalMethodSidecar {
 
     protected final <T> void attach(Class<T> key, T instance) {
         attach(Key.of(key), instance);
@@ -56,63 +46,21 @@ public abstract class MethodSidecar {
         attach((Class) instance.getClass(), instance);
     }
 
-    protected final void bindParameterMh(int index, MethodHandle mh) {
+    // Ellers har vi en speciel Invoker factory
 
-    }
+    // Parameters of method handle must match Invoker
 
-    /**
-     * Returns this sidecar's builder object.
-     * 
-     * @return this sidecar's builder object
-     */
-    private SourceModelMethod.Builder configuration() {
-        SourceModelMethod.Builder c = configuration;
-        if (c == null) {
-            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
-        }
-        return c;
-    }
+    // Maaske man skal have sat en invoker inden... Ja det skal man
 
-    /**
-     * Configures the the sidecar
-     */
-    protected abstract void configure();
+    // Hvordan mixer vi med services???
+    protected final void bindParameterToInvoker(int index, int invokerIndex) {}
 
-    /** Disables the sidecar. No reference to it will be maintained at runtime. */
-    protected final void disable() {
-        configuration.disable();
-    }
+    protected final void bindParameterToInvoker(int index, MethodHandle invokerCompatible) {}
 
-    /**
-     * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
-     * 
-     * @return any extension the source is a member of of
-     */
-    // It is basically whether or not the declaring class is annotated with AnnotatedMember
-    protected final Optional<Class<? extends Extension>> extensionMember() {
-        return configuration().extensionMember();
-    }
+    // protected final void bindParameterMh(int index, MethodHandle mh) {}
 
     protected final void forEachUnbound(Consumer<? super VariableBinder> action) {
 
-    }
-
-    /**
-     * Returns an annotated element from the method that is being bootstrapped.
-     * 
-     * @see AnnotatedElement#getAnnotation(Class)
-     */
-    protected final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return configuration.methodUnsafe().getAnnotation(annotationClass);
-    }
-
-    /**
-     * Returns the method that is being bootstrapped.
-     * 
-     * @return the method that is being bootstrapped
-     */
-    protected final Method method() {
-        return configuration.methodSafe();
     }
 
     /**

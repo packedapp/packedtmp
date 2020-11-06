@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.reflect.Member;
 import java.util.Optional;
 
-import app.packed.base.AnnotatedVariable;
+import app.packed.base.Variable;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bundle.Extension;
@@ -97,7 +97,7 @@ public final class PackedProvisionContext implements ProvisionContext {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<AnnotatedVariable> targetVariable() {
+    public Optional<Variable> targetVariable() {
         return dependency.variable();
     }
 

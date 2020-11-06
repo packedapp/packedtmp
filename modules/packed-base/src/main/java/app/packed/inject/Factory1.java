@@ -79,6 +79,7 @@ import packed.internal.util.LookupUtil;
  * @see Factory
  * @see Factory2
  */
+// Maybe define a CustomFactory we can override...
 public abstract class Factory1<T, R> extends Factory<R> {
 
     /** A method handle for invoking {@link #create(Function, Class, Object)}. */

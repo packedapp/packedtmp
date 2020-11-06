@@ -210,6 +210,10 @@ public final class WireletList extends Wirelet {
         return new WireletList(wirelets);
     }
 
+    public static Wirelet of(Wirelet[] w1, Wirelet... w2) {
+        throw new UnsupportedOperationException();
+    }
+
     public static Wirelet of(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {

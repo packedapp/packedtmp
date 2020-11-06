@@ -20,55 +20,64 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import app.packed.base.AnnotatedVariable;
+import app.packed.base.Variable;
 import app.packed.base.OldVariable;
 import packed.internal.inject.DependencyDescriptor;
 
 /**
  *
  */
-public abstract class AbstractVariable implements AnnotatedVariable, OldVariable {
-
-    final AnnotatedElement e;
+public abstract class AbstractAnnotatedVariable implements Variable, OldVariable {
 
     public DependencyDescriptor descriptor;
 
-    AbstractVariable(AnnotatedElement e) {
-        this.e = requireNonNull(e);
+    /** The annotated element. */
+    // Maybe make an abstract method instead. then we don't need to store it.
+    final AnnotatedElement element;
+
+    AbstractAnnotatedVariable(AnnotatedElement e) {
+        this.element = requireNonNull(e);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return e.getAnnotation(annotationClass);
+        return element.getAnnotation(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Annotation[] getAnnotations() {
-        return e.getAnnotations();
+        return element.getAnnotations();
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return e.getAnnotationsByType(annotationClass);
+        return element.getAnnotationsByType(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-        return e.getDeclaredAnnotation(annotationClass);
+        return element.getDeclaredAnnotation(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public Annotation[] getDeclaredAnnotations() {
-        return e.getDeclaredAnnotations();
+        return element.getDeclaredAnnotations();
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return e.getDeclaredAnnotationsByType(annotationClass);
+        return element.getDeclaredAnnotationsByType(annotationClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-        return e.isAnnotationPresent(annotationClass);
+        return element.isAnnotationPresent(annotationClass);
     }
 }

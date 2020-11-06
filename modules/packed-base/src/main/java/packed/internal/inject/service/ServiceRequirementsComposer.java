@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.base.AnnotatedVariable;
+import app.packed.base.Variable;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
@@ -94,7 +94,7 @@ public final class ServiceRequirementsComposer {
                         if (dependencies.size() > 1) {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
-                                AnnotatedVariable vd = dependency.variable().orElse(null);
+                                Variable vd = dependency.variable().orElse(null);
                                 int pindex = vd instanceof PackedParameterDescriptor ? ((PackedParameterDescriptor) vd).index() : -1;
                                 if (j == pindex) {
                                     sj.add("-> " + dependency.key().toString() + " <-");

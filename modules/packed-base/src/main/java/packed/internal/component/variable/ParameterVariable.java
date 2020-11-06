@@ -25,7 +25,7 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class ParameterVariable extends AbstractVariable {
+public final class ParameterVariable extends AbstractAnnotatedVariable {
 
     final Parameter p;
 
@@ -51,7 +51,7 @@ public final class ParameterVariable extends AbstractVariable {
 
     /** {@inheritDoc} */
     @Override
-    public TypeToken<?> type() {
+    public TypeToken<?> typeToken() {
         throw new UnsupportedOperationException();
     }
 }
