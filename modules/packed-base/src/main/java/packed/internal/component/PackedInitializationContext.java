@@ -53,11 +53,13 @@ public final class PackedInitializationContext {
     PackedComponent component;
 
     final ComponentBuild root;
+
     private final WireletPack wirelets;
 
     private PackedInitializationContext(ComponentBuild root, WireletPack wirelets) {
         this.root = root;
         this.wirelets = wirelets;
+        this.component = new PackedComponent(null, root, this);
     }
 
     /**
@@ -112,12 +114,15 @@ public final class PackedInitializationContext {
         PackedInitializationContext pic = new PackedInitializationContext(root,
                 root.build.isImage() ? WireletPack.forImage(root, imageWirelets) : root.wirelets);
 
-        // initializes
-        pic.component = new PackedComponent(null, root, pic);
+        // Instantiates the whole component tree (well @Initialize does not yet work)
+        // pic.component is set from PackedComponent
+        new PackedComponent(null, root, pic);
+
+        // TODO initialize
 
         if (root.modifiers().isContainer()) {
-            PackedContainer.start(root, pic);
+            pic.component.region.guest().onInitialized(root, pic);
         }
-        return pic;
+        return pic; // don't know do we want to gc PIC at fast as possible
     }
 }

@@ -26,7 +26,7 @@ public class Zoob extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        install(Dddd.class);
+        provide(Dddd.class);
     }
 
     public static void main(String[] args) {

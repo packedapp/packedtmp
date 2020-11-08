@@ -30,6 +30,7 @@ import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Container;
+import app.packed.container.ContainerInfo;
 import app.packed.container.ContainerState;
 
 /**
@@ -47,7 +48,7 @@ import app.packed.container.ContainerState;
 
 public class PackedContainer implements Container {
 
-    final Sync sync = new Sync();
+    ContainerState desiredState = ContainerState.INITIALIZING;
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -60,7 +61,7 @@ public class PackedContainer implements Container {
 
     volatile ContainerState state = ContainerState.INITIALIZING;
 
-    ContainerState desiredState;
+    final Sync sync = new Sync();
 
     public PackedContainer(PackedInitializationContext pic) {
 
@@ -76,7 +77,7 @@ public class PackedContainer implements Container {
         lock.lock();
         try {
             for (;;) {
-                if (state.ordinal() <= getState().ordinal()) {
+                if (state.ordinal() <= state().ordinal()) {
                     return;
                 }
                 lockAwaitState.await();
@@ -94,7 +95,7 @@ public class PackedContainer implements Container {
         lock.lock();
         try {
             for (;;) {
-                if (state.ordinal() <= getState().ordinal()) {
+                if (state.ordinal() <= state().ordinal()) {
                     return true;
                 } else if (nanos <= 0) {
                     return false;
@@ -106,29 +107,65 @@ public class PackedContainer implements Container {
         }
     }
 
-    public CompletionStage<Container> whenAt(ContainerState state) {
-        if (getState().ordinal() >= state.ordinal()) {
-            return CompletableFuture.completedFuture(this);
-        }
+    /** {@inheritDoc} */
+    @Override
+    public ContainerInfo info() {
+        return null;
+    }
+
+    void onInitialized(ComponentBuild component, PackedInitializationContext pic) {
+        boolean isMain = component.build.shellDriver() == null;
+        boolean start = isMain;
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            throw new UnsupportedOperationException();
+            if (!start) {
+                this.state = ContainerState.INITIALIZED;
+                this.desiredState = ContainerState.INITIALIZED;
+                return;
+            } else {
+                this.state = ContainerState.STARTING;
+                this.desiredState = ContainerState.RUNNING;
+            }
         } finally {
             lock.unlock();
         }
-    }
 
-    public ContainerState getState() {
-        return state;
+        // run starting
+
+        lock.lock();
+        try {
+            this.state = ContainerState.RUNNING;
+            this.desiredState = ContainerState.RUNNING;
+            if (!isMain) {
+                return;
+            }
+        } finally {
+            lock.unlock();
+        }
+
+        // EXECUTE
+        // started
+        if (!isMain)
+
+        {
+            return;
+        }
+
+        // if has execution... execute
+
+        // shutdown / or await shutdown.
     }
 
     /** {@inheritDoc} */
     @Override
-    public Container start() {
+    public void start() {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
+            if (state == ContainerState.INITIALIZING) {
+                throw new IllegalStateException("Cannot call this method now");
+            }
             throw new UnsupportedOperationException();
         } finally {
             lock.unlock();
@@ -147,21 +184,12 @@ public class PackedContainer implements Container {
     /** {@inheritDoc} */
     @Override
     public ContainerState state() {
-        throw new UnsupportedOperationException();
-
-    }
-
-    static void start(ComponentBuild component, PackedInitializationContext pic) {
-
-        // TODO should check guest.delayStart wirelet
-        // pic.container().start();
+        return state;
     }
 
     /** {@inheritDoc} */
     @Override
-    public Container stop(StopOption... options) {
-        return null;
-    }
+    public void stop(StopOption... options) {}
 
     /** {@inheritDoc} */
     @Override
@@ -169,19 +197,18 @@ public class PackedContainer implements Container {
         return null;
     }
 
-    @SuppressWarnings("serial") // Guest is not synchronized
-    public static final class Sync extends AbstractQueuedSynchronizer {
-
-        @Override
-        protected int tryAcquireShared(int arg) {
-            return super.tryAcquireShared(arg);
+    // Tag T istedet for container...
+    public <T> CompletionStage<T> whenAt(ContainerState state, T object) {
+        if (state().ordinal() >= state.ordinal()) {
+            return CompletableFuture.completedFuture(object);
         }
-
-        @Override
-        protected boolean tryReleaseShared(int arg) {
-            return super.tryReleaseShared(arg);
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            throw new UnsupportedOperationException();
+        } finally {
+            lock.unlock();
         }
-
     }
 
     /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Assembly, Wirelet...)}. */
@@ -212,6 +239,21 @@ public class PackedContainer implements Container {
             PackedInitializationContext.process(compConf, wirelets);
             return null;
         }
+    }
+
+    @SuppressWarnings("serial") // Guest is not synchronized
+    public static final class Sync extends AbstractQueuedSynchronizer {
+
+        @Override
+        protected int tryAcquireShared(int arg) {
+            return super.tryAcquireShared(arg);
+        }
+
+        @Override
+        protected boolean tryReleaseShared(int arg) {
+            return super.tryReleaseShared(arg);
+        }
+
     }
 }
 //

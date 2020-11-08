@@ -34,13 +34,6 @@ import packed.internal.component.PackedInitializationContext;
 // Restarting a guest actually means terminated an existing guest. And starting a new one.
 // Component, Service = Describes something, Guest also controls something...
 // I would imagine we want something to iterate over all state machines...
-// StateMachine
-// host facing
-// Maybe GuestController.... And guest can be a view/readable thingy
-
-// External facing...
-// Taenker ikke en Guest har attributer direkte. Udover componenten..
-// Taenker heller ikke ServiceRegistry
 public interface Container {
 
     /**
@@ -48,8 +41,8 @@ public interface Container {
      * first.
      * <p>
      * If the container has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link ContainerState#RUNNING} state and the container has already been stopped. This
-     * method will return immediately.
+     * attempting to wait on the {@link ContainerState#RUNNING} state and the container has already been successfully
+     * terminated. This method will return immediately.
      *
      * @param state
      *            the state to wait on
@@ -83,19 +76,12 @@ public interface Container {
      */
     boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException;
 
-    // start + await termination in the thread
-    default void execute() {
-
-    }
-
     /**
-     * Returns a snapshot of the container's current state.
+     * Returns an immutable snapshot of the container's current status.
      * 
-     * @return a snapshot of the container's current state
+     * @return an immutable snapshot of the container's current status
      */
-    default ContainerInfo snapshotState() {
-        throw new UnsupportedOperationException();
-    }
+    ContainerInfo info();
 
     /**
      * Starts and awaits the container if it has not already been started.
@@ -104,14 +90,15 @@ public interface Container {
      * whenever it is needed. For example, invoking use will automatically start the container if it has not already been
      * started by another action.
      * 
-     * @return this container
      * @see #startAsync(Object)
      */
-    Container start();
+    void start();
+
+    default CompletableFuture<Void> startAsync() {
+        return startAsync(null);
+    }
 
     <@Nullable T> CompletableFuture<T> startAsync(T result);
-
-    // startInterruptable, awaitInterruptable()
 
     /**
      * Returns the current state of the container.
@@ -127,10 +114,9 @@ public interface Container {
      * 
      * @param options
      *            optional stop options
-     * @return this container
      * @see #stopAsync(Object, StopOption...)
      */
-    Container stop(StopOption... options);
+    void stop(StopOption... options);
 
     default CompletableFuture<Void> stopAsync(StopOption... options) {
         return stopAsync(null, new StopOption[] {});
@@ -152,14 +138,14 @@ public interface Container {
      */
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
-    public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        ComponentBuild build = PackedBuildContext.build(assembly, false, true, null, wirelets);
-        return new ExecutingImage(build);
-    }
-
     public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
         ComponentBuild build = PackedBuildContext.build(assembly, false, false, null, wirelets);
         PackedInitializationContext.process(build, null);
+    }
+
+    public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        ComponentBuild build = PackedBuildContext.build(assembly, false, true, null, wirelets);
+        return new ExecutingImage(build);
     }
 
     // ContainerStopOption????
@@ -189,15 +175,6 @@ public interface Container {
 
     public interface StopOption {
 
-        // panic()?
-        static StopOption panic(Supplier<Throwable> cause) {
-            throw new UnsupportedOperationException();
-        }
-
-        static StopOption panic(Throwable cause) {
-            throw new UnsupportedOperationException();
-        }
-
         // Forced = try and interrupt
         static StopOption forced() {
             throw new UnsupportedOperationException();
@@ -216,6 +193,15 @@ public interface Container {
         }
 
         static StopOption now(Throwable cause) {
+            throw new UnsupportedOperationException();
+        }
+
+        // panic()?
+        static StopOption panic(Supplier<Throwable> cause) {
+            throw new UnsupportedOperationException();
+        }
+
+        static StopOption panic(Throwable cause) {
             throw new UnsupportedOperationException();
         }
 
@@ -253,10 +239,6 @@ public interface Container {
 
 //Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
 //AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
-
-//Muligheder -> build... instantiate... create... initialize
-
-//Build -> Image.of -> App.build() hmmm Image.Build <- kun assemble delen...
 ///**
 //* Initiates an asynchronously startup of the application. Normally, there is no need to call this methods since most
 //* methods on the container will lazily start the container whenever it is needed. For example, invoking
@@ -272,17 +254,3 @@ public interface Container {
 //* of starting up. Can also be used to retrieve any exception that might have prevented the container in
 //* starting properly
 //*/
-
-// Altsaa vi skal ikke have interface StartOption of @interface WireletOption... Saa maa de hedde noget forskelligt
-
-// Altsaa skal vi have den her.. eller kan vi komme langt nok med wirelets???
-// Og stopoptions... Kan vi komme derhen med wirelets??? F.eks. lad os sige vi gerne vil restarte med nogle andre
-// settings???? StopOption.restart(Wirelet... wirelets)
-// Jeg vil ikke afvise at vi skal have den... men Wirelets er maaske lidt bedre...
-//public interface GuestStartOption {
-//
-//    // LifecycleTransition
-//    static GuestStartOption reason(String reason) {
-//        throw new UnsupportedOperationException();
-//    }
-//}
