@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
+import app.packed.component.Wirelet;
 import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.wirelet.WireletPack;
@@ -51,8 +52,8 @@ public final class PackedInitializationContext {
     /** The component node we are building. */
     PackedComponent component;
 
-    private final WireletPack wirelets;
     final ComponentBuild root;
+    private final WireletPack wirelets;
 
     private PackedInitializationContext(ComponentBuild root, WireletPack wirelets) {
         this.root = root;
@@ -107,24 +108,15 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static PackedInitializationContext initialize(ComponentBuild root) {
-        PackedInitializationContext pic = new PackedInitializationContext(root, root.wirelets);
-        // Hmmm Packed Guest bliver jo lavet der...
-        // Maaske laver vi en PackedGuest og smider i PIC. som man saa kan steale...
-        if (root.modifiers().isContainer()) {
-            PackedContainer.initializeAndStart(root, pic);
-        } else {
-            new PackedComponent(null, root, pic);
-        }
-        return pic;
-    }
+    public static PackedInitializationContext process(ComponentBuild root, Wirelet[] imageWirelets) {
+        PackedInitializationContext pic = new PackedInitializationContext(root,
+                root.build.isImage() ? WireletPack.forImage(root, imageWirelets) : root.wirelets);
 
-    public static PackedInitializationContext initializeFromImage(ComponentBuild root, WireletPack wirelets) {
-        PackedInitializationContext pic = new PackedInitializationContext(root, wirelets);
+        // initializes
+        pic.component = new PackedComponent(null, root, pic);
+
         if (root.modifiers().isContainer()) {
-            PackedContainer.initializeAndStart(root, pic);
-        } else {
-            new PackedComponent(null, root, pic);
+            PackedContainer.start(root, pic);
         }
         return pic;
     }

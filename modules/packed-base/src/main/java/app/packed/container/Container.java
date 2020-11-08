@@ -25,6 +25,7 @@ import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedBuildContext;
+import packed.internal.component.PackedContainer.ExecutingImage;
 import packed.internal.component.PackedInitializationContext;
 
 /**
@@ -108,7 +109,7 @@ public interface Container {
      */
     Container start();
 
-    <T> CompletableFuture<T> startAsync(T result);
+    <@Nullable T> CompletableFuture<T> startAsync(T result);
 
     // startInterruptable, awaitInterruptable()
 
@@ -153,14 +154,14 @@ public interface Container {
 
     public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
         ComponentBuild build = PackedBuildContext.build(assembly, false, true, null, wirelets);
-        throw new UnsupportedOperationException();
+        return new ExecutingImage(build);
     }
 
     public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
         ComponentBuild build = PackedBuildContext.build(assembly, false, false, null, wirelets);
-        PackedInitializationContext.initialize(build);
-
+        PackedInitializationContext.process(build, null);
     }
+
     // ContainerStopOption????
     // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...
     // Hehe, hvis actor ogsaa er en artifact... Saa

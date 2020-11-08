@@ -47,7 +47,7 @@ public final class BuildtimeRegion {
 
         // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().isContainer()) {
-            region.store(0, new PackedContainer());
+            region.store(0, new PackedContainer(pic));
         }
 
         // We start by storing all constant instances in the region array

@@ -30,7 +30,6 @@ import app.packed.component.CustomConfigurator;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ShellDriver}. */
@@ -66,7 +65,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         ComponentBuild node = PackedBuildContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
-        PackedInitializationContext ac = PackedInitializationContext.initialize(node);
+        PackedInitializationContext ac = PackedInitializationContext.process(node, null);
         return newShell(ac);
     }
 
@@ -114,7 +113,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         ComponentBuild component = PackedBuildContext.build(bundle, false, false, this, wirelets);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = PackedInitializationContext.initialize(component);
+        PackedInitializationContext pic = PackedInitializationContext.process(component, null);
 
         // Return the system in a new shell
         return newShell(pic);
@@ -249,9 +248,9 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         @Override
         public S use(Wirelet... wirelets) {
             // Initialize a new system using the previously assembled node
-            PackedInitializationContext pic = PackedInitializationContext.initializeFromImage(compConf, WireletPack.forImage(compConf, wirelets));
+            PackedInitializationContext pic = PackedInitializationContext.process(compConf, wirelets);
 
-            // Wrap the system in a shell and return it
+            // Wrap the system in a new shell and return it
             return newShell(pic);
         }
     }

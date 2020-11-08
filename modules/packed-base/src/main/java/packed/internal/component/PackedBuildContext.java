@@ -65,6 +65,10 @@ public final class PackedBuildContext implements BuildContext {
         this.wirelets = wirelets;
     }
 
+    public boolean isImage() {
+        return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
+    }
+
     /** {@inheritDoc} */
     @Override
     public void addError(ErrorMessage message) {}
