@@ -140,12 +140,12 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
             mod = mod | build.modifiers;
             mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
-            if (build.modifiers().isGuest()) {
+            if (build.modifiers().isContainer()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINER);
             }
         } else {
-            this.region = driver.modifiers().isGuest() ? new BuildtimeRegion() : parent.region;
+            this.region = driver.modifiers().isContainer() ? new BuildtimeRegion() : parent.region;
         }
         this.modifiers = mod;
 
@@ -153,7 +153,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         this.realm = requireNonNull(realm);
 
         // Setup Container
-        if (modifiers().isContainer()) {
+        if (modifiers().isBundle()) {
             this.memberOfCube = this.cube = new BundleBuild(this);
         } else {
             this.cube = null;
@@ -161,7 +161,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         }
 
         // Setup Guest
-        if (modifiers().isGuest()) {
+        if (modifiers().isContainer()) {
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
@@ -275,7 +275,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            PackedShellDriver<?> psd = (PackedShellDriver<?>) build().shellDriver();
+            PackedShellDriver<?> psd = build().shellDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, psd.shellRawType());
         }
         return dam;
@@ -376,7 +376,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     @Override
     public void link(Assembly<?> bundle, Wirelet... wirelets) {
         // Get the driver from the bundle
-        PackedComponentDriver<?> driver = BundleHelper.getDriver(bundle);
+        PackedComponentDriver<?> driver = AssemblyHelper.getDriver(bundle);
 
         WireletPack wp = WireletPack.from(driver, wirelets);
 
@@ -391,7 +391,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         ComponentBuild compConf = new ComponentBuild(build, new RealmBuild(bundle.getClass()), driver, cs, parent, wp);
 
         // Invoke Bundle::configure
-        BundleHelper.configure(bundle, driver.toConfiguration(compConf));
+        AssemblyHelper.configure(bundle, driver.toConfiguration(compConf));
 
         // Close the the linked realm, no further configuration of it is possible after Bundle::configure has been invoked
         compConf.close();
@@ -493,13 +493,16 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
                     if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
                         nnn = nnn.substring(0, nnn.length() - 6);
                     }
+                    if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
+                        nnn = nnn.substring(0, nnn.length() - 8);
+                    }
                     if (nnn.length() > 0) {
                         // checkName, if not just App
                         // TODO need prefix
                         n = nnn;
                     }
                     if (nnn.length() == 0) {
-                        n = "Container";
+                        n = "Bundle";
                     }
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...

@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.bundle.BaseAssembly;
-import packed.internal.component.BundleHelper;
+import packed.internal.component.AssemblyHelper;
 import packed.internal.component.PackedComponentDriver;
 
 /**
@@ -38,7 +38,7 @@ import packed.internal.component.PackedComponentDriver;
 public abstract class Assembly<C> implements ComponentSystem {
 
     /**
-     * The configuration of this bundle. This field is set via a VarHandle from {@link BundleHelper}.
+     * The configuration of this bundle. This field is set via a VarHandle from {@link AssemblyHelper}.
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the bundle has not yet been consumed.
@@ -52,7 +52,7 @@ public abstract class Assembly<C> implements ComponentSystem {
     // [afdf, state = Unusued]consuming|consumed]
     private Object configuration;
 
-    /** The driver of this bundle. This field is read via a VarHandle from {@link BundleHelper}. */
+    /** The driver of this bundle. This field is read via a VarHandle from {@link AssemblyHelper}. */
     @SuppressWarnings("unused")
     private final PackedComponentDriver<? extends C> driver;
 
@@ -80,7 +80,7 @@ public abstract class Assembly<C> implements ComponentSystem {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
-        } else if (c == BundleHelper.BUNDLE_CONSUMED) {
+        } else if (c == AssemblyHelper.BUNDLE_CONSUMED) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
         } else {
             return (C) c;

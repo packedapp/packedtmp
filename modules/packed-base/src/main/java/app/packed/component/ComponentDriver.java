@@ -118,10 +118,10 @@ public interface ComponentDriver<C> {
          * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          * 
          * @return stuff
-         * @see ComponentModifier#CUBE
+         * @see ComponentModifier#BUNDLE
          */
-        static Option container() {
-            return PackedComponentDriver.OptionImpl.CONTAINER;
+        static Option bundle() {
+            return PackedComponentDriver.OptionImpl.BUNDLE;
         }
 
         static Option sourceAssignableTo(Class<?> rawType) {
@@ -141,7 +141,7 @@ public interface ComponentDriver<C> {
         }
 
         static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.CUBE), "This component can only be wired to a container");
+            return validateParent(c -> c.hasModifier(ComponentModifier.BUNDLE), "This component can only be wired to a container");
         }
 
         // The parent + the driver

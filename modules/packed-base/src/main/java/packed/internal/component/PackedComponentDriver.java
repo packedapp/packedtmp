@@ -75,8 +75,8 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         for (int i = 0; i < options.length; i++) {
             OptionImpl o = (OptionImpl) options[i];
             switch (o.id) {
-            case OptionImpl.OPT_CONTAINER:
-                modifiers |= PackedComponentModifierSet.I_CONTAINER;
+            case OptionImpl.OPT_BUNDLE:
+                modifiers |= PackedComponentModifierSet.I_BUNDLE;
                 break;
             case OptionImpl.OPT_CONSTANT:
                 modifiers |= PackedComponentModifierSet.I_SINGLETON;
@@ -154,10 +154,10 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
 
         static final int OPT_STATELESS = 3;
         static final int OPT_CONSTANT = 2;
-        static final int OPT_CONTAINER = 1;
+        static final int OPT_BUNDLE = 1;
         public static final OptionImpl STATELESS = new OptionImpl(OPT_STATELESS, null);
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
-        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
+        public static final OptionImpl BUNDLE = new OptionImpl(OPT_BUNDLE, null);
 
         @Nullable
         final Object data;

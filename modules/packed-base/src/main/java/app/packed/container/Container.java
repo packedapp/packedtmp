@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
+import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedBuildContext;
@@ -150,8 +151,13 @@ public interface Container {
      */
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
+    public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        ComponentBuild build = PackedBuildContext.build(assembly, false, true, null, wirelets);
+        throw new UnsupportedOperationException();
+    }
+
     public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        ComponentBuild build = PackedBuildContext.assemble(assembly, 0, null, wirelets);
+        ComponentBuild build = PackedBuildContext.build(assembly, false, false, null, wirelets);
         PackedInitializationContext.initialize(build);
 
     }

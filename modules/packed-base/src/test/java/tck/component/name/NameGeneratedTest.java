@@ -31,7 +31,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
     /** Tests the */
     @Test
     public void bundles() {
-        check(f -> new AbstractConsumableBundle(f) {}, "Container"); // Anonymous class
+        check(f -> new AbstractConsumableBundle(f) {}, "Bundle"); // Anonymous class
         check(f -> new S(f), "S");
         check(f -> new NameGeneratedTest.Bundle(f), "Bundle");
         check(f -> new HelloWorld(f), "HelloWorld");
@@ -58,7 +58,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
             c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
-        }) {}).nameIs("Container");
+        }) {}).nameIs("Bundle");
 
         // As multiple children
         appOf(new AbstractConsumableBundle(c -> {
@@ -68,7 +68,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
             c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName + "1");
             }));
-        }) {}).nameIs("Container");
+        }) {}).nameIs("Bundle");
 
         // As two level nested
         appOf(new AbstractConsumableBundle(c -> {
@@ -77,7 +77,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
                     ccc.pathIs("/" + defaultName + "/" + defaultName);
                 }));
             }));
-        }) {}).nameIs("Container");
+        }) {}).nameIs("Bundle");
 
         // As 3 level nested
         appOf(new AbstractConsumableBundle(c -> {
@@ -88,7 +88,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
                     }));
                 }));
             }));
-        }) {}).nameIs("Container");
+        }) {}).nameIs("Bundle");
     }
 
     /** We normally remove the suffix 'Bundle', so make sure Bundle works */

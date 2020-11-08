@@ -76,7 +76,7 @@ public class PackedContainer implements Container {
         new PackedComponent(null, component, pic);
 
         // TODO should check guest.delayStart wirelet
-        pic.guest().start();
+        pic.container().start();
     }
 
     /** {@inheritDoc} */

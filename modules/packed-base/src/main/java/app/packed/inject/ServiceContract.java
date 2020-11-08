@@ -246,8 +246,8 @@ public final class ServiceContract {
 
     public static ServiceContract of(ComponentSystem system) {
         Component c = ComponentAnalyzer.analyze(system);
-        if (!c.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
+        if (!c.modifiers().isBundle()) {
+            throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }
         ComponentBuild compConf = ComponentBuild.unadapt(null, c);
         ServiceComposer sm = compConf.cube.getServiceManager();

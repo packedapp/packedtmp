@@ -114,7 +114,7 @@ public final class WireletPack {
 
     @Nullable
     public static WireletPack from(PackedComponentDriver<?> driver, Wirelet... wirelets) {
-        if (driver.modifiers().isContainer()) {
+        if (driver.modifiers().isBundle()) {
             return create(wirelets);
         }
         return null;

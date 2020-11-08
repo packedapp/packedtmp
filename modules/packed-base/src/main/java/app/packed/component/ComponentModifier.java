@@ -92,14 +92,14 @@ public enum ComponentModifier {
      * <li>Are never sourced???.</li>
      * </ul>
      */
-    CUBE,
+    BUNDLE,
 
     /**
      * Indicates that the component is a part of an extension.
      * <p>
      * Components with this modifier:
      * <ul>
-     * <li>Always has a parent component with the {@link #CUBE} modifier set.</li>
+     * <li>Always has a parent component with the {@link #BUNDLE} modifier set.</li>
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime in a system if it is part of an {@link Image}.</li>
      * <li>Never has any other modifiers set.</li>

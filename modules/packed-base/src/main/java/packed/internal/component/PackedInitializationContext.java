@@ -42,8 +42,8 @@ public final class PackedInitializationContext {
     /** A MethodHandle for invoking {@link #component()}. */
     public static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "component", Component.class);
 
-    /** A MethodHandle for invoking {@link #guest()}. */
-    public static final MethodHandle MH_GUEST = LookupUtil.lookupVirtual(MethodHandles.lookup(), "guest", Container.class);
+    /** A MethodHandle for invoking {@link #container()}. */
+    public static final MethodHandle MH_CONTAINER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "container", Container.class);
 
     /** A MethodHandle for invoking {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
@@ -68,7 +68,7 @@ public final class PackedInitializationContext {
         return component;
     }
 
-    public Container guest() {
+    public Container container() {
         if (component.hasModifier(ComponentModifier.CONTAINER)) {
             return component.region.guest();
         }
@@ -111,7 +111,7 @@ public final class PackedInitializationContext {
         PackedInitializationContext pic = new PackedInitializationContext(root, root.wirelets);
         // Hmmm Packed Guest bliver jo lavet der...
         // Maaske laver vi en PackedGuest og smider i PIC. som man saa kan steale...
-        if (root.modifiers().isGuest()) {
+        if (root.modifiers().isContainer()) {
             PackedContainer.initializeAndStart(root, pic);
         } else {
             new PackedComponent(null, root, pic);
@@ -121,7 +121,7 @@ public final class PackedInitializationContext {
 
     public static PackedInitializationContext initializeFromImage(ComponentBuild root, WireletPack wirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root, wirelets);
-        if (root.modifiers().isGuest()) {
+        if (root.modifiers().isContainer()) {
             PackedContainer.initializeAndStart(root, pic);
         } else {
             new PackedComponent(null, root, pic);

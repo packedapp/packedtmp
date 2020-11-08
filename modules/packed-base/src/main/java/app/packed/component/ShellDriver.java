@@ -48,14 +48,14 @@ public interface ShellDriver<S> {
 
     <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets);
 
-    /**
-     * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of shell
-     * being created by this driver has an execution phase. This is determined by whether or not the shell implements
-     * {@link AutoCloseable}.
-     * 
-     * @return whether or not the shell being produced by this driver has an execution phase
-     */
-    ComponentModifierSet modifiers();
+//    /**
+//     * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of shell
+//     * being created by this driver has an execution phase. This is determined by whether or not the shell implements
+//     * {@link AutoCloseable}.
+//     * 
+//     * @return whether or not the shell being produced by this driver has an execution phase
+//     */
+//    ComponentModifierSet modifiers();
 
     /**
      * Creates a new image using the specified bundle and this driver.
@@ -112,7 +112,7 @@ public interface ShellDriver<S> {
         ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
         ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
         if (isGuest) {
-            ib.addKey(Container.class, PackedInitializationContext.MH_GUEST, 0);
+            ib.addKey(Container.class, PackedInitializationContext.MH_CONTAINER, 0);
         }
         MethodHandle mh = ib.build();
         return new PackedShellDriver<>(isGuest, mh);

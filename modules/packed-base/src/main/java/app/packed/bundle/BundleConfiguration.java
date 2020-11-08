@@ -39,7 +39,7 @@ public final class BundleConfiguration extends AbstractComponentConfiguration {
 
     /** A driver that create container components. */
     private static final ComponentDriver<BundleConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), BundleConfiguration.class,
-            Option.container());
+            Option.bundle());
 
     /**
      * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.

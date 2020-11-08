@@ -16,7 +16,6 @@
 package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.component.PackedComponentModifierSet.I_IMAGE;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -27,7 +26,6 @@ import app.packed.component.Assembler;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
@@ -39,7 +37,7 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** The initial set of modifiers for any system that uses this driver. */
-    private final int modifiers;
+    private final boolean isGuest;
 
     /** The method handle responsible for creating new shell instances. */
     private final MethodHandle newShellMH;
@@ -53,8 +51,12 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
      *            a method handle that can create new shell instances
      */
     public PackedShellDriver(boolean isGuest, MethodHandle newShellMH) {
-        this.modifiers = PackedComponentModifierSet.I_SHELL + (isGuest ? PackedComponentModifierSet.I_GUEST : 0);
+        this.isGuest = isGuest;
         this.newShellMH = requireNonNull(newShellMH);
+    }
+
+    public boolean isContainer() {
+        return isGuest;
     }
 
     public <D extends Assembler> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
@@ -83,23 +85,23 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         }
     }
 
-    /**
-     * Returns a set of the various modifiers that will by set on the root component. whether or not the type of shell being
-     * created by this driver has an execution phase. This is determined by whether or not the shell implements
-     * {@link AutoCloseable}.
-     * 
-     * @return whether or not the shell being produced by this driver has an execution phase
-     */
-    @Override
-    public ComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(modifiers);
-    }
+//    /**
+//     * Returns a set of the various modifiers that will by set on the root component. whether or not the type of shell being
+//     * created by this driver has an execution phase. This is determined by whether or not the shell implements
+//     * {@link AutoCloseable}.
+//     * 
+//     * @return whether or not the shell being produced by this driver has an execution phase
+//     */
+//    @Override
+//    public ComponentModifierSet modifiers() {
+//        return new PackedComponentModifierSet(modifiers);
+//    }
 
     /** {@inheritDoc} */
     @Override
     public Image<S> newImage(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system with the ComponentModifier.IMAGE modifier added
-        ComponentBuild component = PackedBuildContext.assemble(bundle, modifiers | I_IMAGE, this, wirelets);
+        ComponentBuild component = PackedBuildContext.build(bundle, false, true, this, wirelets);
 
         // Return a new image that be people can use (Image::use)
         return new ShellImage(component);
@@ -109,7 +111,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public S newShell(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system
-        ComponentBuild component = PackedBuildContext.assemble(bundle, modifiers, this, wirelets);
+        ComponentBuild component = PackedBuildContext.build(bundle, false, false, this, wirelets);
 
         // Initialize the system. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = PackedInitializationContext.initialize(component);

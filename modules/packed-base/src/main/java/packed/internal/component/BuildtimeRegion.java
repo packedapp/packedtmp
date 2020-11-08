@@ -46,7 +46,7 @@ public final class BuildtimeRegion {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though
-        if (root.modifiers().isGuest()) {
+        if (root.modifiers().isContainer()) {
             region.store(0, new PackedContainer());
         }
 

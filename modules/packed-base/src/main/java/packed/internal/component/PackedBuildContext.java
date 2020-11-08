@@ -21,11 +21,10 @@ import java.util.function.Function;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembler;
-import app.packed.component.BuildContext;
 import app.packed.component.Assembly;
+import app.packed.component.BuildContext;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
-import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
 import packed.internal.component.source.RealmBuild;
@@ -40,8 +39,9 @@ public final class PackedBuildContext implements BuildContext {
     /** The build output. */
     final int modifiers;
 
+    /** Any shell driver that initiated the build process. */
     @Nullable
-    private final ShellDriver<?> shellDriver;
+    private final PackedShellDriver<?> shellDriver;
 
     /** The thread that is assembling the system. */
     // This should not be permanently..
@@ -59,8 +59,8 @@ public final class PackedBuildContext implements BuildContext {
      * @param modifiers
      *            the output of the build process
      */
-    PackedBuildContext(int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
-        this.modifiers = modifiers + PackedComponentModifierSet.I_ASSEMBLY; // we use + to make sure others don't provide ASSEMBLY
+    PackedBuildContext(int modifiers, @Nullable PackedShellDriver<?> shellDriver, Wirelet... wirelets) {
+        this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
         this.shellDriver = shellDriver;
         this.wirelets = wirelets;
     }
@@ -75,8 +75,13 @@ public final class PackedBuildContext implements BuildContext {
         return new PackedComponentModifierSet(modifiers);
     }
 
+    /**
+     * Returns any shell driver that initiated the build process.
+     * 
+     * @return any shell driver that initiated the build process
+     */
     @Nullable
-    public ShellDriver<?> shellDriver() {
+    public PackedShellDriver<?> shellDriver() {
         return shellDriver;
     }
 
@@ -94,37 +99,53 @@ public final class PackedBuildContext implements BuildContext {
     }
 
     /**
-     * @param bundle
+     * Builds a system.
+     * 
+     * @param assembly
      *            the root bundle
-     * @param modifiers
-     *            any modifiers
      * @param shellDriver
      *            if the component is to be run in a shell
      * @param wirelets
      *            optional wirelets
      * @return the root component configuration node
      */
-    public static ComponentBuild assemble(Assembly<?> bundle, int modifiers, @Nullable ShellDriver<?> shellDriver, Wirelet... wirelets) {
+    public static ComponentBuild build(Assembly<?> assembly, boolean isAnalysis, boolean isImage, @Nullable PackedShellDriver<?> shellDriver,
+            Wirelet... wirelets) {
+        int modifiers = 0;
+        if (shellDriver != null) {
+            modifiers += PackedComponentModifierSet.I_ANALYSIS;
+            if (shellDriver.isContainer()) {
+                modifiers += PackedComponentModifierSet.I_CONTAINER;
+            }
+        } else if (isAnalysis) {
+            modifiers += PackedComponentModifierSet.I_ANALYSIS;
+        } else { // execute
+            modifiers += PackedComponentModifierSet.I_CONTAINER;
+        }
+        if (isImage) {
+            modifiers += PackedComponentModifierSet.I_IMAGE;
+        }
 
-        // First we extract the component driver from the bundle
-        PackedComponentDriver<?> componentDriver = BundleHelper.getDriver(bundle);
+        // First we extract the component driver from the assembly
+        PackedComponentDriver<?> componentDriver = AssemblyHelper.getDriver(assembly);
 
-        // Create a new assembly context that we passe around
+        // Create a new build context that we passe around
         PackedBuildContext pac = new PackedBuildContext(modifiers, shellDriver, wirelets);
 
         WireletPack wp = WireletPack.from(componentDriver, wirelets);
 
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
-        ComponentBuild compConf = new ComponentBuild(pac, new RealmBuild(bundle.getClass()), componentDriver, cs, null, wp);
+        // Create the root component
+        ComponentBuild compConf = new ComponentBuild(pac, new RealmBuild(assembly.getClass()), componentDriver, cs, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
-        BundleHelper.configure(bundle, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
+        AssemblyHelper.configure(assembly, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         compConf.close();
         return compConf;
     }
 
-    public static <C extends Assembler, D> ComponentBuild configure(ShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C extends Assembler, D> ComponentBuild configure(PackedShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste

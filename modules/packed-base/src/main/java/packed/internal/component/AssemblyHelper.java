@@ -26,9 +26,9 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Helper class to access non-public members in {@link Assembly}. */
-public final class BundleHelper {
+public final class AssemblyHelper {
 
-    public static final BundleHelper BUNDLE_CONSUMED = new BundleHelper();
+    public static final AssemblyHelper BUNDLE_CONSUMED = new AssemblyHelper();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "configuration",
@@ -42,7 +42,7 @@ public final class BundleHelper {
     private static final MethodHandle MH_BUNDLE_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "build", void.class);
 
     /** No instances for you. */
-    private BundleHelper() {}
+    private AssemblyHelper() {}
 
     public static void configure(Assembly<?> bundle, Object configuration) {
         // We perform a compare and exchange with configuration. Guarding against
@@ -57,9 +57,9 @@ public final class BundleHelper {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
                 // sets Bundle.configuration to a marker that indicates the bundle has been consumed
-                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, BundleHelper.BUNDLE_CONSUMED);
+                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, AssemblyHelper.BUNDLE_CONSUMED);
             }
-        } else if (existing instanceof BundleHelper) {
+        } else if (existing instanceof AssemblyHelper) {
             // Bundle has already been used successfully or unsuccessfully
             throw new IllegalStateException("This bundle has already been used, type = " + bundle.getClass());
         } else {

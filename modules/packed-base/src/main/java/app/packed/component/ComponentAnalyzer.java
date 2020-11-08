@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import app.packed.base.Attribute;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedBuildContext;
-import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * Analysis servers 2 main purposes
@@ -57,12 +56,12 @@ public final class ComponentAnalyzer {
         } else if (s instanceof ComponentDelegate) {
             return ((ComponentDelegate) s).component();
         } else {
-            Assembly<?> bundle = (Assembly<?>) s;
+            Assembly<?> assembly = (Assembly<?>) s;
 
-            // Assembles the system with the ComponentModifier.ANALYSIS modifier set
-            ComponentBuild component = PackedBuildContext.assemble(bundle, PackedComponentModifierSet.I_ANALYSIS, null);
+            // Builds the system with the ComponentModifier.ANALYSIS modifier set
+            ComponentBuild component = PackedBuildContext.build(assembly, true, false, null);
 
-            // Returns a ComponentConfiguration -> Component adaptor
+            // Returns a ComponentBuild -> Component adaptor
             return component.adaptToComponent();
         }
     }

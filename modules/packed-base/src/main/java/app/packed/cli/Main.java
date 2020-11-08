@@ -40,7 +40,7 @@ import app.packed.container.ContainerWirelets;
 
 // Men meget af det taenker jeg skal styres af system wirelets...
 // Maaske endda MainWirelets... (The first system???
-public class Main {
+public final class Main {
 
     private Main() {}
 
@@ -92,6 +92,14 @@ class Zandbox {
     public static void restartable(Assembly<?> bundle, Object errorHandler, Wirelet... wirelets) {}
 
     public static void restartable(Assembly<?> bundle, Object errorHandler, String[] args, Wirelet... wirelets) {}
+
+    public static Image<Void> restartableImageOf(Assembly<?> bundle, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Image<Void> restartableImageOf(Assembly<?> bundle, Object errorHandler, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 
     // sync deamon???????
     // App.main(new Goo(), args);

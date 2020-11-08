@@ -35,12 +35,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     boolean contains(ComponentModifier modifier);
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CUBE} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */
-    default boolean isContainer() {
-        return contains(ComponentModifier.CUBE);
+    default boolean isBundle() {
+        return contains(ComponentModifier.BUNDLE);
     }
 
     /**
@@ -65,7 +65,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */
-    default boolean isGuest() {
+    default boolean isContainer() {
         return contains(ComponentModifier.CONTAINER);
     }
 
@@ -97,7 +97,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CUBE} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */

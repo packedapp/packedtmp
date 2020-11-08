@@ -89,7 +89,7 @@ public interface ComponentConfigurationContext {
      * @param extensionType
      * @return the extension
      * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#CUBE} modifier
+     *             if the component does not have the {@link ComponentModifier#BUNDLE} modifier
      */
     <T extends Extension> T cubeUse(Class<T> extensionType);
 
