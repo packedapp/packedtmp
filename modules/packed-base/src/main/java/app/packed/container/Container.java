@@ -40,24 +40,24 @@ public interface Container {
      * first.
      * <p>
      * If the container has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link ContainerState#RUNNING} state and the container has already been successfully
+     * attempting to wait on the {@link RunState#RUNNING} state and the container has already been successfully
      * terminated. This method will return immediately.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(ContainerState, long, TimeUnit)
+     * @see #await(RunState, long, TimeUnit)
      * @see #state()
      */
-    void await(ContainerState state) throws InterruptedException;
+    void await(RunState state) throws InterruptedException;
 
     /**
      * Blocks until the container has reached the requested state, or the timeout occurs, or the current thread is
      * interrupted, whichever happens first.
      * <p>
      * If the container has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link ContainerState#RUNNING} state and the object has already been stopped. This
+     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This
      * method will return immediately with true.
      *
      * @param state
@@ -70,10 +70,10 @@ public interface Container {
      *         timeout elapsed before reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(ContainerState)
+     * @see #await(RunState)
      * @see #state()
      */
-    boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Returns an immutable snapshot of the container's current status.
@@ -106,7 +106,7 @@ public interface Container {
      * 
      * @return the current state of the container
      */
-    ContainerState state();
+    RunState state();
 
     /**
      * Stops the container.
@@ -138,8 +138,7 @@ public interface Container {
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
     public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        PackedBuildContext build = PackedBuildContext.build(assembly, false, false, null, wirelets);
-        build.process(null);
+        PackedBuildContext.build(assembly, false, false, null, wirelets).process(null);
     }
 
     public static <T> T execute(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {

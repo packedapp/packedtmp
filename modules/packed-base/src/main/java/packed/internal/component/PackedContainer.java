@@ -31,7 +31,7 @@ import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Container;
 import app.packed.container.ContainerInfo;
-import app.packed.container.ContainerState;
+import app.packed.container.RunState;
 import packed.internal.component.BuildtimeRegion.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
@@ -50,7 +50,7 @@ import packed.internal.util.ThrowableUtil;
 
 public class PackedContainer implements Container {
 
-    ContainerState desiredState = ContainerState.INITIALIZING;
+    RunState desiredState = RunState.INITIALIZING;
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -58,10 +58,10 @@ public class PackedContainer implements Container {
      */
     final ReentrantLock lock = new ReentrantLock();
 
-    /** A condition used for waiting on state changes from {@link #await(ContainerState, long, TimeUnit)}. */
+    /** A condition used for waiting on state changes from {@link #await(RunState, long, TimeUnit)}. */
     final Condition lockAwaitState = lock.newCondition();
 
-    volatile ContainerState state = ContainerState.INITIALIZING;
+    volatile RunState state = RunState.INITIALIZING;
 
     final Sync sync = new Sync();
 
@@ -74,7 +74,7 @@ public class PackedContainer implements Container {
 //    final PackedContainer parent;
     /** {@inheritDoc} */
     @Override
-    public void await(ContainerState state) throws InterruptedException {
+    public void await(RunState state) throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -91,7 +91,7 @@ public class PackedContainer implements Container {
 
     /** {@inheritDoc} */
     @Override
-    public boolean await(ContainerState state, long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -122,12 +122,12 @@ public class PackedContainer implements Container {
         lock.lock();
         try {
             if (!start) {
-                this.state = ContainerState.INITIALIZED;
-                this.desiredState = ContainerState.INITIALIZED;
+                this.state = RunState.INITIALIZED;
+                this.desiredState = RunState.INITIALIZED;
                 return;
             } else {
-                this.state = ContainerState.STARTING;
-                this.desiredState = ContainerState.RUNNING;
+                this.state = RunState.STARTING;
+                this.desiredState = RunState.RUNNING;
             }
         } finally {
             lock.unlock();
@@ -137,8 +137,8 @@ public class PackedContainer implements Container {
 
         lock.lock();
         try {
-            this.state = ContainerState.RUNNING;
-            this.desiredState = ContainerState.RUNNING;
+            this.state = RunState.RUNNING;
+            this.desiredState = RunState.RUNNING;
             if (!isMain) {
                 return;
             }
@@ -168,7 +168,7 @@ public class PackedContainer implements Container {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            if (state == ContainerState.INITIALIZING) {
+            if (state == RunState.INITIALIZING) {
                 throw new IllegalStateException("Cannot call this method now");
             }
             throw new UnsupportedOperationException();
@@ -188,7 +188,7 @@ public class PackedContainer implements Container {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerState state() {
+    public RunState state() {
         return state;
     }
 
@@ -203,7 +203,7 @@ public class PackedContainer implements Container {
     }
 
     // Tag T istedet for container...
-    public <T> CompletionStage<T> whenAt(ContainerState state, T object) {
+    public <T> CompletionStage<T> whenAt(RunState state, T object) {
         if (state().ordinal() >= state.ordinal()) {
             return CompletableFuture.completedFuture(object);
         }

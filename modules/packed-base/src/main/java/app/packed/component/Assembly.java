@@ -17,6 +17,8 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.io.PrintStream;
+
 import app.packed.base.Nullable;
 import app.packed.bundle.BaseAssembly;
 import packed.internal.component.AssemblyHelper;
@@ -89,4 +91,10 @@ public abstract class Assembly<C> implements ComponentSystem {
 
     /** Configures the bundle. This method should never be invoked directly by the user. */
     protected abstract void build();
+
+    static void print(Assembly<?> assembly) {
+        print(assembly, System.out);
+    }
+
+    static void print(Assembly<?> assembly, PrintStream ps) {}
 }

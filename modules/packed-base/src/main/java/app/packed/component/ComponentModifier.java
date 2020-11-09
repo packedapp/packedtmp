@@ -31,6 +31,7 @@ import app.packed.inject.Factory;
  * @apiNote Packed uses a enum modifier similar to how Java uses {@link Modifier} to indicate access properties of
  *          members and types. The alternative would be
  */
+// ComponentMode??
 public enum ComponentModifier {
 
     /**

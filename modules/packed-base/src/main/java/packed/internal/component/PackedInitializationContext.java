@@ -115,7 +115,7 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static PackedInitializationContext process(ComponentBuild root, Wirelet[] imageWirelets) {
+    static PackedInitializationContext process(ComponentBuild root, Wirelet[] imageWirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root,
                 root.build.isImage() ? WireletPack.forImage(root, imageWirelets) : root.wirelets);
 

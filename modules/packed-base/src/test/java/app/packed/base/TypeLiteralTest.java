@@ -105,7 +105,7 @@ public class TypeLiteralTest {
 
         MyTypeLiteral<Integer> integerNew = new MyTypeLiteral<Integer>() {};
 
-        assertThat(integerNew.box().type()).isSameAs(Integer.class);
+        assertThat(integerNew.wrap().type()).isSameAs(Integer.class);
 
         assertThat(integerNew.rawType()).isSameAs(Integer.class);
         assertThat(integerNew.type()).isSameAs(Integer.class);
@@ -131,7 +131,7 @@ public class TypeLiteralTest {
     public void tl_int() {
         TypeToken<Integer> intOf = TypeToken.of(int.class);
 
-        assertThat(intOf.box().type()).isSameAs(Integer.class);
+        assertThat(intOf.wrap().type()).isSameAs(Integer.class);
 
         assertThat(intOf.rawType()).isSameAs(int.class);
         assertThat(intOf.type()).isSameAs(int.class);
@@ -154,7 +154,7 @@ public class TypeLiteralTest {
     public void tl_intArray() {
         TypeToken<int[]> intArrayOf = TypeToken.of(int[].class);
 
-        assertThat(intArrayOf.box().type()).isSameAs(int[].class);
+        assertThat(intArrayOf.wrap().type()).isSameAs(int[].class);
 
         assertThat(intArrayOf.rawType()).isSameAs(int[].class);
         assertThat(intArrayOf.type()).isSameAs(int[].class);
@@ -175,7 +175,7 @@ public class TypeLiteralTest {
     /** Tests an primitive int type literal. */
     @Test
     public void tl_Integer() {
-        assertThat(TL_INTEGER.box().type()).isSameAs(Integer.class);
+        assertThat(TL_INTEGER.wrap().type()).isSameAs(Integer.class);
 
         assertThat(TL_INTEGER.rawType()).isSameAs(Integer.class);
         assertThat(TL_INTEGER.type()).isSameAs(Integer.class);
@@ -200,7 +200,7 @@ public class TypeLiteralTest {
     public void tl_IntegerArray() {
         TypeToken<Integer[]> integerNew = new TypeToken<Integer[]>() {};
 
-        assertThat(integerNew.box().type()).isSameAs(Integer[].class);
+        assertThat(integerNew.wrap().type()).isSameAs(Integer[].class);
 
         assertThat(integerNew.rawType()).isSameAs(Integer[].class);
         assertThat(integerNew.type()).isSameAs(Integer[].class);
@@ -225,7 +225,7 @@ public class TypeLiteralTest {
     public void tl_IntegerArrayArray() {
         TypeToken<Integer[][]> integerArrayArrayNew = new TypeToken<Integer[][]>() {};
 
-        assertThat(integerArrayArrayNew.box().type()).isSameAs(Integer[][].class);
+        assertThat(integerArrayArrayNew.wrap().type()).isSameAs(Integer[][].class);
 
         assertThat(integerArrayArrayNew.rawType()).isSameAs(Integer[][].class);
         assertThat(integerArrayArrayNew.type()).isSameAs(Integer[][].class);
@@ -249,7 +249,7 @@ public class TypeLiteralTest {
     public void tl_ListString() throws Exception {
         TypeToken<List<String>> listStringNew = new TypeToken<List<String>>() {};
 
-        assertThat(listStringNew.box().type()).isEqualTo(LIST_STRING);
+        assertThat(listStringNew.wrap().type()).isEqualTo(LIST_STRING);
 
         assertThat(listStringNew.rawType()).isSameAs(List.class);
 
@@ -269,7 +269,7 @@ public class TypeLiteralTest {
     /** Tests {@code List<?>}. */
     @Test
     public void tl_ListWildcard() throws Exception {
-        assertThat(TL_LIST_WILDCARD.box().type()).isEqualTo(LIST_WILDCARD);
+        assertThat(TL_LIST_WILDCARD.wrap().type()).isEqualTo(LIST_WILDCARD);
 
         assertThat(TL_LIST_WILDCARD.rawType()).isSameAs(List.class);
 
@@ -297,7 +297,7 @@ public class TypeLiteralTest {
         }
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
 
-        assertThat(listStringNew.box().type()).isEqualTo(fGenericType);
+        assertThat(listStringNew.wrap().type()).isEqualTo(fGenericType);
 
         assertThat(listStringNew.rawType()).isSameAs(Map.class);
 
@@ -319,7 +319,7 @@ public class TypeLiteralTest {
     public void tl_String() {
         TypeToken<String> stringNew = new TypeToken<String>() {};
 
-        assertThat(stringNew.box().type()).isSameAs(String.class);
+        assertThat(stringNew.wrap().type()).isSameAs(String.class);
 
         assertThat(stringNew.rawType()).isSameAs(String.class);
         assertThat(stringNew.type()).isSameAs(String.class);
@@ -343,7 +343,7 @@ public class TypeLiteralTest {
     public void tl_void() {
         TypeToken<Void> voidOf = TypeToken.of(void.class);
 
-        assertThat(voidOf.box().type()).isSameAs(Void.class);
+        assertThat(voidOf.wrap().type()).isSameAs(Void.class);
 
         assertThat(voidOf.rawType()).isSameAs(void.class);
         assertThat(voidOf.type()).isSameAs(void.class);
@@ -372,7 +372,7 @@ public class TypeLiteralTest {
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
         TypeToken<?> typeVariable = new CanonicalizedTypeLiteral<>(fGenericType);
 
-        assertThat(typeVariable.box().type()).isEqualTo(fGenericType);
+        assertThat(typeVariable.wrap().type()).isEqualTo(fGenericType);
 
         assertThat(typeVariable.rawType()).isSameAs(Map.class);
 

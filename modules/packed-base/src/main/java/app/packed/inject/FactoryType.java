@@ -27,7 +27,7 @@ import app.packed.base.Variable;
 // InjectionType, FunctionType, ...
 public final class FactoryType {
 
-    public Variable variableType(int index) {
+    public Variable variable(int index) {
         throw new UnsupportedOperationException();
     }
 

@@ -25,7 +25,6 @@ import java.lang.invoke.MethodHandle;
 import app.packed.component.BuildException;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.MethodSidecar;
-import app.packed.statemachine.OnInitialize;
 import packed.internal.component.source.SourceModelMethod;
 
 /**
@@ -75,10 +74,10 @@ class MySidecar extends MethodSidecar {
         });
     }
 
-    @OnInitialize
-    protected void onInit(Runnable r) {
-
-    }
+//    @OnInitialize
+//    protected void onInit(Runnable r) {
+//
+//    }
 
 }
 // ExecutionResult<T>... Maaske bare CompletableFuture

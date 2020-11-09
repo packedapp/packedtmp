@@ -25,7 +25,7 @@ import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.container.Container;
 import app.packed.container.Container.StopOption;
-import app.packed.container.ContainerState;
+import app.packed.container.RunState;
 import app.packed.container.ContainerWirelets;
 
 /**
@@ -118,7 +118,7 @@ public final class Main {
 
     /**
      * This method will create and start an {@link App application} from the specified source. Blocking until the run state
-     * of the application is {@link ContainerState#TERMINATED}.
+     * of the application is {@link RunState#TERMINATED}.
      * <p>
      * Entry point or run to termination
      * <p>

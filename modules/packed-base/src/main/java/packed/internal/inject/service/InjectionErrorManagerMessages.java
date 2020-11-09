@@ -26,8 +26,8 @@ import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.config.ConfigSiteVisitor;
 import packed.internal.config.ConfigSiteJoiner;
-import packed.internal.inject.service.build.ExportedBuildtimeService;
 import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ExportedBuildtimeService;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -57,7 +57,7 @@ public final class InjectionErrorManagerMessages {
             sb.append("\n\n");
             Key<?> key = e.getKey();
             String n = "";
-            if (key.hasQualifier()) {
+            if (key.hasQualifiers()) {
                 // TODO fix
                 // String n = key.qualifier().map(ee -> "@" + ee.annotationType().getSimpleName() + " ").orElse("") +
                 // key.typeLiteral().toStringSimple();

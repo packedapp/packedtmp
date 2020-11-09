@@ -25,7 +25,9 @@ import app.packed.component.Assembly;
 import app.packed.component.BuildContext;
 import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
+import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.ComponentSystem;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -118,14 +120,23 @@ public final class PackedBuildContext implements BuildContext {
     }
 
     /**
-     * @param assembly
+     * Returns a
+     * 
+     * @param system
      *            the assembly to analyse
      * @return a component adaptor
-     * 
      * @see ComponentAnalyzer#analyze(app.packed.component.ComponentSystem)
      */
-    public static Component analysis(Assembly<?> assembly) {
-        return build(assembly, false, false, null).asComponent();
+    public static Component analysis(ComponentSystem system) {
+        requireNonNull(system, "system is null");
+        if (system instanceof Component) {
+            return (Component) system;
+        } else if (system instanceof ComponentDelegate) {
+            return ((ComponentDelegate) system).component();
+        } else {
+            Assembly<?> assembly = (Assembly<?>) system;
+            return build(assembly, false, false, null).asComponent();
+        }
     }
 
     /**

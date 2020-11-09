@@ -20,7 +20,7 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.base.TreePath;
 import app.packed.container.Container;
-import app.packed.container.ContainerState;
+import app.packed.container.RunState;
 import app.packed.container.ContainerWirelets;
 import app.packed.inject.ServiceLocator;
 
@@ -139,13 +139,13 @@ public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
      * Build and start a new application using the specified bundle. The state of the returned application is
-     * {@link ContainerState#RUNNING}.
+     * {@link RunState#RUNNING}.
      * <p>
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
      * process you can use {@link ContainerWirelets#lazyStart()}. Which will return an application in the
-     * {@link ContainerState#INITIALIZED} phase instead.
+     * {@link RunState#INITIALIZED} phase instead.
      * 
      * @param assembly
      *            the assembly to use for creating the application

@@ -13,30 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
-
-import app.packed.bundle.BaseAssembly;
-import app.packed.cli.Main;
+package app.packed.inject.sandbox;
 
 /**
  *
  */
-public class ExecuteTest extends BaseAssembly {
+// Er det en speciel shell?? Ja det ville jeg mene
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(Comp.class);
-    }
+// Altsaa det giver sjaeldent mening at lave den direkte 
 
-    public static void main(String[] args) {
-        Main.main(new ExecuteTest());
-        System.out.println("Bye");
-    }
+interface Job<T> {
 
-    public static class Comp {
-
-        @Execute
-        public void runMe() {}
-    }
+    // Job<Void> of()
 }

@@ -119,7 +119,7 @@ public interface ContainerWirelets {
 
     // Runnig on the initializaiob/starting/stopping thread
 
-    static Wirelet runOn(ContainerState state, Runnable task) {
+    static Wirelet runOn(RunState state, Runnable task) {
         throw new UnsupportedOperationException();
     }
 

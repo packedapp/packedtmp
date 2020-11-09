@@ -29,12 +29,8 @@ import packed.internal.sidecar.SidecarModel;
 /**
  *
  * <p>
- * Something about throwing {@link IllegalStateException}.
+ * Calling any method on this class outside of {@link #configure()} will fail with {@link IllegalStateException}.
  */
-// configure vs builder -> configuration (but for someone it is a builder)
-
-// public methods vs private... This class is never exposed to users.
-// So why not public
 public abstract class AbstractMethodSidecar {
 
     /** The configuration (builder) of this sidecar. Updated by {@link SidecarModel.Builder}. */
@@ -46,7 +42,7 @@ public abstract class AbstractMethodSidecar {
      * 
      * @return this sidecar's builder object
      */
-    SourceModelMethod.Builder configuration() {
+    final SourceModelMethod.Builder configuration() {
         SourceModelMethod.Builder c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
@@ -87,6 +83,8 @@ public abstract class AbstractMethodSidecar {
      * 
      * @see AnnotatedElement#getAnnotation(Class)
      */
+    // MS extends AnnotatedElement???? With meta annotations.
+    // Call method if you want without them...
     public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return configuration().methodUnsafe().getAnnotation(annotationClass);
     }

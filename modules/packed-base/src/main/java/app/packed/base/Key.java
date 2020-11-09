@@ -75,12 +75,12 @@ import packed.internal.util.TypeUtil;
 public abstract class Key<T> {
 
     /** A cache of keys used by {@link #of(Class)}. */
-    private static final ClassValue<Key<?>> CLASS_CACHE = new ClassValue<>() {
+    private static final ClassValue<Key<?>> CLASS_KEY_CACHE = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @Override
-        protected Key<?> computeValue(Class<?> implementation) {
-            return Key.fromTypeLiteral(TypeToken.of(implementation).box());
+        protected Key<?> computeValue(Class<?> key) {
+            return Key.fromTypeLiteral(TypeToken.of(key).wrap());
         }
     };
 
@@ -140,9 +140,9 @@ public abstract class Key<T> {
      * 
      * @return the key
      */
-    final CanonicalizedKey<T> canonicalize() {
+    public final Key<T> canonicalize() {
         if (getClass() == CanonicalizedKey.class) {
-            return (CanonicalizedKey<T>) this;
+            return this;
         }
         return new CanonicalizedKey<>(typeLiteral, qualifiers);
     }
@@ -166,21 +166,33 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns whether or not this key has at least one qualifier.
+     * Returns whether or not this key has a qualifier equivalent to the specified qualifier.
      * 
-     * @return whether or not this key has at least one qualifier
+     * @param qualifier
+     *            the qualifier to test
+     * @return whether or not this key has any qualifiers of the specified type
+     * @implNote this method does not test whether or not the specified annotation is annotated with {@link Qualifier}
      */
-    public final boolean hasQualifier() {
-        return qualifiers != null;
+    public final boolean hasQualifier(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        if (qualifiers == null) {
+            return false;
+        }
+        for (int i = 0; i < qualifiers.length; i++) {
+            if (qualifiers[i].equals(qualifier)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
-     * Returns whether or not this key has a qualifier of the specified type.
+     * Returns whether or not this key has any qualifiers of the specified type.
      * 
      * @param qualifierType
      *            the type of qualifier
-     * @return whether or not this key has a qualifier of the specified type
-     * @implNote this method does not test whether or not the specified annotation is annotated with {@link Qualifier}
+     * @return whether or not this key has any qualifiers of the specified type
+     * @implNote this method does not test whether or not the specified annotation type is annotated with {@link Qualifier}
      */
     public final boolean hasQualifier(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
@@ -195,21 +207,37 @@ public abstract class Key<T> {
         return false;
     }
 
-    public final boolean hasQualifier(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        if (qualifiers == null) {
-            return false;
-        }
-        for (int i = 0; i < qualifiers.length; i++) {
-            if (qualifiers[i].equals(qualifier)) {
-                return true;
-            }
-        }
-        return false;
+    /**
+     * Returns whether or not this key has any qualifiers.
+     * 
+     * @return whether or not this key has any qualifiers
+     */
+    public final boolean hasQualifiers() {
+        return qualifiers != null;
     }
 
+    /**
+     * @param c
+     *            the class
+     * @return true if a class key, otherwise false
+     */
     public final boolean isClassKey(Class<?> c) {
         return qualifiers == null && typeLiteral.type() == c;
+    }
+
+    public final boolean isSuperKeyOf(Key<?> key) {
+        requireNonNull(key, "key is null");
+        if (!typeLiteral.equals(key.typeLiteral)) {
+            return false;
+        }
+        if (qualifiers != null) {
+            for (Annotation a : qualifiers) {
+                if (!key.hasQualifier(a)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -300,21 +328,6 @@ public abstract class Key<T> {
         return new CanonicalizedKey<>(typeLiteral, an);
     }
 
-    public final boolean isSuperKeyOf(Key<?> key) {
-        requireNonNull(key, "key is null");
-        if (!typeLiteral.equals(key.typeLiteral)) {
-            return false;
-        }
-        if (qualifiers != null) {
-            for (Annotation a : qualifiers) {
-                if (!key.hasQualifier(a)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     /**
      * Calling this method will replace any existing qualifier.
      * 
@@ -398,7 +411,7 @@ public abstract class Key<T> {
      */
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     public static Key<?> fromField(Field field) {
-        TypeToken<?> tl = TypeToken.fromField(field).box(); // checks null
+        TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
         Annotation[] annotation = QualifierHelper.findQualifier(field.getAnnotations());
         return fromTypeLiteralNullableAnnotation(field, tl, annotation);
     }
@@ -420,7 +433,7 @@ public abstract class Key<T> {
         if (method.getReturnType() == void.class) {
             throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
         }
-        TypeToken<?> tl = TypeToken.fromMethodReturnType(method).box();
+        TypeToken<?> tl = TypeToken.fromMethodReturnType(method).wrap();
         Annotation[] annotation = QualifierHelper.findQualifier(method.getAnnotations());
         return fromTypeLiteralNullableAnnotation(method, tl, annotation);
     }
@@ -472,7 +485,7 @@ public abstract class Key<T> {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
-        typeLiteral = typeLiteral.box();
+        typeLiteral = typeLiteral.wrap();
         if (TypeUtil.isOptionalType(typeLiteral.rawType())) {
             throw new InvalidDeclarationException(
                     "Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
@@ -503,7 +516,7 @@ public abstract class Key<T> {
     }
 
     /**
-     * Returns a key with no qualifiers matching the specified class key.
+     * Returns a class key with no qualifiers from the specified class.
      *
      * @param <T>
      *            the type to construct a key of
@@ -514,7 +527,7 @@ public abstract class Key<T> {
     @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> key) {
         requireNonNull(key, "key is null");
-        return (Key<T>) CLASS_CACHE.get(key);
+        return (Key<T>) CLASS_KEY_CACHE.get(key);
     }
 
     /**
@@ -529,7 +542,7 @@ public abstract class Key<T> {
      * @return a key of the specified type with the specified qualifier
      */
     public static <T> Key<T> of(Class<T> type, Annotation qualifier) {
-        return Key.fromTypeLiteral(TypeToken.of(type).box(), qualifier);
+        return of(type).with(qualifier);
     }
 
     /** See {@link CanonicalizedTypeLiteral}. */
@@ -558,7 +571,6 @@ public abstract class Key<T> {
     @Target(ANNOTATION_TYPE)
     @Retention(RUNTIME)
     @Documented
-    // TODO rename to KeyQualifier????
     public @interface Qualifier {}
 
     // dependency resolver, qualifier resolver,

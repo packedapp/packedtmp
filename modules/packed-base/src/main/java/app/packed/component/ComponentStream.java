@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.bundle.Extension;
+import packed.internal.component.PackedBuildContext;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
@@ -158,6 +159,21 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //    default ComponentStream withFeatures(@SuppressWarnings("unchecked") Class<? extends Feature>... featureTypes) {
 //        throw new UnsupportedOperationException();
 //    }
+
+    /**
+     * <p>
+     * If the specified system is a subclass of {@link Assembly}. The {@link ComponentModifier#ANALYSIS} modifier will be
+     * set for the root component.
+     * 
+     * @param system
+     *            the system to create a stream for
+     * @param options
+     *            streaming options
+     * @return the new stream
+     */
+    public static ComponentStream of(ComponentSystem system, Option... options) {
+        return PackedBuildContext.analysis(system).stream(options);
+    }
 
     /********** Overridden to provide ComponentStream as a return value. **********/
 

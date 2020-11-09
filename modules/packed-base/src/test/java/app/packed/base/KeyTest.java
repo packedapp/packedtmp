@@ -119,22 +119,22 @@ public class KeyTest {
 
         Field f = findField(Tmpx.class, "ok");
         assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromField(f).hasQualifier()).isFalse();
+        assertThat(Key.fromField(f).hasQualifiers()).isFalse();
         assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
         assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromField(f).hasQualifier()).isTrue();
+        assertThat(Key.fromField(f).hasQualifiers()).isTrue();
         assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
         assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromField(f).hasQualifier()).isFalse();
+        assertThat(Key.fromField(f).hasQualifiers()).isFalse();
         assertThat(Key.fromField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
         assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromField(f).hasQualifier()).isTrue();
+        assertThat(Key.fromField(f).hasQualifiers()).isTrue();
         assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "notTypeParameterFree")));
@@ -199,22 +199,22 @@ public class KeyTest {
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
         assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isFalse();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
         assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
+        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isTrue();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
         assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isFalse();
+        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isFalse();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
         assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromMethodReturnType(m).hasQualifier()).isTrue();
+        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isTrue();
         assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
@@ -250,9 +250,9 @@ public class KeyTest {
     }
 
     @Test
-    public void hasQualifier() {
-        assertThat(KEY_INTEGER.hasQualifier()).isFalse();
-        assertThat(KEY_INTEGER_X.hasQualifier()).isTrue();
+    public void hasQualifiers() {
+        assertThat(KEY_INTEGER.hasQualifiers()).isFalse();
+        assertThat(KEY_INTEGER_X.hasQualifiers()).isTrue();
     }
 
     @Test
@@ -266,8 +266,8 @@ public class KeyTest {
         assertThat(k2.typeToken()).isEqualTo(TL_INTEGER);
         assertThat(k2.typeToken()).isNotSameAs(TL_INTEGER);
 
-        assertThat(k1.hasQualifier()).isFalse();
-        assertThat(k2.hasQualifier()).isFalse();
+        assertThat(k1.hasQualifiers()).isFalse();
+        assertThat(k2.hasQualifiers()).isFalse();
 
         // Optional
         assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)

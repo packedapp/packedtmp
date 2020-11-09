@@ -42,7 +42,7 @@ package app.packed.container;
 // Managed Resource
 
 // Status vs State...
-public enum ContainerState {
+public enum RunState {
 
     /**
      * The initial state of a guest. This state is typically used for reading and validating the configuration of the guest.
@@ -92,8 +92,8 @@ public enum ContainerState {
      *            the states to test against
      * @return true if the guest is in any of the specified states, otherwise false
      */
-    public boolean isAnyOf(ContainerState... states) {
-        for (ContainerState s : states) {
+    public boolean isAnyOf(RunState... states) {
+        for (RunState s : states) {
             if (s == this) {
                 return true;
             }

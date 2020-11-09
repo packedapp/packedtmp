@@ -79,7 +79,7 @@ class TestIt extends MethodSidecar {
         if (method().isDefault()) {
             disable();
         }
-        attach(method().getName());
+        provide(method().getName());
         System.out.println("CONF");
     }
 

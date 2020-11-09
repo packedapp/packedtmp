@@ -127,7 +127,7 @@ public abstract class TypeToken<T> {
      */
     // wrap instead of box
     @SuppressWarnings("unchecked")
-    public final TypeToken<T> box() {
+    public final TypeToken<T> wrap() {
         // TODO fix for Valhalla? reference type, inline type...
         if (rawType().isPrimitive()) {
             return (TypeToken<T>) of(TypeUtil.boxClass(rawType()));

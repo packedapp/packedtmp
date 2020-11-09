@@ -16,7 +16,6 @@
 package app.packed.component;
 
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.base.Attribute;
 import packed.internal.component.PackedBuildContext;
@@ -36,31 +35,21 @@ import packed.internal.component.PackedBuildContext;
 
 // Currently we do not take any kind of wirelets...
 
-// Maaske kan vi laver "builder" agtigt a.la. cli.Main
-
-// map
-
 // Skal vi have wirelets er spoergsmaalet
 // Svaret er det kan give mening naar vi vil analysere...
 // F.eks. AssemblyWirelets... printStuff()
 
 // Det eneste problem er den option...
 // Ellers smider vi den paa ComponentSystem...
+
+// Hmm, efter vi er begyndt lidt at flytte dem ud...
+// Saa er det maaske primaert en builder a.la. cli.Main
+
 public final class ComponentAnalyzer {
 
     // Maybe on Component???
-
-    // If the specified system is a bundle. The bundle will be consumed
-    // And ComponentModifier.Analysis will be set
-
     public static Component analyze(ComponentSystem s) {
-        if (s instanceof Component) {
-            return (Component) s;
-        } else if (s instanceof ComponentDelegate) {
-            return ((ComponentDelegate) s).component();
-        } else {
-            return PackedBuildContext.analysis((Assembly<?>) s);
-        }
+        return PackedBuildContext.analysis(s);
     }
 
     /**
@@ -76,19 +65,11 @@ public final class ComponentAnalyzer {
     }
 
     public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
-        return stream(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
-    }
-
-    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
-        analyze(s).stream().forEach(action);
+        return ComponentStream.of(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
     }
 
     public static void print(ComponentSystem s) {
-        ComponentAnalyzer.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
-    }
-
-    public static ComponentStream stream(ComponentSystem s) {
-        return analyze(s).stream();
+        ComponentSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
     }
 
     static void validate(ComponentSystem s, Object ruleset) {

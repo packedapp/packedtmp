@@ -20,7 +20,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandles;
 
+import app.packed.base.AnnotationMaker;
 import app.packed.bundle.ExtensionMember;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.ActivateMethodSidecar;
@@ -80,6 +82,8 @@ import app.packed.sidecar.MethodSidecar;
 @ActivateFieldSidecar(allowGet = true, sidecar = ProvideFieldSidecar.class)
 public @interface Provide {
 
+    public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
+
     /**
      * Indicates whether or not the provided value is a constant.
      * <p>
@@ -116,5 +120,6 @@ final class ProvideMethodSidecar extends MethodSidecar {
     @Override
     protected void configure() {
         serviceRegister(getAnnotation(Provide.class).constant());
+        // new Factory<@Provide Long>(() -> 2L) {};
     }
 }

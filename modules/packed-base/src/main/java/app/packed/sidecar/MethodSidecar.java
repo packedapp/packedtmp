@@ -34,16 +34,19 @@ import app.packed.base.Key;
 // Ikke hvis man skal kunne specificere den til extensions...
 public abstract class MethodSidecar extends AbstractSemiFinalMethodSidecar {
 
-    protected final <T> void attach(Class<T> key, T instance) {
-        attach(Key.of(key), instance);
+    // Tror de her doer...
+    // Hvis vi kan lave en ny instans...
+    // provideLocal...
+    protected final <T> void provide(Class<T> key, T instance) {
+        provide(Key.of(key), instance);
     }
 
-    protected final <T> void attach(Key<T> key, T instance) {}
+    protected final <T> void provide(Key<T> key, T instance) {}
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void attach(Object instance) {
+    protected final void provide(Object instance) {
         requireNonNull(instance, "instance is null");
-        attach((Class) instance.getClass(), instance);
+        provide((Class) instance.getClass(), instance);
     }
 
     // Ellers har vi en speciel Invoker factory
@@ -117,6 +120,8 @@ public abstract class MethodSidecar extends AbstractSemiFinalMethodSidecar {
     // Multi services... I think you need to register multiple sidecars
 
     // Move to a special place on ServiceExtension... IDK
+    // Vi vil ogsaa gerne have muligheden for at tilfoeje attributer...
+
     protected final void serviceRegister(boolean isConstant) {
         configuration().serviceRegister(isConstant);
     }

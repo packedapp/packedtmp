@@ -35,12 +35,12 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.base.Variable;
 import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
@@ -362,7 +362,7 @@ public final class DependencyDescriptor implements OldVariable {
         // }
         // }
         if (rawType.isPrimitive()) {
-            tl = tl.box();
+            tl = tl.wrap();
         } else if (rawType == Optional.class) {
             optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) getParameterizedType).getActualTypeArguments()[0];
@@ -414,7 +414,7 @@ public final class DependencyDescriptor implements OldVariable {
 
     public static DependencyDescriptor of(Key<?> key) {
         requireNonNull(key, "key is null");
-        if (!key.hasQualifier()) {
+        if (!key.hasQualifiers()) {
             TypeToken<?> tl = key.typeToken();
             if (tl.type() == tl.rawType()) {
                 return CLASS_CACHE.get(tl.rawType());

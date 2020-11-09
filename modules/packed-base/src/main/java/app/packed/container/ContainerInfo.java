@@ -27,14 +27,14 @@ public interface ContainerInfo {
      * 
      * @return the actual state
      */
-    ContainerState actual();
+    RunState actual();
 
     /**
      * Returns the desired state of the container.
      * 
      * @return the desired state
      */
-    ContainerState desired();
+    RunState desired();
 
     boolean hasPanicked();
 

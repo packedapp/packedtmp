@@ -21,12 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.component.App;
-import app.packed.container.ContainerState;
+import app.packed.container.RunState;
 import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link ContainerState#STARTING} state.
+ * {@link RunState#STARTING} state.
  *
  * <p>
  * A simple usage example:
