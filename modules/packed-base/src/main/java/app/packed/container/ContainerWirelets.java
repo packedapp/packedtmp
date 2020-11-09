@@ -48,9 +48,16 @@ public interface ContainerWirelets {
         throw new UnsupportedOperationException();
     }
 
-    // * The returned application will lazily start itself when needed. For example, on first invocation of
-    // * {@link #use(Class)}.
-    static Wirelet lazyStart() {
+    // Teankt som en lille hjaelper metode
+    static Wirelet enterToStop() {
+        // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
+//        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
+//        try {
+//          System.out.println("Press ENTER to exit");
+//          System.in.read();
+//        } finally {
+//          system.terminate();
+//        }
         throw new UnsupportedOperationException();
     }
 
@@ -78,6 +85,23 @@ public interface ContainerWirelets {
 //        throw new UnsupportedOperationException();
 //    }
 
+    static Wirelet executeInThread() {
+        throw new UnsupportedOperationException();
+    }
+
+    // Den har et andet navn en CTRL_C...
+    // shutdownHook() -> Adds a shutdown directly I think...
+
+    // Vi skal lige sikre os at det ikke bliver installeret
+    // Foerend vi er fuldt initialiseret. Da vi ikke supportere
+    // Fremmede traade der kalder ind paa os naar vi bygger.
+
+    // * The returned application will lazily start itself when needed. For example, on first invocation of
+    // * {@link #use(Class)}.
+    static Wirelet lazyStart() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param state
      *            the state
@@ -95,16 +119,9 @@ public interface ContainerWirelets {
 
     // Runnig on the initializaiob/starting/stopping thread
 
-    static Wirelet on(ContainerState state, Runnable task) {
+    static Wirelet runOn(ContainerState state, Runnable task) {
         throw new UnsupportedOperationException();
     }
-
-    // Den har et andet navn en CTRL_C...
-    // shutdownHook() -> Adds a shutdown directly I think...
-
-    // Vi skal lige sikre os at det ikke bliver installeret
-    // Foerend vi er fuldt initialiseret. Da vi ikke supportere
-    // Fremmede traade der kalder ind paa os naar vi bygger.
 
     /**
      * Returns a wirelet that will install a shutdown hook.
@@ -115,6 +132,7 @@ public interface ContainerWirelets {
      */
     // StopOption.panic(()->throw new DooException());
     static Wirelet shutdownHook(Container.StopOption... options) {
+        // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);
     }
 
@@ -125,12 +143,6 @@ public interface ContainerWirelets {
      * @see Runtime#addShutdownHook(Thread)
      */
     static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Container.StopOption... options) {
-        throw new UnsupportedOperationException();
-    }
-
-    static Wirelet timeToLive(Duration duration, Container.StopOption... options) {
-        // Duration is from Running transitioning...
-        // Shuts down container normally
         throw new UnsupportedOperationException();
     }
 
@@ -156,33 +168,13 @@ public interface ContainerWirelets {
 
     // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
-    static Wirelet timeToLive(long timeout, TimeUnit unit, Container.StopOption... options) {
-        return timeToLive(Duration.of(timeout, unit.toChronoUnit()), options);
-    }
-
-    static void shutdownHooks() {
-        // https://www.baeldung.com/spring-boot-shutdown
-    }
-
-    // Teankt som en lille hjaelper metode
-    static Wirelet enterToStop() {
-        // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
-//        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
-//        try {
-//          System.out.println("Press ENTER to exit");
-//          System.in.read();
-//        } finally {
-//          system.terminate();
-//        }
-        throw new UnsupportedOperationException();
-    }
-
-    static Wirelet executeInThread() {
-        throw new UnsupportedOperationException();
+    static Wirelet timeToRun(long timeout, TimeUnit unit, Container.StopOption... options) {
+        return timeToRun(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 
     // excludes start?? IDK
     static Wirelet timeToRun(Duration duration, Container.StopOption... options) {
+        // can make a timeToLive() <-- which includes start
         throw new UnsupportedOperationException();
     }
 

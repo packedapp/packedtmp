@@ -64,8 +64,8 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     @Override
     public <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        ComponentBuild node = PackedBuildContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
-        PackedInitializationContext ac = PackedInitializationContext.process(node, null);
+        PackedBuildContext build = PackedBuildContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
+        PackedInitializationContext ac = build.process(null);
         return newShell(ac);
     }
 
@@ -84,36 +84,24 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         }
     }
 
-//    /**
-//     * Returns a set of the various modifiers that will by set on the root component. whether or not the type of shell being
-//     * created by this driver has an execution phase. This is determined by whether or not the shell implements
-//     * {@link AutoCloseable}.
-//     * 
-//     * @return whether or not the shell being produced by this driver has an execution phase
-//     */
-//    @Override
-//    public ComponentModifierSet modifiers() {
-//        return new PackedComponentModifierSet(modifiers);
-//    }
-
     /** {@inheritDoc} */
     @Override
     public Image<S> newImage(Assembly<?> bundle, Wirelet... wirelets) {
-        // Assemble the system with the ComponentModifier.IMAGE modifier added
-        ComponentBuild component = PackedBuildContext.build(bundle, false, true, this, wirelets);
+        // Assemble the system
+        PackedBuildContext build = PackedBuildContext.build(bundle, false, true, this, wirelets);
 
         // Return a new image that be people can use (Image::use)
-        return new ShellImage(component);
+        return new ShellImage(build);
     }
 
     /** {@inheritDoc} */
     @Override
     public S newShell(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system
-        ComponentBuild component = PackedBuildContext.build(bundle, false, false, this, wirelets);
+        PackedBuildContext build = PackedBuildContext.build(bundle, false, false, this, wirelets);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = PackedInitializationContext.process(component, null);
+        PackedInitializationContext pic = build.process(null);
 
         // Return the system in a new shell
         return newShell(pic);
@@ -226,29 +214,29 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     private final class ShellImage implements Image<S> {
 
         /** The assembled image node. */
-        private final ComponentBuild compConf;
+        private final PackedBuildContext build;
 
         /**
          * Create a new image from the specified component.
          * 
-         * @param compConf
-         *            the assembled component
+         * @param build
+         *            the build
          */
-        private ShellImage(ComponentBuild compConf) {
-            this.compConf = requireNonNull(compConf);
+        private ShellImage(PackedBuildContext build) {
+            this.build = requireNonNull(build);
         }
 
         /** {@inheritDoc} */
         @Override
         public Component component() {
-            return compConf.adaptToComponent();
+            return build.asComponent();
         }
 
         /** {@inheritDoc} */
         @Override
         public S use(Wirelet... wirelets) {
-            // Initialize a new system using the previously assembled node
-            PackedInitializationContext pic = PackedInitializationContext.process(compConf, wirelets);
+            // Initialize a new system
+            PackedInitializationContext pic = build.process(wirelets);
 
             // Wrap the system in a new shell and return it
             return newShell(pic);
@@ -256,6 +244,17 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     }
 }
 
+///**
+//* Returns a set of the various modifiers that will by set on the root component. whether or not the type of shell being
+//* created by this driver has an execution phase. This is determined by whether or not the shell implements
+//* {@link AutoCloseable}.
+//* 
+//* @return whether or not the shell being produced by this driver has an execution phase
+//*/
+//@Override
+//public ComponentModifierSet modifiers() {
+//  return new PackedComponentModifierSet(modifiers);
+//}
 // Ideen er lidt at vi har en OptionList som aggregere alle options
 // Det er en public klasse i packedapp.internal.shell.OptionAggregate
 // Den har en PackedContainerConfiguration saa adgang til. og f.eks. kalder

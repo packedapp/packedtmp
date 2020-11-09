@@ -42,6 +42,8 @@ public final class BuildtimeRegion {
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
+    public final Lifecycle lifecycle = new Lifecycle();
+
     RuntimeRegion newRegion(PackedInitializationContext pic, PackedComponent root) {
         RuntimeRegion region = new RuntimeRegion(nextIndex);
 
@@ -91,4 +93,12 @@ public final class BuildtimeRegion {
         return nextIndex++;
     }
 
+    public static class Lifecycle {
+
+        public boolean hasExecutionBlock() {
+            return methodHandle != null;
+        }
+
+        public MethodHandle methodHandle;
+    }
 }

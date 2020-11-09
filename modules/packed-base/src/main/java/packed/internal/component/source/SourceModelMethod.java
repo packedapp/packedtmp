@@ -206,7 +206,7 @@ public final class SourceModelMethod extends SourceModelMember {
         }
 
         public MethodHandle methodHandle() {
-            return shared.directMethodHandle;
+            return shared.direct();
         }
 
         public static void registerProcessor(AbstractMethodSidecar sidecar, Consumer<? super ComponentBuild> processor) {

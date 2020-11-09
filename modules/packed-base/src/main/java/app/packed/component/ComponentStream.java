@@ -64,6 +64,9 @@ import packed.internal.component.PackedComponentStreamOption;
 // ComponentStream<T extends Component> extends Stream<T> ????
 // Vi har mere eller mindre aldrig brug for at gemm
 // Men der skal lige lidt mere guf paa Component sub interfaces...Foerend jeg gider lave det
+
+// we should remove AttributedElementStream...
+// But keep an abstract version internally
 public interface ComponentStream extends AttributedElementStream<Component> {
 
 //    /**

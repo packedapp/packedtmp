@@ -44,15 +44,14 @@ public final class AssemblyHelper {
     /** No instances for you. */
     private AssemblyHelper() {}
 
-    public static void configure(Assembly<?> bundle, Object configuration) {
+    static void configure(Assembly<?> bundle, Object configuration) {
         // We perform a compare and exchange with configuration. Guarding against
         // concurrent usage of this bundle.
 
         Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(bundle, null, configuration);
         if (existing == null) {
             try {
-                // Invokes app.packed.component.Bundle#configure()
-                MH_BUNDLE_CONFIGURE.invoke(bundle);
+                MH_BUNDLE_CONFIGURE.invoke(bundle); // Invokes app.packed.component.Assembly#configure()
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
@@ -66,14 +65,6 @@ public final class AssemblyHelper {
             // Can be this thread or another thread that is already using the bundle.
             throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + bundle.getClass());
         }
-
-        // Do we want to cache exceptions?
-        // Do we want better error messages, for example, This bundle has already been used to create an artifactImage
-        // Do we want to store the calling thread in case of recursive linking..
-
-        // We should have some way to mark it failed????
-        // If configure() fails. The ContainerConfiguration still works...
-        /// Well we should probably catch the exception from where ever we call his method
     }
 
     /**
@@ -84,8 +75,16 @@ public final class AssemblyHelper {
      * @return the specified bundle's component driver
      * @see #VH_BUNDLE_DRIVER
      */
-    public static <C> PackedComponentDriver<? extends C> getDriver(Assembly<C> bundle) {
+    static <C> PackedComponentDriver<? extends C> getDriver(Assembly<C> bundle) {
         requireNonNull(bundle, "bundle is null");
         return (PackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(bundle);
     }
 }
+/// Some extensions that I don't think we will do
+// Do we want to cache exceptions?
+// Do we want better error messages, for example, This bundle has already been used to create an artifactImage
+// Do we want to store the calling thread in case of recursive linking..
+
+// We should have some way to mark it failed????
+// If configure() fails. The ContainerConfiguration still works...
+/// Well we should probably catch the exception from where ever we call his method

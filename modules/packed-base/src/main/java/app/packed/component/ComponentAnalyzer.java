@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Attribute;
-import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedBuildContext;
 
 /**
@@ -34,6 +33,10 @@ import packed.internal.component.PackedBuildContext;
 
 // Validere
 // Extract Information from a system
+
+// Currently we do not take any kind of wirelets...
+
+// Maaske kan vi laver "builder" agtigt a.la. cli.Main
 
 // map
 
@@ -56,13 +59,7 @@ public final class ComponentAnalyzer {
         } else if (s instanceof ComponentDelegate) {
             return ((ComponentDelegate) s).component();
         } else {
-            Assembly<?> assembly = (Assembly<?>) s;
-
-            // Builds the system with the ComponentModifier.ANALYSIS modifier set
-            ComponentBuild component = PackedBuildContext.build(assembly, true, false, null);
-
-            // Returns a ComponentBuild -> Component adaptor
-            return component.adaptToComponent();
+            return PackedBuildContext.analysis((Assembly<?>) s);
         }
     }
 
@@ -74,6 +71,7 @@ public final class ComponentAnalyzer {
      *             if the system is not in an assembled state.
      */
     public static Component analyzeAssembly(ComponentSystem s) {
+        // ??
         throw new UnsupportedOperationException();
     }
 
@@ -90,8 +88,6 @@ public final class ComponentAnalyzer {
     }
 
     public static ComponentStream stream(ComponentSystem s) {
-        // Should we take options??? Again I don't know if
-        // options is more a system transform.
         return analyze(s).stream();
     }
 

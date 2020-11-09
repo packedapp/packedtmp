@@ -16,26 +16,29 @@
 package packed.internal.component;
 
 import app.packed.bundle.BaseAssembly;
-import app.packed.component.App;
+import app.packed.cli.Main;
+import app.packed.container.Execute;
 
 /**
  *
  */
-public class Zoob extends BaseAssembly {
+public class HelloWorldAssembly extends BaseAssembly {
 
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        provide(Dddd.class);
+        provide(HelloWorld.class);
     }
 
     public static void main(String[] args) {
-        App.of(new Zoob());
+        Main.main(new HelloWorldAssembly());
     }
 
-    public static class Dddd {
-        public Dddd() {
-            new Exception().printStackTrace();
+    public static class HelloWorld {
+
+        @Execute
+        public static void execute() {
+            System.out.println("HelloWorld");
         }
     }
 }

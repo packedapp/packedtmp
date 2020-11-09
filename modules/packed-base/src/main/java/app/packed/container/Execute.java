@@ -20,10 +20,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.invoke.MethodHandle;
 
 import app.packed.component.BuildException;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.MethodSidecar;
+import app.packed.statemachine.OnInitialize;
 import packed.internal.component.source.SourceModelMethod;
 
 /**
@@ -56,7 +58,7 @@ import packed.internal.component.source.SourceModelMethod;
 public @interface Execute {
 
     // Skal det styres paa shell niveau?? Eller wirelet niveau..
-    boolean ownThreadOfControl() default false;
+    boolean spawnThread() default false;
 
     // remainRunning
     boolean stopOnSucces() default true;
@@ -67,10 +69,15 @@ class MySidecar extends MethodSidecar {
     /** {@inheritDoc} */
     @Override
     protected void configure() {
+        MethodHandle mh = directMethodHandle();
         SourceModelMethod.Builder.registerProcessor(this, c -> {
-            // c.region
-            System.out.println(c.path());
+            c.region.lifecycle.methodHandle = mh;
         });
+    }
+
+    @OnInitialize
+    protected void onInit(Runnable r) {
+
     }
 
 }

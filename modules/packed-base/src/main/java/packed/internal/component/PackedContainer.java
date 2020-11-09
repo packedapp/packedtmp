@@ -32,6 +32,8 @@ import app.packed.component.Wirelet;
 import app.packed.container.Container;
 import app.packed.container.ContainerInfo;
 import app.packed.container.ContainerState;
+import packed.internal.component.BuildtimeRegion.Lifecycle;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -144,17 +146,20 @@ public class PackedContainer implements Container {
             lock.unlock();
         }
 
-        // EXECUTE
-        // started
-        if (!isMain)
-
-        {
-            return;
+        Lifecycle l = component.region.lifecycle;
+        if (!l.hasExecutionBlock()) {
+            return; // runnint as deamon
         }
 
-        // if has execution... execute
+        try {
+            l.methodHandle.invoke();
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        // todo run execution block
 
-        // shutdown / or await shutdown.
+        // shutdown
+
     }
 
     /** {@inheritDoc} */
@@ -215,28 +220,28 @@ public class PackedContainer implements Container {
     public static final class ExecutingImage implements Image<Void> {
 
         /** The assembled image node. */
-        private final ComponentBuild compConf;
+        private final PackedBuildContext build;
 
         /**
          * Create a new image from the specified component.
          * 
-         * @param compConf
+         * @param build
          *            the assembled component
          */
-        public ExecutingImage(ComponentBuild compConf) {
-            this.compConf = requireNonNull(compConf);
+        public ExecutingImage(PackedBuildContext build) {
+            this.build = requireNonNull(build);
         }
 
         /** {@inheritDoc} */
         @Override
         public Component component() {
-            return compConf.adaptToComponent();
+            return build.asComponent();
         }
 
         /** {@inheritDoc} */
         @Override
         public Void use(Wirelet... wirelets) {
-            PackedInitializationContext.process(compConf, wirelets);
+            build.process(wirelets);
             return null;
         }
     }

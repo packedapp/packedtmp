@@ -64,12 +64,12 @@ public abstract class AbstractMethodSidecar {
      * @return a direct method handle to the method
      */
     public final MethodHandle directMethodHandle() {
-        return configuration.methodHandle();
+        return configuration().methodHandle();
     }
 
     /** Disables the sidecar. No reference to it will be maintained at runtime. */
     public final void disable() {
-        configuration.disable();
+        configuration().disable();
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class AbstractMethodSidecar {
      * @see AnnotatedElement#getAnnotation(Class)
      */
     public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return configuration.methodUnsafe().getAnnotation(annotationClass);
+        return configuration().methodUnsafe().getAnnotation(annotationClass);
     }
 
     /**

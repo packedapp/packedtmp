@@ -59,7 +59,6 @@ public final class PackedInitializationContext {
     private PackedInitializationContext(ComponentBuild root, WireletPack wirelets) {
         this.root = root;
         this.wirelets = wirelets;
-        this.component = new PackedComponent(null, root, this);
     }
 
     /**
@@ -73,9 +72,9 @@ public final class PackedInitializationContext {
 
     public Container container() {
         if (component.hasModifier(ComponentModifier.CONTAINER)) {
-            return component.region.guest();
+            return component.region.container();
         }
-        throw new UnsupportedOperationException("This component does not have a guest");
+        throw new UnsupportedOperationException("This component does not have a container");
     }
 
     // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
@@ -95,9 +94,15 @@ public final class PackedInitializationContext {
         return n;
     }
 
+    /**
+     * Returns a service locator for the system. If the service extension is not installed, returns
+     * {@link ServiceLocator#of()}.
+     * 
+     * @return a service locator for the system
+     */
     public ServiceLocator services() {
-        ServiceComposer sm = root.cube.getServiceManager();
-        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.region);
+        ServiceComposer sc = root.cube.getServiceManager();
+        return sc == null ? ServiceLocator.of() : sc.newServiceLocator(component, component.region);
     }
 
     /**
@@ -121,7 +126,7 @@ public final class PackedInitializationContext {
         // TODO initialize
 
         if (root.modifiers().isContainer()) {
-            pic.component.region.guest().onInitialized(root, pic);
+            pic.component.region.container().onInitialized(root, pic);
         }
         return pic; // don't know do we want to gc PIC at fast as possible
     }

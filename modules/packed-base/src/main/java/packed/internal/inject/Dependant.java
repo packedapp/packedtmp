@@ -200,12 +200,15 @@ public class Dependant {
 
                     // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
                     SourceModelMethod msm = (SourceModelMethod) sourceMember;
-                    MethodHandle mh2 = MethodHandles.collectArguments(msm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                    if (msm.model.onInitialize != null) {
+                        System.out.println(msm.model.onInitialize);
+                        MethodHandle mh2 = MethodHandles.collectArguments(msm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
 
-                    System.out.println(mh2);
-                    mh2 = mh2.bindTo(mh1);
+                        System.out.println(mh2);
+                        mh2 = mh2.bindTo(mh1);
 
-                    region.initializers.add(mh2);
+                        region.initializers.add(mh2);
+                    }
                 }
             }
         }

@@ -23,6 +23,8 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembler;
 import app.packed.component.Assembly;
 import app.packed.component.BuildContext;
+import app.packed.component.Component;
+import app.packed.component.ComponentAnalyzer;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
@@ -38,6 +40,8 @@ public final class PackedBuildContext implements BuildContext {
 
     /** The build output. */
     final int modifiers;
+
+    ComponentBuild root;
 
     /** Any shell driver that initiated the build process. */
     @Nullable
@@ -59,11 +63,22 @@ public final class PackedBuildContext implements BuildContext {
      * @param modifiers
      *            the output of the build process
      */
-    PackedBuildContext(int modifiers, @Nullable PackedShellDriver<?> shellDriver, Wirelet... wirelets) {
+    private PackedBuildContext(int modifiers, @Nullable PackedShellDriver<?> shellDriver, Wirelet... wirelets) {
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
         this.shellDriver = shellDriver;
         this.wirelets = wirelets;
     }
+
+    /**
+     * @return comp
+     */
+    public Component asComponent() {
+        return root.adaptToComponent();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void addError(ErrorMessage message) {}
 
     public boolean isImage() {
         return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
@@ -71,12 +86,12 @@ public final class PackedBuildContext implements BuildContext {
 
     /** {@inheritDoc} */
     @Override
-    public void addError(ErrorMessage message) {}
-
-    /** {@inheritDoc} */
-    @Override
     public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
+    }
+
+    public PackedInitializationContext process(Wirelet[] imageWirelets) {
+        return PackedInitializationContext.process(root, imageWirelets);
     }
 
     /**
@@ -90,9 +105,9 @@ public final class PackedBuildContext implements BuildContext {
     }
 
     /**
-     * Returns the build output.
+     * Returns the thread that is used for build process.
      * 
-     * @return the build output
+     * @return the thread that is used for build process
      */
     public Thread thread() {
         return thread;
@@ -100,6 +115,17 @@ public final class PackedBuildContext implements BuildContext {
 
     public Wirelet[] wirelets() {
         return wirelets;
+    }
+
+    /**
+     * @param assembly
+     *            the assembly to analyse
+     * @return a component adaptor
+     * 
+     * @see ComponentAnalyzer#analyze(app.packed.component.ComponentSystem)
+     */
+    public static Component analysis(Assembly<?> assembly) {
+        return build(assembly, false, false, null).asComponent();
     }
 
     /**
@@ -113,7 +139,7 @@ public final class PackedBuildContext implements BuildContext {
      *            optional wirelets
      * @return the root component configuration node
      */
-    public static ComponentBuild build(Assembly<?> assembly, boolean isAnalysis, boolean isImage, @Nullable PackedShellDriver<?> shellDriver,
+    public static PackedBuildContext build(Assembly<?> assembly, boolean isAnalysis, boolean isImage, @Nullable PackedShellDriver<?> shellDriver,
             Wirelet... wirelets) {
         int modifiers = 0;
         if (shellDriver != null) {
@@ -141,15 +167,15 @@ public final class PackedBuildContext implements BuildContext {
         ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         // Create the root component
-        ComponentBuild compConf = new ComponentBuild(pac, new RealmBuild(assembly.getClass()), componentDriver, cs, null, wp);
+        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(assembly.getClass()), componentDriver, cs, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
         AssemblyHelper.configure(assembly, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
         compConf.close();
-        return compConf;
+        return pac;
     }
 
-    public static <C extends Assembler, D> ComponentBuild configure(PackedShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C extends Assembler, D> PackedBuildContext configure(PackedShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             CustomConfigurator<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste
@@ -157,13 +183,13 @@ public final class PackedBuildContext implements BuildContext {
 
         PackedBuildContext pac = new PackedBuildContext(0, ad);
 
-        ComponentBuild compConf = new ComponentBuild(pac, new RealmBuild(consumer.getClass()), driver, cs, null, wp);
+        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(consumer.getClass()), driver, cs, null, wp);
 
         D conf = driver.toConfiguration(compConf);
         C cc = requireNonNull(factory.apply(conf));
         consumer.configure(cc);
 
         compConf.close();
-        return compConf;
+        return pac;
     }
 }

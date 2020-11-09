@@ -62,7 +62,7 @@ public final class RuntimeRegion {
     }
 
     // Don't know
-    PackedContainer guest() {
+    PackedContainer container() {
         return (PackedContainer) store[0];
     }
 

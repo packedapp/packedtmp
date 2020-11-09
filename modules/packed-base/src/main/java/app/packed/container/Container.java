@@ -20,13 +20,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedBuildContext;
 import packed.internal.component.PackedContainer.ExecutingImage;
-import packed.internal.component.PackedInitializationContext;
 
 /**
  * A container instance.
@@ -139,13 +138,30 @@ public interface Container {
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
     public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        ComponentBuild build = PackedBuildContext.build(assembly, false, false, null, wirelets);
-        PackedInitializationContext.process(build, null);
+        PackedBuildContext build = PackedBuildContext.build(assembly, false, false, null, wirelets);
+        build.process(null);
+    }
+
+    public static <T> T execute(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public static <T> T execute(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 
     public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        ComponentBuild build = PackedBuildContext.build(assembly, false, true, null, wirelets);
+        PackedBuildContext build = PackedBuildContext.build(assembly, false, true, null, wirelets);
         return new ExecutingImage(build);
+    }
+
+    public static <T> Image<T> imageOf(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public static <T> Image<T> imageOf(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
+        return imageOf(assembly, (Class) resultType.rawType(), wirelets);
     }
 
     // ContainerStopOption????
