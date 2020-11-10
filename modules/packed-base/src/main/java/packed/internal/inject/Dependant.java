@@ -176,6 +176,8 @@ public class Dependant {
 
     // All dependencies have been successfully resolved
     public void onAllDependenciesResolved(BuildtimeRegion region) {
+        // If analysis we should not need to create method handles...
+
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
@@ -201,10 +203,10 @@ public class Dependant {
                     // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
                     SourceModelMethod msm = (SourceModelMethod) sourceMember;
                     if (msm.model.onInitialize != null) {
-                        System.out.println(msm.model.onInitialize);
+                        // System.out.println(msm.model.onInitialize);
                         MethodHandle mh2 = MethodHandles.collectArguments(msm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
 
-                        System.out.println(mh2);
+//                        System.out.println(mh2);
                         mh2 = mh2.bindTo(mh1);
 
                         region.initializers.add(mh2);

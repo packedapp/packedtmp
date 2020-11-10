@@ -82,6 +82,10 @@ public final class PackedBuildContext implements BuildContext {
     @Override
     public void addError(ErrorMessage message) {}
 
+    public boolean isAnalysis() {
+        return (modifiers & PackedComponentModifierSet.I_ANALYSIS) != 0;
+    }
+
     public boolean isImage() {
         return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
     }

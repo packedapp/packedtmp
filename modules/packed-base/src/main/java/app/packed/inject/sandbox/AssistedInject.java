@@ -32,6 +32,9 @@ import java.lang.annotation.Target;
 @Documented
 public @interface AssistedInject {
 
+    // only looks for @Inject??
+    boolean injectMembers() default false;
+
     Class<?> actualType() default Object.class;
 
     // If defined looks for a static method

@@ -28,39 +28,34 @@ import app.packed.sidecar.MethodSidecar;
 import packed.internal.component.source.SourceModelMethod;
 
 /**
- * Trying to build a container with more than a single method annotated with Execute will fail with
+ * Trying to build a container with more than a single method annotated with this annotation will fail with
  * {@link BuildException}.
  * <p>
  * If the container fails to start, the method will never be invoked.
  * <p>
- * When the annotated method returns the container will automatically be stopped. Unless {@link #stopOnSucces()} has
- * been set to false. If the annotated method fails with an exception the container will automatically be shutdown with
- * the exception being the cause.
+ * When the annotated method returns the container will automatically be stopped. If the annotated method fails with an
+ * unhandled exception the container will automatically be shutdown with the exception being the cause.
  * <p>
  * Annotated methods will never be invoked more than once??? Well if we have some retry mechanism
  */
 // A single method. Will be executed.
 // and then shutdown container down again
-
 // Panic if it fails???? or do we not wrap exception??? I think we wrap...
 // We always wrap in container panic exception
 // @EntryPoint
 // What happens with CLI
 // We can have multiple entry points
 // Some of them deamons and some of them not...
-
 // Det er maaske mere noget med state end kun container...
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @ActivateMethodSidecar(sidecar = MySidecar.class)
-public @interface Execute {
+public @interface Compute {
+    // forceSpawnThread???
 
-    // Skal det styres paa shell niveau?? Eller wirelet niveau..
-    boolean spawnThread() default false;
-
-    // remainRunning
-    boolean stopOnSucces() default true;
+    // It can be the same thread, but I think it is a different request.
+    // spawnRequest = true;
 }
 
 class MySidecar extends MethodSidecar {
@@ -80,6 +75,16 @@ class MySidecar extends MethodSidecar {
 //    }
 
 }
+
+// Skal det styres paa shell niveau?? Eller wirelet niveau..
+// Tror det bliver styres paa runtime niveau
+// boolean spawnThread() default false;
+
+// remainRunning, nej det er sgu en anden annotering
+// We will gerne kunne foresporge om en Bundle har en Computer
+// Det har en semantics betydning. Det har et request
+// boolean stopOnSucces() default true;
+
 // ExecutionResult<T>... Maaske bare CompletableFuture
 
 // Vi skal have en maade hvorpaa en shell driver skal kunne faa et resultat.

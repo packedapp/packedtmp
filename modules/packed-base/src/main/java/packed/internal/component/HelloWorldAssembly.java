@@ -18,7 +18,7 @@ package packed.internal.component;
 import app.packed.bundle.BaseAssembly;
 import app.packed.cli.Main;
 import app.packed.component.ComponentSystem;
-import app.packed.container.Execute;
+import app.packed.container.Compute;
 
 /**
  *
@@ -39,7 +39,7 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     public static class HelloWorld {
 
-        @Execute
+        @Compute
         public static void execute() {
             System.out.println("HelloWorld");
         }

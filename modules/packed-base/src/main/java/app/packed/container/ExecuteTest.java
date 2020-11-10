@@ -36,7 +36,7 @@ public class ExecuteTest extends BaseAssembly {
 
     public static class Comp {
 
-        @Execute
+        @Compute
         public void runMe() {}
     }
 }

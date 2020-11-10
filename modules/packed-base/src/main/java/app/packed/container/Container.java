@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
@@ -40,8 +39,8 @@ public interface Container {
      * first.
      * <p>
      * If the container has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the container has already been successfully
-     * terminated. This method will return immediately.
+     * attempting to wait on the {@link RunState#RUNNING} state and the container has already been successfully terminated.
+     * This method will return immediately.
      *
      * @param state
      *            the state to wait on
@@ -57,8 +56,8 @@ public interface Container {
      * interrupted, whichever happens first.
      * <p>
      * If the container has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This
-     * method will return immediately with true.
+     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method will
+     * return immediately with true.
      *
      * @param state
      *            the state to wait on
@@ -137,31 +136,32 @@ public interface Container {
      */
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
-    public static void execute(Assembly<?> assembly, Wirelet... wirelets) {
+    static void execute(Assembly<?> assembly, Wirelet... wirelets) {
         PackedBuildContext.build(assembly, false, false, null, wirelets).process(null);
     }
 
-    public static <T> T execute(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static <T> T execute(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+    static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
         PackedBuildContext build = PackedBuildContext.build(assembly, false, true, null, wirelets);
         return new ExecutingImage(build);
     }
 
-    public static <T> Image<T> imageOf(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Image<T> imageOf(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
-        return imageOf(assembly, (Class) resultType.rawType(), wirelets);
-    }
+//
+//    static <T> T execute(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    static <T> T execute(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//    
+//    static <T> Image<T> imageOf(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    @SuppressWarnings({ "rawtypes", "unchecked" })
+//    static <T> Image<T> imageOf(Assembly<?> assembly, TypeToken<T> resultType, Wirelet... wirelets) {
+//        return imageOf(assembly, (Class) resultType.rawType(), wirelets);
+//    }
 
     // ContainerStopOption????
     // Eller er det generisk..? Kan den bruges paa en actor??? et Actor Trae...

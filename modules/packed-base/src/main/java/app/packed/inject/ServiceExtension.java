@@ -407,6 +407,13 @@ class ZExtraFunc {
 
     protected void addAlias(Key<?> existing, Key<?> newKey) {}
 
+    <T> ExportedServiceConfiguration<T> assistedInject(Class<T> interfase) {
+        // or abstract class can have state which can be merge in some way?
+        // well def not ver 1.
+
+        throw new UnsupportedOperationException();
+    }
+
     <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
         // Den har ihvertfald slet ikke noget providing...
