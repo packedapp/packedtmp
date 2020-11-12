@@ -59,17 +59,17 @@ public class KeyMicro {
 
     @Benchmark
     public Key<?> keyFromFieldMapStringInteger() {
-        return Key.fromField(MAP_STRING_INTEGER$);
+        return Key.convertField(MAP_STRING_INTEGER$);
     }
 
     @Benchmark
     public Key<?> keyFromFieldString() {
-        return Key.fromField(STRING$);
+        return Key.convertField(STRING$);
     }
 
     @Benchmark
     public Key<?> keyFromFieldStringQualified() {
-        return Key.fromField(STRING_QUALIFIED$);
+        return Key.convertField(STRING_QUALIFIED$);
     }
 
     @Benchmark

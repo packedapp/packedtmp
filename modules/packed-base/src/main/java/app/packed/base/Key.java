@@ -36,6 +36,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 import app.packed.base.TypeToken.CanonicalizedTypeLiteral;
+import app.packed.conversion.ConversionException;
 import packed.internal.util.AnnotationUtil;
 import packed.internal.util.QualifierHelper;
 import packed.internal.util.TypeUtil;
@@ -80,7 +81,7 @@ public abstract class Key<T> {
         /** {@inheritDoc} */
         @Override
         protected Key<?> computeValue(Class<?> key) {
-            return Key.fromTypeLiteral(TypeToken.of(key).wrap());
+            return Key.convertTypeLiteral(TypeToken.of(key).wrap());
         }
     };
 
@@ -91,7 +92,7 @@ public abstract class Key<T> {
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         protected Key<?> computeValue(Class<?> implementation) {
-            return fromTypeVariable((Class) implementation, Key.class, 0);
+            return convertTypeVariable((Class) implementation, Key.class, 0);
         }
     };
 
@@ -297,7 +298,7 @@ public abstract class Key<T> {
      * @param qualifier
      *            the new key's qualifier
      * @return the new key
-     * @throws InvalidDeclarationException
+     * @throws IllegalArgumentException
      *             if the specified annotation is not annotated with {@link Qualifier}.
      */
     // repeatable annotations??? forbidden? or overwrite.
@@ -366,9 +367,8 @@ public abstract class Key<T> {
      *            the type of qualifier for the new key
      * @return the new key
      * @throws IllegalArgumentException
-     *             if the specified qualifier type does not have default values for every attribute
-     * @throws InvalidDeclarationException
-     *             if the specified qualifier type is not annotated with {@link Qualifier}.
+     *             if the specified qualifier type does not have default values for every attribute. Or if the specified
+     *             qualifier type is not annotated with {@link Qualifier}.
      */
     final Key<T> withQualifier(Class<? extends Annotation> qualifierType) {
         requireNonNull(qualifierType, "qualifierType is null");
@@ -403,17 +403,17 @@ public abstract class Key<T> {
      * @param field
      *            the field to return a key for
      * @return a key matching the type of the field and any qualifier that may be present on the field
-     * @throws InvalidDeclarationException
+     * @throws ConversionException
      *             if the field does not represent a valid key. For example, if the type is an optional type such as
      *             {@link Optional} or {@link OptionalInt}. Or if there are more than 1 qualifier present on the field
      * @see Field#getType()
      * @see Field#getGenericType()
      */
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
-    public static Key<?> fromField(Field field) {
+    public static Key<?> convertField(Field field) {
         TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
         Annotation[] annotation = QualifierHelper.findQualifier(field.getAnnotations());
-        return fromTypeLiteralNullableAnnotation(field, tl, annotation);
+        return convertTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
     /**
@@ -422,20 +422,20 @@ public abstract class Key<T> {
      * @param method
      *            the method for to return a key for
      * @return the key matching the return type of the method and any qualifier that may be present on the method
-     * @throws InvalidDeclarationException
+     * @throws ConversionException
      *             if the specified method has a void return type. Or returns an optional type such as {@link Optional} or
      *             {@link OptionalInt}. Or if there are more than 1 qualifier present on the method
      * @see Method#getReturnType()
      * @see Method#getGenericReturnType()
      */
-    public static Key<?> fromMethodReturnType(Method method) {
+    public static Key<?> convertMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
         if (method.getReturnType() == void.class) {
-            throw new InvalidDeclarationException("@Provides method " + method + " cannot have void return type");
+            throw new ConversionException("@Provides method " + method + " cannot have void return type");
         }
         TypeToken<?> tl = TypeToken.fromMethodReturnType(method).wrap();
         Annotation[] annotation = QualifierHelper.findQualifier(method.getAnnotations());
-        return fromTypeLiteralNullableAnnotation(method, tl, annotation);
+        return convertTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
 //    public static Key<?> fromParameter(Parameter parameter) {
@@ -453,12 +453,12 @@ public abstract class Key<T> {
      * @param typeLiteral
      *            the type literal
      * @return a key with no qualifier and the same type as this instance
-     * @throws InvalidDeclarationException
+     * @throws ConversionException
      *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
      *             specified type literal it not free from type parameters
      */
-    public static <T> Key<T> fromTypeLiteral(TypeToken<T> typeLiteral) {
-        return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, (Annotation[]) null);
+    public static <T> Key<T> convertTypeLiteral(TypeToken<T> typeLiteral) {
+        return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, (Annotation[]) null);
     }
 
     /**
@@ -471,39 +471,39 @@ public abstract class Key<T> {
      * @param qualifier
      *            the qualifier of the new
      * @return a key with the specified qualifier and the same type as this instance
-     * @throws InvalidDeclarationException
-     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}. Or if the
-     *             qualifier type is not annotated with {@link Qualifier}.
+     * @throws ConversionException
+     *             if the type literal could not be converted to a key, for example, if it is an {@link Optional}.
+     * @throws IllegalArgumentException
+     *             if the qualifier type is not annotated with {@link Qualifier}.
      */
-    public static <T> Key<T> fromTypeLiteral(TypeToken<T> typeLiteral, Annotation qualifier) {
+    public static <T> Key<T> convertTypeLiteral(TypeToken<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
         QualifierHelper.checkQualifierAnnotationPresent(qualifier);
-        return fromTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
+        return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
-    public static <T> Key<T> fromTypeLiteralNullableAnnotation(Object source, TypeToken<T> typeLiteral, Annotation... qualifier) {
+    public static <T> Key<T> convertTypeLiteralNullableAnnotation(Object source, TypeToken<T> typeLiteral, Annotation... qualifier) {
         requireNonNull(typeLiteral, "typeLiteral is null");
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
         typeLiteral = typeLiteral.wrap();
         if (TypeUtil.isOptionalType(typeLiteral.rawType())) {
-            throw new InvalidDeclarationException(
-                    "Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
+            throw new ConversionException("Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
         } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
-            throw new InvalidDeclarationException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
+            throw new ConversionException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
                     + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(typeLiteral.type()));
         }
         return new CanonicalizedKey<T>(typeLiteral.canonicalize(), qualifier);
     }
 
-    public static <T> Key<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
+    public static <T> Key<?> convertTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
         TypeToken<?> t = TypeToken.fromTypeVariable(subClass, superClass, parameterIndex);
 
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
         Annotation[] qa = QualifierHelper.findQualifier(annotations);
-        return Key.fromTypeLiteralNullableAnnotation(superClass, t, qa);
+        return Key.convertTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 
     public static Key<?>[] of(Class<?>... keys) {

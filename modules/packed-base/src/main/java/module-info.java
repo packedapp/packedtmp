@@ -9,6 +9,7 @@ module app.packed.base {
     exports app.packed.inject.sandbox;
     exports app.packed.sidecar;
     exports app.packed.statemachine;
+    exports app.packed.validate;
     /*
      * exports packed.internal.classscan.invoke to app.packed.sidecar2; exports packed.internal.util to app.packed.sidecar2;
      */

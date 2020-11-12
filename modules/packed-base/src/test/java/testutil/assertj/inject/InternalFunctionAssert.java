@@ -52,7 +52,7 @@ public class InternalFunctionAssert<T> extends AbstractAssert<InternalFunctionAs
     // }
 
     public InternalFunctionAssert<T> is(TypeToken<?> type) {
-        return is(Key.fromTypeLiteral(type));
+        return is(Key.convertTypeLiteral(type));
     }
 
     public InternalFunctionAssert<T> is(Key<?> type) {

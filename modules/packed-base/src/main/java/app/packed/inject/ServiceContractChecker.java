@@ -15,7 +15,7 @@
  */
 package app.packed.inject;
 
-import java.util.function.Consumer;
+import app.packed.validate.Validator;
 
 /**
  *
@@ -30,13 +30,13 @@ import java.util.function.Consumer;
 // ??? How does this play out with the generic validation framework??????
 
 // no class and ServiceContract.exactChecker
-public abstract class ServiceContractChecker implements Consumer<ServiceContract> {
+public abstract class ServiceContractChecker implements Validator<ServiceContract> {
 
     // checkNot
     // checkIs
     // checkFoo
 
-    public static ServiceContractChecker exact(ServiceContract sc) {
+    public static Validator<ServiceContract> exact(ServiceContract sc) {
         throw new UnsupportedOperationException();
     }
 }

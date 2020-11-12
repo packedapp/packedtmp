@@ -269,7 +269,7 @@ public final class PackedComponent implements Component {
     }
 
     @Override
-    public Component system() {
+    public Component root() {
         PackedComponent p = parent;
         while (p.parent != null) {
             p = p.parent;

@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import app.packed.component.ComponentRelation;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateMethodSidecar;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.MethodSidecarSandbox;
 
 /**
  * A class cannot define more than one method annotated with {@link ConnectExtensions}.
@@ -50,7 +50,7 @@ import app.packed.sidecar.MethodSidecar;
 
 // ExtensionLinker???
 
-@ActivateMethodSidecar(allowInvoke = true, sidecar = MethodSidecar.class)
+@ActivateMethodSidecar(allowInvoke = true, sidecar = MethodSidecarSandbox.class)
 public @interface ConnectExtensions {
 
     // Only children not anything farther removed...
@@ -68,7 +68,7 @@ public @interface ConnectExtensions {
     // boolean crossArtifacts default ???
 }
 
-class Sidecar extends MethodSidecar {
+class Sidecar extends MethodSidecarSandbox {
 
     @Provide
     ComponentRelation cr() {

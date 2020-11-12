@@ -56,13 +56,13 @@ public interface ComponentRelation extends Iterable<Component> {
 
     /**
      * Returns whether or not the two components are in the same system. Two components are in the same system, iff they
-     * have the same {@link Component#system() system component}.
+     * have the same {@link Component#root() system component}.
      * 
      * @return whether or not the two components are in the same system
-     * @see Component#system()
+     * @see Component#root()
      */
     default boolean inSameSystem() {
-        return source().system() == target().system();
+        return source().root() == target().root();
     }
 
     // Just here because it might be easier to remember...

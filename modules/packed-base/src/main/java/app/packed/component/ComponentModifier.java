@@ -34,14 +34,14 @@ import app.packed.inject.Factory;
 // ComponentMode??
 public enum ComponentModifier {
 
-    /**
-     * Every component system has exactly one system component which is always the root of the component tree.
-     * 
-     * @see Component#system()
-     */
-    // Always a guest. Naah, hvad hvis vi har system view...????
-    // Was This component is also always automatically a {@link #GUEST}.
-    SYSTEM,
+//    /**
+//     * Every component system has exactly one system component which is always the root of the component tree.
+//     * 
+//     * @see Component#root()
+//     */
+//    // Always a guest. Naah, hvad hvis vi har system view...????
+//    // Was This component is also always automatically a {@link #GUEST}.
+//    SYSTEM,
 
     /**
      * Indicates that the component and all of its children is in the assembly phase. When such a system is initialized. A
@@ -76,7 +76,7 @@ public enum ComponentModifier {
      * Components with this modifier:
      * <ul>
      * <li>Always has a parent component with the {@link #BUILD} modifier set.</li>
-     * <li>Either have the {@link #SYSTEM} modifier set, or has a parent component with {@link #HOST} modifier set.</li>
+     * <li>Are either the root component, or has a parent component with {@link #HOST} modifier set.</li>
      * <li>The subtree of an image is always immutable once constructed. A {@link #HOST} modifier on a sub component. Merely
      * indicates that a runtime spawn of the image can add guests.</li>
      * </ul>
@@ -203,7 +203,6 @@ public enum ComponentModifier {
      * Indicates that once the system is constructed it will never change.
      * 
      * <ul>
-     * <li>Always have the {@link #SYSTEM} modifier set as well.</li>
      * <li>Never has a parent component (is root).</li>
      * <li>Never has any components with the {@link #HOST} modifier set.</li>
      * </ul>

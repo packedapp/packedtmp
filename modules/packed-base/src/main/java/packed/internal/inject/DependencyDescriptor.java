@@ -35,12 +35,12 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
+import app.packed.component.ComponentDefinitionException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
@@ -368,7 +368,7 @@ public final class DependencyDescriptor implements OldVariable {
             Type cl = ((ParameterizedType) getParameterizedType).getActualTypeArguments()[0];
             tl = BasePackageAccess.base().toTypeLiteral(cl);
             if (TypeUtil.isOptionalType(tl.rawType())) {
-                throw new InvalidDeclarationException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl));
+                throw new ComponentDefinitionException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl));
             }
         } else if (rawType == OptionalLong.class) {
             optionallaity = Optionality.OPTIONAL_LONG;
@@ -384,7 +384,7 @@ public final class DependencyDescriptor implements OldVariable {
         if (parameter.isAnnotationPresent(Nullable.class)) {
             if (optionallaity != null) {
                 // TODO fix name() to something more readable
-                throw new InvalidDeclarationException(
+                throw new ComponentDefinitionException(
                         ErrorMessageBuilder.of(parameter).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
                                 .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
             }
@@ -395,7 +395,7 @@ public final class DependencyDescriptor implements OldVariable {
             optionallaity = Optionality.REQUIRED;
         }
         // TL is free from Optional
-        Key<?> key = Key.fromTypeLiteralNullableAnnotation(parameter, tl, qualifiers);
+        Key<?> key = Key.convertTypeLiteralNullableAnnotation(parameter, tl, qualifiers);
 
         return new DependencyDescriptor(getParameterizedType, key, optionallaity, parameter);
     }

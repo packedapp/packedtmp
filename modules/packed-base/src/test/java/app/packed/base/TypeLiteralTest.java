@@ -389,14 +389,14 @@ public class TypeLiteralTest {
 
     @Test
     public <S> void toKeyAnnotation() {
-        npe(() -> Key.fromTypeLiteral(TL_INTEGER, null), "qualifier");
+        npe(() -> Key.convertTypeLiteral(TL_INTEGER, null), "qualifier");
 
         Annotation nonQualified = Arrays.stream(TypeLiteralTest.class.getDeclaredMethods()).filter(m -> m.getName().equals("toKeyAnnotation")).findFirst().get()
                 .getAnnotations()[0];
-        assertThatThrownBy(() -> Key.fromTypeLiteral(TL_INTEGER, nonQualified)).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(TL_INTEGER, nonQualified)).isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("@org.junit.jupiter.api.Test is not a valid qualifier. The annotation must be annotated with @Qualifier");
 
-        Key<Integer> key = Key.fromTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
+        Key<Integer> key = Key.convertTypeLiteral(TL_INTEGER, AnnotationInstances.NO_VALUE_QUALIFIER);
         assertThat(key.typeToken()).isEqualTo(TL_INTEGER);
         assertThat(key.qualifiers()).containsExactly(AnnotationInstances.NO_VALUE_QUALIFIER);
     }

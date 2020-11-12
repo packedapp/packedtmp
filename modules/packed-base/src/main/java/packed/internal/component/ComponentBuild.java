@@ -139,7 +139,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
             this.region = new BuildtimeRegion(); // Root always needs a nodestore
 
             mod = mod | build.modifiers;
-            mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
+            // mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
             if (build.modifiers().isContainer()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINER);

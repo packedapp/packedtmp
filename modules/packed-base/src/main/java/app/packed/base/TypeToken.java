@@ -70,7 +70,7 @@ public abstract class TypeToken<T> {
             @Override
             public Key<?> toKeyNullableQualifier(Type type, Annotation[] qualifier) {
                 TypeToken<?> tl = new TypeToken.CanonicalizedTypeLiteral<>(type);
-                return Key.fromTypeLiteralNullableAnnotation(type, tl, qualifier);
+                return Key.convertTypeLiteralNullableAnnotation(type, tl, qualifier);
             }
 
             /** {@inheritDoc} */

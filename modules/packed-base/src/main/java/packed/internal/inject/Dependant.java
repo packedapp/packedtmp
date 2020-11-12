@@ -23,8 +23,8 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentDefinitionException;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.RuntimeRegion;
@@ -103,7 +103,7 @@ public class Dependant {
 
         if (smm.provideAskey != null) {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
-                throw new InvalidDeclarationException("Not okay)");
+                throw new ComponentDefinitionException("Not okay)");
             }
             ServiceComposer sbm = compConf.memberOfCube.getServiceManagerOrCreate();
             BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);

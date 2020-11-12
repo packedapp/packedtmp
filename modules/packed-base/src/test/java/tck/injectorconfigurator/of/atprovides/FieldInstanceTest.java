@@ -25,8 +25,8 @@ import java.util.function.Consumer;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.TypeToken;
+import app.packed.component.ComponentDefinitionException;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.inject.service.sandbox.Injector;
@@ -103,7 +103,7 @@ public class FieldInstanceTest {
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(SingletonField.class);
         }));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        a.isExactlyInstanceOf(ComponentDefinitionException.class).hasNoCause();
         // TODO check message
 
         // a = assertThatThrownBy(() -> of(c -> {
@@ -118,7 +118,7 @@ public class FieldInstanceTest {
             c.provideInstance(new AtomicBoolean());
             c.providePrototype(PrototypeField.class);
         }));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        a.isExactlyInstanceOf(ComponentDefinitionException.class).hasNoCause();
         // TODO check message
     }
 

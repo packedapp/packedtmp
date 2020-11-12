@@ -27,7 +27,7 @@ import app.packed.inject.FactoryType;
 /**
  *
  */
-public abstract class AbstractSemiFinalMethodSidecar extends AbstractMethodSidecar {
+public abstract class AbstractSemiFinalMethodSidecar extends MethodSidecar {
 
     final boolean needsInstance() {
         return !Modifier.isStatic(method().getModifiers());

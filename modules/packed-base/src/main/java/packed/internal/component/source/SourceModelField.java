@@ -157,7 +157,7 @@ public class SourceModelField extends SourceModelMember {
         }
 
         public void provideAsService(boolean isConstant) {
-            provideAsService(isConstant, Key.fromField(field()));
+            provideAsService(isConstant, Key.convertField(field()));
         }
 
         public void provideAsService(boolean isConstant, Key<?> key) {

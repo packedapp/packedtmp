@@ -68,7 +68,7 @@ public final class SidecarContextDependencyProvider implements DependencyProvide
         final MethodHandle methodHandle;
 
         Builder(Method method, MethodHandle methodHandle) {
-            this.key = Key.fromMethodReturnType(method);
+            this.key = Key.convertMethodReturnType(method);
             this.methodHandle = requireNonNull(methodHandle);
         }
 

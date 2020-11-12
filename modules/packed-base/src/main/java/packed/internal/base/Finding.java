@@ -13,28 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+package packed.internal.base;
 
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-public @interface ActivateMethodSidecar {
+// Like optional, but with an error context...
+// Very similar to Converter
+// Eneste problem er at vi skal have et felt til...
+// Kan ikke have en speciel type vi tester mod pga parameterizere parametere
 
-    /** Whether or not the sidecar is allow to invoke the method. */
-    boolean allowInvoke() default false;
+// Maaske starte med at bruge den internt... For FindInjectableConstructor
+// Lad os lige gennemtaenke det..
+public class Finding<T> {
 
-    /** The sidecar that is activated. */
-    Class<? extends MethodSidecarSandbox> sidecar();
 }
-// invoke...
-// provide, but someone else invokes

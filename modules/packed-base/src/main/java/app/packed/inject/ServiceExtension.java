@@ -35,6 +35,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
+import app.packed.validate.Validator;
 import packed.internal.bundle.BundleBuild;
 import packed.internal.bundle.ExtensionBuild;
 import packed.internal.config.ConfigSiteInjectOperations;
@@ -111,7 +112,7 @@ public final class ServiceExtension extends Extension {
     }
 
     // Validates the outward facing contract
-    public void checkContract(Consumer<? super ServiceContract> validator) {
+    public void checkContract(Validator<? super ServiceContract> validator) {
 
     }
 

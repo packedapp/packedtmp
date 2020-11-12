@@ -44,7 +44,7 @@ public class FactoryAssert<T> extends AbstractAssert<FactoryAssert<T>, Factory<T
     }
 
     public FactoryAssert<T> is(TypeToken<?> type) {
-        return is(Key.fromTypeLiteral(type));
+        return is(Key.convertTypeLiteral(type));
     }
 
     public FactoryAssert<T> is(Key<?> type) {

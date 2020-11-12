@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package app.packed.conversion;
 
-/**
- * A runtime exception that is typically thrown when the runtime encounters a structural problems on some object. For
- * example, a final field annotated with {@link app.packed.inject.Inject}.
- */
-// ComponentDeclarationException.
-// Skal vel kende forskel paa runtime og build time...
-// Skal vel ogsaa flyttes til component packen.
-
-// ClassDefinitionException...
-// ConstCreateException.. <- Det er en exception der bliver lavet naar man bruger const api'en...
-
-// SourceException??
-public class InvalidDeclarationException extends RuntimeException {
+/** An exception indicating the failure of some kind of object conversion. */
+public class ConversionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
     private static final long serialVersionUID = 1L;
@@ -40,9 +29,8 @@ public class InvalidDeclarationException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InvalidDeclarationException(CharSequence message) {
-        super(message.toString());
-
+    public ConversionException(String message) {
+        super(message);
     }
 
     /**
@@ -55,8 +43,7 @@ public class InvalidDeclarationException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public InvalidDeclarationException(CharSequence message, Throwable cause) {
-        super(message.toString(), cause);
+    public ConversionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
-// Kunne vaere fedt med et configuration site...Men nah er det ikke kun statisk vi brokker os over

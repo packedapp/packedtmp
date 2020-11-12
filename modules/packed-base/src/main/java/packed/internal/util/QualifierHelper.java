@@ -19,7 +19,6 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.base.InvalidDeclarationException;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 
@@ -34,7 +33,7 @@ public final class QualifierHelper {
         }
         // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
         // InjectExtension??? I think that's better...
-        throw new InvalidDeclarationException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
+        throw new IllegalArgumentException("@" + format(annotationType) + " is not a valid qualifier. The annotation must be annotated with @Qualifier");
     }
 
     @Nullable

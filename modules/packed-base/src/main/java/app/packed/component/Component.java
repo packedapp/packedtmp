@@ -121,12 +121,11 @@ public interface Component extends AttributedElement, ComponentSystem {
     ComponentStream stream(ComponentStream.Option... options);
 
     /**
-     * Returns the system component. The system component always is always the single component having the
-     * {@link ComponentModifier#SYSTEM} modifier in a component system.
+     * Returns the root (system) component.
      * 
-     * @return the system component
+     * @return the root component
      */
-    default Component system() {
+    default Component root() {
         Optional<Component> p = parent();
         while (!p.isEmpty()) {
             p = p.get().parent();

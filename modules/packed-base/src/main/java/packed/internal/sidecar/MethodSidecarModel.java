@@ -26,13 +26,13 @@ import app.packed.bundle.InternalExtensionException;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.Invoker;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.MethodSidecarSandbox;
 import app.packed.statemachine.OnInitialize;
 import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
-/** A model of a {@link MethodSidecar}. */
-public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
+/** A model of a {@link MethodSidecarSandbox}. */
+public final class MethodSidecarModel extends SidecarModel<MethodSidecarSandbox> {
 
     /** A cache of any extensions a particular annotation activates. */
     static final ClassValue<MethodSidecarModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
@@ -68,8 +68,8 @@ public final class MethodSidecarModel extends SidecarModel<MethodSidecar> {
         return ANNOTATION_ON_METHOD_SIDECARS.get(c);
     }
 
-    /** A builder for method sidecar. This class is public because it used from {@link MethodSidecar}. */
-    public final static class Builder extends SidecarModel.Builder<MethodSidecar> {
+    /** A builder for method sidecar. This class is public because it used from {@link MethodSidecarSandbox}. */
+    public final static class Builder extends SidecarModel.Builder<MethodSidecarSandbox> {
 
         Class<?> invoker;
 

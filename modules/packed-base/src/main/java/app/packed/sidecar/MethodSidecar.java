@@ -15,127 +15,125 @@
  */
 package app.packed.sidecar;
 
-import static java.util.Objects.requireNonNull;
-
+import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-import java.util.function.Consumer;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
-import app.packed.base.Key;
+import app.packed.base.Nullable;
+import app.packed.bundle.Extension;
+import app.packed.bundle.ExtensionMember;
+import packed.internal.component.source.SourceModelMethod;
+import packed.internal.sidecar.SidecarModel;
 
 /**
- * Packed creates a single instance of a subclass per method and runs the {@link #configure()} method.
+ *
+ * <p>
+ * Calling any method on this class outside of {@link #configure()} will fail with {@link IllegalStateException}.
  */
-// Vi har ikke laengere 
+public abstract class MethodSidecar implements AnnotatedElement {
 
-// implements AnnotatedElement
+    /** The configuration (builder) of this sidecar. Updated by {@link SidecarModel.Builder}. */
+    @Nullable
+    private SourceModelMethod.Builder configuration;
 
-// Skal metoderne vaere protected????
-// Ikke hvis man skal kunne specificere den til extensions...
-public abstract class MethodSidecar extends AbstractSemiFinalMethodSidecar {
-
-    // Tror de her doer...
-    // Hvis vi kan lave en ny instans...
-    // provideLocal...
-    protected final <T> void provide(Class<T> key, T instance) {
-        provide(Key.of(key), instance);
+    /**
+     * Returns this sidecar's builder object.
+     * 
+     * @return this sidecar's builder object
+     */
+    final SourceModelMethod.Builder configuration() {
+        SourceModelMethod.Builder c = configuration;
+        if (c == null) {
+            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
+        }
+        return c;
     }
 
-    protected final <T> void provide(Key<T> key, T instance) {}
+    /** Configures this sidecar. */
+    protected abstract void configure();
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected final void provide(Object instance) {
-        requireNonNull(instance, "instance is null");
-        provide((Class) instance.getClass(), instance);
+    /**
+     * Returns a direct method handle to the method (without any intervening argument bindings or transformations that may
+     * have been called elsewhere on this sidecar).
+     * 
+     * @return a direct method handle to the method
+     */
+    public final MethodHandle directMethodHandle() {
+        return configuration().methodHandle();
     }
 
-    // Ellers har vi en speciel Invoker factory
-
-    // Parameters of method handle must match Invoker
-
-    // Maaske man skal have sat en invoker inden... Ja det skal man
-
-    // Hvordan mixer vi med services???
-    protected final void bindParameterToInvoker(int index, int invokerIndex) {}
-
-    protected final void bindParameterToInvoker(int index, MethodHandle invokerCompatible) {}
-
-    // protected final void bindParameterMh(int index, MethodHandle mh) {}
-
-    protected final void forEachUnbound(Consumer<? super VariableBinder> action) {
-
+    /** Disables the sidecar. No reference to it will be maintained at runtime. */
+    public final void disable() {
+        configuration().disable();
     }
 
     /**
+     * Returns any extension the source is a member of of. Or empty if the source is not part of any extension.
      * 
-     * @throws IllegalStateException
-     *             if called from outside of {@link #configure()}
+     * @return any extension the source is a member of of
+     * @see ExtensionMember
      */
-    protected final void provideInvoker() {
-        throw new UnsupportedOperationException();
-    }
-
-    // MethodHandle must take
-    protected final void returnTypeTransform(MethodHandle mh, Class<?>... injections) {
-        // Kunne maaske godt taenke mig noget tekst???
-        // Skal vi have en klasse??
-        // Naar vi skal have et visuelt overblik engang?
-        // Maaske er det nok at kunne se sidecaren...
-
-        // Vi kan jo sende aben videre til andre sidecars. Saa tror ogsaa
-        // vi skal kunne transformere variablen...
-
-        // VarTransformer // add annotations, set type literal, remove annotations
-
-        // Altsaa det er jo fuldstaendig som method handle... Vi har behov for de samme ting...
-        // insert, drop, ...
-        // Ved ikke om vi supporter multiple variable transformers...
-
-        // Must take existing class value as single parameter
-        // and injections as subsequent values
-        // Har vi behov for at kunne aendre noget ved typen
-    }
-
-    protected final void returnTypeTransform(MethodHandle mh, Key<?>... injections) {
-        // Must take class value
-    }
-
-    protected final void serviceInjectionDisable() {
-        // syntes den er enabled by default
+    public final Optional<Class<? extends Extension>> extensionMember() {
+        return configuration().extensionMember();
     }
 
     /**
-     * Register the result of invoking the method as a service.
-     * <p>
-     * Methods that Cannot create invokers.
+     * Returns an annotated element from the method that is being bootstrapped.
      * 
-     * @param isConstant
-     *            whether or not the service is constant. Constants are always eagerly computed at initialization time
-     * @see #serviceRegister(boolean, Class)
-     * @see #serviceRegister(boolean, Key)
-     * @throws IllegalStateException
-     *             if any invokers have already been registered for the sidecar.
+     * @see AnnotatedElement#getAnnotation(Class)
      */
-    // Multiple invocations???? Failure, multi services???
-    // Multi services... I think you need to register multiple sidecars
-
-    // Move to a special place on ServiceExtension... IDK
-    // Vi vil ogsaa gerne have muligheden for at tilfoeje attributer...
-
-    protected final void serviceRegister(boolean isConstant) {
-        configuration().serviceRegister(isConstant);
+    // MS extends AnnotatedElement???? With meta annotations.
+    // Call method if you want without them...
+    @Override
+    public final <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        return configuration().methodUnsafe().getAnnotation(annotationClass);
     }
 
-    protected final void serviceRegister(boolean isConstant, Class<?> key) {
-        serviceRegister(isConstant, Key.of(key));
+    /** {@inheritDoc} */
+    @Override
+    public final Annotation[] getAnnotations() {
+        return configuration().methodUnsafe().getAnnotations();
     }
 
-    protected final void serviceRegister(boolean isConstant, Key<?> key) {
-        configuration().serviceRegister(isConstant, key);
+    /** {@inheritDoc} */
+    @Override
+    public final <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        return configuration().methodUnsafe().getAnnotationsByType(annotationClass);
     }
 
-    protected final MethodType type() {
-        // Taenker den er opdateret
-        return null;
+    /** {@inheritDoc} */
+    @Override
+    public final <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
+        return configuration().methodUnsafe().getDeclaredAnnotation(annotationClass);
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public final Annotation[] getDeclaredAnnotations() {
+        return configuration().methodUnsafe().getDeclaredAnnotations();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return configuration().methodUnsafe().getDeclaredAnnotationsByType(annotationClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+        return configuration().methodUnsafe().isAnnotationPresent(annotationClass);
+    }
+
+    /**
+     * Returns the method that is being processed by this sidecar.
+     * 
+     * @return the method that is being processed by this sidecar
+     */
+    public final Method method() {
+        return configuration().methodSafe();
+    }
+
 }

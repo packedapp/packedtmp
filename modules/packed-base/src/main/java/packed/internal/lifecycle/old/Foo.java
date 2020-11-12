@@ -29,7 +29,7 @@ import app.packed.component.App;
 import app.packed.inject.Provide;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.Invoker;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.MethodSidecarSandbox;
 import app.packed.statemachine.OnInitialize;
 
 /**
@@ -69,7 +69,7 @@ public class Foo extends BaseAssembly {
     }
 }
 
-class TestIt extends MethodSidecar {
+class TestIt extends MethodSidecarSandbox {
 
     static final AtomicLong al = new AtomicLong();
 

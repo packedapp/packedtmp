@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
-
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+package app.packed.conversion;
 
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-public @interface ActivateMethodSidecar {
+// report errors
+// What am I converter
+// From where is this
 
-    /** Whether or not the sidecar is allow to invoke the method. */
-    boolean allowInvoke() default false;
+// Kan ikke se vi kan undgaa en object allocation
 
-    /** The sidecar that is activated. */
-    Class<? extends MethodSidecarSandbox> sidecar();
-}
-// invoke...
-// provide, but someone else invokes
+// Maaske kan man tillade @Nullable ConversionContext i saa fald smider man en exception. Som bliver fanget IDK
+public interface ConversionContext {}

@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.component.BuildException;
 import app.packed.sidecar.ActivateMethodSidecar;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.MethodSidecarSandbox;
 import packed.internal.component.source.SourceModelMethod;
 
 /**
@@ -58,7 +58,7 @@ public @interface Compute {
     // spawnRequest = true;
 }
 
-class MySidecar extends MethodSidecar {
+class MySidecar extends MethodSidecarSandbox {
 
     /** {@inheritDoc} */
     @Override

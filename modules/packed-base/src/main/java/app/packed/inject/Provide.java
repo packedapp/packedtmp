@@ -27,7 +27,7 @@ import app.packed.bundle.ExtensionMember;
 import app.packed.sidecar.ActivateFieldSidecar;
 import app.packed.sidecar.ActivateMethodSidecar;
 import app.packed.sidecar.FieldSidecar;
-import app.packed.sidecar.MethodSidecar;
+import app.packed.sidecar.MethodSidecarSandbox;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -114,7 +114,7 @@ final class ProvideFieldSidecar extends FieldSidecar {
 }
 
 /** A method sidecar for {@link Provide}. */
-final class ProvideMethodSidecar extends MethodSidecar {
+final class ProvideMethodSidecar extends MethodSidecarSandbox {
 
     /** {@inheritDoc} */
     @Override

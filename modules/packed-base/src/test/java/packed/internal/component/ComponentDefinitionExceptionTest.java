@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.base;
+package packed.internal.component;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
+import app.packed.component.ComponentDefinitionException;
 import testutil.stubs.Throwables.Exception1;
 
-/** Tests {@link InvalidDeclarationException}. */
-public class InvalidDeclarationExceptionTest {
+/** Tests {@link ComponentDefinitionException}. */
+public class ComponentDefinitionExceptionTest {
 
     /** Tests the various constructors. */
     @Test
     public void test() {
-        assertThat(new InvalidDeclarationException("foo")).hasNoCause();
-        assertThat(new InvalidDeclarationException("foo")).hasMessage("foo");
-        assertThat(new InvalidDeclarationException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
-        assertThat(new InvalidDeclarationException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
+        assertThat(new ComponentDefinitionException("foo")).hasNoCause();
+        assertThat(new ComponentDefinitionException("foo")).hasMessage("foo");
+        assertThat(new ComponentDefinitionException("foobar", Exception1.INSTANCE)).hasCause(Exception1.INSTANCE);
+        assertThat(new ComponentDefinitionException("foobar", Exception1.INSTANCE)).hasMessage("foobar");
     }
 }

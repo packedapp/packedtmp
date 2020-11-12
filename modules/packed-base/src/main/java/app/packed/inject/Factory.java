@@ -141,7 +141,7 @@ public abstract class Factory<T> {
     @SuppressWarnings("unchecked")
     Factory() {
         this.typeLiteral = (TypeToken<T>) CACHE.get(getClass());
-        this.key = Key.fromTypeLiteral(typeLiteral);
+        this.key = Key.convertTypeLiteral(typeLiteral);
         this.methodHandle = null;
     }
 
@@ -159,7 +159,7 @@ public abstract class Factory<T> {
     protected Factory(Supplier<? extends T> supplier) {
         requireNonNull(supplier, "supplier is null");
         this.typeLiteral = (TypeToken<T>) CACHE.get(getClass());
-        this.key = Key.fromTypeLiteral(typeLiteral);
+        this.key = Key.convertTypeLiteral(typeLiteral);
         MethodHandle mh = CREATE.bindTo(supplier).bindTo(rawType()); // (Supplier, Class)Object -> ()Object
         this.methodHandle = MethodHandleUtil.castReturnType(mh, rawType()); // ()Object -> ()R
     }
@@ -167,7 +167,7 @@ public abstract class Factory<T> {
     private Factory(TypeToken<T> typeLiteralOrKey) {
         requireNonNull(typeLiteralOrKey, "typeLiteralOrKey is null");
         this.typeLiteral = typeLiteralOrKey;
-        this.key = Key.fromTypeLiteral(typeLiteral);
+        this.key = Key.convertTypeLiteral(typeLiteral);
         this.methodHandle = null;
     }
 

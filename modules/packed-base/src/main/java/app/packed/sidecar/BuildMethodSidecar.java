@@ -15,26 +15,35 @@
  */
 package app.packed.sidecar;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import java.util.Optional;
 
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-public @interface ActivateMethodSidecar {
+public abstract class BuildMethodSidecar extends MethodSidecar {
 
-    /** Whether or not the sidecar is allow to invoke the method. */
-    boolean allowInvoke() default false;
+    public final Optional<Class<?>> buildtimeProcessor() {
+        // disabled -> Optional.empty
 
-    /** The sidecar that is activated. */
-    Class<? extends MethodSidecarSandbox> sidecar();
+        // Can specify both
+        // class
+        // instance
+        // prototype
+        return Optional.of(getClass());
+    }
+
+    public void buildtimeDisable() {}
+
+    // replaces the
+    public void buildtimeSetInstance(Object o) {}
+
+    //
+    public void buildtimeSet(Class<?> injectMe) {}
+
+    public static class BuildTime {
+
+        protected void configure() {
+
+        }
+    }
 }
-// invoke...
-// provide, but someone else invokes

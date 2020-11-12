@@ -36,6 +36,7 @@ import java.util.OptionalLong;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.junit.jupiter.api.Test;
 
+import app.packed.conversion.ConversionException;
 import testutil.stubs.annotation.AnnotationInstances;
 import testutil.stubs.annotation.CharQualifier;
 import testutil.stubs.annotation.IntQualifier;
@@ -89,9 +90,9 @@ public class KeyTest {
         assertThat(KEY_INTEGER_X).isNotEqualTo(KEY_INTEGER).isNotEqualTo(KEY_INTEGER_Y).isNotEqualTo((new Key<@CharQualifier('X') Long>() {}));
     }
 
-    /** Tests {@link Key#fromField(Field)}. */
+    /** Tests {@link Key#convertField(Field)}. */
     @Test
-    public void fromField() {
+    public void convertField() {
         @SuppressWarnings("unused")
         class Tmpx<T> {
 
@@ -115,44 +116,44 @@ public class KeyTest {
             int primitiveQualified;
         }
 
-        npe(() -> Key.fromField((Field) null), "field");
+        npe(() -> Key.convertField((Field) null), "field");
 
         Field f = findField(Tmpx.class, "ok");
-        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromField(f).hasQualifiers()).isFalse();
-        assertThat(Key.fromField(f).qualifiers()).isEmpty();
+        assertThat(Key.convertField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.convertField(f).hasQualifiers()).isFalse();
+        assertThat(Key.convertField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "okQualified");
-        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromField(f).hasQualifiers()).isTrue();
-        assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.convertField(f).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.convertField(f).hasQualifiers()).isTrue();
+        assertThat(Key.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         f = findField(Tmpx.class, "primitive");
-        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromField(f).hasQualifiers()).isFalse();
-        assertThat(Key.fromField(f).qualifiers()).isEmpty();
+        assertThat(Key.convertField(f).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(Key.convertField(f).hasQualifiers()).isFalse();
+        assertThat(Key.convertField(f).qualifiers()).isEmpty();
 
         f = findField(Tmpx.class, "primitiveQualified");
-        assertThat(Key.fromField(f).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromField(f).hasQualifiers()).isTrue();
-        assertThat(Key.fromField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.convertField(f).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(Key.convertField(f).hasQualifiers()).isTrue();
+        assertThat(Key.convertField(f).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "notTypeParameterFree")));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.convertField(findField(Tmpx.class, "notTypeParameterFree")));
+        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
         // TODO test msg
 
-        a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "optional")));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        a = assertThatThrownBy(() -> Key.convertField(findField(Tmpx.class, "optional")));
+        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
         // TODO test msg
 
-//        a = assertThatThrownBy(() -> Key.fromField(findField(Tmpx.class, "multipleQualifier")));
+//        a = assertThatThrownBy(() -> Key.convertField(findField(Tmpx.class, "multipleQualifier")));
 //        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
     }
 
-    /** Tests {@link Key#fromField(Field)}. */
+    /** Tests {@link Key#convertField(Field)}. */
     @Test
-    public void fromMethodReturnType() throws Exception {
+    public void convertMethodReturnType() throws Exception {
         @SuppressWarnings("unused")
         class Tmpx<T> {
 
@@ -195,40 +196,41 @@ public class KeyTest {
             }
         }
 
-        npe(() -> Key.fromMethodReturnType((Method) null), "method");
+        npe(() -> Key.convertMethodReturnType((Method) null), "method");
 
         Method m = Tmpx.class.getDeclaredMethod("ok");
-        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isFalse();
-        assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
+        assertThat(Key.convertMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.convertMethodReturnType(m).hasQualifiers()).isFalse();
+        assertThat(Key.convertMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("okQualified");
-        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
-        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isTrue();
-        assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.convertMethodReturnType(m).typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        assertThat(Key.convertMethodReturnType(m).hasQualifiers()).isTrue();
+        assertThat(Key.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
         m = Tmpx.class.getDeclaredMethod("primitive");
-        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isFalse();
-        assertThat(Key.fromMethodReturnType(m).qualifiers()).isEmpty();
+        assertThat(Key.convertMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(Key.convertMethodReturnType(m).hasQualifiers()).isFalse();
+        assertThat(Key.convertMethodReturnType(m).qualifiers()).isEmpty();
 
         m = Tmpx.class.getDeclaredMethod("primitiveQualified");
-        assertThat(Key.fromMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
-        assertThat(Key.fromMethodReturnType(m).hasQualifiers()).isTrue();
-        assertThat(Key.fromMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
+        assertThat(Key.convertMethodReturnType(m).typeToken()).isEqualTo(TL_INTEGER);
+        assertThat(Key.convertMethodReturnType(m).hasQualifiers()).isTrue();
+        assertThat(Key.convertMethodReturnType(m).qualifiers()).containsExactly(AnnotationInstances.CHAR_QUALIFIER_X);
 
-        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
+                () -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("voidReturnType")));
+        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
 
-        a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("notTypeParameterFree")));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        a = assertThatThrownBy(() -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("notTypeParameterFree")));
+        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
         // TODO test msg
 
-        a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("optional")));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        a = assertThatThrownBy(() -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("optional")));
+        a.isExactlyInstanceOf(ConversionException.class).hasNoCause();
         // TODO test msg
 
-//        a = assertThatThrownBy(() -> Key.fromMethodReturnType(Tmpx.class.getDeclaredMethod("multipleQualifier")));
+//        a = assertThatThrownBy(() -> Key.convertMethodReturnType(Tmpx.class.getDeclaredMethod("multipleQualifier")));
 //        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
         // TODO test msg
     }
@@ -259,8 +261,8 @@ public class KeyTest {
     public <S> void toKey() {
         TypeToken<Integer> tl1 = TypeToken.of(Integer.class);
 
-        Key<Integer> k1 = Key.fromTypeLiteral(tl1);
-        Key<Integer> k2 = Key.fromTypeLiteral(TL_INTEGER);
+        Key<Integer> k1 = Key.convertTypeLiteral(tl1);
+        Key<Integer> k2 = Key.convertTypeLiteral(TL_INTEGER);
 
         assertThat(k1.typeToken()).isSameAs(tl1);
         assertThat(k2.typeToken()).isEqualTo(TL_INTEGER);
@@ -270,20 +272,20 @@ public class KeyTest {
         assertThat(k2.hasQualifiers()).isFalse();
 
         // Optional
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<Optional<Integer>>() {})).isExactlyInstanceOf(ConversionException.class)
                 .hasMessage("Cannot convert an optional type (Optional<Integer>) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<OptionalInt>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalInt>() {})).isExactlyInstanceOf(ConversionException.class)
                 .hasMessage("Cannot convert an optional type (OptionalInt) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<OptionalLong>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalLong>() {})).isExactlyInstanceOf(ConversionException.class)
                 .hasMessage("Cannot convert an optional type (OptionalLong) to a Key, as keys cannot be optional");
-        assertThatThrownBy(() -> Key.fromTypeLiteral(new TypeToken<OptionalDouble>() {})).isExactlyInstanceOf(InvalidDeclarationException.class)
+        assertThatThrownBy(() -> Key.convertTypeLiteral(new TypeToken<OptionalDouble>() {})).isExactlyInstanceOf(ConversionException.class)
                 .hasMessage("Cannot convert an optional type (OptionalDouble) to a Key, as keys cannot be optional");
 
         // We need to use this old fashion way because of
         try {
-            Key.fromTypeLiteral(new TypeToken<List<S>>() {});
+            Key.convertTypeLiteral(new TypeToken<List<S>>() {});
             fail("should have failed");
-        } catch (InvalidDeclarationException e) {
+        } catch (ConversionException e) {
             assertThat(e).hasMessage("Can only convert type literals that are free from type variables to a Key, however TypeVariable<List<S>> defined: [S]");
         }
     }
@@ -330,7 +332,7 @@ public class KeyTest {
         // Tests that the annotation has a qualifier annotation.
         AbstractThrowableAssert<?, ? extends Throwable> a = assertThatThrownBy(
                 () -> KEY_INTEGER.with(KeyTest.class.getDeclaredMethod("withQualifier").getAnnotations()[0]));
-        a.isExactlyInstanceOf(InvalidDeclarationException.class).hasNoCause();
+        a.isExactlyInstanceOf(IllegalArgumentException.class).hasNoCause();
         // TODO check message
     }
 

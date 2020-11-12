@@ -13,28 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.sidecar;
+package app.packed.conversion;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import app.packed.bundle.Extension;
 
 /**
  *
  */
-@Target(ElementType.ANNOTATION_TYPE)
-@Retention(RUNTIME)
-@Documented
-public @interface ActivateMethodSidecar {
+// Auto aktiveret...
 
-    /** Whether or not the sidecar is allow to invoke the method. */
-    boolean allowInvoke() default false;
-
-    /** The sidecar that is activated. */
-    Class<? extends MethodSidecarSandbox> sidecar();
+// Som udgangspunkt bliver converters arvet
+public final class ConverterExtension extends Extension {
+    /* package-private */ ConverterExtension() {}
 }
-// invoke...
-// provide, but someone else invokes
