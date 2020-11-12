@@ -24,9 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.StringJoiner;
 
-import app.packed.base.Variable;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.Variable;
 import app.packed.component.BuildException;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;

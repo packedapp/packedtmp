@@ -85,8 +85,6 @@ public final class BasePackageAccess {
     /** A support class for calling package private methods in the app.packed.base package. */
     public interface AppPackedBaseAccess {
 
-        boolean isCanonicalized(TypeToken<?> typeLiteral);
-
         Key<?> toKeyNullableQualifier(Type type, @Nullable Annotation[] qualifier);
 
         /**

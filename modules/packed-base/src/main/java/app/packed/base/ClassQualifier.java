@@ -26,7 +26,7 @@ import java.lang.annotation.Target;
 // Ideen er lidt at vi definere en standard qualifier man kan bruge
 
 @Retention(RetentionPolicy.RUNTIME)
-@Key.Qualifier
+@Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 @interface ClassQualifier {
     Class<?> value();

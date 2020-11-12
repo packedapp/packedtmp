@@ -20,8 +20,8 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.base.TreePath;
 import app.packed.container.Container;
-import app.packed.container.RunState;
 import app.packed.container.ContainerWirelets;
+import app.packed.container.RunState;
 import app.packed.inject.ServiceLocator;
 
 /**

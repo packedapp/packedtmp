@@ -22,13 +22,13 @@ import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
-import app.packed.inject.Factory;
 import app.packed.component.StatelessConfiguration;
+import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 
 /**

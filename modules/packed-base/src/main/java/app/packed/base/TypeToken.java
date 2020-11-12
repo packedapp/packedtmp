@@ -43,7 +43,7 @@ import packed.internal.util.TypeUtil;
  * TypeToken<Map<Integer, List<Integer>>> list = new TypeToken<>() {};}
  * </pre>
  */
-//https://www.reddit.com/r/java/comments/6b9zvl/do_you_think_we_should_have_a_typeliteral_class/
+//https://www.reddit.com/r/java/comments/6b9zvl/do_you_think_we_should_have_a_typetoken_class/
 //http://mail.openjdk.java.net/pipermail/valhalla-dev/2017-January/002150.html
 public abstract class TypeToken<T> {
 
@@ -61,28 +61,23 @@ public abstract class TypeToken<T> {
     static {
         BasePackageAccess.initialize(AppPackedBaseAccess.class, new AppPackedBaseAccess() {
 
-            @Override
-            public boolean isCanonicalized(TypeToken<?> typeLiteral) {
-                return typeLiteral.getClass() == CanonicalizedTypeLiteral.class;
-            }
-
             /** {@inheritDoc} */
             @Override
             public Key<?> toKeyNullableQualifier(Type type, Annotation[] qualifier) {
-                TypeToken<?> tl = new TypeToken.CanonicalizedTypeLiteral<>(type);
+                TypeToken<?> tl = new TypeToken.CanonicalizedTypeToken<>(type);
                 return Key.convertTypeLiteralNullableAnnotation(type, tl, qualifier);
             }
 
             /** {@inheritDoc} */
             @Override
             public TypeToken<?> toTypeLiteral(Type type) {
-                return new CanonicalizedTypeLiteral<>(type);
+                return new CanonicalizedTypeToken<>(type);
             }
         });
     }
 
     /**
-     * We cache the hash code of the type, as most Type implementations calculate it every time. See, for example,
+     * We cache the hash code of the type, as many Type implementations calculate it every time. See, for example,
      * https://github.com/frohoff/jdk8u-jdk/blob/master/src/share/classes/sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl.java
      */
     private int hash;
@@ -94,7 +89,7 @@ public abstract class TypeToken<T> {
     private final Type type;
 
     /**
-     * Constructs a new type literal by deriving the actual type from the type parameter of the extending class.
+     * Constructs a new type token by deriving the actual type from the type parameter of the extending class.
      * 
      * @throws RuntimeException
      *             if the type could not be determined
@@ -107,45 +102,49 @@ public abstract class TypeToken<T> {
     }
 
     /**
-     * Constructs a type literal from the specific type.
+     * Constructs a type token from the specific type.
      * 
      * @param type
-     *            the type to create a type literal from
+     *            the type to create a type token from
      */
     @SuppressWarnings("unchecked")
     TypeToken(Type type) {
         assert (type.getClass().getModule() == null || type.getClass().getModule().getName().equals("java.base"));
         this.type = requireNonNull(type, "type is null");
-        this.rawType = (Class<? super T>) TypeUtil.findRawType(type);
+        this.rawType = (Class<? super T>) TypeUtil.rawTypeOf(type);
     }
 
     /**
-     * If this type literal is a {@link Class#isPrimitive() primitive type}, returns a boxed type literal. Otherwise returns
+     * If this type token is a {@link Class#isPrimitive() primitive type}, returns a boxed type token. Otherwise returns
      * this.
      * 
-     * @return if this type literal is a primitive returns the boxed version, otherwise returns this
+     * @return if this type token is a primitive returns the boxed version, otherwise returns this
      */
     // wrap instead of box
     @SuppressWarnings("unchecked")
     public final TypeToken<T> wrap() {
         // TODO fix for Valhalla? reference type, inline type...
         if (rawType().isPrimitive()) {
-            return (TypeToken<T>) of(TypeUtil.boxClass(rawType()));
+            return (TypeToken<T>) of(TypeUtil.wrap(rawType()));
         }
         return this;
     }
 
     /**
-     * To avoid accidentally holding on to any instance that defines this type literal as an anonymous class. This method
-     * creates a new type literal instance without any reference to the instance that defined the anonymous class.
+     * To avoid accidentally holding on to any instance that defines this type token as an anonymous class. This method
+     * creates a new type token instance without any reference to the instance that defined the anonymous class.
      * 
-     * @return the type literal
+     * @return the type token
      */
-    final CanonicalizedTypeLiteral<T> canonicalize() {
-        if (getClass() == CanonicalizedTypeLiteral.class) {
-            return (CanonicalizedTypeLiteral<T>) this;
+    public final CanonicalizedTypeToken<T> canonicalize() {
+        if (getClass() == CanonicalizedTypeToken.class) {
+            return (CanonicalizedTypeToken<T>) this;
         }
-        return new CanonicalizedTypeLiteral<>(type);
+        return new CanonicalizedTypeToken<>(type);
+    }
+
+    public boolean isCanonicalized() {
+        return getClass() == CanonicalizedTypeToken.class;
     }
 
     /** {@inheritDoc} */
@@ -199,59 +198,46 @@ public abstract class TypeToken<T> {
     }
 
     /**
-     * Returns the type of the specified field as a type literal.
+     * Returns the type of the specified field as a type token.
      * 
      * @param field
-     *            the field to return a type literal for
-     * @return the type literal for the field
+     *            the field to return a type token for
+     * @return the type token for the field
      * @see Field#getGenericType()
      */
     public static TypeToken<?> fromField(Field field) {
         requireNonNull(field, "field is null");
-        return new CanonicalizedTypeLiteral<>(field.getGenericType());
+        return new CanonicalizedTypeToken<>(field.getGenericType());
     }
 
     /**
-     * Returns the type of the specified method's return type as a type literal.
+     * Returns the type of the specified method's return type as a type token.
      * 
      * @param method
-     *            the method whose return type to return a type literal for
-     * @return the type literal for the return type of the specified method
+     *            the method whose return type to return a type token for
+     * @return the type token for the return type of the specified method
      * @see Method#getGenericReturnType()
      */
     public static TypeToken<?> fromMethodReturnType(Method method) {
         requireNonNull(method, "method is null");
-        return new CanonicalizedTypeLiteral<>(method.getGenericReturnType());
+        return new CanonicalizedTypeToken<>(method.getGenericReturnType());
     }
 
-//    /**
-//     * Returns the type of the specified parameter as a type literal.
-//     * 
-//     * @param parameter
-//     *            the parameter to return a type literal for
-//     * @return the type literal for the parameter
-//     * @see Parameter#getParameterizedType()
-//     */
-//    public static TypeToken<?> fromParameter(Parameter parameter) {
-//        requireNonNull(parameter, "parameter is null");
-//        return new CanonicalizedTypeLiteral<>(ParameterDescriptor.from(parameter).getParameterizedType());
-//    }
-
     /**
-     * Returns the type of the specified parameter as a type literal.
+     * Returns the type of the specified parameter as a type token.
      * 
      * @param type
-     *            the parameter to return a type literal for
-     * @return the type literal for the parameter
+     *            the parameter to return a type token for
+     * @return the type token for the parameter
      * @see Parameter#getParameterizedType()
      */
     public static TypeToken<?> fromType(Type type) {
         requireNonNull(type, "type is null");
-        return new CanonicalizedTypeLiteral<>(type);
+        return new CanonicalizedTypeToken<>(type);
     }
 
     /**
-     * Creates a new type literal by extracting information from a type variable.
+     * Creates a new type token by extracting information from a type variable.
      * <p>
      * Given a class:
      * 
@@ -259,7 +245,7 @@ public abstract class TypeToken<T> {
      * public abstract class MyConsumer extends HashMap<String, List<String>>} 
      * </pre>
      * <p>
-     * The hash maps value type parameter can be extracted as a type literal by calling:
+     * The hash maps value type parameter can be extracted as a type token by calling:
      * 
      * <pre> {@code
      * TypeLiteral<?> tl = TypeLiteral.fromTypeVariable(MyConsumer.class, HashMap.class, 1);
@@ -274,7 +260,7 @@ public abstract class TypeToken<T> {
      *            the base class that defines the type variable we want to get information on
      * @param parameterIndex
      *            the index in the signature of superClass of the type variable to extract
-     * @return a type literal matching the type variable
+     * @return a type token matching the type variable
      * @throws UnsupportedOperationException
      *             this method does not currently support extracting type information from interfaces
      * @throws IllegalArgumentException
@@ -282,29 +268,28 @@ public abstract class TypeToken<T> {
      */
     public static <T> TypeToken<?> fromTypeVariable(Class<? extends T> subClass, Class<T> superClass, int parameterIndex) {
         Type t = TypeVariableExtractor.of(superClass, parameterIndex).extract(subClass);
-        return new CanonicalizedTypeLiteral<>(t);
+        return new CanonicalizedTypeToken<>(t);
     }
 
     /**
-     * Returns a type literal of the specified class type.
+     * Returns a type token of the specified class type.
      *
      * @param <T>
      *            the type
      * @param type
-     *            the class instance to return a type literal of
-     * @return a type literal of the specified class type
+     *            the class instance to return a type token of
+     * @return a type token of the specified class type
      */
-    @SuppressWarnings("unchecked")
     public static <T> TypeToken<T> of(Class<T> type) {
         requireNonNull(type, "type is null");
-        return (TypeToken<T>) new CanonicalizedTypeLiteral<>(type);
+        return new CanonicalizedTypeToken<T>(type);
     }
 
     /**
-     * The default implementation of TypeLiteral. This is also the type we normally maintain a reference to internally. As
-     * it is guaranteed to not retain any references to, for example, an instance that defined an anonymous class.
+     * The default implementation of TypeToken. This is also the type we normally maintain a reference to internally. As it
+     * is guaranteed to not retain any references to, for example, an instance that defined an anonymous class.
      * <p>
-     * Returns a type literal from a type that is implemented by a class located in java.base, as these are known to be
+     * Returns a type token from a type that is implemented by a class located in java.base, as these are known to be
      * intra-comparable.
      * <p>
      * This method is not available publically because you can really pass anything in like a Type. Since there are no
@@ -315,15 +300,15 @@ public abstract class TypeToken<T> {
      * both of them into instances of the same InternalParameterizedType. While this is not impossible, it is just a lot of
      * work, and has some overhead.
      */
-    static final class CanonicalizedTypeLiteral<T> extends TypeToken<T> {
+    static final class CanonicalizedTypeToken<T> extends TypeToken<T> {
 
         /**
-         * Creates a new type literal instance
+         * Creates a new type token instance
          * 
          * @param type
          *            the type
          */
-        CanonicalizedTypeLiteral(Type type) {
+        CanonicalizedTypeToken(Type type) {
             super(type);
         }
     }

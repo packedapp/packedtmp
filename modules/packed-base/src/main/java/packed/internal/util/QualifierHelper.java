@@ -19,8 +19,8 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.base.Qualifier;
 
 /** Limited support for javax.inject classes. */
 public final class QualifierHelper {
@@ -28,7 +28,7 @@ public final class QualifierHelper {
     public static void checkQualifierAnnotationPresent(Annotation e) {
         Class<?> annotationType = e.annotationType();
         // TODO check also withQualifier
-        if (annotationType.isAnnotationPresent(Key.Qualifier.class)) {
+        if (annotationType.isAnnotationPresent(Qualifier.class)) {
             return;
         }
         // Har maaske nogle steder jeg hellere vil have IllegalArgumentException...
@@ -41,7 +41,7 @@ public final class QualifierHelper {
         Annotation[] qualifiers = null;
         for (Annotation a : annotations) {
             Class<? extends Annotation> annotationType = a.annotationType();
-            if (annotationType.isAnnotationPresent(Key.Qualifier.class)) {
+            if (annotationType.isAnnotationPresent(Qualifier.class)) {
                 if (qualifiers == null) {
                     qualifiers = new Annotation[1];
                     qualifiers[0] = a;

@@ -18,8 +18,8 @@ package app.packed.inject;
 import java.lang.reflect.Member;
 import java.util.Optional;
 
-import app.packed.base.Variable;
 import app.packed.base.Key;
+import app.packed.base.Variable;
 import app.packed.bundle.Extension;
 import app.packed.component.Component;
 

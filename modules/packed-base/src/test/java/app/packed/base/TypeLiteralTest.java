@@ -32,7 +32,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TypeToken.CanonicalizedTypeLiteral;
+import app.packed.base.TypeToken.CanonicalizedTypeToken;
 import testutil.stubs.annotation.AnnotationInstances;
 
 /** Tests {@link TypeToken}. */
@@ -112,12 +112,12 @@ public class TypeLiteralTest {
 
         assertThat(integerNew).hasSameHashCodeAs(Integer.class);
         assertThat(integerNew).hasSameHashCodeAs(TypeToken.of(Integer.class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer.class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer.class).hashCode());
 
         assertThat(integerNew).isEqualTo(TypeToken.of(Integer.class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
         assertThat(integerNew).isNotSameAs(integerNew.canonicalize());
-        assertThat(integerNew).isEqualTo(new CanonicalizedTypeLiteral<>(Integer.class));
+        assertThat(integerNew).isEqualTo(new CanonicalizedTypeToken<>(Integer.class));
 
         assertThat(integerNew).isNotEqualTo(Integer.class);
         assertThat(integerNew).isNotEqualTo(TypeToken.of(Long.class));
@@ -182,10 +182,10 @@ public class TypeLiteralTest {
 
         assertThat(TL_INTEGER).hasSameHashCodeAs(Integer.class);
         assertThat(TL_INTEGER).hasSameHashCodeAs(TypeToken.of(Integer.class).hashCode());
-        assertThat(TL_INTEGER).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer.class).hashCode());
+        assertThat(TL_INTEGER).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer.class).hashCode());
 
         assertThat(TL_INTEGER).isEqualTo(TypeToken.of(Integer.class));
-        assertThat(TL_INTEGER).isEqualTo(new CanonicalizedTypeLiteral<>(Integer.class));
+        assertThat(TL_INTEGER).isEqualTo(new CanonicalizedTypeToken<>(Integer.class));
         assertThat(TL_INTEGER).isEqualTo(TL_INTEGER.canonicalize());
 
         assertThat(TL_INTEGER).isNotEqualTo(Integer.class);
@@ -207,10 +207,10 @@ public class TypeLiteralTest {
 
         assertThat(integerNew).hasSameHashCodeAs(Integer[].class);
         assertThat(integerNew).hasSameHashCodeAs(TypeToken.of(Integer[].class).hashCode());
-        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer[].class).hashCode());
+        assertThat(integerNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer[].class).hashCode());
 
         assertThat(integerNew).isEqualTo(TypeToken.of(Integer[].class));
-        assertThat(integerNew).isEqualTo(new CanonicalizedTypeLiteral<>(Integer[].class));
+        assertThat(integerNew).isEqualTo(new CanonicalizedTypeToken<>(Integer[].class));
         assertThat(integerNew).isEqualTo(integerNew.canonicalize());
 
         assertThat(integerNew).isNotEqualTo(Integer[].class);
@@ -232,10 +232,10 @@ public class TypeLiteralTest {
 
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(Integer[][].class);
         assertThat(integerArrayArrayNew).hasSameHashCodeAs(TypeToken.of(Integer[][].class).hashCode());
-        assertThat(integerArrayArrayNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(Integer[][].class).hashCode());
+        assertThat(integerArrayArrayNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(Integer[][].class).hashCode());
 
         assertThat(integerArrayArrayNew).isEqualTo(TypeToken.of(Integer[][].class));
-        assertThat(integerArrayArrayNew).isEqualTo(new CanonicalizedTypeLiteral<>(Integer[][].class));
+        assertThat(integerArrayArrayNew).isEqualTo(new CanonicalizedTypeToken<>(Integer[][].class));
         assertThat(integerArrayArrayNew).isEqualTo(integerArrayArrayNew.canonicalize());
 
         assertThat(integerArrayArrayNew).isNotEqualTo(Integer[][].class);
@@ -256,9 +256,9 @@ public class TypeLiteralTest {
         assertThat(listStringNew.type()).isEqualTo(LIST_STRING);
 
         assertThat(listStringNew).hasSameHashCodeAs(LIST_STRING);
-        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(LIST_STRING).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(LIST_STRING).hashCode());
 
-        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeLiteral<>(LIST_STRING));
+        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeToken<>(LIST_STRING));
         assertThat(listStringNew).isNotEqualTo(List.class);
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
 
@@ -276,9 +276,9 @@ public class TypeLiteralTest {
         assertThat(TL_LIST_WILDCARD.type()).isEqualTo(LIST_WILDCARD);
 
         assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(LIST_WILDCARD);
-        assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(LIST_WILDCARD).hashCode());
+        assertThat(TL_LIST_WILDCARD).hasSameHashCodeAs(new CanonicalizedTypeToken<>(LIST_WILDCARD).hashCode());
 
-        assertThat(TL_LIST_WILDCARD).isEqualTo(new CanonicalizedTypeLiteral<>(LIST_WILDCARD));
+        assertThat(TL_LIST_WILDCARD).isEqualTo(new CanonicalizedTypeToken<>(LIST_WILDCARD));
         assertThat(TL_LIST_WILDCARD).isNotEqualTo(List.class);
         assertThat(TL_LIST_WILDCARD).isEqualTo(TL_LIST_WILDCARD.canonicalize());
 
@@ -304,9 +304,9 @@ public class TypeLiteralTest {
         assertThat(listStringNew.type()).isEqualTo(fGenericType);
 
         assertThat(listStringNew).hasSameHashCodeAs(fGenericType);
-        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(fGenericType).hashCode());
+        assertThat(listStringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(fGenericType).hashCode());
 
-        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeLiteral<>(fGenericType));
+        assertThat(listStringNew).isEqualTo(new CanonicalizedTypeToken<>(fGenericType));
         assertThat(listStringNew).isEqualTo(listStringNew.canonicalize());
         assertThat(listStringNew).isNotEqualTo(Map.class);
 
@@ -326,11 +326,11 @@ public class TypeLiteralTest {
 
         assertThat(stringNew).hasSameHashCodeAs(String.class);
         assertThat(stringNew).hasSameHashCodeAs(TypeToken.of(String.class).hashCode());
-        assertThat(stringNew).hasSameHashCodeAs(new CanonicalizedTypeLiteral<>(String.class).hashCode());
+        assertThat(stringNew).hasSameHashCodeAs(new CanonicalizedTypeToken<>(String.class).hashCode());
 
         assertThat(stringNew).isEqualTo(stringNew.canonicalize());
         assertThat(stringNew).isEqualTo(TypeToken.of(String.class));
-        assertThat(stringNew).isEqualTo(new CanonicalizedTypeLiteral<>(String.class));
+        assertThat(stringNew).isEqualTo(new CanonicalizedTypeToken<>(String.class));
 
         assertThat(stringNew).isNotEqualTo(String.class);
 
@@ -370,7 +370,7 @@ public class TypeLiteralTest {
             Map<T, ?> f;
         }
         Type fGenericType = findField(Tmpx.class, "f").getGenericType();
-        TypeToken<?> typeVariable = new CanonicalizedTypeLiteral<>(fGenericType);
+        TypeToken<?> typeVariable = new CanonicalizedTypeToken<>(fGenericType);
 
         assertThat(typeVariable.wrap().type()).isEqualTo(fGenericType);
 

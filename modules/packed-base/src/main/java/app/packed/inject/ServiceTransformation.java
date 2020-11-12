@@ -26,8 +26,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
-import app.packed.base.Key.Qualifier;
 import app.packed.base.Nullable;
+import app.packed.base.Qualifier;
 import app.packed.component.Component;
 
 /**

@@ -66,22 +66,22 @@ public class TypeUtilTest {
         assertThat(TypeUtil.checkClassIsInstantiable(HashMap.class)).isSameAs(HashMap.class);
     }
 
-    /** Tests {@link TypeUtil#boxClass(Class)}. */
+    /** Tests {@link TypeUtil#wrap(Class)}. */
     @Test
     public void boxClass() {
-        assertThat(TypeUtil.boxClass(String.class)).isSameAs(String.class);
-        assertThat(TypeUtil.boxClass(boolean.class)).isSameAs(Boolean.class);
-        assertThat(TypeUtil.boxClass(byte.class)).isSameAs(Byte.class);
-        assertThat(TypeUtil.boxClass(char.class)).isSameAs(Character.class);
-        assertThat(TypeUtil.boxClass(double.class)).isSameAs(Double.class);
-        assertThat(TypeUtil.boxClass(float.class)).isSameAs(Float.class);
-        assertThat(TypeUtil.boxClass(int.class)).isSameAs(Integer.class);
-        assertThat(TypeUtil.boxClass(long.class)).isSameAs(Long.class);
-        assertThat(TypeUtil.boxClass(short.class)).isSameAs(Short.class);
-        assertThat(TypeUtil.boxClass(void.class)).isSameAs(Void.class);
+        assertThat(TypeUtil.wrap(String.class)).isSameAs(String.class);
+        assertThat(TypeUtil.wrap(boolean.class)).isSameAs(Boolean.class);
+        assertThat(TypeUtil.wrap(byte.class)).isSameAs(Byte.class);
+        assertThat(TypeUtil.wrap(char.class)).isSameAs(Character.class);
+        assertThat(TypeUtil.wrap(double.class)).isSameAs(Double.class);
+        assertThat(TypeUtil.wrap(float.class)).isSameAs(Float.class);
+        assertThat(TypeUtil.wrap(int.class)).isSameAs(Integer.class);
+        assertThat(TypeUtil.wrap(long.class)).isSameAs(Long.class);
+        assertThat(TypeUtil.wrap(short.class)).isSameAs(Short.class);
+        assertThat(TypeUtil.wrap(void.class)).isSameAs(Void.class);
     }
 
-    /** Tests {@link TypeUtil#findRawType(Type)}. */
+    /** Tests {@link TypeUtil#rawTypeOf(Type)}. */
     @Test
     public void findRawType() throws Exception {
         @SuppressWarnings("unused")
@@ -91,21 +91,21 @@ public class TypeUtilTest {
             public List<String>[] f3;
             public List<?> f4;
         }
-        npe(() -> TypeUtil.findRawType(null), "type");
-        assertThat(TypeUtil.findRawType(String.class)).isSameAs(String.class);
-        assertThat(TypeUtil.findRawType(String[].class)).isSameAs(String[].class);
+        npe(() -> TypeUtil.rawTypeOf(null), "type");
+        assertThat(TypeUtil.rawTypeOf(String.class)).isSameAs(String.class);
+        assertThat(TypeUtil.rawTypeOf(String[].class)).isSameAs(String[].class);
 
-        assertThat(TypeUtil.findRawType(C.class.getField("f1").getGenericType())).isSameAs(List.class);
-        assertThat(TypeUtil.findRawType(C.class.getField("f2").getGenericType())).isSameAs(Map.class);
-        assertThat(TypeUtil.findRawType(C.class.getField("f3").getGenericType())).isSameAs(List[].class);
-        assertThat(TypeUtil.findRawType(C.class.getField("f4").getGenericType())).isSameAs(List.class);
+        assertThat(TypeUtil.rawTypeOf(C.class.getField("f1").getGenericType())).isSameAs(List.class);
+        assertThat(TypeUtil.rawTypeOf(C.class.getField("f2").getGenericType())).isSameAs(Map.class);
+        assertThat(TypeUtil.rawTypeOf(C.class.getField("f3").getGenericType())).isSameAs(List[].class);
+        assertThat(TypeUtil.rawTypeOf(C.class.getField("f4").getGenericType())).isSameAs(List.class);
 
         WildcardType wt = (WildcardType) ((ParameterizedType) C.class.getField("f4").getGenericType()).getActualTypeArguments()[0];
-        assertThat(TypeUtil.findRawType(wt)).isSameAs(Object.class);
+        assertThat(TypeUtil.rawTypeOf(wt)).isSameAs(Object.class);
 
-        assertThat(TypeUtil.findRawType(C.class.getTypeParameters()[0])).isSameAs(Object.class);
+        assertThat(TypeUtil.rawTypeOf(C.class.getTypeParameters()[0])).isSameAs(Object.class);
 
-        assertThatThrownBy(() -> TypeUtil.findRawType(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> TypeUtil.rawTypeOf(new Type() {})).isExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     /** Tests {@link TypeUtil#isFreeFromTypeVariables(Type)}. */
@@ -160,19 +160,19 @@ public class TypeUtilTest {
         assertThat(TypeUtil.isOptionalType(OptionalDouble.class)).isTrue();
     }
 
-    /** Tests {@link TypeUtil#unboxClass(Class)}. */
+    /** Tests {@link TypeUtil#unwrap(Class)}. */
     @Test
     public void unboxClass() {
-        assertThat(TypeUtil.unboxClass(String.class)).isSameAs(String.class);
-        assertThat(TypeUtil.unboxClass(Boolean.class)).isSameAs(boolean.class);
-        assertThat(TypeUtil.unboxClass(Byte.class)).isSameAs(byte.class);
-        assertThat(TypeUtil.unboxClass(Character.class)).isSameAs(char.class);
-        assertThat(TypeUtil.unboxClass(Double.class)).isSameAs(double.class);
-        assertThat(TypeUtil.unboxClass(Float.class)).isSameAs(float.class);
-        assertThat(TypeUtil.unboxClass(Integer.class)).isSameAs(int.class);
-        assertThat(TypeUtil.unboxClass(Long.class)).isSameAs(long.class);
-        assertThat(TypeUtil.unboxClass(Short.class)).isSameAs(short.class);
-        assertThat(TypeUtil.unboxClass(Void.class)).isSameAs(void.class);
+        assertThat(TypeUtil.unwrap(String.class)).isSameAs(String.class);
+        assertThat(TypeUtil.unwrap(Boolean.class)).isSameAs(boolean.class);
+        assertThat(TypeUtil.unwrap(Byte.class)).isSameAs(byte.class);
+        assertThat(TypeUtil.unwrap(Character.class)).isSameAs(char.class);
+        assertThat(TypeUtil.unwrap(Double.class)).isSameAs(double.class);
+        assertThat(TypeUtil.unwrap(Float.class)).isSameAs(float.class);
+        assertThat(TypeUtil.unwrap(Integer.class)).isSameAs(int.class);
+        assertThat(TypeUtil.unwrap(Long.class)).isSameAs(long.class);
+        assertThat(TypeUtil.unwrap(Short.class)).isSameAs(short.class);
+        assertThat(TypeUtil.unwrap(Void.class)).isSameAs(void.class);
     }
 
     class NestedNonStaticClass {}

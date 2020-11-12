@@ -39,64 +39,34 @@ public final class TypeUtil {
     private TypeUtil() {}
 
     /**
-     * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
-     * is not a primitive class.
+     * Checks that the specified class can be instantiated. That is, a public non-abstract class with at least one public
+     * constructor.
      *
-     * @param <T>
-     *            the type to box
-     * @param type
-     *            the class to convert
-     * @return the converted class
+     * @param clazz
+     *            the class to check
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Class<T> boxClass(Class<T> type) {
-        if (type.isPrimitive()) {
-            if (type == boolean.class) {
-                return (Class<T>) Boolean.class;
-            } else if (type == byte.class) {
-                return (Class<T>) Byte.class;
-            } else if (type == char.class) {
-                return (Class<T>) Character.class;
-            } else if (type == double.class) {
-                return (Class<T>) Double.class;
-            } else if (type == float.class) {
-                return (Class<T>) Float.class;
-            } else if (type == int.class) {
-                return (Class<T>) Integer.class;
-            } else if (type == long.class) {
-                return (Class<T>) Long.class;
-            } else if (type == short.class) {
-                return (Class<T>) Short.class;
-            } else { /* if (type == void.class) */
-                return (Class<T>) Void.class;
-            }
+    public static <T> Class<T> checkClassIsInstantiable(Class<T> clazz) {
+        if (clazz.isAnnotation()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an annotation and cannot be instantiated");
+        } else if (clazz.isInterface()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an interface and cannot be instantiated");
+        } else if (clazz.isArray()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an array and cannot be instantiated");
+        } else if (clazz.isPrimitive()) {
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
         }
-        return type;
-
-    }
-
-    /**
-     * Finds the raw class type for the specified type
-     *
-     * @param type
-     *            the type to find the raw class from
-     * @return the raw type
-     * @throws IllegalArgumentException
-     *             if the raw type could not be found
-     */
-    public static Class<?> findRawType(Type type) {
-        requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof GenericArrayType) {
-            return Array.newInstance(findRawType(((GenericArrayType) type).getGenericComponentType()), 0).getClass();
-        } else if (type instanceof TypeVariable || type instanceof WildcardType) {
-            return Object.class;
-        } else {
-            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
+        int modifiers = clazz.getModifiers();
+        if (Modifier.isAbstract(modifiers)) {
+            // Yes a primitive class is abstract
+            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an abstract class and cannot be instantiated");
         }
+        /*
+         * else if (!Modifier.isPublic(modifiers)) { throw new IllegalArgumentException("The specified class (" + format(clazz)
+         * + ") is not a public class and cannot be instantiated"); } if (clazz.getConstructors().length == 0) { throw new
+         * IllegalArgumentException("The specified class (" + format(clazz) +
+         * ") does not have any public constructors and cannot be instantiated"); }
+         */
+        return clazz;
     }
 
     /**
@@ -220,6 +190,30 @@ public final class TypeUtil {
     }
 
     /**
+     * Finds the raw class type for the specified type
+     *
+     * @param type
+     *            the type to find the raw class from
+     * @return the raw type
+     * @throws IllegalArgumentException
+     *             if the raw type could not be found
+     */
+    public static Class<?> rawTypeOf(Type type) {
+        requireNonNull(type, "type is null");
+        if (type instanceof Class<?>) {
+            return (Class<?>) type;
+        } else if (type instanceof ParameterizedType) {
+            return (Class<?>) ((ParameterizedType) type).getRawType();
+        } else if (type instanceof GenericArrayType) {
+            return Array.newInstance(rawTypeOf(((GenericArrayType) type).getGenericComponentType()), 0).getClass();
+        } else if (type instanceof TypeVariable || type instanceof WildcardType) {
+            return Object.class;
+        } else {
+            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
+        }
+    }
+
+    /**
      * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
      * if it is not a primitive wrapper class.
      * 
@@ -230,7 +224,7 @@ public final class TypeUtil {
      * @return the converted class
      */
     @SuppressWarnings("unchecked")
-    public static <T> Class<T> unboxClass(Class<T> type) {
+    public static <T> Class<T> unwrap(Class<T> type) {
         if (type == Boolean.class) {
             return (Class<T>) boolean.class;
         } else if (type == Byte.class) {
@@ -254,34 +248,38 @@ public final class TypeUtil {
     }
 
     /**
-     * Checks that the specified class can be instantiated. That is, a public non-abstract class with at least one public
-     * constructor.
+     * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
+     * is not a primitive class.
      *
-     * @param clazz
-     *            the class to check
+     * @param <T>
+     *            the type to box
+     * @param type
+     *            the class to convert
+     * @return the converted class
      */
-    public static <T> Class<T> checkClassIsInstantiable(Class<T> clazz) {
-        if (clazz.isAnnotation()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an annotation and cannot be instantiated");
-        } else if (clazz.isInterface()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an interface and cannot be instantiated");
-        } else if (clazz.isArray()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an array and cannot be instantiated");
-        } else if (clazz.isPrimitive()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> wrap(Class<T> type) {
+        if (type.isPrimitive()) {
+            if (type == boolean.class) {
+                return (Class<T>) Boolean.class;
+            } else if (type == byte.class) {
+                return (Class<T>) Byte.class;
+            } else if (type == char.class) {
+                return (Class<T>) Character.class;
+            } else if (type == double.class) {
+                return (Class<T>) Double.class;
+            } else if (type == float.class) {
+                return (Class<T>) Float.class;
+            } else if (type == int.class) {
+                return (Class<T>) Integer.class;
+            } else if (type == long.class) {
+                return (Class<T>) Long.class;
+            } else if (type == short.class) {
+                return (Class<T>) Short.class;
+            } else { /* if (type == void.class) */
+                return (Class<T>) Void.class;
+            }
         }
-        int modifiers = clazz.getModifiers();
-        if (Modifier.isAbstract(modifiers)) {
-            // Yes a primitive class is abstract
-
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an abstract class and cannot be instantiated");
-        }
-        /*
-         * else if (!Modifier.isPublic(modifiers)) { throw new IllegalArgumentException("The specified class (" + format(clazz)
-         * + ") is not a public class and cannot be instantiated"); } if (clazz.getConstructors().length == 0) { throw new
-         * IllegalArgumentException("The specified class (" + format(clazz) +
-         * ") does not have any public constructors and cannot be instantiated"); }
-         */
-        return clazz;
+        return type;
     }
 }

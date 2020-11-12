@@ -32,9 +32,9 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.inject.ServiceTransformation;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.ExportedBuildtimeService;
 import packed.internal.inject.service.build.PackedServiceTransformer;
-import packed.internal.inject.service.build.BuildtimeService;
 
 /**
  * This class manages everything to do with exporting of service entries.

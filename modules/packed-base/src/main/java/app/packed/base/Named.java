@@ -21,11 +21,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Key.Qualifier;
-
 /** A {@link Qualifier} that holds a generic string. */
 @Retention(RetentionPolicy.RUNTIME)
-@Key.Qualifier
+@Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface Named {
 

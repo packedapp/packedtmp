@@ -18,7 +18,7 @@ package app.packed.bundle;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
-import app.packed.base.Key.Qualifier;
+import app.packed.base.Qualifier;
 import app.packed.component.BeanConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;

@@ -126,11 +126,13 @@ public interface Component extends AttributedElement, ComponentSystem {
      * @return the root component
      */
     default Component root() {
+        Component c = this;
         Optional<Component> p = parent();
         while (!p.isEmpty()) {
-            p = p.get().parent();
+            c = p.get();
+            p = c.parent();
         }
-        return this;
+        return c;
     }
 
     /**

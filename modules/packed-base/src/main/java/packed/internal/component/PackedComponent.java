@@ -250,6 +250,18 @@ public final class PackedComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
+    public Component root() {
+        PackedComponent c = this;
+        PackedComponent p = parent;
+        while (p != null) {
+            c = p;
+            p = p.parent;
+        }
+        return c;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public ComponentStream stream(ComponentStream.Option... options) {
         return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
@@ -266,14 +278,5 @@ public final class PackedComponent implements Component {
         } else {
             return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
         }
-    }
-
-    @Override
-    public Component root() {
-        PackedComponent p = parent;
-        while (p.parent != null) {
-            p = p.parent;
-        }
-        return p;
     }
 }

@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.base.TreePath;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Assembly;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;

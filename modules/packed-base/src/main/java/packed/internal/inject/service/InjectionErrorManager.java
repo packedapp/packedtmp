@@ -19,8 +19,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 
 import app.packed.base.Key;
-import packed.internal.inject.service.build.ExportedBuildtimeService;
 import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ExportedBuildtimeService;
 
 /**
  * An error manager is lazily created when an the configuration of an injection manager fails

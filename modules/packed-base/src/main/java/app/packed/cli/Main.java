@@ -25,8 +25,8 @@ import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.container.Container;
 import app.packed.container.Container.StopOption;
-import app.packed.container.RunState;
 import app.packed.container.ContainerWirelets;
+import app.packed.container.RunState;
 
 /**
  *

@@ -18,8 +18,8 @@ package app.packed.inject;
 import java.util.List;
 import java.util.Set;
 
-import app.packed.base.Variable;
 import app.packed.base.Key;
+import app.packed.base.Variable;
 
 /**
  * An injection context object can be injected into any injection site (typically a method or constructor) to query

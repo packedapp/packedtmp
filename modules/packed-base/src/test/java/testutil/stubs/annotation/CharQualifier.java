@@ -20,13 +20,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.Key;
+import app.packed.base.Qualifier;
 
 /**
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Key.Qualifier
+@Qualifier
 @Target({ ElementType.TYPE_USE, ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER })
 public @interface CharQualifier {
     char value() default '?';

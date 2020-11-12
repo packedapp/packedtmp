@@ -20,12 +20,12 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.base.Key.Qualifier;
+import app.packed.base.Qualifier;
 import app.packed.bundle.BaseAssembly;
 import app.packed.bundle.BundleConfiguration;
 import app.packed.component.Assembler;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Assembly;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;

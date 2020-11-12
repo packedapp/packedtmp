@@ -25,8 +25,8 @@ import java.util.function.Predicate;
 
 import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
-import app.packed.base.Key.Qualifier;
 import app.packed.base.Nullable;
+import app.packed.base.Qualifier;
 import app.packed.bundle.Extension;
 import app.packed.bundle.ExtensionConfiguration;
 import app.packed.component.BeanConfiguration;

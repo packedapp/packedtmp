@@ -27,6 +27,9 @@ import java.util.function.Consumer;
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // Sealed, Bundle, Component, ComponentHolder
+
+// Hmm, Vil vi paa et tidspunkt have component.system() ?????
+// Saa har vi jo ligesom snuppet et oplagt navn...
 public interface ComponentSystem {
 
     // hmmm, efterhaanden lidt for mange metoder???

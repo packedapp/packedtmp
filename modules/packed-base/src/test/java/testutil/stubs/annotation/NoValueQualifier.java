@@ -18,12 +18,12 @@ package testutil.stubs.annotation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import app.packed.base.Key;
+import app.packed.base.Qualifier;
 
 /**
  * An annotation with with no values for testing.
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Key.Qualifier
+@Qualifier
 public @interface NoValueQualifier {}

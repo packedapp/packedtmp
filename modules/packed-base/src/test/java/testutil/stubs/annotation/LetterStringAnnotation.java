@@ -20,14 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.base.Key;
+import app.packed.base.Qualifier;
 import testutil.stubs.Letters;
 
 /**
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Key.Qualifier
+@Qualifier
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE_USE })
 public @interface LetterStringAnnotation {
     Class<? extends Letters> letter() default Letters.class;

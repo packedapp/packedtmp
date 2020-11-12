@@ -86,7 +86,7 @@ public class DependencyTest {
     }
 
     @Retention(RUNTIME)
-    @Key.Qualifier
+    @Qualifier
     @Target({ ANNOTATION_TYPE, ElementType.TYPE_PARAMETER, ElementType.TYPE_USE })
     public @interface Q {
         String value() default "";

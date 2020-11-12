@@ -22,9 +22,9 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import app.packed.base.Variable;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.base.Variable;
 import packed.internal.util.ReflectionUtil;
 
 /**

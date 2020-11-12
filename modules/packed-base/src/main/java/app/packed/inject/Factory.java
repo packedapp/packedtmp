@@ -566,8 +566,8 @@ public abstract class Factory<T> {
     public static <T> Factory<T> of(TypeToken<T> implementation) {
         // Can cache it with a Class[] array corresponding to type parameters...
         requireNonNull(implementation, "implementation is null");
-        if (!BasePackageAccess.base().isCanonicalized(implementation)) {
-            // We cache factories for all "new TypeLiteral<>(){}"
+        if (!implementation.isCanonicalized()) {
+            // We cache factories for all "new TypeToken<>(){}"
             return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
         Type t = implementation.type();
