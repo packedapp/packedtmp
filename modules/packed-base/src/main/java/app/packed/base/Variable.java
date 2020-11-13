@@ -17,6 +17,7 @@ package app.packed.base;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -50,22 +51,15 @@ public interface Variable extends AnnotatedElement, OldVariable {
     // lots of little transformations
 
     /**
-     * Returns whether or not a {@link Nullable} annotation is present on the variable.
-     * 
-     * @return true if a nullable annotation is present, otherwise false
-     */
-    // Hmm, now Nullable has a meaning. For example, factory.bind(null)
-    // would probably need to check it
-    default boolean isNullable() {
-        return isAnnotationPresent(Nullable.class);
-    }
-
-    /**
-     * A variable may declare a name.
+     * Returns the name of the variable if available.
+     * <p>
+     * This method should mainly be used for informational or debug purposes.
      * 
      * @return the name of the variable, or empty if the variable does not have a name
+     * @see #withName(String)
+     * @see #withoutName()
      */
-    Optional<String> name(); // Should mainly be used for debug reasons.
+    Optional<String> name();
 
     /**
      * Returns the raw type (Class) of the variable.
@@ -83,15 +77,58 @@ public interface Variable extends AnnotatedElement, OldVariable {
 
     TypeToken<?> typeToken();
 
+    default Variable withName(String name) {
+        return this;
+    }
+
+    // How do we handle repeatable annotations?
+    default Variable withAnnotation(Annotation annotation) {
+        return this;
+    }
+
+    default Variable withoutAnnotation(Annotation annotation) {
+        return this;
+    }
+
+    /**
+     * Returns a variable without a name
+     * 
+     * @return the nameless variable
+     */
+    default Variable withoutName() {
+        return this;
+    }
+
+    /**
+     * Returns a variable from the specified field.
+     * 
+     * @param field
+     *            the field to return a variable from
+     * @return the variable
+     */
     static Variable ofField(Field field) {
         requireNonNull(field, "field is null");
         return new FieldVariable(field);
     }
 
+    /**
+     * Returns a variable from the return type of the specified method.
+     * 
+     * @param method
+     *            the method to return a variable from
+     * @return the variable
+     */
     static Variable ofMethodReturnType(Method method) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns a variable from the specified parameter.
+     * 
+     * @param parameter
+     *            the parameter to return a variable from
+     * @return the variable
+     */
     static Variable ofParameter(Parameter parameter) {
         requireNonNull(parameter, "parameter is null");
         return new ParameterVariable(parameter);
@@ -105,7 +142,18 @@ public interface Variable extends AnnotatedElement, OldVariable {
         throw new UnsupportedOperationException();
     }
 }
-// maybe just have Optional<?> source()
+
+///**
+// * Returns whether or not a {@link Nullable} annotation is present on the variable.
+// * 
+// * @return true if a nullable annotation is present, otherwise false
+// */
+// Hmm, now Nullable has a meaning. For example, factory.bind(null)
+// would probably need to check it
+//default boolean isNullable() {
+//    return isAnnotationPresent(Nullable.class);
+//}
+// maybe just have Optional<Class<?>> source()
 
 // TypeVariable
 // Field

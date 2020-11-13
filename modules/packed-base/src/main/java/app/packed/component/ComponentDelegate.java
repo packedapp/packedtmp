@@ -21,7 +21,7 @@ import app.packed.component.ComponentStream.Option;
 /**
  *
  */
-public interface ComponentDelegate extends ComponentSystem {
+public interface ComponentDelegate extends ComponentSubSystem {
 
     /**
      * The component this is delegating

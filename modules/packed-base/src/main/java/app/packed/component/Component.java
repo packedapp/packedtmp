@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public interface Component extends AttributedElement, ComponentSystem {
+public interface Component extends AttributedElement, ComponentSubSystem {
 
     /**
      * Returns an unmodifiable view of all of this component's children.

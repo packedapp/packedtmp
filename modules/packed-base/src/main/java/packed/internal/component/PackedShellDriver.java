@@ -36,7 +36,7 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedShellDriver<S> implements ShellDriver<S> {
 
     /** The initial set of modifiers for any system that uses this driver. */
-    private final boolean isGuest;
+    private final boolean isStateful;
 
     /** The method handle responsible for creating new shell instances. */
     private final MethodHandle newShellMH;
@@ -44,24 +44,21 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     /**
      * Creates a new driver.
      * 
-     * @param isGuest
-     *            the type of shell that is created
+     * @param isStateful
+     *            whether or not the the shell is stateful
      * @param newShellMH
      *            a method handle that can create new shell instances
      */
-    public PackedShellDriver(boolean isGuest, MethodHandle newShellMH) {
-        this.isGuest = isGuest;
+    public PackedShellDriver(boolean isStateful, MethodHandle newShellMH) {
+        this.isStateful = isStateful;
         this.newShellMH = requireNonNull(newShellMH);
-    }
-
-    public boolean isContainer() {
-        return isGuest;
     }
 
     public <D extends Assembler> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
         PackedBuildContext build = PackedBuildContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
@@ -69,19 +66,8 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         return newShell(ac);
     }
 
-    /**
-     * Create a new shell using the specified initialization context.
-     * 
-     * @param pic
-     *            the initialization context to wrap
-     * @return the new shell
-     */
-    private S newShell(PackedInitializationContext pic) {
-        try {
-            return (S) newShellMH.invoke(pic);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
+    public boolean isStateful() {
+        return isStateful;
     }
 
     /** {@inheritDoc} */
@@ -108,6 +94,21 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     }
 
     /**
+     * Create a new shell using the specified initialization context.
+     * 
+     * @param pic
+     *            the initialization context to wrap
+     * @return the new shell
+     */
+    private S newShell(PackedInitializationContext pic) {
+        try {
+            return (S) newShellMH.invoke(pic);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    /**
      * Returns the raw type of the shell instances that this driver creates.
      * 
      * @return the raw type of the shell instances that this driver creates
@@ -129,19 +130,6 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     /** Options that can be applied when creating a shell driver. */
     interface Option {
 
-        // If not autoclosable
-        static Option forceGuest() {
-            throw new UnsupportedOperationException();
-        }
-
-        static Option forceNonGuest() {
-            throw new UnsupportedOperationException();
-        }
-
-        // Normally we just check if App.iface extends AutoClosable...
-        // But might want to override this.
-        // forceManaged, forceUnmanaged
-
         // String Reason??? This extension has been blacklisted
         @SafeVarargs
         static Option blacklistExtensions(Class<? extends Extension>... extensions) {
@@ -149,6 +137,19 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         }
 
         static Option blacklistExtensions(String... extensions) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Normally we just check if App.iface extends AutoClosable...
+        // But might want to override this.
+        // forceManaged, forceUnmanaged
+
+        // If not autoclosable
+        static Option forceGuest() {
+            throw new UnsupportedOperationException();
+        }
+
+        static Option forceNonGuest() {
             throw new UnsupportedOperationException();
         }
 

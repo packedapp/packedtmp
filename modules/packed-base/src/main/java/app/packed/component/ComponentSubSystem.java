@@ -20,20 +20,22 @@ import java.util.function.Consumer;
 /**
  *
  * <p>
- * In general if you specify a {@link Assembly} to a method that takes a {@link ComponentSystem} you can assume that the
- * method will consume the bundle.
+ * In general if you specify a {@link Assembly} to a method that takes a {@link ComponentSubSystem} you can assume that
+ * the method will consume the bundle.
  * 
- * @apiNote In the future, if the Java language permits, {@link ComponentSystem} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ * @apiNote In the future, if the Java language permits, {@link ComponentSubSystem} may become a {@code sealed}
+ *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 // Sealed, Bundle, Component, ComponentHolder
 
 // Hmm, Vil vi paa et tidspunkt have component.system() ?????
 // Saa har vi jo ligesom snuppet et oplagt navn...
-public interface ComponentSystem {
+
+// ComponentBranch
+public interface ComponentSubSystem {
 
     // hmmm, efterhaanden lidt for mange metoder???
-    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
+    public static void forEach(ComponentSubSystem s, Consumer<? super Component> action) {
         ComponentStream.of(s).forEach(action);
     }
 }

@@ -26,7 +26,7 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.component.App;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentSystem;
+import app.packed.component.ComponentSubSystem;
 import app.packed.component.Wirelet;
 import app.packed.sidecar.ActiveVariableSidecar;
 import packed.internal.inject.service.build.PackedServiceTransformer;
@@ -192,7 +192,7 @@ public interface ServiceLocator extends ServiceRegistry {
     /**
      * 
      * <p>
-     * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSystem} so there are
+     * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSubSystem} so there are
      * no ways to inspect it using the normal tools.
      * 
      * @param bundle

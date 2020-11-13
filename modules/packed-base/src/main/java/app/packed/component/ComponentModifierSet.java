@@ -101,8 +101,8 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      * 
      * @return true if this set contains the container modifier, otherwise false
      */
-    default boolean isStateless() {
-        return contains(ComponentModifier.STATELESS);
+    default boolean isStateful() {
+        return contains(ComponentModifier.STATEFUL);
     }
 
     /**

@@ -640,7 +640,7 @@ public abstract class Factory<T> {
      * @param <T>
      *            the type of value returned by the factory
      * @param instance
-     *            the instance to return for every request
+     *            the instance to return on every request
      * @return the factory
      */
     public static <T> Factory<T> ofInstance(T instance) {

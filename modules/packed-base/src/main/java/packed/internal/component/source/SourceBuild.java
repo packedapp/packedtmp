@@ -64,7 +64,8 @@ public final class SourceBuild implements DependencyProvider {
         if (source instanceof Class) {
             sourceType = (Class<?>) source;
             this.instance = null;
-            this.factory = compConf.modifiers().isStateless() ? null : Factory.of(sourceType);
+            // We need to stateful on all components...
+            this.factory = compConf.modifiers().isStateful() ? null : Factory.of(sourceType);
         } else if (source instanceof Factory) {
             this.instance = null;
             this.factory = (Factory<?>) source;

@@ -81,8 +81,8 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
             case OptionImpl.OPT_CONSTANT:
                 modifiers |= PackedComponentModifierSet.I_SINGLETON;
                 break;
-            case OptionImpl.OPT_STATELESS:
-                modifiers |= PackedComponentModifierSet.I_STATELESS;
+            case OptionImpl.OPT_STATEFUL:
+                modifiers |= PackedComponentModifierSet.I_STATEFUL;
                 break;
             default:
                 throw new IllegalStateException(o + " is not a valid option");
@@ -152,10 +152,10 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
     // Nahhh
     public static class OptionImpl implements ComponentDriver.Option {
 
-        static final int OPT_STATELESS = 3;
+        static final int OPT_STATEFUL = 3;
         static final int OPT_CONSTANT = 2;
         static final int OPT_BUNDLE = 1;
-        public static final OptionImpl STATELESS = new OptionImpl(OPT_STATELESS, null);
+        public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
         public static final OptionImpl BUNDLE = new OptionImpl(OPT_BUNDLE, null);
 

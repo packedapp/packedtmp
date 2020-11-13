@@ -27,7 +27,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
 import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentSystem;
+import app.packed.component.ComponentSubSystem;
 import app.packed.component.CustomConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
@@ -129,9 +129,9 @@ public final class PackedBuildContext implements BuildContext {
      * @param system
      *            the assembly to analyse
      * @return a component adaptor
-     * @see ComponentAnalyzer#analyze(app.packed.component.ComponentSystem)
+     * @see ComponentAnalyzer#analyze(app.packed.component.ComponentSubSystem)
      */
-    public static Component analysis(ComponentSystem system) {
+    public static Component analysis(ComponentSubSystem system) {
         requireNonNull(system, "system is null");
         if (system instanceof Component) {
             return (Component) system;
@@ -159,7 +159,7 @@ public final class PackedBuildContext implements BuildContext {
         int modifiers = 0;
         if (shellDriver != null) {
             modifiers += PackedComponentModifierSet.I_ANALYSIS;
-            if (shellDriver.isContainer()) {
+            if (shellDriver.isStateful()) {
                 modifiers += PackedComponentModifierSet.I_CONTAINER;
             }
         } else if (isAnalysis) {

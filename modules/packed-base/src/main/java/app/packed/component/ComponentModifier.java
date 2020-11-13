@@ -249,8 +249,6 @@ public enum ComponentModifier {
      */
     STATEFUL, // Something that has to be managed by the runtime after it has been initialized.
 
-    STATELESS, // passer ogsaa bedre med provide
-
     UNSCOPED; // Det er her hvor den kan vaere managed eller unmanaged..
 
     /**
@@ -265,6 +263,15 @@ public enum ComponentModifier {
     int bits() {
         return 1 << ordinal();
     }
+}
+
+enum Retired {
+
+    // Altsaa den er stateless hvis den ikke har state...
+    STATELESS, // passer ogsaa bedre med provide
+
+    // Syntes den er lidt overfloedig, det er altid rooten
+    SYSTEM;
 }
 
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 

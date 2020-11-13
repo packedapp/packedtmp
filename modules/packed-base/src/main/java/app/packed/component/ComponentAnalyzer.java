@@ -48,7 +48,7 @@ import packed.internal.component.PackedBuildContext;
 public final class ComponentAnalyzer {
 
     // Maybe on Component???
-    public static Component analyze(ComponentSystem s) {
+    public static Component analyze(ComponentSubSystem s) {
         return PackedBuildContext.analysis(s);
     }
 
@@ -59,20 +59,20 @@ public final class ComponentAnalyzer {
      * @throws IllegalStateException
      *             if the system is not in an assembled state.
      */
-    public static Component analyzeAssembly(ComponentSystem s) {
+    public static Component analyzeAssembly(ComponentSubSystem s) {
         // ??
         throw new UnsupportedOperationException();
     }
 
-    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
+    public static Optional<Component> findExtension(ComponentSubSystem s, Attribute<?> attribute) {
         return ComponentStream.of(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
     }
 
-    public static void print(ComponentSystem s) {
-        ComponentSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
+    public static void print(ComponentSubSystem s) {
+        ComponentSubSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
     }
 
-    static void validate(ComponentSystem s, Object ruleset) {
+    static void validate(ComponentSubSystem s, Object ruleset) {
 
     }
 

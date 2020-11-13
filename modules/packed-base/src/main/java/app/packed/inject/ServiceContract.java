@@ -28,7 +28,7 @@ import app.packed.base.Key;
 import app.packed.bundle.ExtensionMember;
 import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
-import app.packed.component.ComponentSystem;
+import app.packed.component.ComponentSubSystem;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.service.ServiceComposer;
 
@@ -244,7 +244,7 @@ public final class ServiceContract {
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
 
-    public static ServiceContract of(ComponentSystem system) {
+    public static ServiceContract of(ComponentSubSystem system) {
         Component c = ComponentAnalyzer.analyze(system);
         if (!c.modifiers().isBundle()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);

@@ -171,7 +171,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      *            streaming options
      * @return the new stream
      */
-    public static ComponentStream of(ComponentSystem system, Option... options) {
+    public static ComponentStream of(ComponentSubSystem system, Option... options) {
         return PackedBuildContext.analysis(system).stream(options);
     }
 
