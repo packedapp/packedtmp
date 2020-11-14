@@ -22,7 +22,7 @@ import java.util.Optional;
  */
 public abstract class BuildMethodSidecar extends MethodSidecar {
 
-    public final Optional<Class<?>> buildtimeProcessor() {
+    public final Optional<Class<?>> buildProcessor() {
         // disabled -> Optional.empty
 
         // Can specify both
@@ -34,16 +34,31 @@ public abstract class BuildMethodSidecar extends MethodSidecar {
 
     public void buildtimeDisable() {}
 
-    // replaces the
-    public void buildtimeSetInstance(Object o) {}
+    // replaces the sidecar with another class that can be used
+    // Vi kan jo faktisk generere kode her..
+    // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
+    // Men helst ikke
+    public void setBuildProcessor(Object o) {}
 
+    // Man kan ogsaa have en BuildContext som man kan faa injected...
     //
-    public void buildtimeSet(Class<?> injectMe) {}
-
-    public static class BuildTime {
+    public abstract static class BuildTime {
 
         protected void configure() {
 
         }
+    }
+
+    public final static class BuildTimeContext {
+        // Alternativ til BuildTime
+    }
+
+    // Things happens here
+    // Runtime vs Buildtime
+    // Do we take extensions or not
+    public @interface AtBuild {
+        boolean runtimeBundle() default false;
+
+        boolean buildtimeBundle() default true;
     }
 }

@@ -38,7 +38,7 @@ import app.packed.component.Component;
  * order. A service transformation requires that any dependencies are available whenever performing a transformation of
  * some kind.
  * 
- * @apiNote In the future, if the Java language permits, {@link ServiceTransformation} may become a {@code sealed}
+ * @apiNote In the future, if the Java language permits, {@link ServiceTransformer} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  * 
  * @see ServiceLocator#transform(java.util.function.Consumer)
@@ -47,8 +47,8 @@ import app.packed.component.Component;
  * @see ServiceWirelets#from(java.util.function.Consumer)
  * @see ServiceExtension#transformExports(java.util.function.Consumer)
  */
-// ServiceTransformation? (like action), was ServiceTransformer
-public interface ServiceTransformation extends ServiceRegistry {
+// was ServiceTransformation. But Validation, Conversation...
+public interface ServiceTransformer extends ServiceRegistry {
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
@@ -388,7 +388,7 @@ public interface ServiceTransformation extends ServiceRegistry {
     }
 }
 
-interface UNext extends ServiceTransformation {
+interface UNext extends ServiceTransformer {
 
     // Den sidste der mangler er jo en maade at aendre attributer paa
 
@@ -417,7 +417,7 @@ interface UNext extends ServiceTransformation {
 }
 
 // Various ideas on provide/rekey
-interface YIdeas extends ServiceTransformation {
+interface YIdeas extends ServiceTransformer {
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
     // Or maybe just methods...
@@ -479,28 +479,28 @@ interface YIdeas extends ServiceTransformation {
 
 }
 
-interface ZBadIdeas extends ServiceTransformation {
+interface ZBadIdeas extends ServiceTransformer {
 
     Object attachment();
 
     // wirelets can communicate here???
     // Nah make an AtomicReference... og sa lambda capture
 
-    ServiceTransformation map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    ServiceTransformer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
-    ServiceTransformation map(Factory<?> factory, int... resolveInternally);
+    ServiceTransformer map(Factory<?> factory, int... resolveInternally);
 
     // Eller ogsaa skal vi have endnu en lag
     // Foerend alle services bliver brugt....
     // Syntes ikke den her fin
-    ServiceTransformation mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+    ServiceTransformer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
 
     Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // JPMS-> Record must be readable for Packed
     // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
     // Man maa lave noget midlertigt hulumhej, som ma saa remover
-    ServiceTransformation multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+    ServiceTransformer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
 
     // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
     // If the specified factory has itself as a variable.
@@ -513,6 +513,6 @@ interface ZBadIdeas extends ServiceTransformation {
     // I think I would rather have something like
     // se.pushForChildExportTransformartion(Key... keys);
 
-    ServiceTransformation retainIf(Iterable<? super Key<?>> keys);
+    ServiceTransformer retainIf(Iterable<? super Key<?>> keys);
 
 }

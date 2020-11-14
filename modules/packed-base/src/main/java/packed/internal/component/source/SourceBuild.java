@@ -34,7 +34,7 @@ import packed.internal.util.MethodHandleUtil;
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceBuild implements DependencyProvider {
 
-    /** Any factory that is used to create the source. */
+    /** A factory that can used to create instances. */
     @Nullable
     private final Factory<?> factory;
 
@@ -52,7 +52,7 @@ public final class SourceBuild implements DependencyProvider {
     /** The index at which to store the runtime instance, or -1 if it should not be stored. */
     public final int regionIndex;
 
-    /** Whether or not this source is provided as a service. */
+    /** A service object if the source is provided as a service. */
     @Nullable
     public BuildtimeService service;
 
@@ -64,6 +64,7 @@ public final class SourceBuild implements DependencyProvider {
         if (source instanceof Class) {
             sourceType = (Class<?>) source;
             this.instance = null;
+            // We need to start putting stateful on every component...
             // We need to stateful on all components...
             this.factory = compConf.modifiers().isStateful() ? null : Factory.of(sourceType);
         } else if (source instanceof Factory) {

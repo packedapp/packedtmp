@@ -131,7 +131,14 @@ public final class PackedBuildContext implements BuildContext {
      * @return a component adaptor
      * @see ComponentAnalyzer#analyze(app.packed.component.ComponentSubSystem)
      */
-    public static Component analysis(ComponentSubSystem system) {
+    public static Component forAnalysis(ComponentSubSystem system) {
+        // PROBLEMET er her at vi ikke kan se om vi er statefull eller stateless
+        // Vil mene det er en ret stor forskel...
+        // Maaske vi skal til at have det paa driveren...
+        // Men saa kan vi jo stadig ikke se det f.eks. med
+        // analyze(new DooAssembly());
+        // Maaske vi skal explicit angive det naar den er stateless.
+
         requireNonNull(system, "system is null");
         if (system instanceof Component) {
             return (Component) system;

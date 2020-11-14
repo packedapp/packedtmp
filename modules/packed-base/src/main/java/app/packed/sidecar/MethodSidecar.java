@@ -135,5 +135,4 @@ public abstract class MethodSidecar implements AnnotatedElement {
     public final Method method() {
         return configuration().methodSafe();
     }
-
 }

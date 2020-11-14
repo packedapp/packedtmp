@@ -40,7 +40,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * service instances.
  * <p>
  * Unless otherwise specified instances of this interface are immutable collections. One notable exception is the
- * {@link ServiceTransformation} interface. Which support mutation operations on the iterators returned by
+ * {@link ServiceTransformer} interface. Which support mutation operations on the iterators returned by
  * {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
  * <p>
  * Unless otherwise specified a service registry never overrides hashCode/equals.

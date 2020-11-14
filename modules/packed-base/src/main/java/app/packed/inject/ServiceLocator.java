@@ -125,7 +125,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transformation to perform
      * @return the new service locator
      */
-    ServiceLocator transform(Consumer<ServiceTransformation> transformation);
+    ServiceLocator transform(Consumer<ServiceTransformer> transformation);
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
@@ -214,7 +214,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transformation to use
      * @return a new service locator
      */
-    static ServiceLocator of(Consumer<? super ServiceTransformation> transformation) {
+    static ServiceLocator of(Consumer<? super ServiceTransformer> transformation) {
         return PackedServiceTransformer.toServiceLocator(new HashMap<>(), transformation);
     }
 }

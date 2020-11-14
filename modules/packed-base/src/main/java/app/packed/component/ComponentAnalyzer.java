@@ -49,7 +49,7 @@ public final class ComponentAnalyzer {
 
     // Maybe on Component???
     public static Component analyze(ComponentSubSystem s) {
-        return PackedBuildContext.analysis(s);
+        return PackedBuildContext.forAnalysis(s);
     }
 
     /**

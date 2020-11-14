@@ -66,7 +66,7 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
+    public static Wirelet from(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             @Override
@@ -83,7 +83,7 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(Consumer<? super ServiceTransformation> transformation) {
+    public static Wirelet from(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             /** {@inheritDoc} */
@@ -136,14 +136,14 @@ public final class ServiceWirelets {
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
-     * @see ServiceTransformation#provideInstance(Object)
+     * @see ServiceTransformer#provideInstance(Object)
      */
     public static Wirelet provide(Object instance) {
         requireNonNull(instance, "instance is null");
         return to(t -> t.provideInstance(instance));
     }
 
-    public static Wirelet to(BiConsumer<? super ServiceTransformation, ServiceContract> transformation) {
+    public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
@@ -153,7 +153,7 @@ public final class ServiceWirelets {
         };
     }
 
-    public static Wirelet to(Consumer<? super ServiceTransformation> transformation) {
+    public static Wirelet to(Consumer<? super ServiceTransformer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override

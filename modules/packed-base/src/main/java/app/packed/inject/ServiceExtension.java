@@ -352,7 +352,7 @@ public final class ServiceExtension extends Extension {
      * @param transformer
      *            transforms the exports
      */
-    public void transformExports(Consumer<? super ServiceTransformation> transformer) {
+    public void transformExports(Consumer<? super ServiceTransformer> transformer) {
         composer.exports().addExportTransformer(transformer);
     }
 

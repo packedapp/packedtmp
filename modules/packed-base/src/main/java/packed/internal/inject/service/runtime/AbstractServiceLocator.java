@@ -30,7 +30,7 @@ import app.packed.inject.Provider;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceSelection;
-import app.packed.inject.ServiceTransformation;
+import app.packed.inject.ServiceTransformer;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 
@@ -105,7 +105,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public final ServiceLocator transform(Consumer<ServiceTransformation> transformer) {
+    public final ServiceLocator transform(Consumer<ServiceTransformer> transformer) {
         return PackedServiceTransformer.transform(transformer, (Collection) asMap().values());
     }
 
