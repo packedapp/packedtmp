@@ -16,8 +16,8 @@
 package app.packed.component;
 
 /**
- * An exception typically thrown by the runtime when something goes wrong doing a system's build phase. This exception
- * normally indicates a programmatic error and can usually only be recovered by updating the underlying code.
+ * An exception typically thrown when something goes wrong doing build phase. This exception normally indicates a
+ * programmatic error and can usually only be recovered by updating the underlying code.
  */
 // Or in .base/.component??? was in .artifact
 // Skal vi have en liste af errors???
@@ -55,6 +55,5 @@ public class BuildException extends RuntimeException {
 }
 //Or in lifecycle???? or base??? Hmmmmmm
 //Hed noget med artifact foer, men hvis vi faar dynamiske componenter...
-
 // InitializationException
 // ExecutionException (vi har den jo i juc...)

@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -38,7 +38,7 @@ public class SourceMemberBuildtimeService extends BuildtimeService {
     /** If constant, the region index to store it in */
     public final int regionIndex;
 
-    public SourceMemberBuildtimeService(ServiceComposer im, ComponentBuild compConf, Dependant dependant, Key<?> key, boolean isConst) {
+    public SourceMemberBuildtimeService(ServiceFabric im, ComponentBuild compConf, Dependant dependant, Key<?> key, boolean isConst) {
         super(compConf.configSite(), key);
         this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.region.reserve() : -1;

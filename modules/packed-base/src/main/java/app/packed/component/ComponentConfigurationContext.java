@@ -19,11 +19,10 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.base.TreePath;
-import app.packed.bundle.BundleAssembly;
-import app.packed.bundle.Extension;
+import app.packed.base.NamespacePath;
 import app.packed.config.ConfigSite;
-import app.packed.inject.Factory;
+import app.packed.container.BundleAssembly;
+import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
 /**
@@ -52,10 +51,10 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceExportAs();
 // sourceProvide();
 // sourceProvideAs();
-public interface ComponentConfigurationContext {
+public interface ComponentConfigurationContext extends ComponentInstaller {
 
     // Hmmmmmm, build() is normally something else
-    BuildContext build();
+    BuildInfo build();
 
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
@@ -75,23 +74,25 @@ public interface ComponentConfigurationContext {
     ConfigSite configSite();
 
     /**
-     * Returns an unmodifiable view of the extensions that are currently used.
+     * Returns an unmodifiable view of the extensions that are currently in use.
      * 
-     * @return an unmodifiable view of the extensions that are currently used
+     * @return an unmodifiable view of the extensions that are currently in use
      * 
      * @see BundleAssembly#extensions()
      */
-    // Maybe an attribute.. component.with(Extension.USED_EXTENSIONS)
-    Set<Class<? extends Extension>> cubeExtensions();
+    // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
+    // for bundle components. Makes sense because we would need for interating 
+    // through the build
+    Set<Class<? extends Extension>> bundleExtensions();
 
     /**
      * @param <T>
      * @param extensionType
      * @return the extension
      * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#BUNDLE} modifier
+     *             if the component does not have the {@link ComponentModifier#BUNDLE_ROOT} modifier
      */
-    <T extends Extension> T cubeUse(Class<T> extensionType);
+    <T extends Extension> T bundleUse(Class<T> extensionType);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is
@@ -105,19 +106,6 @@ public interface ComponentConfigurationContext {
      */
     // Ditch this one?? Maybe have it via asComponent();
     String getName();
-
-    /**
-     * @param bundle
-     *            the bundle
-     * @param wirelets
-     *            wirelets
-     * 
-     * @apiNote Previously this method returned the specified bundle. However, to encourage people to configure the bundle
-     *          before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have
-     *          void return type.
-     */
-    // Why not just wire... or maybe link and linklist
-    void link(Assembly<?> bundle, Wirelet... wirelets);
 
     /**
      * Returns an immutable set containing all the modifiers of this component.
@@ -139,7 +127,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return the path of this configuration.
      */
-    TreePath path();
+    NamespacePath path();
 
     /**
      * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
@@ -165,32 +153,4 @@ public interface ComponentConfigurationContext {
     void sourceProvideAs(Key<?> key);
 
     Optional<Key<?>> sourceProvideAsKey();
-
-    default <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
-
-    /**
-     * Wires a new child component using the specified driver
-     * 
-     * @param <C>
-     *            the type of configuration returned by the driver
-     * @param driver
-     *            the driver to use for creating the component
-     * @param wirelets
-     *            any wirelets that should be used when creating the component
-     * @return a configuration for the component
-     */
-    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
-
-    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
-
-    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bindInstance(instance);
-        return wire(cd, wirelets);
-    }
 }

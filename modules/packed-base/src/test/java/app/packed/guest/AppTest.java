@@ -22,9 +22,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.BundleConfiguration;
 import app.packed.component.App;
+import app.packed.container.BaseAssembly;
+import app.packed.container.BundleConfiguration;
 
 /** Tests {@link App} (PackedApp). */
 public class AppTest {

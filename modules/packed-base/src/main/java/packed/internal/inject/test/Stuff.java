@@ -16,8 +16,8 @@
 package packed.internal.inject.test;
 
 import app.packed.base.Named;
-import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 

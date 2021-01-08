@@ -16,7 +16,7 @@
 package packed.internal.component.wirelet;
 
 import app.packed.component.Wirelet;
-import app.packed.sidecar.VariableSidecar;
+import app.packed.hooks.sandbox.VariableSidecar;
 
 /**
  *

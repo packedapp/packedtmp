@@ -40,7 +40,7 @@ import packed.internal.util.ThrowableConsumer;
  * This class is not safe for use with multiple threads.
  */
 //TODO should we know whether or the lookup is Packed one or a user supplied??
-// lookup.getClass().getModule==OpenClass.getModule...?
+// lookup.getClass().getModule==OpenClass.getModule...? nah virker ikke paa classpath
 public final class OpenClass {
 
     /** The app.packed.base module. */

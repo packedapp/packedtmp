@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.AttributeMap;
 import app.packed.base.Nullable;
-import app.packed.base.TreePath;
+import app.packed.base.NamespacePath;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
@@ -223,7 +223,7 @@ public final class PackedComponent implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public TreePath path() {
+    public NamespacePath path() {
         return PackedTreePath.of(this);
     }
 

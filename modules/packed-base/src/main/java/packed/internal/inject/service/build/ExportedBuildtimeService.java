@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -53,7 +53,7 @@ public final class ExportedBuildtimeService extends BuildtimeService {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedBuildtimeService(ServiceComposer builder, Key<?> exportAsKey, ConfigSite configSite) {
+    public ExportedBuildtimeService(ServiceFabric builder, Key<?> exportAsKey, ConfigSite configSite) {
         super(configSite, exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }

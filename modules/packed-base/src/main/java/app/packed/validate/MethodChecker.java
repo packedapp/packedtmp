@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.sidecar.MethodSidecar;
+import app.packed.container.MethodHook;
 
 /**
  *
@@ -32,24 +32,31 @@ import app.packed.sidecar.MethodSidecar;
 // F.eks. ComponentSystemChecker.
 final class MethodChecker {
 
-    final Method method;
-
     final ContraintCheckContext context = null;
+
+    /** The method that is being checked */
+    private final Method method;
 
     private MethodChecker(Method method) {
         this.method = requireNonNull(method);
     }
 
-    public MethodChecker isStatic() {
-        return modifierSet(Modifier.STATIC);
-    }
+    public MethodChecker isModifierSet(int modifier) {
+        if ((method.getModifiers() & modifier) == 0) {
 
-    public MethodChecker modifierSet(int modifier) {
+        }
         return this;
     }
 
-    static Validator<? super Method> validator(Consumer<? super MethodChecker> checker) {
-        throw new UnsupportedOperationException();
+    /**
+     * Checks that the method is static.
+     * 
+     * @return this checker
+     * 
+     * @see Modifier#isStatic(int)
+     */
+    public MethodChecker isStatic() {
+        return isModifierSet(Modifier.STATIC);
     }
 
     static MethodChecker of(Method method) {
@@ -60,6 +67,10 @@ final class MethodChecker {
     static MethodChecker of(Method method, Object validationContext) {
         return new MethodChecker(method);
     }
+
+    static Validator<? super Method> validator(Consumer<? super MethodChecker> checker) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 /**
@@ -69,32 +80,11 @@ final class MethodChecker {
  */
 class ZandboxValidations {
 
-    static abstract class ValidatingMethodSidecar extends MethodSidecar {
-        public final MethodChecker check() {
-            throw new UnsupportedOperationException();
-        };
-        // check().isStatic();
-    }
-
-    // Must be either an error or runtime exception
-    // I don't know what the default exception we throw is
-    // also validate vs check....
-    // Maybe we can just throw ValidationException
-    public final void setCheckerException(Function<String, Throwable> f) {}
-
-    // rename to validate instead of check...
-    public final void checkNoReturnValue() {}
-
-    public final void checkNoParameters() {}
-
     public final void checkIsInstance() {}
 
     public final void checkIsStatic() {
         checkModifier(Modifier.STATIC);
     }
-
-    // Checks that the method does not have any checked exceptions
-    public final void checkNoCheckedExceptions() {}
 
     /**
      * @param modifier
@@ -104,5 +94,26 @@ class ZandboxValidations {
     public final void checkModifier(int modifier) {}
 
     public final void checkModifierNotSet(int modifier) {}
+
+    // Checks that the method does not have any checked exceptions
+    public final void checkNoCheckedExceptions() {}
+
+    public final void checkNoParameters() {}
+
+    // rename to validate instead of check...
+    public final void checkNoReturnValue() {}
+
+    // Must be either an error or runtime exception
+    // I don't know what the default exception we throw is
+    // also validate vs check....
+    // Maybe we can just throw ValidationException
+    public final void setCheckerException(Function<String, Throwable> f) {}
+
+    static abstract class ValidatingMethodSidecar extends MethodHook.Bootstrap {
+        public final MethodChecker check() {
+            throw new UnsupportedOperationException();
+        };
+        // check().isStatic();
+    }
 
 }

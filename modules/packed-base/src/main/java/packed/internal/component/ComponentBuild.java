@@ -33,8 +33,7 @@ import java.util.stream.Stream;
 import app.packed.base.AttributeMap;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.TreePath;
-import app.packed.bundle.Extension;
+import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
@@ -46,6 +45,7 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
@@ -116,7 +116,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
-    final PackedBuildContext build;
+    final PackedBuildInfo build;
 
     /**
      * Creates a new instance of this class
@@ -126,7 +126,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentBuild(PackedBuildContext build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentBuild parent,
+    ComponentBuild(PackedBuildInfo build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentBuild parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.configSite = requireNonNull(configSite);
@@ -254,7 +254,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
             ProvidableAttributeModel pam = extension.model().attributes();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
-                    Extension ex = extension.instance();
+                    Extension ex = extension.extension();
                     Object val;
                     MethodHandle mh = e.getValue().mh;
                     try {
@@ -304,7 +304,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public PackedBuildContext build() {
+    public PackedBuildInfo build() {
         return build;
     }
 
@@ -410,7 +410,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public TreePath path() {
+    public NamespacePath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
             ComponentBuild p = treeParent;
@@ -598,14 +598,14 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> cubeExtensions() {
+    public Set<Class<? extends Extension>> bundleExtensions() {
         checkHasContainer();
         return cube.extensionView();
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Extension> T cubeUse(Class<T> extensionType) {
+    public <T extends Extension> T bundleUse(Class<T> extensionType) {
         checkHasContainer();
         return cube.useExtension(extensionType);
     }
@@ -705,7 +705,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
         /** {@inheritDoc} */
         @Override
-        public TreePath path() {
+        public NamespacePath path() {
             return compConf.path();
         }
 

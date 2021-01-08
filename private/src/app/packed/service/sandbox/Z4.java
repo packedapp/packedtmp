@@ -18,12 +18,11 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.ConnectExtensions;
-import app.packed.bundle.Extension;
-import app.packed.bundle.ExtensionSetup;
 import app.packed.component.App;
 import app.packed.component.Image;
+import app.packed.container.BaseAssembly;
+import app.packed.container.ConnectExtensions;
+import app.packed.container.Extension;
 
 /**
  *
@@ -92,37 +91,38 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void add() {
+        protected void extensionAdded() {
             // System.out.println(ai + "E-ADDED");
         }
 
         @Override
-        protected void complete() {
+        protected void extensionConfigured() {
             // System.out.println(ai + "E-Complete");
         }
 
         @Override
-        protected void preChildBundles() {
+        protected void extensionBeforeDescendents() {
             // System.out.println(ai + "E-PreChildContainers");
         }
     }
 
-    @ExtensionSetup(dependencies = E.class)
     public static class F extends Extension {
         F() {}
-
+        static {
+            $AddDependency(E.class);
+        }
         @Override
-        protected void add() {
+        protected void extensionAdded() {
             System.out.println("F-ADDED");
         }
 
         @Override
-        protected void complete() {
+        protected void extensionConfigured() {
             System.out.println("F-Complete");
         }
 
         @Override
-        protected void preChildBundles() {
+        protected void extensionBeforeDescendents() {
             System.out.println("F-PreChildContainers");
             useOld(E.class);
         }

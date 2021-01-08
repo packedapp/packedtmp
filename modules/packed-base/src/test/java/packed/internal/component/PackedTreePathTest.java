@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.base.TreePath;
+import app.packed.base.NamespacePath;
 
 /**
  *
@@ -36,7 +36,7 @@ public class PackedTreePathTest {
         checkPath(new PackedTreePath("Foo", "Boo"), "/Foo/Boo");
     }
 
-    private static void checkPath(TreePath p, String expected) {
+    private static void checkPath(NamespacePath p, String expected) {
 
         ///////// Object
         // hashCode

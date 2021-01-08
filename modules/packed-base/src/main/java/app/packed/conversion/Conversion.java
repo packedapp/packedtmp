@@ -17,6 +17,7 @@ package app.packed.conversion;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -60,30 +61,6 @@ public final class Conversion<T> {
     public void assertConverted() {
         if (failure != null) {
             throw new AssertionError("oops");
-        }
-    }
-
-    /**
-     * If a value is present, returns the value, otherwise throws an exception produced by the exception supplying function.
-     *
-     * @apiNote A method reference to the exception constructor with an empty argument list can be used as the supplier. For
-     *          example, {@code IllegalStateException::new}
-     *
-     * @param <X>
-     *            Type of the exception to be thrown
-     * @param exceptionSupplier
-     *            the supplying function that produces an exception to be thrown
-     * @return the value, if present
-     * @throws X
-     *             if no value is present
-     * @throws NullPointerException
-     *             if no value is present and the exception supplying function is {@code null}
-     */
-    public <X extends Throwable> T orElseThrow(Function<String, ? extends X> exceptionSupplier) throws X {
-        if (failure == null) {
-            return value;
-        } else {
-            throw exceptionSupplier.apply(failure.toString());
         }
     }
 
@@ -132,6 +109,34 @@ public final class Conversion<T> {
     }
 
     /**
+     * If a value is present, returns the value, otherwise throws an exception produced by the exception supplying function.
+     *
+     * @apiNote A method reference to the exception constructor with an empty argument list can be used as the supplier. For
+     *          example, {@code IllegalStateException::new}
+     *
+     * @param <X>
+     *            Type of the exception to be thrown
+     * @param exceptionSupplier
+     *            the supplying function that produces an exception to be thrown
+     * @return the value, if present
+     * @throws X
+     *             if no value is present
+     * @throws NullPointerException
+     *             if no value is present and the exception supplying function is {@code null}
+     */
+    public <X extends Throwable> T orElseThrow(Function<String, ? extends X> exceptionSupplier) throws X {
+        if (failure == null) {
+            return value;
+        } else {
+            throw exceptionSupplier.apply(failure.toString());
+        }
+    }
+
+    public Optional<T> toOptional() {
+        return failure == null ? Optional.empty() : Optional.of(value);
+    }
+
+    /**
      * @param <T>
      *            the type value a successful conversion would have created
      * @param context
@@ -144,6 +149,12 @@ public final class Conversion<T> {
 
     public static final <T> Conversion<T> failed(String message) {
         return new Conversion<>(null, new PackedConversionFailure(message));
+    }
+
+    public static void main(String[] args) {
+        Conversion.of("foo").orElseThrow(s -> new IllegalArgumentException(s));
+
+        Conversion.failed("foo").orElseThrow(s -> new IllegalArgumentException(s));
     }
 
     /**
@@ -159,10 +170,13 @@ public final class Conversion<T> {
         requireNonNull(value, "value is null");
         return new Conversion<>(value, null);
     }
-
-    public static void main(String[] args) {
-        Conversion.of("foo").orElseThrow(s -> new IllegalArgumentException(s));
-
-        Conversion.failed("foo").orElseThrow(s -> new IllegalArgumentException(s));
+    
+    static final class Success {
+        
     }
+    
+    static final class Failed {
+        
+    }
+
 }

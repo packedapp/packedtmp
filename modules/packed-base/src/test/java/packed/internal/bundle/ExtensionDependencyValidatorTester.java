@@ -15,7 +15,7 @@
  */
 package packed.internal.bundle;
 
-import app.packed.bundle.Extension;
+import app.packed.container.Extension;
 
 /**
  *

@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.AttributedElement;
-import app.packed.base.TreePath;
+import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
 import app.packed.config.ConfigSite;
 
@@ -28,7 +28,7 @@ import app.packed.config.ConfigSite;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public interface Component extends AttributedElement, ComponentSubSystem {
+public interface Component extends AttributedElement, ComponentSystem {
 
     /**
      * Returns an unmodifiable view of all of this component's children.
@@ -57,6 +57,7 @@ public interface Component extends AttributedElement, ComponentSubSystem {
      * 
      * @return the distance to the root component
      */
+    // Maybe just a method on path().depth();
     int depth();
 
     default boolean hasModifier(ComponentModifier modifier) {
@@ -94,7 +95,7 @@ public interface Component extends AttributedElement, ComponentSubSystem {
      *
      * @return the path of this component
      */
-    TreePath path();
+    NamespacePath path();
 
     /**
      * Computes the relation from this component to the specified component.
@@ -121,7 +122,7 @@ public interface Component extends AttributedElement, ComponentSubSystem {
     ComponentStream stream(ComponentStream.Option... options);
 
     /**
-     * Returns the root (system) component.
+     * Returns the root component of the namespace this component is located in.
      * 
      * @return the root component
      */
@@ -170,6 +171,7 @@ public interface Component extends AttributedElement, ComponentSubSystem {
         // der sker internt...
         throw new UnsupportedOperationException();
     }
+       
 }
 
 ///**

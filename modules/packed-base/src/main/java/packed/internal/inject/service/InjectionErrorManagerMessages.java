@@ -77,7 +77,7 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceComposer node, HashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceFabric node, HashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 

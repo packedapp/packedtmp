@@ -22,13 +22,13 @@ import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import app.packed.base.Nullable;
-import app.packed.base.TreePath;
+import app.packed.base.NamespacePath;
 
-/** The default implementation of {@link TreePath}. */
-public final class PackedTreePath implements TreePath {
+/** The default implementation of {@link NamespacePath}. */
+public final class PackedTreePath implements NamespacePath {
 
     /** A component path representing the root of a hierarchy. */
-    public static final TreePath ROOT = new PackedTreePath();
+    public static final NamespacePath ROOT = new PackedTreePath();
 
     private final String[] elements;
 
@@ -50,7 +50,7 @@ public final class PackedTreePath implements TreePath {
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(TreePath o) {
+    public int compareTo(NamespacePath o) {
         return toString().compareTo(o.toString());
     }
 
@@ -74,8 +74,8 @@ public final class PackedTreePath implements TreePath {
                 }
             }
             return true;
-        } else if (obj instanceof TreePath) {
-            TreePath pcp = (TreePath) obj;
+        } else if (obj instanceof NamespacePath) {
+            NamespacePath pcp = (NamespacePath) obj;
             if (pcp.depth() != elements.length) {
                 return false;
             }
@@ -116,7 +116,7 @@ public final class PackedTreePath implements TreePath {
 
     /** {@inheritDoc} */
     @Override
-    public @Nullable TreePath parent() {
+    public @Nullable NamespacePath parent() {
         if (isRoot()) {
             return null;
         }
@@ -145,7 +145,7 @@ public final class PackedTreePath implements TreePath {
 
     }
 
-    static TreePath of(PackedComponent component) {
+    static NamespacePath of(PackedComponent component) {
         int depth = component.depth();
         switch (depth) {
         case 0:
@@ -163,7 +163,7 @@ public final class PackedTreePath implements TreePath {
         }
     }
 
-    static TreePath of(OpenTreeNode<?> cc) {
+    static NamespacePath of(OpenTreeNode<?> cc) {
         int depth = cc.treeDepth;
         switch (depth) {
         case 0:
@@ -183,7 +183,7 @@ public final class PackedTreePath implements TreePath {
 
     /** {@inheritDoc} */
     @Override
-    public TreePath add(TreePath other) {
+    public NamespacePath add(NamespacePath other) {
         PackedTreePath pcp = (PackedTreePath) other;
         return new PackedTreePath(Stream.concat(Arrays.stream(elements), Arrays.stream(pcp.elements)).toArray(String[]::new));
     }

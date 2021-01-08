@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.base.AttributedElementStream;
-import app.packed.bundle.Extension;
-import packed.internal.component.PackedBuildContext;
+import app.packed.container.Extension;
+import packed.internal.component.PackedBuildInfo;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
@@ -171,8 +171,8 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      *            streaming options
      * @return the new stream
      */
-    public static ComponentStream of(ComponentSubSystem system, Option... options) {
-        return PackedBuildContext.forAnalysis(system).stream(options);
+    public static ComponentStream of(ComponentSystem system, Option... options) {
+        return PackedBuildInfo.forAnalysis(system).stream(options);
     }
 
     /********** Overridden to provide ComponentStream as a return value. **********/
@@ -272,6 +272,11 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 
         // FollowUnitialized guests...
 
+        // Fail if not??
+        public static ComponentStream.Option partOfSame(ComponentSystemType boundaryType) {
+            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
+        }
+        
         /**
          * Include components that belongs to an extension .
          * 

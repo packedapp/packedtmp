@@ -21,7 +21,19 @@ package app.packed.component;
 //Features
 // Debuggin
 // We could have app.packed.build package.
-final class BuildWirelets {
+
+// Taenker de kan bruges paa alle componenter. Og ikke kun rod..
+// Eller??? Skal de fx. cachnes af en host???
+// Saa nye guests ogsaa skal kunne overtage dem??
+// Det samme gaelder med NameSpaceRules
+
+// De her regner gaelder for build'et...
+
+// Return InheritableWirelet().
+
+// Wirelet printDebug().inherit();
+// printDebug().inherit();
+public final class BuildWirelets {
 
     /** Not for you my friend. */
     private BuildWirelets() {}
@@ -32,29 +44,38 @@ final class BuildWirelets {
     // Throw XX exception instead of
 
     // Additional to people overridding artifacts, bundles, ect.
-    public static Wirelet checkRuleset(Object... ruleset) {
+    public static InheritableWirelet checkRuleset(Object... ruleset) {
         throw new UnsupportedOperationException();
     }
 
     // Because it is just much easier than fiddling with loggers
-    public static Wirelet printDebug() {
+    /**
+     * A wirelet that will print various build information to {@code system.out}.
+     * 
+     * @return the wirelet
+     */
+    public static InheritableWirelet printDebug() {
         throw new UnsupportedOperationException();
     }
 
     // Taenker vi printer dem...
     // Og er det kun roden der kan disable dem???
-    public static Wirelet disableWarnings() {
+    public static InheritableWirelet disableWarnings() {
         throw new UnsupportedOperationException();
     }
 
+    // NoBootstrapCaching...
+    // BootstrapWirelets.noBootstrap()
     public static Wirelet sidecarCacheLess() {
         throw new UnsupportedOperationException();
     }
 
-    public static Wirelet sidecarCacheSpecific() {
+    static InheritableWirelet sidecarCacheSpecific() {
         // The wirelet itself contains the cache...
         // And can be reused (also concurrently)
         // Maaske kan man styre noget reload praecist...
+        // Maaske kan man optionalt tage en Runnable?
+        // Som brugere kan invoke
         throw new UnsupportedOperationException();
     }
 

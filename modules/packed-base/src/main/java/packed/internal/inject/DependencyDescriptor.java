@@ -44,7 +44,7 @@ import app.packed.component.ComponentDefinitionException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
-import packed.internal.util.QualifierHelper;
+import packed.internal.util.QualifierUtil;
 import packed.internal.util.ReflectionUtil;
 import packed.internal.util.TypeUtil;
 
@@ -305,7 +305,7 @@ public final class DependencyDescriptor implements OldVariable {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) actualClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[0].getAnnotations();
-        Annotation[] qa = QualifierHelper.findQualifier(annotations);
+        Annotation[] qa = QualifierUtil.findQualifier(annotations);
 
         Optionality optionalType = null;
         if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Optional.class) {
@@ -347,7 +347,7 @@ public final class DependencyDescriptor implements OldVariable {
 
         TypeToken<?> tl = TypeToken.fromType(getParameterizedType);
 
-        Annotation[] qualifiers = QualifierHelper.findQualifier(parameter.getAnnotations());
+        Annotation[] qualifiers = QualifierUtil.findQualifier(parameter.getAnnotations());
 
         // Illegal
         // Optional<Optional*>

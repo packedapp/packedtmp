@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Extension;
 import app.packed.component.App;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 import packed.internal.bundle.Packlet;
 import testutil.util.AbstractArtifactTest;
 

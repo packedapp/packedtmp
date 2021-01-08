@@ -19,8 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.Extension;
-import app.packed.bundle.ExtensionSetup;
+import app.packed.container.Extension;
 import testutil.util.AbstractArtifactTest;
 
 /**
@@ -37,19 +36,26 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         });
     }
 
-    @ExtensionSetup(dependencies = Ex2.class)
     static final class Ex1 extends Extension {
         @Override
-        protected void add() {
+        protected void extensionAdded() {
             useOld(Ex2.class);
         }
+
+        static {
+            $AddDependency(Ex2.class);
+        }
+
     }
 
-    @ExtensionSetup(dependencies = Ex3.class)
     static final class Ex2 extends Extension {
         @Override
-        protected void add() {
+        protected void extensionAdded() {
             useOld(Ex3.class);
+        }
+
+        static {
+            $AddDependency(Ex3.class);
         }
     }
 

@@ -22,16 +22,16 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
-import app.packed.base.TreePath;
-import app.packed.bundle.Extension;
-import app.packed.bundle.Extension.Subtension;
-import app.packed.bundle.ExtensionConfiguration;
+import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.BuildContext;
+import app.packed.component.BuildInfo;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.Extension;
+import app.packed.container.Extension.Subtension;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 import packed.internal.util.LookupUtil;
@@ -40,15 +40,16 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ExtensionConfiguration}. */
 public final class ExtensionBuild implements ExtensionConfiguration, Comparable<ExtensionBuild> {
 
-    /** A MethodHandle for invoking {@link Extension#add()}. */
-    private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "add", void.class);
+    /** A MethodHandle for invoking {@link Extension#extensionAdded()}. */
+    private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionAdded", void.class);
 
-    /** A MethodHandle for invoking {@link Extension#complete()}. */
-    private static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "complete", void.class);
+    /** A MethodHandle for invoking {@link Extension#extensionConfigured()}. */
+    private static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionConfigured",
+            void.class);
 
-    /** A MethodHandle for invoking {@link Extension#preChildBundles()}. */
+    /** A MethodHandle for invoking {@link Extension#extensionBeforeDescendents()}. */
     private static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "preChildBundles", void.class);
+            "extensionBeforeDescendents", void.class);
 
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -89,7 +90,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public BuildContext build() {
+    public BuildInfo build() {
         return compConf.build();
     }
 
@@ -136,8 +137,23 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public ConfigSite cubeConfigSite() {
+    public ConfigSite containerConfigSite() {
         return bundle.compConf.configSite();
+    }
+
+    /**
+     * Returns the extension instance this class wraps.
+     * 
+     * @return the extension instance this class wraps
+     * @throws IllegalStateException
+     *             if trying to call this method from the constructor of the extension
+     */
+    public Extension extension() {
+        Extension e = instance;
+        if (e == null) {
+            throw new IllegalStateException("Cannot call this method from the constructor of " + model.name());
+        }
+        return e;
     }
 
     /** {@inheritDoc} */
@@ -179,21 +195,6 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         return compConf.wire(cd);
     }
 
-    /**
-     * Returns the extension instance this class wraps.
-     * 
-     * @return the extension instance this class wraps
-     * @throws IllegalStateException
-     *             if trying to call this method from the constructor of the extension
-     */
-    public Extension instance() {
-        Extension e = instance;
-        if (e == null) {
-            throw new IllegalStateException("Cannot call this method from the constructor of " + model.name());
-        }
-        return e;
-    }
-
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
@@ -217,7 +218,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public TreePath path() {
+    public NamespacePath path() {
         return compConf.path();
     }
 
@@ -259,7 +260,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
         if (!model.isDirectDependency(extensionType)) {
             // We allow an extension to use itself, alternative would be to throw an exception, but why?
-            if (extensionType == instance().getClass()) {
+            if (extensionType == extension().getClass()) {
                 return (T) instance;
             }
 

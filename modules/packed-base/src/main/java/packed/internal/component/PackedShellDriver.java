@@ -21,15 +21,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.bundle.Extension;
-import app.packed.component.Assembler;
+import app.packed.component.Composer;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentDriver;
-import app.packed.component.CustomConfigurator;
+import app.packed.component.Composable;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
+import app.packed.container.Extension;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ShellDriver}. */
@@ -54,14 +54,14 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
         this.newShellMH = requireNonNull(newShellMH);
     }
 
-    public <D extends Assembler> S configure(ComponentDriver<D> driver, CustomConfigurator<D> consumer, Wirelet... wirelets) {
+    public <D extends Composer> S configure(ComponentDriver<D> driver, Composable<D> consumer, Wirelet... wirelets) {
         return configure(driver, e -> e, consumer, wirelets);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets) {
-        PackedBuildContext build = PackedBuildContext.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
+    public <C extends Composer, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, Composable<C> consumer, Wirelet... wirelets) {
+        PackedBuildInfo build = PackedBuildInfo.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
         PackedInitializationContext ac = build.process(null);
         return newShell(ac);
     }
@@ -74,7 +74,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public Image<S> newImage(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system
-        PackedBuildContext build = PackedBuildContext.build(bundle, false, true, this, wirelets);
+        PackedBuildInfo build = PackedBuildInfo.build(bundle, false, true, this, wirelets);
 
         // Return a new image that be people can use (Image::use)
         return new ShellImage(build);
@@ -84,7 +84,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     @Override
     public S newShell(Assembly<?> bundle, Wirelet... wirelets) {
         // Assemble the system
-        PackedBuildContext build = PackedBuildContext.build(bundle, false, false, this, wirelets);
+        PackedBuildInfo build = PackedBuildInfo.build(bundle, false, false, this, wirelets);
 
         // Initialize the system. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = build.process(null);
@@ -215,7 +215,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
     private final class ShellImage implements Image<S> {
 
         /** The assembled image node. */
-        private final PackedBuildContext build;
+        private final PackedBuildInfo build;
 
         /**
          * Create a new image from the specified component.
@@ -223,7 +223,7 @@ public final class PackedShellDriver<S> implements ShellDriver<S> {
          * @param build
          *            the build
          */
-        private ShellImage(PackedBuildContext build) {
+        private ShellImage(PackedBuildInfo build) {
             this.build = requireNonNull(build);
         }
 

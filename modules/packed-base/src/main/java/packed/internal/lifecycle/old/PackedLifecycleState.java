@@ -17,7 +17,7 @@ package packed.internal.lifecycle.old;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.RunState;
+import app.packed.state.RunState;
 
 /**
  *

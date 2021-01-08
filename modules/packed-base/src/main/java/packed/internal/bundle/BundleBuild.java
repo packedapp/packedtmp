@@ -24,13 +24,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.Extension;
-import app.packed.bundle.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 
 /** Contains data and logic relevant for containers. */
 public final class BundleBuild {
@@ -59,7 +59,7 @@ public final class BundleBuild {
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private ServiceComposer sbm;
+    private ServiceFabric sbm;
 
     private ArrayList<ExtensionBuild> tmpExtensions;
 
@@ -157,12 +157,12 @@ public final class BundleBuild {
     }
 
     @Nullable
-    public ServiceComposer getServiceManager() {
+    public ServiceFabric getServiceManager() {
         return sbm;
     }
 
-    public ServiceComposer getServiceManagerOrCreate() {
-        ServiceComposer s = sbm;
+    public ServiceFabric getServiceManagerOrCreate() {
+        ServiceFabric s = sbm;
         if (s == null) {
             useExtension(ServiceExtension.class);
             s = sbm;
@@ -185,8 +185,8 @@ public final class BundleBuild {
         return isImage = Boolean.FALSE;
     }
 
-    public ServiceComposer newServiceManagerFromServiceExtension() {
-        return sbm = new ServiceComposer(this, sbm);
+    public ServiceFabric newServiceManagerFromServiceExtension() {
+        return sbm = new ServiceFabric(this, sbm);
     }
 
     private void runPredContainerChildren() {
@@ -265,7 +265,7 @@ public final class BundleBuild {
 
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionType) {
-        return (T) useExtension(extensionType, null).instance();
+        return (T) useExtension(extensionType, null).extension();
     }
 
 }

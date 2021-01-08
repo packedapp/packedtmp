@@ -30,7 +30,7 @@ import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
-import app.packed.inject.ServiceTransformer;
+import app.packed.inject.ServiceComposer;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.ExportedBuildtimeService;
@@ -61,10 +61,10 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
     private final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
-    private final ServiceComposer sm;
+    private final ServiceFabric sm;
 
     @Nullable
-    Consumer<? super ServiceTransformer> transformer;
+    Consumer<? super ServiceComposer> transformer;
 
     /**
      * Creates a new export manager.
@@ -72,14 +72,14 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceExportComposer(ServiceComposer sm) {
+    ServiceExportComposer(ServiceFabric sm) {
         this.sm = requireNonNull(sm);
     }
 
     /**
      * @param transformer
      */
-    public void addExportTransformer(Consumer<? super ServiceTransformer> transformer) {
+    public void addExportTransformer(Consumer<? super ServiceComposer> transformer) {
         if (this.transformer != null) {
             throw new IllegalStateException("Can only set an export transformer once");
         }
@@ -232,7 +232,7 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
         // Finally, make the resolved exports visible.
     }
 
-    public void transform(BiConsumer<? super ServiceTransformer, ? super ServiceContract> transformer) {
+    public void transform(BiConsumer<? super ServiceComposer, ? super ServiceContract> transformer) {
         PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
     }
 
@@ -242,7 +242,7 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      * @param transformer
      *            the transformer to use
      */
-    public void transform(Consumer<? super ServiceTransformer> transformer) {
+    public void transform(Consumer<? super ServiceComposer> transformer) {
         PackedServiceTransformer.transformInplace(resolvedExports, transformer);
     }
 }

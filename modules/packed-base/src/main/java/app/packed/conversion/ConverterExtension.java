@@ -15,7 +15,7 @@
  */
 package app.packed.conversion;
 
-import app.packed.bundle.Extension;
+import app.packed.container.Extension;
 
 /**
  *

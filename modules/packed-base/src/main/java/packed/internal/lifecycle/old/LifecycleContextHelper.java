@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Set;
 
-import app.packed.statemachine.LifecycleContext;
+import app.packed.state.LifecycleContext;
 
 /**
  *

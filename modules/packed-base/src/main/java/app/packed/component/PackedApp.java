@@ -4,8 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.Host;
 
 /** The default implementation of {@link App}. */
 final class PackedApp implements App {
@@ -17,7 +17,7 @@ final class PackedApp implements App {
     private final Component component;
 
     /** The app's container. */
-    private final Container container;
+    private final Host guest;
 
     /** The app's service locator. */
     private final ServiceLocator services;
@@ -29,12 +29,12 @@ final class PackedApp implements App {
      *            the service component
      * @param services
      *            the exported services
-     * @param container
+     * @param guest
      *            the container
      */
-    private PackedApp(Component component, ServiceLocator services, Container container) {
+    private PackedApp(Component component, ServiceLocator services, Host guest) {
         this.component = requireNonNull(component);
-        this.container = requireNonNull(container);
+        this.guest = requireNonNull(guest);
         this.services = requireNonNull(services);
     }
 
@@ -46,8 +46,8 @@ final class PackedApp implements App {
 
     /** {@inheritDoc} */
     @Override
-    public Container container() {
-        return container;
+    public Host host() {
+        return guest;
     }
 
     /** {@inheritDoc} */
@@ -58,6 +58,6 @@ final class PackedApp implements App {
 
     @Override
     public String toString() {
-        return "App[state = " + container.state() + "] " + path();
+        return "App[state = " + guest.state() + "] " + component.path();
     }
 }

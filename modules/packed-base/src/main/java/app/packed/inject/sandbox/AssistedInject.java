@@ -33,6 +33,8 @@ import java.lang.annotation.Target;
 public @interface AssistedInject {
 
     // only looks for @Inject??
+    // Den traels at skulle putte hver member
+    // Taenker maaske det er default og ikke noget man kan styre...
     boolean injectMembers() default false;
 
     Class<?> actualType() default Object.class;
@@ -58,6 +60,8 @@ public @interface AssistedInject {
     // types must be specified in the signature. Or use parameters
 
     int[] parameters() default {}; // if it takes parameters of the same type
+    
+    // Class<? super InvocationBinder> nahh ved sgu ikke om det er mere simpelt...
 }
 // How to handle generic types??? Jeg taenker
 // primaert i forbindelse med matching

@@ -24,13 +24,13 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.base.Named;
-import app.packed.bundle.BaseAssembly;
+import app.packed.base.invoke.Invoker;
 import app.packed.component.App;
+import app.packed.container.BaseAssembly;
+import app.packed.container.MethodHook;
+import app.packed.container.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
-import app.packed.sidecar.ActivateMethodSidecar;
-import app.packed.sidecar.Invoker;
-import app.packed.sidecar.MethodSidecarSandbox;
-import app.packed.statemachine.OnInitialize;
+import app.packed.state.OnInitialize;
 
 /**
  *
@@ -51,7 +51,7 @@ public class Foo extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RUNTIME)
-    @ActivateMethodSidecar(allowInvoke = true, sidecar = TestIt.class)
+    @MethodHook(allowInvoke = true, bootstrap = TestIt.class)
     public @interface Hej {
 
     }
@@ -69,12 +69,12 @@ public class Foo extends BaseAssembly {
     }
 }
 
-class TestIt extends MethodSidecarSandbox {
+class TestIt extends RealMethodSidecarBootstrap {
 
     static final AtomicLong al = new AtomicLong();
 
     @Override
-    protected void configure() {
+    protected void bootstrap() {
         provideInvoker();
         if (method().isDefault()) {
             disable();

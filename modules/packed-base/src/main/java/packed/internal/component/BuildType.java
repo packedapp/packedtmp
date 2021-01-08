@@ -15,7 +15,7 @@
  */
 package packed.internal.component;
 
-import app.packed.container.Container;
+import app.packed.state.Host;
 
 /**
  *
@@ -30,7 +30,7 @@ public enum BuildType {
     /**
      * We are executing a program.
      * 
-     * @see Container#execute(app.packed.component.Assembly, app.packed.component.Wirelet...)
+     * @see Host#execute(app.packed.component.Assembly, app.packed.component.Wirelet...)
      */
     EXECUTE_IMAGE,
 

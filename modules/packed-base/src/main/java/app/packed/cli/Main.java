@@ -23,10 +23,10 @@ import app.packed.component.App;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import app.packed.container.Container;
-import app.packed.container.Container.StopOption;
-import app.packed.container.ContainerWirelets;
-import app.packed.container.RunState;
+import app.packed.state.RunState;
+import app.packed.state.Host;
+import app.packed.state.StateWirelets;
+import app.packed.state.Host.StopOption;
 
 /**
  *
@@ -77,7 +77,7 @@ public final class Main {
     }
 
     public void execute(Assembly<?> bundle, Wirelet... wirelets) {
-        Container.execute(bundle, Wirelet.combine(wirelet, wirelets));
+        Host.execute(bundle, Wirelet.combine(wirelet, wirelets));
     }
 
     Image<Void> image() {
@@ -99,7 +99,7 @@ public final class Main {
     // Maybe just delay it.
 
     Main timeToRun(long timeout, TimeUnit unit, StopOption... options) {
-        return add(ContainerWirelets.timeToRun(timeout, unit, options));
+        return add(StateWirelets.timeToRun(timeout, unit, options));
     }
 
     static Main defaults() {
@@ -113,7 +113,7 @@ public final class Main {
     }
 
     public static void main(Assembly<?> bundle, String[] args, Wirelet... wirelets) {
-        Container.execute(bundle, Wirelet.combine(wirelets, MainArgs.of(args)));
+        Host.execute(bundle, Wirelet.combine(wirelets, MainArgs.of(args)));
     }
 
     /**
@@ -123,7 +123,7 @@ public final class Main {
      * Entry point or run to termination
      * <p>
      * This method will automatically install a shutdown hook wirelet using
-     * {@link ContainerWirelets#shutdownHook(app.packed.container.Container.StopOption...)}.
+     * {@link StateWirelets#shutdownHook(app.packed.state.Host.StopOption...)}.
      * 
      * @param assembly
      *            the assembly to execute
@@ -131,10 +131,10 @@ public final class Main {
      *            wirelets
      * @throws RuntimeException
      *             if the application did not execute properly
-     * @see ContainerWirelets#shutdownHook(app.packed.container.Container.StopOption...)
+     * @see StateWirelets#shutdownHook(app.packed.state.Host.StopOption...)
      */
     public static void main(Assembly<?> assembly, Wirelet... wirelets) {
-        Container.execute(assembly, wirelets);
+        Host.execute(assembly, wirelets);
     }
 
     static Main of() {

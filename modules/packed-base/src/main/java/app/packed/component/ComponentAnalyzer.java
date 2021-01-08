@@ -18,7 +18,7 @@ package app.packed.component;
 import java.util.Optional;
 
 import app.packed.base.Attribute;
-import packed.internal.component.PackedBuildContext;
+import packed.internal.component.PackedBuildInfo;
 
 /**
  * Analysis servers 2 main purposes
@@ -48,8 +48,8 @@ import packed.internal.component.PackedBuildContext;
 public final class ComponentAnalyzer {
 
     // Maybe on Component???
-    public static Component analyze(ComponentSubSystem s) {
-        return PackedBuildContext.forAnalysis(s);
+    public static Component analyze(ComponentSystem s) {
+        return PackedBuildInfo.forAnalysis(s);
     }
 
     /**
@@ -59,33 +59,35 @@ public final class ComponentAnalyzer {
      * @throws IllegalStateException
      *             if the system is not in an assembled state.
      */
-    public static Component analyzeAssembly(ComponentSubSystem s) {
+    public static Component analyzeAssembly(ComponentSystem s) {
         // ??
         throw new UnsupportedOperationException();
     }
 
-    public static Optional<Component> findExtension(ComponentSubSystem s, Attribute<?> attribute) {
+    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
         return ComponentStream.of(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
     }
 
-    public static void print(ComponentSubSystem s) {
-        ComponentSubSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
+    public static void print(ComponentSystem s) {
+        ComponentSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
     }
 
-    static void validate(ComponentSubSystem s, Object ruleset) {
+    static void validate(ComponentSystem s, Object ruleset) {
 
     }
 
     // require runtime
     // require assembly time (maybe as options...)
     // I don't know if we want an option
-    interface Option {
+    
+    // MAKE TO WIRELETS I THINK
+    static class AnalyzerWirelets {
         // Omvendt kan det jo vaere en steam option
-        static Option includeEnvironment(ComponentModifier modifier) {
+        static Wirelet includeEnvironment(ComponentModifier modifier) {
             throw new UnsupportedOperationException();
         }
 
-        static Option requireAssembly() {
+        static Wirelet requireAssembly() {
             throw new UnsupportedOperationException();
         }
 
@@ -93,14 +95,13 @@ public final class ComponentAnalyzer {
         // container analyse paa andet en containere...
 
         // Should throw IAE if modifiers does not match
-        static Option requireModifier(ComponentModifier modifier) {
+        static Wirelet requireModifier(ComponentModifier modifier) {
             throw new UnsupportedOperationException();
         }
 
         // Det er primaert taenkt at vi f.eks. gerne transformere et stort system
         // til en enkelt container. Hvor alle referencer er EXTERNAL/ENVIRONMENT
-
-        static Option requireRuntime() {
+        static Wirelet requireRuntime() {
             throw new UnsupportedOperationException();
         }
     }

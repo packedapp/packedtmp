@@ -21,17 +21,20 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeToken;
-import app.packed.bundle.BaseAssembly;
+import app.packed.container.BaseAssembly;
 import packed.internal.component.PackedComponentDriver;
 
 /**
- * Component drivers are responsible for configuring and creating new components. Every time you, for example, call
- * {@link BaseAssembly#install(Class)} it actually dela
+ * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
+ * Instead Packed defines a number of commonly used drivers such as ....
+ * <p>
+ * 
+ * Every time you, for example, call {@link BaseAssembly#install(Class)} it actually de
  * 
  * install a
  * 
  * @param <C>
- *            the type of configuration the driver expose to users for configuring the underlying component
+ *            the type of configuration this driver exposes for configuring the component
  * 
  * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
@@ -88,6 +91,9 @@ public interface ComponentDriver<C> {
     // Saa Builder er driver type...
     // Og saa maa vi leve med lidt redundency
     // Eller ogsaa maa vi bide the bullet og faa en ComponentSourceDriver
+
+    // Det gode ved options, er man kun har en metode.
+    // Det daarlige er at det alt andet lige er lidt mere forvirrende
     class Builder {
 
     }
@@ -118,7 +124,7 @@ public interface ComponentDriver<C> {
          * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          * 
          * @return stuff
-         * @see ComponentModifier#BUNDLE
+         * @see ComponentModifier#BUNDLE_ROOT
          */
         static Option bundle() {
             return PackedComponentDriver.OptionImpl.BUNDLE;
@@ -141,7 +147,7 @@ public interface ComponentDriver<C> {
         }
 
         static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.BUNDLE), "This component can only be wired to a container");
+            return validateParent(c -> c.hasModifier(ComponentModifier.BUNDLE_ROOT), "This component can only be wired to a container");
         }
 
         // The parent + the driver

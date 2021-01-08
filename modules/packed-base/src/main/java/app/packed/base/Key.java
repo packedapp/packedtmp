@@ -33,7 +33,7 @@ import java.util.Set;
 import app.packed.base.TypeToken.CanonicalizedTypeToken;
 import app.packed.conversion.ConversionException;
 import packed.internal.util.AnnotationUtil;
-import packed.internal.util.QualifierHelper;
+import packed.internal.util.QualifierUtil;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -306,7 +306,7 @@ public abstract class Key<T> {
     // with(Annotation... qualifiers) altsaa hvor tit har man brug for det?????
     public final Key<T> with(Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        QualifierHelper.checkQualifierAnnotationPresent(qualifier);
+        QualifierUtil.checkQualifierAnnotationPresent(qualifier);
         if (qualifiers == null) {
             return new CanonicalizedKey<>(typeToken, qualifier);
         }
@@ -409,7 +409,7 @@ public abstract class Key<T> {
     // I think throw IAE. And then have package private methods that take a ThrowableFactory.
     public static Key<?> convertField(Field field) {
         TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
-        Annotation[] annotation = QualifierHelper.findQualifier(field.getAnnotations());
+        Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
         return convertTypeLiteralNullableAnnotation(field, tl, annotation);
     }
 
@@ -431,7 +431,7 @@ public abstract class Key<T> {
             throw new ConversionException("@Provides method " + method + " cannot have void return type");
         }
         TypeToken<?> tl = TypeToken.fromMethodReturnType(method).wrap();
-        Annotation[] annotation = QualifierHelper.findQualifier(method.getAnnotations());
+        Annotation[] annotation = QualifierUtil.findQualifier(method.getAnnotations());
         return convertTypeLiteralNullableAnnotation(method, tl, annotation);
     }
 
@@ -475,7 +475,7 @@ public abstract class Key<T> {
      */
     public static <T> Key<T> convertTypeLiteral(TypeToken<T> typeLiteral, Annotation qualifier) {
         requireNonNull(qualifier, "qualifier is null");
-        QualifierHelper.checkQualifierAnnotationPresent(qualifier);
+        QualifierUtil.checkQualifierAnnotationPresent(qualifier);
         return convertTypeLiteralNullableAnnotation(typeLiteral, typeLiteral, qualifier);
     }
 
@@ -499,7 +499,7 @@ public abstract class Key<T> {
         // Find any qualifier annotation that might be present
         AnnotatedParameterizedType pta = (AnnotatedParameterizedType) subClass.getAnnotatedSuperclass();
         Annotation[] annotations = pta.getAnnotatedActualTypeArguments()[parameterIndex].getAnnotations();
-        Annotation[] qa = QualifierHelper.findQualifier(annotations);
+        Annotation[] qa = QualifierUtil.findQualifier(annotations);
         return Key.convertTypeLiteralNullableAnnotation(superClass, t, qa);
     }
 

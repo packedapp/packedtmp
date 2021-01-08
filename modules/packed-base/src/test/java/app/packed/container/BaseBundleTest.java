@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BaseAssembly;
 import app.packed.component.App;
 import testutil.util.AbstractArtifactTest;
 

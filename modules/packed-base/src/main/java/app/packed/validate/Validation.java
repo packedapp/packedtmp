@@ -20,6 +20,8 @@ import app.packed.base.Nullable;
 /**
  * The result of a validation.
  */
+//https://github.com/making/yavi
+// https://www.fpcomplete.com/blog/monads-gats-nightly-rust/
 public final class Validation {
 
     /**

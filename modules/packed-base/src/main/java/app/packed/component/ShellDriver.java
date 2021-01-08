@@ -19,8 +19,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Function;
 
-import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.Host;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.PackedShellDriver;
@@ -32,6 +32,8 @@ import packed.internal.inject.service.sandbox.Injector;
  * This class can be extended to create custom shell types if the built-in shell types such as {@link App} and
  * {@link Injector} are not sufficient. In fact, the default implementations of both {@link App} and {@link Injector}
  * are just thin facade that delegates all calls to an stuff instance.
+ * <p>
+ * A shell used to access a component, typically the root component, in some way.
  * <p>
  * Normally, you would never create more than a single instance of a shell driver.
  * <p>
@@ -46,7 +48,7 @@ import packed.internal.inject.service.sandbox.Injector;
  */
 public interface ShellDriver<S> {
 
-    <C extends Assembler, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, CustomConfigurator<C> consumer, Wirelet... wirelets);
+    <C extends Composer, D> S configure(ComponentDriver<D> driver, Function<D, C> factory, Composable<C> consumer, Wirelet... wirelets);
 
 //    /**
 //     * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of shell
@@ -84,12 +86,17 @@ public interface ShellDriver<S> {
     // Maaske kan vi laver en function der smider Throwable...
     S newShell(Assembly<?> bundle, Wirelet... wirelets);
 
+    default S newShell(Assembly<?> bundle, Wirelet[] userWirelets, Wirelet... shellWirelets) {
+        // Ideen er lidt 
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Creates a new shell driver.
      * <p>
      * The specified implementation can have the following types injected.
      * 
-     * If the specified implementation implements {@link AutoCloseable} a {@link Container} can also be injected.
+     * If the specified implementation implements {@link AutoCloseable} a {@link Host} can also be injected.
      * <p>
      * Fields and methods are not processed.
      * 
@@ -112,7 +119,7 @@ public interface ShellDriver<S> {
         ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
         ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
         if (isGuest) {
-            ib.addKey(Container.class, PackedInitializationContext.MH_CONTAINER, 0);
+            ib.addKey(Host.class, PackedInitializationContext.MH_CONTAINER, 0);
         }
         MethodHandle mh = ib.build();
         return new PackedShellDriver<>(isGuest, mh);

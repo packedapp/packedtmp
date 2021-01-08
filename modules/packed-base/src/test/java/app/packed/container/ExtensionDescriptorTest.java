@@ -23,9 +23,6 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Attribute;
 import app.packed.base.ExposeAttribute;
-import app.packed.bundle.Extension;
-import app.packed.bundle.ExtensionDescriptor;
-import app.packed.bundle.ExtensionSetup;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {
@@ -46,8 +43,11 @@ public class ExtensionDescriptorTest {
         assertThat(ed.type()).isSameAs(VariousExtension.class);
     }
 
-    @ExtensionSetup(dependencies = EmptyExtension.class)
     static class VariousExtension extends Extension {
+
+        static {
+            $AddDependency(EmptyExtension.class);
+        }
 
         @ExposeAttribute(from = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {

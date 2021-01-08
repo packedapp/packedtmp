@@ -19,15 +19,15 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bundle.ExtensionMember;
 import app.packed.component.Wirelet;
+import app.packed.container.ExtensionNest;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.build.BuildtimeService;
 
 /**
  *
  */
-@ExtensionMember(ServiceExtension.class)
+@ExtensionNest(ServiceExtension.class)
 public abstract class Service2ndPassWirelet extends Wirelet {
-    protected abstract void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, BuildtimeService> map);
+    protected abstract void process(@Nullable ServiceFabric parent, ServiceFabric child, Map<Key<?>, BuildtimeService> map);
 }

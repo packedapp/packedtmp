@@ -30,23 +30,21 @@ public final class ReflectionUtil {
 
     /** Nein Nein Nein. */
     private ReflectionUtil() {}
+    
+    public static <T> Constructor<T> copy(Constructor<T> constructor) {
+        try {
+            return constructor.getDeclaringClass().getDeclaredConstructor(constructor.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Executable> T copy(T executable) {
-        if (executable instanceof Method) {
-            Method method = (Method) executable;
-            try {
-                return (T) method.getDeclaringClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException(e);
-            }
-        } else {
-            Constructor<?> constructor = (Constructor<?>) executable;
-            try {
-                return (T) constructor.getDeclaringClass().getDeclaredConstructor(constructor.getParameterTypes());
-            } catch (NoSuchMethodException e) {
-                throw new IllegalStateException(e);
-            }
+
+    public static Method copy(Method method) {
+        try {
+            return method.getDeclaringClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
+        } catch (NoSuchMethodException e) {
+            throw new IllegalStateException(e);
         }
     }
 

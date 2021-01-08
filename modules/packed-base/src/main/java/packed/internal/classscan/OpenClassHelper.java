@@ -43,6 +43,7 @@ final class OpenClassHelper {
         if (methodConsumer != null) {
             for (Method m : actualType.getMethods()) {
                 // Filter methods whose declaring class is in java.base and bridge methods
+                // TODO: On Classpath all classes are in the same module as java.base
                 if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                     // Should we also ignore methods on base bundle class????
                     methodConsumer.accept(m);// move this to step 2???
@@ -52,6 +53,7 @@ final class OpenClassHelper {
 
         }
         // Step 2 process all declared methods
+        // TODO: On Classpath all classes are in the same module as java.base
         for (Class<?> c = actualType; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
             if (fieldConsumer != null) {

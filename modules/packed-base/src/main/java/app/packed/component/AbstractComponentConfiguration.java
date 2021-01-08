@@ -22,9 +22,9 @@ import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 
-import app.packed.base.TreePath;
-import app.packed.bundle.Extension;
+import app.packed.base.NamespacePath;
 import app.packed.config.ConfigSite;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 import packed.internal.config.ConfigSiteSupport;
@@ -35,7 +35,7 @@ import packed.internal.config.ConfigSiteSupport;
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public abstract class AbstractComponentConfiguration {
+public abstract class AbstractComponentConfiguration implements ComponentInstaller {
 
     /** A stack walker used from {@link #captureStackFrame(String)}. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
@@ -164,7 +164,7 @@ public abstract class AbstractComponentConfiguration {
      * 
      * @return the path of this configuration.
      */
-    public final TreePath path() {
+    public final NamespacePath path() {
         return context.path();
     }
 

@@ -15,13 +15,13 @@
  */
 package app.packed.component;
 
-import app.packed.base.TreePath;
+import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
 
 /**
  *
  */
-public interface ComponentDelegate extends ComponentSubSystem {
+public interface ComponentDelegate extends ComponentSystem {
 
     /**
      * The component this is delegating
@@ -46,7 +46,7 @@ public interface ComponentDelegate extends ComponentSubSystem {
     /**
      * <p>
      * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
-     * {@link TreePath}.
+     * {@link NamespacePath}.
      * 
      * @param path
      *            the path of the component to return

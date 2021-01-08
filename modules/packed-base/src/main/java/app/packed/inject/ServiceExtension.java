@@ -27,11 +27,11 @@ import app.packed.base.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.bundle.Extension;
-import app.packed.bundle.ExtensionConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.config.ConfigSite;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
@@ -39,7 +39,7 @@ import app.packed.validate.Validator;
 import packed.internal.bundle.BundleBuild;
 import packed.internal.bundle.ExtensionBuild;
 import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -83,7 +83,7 @@ public final class ServiceExtension extends Extension {
     private final BundleBuild bundle;
 
     /** The service build manager. */
-    private final ServiceComposer composer;
+    private final ServiceFabric composer;
 
     /**
      * Invoked by the runtime to create a new service extension.
@@ -352,7 +352,7 @@ public final class ServiceExtension extends Extension {
      * @param transformer
      *            transforms the exports
      */
-    public void transformExports(Consumer<? super ServiceTransformer> transformer) {
+    public void transformExports(Consumer<? super ServiceComposer> transformer) {
         composer.exports().addExportTransformer(transformer);
     }
 

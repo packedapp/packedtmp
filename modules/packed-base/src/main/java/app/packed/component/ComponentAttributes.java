@@ -18,9 +18,9 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Attribute;
-import app.packed.base.TreePath;
+import app.packed.base.NamespacePath;
 import app.packed.base.TypeToken;
-import app.packed.bundle.Extension;
+import app.packed.container.Extension;
 
 /**
  *
@@ -41,6 +41,7 @@ public class ComponentAttributes {
      * An attribute that accompanies any component that has the {@link ComponentModifier#EXTENSION} modifier. Subclasses of
      * {@link Extension} are trivially member of itself.
      */
+    // EXTENSION_INFO
     public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", _EXTENSION);
 
     /** An attribute that accompanies any component that has the {@link ComponentModifier#SHELL} modifier. */
@@ -55,6 +56,9 @@ public class ComponentAttributes {
     static final Attribute<Class<? extends Assembly<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
             new TypeToken<Class<? extends Assembly<?>>>() {});
 
+    /** An attribute that is available on any component with the {@link ComponentModifier#BUILD_ROOT} modifier. */
+    public static final Attribute<BuildInfo> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", BuildInfo.class);
+
     /**
      * 
      * @see ComponentModifier#FUNCTION
@@ -65,5 +69,5 @@ public class ComponentAttributes {
     // What Aboun generation?? MAYBE an IMAGE_GENERATION as well?? Or maybe Image names are never reused???
     // A root image will have "/" or /.system.image if restartable...
     // Maybe on GuestImage instead???
-    public static final Attribute<TreePath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", TreePath.class);
+    public static final Attribute<NamespacePath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", NamespacePath.class);
 }

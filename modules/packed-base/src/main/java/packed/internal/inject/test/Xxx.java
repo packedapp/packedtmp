@@ -17,9 +17,9 @@ package packed.internal.inject.test;
 
 import app.packed.base.Key;
 import app.packed.base.Named;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.Extension;
 import app.packed.component.App;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.test.FooBar.NeedsString;

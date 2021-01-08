@@ -18,11 +18,10 @@ package app.packed.component;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
-import app.packed.base.TreePath;
-import app.packed.container.Container;
-import app.packed.container.ContainerWirelets;
-import app.packed.container.RunState;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.Host;
+import app.packed.state.RunState;
+import app.packed.state.StateWirelets;
 
 /**
  * An App (application) is the main type of shell available in Packed and should cover must usages.
@@ -30,22 +29,22 @@ import app.packed.inject.ServiceLocator;
 public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
-     * Closes the app (synchronously). Calling this method is equivalent to calling {@code container().stop()}, but this
+     * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this
      * method is here in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see Container#stop(Container.StopOption...)
+     * @see Host#stop(Host.StopOption...)
      **/
     @Override
     default void close() {
-        container().stop();
+        host().stop();
     }
 
     /**
-     * Returns the container this app wraps.
+     * Returns the host this app wraps.
      * 
-     * @return this application's container.
+     * @return this application's host.
      */
-    Container container();
+    Host host();
 
     /**
      * Returns the name of this application.
@@ -55,23 +54,14 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @return the name of this application
      * @see Component#name()
      */
+    // Her knaekker filmen saa lidt..
+    // Hvis vi har multiple apps saa skal state navnet jo vaere en del af navnet???
     default String name() {
         return component().name();
     }
 
     /**
-     * Returns the path of this application. Unless the app is installed as a guest, this method always returns
-     * <code>"{@literal /}"</code>.
-     *
-     * @return the path of this application
-     * @see Component#path()
-     */
-    default TreePath path() {
-        return component().path();
-    }
-
-    /**
-     * Returns the service locator for this app.
+     * Returns this app's service locator.
      * 
      * @return the service locator for this app
      */
@@ -111,6 +101,15 @@ public interface App extends AutoCloseable, ComponentDelegate {
         return services().use(key);
     }
 
+    // An image that can be used exactly, will drop any memory references...
+    // Maybe make a more generic low-memory profile
+    // Which drops this. And keeps
+    // It is is more like single instantiable..
+    // Because we can analyze it as many times as we want..
+    static Image<App> bootableimageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().newImage(assembly, wirelets);
+    }
+
     /**
      * Returns a driver that produce {@link App} instances.
      * <p>
@@ -121,7 +120,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
     static ShellDriver<App> driver() {
         return PackedApp.DRIVER;
     }
-
+    
     /**
      * 
      * <p>
@@ -144,7 +143,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use {@link ContainerWirelets#lazyStart()}. Which will return an application in the
+     * process you can use {@link StateWirelets#lazyStart()}. Which will return an application in the
      * {@link RunState#INITIALIZED} phase instead.
      * 
      * @param assembly
@@ -159,3 +158,15 @@ public interface App extends AutoCloseable, ComponentDelegate {
         return driver().newShell(assembly, wirelets);
     }
 }
+///**
+//* Returns the path of this application. Unless the app is installed as a guest, this method always returns
+//* <code>"{@literal /}"</code>.
+//*
+//* @return the path of this application
+//* @see Component#path()
+//*/
+//// The state or the component?????
+////
+//default NamespacePath path() {
+// return component().path();
+//}

@@ -119,7 +119,6 @@ class MethodHandleBuilderHelper {
                 // Injection Context
                 if (kk.equalsTo(InjectionContext.class)) {
                     // TODO we have a non-constant injection context, when we have a dynamic injector
-
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section
                     PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
                     aa.keys.putIfAbsent(kk, new Entry(new int[0], MethodHandles.constant(InjectionContext.class, pic)));

@@ -25,19 +25,19 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDefinitionException;
+import packed.internal.bundle.extension.RuntimeRegionInvoker;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.RuntimeRegion;
+import packed.internal.component.source.MemberHookModel;
+import packed.internal.component.source.MethodHookModel;
+import packed.internal.component.source.MethodHookModel.RunAt;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.source.SourceModel;
-import packed.internal.component.source.SourceModelMember;
-import packed.internal.component.source.SourceModelMethod;
-import packed.internal.component.source.SourceModelMethod.RunAt;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.Wrapper;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.SourceMemberBuildtimeService;
-import packed.internal.sidecar.RuntimeRegionInvoker;
 
 /**
  *
@@ -81,7 +81,7 @@ public class Dependant {
     public final SourceBuild source;
 
     @Nullable
-    private final SourceModelMember sourceMember;
+    private final MemberHookModel sourceMember;
 
     public final int providerDelta;
 
@@ -97,7 +97,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentBuild compConf, SourceBuild source, SourceModelMember smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentBuild compConf, SourceBuild source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new ComponentDefinitionException("Not okay)");
             }
-            ServiceComposer sbm = compConf.memberOfCube.getServiceManagerOrCreate();
+            ServiceFabric sbm = compConf.memberOfCube.getServiceManagerOrCreate();
             BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
@@ -201,15 +201,17 @@ public class Dependant {
                     // the method on the sidecar: sourceMember.model.onInitialize
 
                     // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                    SourceModelMethod msm = (SourceModelMethod) sourceMember;
-                    if (msm.model.onInitialize != null) {
-                        // System.out.println(msm.model.onInitialize);
-                        MethodHandle mh2 = MethodHandles.collectArguments(msm.model.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                    if (sourceMember instanceof MethodHookModel) {
+                        MethodHookModel msm = (MethodHookModel) sourceMember;
+                        if (msm.bootstrapModel.onInitialize != null) {
+                            // System.out.println(msm.model.onInitialize);
+                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
 
 //                        System.out.println(mh2);
-                        mh2 = mh2.bindTo(mh1);
+                            mh2 = mh2.bindTo(mh1);
 
-                        region.initializers.add(mh2);
+                            region.initializers.add(mh2);
+                        }
                     }
                 }
             }
@@ -224,7 +226,7 @@ public class Dependant {
         this.providers[providerIndex] = requireNonNull(p);
     }
 
-    public void resolve(ServiceComposer sbm) {
+    public void resolve(ServiceFabric sbm) {
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {

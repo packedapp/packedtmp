@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.RuntimeAdaptorBuildtimeService;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -32,7 +32,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public final class ProvideAllFromServiceLocator {
 
     /** The injector builder from where the service will be provided. */
-    public final ServiceComposer node;
+    public final ServiceFabric node;
 
     /** The configuration site of the provide all statement. */
     public final ConfigSite configSite;
@@ -54,7 +54,7 @@ public final class ProvideAllFromServiceLocator {
      * @param injector
      *            the injector that is being imported
      */
-    public ProvideAllFromServiceLocator(ServiceComposer node, ConfigSite configSite, PackedInjector injector) {
+    public ProvideAllFromServiceLocator(ServiceFabric node, ConfigSite configSite, PackedInjector injector) {
         this.node = requireNonNull(node);
         this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);

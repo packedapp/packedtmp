@@ -23,11 +23,10 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
-import app.packed.bundle.ExtensionMember;
-import app.packed.sidecar.ActivateFieldSidecar;
-import app.packed.sidecar.ActivateMethodSidecar;
-import app.packed.sidecar.FieldSidecar;
-import app.packed.sidecar.MethodSidecarSandbox;
+import app.packed.container.ExtensionNest;
+import app.packed.container.FieldHook;
+import app.packed.container.MethodHook;
+import app.packed.container.RealMethodSidecarBootstrap;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field
@@ -77,9 +76,9 @@ import app.packed.sidecar.MethodSidecarSandbox;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionMember(ServiceExtension.class)
-@ActivateMethodSidecar(allowInvoke = true, sidecar = ProvideMethodSidecar.class)
-@ActivateFieldSidecar(allowGet = true, sidecar = ProvideFieldSidecar.class)
+@ExtensionNest(ServiceExtension.class)
+@MethodHook(annotatedWith = Provide.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+@FieldHook(allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
@@ -104,21 +103,21 @@ public @interface Provide {
 }
 
 /** A field sidecar for {@link Provide}. */
-final class ProvideFieldSidecar extends FieldSidecar {
+final class ProvideFieldBootstrap extends FieldHook.Bootstrap {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void bootstrap() {
         provideAsService(getAnnotation(Provide.class).constant());
     }
 }
 
 /** A method sidecar for {@link Provide}. */
-final class ProvideMethodSidecar extends MethodSidecarSandbox {
+final class ProvideMethodBootstrap extends RealMethodSidecarBootstrap {
 
     /** {@inheritDoc} */
     @Override
-    protected void configure() {
+    protected void bootstrap() {
         serviceRegister(getAnnotation(Provide.class).constant());
         // new Factory<@Provide Long>(() -> 2L) {};
     }

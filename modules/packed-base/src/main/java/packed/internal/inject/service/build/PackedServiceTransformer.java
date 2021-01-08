@@ -31,18 +31,18 @@ import app.packed.base.Nullable;
 import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.inject.Service;
+import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.ServiceTransformer;
+import app.packed.inject.ServiceRegistry;
 import packed.internal.inject.service.AbstractService;
-import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
-import packed.internal.util.ForwardingMap;
-import packed.internal.util.ForwardingStrategy;
+import packed.internal.util.CollectionUtil.ForwardingMap;
+import packed.internal.util.CollectionUtil.ForwardingStrategy;
 
-/** Implementation of {@link ServiceTransformer}. */
-public final class PackedServiceTransformer extends AbstractServiceRegistry implements ServiceTransformer {
+/** Implementation of {@link ServiceComposer}. */
+public final class PackedServiceTransformer extends ServiceComposer implements  ServiceRegistry {
 
     /** A lazily initialized map that is exposed via {@link #asMap}. */
     private ForwardingMap<Key<?>, Service> asMap;
@@ -164,7 +164,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
      * 
      * @return the new service locator
      */
-    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformer> transformation) {
+    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         PackedServiceTransformer psm = new PackedServiceTransformer(services);
         transformation.accept(psm);
@@ -177,7 +177,7 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         return new PackedInjector(ConfigSite.UNKNOWN, runtimeEntries);
     }
 
-    public static ServiceLocator transform(Consumer<? super ServiceTransformer> transformation, Collection<RuntimeService> services) {
+    public static ServiceLocator transform(Consumer<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
         requireNonNull(transformation, "transformation is null");
         HashMap<Key<?>, BuildtimeService> m = new HashMap<>();
         for (RuntimeService s : services) {
@@ -186,13 +186,13 @@ public final class PackedServiceTransformer extends AbstractServiceRegistry impl
         return toServiceLocator(m, transformation);
     }
 
-    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceTransformer> transformer) {
+    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceComposer> transformer) {
         PackedServiceTransformer dst = new PackedServiceTransformer(services);
         transformer.accept(dst);
     }
 
     public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
-            BiConsumer<? super ServiceTransformer, ? super T> transformer, T attachment) {
+            BiConsumer<? super ServiceComposer, ? super T> transformer, T attachment) {
         PackedServiceTransformer dst = new PackedServiceTransformer(services);
         transformer.accept(dst, attachment);
     }

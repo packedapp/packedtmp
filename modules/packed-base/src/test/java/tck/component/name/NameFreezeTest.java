@@ -22,9 +22,9 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BundleConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
+import app.packed.container.BundleConfiguration;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
 

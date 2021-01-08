@@ -33,15 +33,14 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.ConnectExtensions;
-import app.packed.bundle.Extension;
-import app.packed.bundle.Extension.Subtension;
-import app.packed.bundle.ExtensionConfiguration;
-import app.packed.bundle.ExtensionDescriptor;
-import app.packed.bundle.ExtensionMember;
-import app.packed.bundle.ExtensionSetup;
-import app.packed.bundle.InternalExtensionException;
 import app.packed.component.WireletConsume;
+import app.packed.container.ConnectExtensions;
+import app.packed.container.Extension;
+import app.packed.container.Extension.Subtension;
+import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionDescriptor;
+import app.packed.container.ExtensionNest;
+import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.classscan.OpenClass;
@@ -68,8 +67,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
                         "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
             }
 
-            if (type.isAnnotationPresent(ExtensionMember.class)) {
-                throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + ExtensionMember.class.getSimpleName()
+            if (type.isAnnotationPresent(ExtensionNest.class)) {
+                throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + ExtensionNest.class.getSimpleName()
                         + " annotation, for  '" + StringFormatter.format(type));
             }
             return Loader.load((Class<? extends Extension>) type, null);
@@ -234,25 +233,19 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return type;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Set<String> unresolvedDependencies() {
-        return Set.of();
-    }
-
     /**
-     * Returns any value of {@link ExtensionMember} annotation.
+     * Returns any value of {@link ExtensionNest} annotation.
      * 
      * @param type
      *            the type look for an ExtensionMember annotation on
      * @return an extension the specified type is a member of
      * @throws InternalExtensionException
      *             if an annotation is present and the specified is not in the same module as the extension specified in
-     *             {@link ExtensionMember#value()}
+     *             {@link ExtensionNest#value()}
      */
     @Nullable
     public static Class<? extends Extension> getExtensionMemberOf(Class<?> type) {
-        ExtensionMember ue = type.getAnnotation(ExtensionMember.class);
+        ExtensionNest ue = type.getAnnotation(ExtensionNest.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
             if (type.getModule() != eType.getModule()) {
@@ -295,23 +288,23 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             @SuppressWarnings("unchecked")
             private List<Class<? extends Extension>> computeValue0(Class<?> type) {
-                String[] dependencies = type.getAnnotation(ExtensionSetup.class).optionalDependencies();
+                String[] dependencies = type.getAnnotation(UsesExtensions.class).optionalDependencies();
 
                 ArrayList<Class<? extends Extension>> result = new ArrayList<>();
                 ClassLoader cl = type.getClassLoader(); // PrividligeAction???
                 for (String s : dependencies) {
                     Class<?> c = null;
                     try {
-                        c = Class.forName(s, false, cl);
+                        c = Class.forName(s, false, cl);//
                     } catch (ClassNotFoundException ignore) {}
 
                     if (c != null) {
                         // We check this in models also...
                         if (Extension.class == c) {
-                            throw new InternalExtensionException("@" + ExtensionSetup.class.getSimpleName() + " " + StringFormatter.format(type)
+                            throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(type)
                                     + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
                         } else if (!Extension.class.isAssignableFrom(c)) {
-                            throw new InternalExtensionException("@" + ExtensionSetup.class.getSimpleName() + " " + StringFormatter.format(type)
+                            throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(type)
                                     + " specified an invalid extension " + StringFormatter.format(c));
                         }
                         result.add((Class<? extends Extension>) c);
@@ -360,7 +353,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         private void addDependency(Class<? extends Extension> dependencyType) {
             if (dependencyType == extensionType) {
-                throw new InternalExtensionException("Extension " + extensionType + " cannot depend on itself via " + ExtensionSetup.class);
+                throw new InternalExtensionException("Extension " + extensionType + " cannot depend on itself");
             }
             ExtensionModel model = Loader.load(dependencyType, loader);
             depth = Math.max(depth, model.depth + 1);
@@ -380,7 +373,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
         @SuppressWarnings("unchecked")
         ExtensionModel build() {
             // See if the extension is annotated with @ExtensionSidecar
-            ExtensionSetup em = extensionType.getAnnotation(ExtensionSetup.class);
+
+            for (Class<? extends Extension> c : ExtensionTmpModel.consume(extensionType)) {
+                addDependency(c);
+            }
+
+            UsesExtensions em = extensionType.getAnnotation(UsesExtensions.class);
             if (em != null) {
                 for (Class<? extends Extension> dependencyType : em.dependencies()) {
                     addDependency(dependencyType);
@@ -423,7 +421,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             Constructor<?> constructor = FindInjectableConstructor.findConstructor(extensionType, s -> new InternalExtensionException(s));
             if (Modifier.isPublic(constructor.getModifiers()) && Modifier.isPublic(extensionType.getModifiers())) {
                 throw new InternalExtensionException(
-                        "Extensions that are defined as public classes, must have a non-public constructor. As end-users should never instantiate them themself, extensionType = "
+                        "Extensions that are public classes, must have a non-public constructor. As end-users should not be able to instantiate them explicitly, extension = "
                                 + extensionType);
             }
             this.mhConstructor = cp.resolve(spec, constructor);

@@ -15,8 +15,8 @@
  */
 package app.packed.cli;
 
-import app.packed.bundle.ExtensionMember;
 import app.packed.component.Wirelet;
+import app.packed.container.ExtensionNest;
 
 /**
  *
@@ -38,7 +38,7 @@ import app.packed.component.Wirelet;
 // Lidt speciel, maaske vi godt vil bibeholder @WireletConsume...
 // Saa kan vi baade faa den injected i extensionen. og brugerkode
 
-@ExtensionMember(CliExtension.class)
+@ExtensionNest(CliExtension.class)
 public final class MainArgs extends Wirelet {
 
     public static MainArgs of(String... args) {

@@ -63,6 +63,28 @@ public abstract class Wirelet {
         this.modifiers = PackedComponentModifierSet.intOf(modifier);
     }
 
+    public final Wirelet andThen(Wirelet wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Wirelet andThen(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    // BeforeThis? PrecededBy
+    public final Wirelet beforeThis(Wirelet w) {
+        throw new UnsupportedOperationException();
+    }
+
+    public final Wirelet beforeThis(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    protected ComponentSystemType scope() {
+        // Does not work with combine..
+        return ComponentSystemType.NAMESPACE;
+    }
+
     /**
      * This
      * 
@@ -105,6 +127,7 @@ public abstract class Wirelet {
     public static Wirelet combine(Wirelet w1, Wirelet w2) {
         return WireletList.of(w1, w2);
     }
+    // syntes andThen()... before()
 
     /**
      * Creates a wiring operation by composing a sequence of zero or more wiring operations.

@@ -35,12 +35,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     boolean contains(ComponentModifier modifier);
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE_ROOT} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */
     default boolean isBundle() {
-        return contains(ComponentModifier.BUNDLE);
+        return contains(ComponentModifier.BUNDLE_ROOT);
     }
 
     /**
@@ -70,12 +70,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#IMAGE_ROOT} modifier.
      * 
      * @return true if this set contains the image modifier, otherwise false
      */
     default boolean isImage() {
-        return contains(ComponentModifier.IMAGE);
+        return contains(ComponentModifier.IMAGE_ROOT);
     }
 
     /**
@@ -97,7 +97,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE_ROOT} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */

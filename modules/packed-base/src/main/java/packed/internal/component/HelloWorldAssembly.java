@@ -15,10 +15,10 @@
  */
 package packed.internal.component;
 
-import app.packed.bundle.BaseAssembly;
 import app.packed.cli.Main;
-import app.packed.component.ComponentSubSystem;
-import app.packed.container.Compute;
+import app.packed.component.ComponentSystem;
+import app.packed.container.BaseAssembly;
+import app.packed.request.Compute;
 
 /**
  *
@@ -34,7 +34,7 @@ public class HelloWorldAssembly extends BaseAssembly {
     public static void main(String[] args) {
         Main.main(new HelloWorldAssembly());
         System.out.println();
-        ComponentSubSystem.forEach(new HelloWorldAssembly(), c -> System.out.println(c.path()));
+        ComponentSystem.forEach(new HelloWorldAssembly(), c -> System.out.println(c.path()));
     }
 
     public static class HelloWorld {

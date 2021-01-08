@@ -29,9 +29,9 @@ import app.packed.component.Component;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.Container;
-import app.packed.container.ContainerInfo;
-import app.packed.container.RunState;
+import app.packed.state.RunState;
+import app.packed.state.RunStateInfo;
+import app.packed.state.Host;
 import packed.internal.component.BuildtimeRegion.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
@@ -48,7 +48,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Extra data... Startup/Initialization exception
 
-public class PackedContainer implements Container {
+public class PackedContainer implements Host {
 
     RunState desiredState = RunState.INITIALIZING;
 
@@ -111,7 +111,7 @@ public class PackedContainer implements Container {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerInfo info() {
+    public RunStateInfo info() {
         return null;
     }
 
@@ -220,7 +220,7 @@ public class PackedContainer implements Container {
     public static final class ExecutingImage implements Image<Void> {
 
         /** The assembled image node. */
-        private final PackedBuildContext build;
+        private final PackedBuildInfo build;
 
         /**
          * Create a new image from the specified component.
@@ -228,7 +228,7 @@ public class PackedContainer implements Container {
          * @param build
          *            the assembled component
          */
-        public ExecutingImage(PackedBuildContext build) {
+        public ExecutingImage(PackedBuildInfo build) {
             this.build = requireNonNull(build);
         }
 

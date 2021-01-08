@@ -25,12 +25,12 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.bundle.ExtensionMember;
 import app.packed.component.Component;
 import app.packed.component.ComponentAnalyzer;
-import app.packed.component.ComponentSubSystem;
+import app.packed.component.ComponentSystem;
+import app.packed.container.ExtensionNest;
 import packed.internal.component.ComponentBuild;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 
 /**
  * A service contract details of a contractee.
@@ -71,7 +71,7 @@ import packed.internal.inject.service.ServiceComposer;
 // This class is typically used at container level.
 
 // provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
-@ExtensionMember(ServiceExtension.class)
+@ExtensionNest(ServiceExtension.class)
 public final class ServiceContract {
 
     /** A contract with no requirements and no services provided. */
@@ -244,13 +244,13 @@ public final class ServiceContract {
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
 
-    public static ServiceContract of(ComponentSubSystem system) {
+    public static ServiceContract of(ComponentSystem system) {
         Component c = ComponentAnalyzer.analyze(system);
         if (!c.modifiers().isBundle()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }
         ComponentBuild compConf = ComponentBuild.unadapt(null, c);
-        ServiceComposer sm = compConf.cube.getServiceManager();
+        ServiceFabric sm = compConf.cube.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

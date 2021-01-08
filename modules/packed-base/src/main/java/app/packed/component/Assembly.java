@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.io.PrintStream;
 
 import app.packed.base.Nullable;
-import app.packed.bundle.BaseAssembly;
+import app.packed.container.BaseAssembly;
 import packed.internal.component.AssemblyHelper;
 import packed.internal.component.PackedComponentDriver;
 
@@ -36,8 +36,9 @@ import packed.internal.component.PackedComponentDriver;
  */
 // Build eller Assembly. syntes ikke det skal hedde bundle mere...
 // you write build classes
-// ComponentAssembly?
-public abstract class Assembly<C> implements ComponentSubSystem {
+// ComponentAssembly??? in lign with ComponentComposer
+// Ellers syntes jeg maaske vi omnavngive Composer
+public abstract class Assembly<C> extends Realm implements ComponentSystem {
 
     /**
      * The configuration of this bundle. This field is set via a VarHandle from {@link AssemblyHelper}.
@@ -92,6 +93,12 @@ public abstract class Assembly<C> implements ComponentSubSystem {
     /** Configures the bundle. This method should never be invoked directly by the user. */
     protected abstract void build();
 
+    
+    // Hmm lidt irriterende naar vi extender. Maaske vi kan smide den en anden sted...
+    protected static void bootstrap(Object param) {
+        //print(assembly, System.out);
+    }
+    
     static void print(Assembly<?> assembly) {
         print(assembly, System.out);
     }

@@ -26,16 +26,16 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.component.App;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentSubSystem;
+import app.packed.component.ComponentSystem;
 import app.packed.component.Wirelet;
-import app.packed.sidecar.ActiveVariableSidecar;
+import app.packed.hooks.sandbox.VariableInjector;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
  * An immutable collection of instance providing services each having a unique {@link Service#key() key}.
  */
-@ActiveVariableSidecar
+@VariableInjector
 public interface ServiceLocator extends ServiceRegistry {
 
     /**
@@ -125,7 +125,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transformation to perform
      * @return the new service locator
      */
-    ServiceLocator transform(Consumer<ServiceTransformer> transformation);
+    ServiceLocator transform(Consumer<ServiceComposer> transformation);
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
@@ -192,7 +192,7 @@ public interface ServiceLocator extends ServiceRegistry {
     /**
      * 
      * <p>
-     * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSubSystem} so there are
+     * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSystem} so there are
      * no ways to inspect it using the normal tools.
      * 
      * @param bundle
@@ -214,7 +214,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transformation to use
      * @return a new service locator
      */
-    static ServiceLocator of(Consumer<? super ServiceTransformer> transformation) {
+    static ServiceLocator of(Consumer<? super ServiceComposer> transformation) {
         return PackedServiceTransformer.toServiceLocator(new HashMap<>(), transformation);
     }
 }

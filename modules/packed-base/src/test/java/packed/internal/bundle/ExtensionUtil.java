@@ -18,8 +18,8 @@ package packed.internal.bundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import app.packed.bundle.Extension;
-import app.packed.bundle.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 import packed.internal.util.StringFormatter;
 
 /**

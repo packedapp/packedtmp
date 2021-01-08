@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BundleConfiguration;
-import app.packed.bundle.Extension;
+import app.packed.container.BundleConfiguration;
+import app.packed.container.Extension;
 import testutil.util.AbstractArtifactTest;
 
 /** Tests {@link BundleConfiguration#extensions()} and {@link BundleConfiguration#use(Class)}. */

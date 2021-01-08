@@ -50,7 +50,7 @@ public final class RuntimeComponentModel {
         this.configSite = requireNonNull(compConf.configSite());
         // this.extension = context.extension();
         int p = compConf.modifiers;
-        p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
+        p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE_ROOT);
         this.modifiers = p;
     }
 

@@ -61,10 +61,14 @@ public interface ComponentRelation extends Iterable<Component> {
      * @return whether or not the two components are in the same system
      * @see Component#root()
      */
-    default boolean inSameSystem() {
-        return source().root() == target().root();
+    default boolean isInSameNamespace() {
+        return isInSame(ComponentSystemType.NAMESPACE);
     }
 
+    default boolean isInSame(ComponentSystemType systemType) {
+        return source().root() == target().root();
+    }
+    
     // Just here because it might be easier to remember...
     default boolean isStronglyConnected() {
         return inSameGuest();

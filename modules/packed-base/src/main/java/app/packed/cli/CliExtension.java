@@ -15,7 +15,7 @@
  */
 package app.packed.cli;
 
-import app.packed.bundle.Extension;
+import app.packed.container.Extension;
 
 /**
  * A extension that can make it easier to create command line

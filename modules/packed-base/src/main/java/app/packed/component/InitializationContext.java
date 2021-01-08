@@ -30,7 +30,7 @@ public interface InitializationContext {
      * @return the assembly context
      */
     // assembly.modifiers().isImage()... to see if we are created from an image...
-    BuildContext assembly();
+    BuildInfo assembly();
 
     // path
 

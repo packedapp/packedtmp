@@ -24,7 +24,7 @@ import app.packed.base.Nullable;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -42,7 +42,7 @@ public final class SourceInstanceBuildtimeService extends BuildtimeService {
      * @param compConf
      *            the component we provide for
      */
-    public SourceInstanceBuildtimeService(ServiceComposer im, ComponentBuild compConf, Key<?> key) {
+    public SourceInstanceBuildtimeService(ServiceFabric im, ComponentBuild compConf, Key<?> key) {
         super(compConf.configSite(), key);
         this.source = requireNonNull(compConf.source);
     }

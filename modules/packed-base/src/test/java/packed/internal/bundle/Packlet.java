@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.bundle.BundleAssembly;
-import app.packed.bundle.Extension;
+import app.packed.container.BundleAssembly;
+import app.packed.container.Extension;
 
 /**
  * An annotation indicating that the runtime must install one or more extensions of annotated type requires

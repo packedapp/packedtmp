@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.inject.InjectionContext;
 
 /** The default implementation of {@link InjectionContext}. */
-public class PackedInjectionContext implements InjectionContext {
+public final class PackedInjectionContext implements InjectionContext {
 
     private final Class<?> target;
 

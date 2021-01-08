@@ -17,8 +17,8 @@ package app.packed.component;
 
 import java.lang.reflect.Modifier;
 
-import app.packed.bundle.Extension;
 import app.packed.cli.Main;
+import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
 /**
@@ -31,33 +31,53 @@ import app.packed.inject.Factory;
  * @apiNote Packed uses a enum modifier similar to how Java uses {@link Modifier} to indicate access properties of
  *          members and types. The alternative would be
  */
-// ComponentMode??
+// ComponentMode?? ComponentKind?
+
+// Problemet er lidt at nogle af dem giver mening
+// BUILD_ROOT, IMAGE_ROOT
 public enum ComponentModifier {
 
-//    /**
-//     * Every component system has exactly one system component which is always the root of the component tree.
-//     * 
-//     * @see Component#root()
-//     */
-//    // Always a guest. Naah, hvad hvis vi har system view...????
-//    // Was This component is also always automatically a {@link #GUEST}.
-//    SYSTEM,
+    /**
+     * Indicates that the component and all of its descendants are part of the same build. When such a system is
+     * initialized. A new system is created retained the structure of the assembled system but without this modifier.
+     * <p>
+     * A system that has the {@link #IMAGE_ROOT} modifier set is always in an assembled state.
+     * <p>
+     * The modifier set returned by {@link BuildInfo#modifiers()} will always contain this modifier. A components with this
+     * modifier will never have any descendants with this modifier.
+     **/
+    BUILD_ROOT,
 
     /**
-     * Indicates that the component and all of its children is in the assembly phase. When such a system is initialized. A
-     * new system is created retained the structure of the assembled system but without this modifier.
+     * Indicates that the component is a bundle.
+     * 
      * <p>
-     * A system that has the {@link #IMAGE} modifier set is always in an assembled state.
-     * <p>
-     * The modifier set returned by {@link BuildContext#modifiers()} always contain this modifier.
-     **/
-    // BUILDING?
-    BUILD,
+     * * Components with this modifier:
+     * <ul>
+     * <li>Are allowed to have children with the {@link #EXTENSION} modifier set.</li>
+     * <li>Are never sourced???.</li>
+     * </ul>
+     */
+    BUNDLE_ROOT,
 
+    /**
+     * Indicates that the component holds an image.
+     * 
+     * Components with this modifier:
+     * <ul>
+     * <li>Always has a parent component with the {@link #BUILD_ROOT} modifier set.</li>
+     * <li>Are either the root component, or has a parent component with {@link #HOST} modifier set.</li>
+     * <li>The subtree of an image is always immutable once constructed. A {@link #HOST} modifier on a sub component. Merely
+     * indicates that a runtime spawn of the image can add guests.</li>
+     * </ul>
+     */
+    IMAGE_ROOT,
+    
     // System wide.. what is part of the system and what is part of the environment
     // System boundary
     // Bondary vs Environment...
     // Maybe Environment is bad because of overloaded meaning
+
     /**
      * Are components that should not be considered part of the system. But are nonetheless present in order to XXX.
      * 
@@ -70,37 +90,13 @@ public enum ComponentModifier {
     // Hmm, hvad med en exstern database????
     EXTERNAL, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...ENVIRONMENT
 
-    /**
-     * Indicates that the component holds an image.
-     * 
-     * Components with this modifier:
-     * <ul>
-     * <li>Always has a parent component with the {@link #BUILD} modifier set.</li>
-     * <li>Are either the root component, or has a parent component with {@link #HOST} modifier set.</li>
-     * <li>The subtree of an image is always immutable once constructed. A {@link #HOST} modifier on a sub component. Merely
-     * indicates that a runtime spawn of the image can add guests.</li>
-     * </ul>
-     */
-    IMAGE,
-
-    /**
-     * Indicates that the component is a container.
-     * 
-     * <p>
-     * * Components with this modifier:
-     * <ul>
-     * <li>Are allowed to have children with the {@link #EXTENSION} modifier set.</li>
-     * <li>Are never sourced???.</li>
-     * </ul>
-     */
-    BUNDLE,
 
     /**
      * Indicates that the component is an {@link Extension} class.
      * <p>
      * Components with this modifier:
      * <ul>
-     * <li>Always has a parent component with the {@link #BUNDLE} modifier set.</li>
+     * <li>Always has a parent component with the {@link #BUNDLE_ROOT} modifier set.</li>
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime if it is part of an embedded {@link Image}.</li>
      * <li>Never has any other modifiers set.</li>
@@ -181,7 +177,7 @@ public enum ComponentModifier {
      * never go through any initialization phase. Extensions may use this information to avoid work that is not needed if
      * the system is never initialized.
      * <p>
-     * This modifier is typically checked by accessing {@link BuildContext#modifiers()}, for example, via
+     * This modifier is typically checked by accessing {@link BuildInfo#modifiers()}, for example, via
      * {@link Extension#assembly()}.
      * <p>
      * The modifier is set by the various methods in {@link ComponentAnalyzer} when specifying a bundle. Systems that are
@@ -189,44 +185,13 @@ public enum ComponentModifier {
      * 
      * Components with this property:
      * <ul>
-     * <li>Always have the {@link #BUILD} modifier set as well.</li>
+     * <li>Always have the {@link #BUILD_ROOT} modifier set as well.</li>
      * <li>Are never present at runtime.</li>
      * </ul>
      * 
      * @see ComponentAnalyzer
      */
     ANALYSIS,
-
-    /**
-     * Indicates that the system is PASSIVE. Components with this property:
-     * 
-     * Indicates that once the system is constructed it will never change.
-     * 
-     * <ul>
-     * <li>Never has a parent component (is root).</li>
-     * <li>Never has any components with the {@link #HOST} modifier set.</li>
-     * </ul>
-     * A system is always either stable or a guest.
-     */
-    PASSIVE, // Bliver vi naesten noedt til at have Active ogsaa..
-
-    /**
-     * Indicates that the component has been not explicitly or implicitly installed by the user.
-     * <p>
-     * A typical example is components installed by the extensions that (or are they just hidden???)
-     * 
-     * been added by the runtime but was .
-     * <p>
-     * A good example is the an artifact. The user itself does not add this component.
-     * <p>
-     * Components with this modifier are typically filtered.
-     * <p>
-     * This modifier serves a similar purpose to Java's synthetic access modifier.
-     */
-    // Maaske er alle foreign components, synthetiske...
-    // Taenker ihvertfald ikke det er noget med specifikt tilfoejer...
-    // Hmm hvad med extensions componeter????? Syntes maaske ikke de er syntetiske... IDK
-    SYNTHETIC,
 
     // A single java based instance that is strongly bound to lifecycle of the component.
     // Cannot be replaced. As such this instance is co-terminus with the guest
@@ -251,6 +216,15 @@ public enum ComponentModifier {
 
     UNSCOPED; // Det er her hvor den kan vaere managed eller unmanaged..
 
+//  /**
+//   * Every component system has exactly one system component which is always the root of the component tree.
+//   * 
+//   * @see Component#root()
+//   */
+//  // Always a guest. Naah, hvad hvis vi har system view...????
+//  // Was This component is also always automatically a {@link #GUEST}.
+//  SYSTEM,
+
     /**
      * Returns a component modifier set containing only this modifier.
      * 
@@ -265,7 +239,37 @@ public enum ComponentModifier {
     }
 }
 
+// Er det noget med buildtime vs runtime
+// requests er jo f.eks. runtime
+// men nye componententer er buildtime
+enum NamespaceType {
+    
+    STATELESS,
+    
+    // Cannot have requests
+    STATEFUL_NO_GUESTS,
+    
+    // Only works via images
+    STATEFUL_NO_REDEFINITION,
+    
+    // Cannot be used with graal
+    STATEFUL_DYNAMIC;
+}
+
 enum Retired {
+
+    /**
+     * Indicates that the system is PASSIVE. Components with this property:
+     * 
+     * Indicates that once the system is constructed it will never change.
+     * 
+     * <ul>
+     * <li>Never has a parent component (is root).</li>
+     * <li>Never has any components with the {@link ComponentModifier#HOST} modifier set.</li>
+     * </ul>
+     * A system is always either stable or a guest.
+     */
+    PASSIVE, // Bliver vi naesten noedt til at have Active ogsaa..
 
     // Altsaa den er stateless hvis den ikke har state...
     STATELESS, // passer ogsaa bedre med provide
@@ -278,12 +282,22 @@ enum Retired {
 
 enum Sandbox {
 
+    // En root modifier, der indikere at et namespace aldrig kan udvides
+    // Indicates that a namespace can neither scrink or expand
+    // IDK er det interessant??? F.eks. requests er jo guests...
+    // Dynamic host er lang mere interessant
+    HOSTLESS,
+    
+    VIRTUAL,
+
     FOREIGN, // A non-JVM language...
 
     INJECTABLE, // Syntes denne er daarlig fordi det er foerst noget vi ved efter
     // sourcen er bundet. provide(Class) -> INJECTABLE, provide(instance) -> NOT_INJECTABLE
 
     RESTARTABLE,
+
+    NATIVE_IMAGE, // if built using GRAAL
 
     AOT,
 
@@ -298,7 +312,23 @@ enum Sandbox {
 
     STABLE, // Not a guest... (Immobile)
 
-    NATIVE_IMAGE, // if built using GRAAL
+    /**
+     * Indicates that the component has been not explicitly or implicitly installed by the user.
+     * <p>
+     * A typical example is components installed by the extensions that (or are they just hidden???)
+     * 
+     * been added by the runtime but was .
+     * <p>
+     * A good example is the an artifact. The user itself does not add this component.
+     * <p>
+     * Components with this modifier are typically filtered.
+     * <p>
+     * This modifier serves a similar purpose to Java's synthetic access modifier.
+     */
+    // Maaske er alle foreign components, synthetiske...
+    // Taenker ihvertfald ikke det er noget med specifikt tilfoejer...
+    // Hmm hvad med extensions componeter????? Syntes maaske ikke de er syntetiske... IDK
+    SYNTHETIC,
 
     JOB, // Why not just an Executor Service??? Because we provide services to the job...
     // A job provides a result??? Maybe a tracker?
@@ -306,6 +336,11 @@ enum Sandbox {
     TASK, // I don't think Task... A job it split into tasks
     // Tasks are not present in the system
 
+    
+    // For example, a FileSystem...
+    RESOURCE,
+    
+    
     REQUEST,
 
     // IDK if we will ever use it... But just a reminder.
@@ -315,6 +350,8 @@ enum Sandbox {
 
     WIRELET, // Wirelet as in t I think instead it is a forerign component
 
+    // A view of a systme...
+    VIEW,
     /**
      * A property indicating the component is a root
      */

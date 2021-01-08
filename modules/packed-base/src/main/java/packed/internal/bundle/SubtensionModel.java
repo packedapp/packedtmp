@@ -17,9 +17,9 @@ package packed.internal.bundle;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.bundle.Extension;
-import app.packed.bundle.Extension.Subtension;
-import app.packed.bundle.InternalExtensionException;
+import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
+import app.packed.container.Extension.Subtension;
 
 /**
  *

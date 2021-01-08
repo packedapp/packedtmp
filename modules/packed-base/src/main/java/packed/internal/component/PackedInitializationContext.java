@@ -21,10 +21,10 @@ import java.lang.invoke.MethodHandles;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import app.packed.container.Container;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.Host;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -44,7 +44,7 @@ public final class PackedInitializationContext {
     public static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "component", Component.class);
 
     /** A MethodHandle for invoking {@link #container()}. */
-    public static final MethodHandle MH_CONTAINER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "container", Container.class);
+    public static final MethodHandle MH_CONTAINER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "container", Host.class);
 
     /** A MethodHandle for invoking {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
@@ -70,7 +70,7 @@ public final class PackedInitializationContext {
         return component;
     }
 
-    public Container container() {
+    public Host container() {
         if (component.hasModifier(ComponentModifier.CONTAINER)) {
             return component.region.container();
         }
@@ -101,7 +101,7 @@ public final class PackedInitializationContext {
      * @return a service locator for the system
      */
     public ServiceLocator services() {
-        ServiceComposer sc = root.cube.getServiceManager();
+        ServiceFabric sc = root.cube.getServiceManager();
         return sc == null ? ServiceLocator.of() : sc.newServiceLocator(component, component.region);
     }
 

@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BaseAssembly;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
 import packed.internal.inject.service.sandbox.Injector;
 

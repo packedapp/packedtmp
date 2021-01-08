@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandles;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.bundle.BaseAssembly;
-import app.packed.component.ComponentSubSystem;
+import app.packed.component.ComponentSystem;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import testutil.stubs.Letters.A;
@@ -141,7 +141,7 @@ public class ServiceContractTCKTest {
         });
     }
 
-    static void check(ServiceContract expected, ComponentSubSystem s) {
+    static void check(ServiceContract expected, ComponentSystem s) {
         assertThat(ServiceContract.of(s)).isEqualTo(expected);
         // TODO maybe check that runtime is the same. Except
         // That requires is removed??

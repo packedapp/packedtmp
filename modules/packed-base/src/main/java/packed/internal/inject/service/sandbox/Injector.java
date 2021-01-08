@@ -18,14 +18,14 @@ package packed.internal.inject.service.sandbox;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bundle.BundleConfiguration;
 import app.packed.component.App;
 import app.packed.component.Assembly;
-import app.packed.component.CustomConfigurator;
+import app.packed.component.Composable;
 import app.packed.component.Image;
 import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
 import app.packed.config.ConfigSite;
+import app.packed.container.BundleConfiguration;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
@@ -158,7 +158,7 @@ public interface Injector extends ServiceLocator {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(CustomConfigurator<? super InjectorAssembler> configurator, Wirelet... wirelets) {
+    static Injector configure(Composable<? super InjectorAssembler> configurator, Wirelet... wirelets) {
         return driver().configure(BundleConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
     }
 

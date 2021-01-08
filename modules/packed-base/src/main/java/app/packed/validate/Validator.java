@@ -19,6 +19,7 @@ package app.packed.validate;
  *
  */
 @FunctionalInterface
+// https://github.com/making/yavi
 public interface Validator<T> {
 
     default void assertValid(T input) {

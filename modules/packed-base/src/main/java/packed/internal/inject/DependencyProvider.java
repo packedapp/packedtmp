@@ -20,10 +20,10 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
+import packed.internal.bundle.extension.SidecarContextDependencyProvider;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.sidecar.SidecarContextDependencyProvider;
 
 /**
  * Something that

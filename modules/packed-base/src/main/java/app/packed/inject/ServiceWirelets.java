@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
-import packed.internal.inject.service.ServiceComposer;
+import packed.internal.inject.service.ServiceFabric;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 
@@ -66,11 +66,11 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
+    public static Wirelet from(BiConsumer<? super ServiceComposer, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             @Override
-            protected void process(ServiceComposer child) {
+            protected void process(ServiceFabric child) {
                 child.exports().transform(transformation);
             }
         };
@@ -83,12 +83,12 @@ public final class ServiceWirelets {
      *            the transformation to perform
      * @return the transforming wirelet
      */
-    public static Wirelet from(Consumer<? super ServiceTransformer> transformation) {
+    public static Wirelet from(Consumer<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             /** {@inheritDoc} */
             @Override
-            protected void process(ServiceComposer child) {
+            protected void process(ServiceFabric child) {
                 child.exports().transform(transformation);
             }
         };
@@ -136,28 +136,28 @@ public final class ServiceWirelets {
      * @param instance
      *            the service to provide
      * @return a wirelet that will provide the specified service
-     * @see ServiceTransformer#provideInstance(Object)
+     * @see ServiceComposer#provideInstance(Object)
      */
     public static Wirelet provide(Object instance) {
         requireNonNull(instance, "instance is null");
         return to(t -> t.provideInstance(instance));
     }
 
-    public static Wirelet to(BiConsumer<? super ServiceTransformer, ServiceContract> transformation) {
+    public static Wirelet to(BiConsumer<? super ServiceComposer, ServiceContract> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, BuildtimeService> map) {
+            protected void process(@Nullable ServiceFabric parent, ServiceFabric child, Map<Key<?>, BuildtimeService> map) {
                 PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
     }
 
-    public static Wirelet to(Consumer<? super ServiceTransformer> transformation) {
+    public static Wirelet to(Consumer<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceComposer parent, ServiceComposer child, Map<Key<?>, BuildtimeService> map) {
+            protected void process(@Nullable ServiceFabric parent, ServiceFabric child, Map<Key<?>, BuildtimeService> map) {
                 PackedServiceTransformer.transformInplace(map, transformation);
             }
         };

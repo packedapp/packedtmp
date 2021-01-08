@@ -21,13 +21,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Qualifier;
-import app.packed.bundle.BaseAssembly;
-import app.packed.bundle.BundleConfiguration;
-import app.packed.component.Assembler;
+import app.packed.component.Composer;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.CustomConfigurator;
+import app.packed.component.Composable;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseAssembly;
+import app.packed.container.BundleConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
@@ -35,14 +35,14 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(CustomConfigurator, Wirelet...)}. This is thought of a alternative to using a
+ * {@link Injector#configure(Composable, Wirelet...)}. This is thought of a alternative to using a
  * {@link BaseAssembly}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public final class InjectorAssembler extends Assembler {
+public final class InjectorAssembler extends Composer {
 
     /** The configuration we delegate all calls to. */
     private final BundleConfiguration configuration;

@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
 
-import app.packed.bundle.Extension;
-import app.packed.bundle.ExtensionDescriptor;
+import app.packed.container.Extension;
+import app.packed.container.ExtensionDescriptor;
 
 /**
  * An set of extensions ordered by {@link ExtensionDescriptor#depth()} and {@link ExtensionDescriptor#fullName()}.

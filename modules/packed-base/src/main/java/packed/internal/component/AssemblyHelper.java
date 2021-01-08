@@ -45,9 +45,7 @@ public final class AssemblyHelper {
     private AssemblyHelper() {}
 
     static void configure(Assembly<?> bundle, Object configuration) {
-        // We perform a compare and exchange with configuration. Guarding against
-        // concurrent usage of this bundle.
-
+        // We perform a compare and exchange. Guarding against concurrent usage of this bundle.
         Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(bundle, null, configuration);
         if (existing == null) {
             try {

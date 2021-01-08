@@ -15,14 +15,14 @@
  */
 package app.packed.conversion;
 
-import app.packed.sidecar.ActiveVariableSidecar;
+import app.packed.hooks.sandbox.VariableInjector;
 
 /**
  * A collection of converters
  */
 // Giver det mening ikke at kunne konvertere direkte???
 // Altsaa fx ServiceRegistry er kun info
-@ActiveVariableSidecar
+@VariableInjector
 public interface ConverterRegistry {
 
     <T> T convert(Object o, Class<T> to);

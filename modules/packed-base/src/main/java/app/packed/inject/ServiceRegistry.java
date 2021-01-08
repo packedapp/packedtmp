@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.AttributedElementStream;
 import app.packed.base.Key;
-import app.packed.sidecar.ActiveVariableSidecar;
+import app.packed.hooks.sandbox.VariableInjector;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
@@ -40,18 +40,18 @@ import packed.internal.util.PackedAttributeHolderStream;
  * service instances.
  * <p>
  * Unless otherwise specified instances of this interface are immutable collections. One notable exception is the
- * {@link ServiceTransformer} interface. Which support mutation operations on the iterators returned by
+ * {@link ServiceComposer} interface. Which support mutation operations on the iterators returned by
  * {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
  * <p>
  * Unless otherwise specified a service registry never overrides hashCode/equals.
  * <p>
  * If used as an auto activating variable sidecar the registry injected will be an immutable
  */
-@ActiveVariableSidecar
+@VariableInjector
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
-     * Returns a map (indexed by its key) of every service in this registry in any order.
+     * Returns a map of every service in this registry in no particular order.
      * <p>
      * The retu But will never support insertions or updates.
      * <p>
