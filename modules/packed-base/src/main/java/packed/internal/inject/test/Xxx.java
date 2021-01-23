@@ -16,7 +16,7 @@
 package packed.internal.inject.test;
 
 import app.packed.base.Key;
-import app.packed.base.Named;
+import app.packed.base.Tag;
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -48,7 +48,7 @@ class Xxx extends BaseAssembly {
             s.decorate(String.class, t -> t + t);
             s.decorate(String.class, t -> t + t);
             s.decorate(String.class, t -> t + t);
-            s.rekey(Key.of(Long.class), new Key<@Named("foo") Long>() {});
+            s.rekey(Key.of(Long.class), new Key<@Tag("foo") Long>() {});
         });
         System.out.println(l.keys());
         System.out.println(l.use(Integer.class));

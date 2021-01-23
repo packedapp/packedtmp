@@ -17,23 +17,16 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.Option;
-import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Modifier;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.Image;
 import app.packed.component.Realm;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import packed.internal.bundle.ExtensionTmpModel;
-import packed.internal.config.ConfigSiteSupport;
 
 /**
  * Extensions are the primary way to add features to Packed.
@@ -79,10 +72,9 @@ import packed.internal.config.ConfigSiteSupport;
 public abstract class Extension extends Realm {
 
     /**
-     * A stack walker used by {@link #captureStackFrame(String)} and for finding the calling extension for the various
-     * bootstrap methods.
+     * A stack walker used by various methods.
      */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
      * The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}.
@@ -109,55 +101,55 @@ public abstract class Extension extends Realm {
         return configuration().build();
     }
 
-    /**
-     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements
-     * <p>
-     * Invoking this method typically takes in the order of 1-2 microseconds.
-     * <p>
-     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-     * {@link ConfigSite#UNKNOWN}.
-     * 
-     * @param operation
-     *            the operation
-     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-     * @see StackWalker
-     */
-    // TODO add stuff about we also ignore non-concrete container sources...
-    protected final ConfigSite captureStackFrame(String operation) {
-        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-        // to the extension class in order to simplify the filtering mechanism.
+//    /**
+//     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+//     * not located on any subclasses of {@link Extension} or any class that implements
+//     * <p>
+//     * Invoking this method typically takes in the order of 1-2 microseconds.
+//     * <p>
+//     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+//     * {@link ConfigSite#UNKNOWN}.
+//     * 
+//     * @param operation
+//     *            the operation
+//     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+//     * @see StackWalker
+//     */
+//    // TODO add stuff about we also ignore non-concrete container sources...
+//    protected final ConfigSite captureStackFrame(String operation) {
+//        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+//        // to the extension class in order to simplify the filtering mechanism.
+//
+//        // TODO!!!! I virkeligheden skal man vel bare fange den sidste brug i et bundle....
+//        // Kan ogsaa sammenligne med configure navnet...
+//
+//        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+//            return ConfigSite.UNKNOWN;
+//        }
+//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+//        return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+//    }
 
-        // TODO!!!! I virkeligheden skal man vel bare fange den sidste brug i et bundle....
-        // Kan ogsaa sammenligne med configure navnet...
-
-        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            return ConfigSite.UNKNOWN;
-        }
-        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-    }
-
-    /**
-     * @param frame
-     *            the frame to filter
-     * @return whether or not to filter the frame
-     */
-    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-        Class<?> c = frame.getDeclaringClass();
-        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-        // Syntes bare vi filtrer app.packed.base modulet fra...
-        // Kan vi ikke checke om imod vores container source.
-
-        // ((PackedExtensionContext) context()).container().source
-        // Nah hvis man koere fra config er det jo fint....
-        // Fra config() paa en bundle er det fint...
-        // Fra alt andet ikke...
-
-        // Dvs ourContainerSource
-        return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
-    }
+//    /**
+//     * @param frame
+//     *            the frame to filter
+//     * @return whether or not to filter the frame
+//     */
+//    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+//        Class<?> c = frame.getDeclaringClass();
+//        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+//        // Syntes bare vi filtrer app.packed.base modulet fra...
+//        // Kan vi ikke checke om imod vores container source.
+//
+//        // ((PackedExtensionContext) context()).container().source
+//        // Nah hvis man koere fra config er det jo fint....
+//        // Fra config() paa en bundle er det fint...
+//        // Fra alt andet ikke...
+//
+//        // Dvs ourContainerSource
+//        return Extension.class.isAssignableFrom(c)
+//                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
+//    }
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

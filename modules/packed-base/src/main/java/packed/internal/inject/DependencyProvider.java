@@ -20,9 +20,9 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.bundle.extension.SidecarContextDependencyProvider;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.source.SourceBuild;
+import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.service.build.BuildtimeService;
 
 /**
@@ -30,7 +30,7 @@ import packed.internal.inject.service.build.BuildtimeService;
  * 
  * {@link SourceBuild} for methods or fields that needs an instance of the component source
  * 
- * {@link SidecarContextDependencyProvider} for methods annotated with {@link Provide}
+ * {@link ContextMethodProvide} for methods annotated with {@link Provide}
  * 
  * {@link BuildtimeService} a service of some kind
  */

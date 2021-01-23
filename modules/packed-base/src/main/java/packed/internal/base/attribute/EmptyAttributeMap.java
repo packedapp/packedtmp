@@ -24,8 +24,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import app.packed.base.Attribute;
-import app.packed.base.AttributeMap;
+import app.packed.attribute.Attribute;
+import app.packed.attribute.AttributeMap;
 import app.packed.base.Nullable;
 
 /**

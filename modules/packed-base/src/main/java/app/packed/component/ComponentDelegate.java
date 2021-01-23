@@ -31,19 +31,6 @@ public interface ComponentDelegate extends ComponentSystem {
     Component component();
 
     /**
-     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
-     * order.
-     * <p>
-     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
-     * 
-     * @return a component stream
-     * @see #stream(Option...)
-     */
-    default ComponentStream stream() {
-        return component().stream();
-    }
-
-    /**
      * <p>
      * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
      * {@link NamespacePath}.
@@ -56,6 +43,19 @@ public interface ComponentDelegate extends ComponentSystem {
      */
     default Component resolve(CharSequence path) {
         return component().resolve(path);
+    }
+
+    /**
+     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
+     * order.
+     * <p>
+     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
+     * 
+     * @return a component stream
+     * @see #stream(Option...)
+     */
+    default ComponentStream stream() {
+        return component().stream();
     }
 
     /**

@@ -16,8 +16,12 @@
 package app.packed.component;
 
 /**
- * A set of wirelets that can be specified when building a system.
+ * A set of wirelets that can be specified at build-time only. Attempts to use them on an pre-generated image will
+ * result in an {@link IllegalStateException} being thrown.
  */
+// Er ikke sikker paa ISE, vi maa generelt smide den samme exception for alle misplaced wirelets...
+// Og der passer IAE altsaa bedre paa de fleste
+
 //Features
 // Debuggin
 // We could have app.packed.build package.
@@ -48,6 +52,12 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
+    // Taenker vi printer dem...
+    // Og er det kun roden der kan disable dem???
+    public static InheritableWirelet disableWarnings() {
+        throw new UnsupportedOperationException();
+    }
+
     // Because it is just much easier than fiddling with loggers
     /**
      * A wirelet that will print various build information to {@code system.out}.
@@ -55,12 +65,6 @@ public final class BuildWirelets {
      * @return the wirelet
      */
     public static InheritableWirelet printDebug() {
-        throw new UnsupportedOperationException();
-    }
-
-    // Taenker vi printer dem...
-    // Og er det kun roden der kan disable dem???
-    public static InheritableWirelet disableWarnings() {
         throw new UnsupportedOperationException();
     }
 

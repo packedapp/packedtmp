@@ -30,7 +30,7 @@ import app.packed.inject.ServiceExtension;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 
 /** Contains data and logic relevant for containers. */
 public final class BundleBuild {
@@ -59,7 +59,7 @@ public final class BundleBuild {
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private ServiceFabric sbm;
+    private ServiceManager sbm;
 
     private ArrayList<ExtensionBuild> tmpExtensions;
 
@@ -157,12 +157,12 @@ public final class BundleBuild {
     }
 
     @Nullable
-    public ServiceFabric getServiceManager() {
+    public ServiceManager getServiceManager() {
         return sbm;
     }
 
-    public ServiceFabric getServiceManagerOrCreate() {
-        ServiceFabric s = sbm;
+    public ServiceManager getServiceManagerOrCreate() {
+        ServiceManager s = sbm;
         if (s == null) {
             useExtension(ServiceExtension.class);
             s = sbm;
@@ -185,8 +185,8 @@ public final class BundleBuild {
         return isImage = Boolean.FALSE;
     }
 
-    public ServiceFabric newServiceManagerFromServiceExtension() {
-        return sbm = new ServiceFabric(this, sbm);
+    public ServiceManager newServiceManagerFromServiceExtension() {
+        return sbm = new ServiceManager(this, sbm);
     }
 
     private void runPredContainerChildren() {

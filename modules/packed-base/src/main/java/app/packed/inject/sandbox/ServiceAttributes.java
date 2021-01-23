@@ -17,7 +17,7 @@ package app.packed.inject.sandbox;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Attribute;
+import app.packed.attribute.Attribute;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;

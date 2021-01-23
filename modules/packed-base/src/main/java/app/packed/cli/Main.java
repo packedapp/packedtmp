@@ -20,13 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.component.App;
+import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import app.packed.state.RunState;
 import app.packed.state.Host;
-import app.packed.state.StateWirelets;
 import app.packed.state.Host.StopOption;
+import app.packed.state.RunState;
+import app.packed.state.StateWirelets;
 
 /**
  *
@@ -105,6 +106,10 @@ public final class Main {
     static Main defaults() {
         // Ideen er at denne metode
         // main() = defaaults().execute()
+        throw new UnsupportedOperationException();
+    }
+    
+    public static ArtifactDriver<Void> driver() {
         throw new UnsupportedOperationException();
     }
 

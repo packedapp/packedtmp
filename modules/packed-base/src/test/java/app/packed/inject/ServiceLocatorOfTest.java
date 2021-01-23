@@ -18,7 +18,7 @@ package app.packed.inject;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.base.Named;
+import app.packed.base.Tag;
 
 /**
  *
@@ -29,7 +29,7 @@ public class ServiceLocatorOfTest {
     public void test() {
         ServiceLocator sl = ServiceLocator.of(c -> {
             c.provideInstance("FooBar");
-            c.provideInstance(new Key<@Named("fpp") String>() {}, "FooBarsdf");
+            c.provideInstance(new Key<@Tag("fpp") String>() {}, "FooBarsdf");
         });
         sl.keys().contains(Key.of(String.class));
     }

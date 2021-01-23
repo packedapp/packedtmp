@@ -24,13 +24,13 @@ import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
 
 /**
- * An App (application) is the main type of shell available in Packed and should cover must usages.
+ * An App (application) is a type of artifact provided by Packed.
  */
 public interface App extends AutoCloseable, ComponentDelegate {
 
     /**
-     * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this
-     * method is here in order to support try-with resources via {@link AutoCloseable}.
+     * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
+     * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
      * @see Host#stop(Host.StopOption...)
      **/
@@ -40,7 +40,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Returns the host this app wraps.
+     * Returns the applications's host.
      * 
      * @return this application's host.
      */
@@ -49,13 +49,16 @@ public interface App extends AutoCloseable, ComponentDelegate {
     /**
      * Returns the name of this application.
      * <p>
-     * The returned name is identical to the name of the application's component.
+     * The name of an application is identical to the name of the application's component.
      * 
      * @return the name of this application
      * @see Component#name()
      */
     // Her knaekker filmen saa lidt..
     // Hvis vi har multiple apps saa skal state navnet jo vaere en del af navnet???
+    // Taenker her paa noget der restarter. Og hver app hedder noget nyt...
+    // Men altsaa er ikke sikker paa man bruger en app saa...
+    // Kan ikke se noget alternativt...
     default String name() {
         return component().name();
     }
@@ -70,6 +73,8 @@ public interface App extends AutoCloseable, ComponentDelegate {
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
      * <p>
+     * This method is shortcut for {@code services().use(key)}
+     * <p>
      * If the application is not already running
      * 
      * @param <T>
@@ -78,7 +83,7 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *            the key of the service to return
      * @return a service of the specified type
      * @throws NoSuchElementException
-     *             if a service with the specified key exist.
+     *             if a service with the specified key does not exist.
      */
     default <T> T use(Class<T> key) {
         return services().use(key);
@@ -87,6 +92,8 @@ public interface App extends AutoCloseable, ComponentDelegate {
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
      * <p>
+     * This method is shortcut for {@code services().use(key)}
+     * <p>
      * If the application is not already running
      * 
      * @param <T>
@@ -95,42 +102,33 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *            the key of the service to return
      * @return a service of the specified type
      * @throws NoSuchElementException
-     *             if a service with the specified key exist.
+     *             if a service with the specified key does not exist.
      */
     default <T> T use(Key<T> key) {
         return services().use(key);
     }
 
-    // An image that can be used exactly, will drop any memory references...
-    // Maybe make a more generic low-memory profile
-    // Which drops this. And keeps
-    // It is is more like single instantiable..
-    // Because we can analyze it as many times as we want..
-    static Image<App> bootableimageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+    /**
+     * Returns an {@link ArtifactDriver artifact driver} for {@link App}.
+     * 
+     * @return an artifact driver for App
+     */
+    static ArtifactDriver<App> driver() {
+        return PackedApp.DRIVER;
     }
 
     /**
-     * Returns a driver that produce {@link App} instances.
+     * Creates a new app image from the specified assembly.
      * <p>
-     * This method is mainly used by advanced users.
-     * 
-     * @return a driver that produces App instances
-     */
-    static ShellDriver<App> driver() {
-        return PackedApp.DRIVER;
-    }
-    
-    /**
-     * 
-     * <p>
-     * Once used the image will return an App in the started state. unless GuestWirelet.delayStart
+     * The state of the applications returned by {@link Image#use(Wirelet...)} will be {@link RunState#RUNNING}. unless
+     * GuestWirelet.delayStart
      * 
      * @param assembly
      *            the assembly to use for creating the image
      * @param wirelets
      *            optional wirelets
      * @return a new app image
+     * @see ImageWirelets
      */
     static Image<App> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().newImage(assembly, wirelets);
@@ -155,7 +153,25 @@ public interface App extends AutoCloseable, ComponentDelegate {
      *             if the application could not be created or started
      */
     static App of(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newShell(assembly, wirelets);
+        return driver().newArtifact(assembly, wirelets);
+    }
+
+    // An image that can be used exactly, will drop any memory references...
+    // Maybe make a more generic low-memory profile
+    // Which drops this. And keeps
+    // It is is more like single instantiable..
+    // Because we can analyze it as many times as we want..
+    // singleImageOf
+    /**
+     * 
+     * @param assembly
+     *            the assembly to use for creating the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     */
+    static Image<App> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().newImage(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
 ///**

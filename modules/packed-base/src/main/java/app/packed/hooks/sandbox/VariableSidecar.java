@@ -22,8 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.base.Nullable;
-import packed.internal.bundle.extension.AbstractHookBootstrapModel;
-import packed.internal.bundle.extension.VariableSidecarModel.VariableSidecarConfiguration;
+import packed.internal.hooks.AbstractHookBootstrapModel;
+import packed.internal.hooks.VariableSidecarModel.VariableSidecarConfiguration;
 
 /**
  *

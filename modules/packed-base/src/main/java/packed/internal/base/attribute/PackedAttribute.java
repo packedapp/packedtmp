@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.base.Attribute;
+import app.packed.attribute.Attribute;
 import app.packed.base.TypeToken;
 
 /**

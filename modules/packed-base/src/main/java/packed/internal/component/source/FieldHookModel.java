@@ -28,10 +28,10 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.FieldHook;
-import packed.internal.bundle.extension.FieldHookBootstrapModel;
-import packed.internal.bundle.extension.SidecarContextDependencyProvider;
+import app.packed.hooks.FieldHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.hooks.ContextMethodProvide;
+import packed.internal.hooks.FieldHookBootstrapModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -103,7 +103,7 @@ public final class FieldHookModel extends MemberHookModel {
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
-            SidecarContextDependencyProvider dp = model.keys.get(d.key());
+            ContextMethodProvide dp = model.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
                 int index = i + (Modifier.isStatic(field.getModifiers()) ? 0 : 1);

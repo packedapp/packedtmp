@@ -21,14 +21,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
-import app.packed.base.Nullable;
 import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -134,12 +133,12 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         }
         isConfigured = true;
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite containerConfigSite() {
-        return bundle.compConf.configSite();
-    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public ConfigSite containerConfigSite() {
+//        return bundle.compConf.configSite();
+//    }
 
     /**
      * Returns the extension instance this class wraps.

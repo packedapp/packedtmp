@@ -29,5 +29,5 @@ import packed.internal.inject.service.build.BuildtimeService;
  */
 @ExtensionNest(ServiceExtension.class)
 public abstract class Service2ndPassWirelet extends Wirelet {
-    protected abstract void process(@Nullable ServiceFabric parent, ServiceFabric child, Map<Key<?>, BuildtimeService> map);
+    protected abstract void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map);
 }

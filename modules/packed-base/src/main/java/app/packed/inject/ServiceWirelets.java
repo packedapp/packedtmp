@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 
@@ -70,7 +70,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service1stPassWirelet() {
             @Override
-            protected void process(ServiceFabric child) {
+            protected void process(ServiceManager child) {
                 child.exports().transform(transformation);
             }
         };
@@ -88,7 +88,7 @@ public final class ServiceWirelets {
         return new Service1stPassWirelet() {
             /** {@inheritDoc} */
             @Override
-            protected void process(ServiceFabric child) {
+            protected void process(ServiceManager child) {
                 child.exports().transform(transformation);
             }
         };
@@ -147,7 +147,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceFabric parent, ServiceFabric child, Map<Key<?>, BuildtimeService> map) {
+            protected void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map) {
                 PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
@@ -157,7 +157,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceFabric parent, ServiceFabric child, Map<Key<?>, BuildtimeService> map) {
+            protected void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map) {
                 PackedServiceTransformer.transformInplace(map, transformation);
             }
         };

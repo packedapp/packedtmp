@@ -24,11 +24,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import app.packed.container.Extension;
-import app.packed.container.ClassHook;
-import app.packed.container.FieldHook;
-import app.packed.container.MethodHook;
 import app.packed.container.ExtensionNest;
-import app.packed.container.RealMethodSidecarBootstrap;
+import app.packed.hooks.ClassHook;
+import app.packed.hooks.FieldHook;
+import app.packed.hooks.MethodHook;
+import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
 
 /**

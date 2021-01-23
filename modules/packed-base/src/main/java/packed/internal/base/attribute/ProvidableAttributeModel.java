@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.packed.base.ExposeAttribute;
+import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
 import packed.internal.classscan.OpenClass;
 import packed.internal.errorhandling.UncheckedThrowableFactory;

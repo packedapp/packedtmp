@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.StackWalker.StackFrame;
 
-import app.packed.config.ConfigSite;
+import packed.internal.config.ConfigSite;
 
 /**
  *

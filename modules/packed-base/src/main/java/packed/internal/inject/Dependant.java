@@ -25,16 +25,16 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDefinitionException;
-import packed.internal.bundle.extension.RuntimeRegionInvoker;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
+import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.source.SourceModel;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.Wrapper;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.SourceMemberBuildtimeService;
@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new ComponentDefinitionException("Not okay)");
             }
-            ServiceFabric sbm = compConf.memberOfCube.getServiceManagerOrCreate();
+            ServiceManager sbm = compConf.memberOfCube.getServiceManagerOrCreate();
             BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
@@ -226,7 +226,7 @@ public class Dependant {
         this.providers[providerIndex] = requireNonNull(p);
     }
 
-    public void resolve(ServiceFabric sbm) {
+    public void resolve(ServiceManager sbm) {
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {

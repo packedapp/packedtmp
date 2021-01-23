@@ -15,10 +15,7 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.component.ComponentModifier;
-import app.packed.config.ConfigSite;
 
 /**
  * The different types of components that are supported in Packed.
@@ -36,8 +33,6 @@ import app.packed.config.ConfigSite;
 // Skal man kunne smide RCM med over i.
 public final class RuntimeComponentModel {
 
-    /** The configuration site of the component. */
-    final ConfigSite configSite;
 
     /** The depth of the component in a tree of components. */
     // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
@@ -47,7 +42,6 @@ public final class RuntimeComponentModel {
 
     RuntimeComponentModel(ComponentBuild compConf) {
         this.depth = compConf.treeDepth;
-        this.configSite = requireNonNull(compConf.configSite());
         // this.extension = context.extension();
         int p = compConf.modifiers;
         p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE_ROOT);

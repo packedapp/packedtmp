@@ -20,7 +20,6 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
-import app.packed.config.ConfigSite;
 import app.packed.container.BundleAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -65,13 +64,13 @@ public interface ComponentConfigurationContext extends ComponentInstaller {
      *             if the component is no longer configurable.
      */
     void checkConfigurable();
-
-    /**
-     * Returns the configuration site that created this configuration.
-     * 
-     * @return the configuration site that created this configuration
-     */
-    ConfigSite configSite();
+//
+//    /**
+//     * Returns the configuration site that created this configuration.
+//     * 
+//     * @return the configuration site that created this configuration
+//     */
+//    ConfigSite configSite();
 
     /**
      * Returns an unmodifiable view of the extensions that are currently in use.

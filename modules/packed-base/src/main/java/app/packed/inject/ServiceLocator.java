@@ -25,17 +25,21 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.component.App;
+import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentSystem;
 import app.packed.component.Wirelet;
-import app.packed.hooks.sandbox.VariableInjector;
+import app.packed.hooks.sandbox.DynamicService;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- * An immutable collection of instance providing services each having a unique {@link Service#key() key}.
+ * A collection of instance providing services each having a unique {@link Service#key() key}.
+ * 
+ * <p>
+ * Unless otherwise specified service locators are always immutable.
  */
-@VariableInjector
+@DynamicService
 public interface ServiceLocator extends ServiceRegistry {
 
     /**
@@ -112,14 +116,26 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     ServiceSelection<?> selectAll();
 
-    default <T> ServiceSelection<T> selectMinimal(Class<T> key) {
-        return selectMinimal(Key.of(key));
+    // kan ikk
+    default <T> ServiceSelection<T> selectAnyQualifiers(Class<T> key) {
+        return selectAnyQualifiers(Key.of(key));
     }
 
-    <T> ServiceSelection<T> selectMinimal(Key<T> key);
+    <T> ServiceSelection<T> selectAnyQualifiers(Key<T> key);
 
     /**
-     * Creates a new service locator by transformation of the services in this locator.
+     * Returns a service selection with all services where the raw type of the key is assignable to the specified type.
+     * 
+     * @param <T>
+     *            the assignable type
+     * @param type
+     *            the assignable type
+     * @return the service selection
+     */
+    <T> ServiceSelection<T> selectAssignableTo(Class<T> type);
+
+    /**
+     * Transforms this locator to a new locator.
      * 
      * @param transformation
      *            the transformation to perform
@@ -180,6 +196,10 @@ public interface ServiceLocator extends ServiceRegistry {
         return t.get();
     }
 
+    static ArtifactDriver<ServiceLocator> driver() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns an empty service locator.
      * 
@@ -190,25 +210,23 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * 
+     * Creates a new service locator from the specified assembly.
      * <p>
      * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSystem} so there are
      * no ways to inspect it using the normal tools.
      * 
-     * @param bundle
-     *            the bundle to use for construction
+     * @param assembly
+     *            the assembly to use for construction
      * @param wirelets
-     *            optional wirelet
+     *            optional wirelets
      * @return a new service locator
      */
-    static ServiceLocator of(Assembly<?> bundle, Wirelet... wirelets) {
+    static ServiceLocator of(Assembly<?> assembly, Wirelet... wirelets) {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
 
     /**
-     * Creates a new service locator by using a service transformation.
-     * <p>
-     * 
+     * Creates a new service locator using a provided service composer.
      * 
      * @param transformation
      *            the transformation to use
@@ -253,11 +271,6 @@ interface ZelectSandbox extends ServiceLocator {
     // Key Delen = Foo.class; (Ignores qualifiers)
     // Key delend.rawType = Foo.class
     // Key delen er assignable. <--- ved ikke hvor tit man skal bruge den
-
-    // All whose raw type can be assigned to
-    default <T> ServiceSelection<T> selectAssignableTo(Class<T> serviceType) {
-        throw new UnsupportedOperationException();
-    }
 
     // All whose raw type is equal to.. Don't know if it is
     default <T> ServiceSelection<T> selectRawType(Class<T> serviceType) {

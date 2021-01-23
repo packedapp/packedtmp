@@ -333,9 +333,9 @@ public abstract class Key<T> {
      *            the qualifier name
      * @return the new key
      */
-    public final Key<T> withName(String name) {
+    public final Key<T> withTag(String name) {
         requireNonNull(name, "name is null");
-        return with(Named.MAKER.make(name));
+        return with(Tag.MAKER.make(name));
     }
 
     public final Key<T> without(Class<? extends Annotation> qualifierType) {
@@ -343,7 +343,7 @@ public abstract class Key<T> {
     }
 
     public final Key<T> withoutName() {
-        return without(Named.class);
+        return without(Tag.class);
     }
 
     /**

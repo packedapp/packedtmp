@@ -20,8 +20,11 @@ package app.packed.inject;
  * Unless otherwise specified, constant is the default mode.
  */
 public enum ServiceMode {
-    CONSTANT, PROTOYPE; // ScopeLess?
+    CONSTANT, TRANSIENT;
 }
+// Prototype, scopeless, ephemeral, 
+
+// Permanent
 //Teknisk set behoever vi ikke denne.
 //Og i lang tid klarede vi os med isConstant()
 //Men den er rigtig god for forstaaelsen og kunne linke til ting.

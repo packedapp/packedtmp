@@ -26,15 +26,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import app.packed.base.AttributeMap;
-import app.packed.base.Nullable;
+import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
-import app.packed.config.ConfigSite;
 
 /** An runtime representation of a component. */
 public final class PackedComponent implements Component {
@@ -128,12 +127,6 @@ public final class PackedComponent implements Component {
         }
         // Right now children are already immutable
         return Collections.unmodifiableCollection(c.values());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return model.configSite;
     }
 
     /** {@inheritDoc} */

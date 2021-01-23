@@ -19,13 +19,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.component.App;
+import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Composable;
 import app.packed.component.Image;
-import app.packed.component.ShellDriver;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
-import app.packed.container.BundleConfiguration;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
@@ -110,12 +108,12 @@ import packed.internal.util.LookupUtil;
 
 public interface Injector extends ServiceLocator {
 
-    /**
-     * Returns the configuration site of this injector.
-     * 
-     * @return the configuration site of this injector
-     */
-    ConfigSite configSite();
+//    /**
+//     * Returns the configuration site of this injector.
+//     * 
+//     * @return the configuration site of this injector
+//     */
+//    ConfigSite configSite();
 
     // /**
     // * Injects services into the fields and methods of the specified instance.
@@ -141,7 +139,7 @@ public interface Injector extends ServiceLocator {
     }
 
     // Is this useful outside of hosts???????
-    static ShellDriver<Injector> driver() {
+    static ArtifactDriver<Injector> driver() {
         return InjectorArtifactHelper.DRIVER;
     }
 
@@ -158,8 +156,8 @@ public interface Injector extends ServiceLocator {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(Composable<? super InjectorAssembler> configurator, Wirelet... wirelets) {
-        return driver().configure(BundleConfiguration.driver(), c -> new InjectorAssembler(c), configurator, wirelets);
+    static Injector configure(Composable<? super InjectorComposer> configurator, Wirelet... wirelets) {
+        return InjectorComposer.configure(configurator, wirelets);
     }
 
     /**
@@ -176,7 +174,7 @@ public interface Injector extends ServiceLocator {
      */
     // Of er maaske fin. Saa understreger vi ligesom
     static Injector create(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().newShell(bundle, wirelets);
+        return driver().newArtifact(bundle, wirelets);
     }
 }
 
@@ -185,7 +183,7 @@ final class InjectorArtifactHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);
 
-    static final ShellDriver<Injector> DRIVER = ShellDriver.of(MethodHandles.lookup(), Injector.class, CONV);
+    static final ArtifactDriver<Injector> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(PackedInitializationContext container) {
         return (Injector) container.services();

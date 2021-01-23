@@ -53,7 +53,7 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      * 
      * @return any other extensions this extension directly depends on
      */
-    // Maybe Set<ExtensionDescriptor> dependencyDescriptors();
+    // Maybe add Set<ExtensionDescriptor> dependencyDescriptors();
     Set<Class<? extends Extension>> dependencies();
 
     /**

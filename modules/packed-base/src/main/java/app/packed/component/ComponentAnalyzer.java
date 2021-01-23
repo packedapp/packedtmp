@@ -17,7 +17,7 @@ package app.packed.component;
 
 import java.util.Optional;
 
-import app.packed.base.Attribute;
+import app.packed.attribute.Attribute;
 import packed.internal.component.PackedBuildInfo;
 
 /**
@@ -60,6 +60,9 @@ public final class ComponentAnalyzer {
      *             if the system is not in an assembled state.
      */
     public static Component analyzeAssembly(ComponentSystem s) {
+        
+        // App.print(sdfsdf)
+        // App.toDoc().print();
         // ??
         throw new UnsupportedOperationException();
     }
@@ -69,6 +72,12 @@ public final class ComponentAnalyzer {
     }
 
     public static void print(ComponentSystem s) {
+        // Er det i virkeligheden bare et streaming hirakisk dokument???
+        // Det tror jeg...
+        // Vil du have det statisk view???
+        // Eller et dynamisk view???
+        //
+        
         ComponentSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
     }
 

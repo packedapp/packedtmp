@@ -23,12 +23,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.base.Attribute;
+import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 
 /**
- * A specialization of {@link ServiceLocator} where all service instances have a common super type {@code <S>}.
- * Instances of this interface are normally created via the various select methods on ServiceLocator.
+ * A specialization of {@link ServiceLocator} where all service instances have some kind of common super type
+ * {@code <S>}. Instances of this interface are normally created via the various select methods on ServiceLocator.
  * 
  * @see ServiceLocator#selectAll()
  */
@@ -52,6 +52,10 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     void forEachInstance(Consumer<? super S> action);
 
+    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
+    
+    void forEachProvider(Consumer<? super Provider<S>> action);
+    
     /**
      * Returns a stream of all instances in the selection.
      * 
@@ -62,7 +66,6 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
 interface Zandbox<S> extends ServiceSelection<S> {
 
-    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
 
     // does not support regexp
     ServiceSelection<S> named(String name);
@@ -86,6 +89,7 @@ interface Zandbox<S> extends ServiceSelection<S> {
      * @return an immutable list containing a provided service instance for every service in this selection in any order
      */
     // Tror vi skal fikse ServiceRegistry.toList();
+    // instances().toList();
     List<S> toInstanceList();
 
     Map<Key<? extends S>, S> toMapKeyInstances();
@@ -95,6 +99,7 @@ interface Zandbox<S> extends ServiceSelection<S> {
 
     Map<Key<? extends S>, Provider<S>> toMapKeyProviders();
 
+    // stream().toList()...
     List<Provider<S>> toProviderList();
 
     <T> ServiceSelection<S> withAttribute(Attribute<T> attribute, Predicate<? super T> filter);

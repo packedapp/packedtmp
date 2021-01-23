@@ -17,11 +17,8 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.StackWalker.Option;
-import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -30,10 +27,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import app.packed.base.AttributeMap;
+import app.packed.attribute.AttributeMap;
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
@@ -44,7 +41,6 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.base.attribute.DefaultAttributeMap;
@@ -58,15 +54,13 @@ import packed.internal.component.source.RealmBuild;
 import packed.internal.component.source.SourceBuild;
 import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.config.ConfigSiteSupport;
 import packed.internal.util.ThrowableUtil;
 
 /** The build time representation of a component. */
 public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implements ComponentConfigurationContext {
-
-    /** A stack walker used from {@link #captureStackFrame(String)}. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+//
+//    /** A stack walker used from {@link #captureStackFrame(String)}. */
+//    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
@@ -101,8 +95,6 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /**************** See how much of this we can get rid of. *****************/
 
-    /** The configuration site of this component. */
-    private final ConfigSite configSite;
 
     boolean isClosed = false;
 
@@ -121,15 +113,12 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     /**
      * Creates a new instance of this class
      * 
-     * @param configSite
-     *            the configuration site of the component
      * @param parent
      *            the parent of the component
      */
-    ComponentBuild(PackedBuildInfo build, RealmBuild realm, PackedComponentDriver<?> driver, ConfigSite configSite, @Nullable ComponentBuild parent,
+    ComponentBuild(PackedBuildInfo build, RealmBuild realm, PackedComponentDriver<?> driver, @Nullable ComponentBuild parent,
             @Nullable WireletPack wirelets) {
         super(parent);
-        this.configSite = requireNonNull(configSite);
         this.extension = null; // Extensions use another constructor
 
         this.build = requireNonNull(build);
@@ -187,7 +176,6 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     public ComponentBuild(ComponentBuild parent, ExtensionModel model) {
         super(parent);
         this.build = parent.build;
-        this.configSite = parent.configSite();
         this.cube = null;
         this.memberOfCube = parent.cube;
         this.extension = new ExtensionBuild(this, model);
@@ -208,33 +196,34 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         return new ComponentAdaptor(this);
     }
 
-    /**
-     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-     * not located on any subclasses of {@link Extension} or any class that implements
-     * <p>
-     * Invoking this method typically takes in the order of 1-2 microseconds.
-     * <p>
-     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-     * {@link ConfigSite#UNKNOWN}.
-     * 
-     * @param operation
-     *            the operation
-     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-     * @see StackWalker
-     */
-    // TODO add stuff about we also ignore non-concrete container sources...
-    ConfigSite captureStackFrame(String operation) {
-        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-        // to the extension class in order to simplify the filtering mechanism.
-
-        // Vi kan spoerge "if context.captureStackFrame() ...."
-
-        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-            return ConfigSite.UNKNOWN;
-        }
-        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-    }
+//    /**
+//     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+//     * not located on any subclasses of {@link Extension} or any class that implements
+//     * <p>
+//     * Invoking this method typically takes in the order of 1-2 microseconds.
+//     * <p>
+//     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+//     * {@link ConfigSite#UNKNOWN}.
+//     * 
+//     * @param operation
+//     *            the operation
+//     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+//     * @see StackWalker
+//     */
+//    // TODO add stuff about we also ignore non-concrete container sources...
+//    ConfigSite captureStackFrame(String operation) {
+//        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+//        // to the extension class in order to simplify the filtering mechanism.
+//
+//        // Vi kan spoerge "if context.captureStackFrame() ...."
+//
+//        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+//            return ConfigSite.UNKNOWN;
+//        }
+//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+//        return ConfigSite.UNKNOWN;
+//        //return sf.isPresent() ? Config configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+//    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
@@ -274,33 +263,33 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
             }
         }
 
-        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.SHELL)) {
-            PackedShellDriver<?> psd = build().shellDriver();
-            dam.addValue(ComponentAttributes.SHELL_TYPE, psd.shellRawType());
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.ARTIFACT)) {
+            PackedArtifactDriver<?> psd = build().shellDriver();
+            dam.addValue(ComponentAttributes.SHELL_TYPE, psd.artifactRawType());
         }
         return dam;
     }
 
-    /**
-     * @param frame
-     *            the frame to filter
-     * @return whether or not to filter the frame
-     */
-    private boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-        Class<?> c = frame.getDeclaringClass();
-        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-        // Syntes bare vi filtrer app.packed.base modulet fra...
-        // Kan vi ikke checke om imod vores container source.
-
-        // ((PackedExtensionContext) context()).container().source
-        // Nah hvis man koere fra config er det jo fint....
-        // Fra config() paa en bundle er det fint...
-        // Fra alt andet ikke...
-
-        // Dvs ourContainerSource
-        return Extension.class.isAssignableFrom(c)
-                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
-    }
+//    /**
+//     * @param frame
+//     *            the frame to filter
+//     * @return whether or not to filter the frame
+//     */
+//    private boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+//        Class<?> c = frame.getDeclaringClass();
+//        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+//        // Syntes bare vi filtrer app.packed.base modulet fra...
+//        // Kan vi ikke checke om imod vores container source.
+//
+//        // ((PackedExtensionContext) context()).container().source
+//        // Nah hvis man koere fra config er det jo fint....
+//        // Fra config() paa en bundle er det fint...
+//        // Fra alt andet ikke...
+//
+//        // Dvs ourContainerSource
+//        return Extension.class.isAssignableFrom(c)
+//                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -341,12 +330,6 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         isClosed = true;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return configSite;
-    }
-
     /**
      * Returns the container this component is a part of. Or null if this component is the top level container.
      * 
@@ -381,14 +364,14 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         WireletPack wp = WireletPack.from(driver, wirelets);
 
         // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        ConfigSite cs = ConfigSite.UNKNOWN;
+        // ConfigSite cs = ConfigSite.UNKNOWN;
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
         ComponentBuild parent = extension == null ? this : treeParent;
 
         // Create the new component
-        ComponentBuild compConf = new ComponentBuild(build, new RealmBuild(bundle.getClass()), driver, cs, parent, wp);
+        ComponentBuild compConf = new ComponentBuild(build, new RealmBuild(bundle.getClass()), driver, parent, wp);
 
         // Invoke Bundle::configure
         AssemblyHelper.configure(bundle, driver.toConfiguration(compConf));
@@ -557,12 +540,12 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
         WireletPack wp = WireletPack.from(d, wirelets);
-        ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
+        //ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentBuild parent = extension == null ? this : treeParent;
-        ComponentBuild compConf = new ComponentBuild(build, realm, d, configSite, parent, wp);
+        ComponentBuild compConf = new ComponentBuild(build, realm, d, parent, wp);
 
         // We only close the component if linking a bundle (new realm)
         return d.toConfiguration(compConf);
@@ -630,8 +613,9 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) memberOfCube.getServiceManagerOrCreate().exports().export(source.service,
-                captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return (ExportedServiceConfiguration<T>) memberOfCube.getServiceManagerOrCreate().exports().export(source.service
+                /*,
+                captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE)*/);
     }
 
     @Override
@@ -664,12 +648,6 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         @Override
         public Collection<Component> children() {
             return compConf.toList(ComponentBuild::adaptToComponent);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ConfigSite configSite() {
-            return compConf.configSite(); // We might need to rewrite this for image...
         }
 
         /** {@inheritDoc} */

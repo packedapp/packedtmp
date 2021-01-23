@@ -18,7 +18,7 @@ package app.packed.component;
 import app.packed.container.Extension;
 
 /**
- *
+ * A wirelet
  */
 // Ideen er at man som default ikke bliver inherited...
 // Men at man kan
@@ -28,7 +28,7 @@ import app.packed.container.Extension;
 // Folk faar den oprindelige wirelet...
 // Saa inheritable maa 100% styres af Packed
 
-// 
+// Skal lige finde ud af omkring build-time/run-time
 public abstract class InheritableWirelet extends Wirelet {
 
     /**
@@ -45,31 +45,38 @@ public abstract class InheritableWirelet extends Wirelet {
         super(modifier);
     }
 
-    public final Wirelet forExtension(Class<? extends Extension> extensionType) {
+    public final InheritableWirelet assembledBy(Class<? extends Assembly<?>> assemblyType) {
         throw new UnsupportedOperationException();
     }
-    
-    public final Wirelet assembledBy(Class<? extends Assembly<?>> assemblyType) {
+
+    public final InheritableWirelet forExtension(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
-    
-    public final Wirelet all() {
+
+    public final InheritableWirelet ignoreThis() {
         throw new UnsupportedOperationException();
     }
-    
-    public final Wirelet sameContainer() {
+
+    public final InheritableWirelet matchPath(String regexp) {
         throw new UnsupportedOperationException();
     }
-    
+
     public final InheritableWirelet maxDepth(int maxDeptch) {
         return this;
     }
-    
-    public final Wirelet matchPath(String regexp) {
+
+    public final InheritableWirelet sameContainer() {
         throw new UnsupportedOperationException();
     }
-    
-    public final Wirelet allExceptThis() {
+
+    /**
+     * By default an inheritable wirelet will be inherited
+     * 
+     * @return the wirelet
+     */
+    // Maybe just call it wirelet()???
+    // We simply just say that you cannot change how it is inherited
+    public final Wirelet wirelet() {
         throw new UnsupportedOperationException();
     }
 }

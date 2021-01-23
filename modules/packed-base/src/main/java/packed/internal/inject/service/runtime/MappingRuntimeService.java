@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.inject.ProvisionContext;
+import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.build.BuildtimeService;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
@@ -46,6 +47,12 @@ public final class MappingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Object getInstance(ProvisionContext site) {
         Object f = delegate.getInstance(site);
         @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -59,19 +66,13 @@ public final class MappingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return delegate.isConstant();
+    public ServiceMode mode() {
+        return delegate.mode();
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
-        return delegate.requiresPrototypeRequest();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
+    public boolean requiresProvisionContext() {
+        return delegate.requiresProvisionContext();
     }
 }

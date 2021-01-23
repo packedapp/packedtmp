@@ -17,7 +17,7 @@ package app.packed.request;
 
 import java.util.Optional;
 
-import app.packed.base.AttributedElement;
+import app.packed.attribute.AttributedElement;
 
 /**
  *

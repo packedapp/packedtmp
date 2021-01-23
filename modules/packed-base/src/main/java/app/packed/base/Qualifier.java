@@ -34,6 +34,8 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Qualifier {}
 
+// Consumer<> validator
+
 // dependency resolver, qualifier resolver,
 // Default is Qualifier which indicates that no special resolver is resolver is used
 // Only support static @Provides methods.... Then we avoid needing to think about how many instances we create...

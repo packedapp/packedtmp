@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ProvisionContext;
+import app.packed.inject.ServiceMode;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.build.BuildtimeService;
 
@@ -45,12 +45,17 @@ public final class ConstantRuntimeService extends RuntimeService {
     }
 
     /**
-     * @param configSite
      * @param key
      */
-    public ConstantRuntimeService(ConfigSite configSite, Key<?> key, @Nullable Object instance) {
-        super(configSite, key);
+    public ConstantRuntimeService(Key<?> key, @Nullable Object instance) {
+        super(key);
         this.constant = requireNonNull(instance);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        return MethodHandles.constant(key().rawType(), constant);
     }
 
     /** {@inheritDoc} */
@@ -61,19 +66,13 @@ public final class ConstantRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return true;
+    public ServiceMode mode() {
+        return ServiceMode.CONSTANT;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
+    public boolean requiresProvisionContext() {
         return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return MethodHandles.constant(key().rawType(), constant);
     }
 }

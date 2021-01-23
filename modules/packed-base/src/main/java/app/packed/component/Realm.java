@@ -47,3 +47,6 @@ public abstract class Realm {
 
     protected abstract void lookup(MethodHandles.Lookup lookup);
 }
+// Realm -> Composer
+// Realm -> Assembly
+// Realm -> Extension

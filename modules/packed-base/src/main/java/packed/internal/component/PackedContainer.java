@@ -27,7 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.Image;
-import app.packed.component.ShellDriver;
+import app.packed.component.ArtifactDriver;
 import app.packed.component.Wirelet;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
@@ -216,7 +216,7 @@ public class PackedContainer implements Host {
         }
     }
 
-    /** An implementation of {@link Image} used by {@link ShellDriver#newImage(Assembly, Wirelet...)}. */
+    /** An implementation of {@link Image} used by {@link ArtifactDriver#newImage(Assembly, Wirelet...)}. */
     public static final class ExecutingImage implements Image<Void> {
 
         /** The assembled image node. */

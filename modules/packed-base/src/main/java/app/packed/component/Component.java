@@ -19,10 +19,9 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.base.AttributedElement;
+import app.packed.attribute.AttributedElement;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
-import app.packed.config.ConfigSite;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
@@ -50,7 +49,7 @@ public interface Component extends AttributedElement, ComponentSystem {
 //     * 
 //     * @return the configuration site of this application
 //     */
-    ConfigSite configSite();
+//    ConfigSite configSite();
 
     /**
      * Returns the distance to the root component. The root component having depth 0.

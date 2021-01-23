@@ -20,9 +20,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.attribute.AttributedElement;
 import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
-import app.packed.config.ConfigSite;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
@@ -56,7 +56,7 @@ public interface NamespaceElement extends AttributedElement {
 //     * 
 //     * @return the configuration site of this application
 //     */
-    ConfigSite configSite();
+    // ConfigSite configSite();
 
     /**
      * Returns the distance to the root component. The root component having depth 0.
@@ -139,7 +139,7 @@ public interface NamespaceElement extends AttributedElement {
     default Optional<NamespaceElement> tryResolve(CharSequence path) {
         throw new UnsupportedOperationException();
     }
-       
+
 }
 
 ///**

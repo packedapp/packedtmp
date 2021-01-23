@@ -11,13 +11,13 @@ import app.packed.state.Host;
 final class PackedApp implements App {
 
     /** An driver for creating PackedApp instances. */
-    static final ShellDriver<App> DRIVER = ShellDriver.of(MethodHandles.lookup(), PackedApp.class);
+    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), PackedApp.class);
 
-    /** The system component. */
+    /** The app's root component. */
     private final Component component;
 
-    /** The app's container. */
-    private final Host guest;
+    /** The app's host. */
+    private final Host host;
 
     /** The app's service locator. */
     private final ServiceLocator services;
@@ -26,15 +26,15 @@ final class PackedApp implements App {
      * Creates a new app.
      * 
      * @param component
-     *            the service component
+     *            the app's root component
      * @param services
-     *            the exported services
-     * @param guest
-     *            the container
+     *            the app's service locator
+     * @param host
+     *            the app's host
      */
-    private PackedApp(Component component, ServiceLocator services, Host guest) {
+    private PackedApp(Component component, ServiceLocator services, Host host) {
         this.component = requireNonNull(component);
-        this.guest = requireNonNull(guest);
+        this.host = requireNonNull(host);
         this.services = requireNonNull(services);
     }
 
@@ -47,7 +47,7 @@ final class PackedApp implements App {
     /** {@inheritDoc} */
     @Override
     public Host host() {
-        return guest;
+        return host;
     }
 
     /** {@inheritDoc} */
@@ -58,6 +58,6 @@ final class PackedApp implements App {
 
     @Override
     public String toString() {
-        return "App[state = " + guest.state() + "] " + component.path();
+        return "App[state = " + host.state() + "] " + component.path();
     }
 }

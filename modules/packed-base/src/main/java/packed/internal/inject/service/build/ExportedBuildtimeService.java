@@ -21,10 +21,9 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -48,13 +47,11 @@ public final class ExportedBuildtimeService extends BuildtimeService {
      * 
      * @param builder
      *            the injector configuration this node is being added to
-     * @param configSite
-     *            the configuration site of the exposure
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedBuildtimeService(ServiceFabric builder, Key<?> exportAsKey, ConfigSite configSite) {
-        super(configSite, exportAsKey);
+    public ExportedBuildtimeService(ServiceManager builder, Key<?> exportAsKey) {
+        super(exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
 
@@ -63,12 +60,10 @@ public final class ExportedBuildtimeService extends BuildtimeService {
      * 
      * @param entryToExport
      *            the entry to export
-     * @param configSite
-     *            the config site of the export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedBuildtimeService(BuildtimeService entryToExport, ConfigSite configSite) {
-        super(configSite, entryToExport.key());
+    public ExportedBuildtimeService(BuildtimeService entryToExport) {
+        super(entryToExport.key());
         this.exportedEntry = entryToExport;
         this.exportAsKey = null;
         // Export of export, of export????

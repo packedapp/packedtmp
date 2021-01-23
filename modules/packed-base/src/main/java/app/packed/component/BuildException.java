@@ -17,10 +17,10 @@ package app.packed.component;
 
 /**
  * An exception typically thrown when something goes wrong doing build phase. This exception normally indicates a
- * programmatic error and can usually only be recovered by updating the underlying code.
+ * programmatic error and can usually only be recovered by updates to the underlying code.
  */
-// Or in .base/.component??? was in .artifact
-// Skal vi have en liste af errors???
+// Skal vi have en liste af errors??? 
+// Evt i suppresed exceptions???
 // Skal vi have en lifecycle base extension for denne og InitializationExtception  
 public class BuildException extends RuntimeException {
 

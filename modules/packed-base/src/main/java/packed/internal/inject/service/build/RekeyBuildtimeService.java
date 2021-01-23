@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
@@ -41,13 +40,11 @@ public final class RekeyBuildtimeService extends BuildtimeService {
      * 
      * @param s
      *            the injector configuration this node is being added to
-     * @param configSite
-     *            the configuration site of the exposure
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public RekeyBuildtimeService(BuildtimeService s, Key<?> key, ConfigSite configSite) {
-        super(configSite, key);
+    public RekeyBuildtimeService(BuildtimeService s, Key<?> key) {
+        super(key);
         this.entryToRekey = s;
     }
 

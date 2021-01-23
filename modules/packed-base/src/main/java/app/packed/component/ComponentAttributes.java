@@ -17,7 +17,7 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Attribute;
+import app.packed.attribute.Attribute;
 import app.packed.base.NamespacePath;
 import app.packed.base.TypeToken;
 import app.packed.container.Extension;
@@ -44,7 +44,7 @@ public class ComponentAttributes {
     // EXTENSION_INFO
     public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", _EXTENSION);
 
-    /** An attribute that accompanies any component that has the {@link ComponentModifier#SHELL} modifier. */
+    /** An attribute that accompanies any component that has the {@link ComponentModifier#ARTIFACT} modifier. */
     public static final Attribute<Class<?>> SHELL_TYPE = Attribute.of(MethodHandles.lookup(), "shell-type", _CLASS);
 
     ////////////////////// Think about these for a bit //////////////////////////

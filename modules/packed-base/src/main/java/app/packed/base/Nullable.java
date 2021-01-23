@@ -41,8 +41,8 @@ import java.lang.annotation.Target;
 // * {@link ServiceDependency#fromTypeVariables(Class, Class, int...)} will acknowledges the annotation and mark the
 // dependency
 // * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
-
+// https://github.com/uber/NullAway
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.TYPE_USE, ElementType.FIELD, ElementType.PARAMETER })
+@Target({ ElementType.TYPE_USE})
 @Documented
 public @interface Nullable {}

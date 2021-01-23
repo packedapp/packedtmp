@@ -15,8 +15,8 @@
  */
 package app.packed.hooks.usage;
 
-import app.packed.base.invoke.Invoker;
-import app.packed.container.MethodHook;
+import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodHook;
 import app.packed.state.OnInitialize;
 
 /**

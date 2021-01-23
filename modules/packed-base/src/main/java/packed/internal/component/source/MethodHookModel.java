@@ -28,11 +28,11 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.MethodHook;
-import packed.internal.bundle.extension.MethodHookBootstrapModel;
-import packed.internal.bundle.extension.SidecarContextDependencyProvider;
+import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentBuild;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.hooks.MethodHookBootstrapModel;
+import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -74,7 +74,7 @@ public final class MethodHookModel extends MemberHookModel {
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
-            SidecarContextDependencyProvider dp = bootstrapModel.keys.get(d.key());
+            ContextMethodProvide dp = bootstrapModel.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
                 int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;

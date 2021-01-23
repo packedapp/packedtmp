@@ -30,7 +30,7 @@ import app.packed.component.ComponentDefinitionException;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.InjectorAssembler;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {
@@ -122,7 +122,7 @@ public class FieldInstanceTest {
         // TODO check message
     }
 
-    private static Injector create(Consumer<? super InjectorAssembler> consumer) {
+    private static Injector create(Consumer<? super InjectorComposer> consumer) {
         return Injector.configure(c -> {
             c.lookup(MethodHandles.lookup());
             consumer.accept(c);
@@ -150,7 +150,7 @@ public class FieldInstanceTest {
         @Provide(constant = true)
         Short s = 1;
 
-        static void test(Consumer<? super InjectorAssembler> configurator) {
+        static void test(Consumer<? super InjectorComposer> configurator) {
             Injector i = create(c -> {
                 configurator.accept(c);
             });

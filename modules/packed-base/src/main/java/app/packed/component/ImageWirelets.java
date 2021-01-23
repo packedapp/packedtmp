@@ -16,11 +16,20 @@
 package app.packed.component;
 
 /**
- *
+ * A collection of wirelets that can be specified when building an {@link Image image}.
  */
 class ImageWirelets {
     // Kun aktuelt for system images, ikke for sub-system images
     static Wirelet retainImage() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Can be used when creating an image
+     * 
+     * @return the wirelet
+     */
+    static Wirelet single() {
         throw new UnsupportedOperationException();
     }
 }

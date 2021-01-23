@@ -15,20 +15,14 @@
  */
 package packed.internal.inject.service;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.config.ConfigSite;
-import app.packed.config.ConfigSiteVisitor;
-import packed.internal.config.ConfigSiteJoiner;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.ExportedBuildtimeService;
-import packed.internal.util.StringFormatter;
 
 /**
  *
@@ -40,14 +34,14 @@ import packed.internal.util.StringFormatter;
 public final class InjectionErrorManagerMessages {
 
     public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<BuildtimeService>> dublicateNodes) {
-        ConfigSiteJoiner csj = new ConfigSiteJoiner();
-
-        csj.prefix("    ", "  & ", "  & ");
-        for (var e : dublicateNodes.entrySet()) {
-            // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
-
-            csj.addAll(e.getValue().stream().map(BuildtimeService::configSite).collect(Collectors.toList()));
-        }
+//        ConfigSiteJoiner csj = new ConfigSiteJoiner();
+//
+//        csj.prefix("    ", "  & ", "  & ");
+//        for (var e : dublicateNodes.entrySet()) {
+//            // e.getValue().stream().map(BSE::configSite).collect(csj.collector();
+//
+//            csj.addAll(e.getValue().stream().map(BuildtimeService::configSite).collect(Collectors.toList()));
+//        }
         StringBuilder sb = new StringBuilder();
 
         // create an instance sounds like something that should not be used in the build phase...
@@ -77,31 +71,32 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceFabric node, HashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceManager node, HashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 
     static String format(BuildtimeService e) {
-        // TODO FIX
-        // Need to look in injectable and see if first dependency is SourceAssembly
-        BuildtimeService declaringEntry = e;
-
-        if (declaringEntry == null) {
-            return e.configSite().toString();
-        }
-        StringBuilder sb = new StringBuilder(declaringEntry.configSite().toString());
-        e.configSite().visit(new ConfigSiteVisitor() {
-
-            /** {@inheritDoc} */
-            @Override
-            public void visitAnnotatedMethod(ConfigSite configSite, Method method, Annotation annotation) {
-                sb.append(" via annotated method @");
-                sb.append(annotation.annotationType().getSimpleName());
-                sb.append(" ");
-                sb.append(StringFormatter.formatShortWithParameters(method));
-            }
-
-        });
-        return sb.toString();
+        return "";
+//        // TODO FIX
+//        // Need to look in injectable and see if first dependency is SourceAssembly
+//        BuildtimeService declaringEntry = e;
+//
+//        if (declaringEntry == null) {
+//            return e.configSite().toString();
+//        }
+//        StringBuilder sb = new StringBuilder(declaringEntry.configSite().toString());
+//        e.configSite().visit(new ConfigSiteVisitor() {
+//
+//            /** {@inheritDoc} */
+//            @Override
+//            public void visitAnnotatedMethod(ConfigSite configSite, Method method, Annotation annotation) {
+//                sb.append(" via annotated method @");
+//                sb.append(annotation.annotationType().getSimpleName());
+//                sb.append(" ");
+//                sb.append(StringFormatter.formatShortWithParameters(method));
+//            }
+//
+//        });
+//        return sb.toString();
     }
 }

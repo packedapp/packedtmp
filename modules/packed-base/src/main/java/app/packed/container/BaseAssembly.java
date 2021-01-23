@@ -27,7 +27,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.state.OnStart;
-import packed.internal.inject.service.sandbox.InjectorAssembler;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
  * A convenience extension of {@link BundleAssembly} which contains shortcut access to common functionality defined by the
@@ -176,7 +176,7 @@ public abstract class BaseAssembly extends BundleAssembly {
      * @param implementation
      *            the implementation to bind
      * @return a service configuration for the service
-     * @see InjectorAssembler#provide(Class)
+     * @see InjectorComposer#provide(Class)
      */
     protected final <T> BeanConfiguration<T> provide(Class<T> implementation) {
         return install(implementation).provide();

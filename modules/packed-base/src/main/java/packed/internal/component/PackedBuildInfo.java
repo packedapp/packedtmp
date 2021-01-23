@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.component.Composer;
 import app.packed.component.Assembly;
 import app.packed.component.BuildInfo;
 import app.packed.component.Component;
@@ -29,12 +28,10 @@ import app.packed.component.ComponentDelegate;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentSystem;
 import app.packed.component.Composable;
+import app.packed.component.Composer;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import packed.internal.component.source.RealmBuild;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.config.ConfigSiteSupport;
 
 /** The default implementation of {@link BuildInfo} */
 public final class PackedBuildInfo implements BuildInfo {
@@ -46,7 +43,7 @@ public final class PackedBuildInfo implements BuildInfo {
 
     /** Any shell driver that initiated the build process. */
     @Nullable
-    private final PackedShellDriver<?> shellDriver;
+    private final PackedArtifactDriver<?> shellDriver;
 
     /** The thread that is assembling the system. */
     // This should not be permanently..
@@ -64,7 +61,7 @@ public final class PackedBuildInfo implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    private PackedBuildInfo(int modifiers, @Nullable PackedShellDriver<?> shellDriver, Wirelet... wirelets) {
+    private PackedBuildInfo(int modifiers, @Nullable PackedArtifactDriver<?> shellDriver, Wirelet... wirelets) {
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
         this.shellDriver = shellDriver;
         this.wirelets = wirelets;
@@ -76,7 +73,6 @@ public final class PackedBuildInfo implements BuildInfo {
     public Component asComponent() {
         return root.adaptToComponent();
     }
-
 
     public boolean isAnalysis() {
         return (modifiers & PackedComponentModifierSet.I_ANALYSIS) != 0;
@@ -102,7 +98,7 @@ public final class PackedBuildInfo implements BuildInfo {
      * @return any shell driver that initiated the build process
      */
     @Nullable
-    public PackedShellDriver<?> shellDriver() {
+    public PackedArtifactDriver<?> shellDriver() {
         return shellDriver;
     }
 
@@ -157,7 +153,7 @@ public final class PackedBuildInfo implements BuildInfo {
      *            optional wirelets
      * @return the root component configuration node
      */
-    public static PackedBuildInfo build(Assembly<?> assembly, boolean isAnalysis, boolean isImage, @Nullable PackedShellDriver<?> shellDriver,
+    public static PackedBuildInfo build(Assembly<?> assembly, boolean isAnalysis, boolean isImage, @Nullable PackedArtifactDriver<?> shellDriver,
             Wirelet... wirelets) {
         int modifiers = 0;
         if (shellDriver != null) {
@@ -182,10 +178,10 @@ public final class PackedBuildInfo implements BuildInfo {
 
         WireletPack wp = WireletPack.from(componentDriver, wirelets);
 
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         // Create the root component
-        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(assembly.getClass()), componentDriver, cs, null, wp);
+        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(assembly.getClass()), componentDriver, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
         AssemblyHelper.configure(assembly, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
@@ -193,15 +189,15 @@ public final class PackedBuildInfo implements BuildInfo {
         return pac;
     }
 
-    public static <C extends Composer, D> PackedBuildInfo configure(PackedShellDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
+    public static <C extends Composer, D> PackedBuildInfo configure(PackedArtifactDriver<?> ad, PackedComponentDriver<D> driver, Function<D, C> factory,
             Composable<C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.from(driver, wirelets);
         // Vil gerne parse nogle wirelets some det allerfoerste
-        ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
+        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(ConfigSiteInjectOperations.INJECTOR_OF);
 
         PackedBuildInfo pac = new PackedBuildInfo(0, ad);
 
-        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(consumer.getClass()), driver, cs, null, wp);
+        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(consumer.getClass()), driver, null, wp);
 
         D conf = driver.toConfiguration(compConf);
         C cc = requireNonNull(factory.apply(conf));

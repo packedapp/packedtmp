@@ -21,9 +21,9 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.base.Attribute;
-import app.packed.base.AttributedElement;
-import app.packed.base.AttributedElementStream;
+import app.packed.attribute.Attribute;
+import app.packed.attribute.AttributedElement;
+import app.packed.attribute.AttributedElementStream;
 
 /**
  *

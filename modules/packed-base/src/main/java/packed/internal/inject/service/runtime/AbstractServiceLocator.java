@@ -28,9 +28,9 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.inject.Provider;
 import app.packed.inject.Service;
+import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceSelection;
-import app.packed.inject.ServiceComposer;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.inject.service.build.PackedServiceTransformer;
 
@@ -39,6 +39,12 @@ import packed.internal.inject.service.build.PackedServiceTransformer;
  * effectively immutable (frozen) services.
  **/
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
+
+    /** {@inheritDoc} */
+    @Override
+    public Map<Key<?>, Service> asMap() {
+        return null;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -98,8 +104,14 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceSelection<T> selectMinimal(Key<T> key) {
+    public final <T> ServiceSelection<T> selectAnyQualifiers(Key<T> key) {
         return select(s -> key.isSuperKeyOf(s.key()));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final <T> ServiceSelection<T> selectAssignableTo(Class<T> key) {
+        return select(s -> key.isAssignableFrom(s.key().rawType()));
     }
 
     /** {@inheritDoc} */

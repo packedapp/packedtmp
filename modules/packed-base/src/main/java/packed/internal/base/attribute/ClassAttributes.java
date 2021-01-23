@@ -18,7 +18,7 @@ package packed.internal.base.attribute;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.packed.base.ExposeAttribute;
+import app.packed.attribute.ExposeAttribute;
 
 /**
  *

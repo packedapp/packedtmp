@@ -5,5 +5,7 @@
  * either express or implied. See the License for the specific language governing permissions and limitations under the
  * License. */
 
-/** This package contains various internal classes for the app.packed.config package. */
+/**
+ * Provides a simple configuration framework.
+ */
 package packed.internal.config;

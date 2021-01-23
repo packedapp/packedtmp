@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
+import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.build.BuildtimeService;
 
 /**
@@ -45,16 +46,16 @@ public final class DelegatingRuntimeService extends RuntimeService {
     }
 
     public DelegatingRuntimeService(RuntimeService rs, Key<?> key) {
-        super(rs.configSite(), key);
+        super(key);
         this.delegate = requireNonNull(rs);
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return delegate.isConstant();
+    public MethodHandle dependencyAccessor() {
+        return delegate.dependencyAccessor();
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public Object getInstance(ProvisionContext site) {
@@ -63,13 +64,13 @@ public final class DelegatingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
-        return delegate.requiresPrototypeRequest();
+    public ServiceMode mode() {
+        return delegate.mode();
     }
 
     /** {@inheritDoc} */
     @Override
-    public MethodHandle dependencyAccessor() {
-        return delegate.dependencyAccessor();
+    public boolean requiresProvisionContext() {
+        return delegate.requiresProvisionContext();
     }
 }

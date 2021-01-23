@@ -28,7 +28,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.component.BuildException;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import packed.internal.bundle.BundleBuild;
 import packed.internal.inject.Dependant;
@@ -150,13 +149,11 @@ public final class ServiceRequirementsComposer {
      *            the key that is required
      * @param isOptional
      *            whether or not it is optional
-     * @param configSite
-     *            the config site
      * 
      * @see ServiceExtension#require(Key...)
      * @see ServiceExtension#requireOptionally(Key...)
      */
-    public void require(Key<?> key, boolean isOptional, ConfigSite configSite) {
+    public void require(Key<?> key, boolean isOptional /*, ConfigSite configSite*/) {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 }

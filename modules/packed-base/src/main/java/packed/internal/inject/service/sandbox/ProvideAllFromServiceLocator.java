@@ -20,10 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.LinkedHashMap;
 
 import app.packed.base.Key;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.RuntimeAdaptorBuildtimeService;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -32,10 +31,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public final class ProvideAllFromServiceLocator {
 
     /** The injector builder from where the service will be provided. */
-    public final ServiceFabric node;
-
-    /** The configuration site of the provide all statement. */
-    public final ConfigSite configSite;
+    public final ServiceManager node;
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
@@ -49,19 +45,16 @@ public final class ProvideAllFromServiceLocator {
      * 
      * @param node
      *            A builder for the injector that the injector is being imported into
-     * @param configSite
-     *            the config site of the import
      * @param injector
      *            the injector that is being imported
      */
-    public ProvideAllFromServiceLocator(ServiceFabric node, ConfigSite configSite, PackedInjector injector) {
+    public ProvideAllFromServiceLocator(ServiceManager node, PackedInjector injector) {
         this.node = requireNonNull(node);
-        this.configSite = requireNonNull(configSite);
         this.injector = requireNonNull(injector);
 
         injector.forEachEntry(e -> {
-            ConfigSite cs = configSite.withParent(e.configSite());
-            entries.put(e.key(), new RuntimeAdaptorBuildtimeService(cs, e));
+            // ConfigSite cs = configSite.withParent(e.configSite());
+            entries.put(e.key(), new RuntimeAdaptorBuildtimeService(e));
         });
     }
 }

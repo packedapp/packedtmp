@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
-import app.packed.base.Named;
-import app.packed.base.invoke.Invoker;
+import app.packed.base.Tag;
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
-import app.packed.container.MethodHook;
-import app.packed.container.RealMethodSidecarBootstrap;
+import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodHook;
+import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 
@@ -63,7 +63,7 @@ public class Foo extends BaseAssembly {
         }
 
         @Hej
-        public void foo(@Named("A") Long ldt, @Named("B") Long ldt2, @Named("A") Long ldt3, String sss) {
+        public void foo(@Tag("A") Long ldt, @Tag("B") Long ldt2, @Tag("A") Long ldt3, String sss) {
             System.out.println("Invoking because of @HEJ " + ldt + "   " + ldt2 + "  " + ldt3);
         }
     }
@@ -89,13 +89,13 @@ class TestIt extends RealMethodSidecarBootstrap {
     }
 
     @Provide
-    @Named("A")
+    @Tag("A")
     public static Long l() {
         return al.incrementAndGet();
     }
 
     @Provide
-    @Named("B")
+    @Tag("B")
     public static Long ld() {
         return al.decrementAndGet();
     }

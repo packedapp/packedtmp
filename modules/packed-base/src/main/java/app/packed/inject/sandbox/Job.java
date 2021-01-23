@@ -22,7 +22,9 @@ package app.packed.inject.sandbox;
 
 // Altsaa det giver sjaeldent mening at lave den direkte 
 
-interface Job<T> {
+interface Job<R> {
 
     // Job<Void> of()
+    
+    
 }

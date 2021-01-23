@@ -207,8 +207,7 @@ class MethodHandleBuilderHelper {
         return mh;
     }
 
-    @Nullable
-    private MethodHandleBuilder.AnnoClassEntry find(MethodHandleBuilder aa, Parameter p) {
+    private MethodHandleBuilder.@Nullable AnnoClassEntry find(MethodHandleBuilder aa, Parameter p) {
         for (Annotation a : p.getAnnotations()) {
             if (aa.annoations.containsKey(a.annotationType())) {
                 return aa.annoations.get(a.annotationType());

@@ -16,7 +16,7 @@
 package app.packed.component;
 
 /** Information about a namespace. */
-// IDK
+// Component namespace info????
 interface NamespaceInfo {
 
     boolean isStateful();

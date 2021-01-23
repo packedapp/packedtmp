@@ -7,5 +7,6 @@ target.tmp
 .classpath
 .project
 .settings
+/sandbox
 .DS_Store
 /trace*

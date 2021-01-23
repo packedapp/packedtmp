@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.test;
 
-import app.packed.base.Named;
+import app.packed.base.Tag;
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
@@ -30,7 +30,7 @@ class Stuff extends BaseAssembly {
     @Override
     protected void build() {
         Factory<String> f = new Factory2<Long, Long, String>((l, i) -> "ffoo " + l + " " + i) {};
-        Factory<String> ff = new Factory2<Long, Long, @Named("foo") String>((l, i) -> "ffoo " + l + " " + i) {};
+        Factory<String> ff = new Factory2<Long, Long, @Tag("foo") String>((l, i) -> "ffoo " + l + " " + i) {};
         f = f.postConstruction(s -> System.out.println(s));
         f = f.postConstruction(s -> System.out.println(s));
         f = f.bind(3333L);

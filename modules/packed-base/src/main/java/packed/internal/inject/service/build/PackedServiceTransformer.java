@@ -28,7 +28,6 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
@@ -105,6 +104,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements  
         add(factory, false, true, false);
     }
 
+    /** {@inheritDoc} */
     @Override
     public <T> void provideInstance(Key<T> key, T instance) {
         requireNonNull(key, "key is null");
@@ -174,14 +174,14 @@ public final class PackedServiceTransformer extends ServiceComposer implements  
         for (AbstractService e : services.values()) {
             runtimeEntries.put(e.key(), ((BuildtimeService) e).toRuntimeEntry(con));
         }
-        return new PackedInjector(ConfigSite.UNKNOWN, runtimeEntries);
+        return new PackedInjector(runtimeEntries);
     }
 
     public static ServiceLocator transform(Consumer<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
         requireNonNull(transformation, "transformation is null");
         HashMap<Key<?>, BuildtimeService> m = new HashMap<>();
         for (RuntimeService s : services) {
-            m.put(s.key(), new RuntimeAdaptorBuildtimeService(ConfigSite.UNKNOWN, s));
+            m.put(s.key(), new RuntimeAdaptorBuildtimeService(s));
         }
         return toServiceLocator(m, transformation);
     }

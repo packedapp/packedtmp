@@ -26,7 +26,7 @@ import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.InjectorAssembler;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
  * Tests {@link Provide#constant()} on static fields. In general we do not need to create an instance of the parent if
@@ -69,7 +69,7 @@ public class FieldStaticTest {
             assertThat(S).isEqualByComparingTo((short) 1);
         }
 
-        static void test(Consumer<? super InjectorAssembler> configurator) {
+        static void test(Consumer<? super InjectorComposer> configurator) {
             // L = 1L;
             P = 1;
             S = 1;
@@ -113,7 +113,7 @@ public class FieldStaticTest {
             throw new AssertionError("Cannot instantiate");
         }
 
-        static void test(Consumer<? super InjectorAssembler> configurator) {
+        static void test(Consumer<? super InjectorComposer> configurator) {
             // L = 1L;
             P = 1;
             S = 1;

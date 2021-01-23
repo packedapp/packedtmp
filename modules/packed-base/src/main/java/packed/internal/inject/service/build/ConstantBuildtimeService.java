@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -40,7 +39,7 @@ public final class ConstantBuildtimeService extends BuildtimeService {
      * @param key
      */
     public ConstantBuildtimeService(Key<?> key, Object constant) {
-        super(ConfigSite.UNKNOWN, key);
+        super(key);
         this.constant = requireNonNull(constant, "constant is null");
     }
 
@@ -65,6 +64,6 @@ public final class ConstantBuildtimeService extends BuildtimeService {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new ConstantRuntimeService(configSite(), key(), constant);
+        return new ConstantRuntimeService(key(), constant);
     }
 }

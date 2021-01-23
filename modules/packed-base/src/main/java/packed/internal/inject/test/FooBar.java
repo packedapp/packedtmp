@@ -16,7 +16,7 @@
 package packed.internal.inject.test;
 
 import app.packed.base.Key;
-import app.packed.base.Named;
+import app.packed.base.Tag;
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceContract;
@@ -35,7 +35,7 @@ public class FooBar extends BaseAssembly {
 
         link(new Child(), ServiceWirelets.from(e -> {
             System.out.println("Exporting " + e.keys());
-            e.rekey(Key.of(String.class), new Key<@Named("foo") String>() {});
+            e.rekey(Key.of(String.class), new Key<@Tag("foo") String>() {});
             System.out.println("Exporting " + e.keys());
             e.decorate(Runnable.class, x -> new Runnable() {
 
@@ -51,7 +51,7 @@ public class FooBar extends BaseAssembly {
     }
 
     public static class NeedsString {
-        public NeedsString(ChildServ string, @Named("foo") String s) {
+        public NeedsString(ChildServ string, @Tag("foo") String s) {
             System.out.println("GOt " + string);
         }
     }
@@ -68,8 +68,8 @@ public class FooBar extends BaseAssembly {
         @Override
         protected void build() {
             provide(ChildServ.class).export();
-            installInstance("asdasd").exportAs(new Key<@Named("Fooo") String>() {});
-            installInstance("asdasd").exportAs(new Key<@Named("dFooo") String>() {});
+            installInstance("asdasd").exportAs(new Key<@Tag("Fooo") String>() {});
+            installInstance("asdasd").exportAs(new Key<@Tag("dFooo") String>() {});
             provideInstance(new Runnable() {
                 @Override
                 public void run() {

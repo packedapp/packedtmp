@@ -25,11 +25,11 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.ClassHook;
-import packed.internal.bundle.extension.AbstractHookBootstrapModel;
-import packed.internal.bundle.extension.ClassHookBootstrapModel;
+import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.source.MethodHookModel.RunAt;
+import packed.internal.hooks.AbstractHookBootstrapModel;
+import packed.internal.hooks.ClassHookBootstrapModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 
@@ -86,8 +86,7 @@ public abstract class MemberHookModel {
         AbstractHookBootstrapModel<?> buildtimeModel;
 
         /** Any extension class that manages this member. */
-        @Nullable
-        ClassHookModel.Builder managedBy;
+        ClassHookModel.@Nullable Builder managedBy;
 
         @Nullable
         Consumer<? super ComponentBuild> processor;
@@ -105,7 +104,9 @@ public abstract class MemberHookModel {
         }
 
         public final Optional<Class<?>> buildType() {
-            if (buildtimeModel == null) {
+            if (disabled) {
+                return Optional.empty();
+            } else if (buildtimeModel == null) {
                 return Optional.empty();
             }
             return Optional.of(buildtimeModel.bootstrapImplementation());
@@ -119,11 +120,14 @@ public abstract class MemberHookModel {
         }
 
         public final void disable() {
+            disabled = true;
             this.buildtimeModel = null;
         }
 
         @SuppressWarnings("unchecked")
         public final <T extends ClassHook.Bootstrap> T manageBy(Class<T> type) {
+            requireNonNull(type, "The specified type is null");
+            checkNotDisabled();
             if (managedBy != null) {
                 throw new IllegalStateException("This method can only be invoked once");
             }

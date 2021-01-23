@@ -24,9 +24,9 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
 import app.packed.container.ExtensionNest;
-import app.packed.container.FieldHook;
-import app.packed.container.MethodHook;
-import app.packed.container.RealMethodSidecarBootstrap;
+import app.packed.hooks.FieldHook;
+import app.packed.hooks.MethodHook;
+import app.packed.hooks.RealMethodSidecarBootstrap;
 
 /**
  * An annotation indicating that an annotated type, method or field provides a object of some kind. A field

@@ -168,9 +168,9 @@ public enum ComponentModifier {
      * Systems that are created via the various methods on {@link Main} never has a shell.
      * 
      * @see App
-     * @see ShellDriver
+     * @see ArtifactDriver
      */
-    SHELL, // FOREIGN???
+    ARTIFACT, // FOREIGN???
 
     /**
      * Indicates that a system has been created for the sole reason of being analyzed. A system with this modifier will

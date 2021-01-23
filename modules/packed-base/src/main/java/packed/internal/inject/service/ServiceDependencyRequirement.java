@@ -18,7 +18,7 @@ package packed.internal.inject.service;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
+import packed.internal.config.ConfigSite;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 

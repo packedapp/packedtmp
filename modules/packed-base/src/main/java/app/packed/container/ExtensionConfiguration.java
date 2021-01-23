@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.base.Nullable;
 import app.packed.base.NamespacePath;
+import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
@@ -35,7 +35,6 @@ import app.packed.component.ComponentInstaller;
 import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.bundle.ExtensionBuild;
@@ -77,12 +76,12 @@ public interface ExtensionConfiguration extends ComponentInstaller {
      */
     void checkIsLeafBundle();
 
-    /**
-     * Returns the config site of the container the extension is registered with.
-     * 
-     * @return the config site of the container the extension is registered with
-     */
-    ConfigSite containerConfigSite();
+//    /**
+//     * Returns the config site of the container the extension is registered with.
+//     * 
+//     * @return the config site of the container the extension is registered with
+//     */
+//    ConfigSite containerConfigSite();
 
     /**
      * Returns the extension instance.

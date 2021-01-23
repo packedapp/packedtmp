@@ -29,12 +29,12 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.ClassHook;
+import app.packed.hooks.ClassHook;
 import packed.internal.bundle.ExtensionModel;
-import packed.internal.bundle.extension.ClassHookBootstrapModel;
-import packed.internal.bundle.extension.SidecarContextDependencyProvider;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentBuild;
+import packed.internal.hooks.ClassHookBootstrapModel;
+import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.Dependant;
 
 /**
@@ -52,7 +52,7 @@ public final class SourceModel {
     /** All fields with a sidecar. */
     private final List<FieldHookModel> fields;
 
-    public final Map<Key<?>, SidecarContextDependencyProvider> sourceServices;
+    public final Map<Key<?>, ContextMethodProvide> sourceServices;
 
     public final Class<?> type;
 
@@ -130,7 +130,7 @@ public final class SourceModel {
 
         final Map<Class<? extends ClassHook.Bootstrap>, ClassHookModel.Builder> classes = new HashMap<>();
 
-        final Map<Key<?>, SidecarContextDependencyProvider> sourceContexts = new HashMap<>();
+        final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
 
         /** */
         @Nullable

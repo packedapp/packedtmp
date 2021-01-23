@@ -30,7 +30,7 @@ import app.packed.component.ComponentAnalyzer;
 import app.packed.component.ComponentSystem;
 import app.packed.container.ExtensionNest;
 import packed.internal.component.ComponentBuild;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 
 /**
  * A service contract details of a contractee.
@@ -243,14 +243,13 @@ public final class ServiceContract {
     // ofElseEmpty();
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
-
     public static ServiceContract of(ComponentSystem system) {
         Component c = ComponentAnalyzer.analyze(system);
         if (!c.modifiers().isBundle()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }
         ComponentBuild compConf = ComponentBuild.unadapt(null, c);
-        ServiceFabric sm = compConf.cube.getServiceManager();
+        ServiceManager sm = compConf.cube.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

@@ -24,10 +24,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ClassHook;
-import app.packed.container.FieldHook;
-import app.packed.container.MethodHook;
-import app.packed.container.RealMethodSidecarBootstrap;
+import app.packed.hooks.ClassHook;
+import app.packed.hooks.FieldHook;
+import app.packed.hooks.MethodHook;
+import app.packed.hooks.RealMethodSidecarBootstrap;
 
 /**
  *
@@ -79,7 +79,7 @@ class MethodBootstrap extends RealMethodSidecarBootstrap {
 
     @Override
     protected void bootstrap() {
-        System.out.println(manageBy(ClassBootstrap.class));
+        System.out.println(manageWithClassHook(ClassBootstrap.class));
         // bindParameterToArguement(0, 0);
     }
 }

@@ -17,7 +17,7 @@ package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.bundle.extension.AbstractHookBootstrapModel;
+import packed.internal.hooks.AbstractHookBootstrapModel;
 
 /**
  * 
@@ -29,9 +29,14 @@ public abstract class AbstractBootstrapBuilder {
 
     final AbstractHookBootstrapModel<?> bootstrapModel;
 
+    boolean disabled;
+    
     AbstractBootstrapBuilder(SourceModel.Builder source) {
         this.source = requireNonNull(source);
         this.bootstrapModel = null;
     }
 
+    void checkNotDisabled() {
+        
+    }
 }

@@ -22,7 +22,6 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.runtime.MappingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -39,8 +38,8 @@ final class MappingBuildtimeService extends BuildtimeService {
     /** The function to apply on the */
     private final Function<?, ?> function;
 
-    MappingBuildtimeService(ConfigSite configSite, BuildtimeService entryToMap, Key<?> toKey, Function<?, ?> function) {
-        super(configSite, toKey);
+    MappingBuildtimeService(BuildtimeService entryToMap, Key<?> toKey, Function<?, ?> function) {
+        super(toKey);
         this.entryToMap = entryToMap;
         this.function = requireNonNull(function, "function is null");
     }

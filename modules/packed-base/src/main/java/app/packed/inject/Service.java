@@ -1,6 +1,6 @@
 package app.packed.inject;
 
-import app.packed.base.AttributedElement;
+import app.packed.attribute.AttributedElement;
 import app.packed.base.Key;
 
 /**
@@ -33,7 +33,7 @@ public interface Service extends AttributedElement {
      * @return the mode of the service
      */
     default ServiceMode mode() {
-        return isConstant() ? ServiceMode.CONSTANT : ServiceMode.PROTOYPE;
+        return isConstant() ? ServiceMode.CONSTANT : ServiceMode.TRANSIENT;
     }
 
     /**

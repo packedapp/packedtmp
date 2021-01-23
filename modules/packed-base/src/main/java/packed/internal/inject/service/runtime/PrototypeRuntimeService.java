@@ -20,12 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvisionContext;
+import app.packed.inject.ServiceMode;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
-public class PrototypeRuntimeService extends RuntimeService {
+public final class PrototypeRuntimeService extends RuntimeService {
 
     /** The method handle used to create new instances. */
     private final MethodHandle mh;
@@ -44,7 +45,13 @@ public class PrototypeRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object getInstance(ProvisionContext site) {
+    public MethodHandle dependencyAccessor() {
+        return mh.bindTo(region);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Object getInstance(ProvisionContext ignore) {
         try {
             return mh.invoke(region);
         } catch (Throwable e) {
@@ -54,19 +61,13 @@ public class PrototypeRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isConstant() {
-        return false;
+    public ServiceMode mode() {
+        return ServiceMode.TRANSIENT;
     }
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresPrototypeRequest() {
+    public boolean requiresProvisionContext() {
         return false;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return mh.bindTo(region);
     }
 }

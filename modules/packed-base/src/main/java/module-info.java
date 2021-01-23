@@ -1,12 +1,12 @@
 module app.packed.base {
+    exports app.packed.attribute; // then have @Preview @DeprecatedWithReason
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
     exports app.packed.cli;
     exports app.packed.component;
-    exports app.packed.config;
     exports app.packed.container;
     exports app.packed.inject;
     exports app.packed.inject.sandbox;
-    exports app.packed.base.invoke;
+    exports app.packed.hooks;
     exports app.packed.state;
     exports app.packed.validate;
     

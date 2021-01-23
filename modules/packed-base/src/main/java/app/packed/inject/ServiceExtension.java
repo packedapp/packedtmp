@@ -23,13 +23,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import app.packed.base.ExposeAttribute;
+import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentFactoryDriver;
-import app.packed.config.ConfigSite;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -38,8 +37,7 @@ import app.packed.inject.sandbox.ServiceAttributes;
 import app.packed.validate.Validator;
 import packed.internal.bundle.BundleBuild;
 import packed.internal.bundle.ExtensionBuild;
-import packed.internal.config.ConfigSiteInjectOperations;
-import packed.internal.inject.service.ServiceFabric;
+import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -56,6 +54,8 @@ import packed.internal.inject.service.runtime.PackedInjector;
 // * Exporting services: export, exportAll
 // * Providing components or injectors (provideAll)
 // * Manual Injection
+
+// Har ikke behov for delete fra ServiceLocator
 
 // Future potential functionality
 /// Contracts
@@ -83,7 +83,7 @@ public final class ServiceExtension extends Extension {
     private final BundleBuild bundle;
 
     /** The service build manager. */
-    private final ServiceFabric composer;
+    private final ServiceManager services;
 
     /**
      * Invoked by the runtime to create a new service extension.
@@ -93,7 +93,7 @@ public final class ServiceExtension extends Extension {
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
         this.bundle = ((ExtensionBuild) extension).bundle();
-        this.composer = bundle.newServiceManagerFromServiceExtension();
+        this.services = bundle.newServiceManagerFromServiceExtension();
     }
 
     /**
@@ -171,7 +171,7 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return composer.exports().export(key, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        return services.exports().export(key /*, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();
@@ -215,7 +215,7 @@ public final class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        composer.exports().exportAll(captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE));
+        services.exports().exportAll( /*captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
@@ -233,7 +233,7 @@ public final class ServiceExtension extends Extension {
      */
     @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract exposeContract() {
-        return composer.newServiceContract();
+        return services.newServiceContract();
     }
 
     /**
@@ -244,7 +244,7 @@ public final class ServiceExtension extends Extension {
     @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return composer.exports().exportsAsServiceRegistry();
+        return services.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -262,7 +262,7 @@ public final class ServiceExtension extends Extension {
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        composer.provideAll((PackedInjector) locator, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL));
+        services.provideAll((PackedInjector) locator /*, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
     }
 
     /**
@@ -315,9 +315,9 @@ public final class ServiceExtension extends Extension {
     public void require(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkConfigurable();
-        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
+        // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            composer.dependencies().require(key, false, cs);
+            services.dependencies().require(key, false /* , cs */);
         }
     }
 
@@ -340,9 +340,9 @@ public final class ServiceExtension extends Extension {
     public void requireOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
         checkConfigurable();
-        ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
+        // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            composer.dependencies().require(key, true, cs);
+            services.dependencies().require(key, true /* , cs */);
         }
     }
 
@@ -353,16 +353,12 @@ public final class ServiceExtension extends Extension {
      *            transforms the exports
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
-        composer.exports().addExportTransformer(transformer);
+        services.exports().addExportTransformer(transformer);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
     public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
         return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PrototypeConfiguration.class);
-    }
-
-    final class SidecarHelper {
-
     }
 
     /**
@@ -398,6 +394,10 @@ public final class ServiceExtension extends Extension {
 }
 
 class ZExtraFunc {
+
+    final class SidecarHelper {
+
+    }
 
     protected void addAlias(Class<?> existing, Class<?> newKey) {}
 

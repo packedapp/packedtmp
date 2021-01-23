@@ -38,8 +38,7 @@ final class RealmModel extends RealmLookup {
         }
     };
 
-    @Nullable
-    private MethodHandles.Lookup cachedLookup;
+    private MethodHandles.@Nullable Lookup cachedLookup;
 
     /** The default lookup object, if using MethodHandles.lookup() from inside a bundle. */
     @Nullable

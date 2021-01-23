@@ -23,12 +23,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
+import app.packed.inject.Provider;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceSelection;
 
-/**
- * Implementation of {@link ServiceSelection}.
- */
+/** Implementation of {@link ServiceSelection}. */
 final class PackedServiceSelection<S> extends AbstractServiceLocator implements ServiceSelection<S> {
 
     /** The services that we wrap */
@@ -66,6 +65,28 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
             @SuppressWarnings("unchecked")
             S instance = (S) s.getInstanceForLocator(this);
             action.accept(instance);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action) {
+        requireNonNull(action, "action is null");
+        for (RuntimeService s : services.values()) {
+            @SuppressWarnings("unchecked")
+            Provider<S> provider = (Provider<S>) s.getProviderForLocator(this);
+            action.accept(s, provider);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void forEachProvider(Consumer<? super Provider<S>> action) {
+        requireNonNull(action, "action is null");
+        for (RuntimeService s : services.values()) {
+            @SuppressWarnings("unchecked")
+            Provider<S> provider = (Provider<S>) s.getProviderForLocator(this);
+            action.accept(provider);
         }
     }
 

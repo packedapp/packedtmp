@@ -16,7 +16,6 @@
 package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
@@ -34,7 +33,7 @@ import packed.internal.component.PackedComponentDriver;
  * install a
  * 
  * @param <C>
- *            the type of configuration this driver exposes for configuring the component
+ *            the type of configuration this driver exposes
  * 
  * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
@@ -55,10 +54,6 @@ public interface ComponentDriver<C> {
      * @return the set of modifiers that will be applied to the component
      */
     ComponentModifierSet modifiers();
-
-    default Optional<Class<?>> source() {
-        return Optional.empty();
-    }
 
     // Ideen er at man kan putte wirelets paa der vil blive applied.
     // Hver gang man bruger driveren
@@ -91,7 +86,6 @@ public interface ComponentDriver<C> {
     // Saa Builder er driver type...
     // Og saa maa vi leve med lidt redundency
     // Eller ogsaa maa vi bide the bullet og faa en ComponentSourceDriver
-
     // Det gode ved options, er man kun har en metode.
     // Det daarlige er at det alt andet lige er lidt mere forvirrende
     class Builder {
@@ -100,7 +94,7 @@ public interface ComponentDriver<C> {
 
     /**
      *
-     * @apiNote In the future, if the Java language permits, {@link ShellDriver} may become a {@code sealed} interface,
+     * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
      *          which would prohibit subclassing except by explicitly permitted types.
      */
     public interface Option {

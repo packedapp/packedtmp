@@ -24,13 +24,13 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import app.packed.container.ClassHook;
-import app.packed.container.FieldHook;
-import app.packed.container.MethodHook;
-import app.packed.container.ClassHook.Bootstrap;
-import packed.internal.bundle.extension.ClassHookBootstrapModel;
-import packed.internal.bundle.extension.FieldHookBootstrapModel;
-import packed.internal.bundle.extension.MethodHookBootstrapModel;
+import app.packed.hooks.ClassHook;
+import app.packed.hooks.FieldHook;
+import app.packed.hooks.MethodHook;
+import app.packed.hooks.ClassHook.Bootstrap;
+import packed.internal.hooks.ClassHookBootstrapModel;
+import packed.internal.hooks.FieldHookBootstrapModel;
+import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

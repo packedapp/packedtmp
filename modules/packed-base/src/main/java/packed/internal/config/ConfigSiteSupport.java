@@ -26,8 +26,6 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
-import app.packed.config.ConfigSiteVisitor;
 
 /** The various implements of {@link ConfigSite}. */
 public interface ConfigSiteSupport {

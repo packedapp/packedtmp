@@ -26,11 +26,10 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
+import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
-import app.packed.inject.ServiceComposer;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.ExportedBuildtimeService;
@@ -46,8 +45,7 @@ import packed.internal.inject.service.build.PackedServiceTransformer;
 public final class ServiceExportComposer implements Iterable<BuildtimeService> {
 
     /** The config site, if we export all entries. */
-    @Nullable
-    private ConfigSite exportAll;
+    private boolean exportAll;
 
     /**
      * An entry to this list is added every time the user calls {@link ServiceExtension#export(Class)},
@@ -61,7 +59,7 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
     private final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
-    private final ServiceFabric sm;
+    private final ServiceManager sm;
 
     @Nullable
     Consumer<? super ServiceComposer> transformer;
@@ -72,7 +70,7 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceExportComposer(ServiceFabric sm) {
+    ServiceExportComposer(ServiceManager sm) {
         this.sm = requireNonNull(sm);
     }
 
@@ -97,14 +95,12 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      *            the type of service
      * @param key
      *            the key of the service to export
-     * @param configSite
-     *            the config site of the export
      * @return a service configuration that can be returned to the user
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public <T> ExportedServiceConfiguration<T> export(Key<T> key, ConfigSite configSite) {
-        return export0(new ExportedBuildtimeService(sm, key, configSite));
+    public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
+        return export0(new ExportedBuildtimeService(sm, key));
     }
 
     /**
@@ -114,19 +110,17 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      *            the type of service
      * @param entryToExport
      *            the entry to export
-     * @param configSite
-     *            the config site of the export
      * @return stuff
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public <T> ExportedServiceConfiguration<T> export(BuildtimeService entryToExport, ConfigSite configSite) {
+    public <T> ExportedServiceConfiguration<T> export(BuildtimeService entryToExport) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another bundle.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedBuildtimeService(entryToExport, configSite));
+        return export0(new ExportedBuildtimeService(entryToExport));
     }
 
     /**
@@ -154,11 +148,9 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
     /**
      * Registers all entries for export.
      * 
-     * @param configSite
-     *            the config site of the export
      */
-    public void exportAll(ConfigSite configSite) {
-        exportAll = configSite;
+    public void exportAll() {
+        exportAll = true;
     }
 
     /**
@@ -218,11 +210,11 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
             // TODO add error messages
         }
 
-        if (exportAll != null) {
+        if (exportAll) {
             for (Wrapper w : sm.resolvedServices.values()) {
                 BuildtimeService e = w.getSingle();
                 if (!resolvedExports.containsKey(e.key())) {
-                    resolvedExports.put(e.key(), new ExportedBuildtimeService(e, exportAll));
+                    resolvedExports.put(e.key(), new ExportedBuildtimeService(e));
                 }
             }
         }

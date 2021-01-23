@@ -19,9 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Function;
 
-import app.packed.base.AttributeMap;
+import app.packed.attribute.AttributeMap;
 import app.packed.base.Key;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.DependencyProvider;
@@ -39,9 +38,6 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public abstract class BuildtimeService extends AbstractService implements DependencyProvider, Service {
 
-    /** The configuration site of this object. */
-    private final ConfigSite configSite;
-
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
@@ -49,8 +45,7 @@ public abstract class BuildtimeService extends AbstractService implements Depend
      */
     private Key<?> key;
 
-    public BuildtimeService(ConfigSite configSite, Key<?> key) {
-        this.configSite = requireNonNull(configSite);
+    public BuildtimeService(Key<?> key) {
         this.key = requireNonNull(key);
     }
 
@@ -68,15 +63,6 @@ public abstract class BuildtimeService extends AbstractService implements Depend
 
     public final void freeze() {
         isFrozen = true;
-    }
-
-    /**
-     * Returns the configuration site of this configuration.
-     * 
-     * @return the configuration site of this configuration
-     */
-    public final ConfigSite configSite() {
-        return configSite;
     }
 
     @Override
@@ -98,18 +84,18 @@ public abstract class BuildtimeService extends AbstractService implements Depend
         if (isFrozen) {
             return this;
         }
-        return new PackedService(key, configSite, isConstant());
+        return new PackedService(key, isConstant());
     }
 
     @Override
     public final <T> BuildtimeService decorate(Function<? super T, ? extends T> decoratingFunction) {
-        return new MappingBuildtimeService(ConfigSite.UNKNOWN, this, key, decoratingFunction);
+        return new MappingBuildtimeService(this, key, decoratingFunction);
     }
 
     @Override
     public final BuildtimeService rekeyAs(Key<?> key) {
         // NewKey must be compatible with type
-        RekeyBuildtimeService esb = new RekeyBuildtimeService(this, key, configSite);
+        RekeyBuildtimeService esb = new RekeyBuildtimeService(this, key);
         return esb;
     }
 
@@ -123,9 +109,6 @@ public abstract class BuildtimeService extends AbstractService implements Depend
     /** An implementation of {@link Service} because {@link BuildtimeService} is mutable. */
     private final class PackedService implements Service {
 
-        /** The configuration site of the service. */
-        private final ConfigSite configSite;
-
         /** The key of the service. */
         private final Key<?> key;
 
@@ -137,12 +120,9 @@ public abstract class BuildtimeService extends AbstractService implements Depend
          * 
          * @param key
          *            the key of the service
-         * @param configSite
-         *            the config site of the service
          */
-        private PackedService(Key<?> key, ConfigSite configSite, boolean isConstant) {
+        private PackedService(Key<?> key, boolean isConstant) {
             this.key = requireNonNull(key);
-            this.configSite = requireNonNull(configSite);
             this.isConstant = isConstant;
         }
 
@@ -161,7 +141,7 @@ public abstract class BuildtimeService extends AbstractService implements Depend
         /** {@inheritDoc} */
         @Override
         public String toString() {
-            return "ServiceDescriptor[key=" + key + ", configSite=" + configSite + "]";
+            return "ServiceDescriptor[key=" + key + "]";
         }
 
         /** {@inheritDoc} */

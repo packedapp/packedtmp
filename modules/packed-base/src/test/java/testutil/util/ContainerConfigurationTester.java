@@ -25,7 +25,6 @@ import app.packed.base.NamespacePath;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BundleConfiguration;
 import app.packed.container.Extension;
@@ -39,10 +38,6 @@ public class ContainerConfigurationTester {
 
     public ContainerConfigurationTester(BundleConfiguration cc) {
         this.cc = requireNonNull(cc);
-    }
-
-    public ConfigSite configSite() {
-        return cc.configSite();
     }
 
     /**

@@ -30,7 +30,6 @@ import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Factory;
 
 /**
@@ -60,16 +59,6 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
-    }
-
-    /**
-     * Returns the configuration site of this bundle.
-     * 
-     * @return the configuration site of this bundle
-     * @see BundleConfiguration#configSite()
-     */
-    protected final ConfigSite configSite() {
-        return configuration().configSite();
     }
 
     /**

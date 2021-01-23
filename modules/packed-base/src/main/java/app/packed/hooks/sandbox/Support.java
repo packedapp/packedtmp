@@ -17,7 +17,7 @@ package app.packed.hooks.sandbox;
 
 import java.lang.annotation.Annotation;
 
-import app.packed.container.FieldHook;
+import app.packed.hooks.FieldHook;
 import app.packed.inject.Inject;
 
 /**

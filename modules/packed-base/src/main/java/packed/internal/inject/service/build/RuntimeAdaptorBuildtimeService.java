@@ -18,7 +18,6 @@ package packed.internal.inject.service.build;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.Dependant;
@@ -32,8 +31,8 @@ public final class RuntimeAdaptorBuildtimeService extends BuildtimeService {
     /** The runtime entry to delegate to. */
     private final RuntimeService entry;
 
-    public RuntimeAdaptorBuildtimeService(ConfigSite configSite, RuntimeService entry) {
-        super(configSite, entry.key());
+    public RuntimeAdaptorBuildtimeService(RuntimeService entry) {
+        super(entry.key());
         this.entry = entry;
     }
 

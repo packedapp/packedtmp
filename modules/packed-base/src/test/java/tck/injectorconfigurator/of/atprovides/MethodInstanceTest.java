@@ -30,7 +30,7 @@ import app.packed.component.ComponentDefinitionException;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.InjectorAssembler;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /** Tests {@link Provide#constant()}. */
 public class MethodInstanceTest {
@@ -119,7 +119,7 @@ public class MethodInstanceTest {
             return s;
         }
 
-        static void test(Consumer<? super InjectorAssembler> configurator) {
+        static void test(Consumer<? super InjectorComposer> configurator) {
             Injector i = Injector.configure(c -> {
                 c.lookup(MethodHandles.lookup());
                 configurator.accept(c);

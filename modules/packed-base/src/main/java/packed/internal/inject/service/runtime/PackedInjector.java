@@ -15,13 +15,10 @@
  */
 package packed.internal.inject.service.runtime;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Map;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.service.sandbox.Injector;
@@ -30,23 +27,14 @@ import packed.internal.inject.service.sandbox.Injector;
 public final class PackedInjector extends AbstractServiceLocator implements Injector {
 
     /** An empty service locator. */
-    public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(ConfigSite.UNKNOWN, Map.of());
+    public static final ServiceLocator EMPTY_SERVICE_LOCATOR = new PackedInjector(Map.of());
 
-    /** The configuration site of this injector. */
-    private final ConfigSite configSite;
 
     /** All services that this injector provides. */
     private final Map<Key<?>, RuntimeService> entries;
 
-    public PackedInjector(ConfigSite configSite, Map<Key<?>, RuntimeService> services) {
-        this.configSite = requireNonNull(configSite);
+    public PackedInjector(Map<Key<?>, RuntimeService> services) {
         this.entries = Map.copyOf(services);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ConfigSite configSite() {
-        return configSite;
     }
 
     /** {@inheritDoc} */

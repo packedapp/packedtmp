@@ -37,7 +37,6 @@ import packed.internal.component.PackedContainer.ExecutingImage;
 // StateHost
 // Kan jo faktisk godt sige det er en Host...
 // Host... everything with state are called Guests...
-
 // AutoClosable???
 public interface Host {
 
@@ -144,7 +143,10 @@ public interface Host {
     <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
 
     // Vs main?????
+    // Tror main er bl.a. propper det ind som et system image...
+    
     static void execute(Assembly<?> assembly, Wirelet... wirelets) {
+        //TODO skal erstattes af en ArtifactDriver<Void>
         PackedBuildInfo.build(assembly, false, false, null, wirelets).process(null);
     }
 

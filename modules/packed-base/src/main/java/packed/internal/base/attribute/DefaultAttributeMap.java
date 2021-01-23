@@ -23,8 +23,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import app.packed.base.Attribute;
-import app.packed.base.AttributeMap;
+import app.packed.attribute.Attribute;
+import app.packed.attribute.AttributeMap;
 
 /**
  *

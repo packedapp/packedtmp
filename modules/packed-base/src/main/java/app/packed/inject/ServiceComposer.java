@@ -29,6 +29,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.component.Component;
+import app.packed.component.Composer;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -38,24 +39,39 @@ import app.packed.component.Component;
  * order. A service transformation requires that any dependencies are available whenever performing a transformation of
  * some kind.
  * 
- * @apiNote In the future, if the Java language permits, {@link ServiceComposer} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
- * 
  * @see ServiceLocator#transform(java.util.function.Consumer)
  * @see ServiceLocator#of(java.util.function.Consumer)
  * @see ServiceWirelets#to(java.util.function.Consumer)
  * @see ServiceWirelets#from(java.util.function.Consumer)
  * @see ServiceExtension#transformExports(java.util.function.Consumer)
  */
+// Create services
+
+// Create (Replaces existing services)
+// -- Prototype (Factory, Class)
+// -- Singleton (Factory, Class, Instance)
+// -- Other ServiceLocator) 
+
+// Update
+// -- Rekey
+// -- Reattribute
+// -- Decorate
+// -- Replace
+
+// Delete
+// -- Remove
+// -- Retain
+
+// Read
+// -- Via ServiceRegistry
+
 // was ServiceTransformation. But Validation, Conversation...
 // ServiceMaker, ServiceSpawner. Only because I want to reserve *Transformer
 // ServiceComposer
 // For future use
 
-// @Sealed
-// public abstract class ServiceComposer extends ComponentComposer implements ServiceRegistry
-
-public abstract class ServiceComposer implements ServiceRegistry {
+// Bliver noedt til at checke at vi ikke f.eks. bruger @OnStart....
+public abstract class ServiceComposer extends Composer implements ServiceRegistry {
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
@@ -137,7 +153,7 @@ public abstract class ServiceComposer implements ServiceRegistry {
         provide(Factory.of(implementation));
     }
 
-    public abstract    void provide(Factory<?> factory);
+    public abstract void provide(Factory<?> factory);
 
     // addAll??? nogle af dem er jo prototypes.
     /**
@@ -176,7 +192,7 @@ public abstract class ServiceComposer implements ServiceRegistry {
      * @param instance
      *            the instance
      */
-    public abstract    <T> void provideInstance(Key<T> key, T instance);
+    public abstract <T> void provideInstance(Key<T> key, T instance);
 
     /**
      * Returns a wirelet that will provide the specified service to the target container. Iff the target container has a
@@ -193,21 +209,6 @@ public abstract class ServiceComposer implements ServiceRegistry {
         provideInstance((Class) instance.getClass(), instance);
     }
 
-    public void qualifyAllWith(Annotation qualifier) {
-        requireNonNull(qualifier, "qualifier is null");
-        rekeyAll(s -> s.key().with(qualifier));
-    }
-
-    /**
-     * Rekey all service
-     * 
-     * @param name
-     */
-    public void qualifyAllWithName(String name) {
-        requireNonNull(name, "name is null");
-        rekeyAll(s -> s.key().withName(name));
-    }
-
     /**
      * A version of
      * 
@@ -217,12 +218,12 @@ public abstract class ServiceComposer implements ServiceRegistry {
      *            the new key of the service
      */
     // How useful is this. It is only for downcasting
-    // don't really see many usecases
-    public void rekey(Class<?> existingKey, Class<?> newKey) {
+    // FooImpl -> Foo
+    public final void rekey(Class<?> existingKey, Class<?> newKey) {
+        requireNonNull(existingKey, "existingKey is null");
+        requireNonNull(newKey, "newKey is null");
         rekey(Key.of(existingKey), Key.of(newKey));
     }
-
-    // auto figure out if constant or prototype
 
     /**
      * Changes the key of an existing service. This method is typically used to add or remove {@link Qualifier qualifiers}.
@@ -246,7 +247,7 @@ public abstract class ServiceComposer implements ServiceRegistry {
      */
     // service(Key).asFoo()????
     // asFoo() laver jo en ny service....
-    public abstract   void rekey(Key<?> existingKey, Key<?> newKey); // Return the new service????
+    public abstract void rekey(Key<?> existingKey, Key<?> newKey); // Return the new service????
 
     /**
      * <p>
@@ -270,7 +271,7 @@ public abstract class ServiceComposer implements ServiceRegistry {
      * @throws ClassCastException
      *             if the type of any new key is not assignable to the service type
      */
-    // Null???? Why Not.. I don't think we will ever be a inline type
+    // Null???? Why Not.. I don't think Key will ever be a inline type
     // Map<Key<?>, Service>... taenker det er en unmodifiable wrapper over en intern
     // datastructur
     // Take text from Map#compute
@@ -283,6 +284,24 @@ public abstract class ServiceComposer implements ServiceRegistry {
                 rekey(s.key(), key);
             }
         }
+    }
+
+    // auto figure out if constant or prototype
+
+    public void rekeyAllWith(Annotation qualifier) {
+        requireNonNull(qualifier, "qualifier is null");
+        rekeyAll(s -> s.key().with(qualifier));
+    }
+
+    /**
+     * Rekey all service
+     * 
+     * @param tag
+     */
+    //IDK, can add them later
+    public void rekeyAllWithTag(String tag) {
+        requireNonNull(tag, "tagis null");
+        rekeyAll(s -> s.key().withTag(tag));
     }
 
     /**
@@ -318,17 +337,20 @@ public abstract class ServiceComposer implements ServiceRegistry {
     }
 
     /**
+     * Remove every key {@link Class} or {@link Key}
      * 
-     * @param c
+     * @param keys
      *            the keys to remove
      * @throws IllegalArgumentException
      *             if the specified collection contain objects that are not instances of either {@link Key} or
      *             {@link Class}.
+     * 
+     * @see #retainAll(Collection)
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void removeAll(Collection<?> c) {
-        requireNonNull(c, "c is null");
-        for (Object o : c) {
+    public void removeAll(Collection<?> keys) {
+        requireNonNull(keys, "keys is null");
+        for (Object o : keys) {
             requireNonNull(o, "Specified collection contains a null");
             if (o instanceof Key) {
                 asMap().remove(o);
@@ -367,7 +389,7 @@ public abstract class ServiceComposer implements ServiceRegistry {
      * @param factory
      *            the factory
      */
-    public abstract     void replace(Factory<?> factory);
+    public abstract void replace(Factory<?> factory);
 
     public void retain(Class<?>... keys) {
         retain(Key.of(keys));
@@ -377,10 +399,14 @@ public abstract class ServiceComposer implements ServiceRegistry {
         keys().retainAll(Set.of(keys));
     }
 
+    /**
+     * @param keys
+     * @see #removeAll(Collection)
+     */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void retainAll(Collection<?> c) {
-        requireNonNull(c, "c is null");
-        Object[] a = c.toArray();
+    public void retainAll(Collection<?> keys) {
+        requireNonNull(keys, "keys is null");
+        Object[] a = keys.toArray();
         for (int i = 0; i < a.length; i++) {
             Object o = a[i];
             requireNonNull(o, "Specified collection contains a null");
@@ -430,7 +456,7 @@ abstract class YIdeas extends ServiceComposer {
     // Or maybe just methods...
     /// decorate(Foo.class, ServiceTransformer.CONSTAFY)
     /// decorate(Foo.class, ServiceTransformer.UNCONSTAFY)
-    public abstract   void addName(Function<Service, String> nameFunction);
+    public abstract void addName(Function<Service, String> nameFunction);
 
     /**
      * Adds.
@@ -440,7 +466,7 @@ abstract class YIdeas extends ServiceComposer {
      * @param name
      */
     public void addNameAll(String name) {
-        rekeyAll(k -> k.key().withName(name));
+        rekeyAll(k -> k.key().withTag(name));
     }
 
     // Maybe mirror key names
@@ -454,9 +480,9 @@ abstract class YIdeas extends ServiceComposer {
     // Som regel vil man gerne argumentere den
     public void constify(Key<?> key) {}
 
-    public abstract  void qualifyWith(Class<?> k, Annotation qualifier);
+    public abstract void qualifyWith(Class<?> k, Annotation qualifier);
 
-    public abstract  void qualifyWith(Key<?> k, Annotation qualifier);
+    public abstract void qualifyWith(Key<?> k, Annotation qualifier);
     // alias()??
 
     // Return the same name to avoid any rekeying
@@ -479,7 +505,7 @@ abstract class YIdeas extends ServiceComposer {
     // Component2Be
     // Vi er ihvertfald interesset i navn, Bundle osv.
     // ComponentDesc
-    public abstract     Component target();
+    public abstract Component target();
     // the target (container) of the transformation
 
     // Vi kan ikke rigtig have source... Idet vi jo er ved at opbygge den container...
@@ -488,26 +514,26 @@ abstract class YIdeas extends ServiceComposer {
 
 abstract class ZBadIdeas extends ServiceComposer {
 
-    public abstract   Object attachment();
+    public abstract Object attachment();
 
     // wirelets can communicate here???
     // Nah make an AtomicReference... og sa lambda capture
 
-    public abstract    ServiceComposer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    public abstract ServiceComposer map(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
-    public abstract    ServiceComposer map(Factory<?> factory, int... resolveInternally);
+    public abstract ServiceComposer map(Factory<?> factory, int... resolveInternally);
 
     // Eller ogsaa skal vi have endnu en lag
     // Foerend alle services bliver brugt....
     // Syntes ikke den her fin
-    public abstract  ServiceComposer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
+    public abstract ServiceComposer mapResolveInternally(Factory<?> factory, int... variablesToResolveInternally);
 
-    public abstract    Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
+    public abstract Service mapx(Class<?> from, Class<?> to); // Make returned Service Configurable???
 
     // JPMS-> Record must be readable for Packed
     // Multiple incoming services -> Multiple outgoing services... Don't think I'm a fan
     // Man maa lave noget midlertigt hulumhej, som ma saa remover
-    public abstract   ServiceComposer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
+    public abstract ServiceComposer multiMap(Factory<? /* extends Record */> factory, int... resolveInternally);
 
     // Kan vel bare vaere et map som tager et factory der har sig selv som dependecy.
     // If the specified factory has itself as a variable.
@@ -520,6 +546,6 @@ abstract class ZBadIdeas extends ServiceComposer {
     // I think I would rather have something like
     // se.pushForChildExportTransformartion(Key... keys);
 
-    public abstract   ServiceComposer retainIf(Iterable<? super Key<?>> keys);
+    public abstract ServiceComposer retainIf(Iterable<? super Key<?>> keys);
 
 }

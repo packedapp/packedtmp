@@ -22,7 +22,7 @@ import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.container.MethodHook;
+import app.packed.hooks.MethodHook;
 
 /**
  *

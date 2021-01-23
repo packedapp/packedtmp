@@ -25,37 +25,35 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-import app.packed.base.AttributedElementStream;
+import app.packed.attribute.AttributedElementStream;
 import app.packed.base.Key;
-import app.packed.hooks.sandbox.VariableInjector;
+import app.packed.hooks.sandbox.DynamicService;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
- * A collection of services each having a unique {@link Service#key() key}.
- * <p>
- * defines 3 subclasses
- * 
- * Unlike {@link ServiceLocator} and {@link ServiceSelection} this interface does not contain methods to acquire actual
- * service instances.
+ * A collection of services where each service has a unique {@link Service#key() key}. Unlike {@link ServiceLocator} and
+ * {@link ServiceSelection} this interface does not contain methods to acquire actual service instances. It merely
+ * provides information about the types of services that are available.
  * <p>
  * Unless otherwise specified instances of this interface are immutable collections. One notable exception is the
- * {@link ServiceComposer} interface. Which support mutation operations on the iterators returned by
- * {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
+ * {@link ServiceComposer} interface. Which support mutation operations on the iterators returned by {@link #iterator()}
+ * and sets returned by {@link #keys()}. Kun remove operationer jo
  * <p>
  * Unless otherwise specified a service registry never overrides hashCode/equals.
  * <p>
  * If used as an auto activating variable sidecar the registry injected will be an immutable
  */
-@VariableInjector
+@DynamicService
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
-     * Returns a map of every service in this registry in no particular order.
+     * Returns a map view of every service in this registry in no particular order.
      * <p>
-     * The retu But will never support insertions or updates.
+     * If this registry supports removals. The returned map will also support removals. However, the map will never support
+     * insertions or updates.
      * <p>
-     * There are no guarantees on the serializability, or thread-safety of the {@code Map} returned.
+     * The returned map will support any thread-safety guarantees provided by this registry instance.
      * 
      * @return a map of every service in this registry in no particular order
      */
@@ -168,23 +166,14 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns an empty service registry.
+     * Returns an empty immutable service registry.
      * 
-     * @return an empty service registry.
+     * @return an empty immutable service registry.
      */
     static ServiceRegistry of() {
         return AbstractServiceRegistry.EMPTY;
     }
 }
-// Altsaa naar vi har en asMap() kan jeg ikke rigtig se hvad vi skal bruge toList() til
-///**
-//* Returns a list of every service in this registry in any order.
-//* <p>
-//* There are no guarantees on the mutability, serializability, or thread-safety of the {@code List} returned.
-//* 
-//* @return a list of every service in this registry in any order
-//*/
-//// Syntes vi returnere en immutable liste...
-//default List<Service> toList() {
-// return List.copyOf(asMap().values());
-//}
+// --------- NOTES --------
+//
+// extends AttributeHolder?

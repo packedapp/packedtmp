@@ -22,10 +22,10 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.config.ConfigSite;
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
+import app.packed.inject.ServiceMode;
 import packed.internal.inject.PackedProvisionContext;
 import packed.internal.inject.service.AbstractService;
 import packed.internal.inject.service.build.BuildtimeService;
@@ -33,16 +33,8 @@ import packed.internal.inject.service.build.BuildtimeService;
 /** An entry that represents a service at runtime. */
 public abstract class RuntimeService extends AbstractService {
 
-    /** The point where this entry was registered. */
-    private final ConfigSite configSite;
-
     /** The key under which the service is available. */
     private final Key<?> key;
-
-    RuntimeService(ConfigSite configSite, Key<?> key) {
-        this.configSite = requireNonNull(configSite);
-        this.key = requireNonNull(key);
-    }
 
     /**
      * Creates a new runtime node from a build entry.
@@ -51,11 +43,11 @@ public abstract class RuntimeService extends AbstractService {
      *            the build node to create the runtime node from
      */
     RuntimeService(BuildtimeService buildEntry) {
-        this(buildEntry.configSite(), buildEntry.key());
+        this(buildEntry.key());
     }
 
-    public final ConfigSite configSite() {
-        return configSite;
+    RuntimeService(Key<?> key) {
+        this.key = requireNonNull(key);
     }
 
     @Override
@@ -70,29 +62,31 @@ public abstract class RuntimeService extends AbstractService {
      * Returns an instance.
      * 
      * @param request
-     *            a request if needed by {@link #requiresPrototypeRequest()}
+     *            a request if needed by {@link #requiresProvisionContext()}
      * @return the instance
      */
     public abstract Object getInstance(@Nullable ProvisionContext request);
 
     Object getInstanceForLocator(ServiceLocator locator) {
-        ProvisionContext pc = PackedProvisionContext.of(key);
+        ProvisionContext pc = PackedProvisionContext.of(key());
         Object t = getInstance(pc);
         return t;
     }
 
     Provider<?> getProviderForLocator(ServiceLocator locator) {
-        if (isConstant()) {
+        if (mode() == ServiceMode.CONSTANT) {
             Object t = getInstanceForLocator(locator);
             return Provider.ofConstant(t);
         } else {
-            ProvisionContext pc = PackedProvisionContext.of(key);
+            ProvisionContext pc = PackedProvisionContext.of(key());
             return new ServiceWrapperProvider<Object>(this, pc);
         }
     }
 
     @Override
-    public abstract boolean isConstant();
+    public final boolean isConstant() {
+        return mode() == ServiceMode.CONSTANT;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -105,14 +99,14 @@ public abstract class RuntimeService extends AbstractService {
         return new DelegatingRuntimeService(this, key);
     }
 
-    public abstract boolean requiresPrototypeRequest();
+    public abstract boolean requiresProvisionContext();
 
     /** {@inheritDoc} */
     @Override
     public final String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(key());
-        sb.append("[isConstant=").append(isConstant()).append(']');
+        sb.append("[mode=").append(mode()).append(']');
         return sb.toString();
     }
 }
