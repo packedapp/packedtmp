@@ -35,7 +35,7 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Composer, Wirelet...)}. This is thought of a alternative to using a
+ * {@link Injector#configure(Composable, Wirelet...)}. This is thought of a alternative to using a
  * {@link BaseAssembly}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
