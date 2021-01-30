@@ -135,7 +135,7 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
     static Image<Injector> newImage(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().newImage(bundle, wirelets);
+        return driver().buildImage(bundle, wirelets);
     }
 
     // Is this useful outside of hosts???????
@@ -174,7 +174,7 @@ public interface Injector extends ServiceLocator {
      */
     // Of er maaske fin. Saa understreger vi ligesom
     static Injector create(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().newArtifact(bundle, wirelets);
+        return driver().use(bundle, wirelets);
     }
 }
 

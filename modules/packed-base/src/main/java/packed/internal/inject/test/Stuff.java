@@ -44,6 +44,6 @@ class Stuff extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.of(new Stuff());
+        App.start(new Stuff());
     }
 }

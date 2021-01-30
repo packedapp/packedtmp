@@ -19,11 +19,14 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.Function;
 
+import app.packed.base.Nullable;
 import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Composable;
 import app.packed.component.Composer;
@@ -35,11 +38,19 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ArtifactDriver}. */
 public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
+    /** A daemon driver. */
+    public static final PackedArtifactDriver<Void> DAEMON = new PackedArtifactDriver<>(true,
+            MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
+
     /** The initial set of modifiers for any system that uses this driver. */
     private final boolean isStateful;
 
-    /** The method handle that can create new artifacts. */
+    /** The method handle used for creating new artifacts. */
     private final MethodHandle newShellMH;
+
+    /** May contain a wirelet that will be processed _after_ any other wirelets. */
+    @Nullable
+    public final Wirelet wirelet;
 
     /**
      * Creates a new driver.
@@ -52,6 +63,20 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     public PackedArtifactDriver(boolean isStateful, MethodHandle newArtifactMH) {
         this.isStateful = isStateful;
         this.newShellMH = requireNonNull(newArtifactMH);
+        this.wirelet = null;
+    }
+
+    private PackedArtifactDriver(boolean isStateful, MethodHandle newArtifactMH, Wirelet prefix) {
+        this.isStateful = isStateful;
+        this.newShellMH = requireNonNull(newArtifactMH);
+        this.wirelet = prefix;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
+        PackedBuildContext pbc = PackedBuildContext.build(this, assembly, wirelets, true, false);
+        return pbc.asComponent();
     }
 
     /**
@@ -63,38 +88,24 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
         return newShellMH.type().returnType();
     }
 
-    public <D extends Composer> A configure(ComponentDriver<D> driver, Composable<D> consumer, Wirelet... wirelets) {
-        return configure(driver, e -> e, consumer, wirelets);
+    /** {@inheritDoc} */
+    @Override
+    public Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+        PackedBuildContext pbc = PackedBuildContext.build(this, assembly, wirelets, false, true);
+        return new PackedImage(pbc);
     }
 
-    public <C extends Composer, D> A configure(ComponentDriver<D> driver, Function<D, C> factory, Composable<C> consumer, Wirelet... wirelets) {
-        PackedBuildInfo build = PackedBuildInfo.configure(this, (PackedComponentDriver<D>) driver, factory, consumer, wirelets);
-        PackedInitializationContext ac = build.process(null);
+    /** {@inheritDoc} */
+    @Override
+    public <CO extends Composer<?>, CC extends ComponentConfiguration> A compose(ComponentDriver<CC> componentDriver,
+            Function<? super CC, ? extends CO> composerFactory, Composable<? super CO> consumer, Wirelet... wirelets) {
+        PackedBuildContext pbc = PackedBuildContext.compose(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
+        PackedInitializationContext ac = pbc.process();
         return newArtifact(ac);
     }
 
     public boolean isStateful() {
         return isStateful;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A newArtifact(Assembly<?> bundle, Wirelet... wirelets) {
-        // Assemble the system
-        PackedBuildInfo build = PackedBuildInfo.build(bundle, false, false, this, wirelets);
-
-        // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = build.process(null);
-
-        // Return the system in a new shell
-        return newArtifact(pic);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A newArtifact(Assembly<?> bundle, Wirelet[] wirelets, Wirelet... artifactWirelets) {
-        // What about order? before or after user wirelets
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -114,18 +125,30 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Image<A> newImage(Assembly<?> bundle, Wirelet... wirelets) {
+    public A use(Assembly<?> assembly, Wirelet... wirelets) {
         // Assemble the system
-        PackedBuildInfo build = PackedBuildInfo.build(bundle, false, true, this, wirelets);
+        PackedBuildContext pbc = PackedBuildContext.build(this, assembly, wirelets, false, false);
 
-        // Return a new image that be people can use (Image::use)
-        return new ArtifactImage(build);
+        // Initialize the system. And start it if necessary (if it is a guest)
+        PackedInitializationContext pic = pbc.process();
+
+        // Return the system in a new shell
+        return newArtifact(pic);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Image<A> newImage(Assembly<?> bundle, Wirelet[] wirelets, Wirelet... artifactWirelets) {
-        throw new UnsupportedOperationException();
+    public ArtifactDriver<A> with(Wirelet... wirelets) {
+        Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
+        return new PackedArtifactDriver<>(isStateful, newShellMH, w);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ArtifactDriver<A> with(Wirelet wirelet) {
+        requireNonNull(wirelet, "wirelet is null");
+        Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
+        return new PackedArtifactDriver<>(isStateful, newShellMH, w);
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
@@ -136,46 +159,6 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
         // TODO fix....
 
         return new PackedArtifactDriver<>(isGuest, mh);
-    }
-
-    /**
-     * An implementation of {@link Image} used by {@link ArtifactDriver#newImage(Assembly, Wirelet...)} and
-     * {@link ArtifactDriver#newArtifact(Assembly, Wirelet[], Wirelet...)}.
-     */
-    private final class ArtifactImage implements Image<A> {
-
-        /** The build info. */
-        private final PackedBuildInfo build;
-
-        /**
-         * Create a new image from the specified build info.
-         * 
-         * @param build
-         *            the build
-         */
-        private ArtifactImage(PackedBuildInfo build) {
-            this.build = requireNonNull(build);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Component component() {
-            return build.asComponent();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public A use(Wirelet... wirelets) {
-            // Initialize a new system
-            PackedInitializationContext pic = build.process(wirelets);
-
-            // Wrap the system in a new shell and return it
-            return newArtifact(pic);
-        }
-    }
-    
-    static class PackedBuilder /* Implements ArtifactDriver.Builder */ {
-        
     }
 
     /** Options that can be applied when creating a shell driver. */
@@ -260,6 +243,44 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 //         // What about execute....
 //         throw new UnsupportedOperationException();
         // }
+    }
+
+    static class PackedBuilder /* Implements ArtifactDriver.Builder */ {
+
+    }
+
+    /**
+     * An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}.
+     */
+    private final class PackedImage implements Image<A> {
+
+        private final ComponentBuild root;
+
+        /**
+         * Create a new image from the specified build info.
+         * 
+         * @param pbc
+         *            the build context
+         */
+        private PackedImage(PackedBuildContext pbc) {
+            this.root = pbc.root;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component component() {
+            return root.adaptToComponent();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public A use(Wirelet... wirelets) {
+            // Initialize a new artifact
+            PackedInitializationContext pic = PackedInitializationContext.process(root, wirelets);
+
+            // Wrap the system in a new shell and return it
+            return newArtifact(pic);
+        }
     }
 }
 

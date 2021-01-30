@@ -43,9 +43,9 @@ public class Z4 extends BaseAssembly {
 
     public static void main(String[] args) throws InterruptedException {
         long s = System.currentTimeMillis();
-        Image<App> img = App.imageOf(new Z4());
+        Image<App> img = App.buildImage(new Z4());
         System.out.println(System.currentTimeMillis() - s);
-        System.out.println(img.stream().count());
+        System.out.println(img.component().stream().count());
         Thread.sleep(10000);
     }
 
@@ -109,7 +109,7 @@ public class Z4 extends BaseAssembly {
     public static class F extends Extension {
         F() {}
         static {
-            $AddDependency(E.class);
+            $addDependency(E.class);
         }
         @Override
         protected void extensionAdded() {

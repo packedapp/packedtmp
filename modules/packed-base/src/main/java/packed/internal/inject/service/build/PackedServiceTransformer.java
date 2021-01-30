@@ -52,6 +52,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements  
 
     @SuppressWarnings("unchecked")
     private PackedServiceTransformer(Map<Key<?>, ? extends AbstractService> services) {
+        super(null);
         this.services = (Map<Key<?>, AbstractService>) requireNonNull(services);
     }
 

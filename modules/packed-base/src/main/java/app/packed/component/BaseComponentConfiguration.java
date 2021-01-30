@@ -15,85 +15,26 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.base.NamespacePath;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 
 /**
- * An abstract base class for creating component configuration classes. It is basically a thin wrapper on top of
- * {@link ComponentConfigurationContext}.
+ * An base component configuration class that can serve as basis for actual component configuration types. 
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public abstract class AbstractComponentConfiguration implements ComponentInstaller {
-
-//    /** A stack walker used from {@link #captureStackFrame(String)}. */
-//    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
-
-    /** The component's configuration context. */
-    protected final ComponentConfigurationContext context;
+public abstract class BaseComponentConfiguration extends ComponentConfiguration implements ComponentInstaller {
 
     /**
-     * Creates a new component configuration.
+     * Creates a new base component configuration.
      * 
      * @param context
-     *            the component's configuration context
+     *            the configuration context for the component
      */
-    protected AbstractComponentConfiguration(ComponentConfigurationContext context) {
-        this.context = requireNonNull(context, "context is null");
+    protected BaseComponentConfiguration(ComponentConfigurationContext context) {
+        super(context);
     }
-
-//    /**
-//     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-//     * not located on any subclasses of {@link Extension} or any class that implements
-//     * <p>
-//     * Invoking this method typically takes in the order of 1-2 microseconds.
-//     * <p>
-//     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-//     * {@link ConfigSite#UNKNOWN}.
-//     * 
-//     * @param operation
-//     *            the operation
-//     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-//     * @see StackWalker
-//     */
-//    // TODO add stuff about we also ignore non-concrete container sources...
-//    protected final ConfigSite captureStackFrame(String operation) {
-//        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-//        // to the extension class in order to simplify the filtering mechanism.
-//
-//        // Vi kan spoerge "if context.captureStackFrame() ...."
-//
-//        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-//            return ConfigSite.UNKNOWN;
-//        }
-//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-//        return sf.isPresent() ? configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-//    }
-
-//    /**
-//     * @param frame
-//     *            the frame to filter
-//     * @return whether or not to filter the frame
-//     */
-//    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-//
-//        Class<?> c = frame.getDeclaringClass();
-//        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-//        // Syntes bare vi filtrer app.packed.base modulet fra...
-//        // Kan vi ikke checke om imod vores container source.
-//
-//        // ((PackedExtensionContext) context()).container().source
-//        // Nah hvis man koere fra config er det jo fint....
-//        // Fra config() paa en bundle er det fint...
-//        // Fra alt andet ikke...
-//
-//        // Dvs ourContainerSource
-//        return Extension.class.isAssignableFrom(c)
-//                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
-//    }
 
     /**
      * Checks that the component is still configurable or throws an {@link IllegalStateException}.
@@ -168,15 +109,20 @@ public abstract class AbstractComponentConfiguration implements ComponentInstall
      * @see #getName()
      * @see Component#name()
      */
-    public AbstractComponentConfiguration setName(String name) {
+    public BaseComponentConfiguration setName(String name) {
         context.setName(name);
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public final String toString() {
+    public String toString() {
         return context.toString();
+    }
+
+    public final <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+        ComponentDriver<C> cd = driver.bind(implementation);
+        return wire(cd, wirelets);
     }
 
     /**
@@ -190,21 +136,16 @@ public abstract class AbstractComponentConfiguration implements ComponentInstall
      *            any wirelets that should be used when creating the component
      * @return a configuration for the component
      */
-    public final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return context.wire(driver, wirelets);
     }
 
-    public final <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    public final <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    public final <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
-
-    public final <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    public final <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bindInstance(instance);
         return wire(cd, wirelets);
     }

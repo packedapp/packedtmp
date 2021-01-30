@@ -104,7 +104,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceSelection<T> selectAnyQualifiers(Key<T> key) {
+    public final <T> ServiceSelection<T> selectWithAnyQualifiers(Key<T> key) {
         return select(s -> key.isSuperKeyOf(s.key()));
     }
 

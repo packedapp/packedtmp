@@ -15,11 +15,6 @@
  */
 package packed.internal.inject.service.sandbox;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-
 import app.packed.base.Qualifier;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
@@ -35,37 +30,25 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Composable, Wirelet...)}. This is thought of a alternative to using a
- * {@link BaseAssembly}. Unlike bundles all services are automatically exported once defined. For example useful in tests.
+ * {@link Injector#configure(Composable, Wirelet...)}. This is thought of a alternative to using a {@link BaseAssembly}.
+ * Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public final class InjectorComposer extends Composer {
-
-    /** The configuration we delegate all calls to. */
-    private final BundleConfiguration configuration;
+public final class InjectorComposer extends Composer<BundleConfiguration> {
 
     private boolean initialized;
 
     /**
-     * Creates a new configurator
+     * Creates a new composer
      * 
      * @param configuration
      *            the configuration to wrap
      */
     InjectorComposer(BundleConfiguration configuration) {
-        this.configuration = requireNonNull(configuration, "configuration is null");
-    }
-
-    /**
-     * Returns the container configuration that was used to create this configurator.
-     * 
-     * @return the container configuration that was used to create this configurator
-     */
-    private BundleConfiguration configuration() {
-        return configuration;
+        super(configuration);
     }
 
     /**
@@ -74,7 +57,7 @@ public final class InjectorComposer extends Composer {
      * @return an instance of the injector extension
      */
     private ServiceExtension extension() {
-        ServiceExtension se = configuration().use(ServiceExtension.class);
+        ServiceExtension se = configuration.use(ServiceExtension.class);
         if (!initialized) {
             se.exportAll();
             initialized = true;
@@ -89,29 +72,9 @@ public final class InjectorComposer extends Composer {
      *            optional import/export wirelets
      */
     public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        configuration().link(bundle, wirelets);
+        configuration.link(bundle, wirelets);
     }
 
-    /**
-     * Sets a {@link Lookup lookup object} that will be used to access members (fields, constructors and methods) on
-     * registered objects. The lookup object will be used for all service bindings and component installations that happens
-     * after the invocation of this method.
-     * <p>
-     * This method can be invoked multiple times. In all cases the object being bound or installed will use the latest
-     * registered lookup object.
-     * <p>
-     * Lookup objects that have been explicitly set using {@link Factory#withLookup(java.lang.invoke.MethodHandles.Lookup)}
-     * are never overridden by any lookup object set by this method.
-     * <p>
-     * If no lookup is specified using this method, the runtime will use the public lookup object
-     * ({@link MethodHandles#publicLookup()}) for member access.
-     *
-     * @param lookup
-     *            the lookup object
-     */
-    public void lookup(Lookup lookup) {
-        configuration().lookup(lookup);
-    }
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
@@ -163,15 +126,6 @@ public final class InjectorComposer extends Composer {
     public <T> BeanConfiguration<T> provide(Factory<T> factory) {
         extension(); // call exportAll
         return configuration.install(factory).provide();
-    }
-
-    public <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
-        extension(); // call exportAll
-        return providePrototype(Factory.of(implementation));
-    }
-
-    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return extension().providePrototype(factory);
     }
 
     /**
@@ -236,10 +190,19 @@ public final class InjectorComposer extends Composer {
         extension(); // call exportAll
         return configuration.installInstance(instance).provide();
     }
-    
+
+    public <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
+        extension(); // call exportAll
+        return providePrototype(Factory.of(implementation));
+    }
+
+    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
+        return extension().providePrototype(factory);
+    }
+
     // configure()
     static Injector configure(Composable<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(InjectorArtifactHelper.DRIVER, BundleConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
+        return InjectorArtifactHelper.DRIVER.compose(BundleConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
     }
 
 }

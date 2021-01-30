@@ -117,7 +117,7 @@ public final class PackedInitializationContext {
 
     static PackedInitializationContext process(ComponentBuild root, Wirelet[] imageWirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root,
-                root.build.isImage() ? WireletPack.forImage(root, imageWirelets) : root.wirelets);
+                root.build.isImage() ? WireletPack.ofImage(root, imageWirelets) : root.wirelets);
 
         // Instantiates the whole component tree (well @Initialize does not yet work)
         // pic.component is set from PackedComponent

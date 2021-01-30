@@ -41,7 +41,7 @@ class Xxx extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App a = App.of(new Xxx());
+        App a = App.start(new Xxx());
         System.out.println(a.services().keys());
         ServiceLocator l = a.services().transform(s -> {
             s.provideInstance(123);

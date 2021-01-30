@@ -18,12 +18,15 @@ package packed.internal.component.wirelet;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 import app.packed.base.Nullable;
+import app.packed.component.InheritableWirelet;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.component.ComponentBuild;
+import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
@@ -33,7 +36,12 @@ public final class WireletPack {
     // In which we need to different between not-set and set to null
     String name; // kan komme i map... og saa saetter vi et flag istedet for...
 
-    private ArrayList<Ent> list = new ArrayList<>();
+    // Vil gerne have det i en liste da det er lettere at parse op i value chainen...
+    private ArrayList<Ent> inherited = new ArrayList<>();
+
+    private final ArrayList<Ent> list = new ArrayList<>();
+
+    private final IdentityHashMap<Class<? extends Wirelet>, Object> wirelets = new IdentityHashMap<>();
 
     /** Creates a new pack. */
     private WireletPack() {}
@@ -42,15 +50,26 @@ public final class WireletPack {
      * @param w
      */
     private void create0(Wirelet w) {
-        Class<? extends Extension> extensionType = WireletModel.of(w.getClass()).extension;
-        if (w instanceof InternalWirelet) {
-            ((InternalWirelet) w).process(this);
+        WireletModel m = WireletModel.of(w.getClass());
+        Class<? extends Extension> extensionType = m.extension;
+
+        if (w instanceof InheritableWirelet) {
+            inherited.add(new Ent(w, extensionType));
+        }
+
+        if (w instanceof BaseWirelet) {
+            ((BaseWirelet) w).process(this);
         } else if (w instanceof WireletList) {
             for (Wirelet ww : ((WireletList) w).wirelets) {
                 create0(ww);
             }
         } else {
             list.add(new Ent(w, extensionType));
+            if (m.stackBy == null) {
+                wirelets.put(w.getClass(), new Ent(w, extensionType));
+            } else {
+
+            }
         }
     }
 
@@ -96,7 +115,7 @@ public final class WireletPack {
      * @return stuff
      */
     @Nullable
-    private static WireletPack create(Wirelet... wirelets) {
+    private static WireletPack create(WireletPack parent, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return null;
@@ -113,19 +132,32 @@ public final class WireletPack {
     // //Is Initializaing in one -> NotAnImage and Not analyzing...
 
     @Nullable
-    public static WireletPack from(PackedComponentDriver<?> driver, Wirelet... wirelets) {
+    public static WireletPack ofChild(@Nullable WireletPack parent, PackedComponentDriver<?> driver, Wirelet... wirelets) {
         if (driver.modifiers().isBundle()) {
-            return create(wirelets);
+            return create(parent, wirelets);
         }
         return null;
     }
 
     @Nullable
-    public static WireletPack forImage(ComponentBuild cnc, Wirelet... wirelets) {
-        return create(wirelets);
+    public static WireletPack ofRoot(PackedArtifactDriver<?> artifactDriver, PackedComponentDriver<?> driver, Wirelet... wirelets) {
+        Wirelet w = Wirelet.combine(wirelets);
+        if (artifactDriver.wirelet != null) {
+            w = artifactDriver.wirelet.andThen(w);
+        }
+        if (driver.modifiers().isBundle()) {
+            return create(null, wirelets);
+        }
+        return null;
+    }
+
+    @Nullable
+    public static WireletPack ofImage(ComponentBuild cnc, Wirelet... wirelets) {
+        return create(null, wirelets);
     }
 
     public static class Ent {
+
         @Nullable
         public final Class<? extends Extension> extensionType;
 
@@ -138,5 +170,4 @@ public final class WireletPack {
             this.extensionType = extensionType;
         }
     }
-
 }

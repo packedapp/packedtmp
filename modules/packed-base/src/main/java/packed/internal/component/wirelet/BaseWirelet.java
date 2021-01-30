@@ -23,12 +23,12 @@ import app.packed.component.Wirelet;
  *
  */
 // Tror meningen er at smide ind i .component igen...
-public abstract class InternalWirelet extends Wirelet {
+public abstract class BaseWirelet extends Wirelet {
 
     abstract void process(WireletPack c);
 
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class ComponentNameWirelet extends InternalWirelet {
+    public static final class SetComponentNameWirelet extends BaseWirelet {
 
         /** The (checked) name to override with. */
         final String name;
@@ -39,14 +39,14 @@ public abstract class InternalWirelet extends Wirelet {
          * @param name
          *            the name to override any existing container name with
          */
-        public ComponentNameWirelet(String name) {
+        public SetComponentNameWirelet(String name) {
             this.name = checkName(name);
         }
 
         /** {@inheritDoc} */
         @Override
         void process(WireletPack c) {
-            c.name = name;// will override any set previously
+            c.name = name;// will override any name set previously
         }
 
         /**
@@ -66,7 +66,7 @@ public abstract class InternalWirelet extends Wirelet {
     }
 
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class IgnoreUnhandled extends InternalWirelet {
+    public static final class IgnoreUnhandled extends BaseWirelet {
 
         final Wirelet wirelet;
 

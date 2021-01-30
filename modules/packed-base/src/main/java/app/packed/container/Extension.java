@@ -26,7 +26,7 @@ import app.packed.component.BuildInfo;
 import app.packed.component.Image;
 import app.packed.component.Realm;
 import app.packed.inject.Factory;
-import packed.internal.bundle.ExtensionTmpModel;
+import packed.internal.bundle.ExtensionPreModel;
 
 /**
  * Extensions are the primary way to add features to Packed.
@@ -71,9 +71,7 @@ import packed.internal.bundle.ExtensionTmpModel;
 //// Her er der noget vi gerne vil have viral.
 public abstract class Extension extends Realm {
 
-    /**
-     * A stack walker used by various methods.
-     */
+    /** A stack walker used by various methods. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
@@ -266,7 +264,7 @@ public abstract class Extension extends Realm {
         return configuration().isPartOfImage();
     }
 
-    protected final void lookup(Lookup l) {
+    protected final void lookup(Lookup lookup) {
         // Den fungere ligesom Bundle.lookup()
         // Her har vi selve extension'en som
     }
@@ -286,8 +284,8 @@ public abstract class Extension extends Realm {
     /**
      * Returns an extension of the specified type.
      * <p>
-     * Only extension types that have been explicitly registered using {@link #bootstrapAddDependency(Class)}may be
-     * specified as arguments to this method.
+     * Only extension types that have been explicitly registered using {@link #$addDependency(Class)}may be specified as
+     * arguments to this method.
      * <p>
      * Invoking this method is similar to calling {@link BundleConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
@@ -304,25 +302,25 @@ public abstract class Extension extends Realm {
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified when bootstrapping the extension
      * @see ExtensionConfiguration#useOld(Class)
-     * @see #bootstrapAddDependency(Class)
+     * @see #$addDependency(Class)
      */
-    // This will be removed..
+    // This will be removed in the future..
     protected final <E extends Extension> E useOld(Class<E> extensionType) {
         return configuration().useOld(extensionType);
     }
 
-    protected static void bootstrapAddDependency(Class<? extends Extension> dependency) {
-        // $
+    /**
+     * @param dependency
+     *            the dependency that this dependency depends on
+     */
+    protected static void $addDependency(Class<? extends Extension> dependency) {
         requireNonNull(dependency, "dependency is null");
-        ExtensionTmpModel.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
+        ExtensionPreModel.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
     }
 
-    protected static void $AddDependency(Class<? extends Extension> dependsOn) {
-        requireNonNull(dependsOn, "dependsOn is null");
-        ExtensionTmpModel.addStaticDependency(STACK_WALKER.getCallerClass(), dependsOn);
-    }
-
-    protected static <T extends Extension, S extends Extension> void $addDependecyLazyInit(Class<T> thisExtension, Class<S> dependsOn, Consumer<? super T> action) {
+    protected static <T extends Extension, S extends Extension> void $addDependencyLazyInit(Class<T> thisExtension, Class<S> dependsOn,
+            Consumer<? super T> action) {
+        // Bliver kaldt hvis den specificeret
         // Registeres ogsaa som dependeenc
         // $ = Static Init (s + i = $)
     }

@@ -13,30 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.request;
+package packed.internal.util;
 
-import app.packed.cli.Main;
 import app.packed.container.BaseAssembly;
+import app.packed.inject.ServiceContract;
 
 /**
  *
  */
-public class ExecuteTest extends BaseAssembly {
+// @Validate(Req.class)
+public abstract class Plugin extends BaseAssembly {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(Comp.class);
-    }
+    static final ServiceContract CONTRACT = ServiceContract.build(b -> b.provides(String.class).requires(Long.class));
 
-    public static void main(String[] args) {
-        Main.run(new ExecuteTest());
-        System.out.println("Bye");
-    }
+    static class Req {
 
-    public static class Comp {
+        // requireExported
 
-        @Compute
-        public void runMe() {}
+        // requireStrictsExports();
+        // requireStrictExports();
+
+        // failIfNotExported()
     }
 }

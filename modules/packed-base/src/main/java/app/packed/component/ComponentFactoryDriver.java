@@ -24,7 +24,7 @@ import packed.internal.component.PackedComponentDriver;
 /**
  *
  */
-public interface ComponentFactoryDriver<C, I> extends ComponentClassDriver<C, I> {
+public interface ComponentFactoryDriver<C extends ComponentConfiguration, I> extends ComponentClassDriver<C, I> {
 
     @Override
     default ComponentDriver<C> bind(Class<? extends I> implementation) {
@@ -33,7 +33,7 @@ public interface ComponentFactoryDriver<C, I> extends ComponentClassDriver<C, I>
 
     ComponentDriver<C> bind(Factory<? extends I> factory);
 
-    static <C, I> ComponentFactoryDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
+    static <C extends ComponentConfiguration, I> ComponentFactoryDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
         return PackedComponentDriver.ofFactory(lookup, driverType, options);
     }
 }

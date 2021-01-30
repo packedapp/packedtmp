@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package zandbox;
 
-import java.util.Optional;
-
-import app.packed.attribute.Attribute;
-import packed.internal.component.PackedBuildInfo;
+import app.packed.component.ComponentModifier;
+import app.packed.component.Wirelet;
 
 /**
  * Analysis servers 2 main purposes
@@ -45,45 +43,45 @@ import packed.internal.component.PackedBuildInfo;
 // Hmm, efter vi er begyndt lidt at flytte dem ud...
 // Saa er det maaske primaert en builder a.la. cli.Main
 
-public final class ComponentAnalyzer {
+final class ComponentAnalyzer {
 
     // Maybe on Component???
-    public static Component analyze(ComponentSystem s) {
-        return PackedBuildInfo.forAnalysis(s);
-    }
+//    public static Component analyze(ComponentSystem s) {
+//        return PackedBuildContext.forAnalysis(s);
+//    }
 
-    /**
-     * @param s
-     *            the system to test
-     * @return the component
-     * @throws IllegalStateException
-     *             if the system is not in an assembled state.
-     */
-    public static Component analyzeAssembly(ComponentSystem s) {
-        
-        // App.print(sdfsdf)
-        // App.toDoc().print();
-        // ??
-        throw new UnsupportedOperationException();
-    }
+//    /**
+//     * @param s
+//     *            the system to test
+//     * @return the component
+//     * @throws IllegalStateException
+//     *             if the system is not in an assembled state.
+//     */
+//    public static Component analyzeAssembly(ComponentSystem s) {
+//        
+//        // App.print(sdfsdf)
+//        // App.toDoc().print();
+//        // ??
+//        throw new UnsupportedOperationException();
+//    }
 
-    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
-        return ComponentStream.of(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
-    }
+//    public static Optional<Component> findExtension(ComponentSystem s, Attribute<?> attribute) {
+//        return ComponentStream.of(s).filter(c -> c.attributes().isPresent(attribute)).findAny();
+//    }
 
-    public static void print(ComponentSystem s) {
-        // Er det i virkeligheden bare et streaming hirakisk dokument???
-        // Det tror jeg...
-        // Vil du have det statisk view???
-        // Eller et dynamisk view???
-        //
-        
-        ComponentSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
-    }
+//    public static void print(ComponentSystem s) {
+//        // Er det i virkeligheden bare et streaming hirakisk dokument???
+//        // Det tror jeg...
+//        // Vil du have det statisk view???
+//        // Eller et dynamisk view???
+//        //
+//        
+//        ComponentSystem.forEach(s, c -> System.out.println(c.path() + " " + c.modifiers() + " " + c.attributes()));
+//    }
 
-    static void validate(ComponentSystem s, Object ruleset) {
-
-    }
+//    static void validate(ComponentSystem s, Object ruleset) {
+//
+//    }
 
     // require runtime
     // require assembly time (maybe as options...)

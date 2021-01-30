@@ -18,6 +18,8 @@ package app.packed.component;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
+import app.packed.base.NamespacePath;
+import app.packed.component.ComponentStream.Option;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import app.packed.state.RunState;
@@ -26,7 +28,7 @@ import app.packed.state.StateWirelets;
 /**
  * An App (application) is a type of artifact provided by Packed.
  */
-public interface App extends AutoCloseable, ComponentDelegate {
+public interface App extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
@@ -38,6 +40,13 @@ public interface App extends AutoCloseable, ComponentDelegate {
     default void close() {
         host().stop();
     }
+
+    /**
+     * The component this is delegating
+     * 
+     * @return the component
+     */
+    Component component();
 
     /**
      * Returns the applications's host.
@@ -64,11 +73,51 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
+     * <p>
+     * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
+     * {@link NamespacePath}.
+     * 
+     * @param path
+     *            the path of the component to return
+     * @throws IllegalArgumentException
+     *             if no component exists with the specified path
+     * @return a component with the specified path
+     */
+    default Component resolve(CharSequence path) {
+        return component().resolve(path);
+    }
+
+    /**
      * Returns this app's service locator.
      * 
      * @return the service locator for this app
      */
     ServiceLocator services();
+
+    /**
+     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
+     * order.
+     * <p>
+     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
+     * 
+     * @return a component stream
+     * @see #stream(Option...)
+     */
+    default ComponentStream stream() {
+        return component().stream();
+    }
+
+    /**
+     * Returns a component stream consisting of all the components in this image.
+     * 
+     * @param options
+     *            stream options
+     * @return the component stream
+     * @see Component#stream(app.packed.component.ComponentStream.Option...)
+     */
+    default ComponentStream stream(ComponentStream.Option... options) {
+        return component().stream(options);
+    }
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
@@ -109,15 +158,6 @@ public interface App extends AutoCloseable, ComponentDelegate {
     }
 
     /**
-     * Returns an {@link ArtifactDriver artifact driver} for {@link App}.
-     * 
-     * @return an artifact driver for App
-     */
-    static ArtifactDriver<App> driver() {
-        return PackedApp.DRIVER;
-    }
-
-    /**
      * Creates a new app image from the specified assembly.
      * <p>
      * The state of the applications returned by {@link Image#use(Wirelet...)} will be {@link RunState#RUNNING}. unless
@@ -130,30 +170,17 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @return a new app image
      * @see ImageWirelets
      */
-    static Image<App> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+    static Image<App> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().buildImage(assembly, wirelets);
     }
 
     /**
-     * Build and start a new application using the specified bundle. The state of the returned application is
-     * {@link RunState#RUNNING}.
-     * <p>
-     * Should be used with try-with-resources
-     * <p>
-     * Applications that are created using this method is always automatically started. If you wish to delay the start
-     * process you can use {@link StateWirelets#lazyStart()}. Which will return an application in the
-     * {@link RunState#INITIALIZED} phase instead.
+     * Returns an {@link ArtifactDriver artifact driver} for {@link App}.
      * 
-     * @param assembly
-     *            the assembly to use for creating the application
-     * @param wirelets
-     *            optional wirelets
-     * @return the new application
-     * @throws RuntimeException
-     *             if the application could not be created or started
+     * @return an artifact driver for App
      */
-    static App of(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newArtifact(assembly, wirelets);
+    static ArtifactDriver<App> driver() {
+        return DefaultApp.DRIVER;
     }
 
     // An image that can be used exactly, will drop any memory references...
@@ -171,7 +198,29 @@ public interface App extends AutoCloseable, ComponentDelegate {
      * @return the new image
      */
     static Image<App> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets/* , ImageWirelet.single() */);
+        return driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
+    }
+
+    /**
+     * Build and start a new application using the specified assembly. The state of the returned application is
+     * {@link RunState#RUNNING}.
+     * <p>
+     * Should be used with try-with-resources
+     * <p>
+     * Applications that are created using this method is always automatically started. If you wish to delay the start
+     * process you can use {@link StateWirelets#lazyStart()}. Which will return an application in the
+     * {@link RunState#INITIALIZED} phase instead.
+     * 
+     * @param assembly
+     *            the assembly to use for creating the application
+     * @param wirelets
+     *            optional wirelets
+     * @return the new application
+     * @throws RuntimeException
+     *             if the application could not be build, initialized or started
+     */
+    static App start(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().use(assembly, wirelets);
     }
 }
 ///**

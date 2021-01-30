@@ -29,6 +29,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 
 /**
@@ -71,7 +72,14 @@ import app.packed.component.Composer;
 // For future use
 
 // Bliver noedt til at checke at vi ikke f.eks. bruger @OnStart....
-public abstract class ServiceComposer extends Composer implements ServiceRegistry {
+public abstract class ServiceComposer extends Composer<ComponentConfiguration> implements ServiceRegistry {
+
+    /**
+     * @param cc
+     */
+    protected ServiceComposer(ComponentConfiguration cc) {
+        super(cc);
+    }
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
@@ -298,10 +306,14 @@ public abstract class ServiceComposer extends Composer implements ServiceRegistr
      * 
      * @param tag
      */
-    //IDK, can add them later
+    // IDK, can add them later
     public void rekeyAllWithTag(String tag) {
         requireNonNull(tag, "tagis null");
         rekeyAll(s -> s.key().withTag(tag));
+    }
+
+    public void rekeyAllWithClassTag(Class<?> tag) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -423,6 +435,13 @@ public abstract class ServiceComposer extends Composer implements ServiceRegistr
 
 abstract class UNext extends ServiceComposer {
 
+    /**
+     * @param cc
+     */
+    protected UNext(ComponentConfiguration cc) {
+        super(cc);
+    }
+
     // Den sidste der mangler er jo en maade at aendre attributer paa
 
     // En hurtig ide var at returnere en mutable service et sted.
@@ -451,6 +470,13 @@ abstract class UNext extends ServiceComposer {
 
 // Various ideas on provide/rekey
 abstract class YIdeas extends ServiceComposer {
+    /**
+     * @param cc
+     */
+    protected YIdeas(ComponentConfiguration cc) {
+        super(cc);
+    }
+
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
     // Or maybe just methods...
@@ -513,6 +539,13 @@ abstract class YIdeas extends ServiceComposer {
 }
 
 abstract class ZBadIdeas extends ServiceComposer {
+
+    /**
+     * @param cc
+     */
+    protected ZBadIdeas(ComponentConfiguration cc) {
+        super(cc);
+    }
 
     public abstract Object attachment();
 

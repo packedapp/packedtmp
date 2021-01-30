@@ -17,7 +17,9 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Function;
 
+import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
@@ -40,33 +42,18 @@ import packed.internal.component.PackedInitializationContext;
  *            The type of artifacts this driver creates.
  * 
  * @see App#driver()
- * @see Composer#compose(ArtifactDriver, ComponentDriver, java.util.function.Function, Composable, Wirelet...)
  * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
+// Environment + Shell + Result
 public interface ArtifactDriver<A> {
 
-    /**
-     * Create a new artifact using the specified assembly.
-     * 
-     * @param assembly
-     *            the system bundle
-     * @param wirelets
-     *            optional wirelets
-     * @return the new artifact
-     * @throws BuildException
-     *             if the artifact could not be assembled properly
-     * @throws InitializationException
-     *             if the artifact failed to initializing
-     * @throws PanicException
-     *             if the artifact had an executing phase and it fails
-     */
-    A newArtifact(Assembly<?> assembly, Wirelet... wirelets);
-
-    A newArtifact(Assembly<?> bundle, Wirelet[] wirelets, Wirelet... artifactWirelets);
+    // forAnalysis? Ville gerne vaere explicit om at vi ikke analysere
+    // inde i metoden.. Men at folk kan bruge componenten.
+    Component analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
-     * Creates a new image using the specified assembly.
+     * Builds a new image using the specified assembly and optional wirelets.
      * 
      * @param assembly
      *            the assembly that should be used to build the image
@@ -76,9 +63,61 @@ public interface ArtifactDriver<A> {
      * @throws BuildException
      *             if the image could not build
      */
-    Image<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
+    Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
 
-    Image<A> newImage(Assembly<?> bundle, Wirelet[] wirelets, Wirelet... artifactWirelets);
+    <CO extends Composer<?>, CC extends ComponentConfiguration> A compose(ComponentDriver<CC> componentDriver,
+            Function<? super CC, ? extends CO> composerFactory, Composable<? super CO> consumer, Wirelet... wirelets);
+
+    /**
+     * Create a new artifact using the specified assembly.
+     * 
+     * @param assembly
+     *            the system bundle
+     * @param wirelets
+     *            optional wirelets
+     * @return the new artifact or null if void artifact
+     * @throws BuildException
+     *             if the artifact could not be assembled properly
+     * @throws InitializationException
+     *             if the artifact failed to initializing
+     * @throws PanicException
+     *             if the artifact had an executing phase and it fails
+     */
+    @Nullable
+    A use(Assembly<?> assembly, Wirelet... wirelets);
+
+    // driver.use(A, W1, W2) == driver.with(W1).use(A, W2)
+    // Hmmm, saa er den jo lige pludselig foerend..
+    // ComponentDriveren
+    // Maaske det giver mening alligevel...
+    // Det er ihvertfald lettere at forklare...
+    ArtifactDriver<A> with(Wirelet wirelet);
+
+    ArtifactDriver<A> with(Wirelet... wirelets);
+
+    /**
+     * Returns a daemon artifact driver.
+     * 
+     * @return a daemon artifact driver
+     */
+    // Hvad skal default lifestate vaere for
+    static ArtifactDriver<Void> daemon() {
+        return PackedArtifactDriver.DAEMON;
+        // ArtifactDriver.Builder<Void> daemonBuilder()
+        // ArtifactDriver.Builder<T> result(...)
+        // ArtifactDriver.Builder<T> shell(...)
+    }
+
+    /**
+     * Returns an artifact driver that can be used for analysis. Statefull
+     * 
+     * @return the default artifact driver for analysis
+     */
+    // maybe just analyzer
+    // I think it should fail if used to create images/instantiate anything
+    static ArtifactDriver<?> defaultAnalyzer() {
+        return daemon();
+    }
 
     /**
      * Creates a new artifact driver.
@@ -101,6 +140,10 @@ public interface ArtifactDriver<A> {
         // We automatically assume that if the implementation implements AutoClosable. Then we need a guest.
         boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
 
+        if (implementation == Void.class) {
+            throw new IllegalArgumentException("Cannot specify Void.class use daemon() instead");
+        }
+
         // We currently do not support @Provide ect... Don't know if we ever will
         // Create a new MethodHandle that can create artifact instances.
 
@@ -110,6 +153,7 @@ public interface ArtifactDriver<A> {
         if (isGuest) {
             ib.addKey(Host.class, PackedInitializationContext.MH_CONTAINER, 0);
         }
+
         MethodHandle mh = ib.build();
         return new PackedArtifactDriver<>(isGuest, mh);
     }
@@ -117,9 +161,51 @@ public interface ArtifactDriver<A> {
     static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         return PackedArtifactDriver.of(caller, artifactType, mh);
     }
+
+    static <S> ArtifactDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
+        throw new UnsupportedOperationException();
+    }
 }
 
-interface ZArtifactDriver {
+interface ZArtifactDriver<A> {
+
+    default void analyze(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
+        // Checks that the container can be sucessfully build...
+        // What about fullfilled??? Er den ok hvis vi f.eks.
+        // mangler nogle service argumenter???
+
+        // Usefull for test
+        // ServiceAsserts.exposes(fff)
+
+        // ServiceWirelet.assertContract(
+
+        // Maaske hedder wirelets ikke noget med assert...
+        // men validate (eller check)....
+        // Og assert goer saa bare at vi smider den med en AssertException...
+        // Men vi kan ogsaa vaelge at faa det i en liste....
+        // App.assertValid(new FooAssembly()), ServiceWirelets.assertExactContract(adasdasd.));
+        // App.assertValid(new FooAssembly()), ServiceWirelets.checkExactContract(adasdasd.));
+        // App.assertValid(new FooAssembly()), ServiceWirelets.validateExactContract(adasdasd.));
+
+        // A specific type of analyze that throws ValidationError...
+        throw new UnsupportedOperationException();
+    }
+
+    // Ideen er at man kan smide checked exceptions...
+    default A invoke(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
+        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
+
+        // Her er ihvertfald noget der skal kunne konfigureres
+        throw new UnsupportedOperationException();
+    }
+
+}
+
+interface ZArtifactDriverBuilders {
 
     // Enten returnere ComponentAnalysis eller Component...
     // CA kan have en masse hjaelpe metoder
@@ -142,11 +228,10 @@ interface ZArtifactDriver {
     }
 
     interface Builder<T> {
-        
+
         // Pre, Post wirelets
         // Whilelist/Blacklist extensions
-        
-        
+
         // Generic Parameterized types... F.eks. Job<R> or BigMap<K, V>
         // Maaske vil vi ikke have component med...
 
@@ -157,7 +242,7 @@ interface ZArtifactDriver {
 
         // hostless er maaske bedre????
 
-        default ZArtifactDriver.Builder<T> stateless() {
+        default ZArtifactDriverBuilders.Builder<T> stateless() {
             return this;
         }
 

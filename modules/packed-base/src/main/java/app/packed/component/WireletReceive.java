@@ -27,7 +27,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-// Collect, Receive, Accept
+// Collect, Receive, Accept, Consume
 
 // Grunden til jeg ikke kan WireletInject er den kan puttes paa en parameter...
 // Men det kan @Inject ikke.
@@ -40,7 +40,7 @@ import java.lang.annotation.Target;
 //  
 
 // @WireletLink...  Nah @WireletLink Optional<>
-public @interface WireletConsume {}
+public @interface WireletReceive {}
 
 /// Metode??? det giver jo god mening...
 /// Men maaske hellere i forbindelse med @Initialize

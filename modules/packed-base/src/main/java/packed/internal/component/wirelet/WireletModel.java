@@ -37,6 +37,11 @@ public final class WireletModel {
     @Nullable
     final Class<? extends Extension> extension;
 
+    @Nullable
+    final Class<? extends Wirelet> stackBy;
+
+    final boolean buildtimeOnly;
+
     /**
      * Create a new wirelet model.
      * 
@@ -45,6 +50,9 @@ public final class WireletModel {
      */
     private WireletModel(Class<? extends Wirelet> type) {
         this.extension = ExtensionModel.getExtensionMemberOf(type);
+        WireletPreModel m = WireletPreModel.consume(type);
+        this.stackBy = m.stackBy;
+        this.buildtimeOnly = m.buildtimeOnly;
     }
 
     /**

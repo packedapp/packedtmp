@@ -44,7 +44,7 @@ import packed.internal.component.PackedComponentDriver;
 // TODO vi kunne expose noget om hvad den laver den her driver...
 // Saa kan man lave checks via ContainerConfigurationContext
 // sourceModel.doo().hasAnnotation(Actor.class);
-public interface ComponentDriver<C> {
+public interface ComponentDriver<C extends ComponentConfiguration> {
 
     /**
      * Returns the set of modifiers that will be applied to the component.
@@ -57,6 +57,8 @@ public interface ComponentDriver<C> {
 
     // Ideen er at man kan putte wirelets paa der vil blive applied.
     // Hver gang man bruger driveren
+    // Ligesom med ArtifactDriver...
+    // Maaske rename til with() as well
     default ComponentDriver<C> withWirelet(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
@@ -73,11 +75,11 @@ public interface ComponentDriver<C> {
      * @return a component driver
      * @see ComponentInstanceDriver#of(MethodHandles.Lookup, Class, Option...)
      */
-    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, Option... options) {
+    static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, Option... options) {
         return PackedComponentDriver.of(lookup, configurationType, options);
     }
 
-    static <C> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeToken<? extends C> configurationType, Option... options) {
+    static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup lookup, TypeToken<? extends C> configurationType, Option... options) {
         throw new UnsupportedOperationException();
     }
 

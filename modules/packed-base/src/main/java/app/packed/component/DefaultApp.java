@@ -8,10 +8,10 @@ import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 
 /** The default implementation of {@link App}. */
-final class PackedApp implements App {
+final class DefaultApp implements App {
 
     /** An driver for creating PackedApp instances. */
-    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), PackedApp.class);
+    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), DefaultApp.class);
 
     /** The app's root component. */
     private final Component component;
@@ -32,7 +32,7 @@ final class PackedApp implements App {
      * @param host
      *            the app's host
      */
-    private PackedApp(Component component, ServiceLocator services, Host host) {
+    private DefaultApp(Component component, ServiceLocator services, Host host) {
         this.component = requireNonNull(component);
         this.host = requireNonNull(host);
         this.services = requireNonNull(services);

@@ -21,6 +21,7 @@ import app.packed.inject.Factory;
  *
  */
 // Daarligt navn. Hvis den wire. Men andre metoder som ikke er paa interfacet installer.
+// ComponentWireway <-- somewhere you can install wirings
 public interface ComponentInstaller {
     
     /**
@@ -35,7 +36,7 @@ public interface ComponentInstaller {
      */
     void link(Assembly<?> bundle, Wirelet... wirelets);
     
-    default <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    default <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
@@ -51,14 +52,14 @@ public interface ComponentInstaller {
      *            any wirelets that should be used when creating the component
      * @return a configuration for the component
      */
-    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+    <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+    default <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    default <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bindInstance(instance);
         return wire(cd, wirelets);
     }

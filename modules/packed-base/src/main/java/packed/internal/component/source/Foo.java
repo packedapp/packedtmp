@@ -43,7 +43,7 @@ public class Foo extends BaseAssembly {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        App.of(new Foo());
+        App.start(new Foo());
     }
 
     @Target({ ElementType.METHOD, ElementType.FIELD })

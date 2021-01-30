@@ -16,7 +16,7 @@
 package packed.internal.component;
 
 import app.packed.cli.Main;
-import app.packed.component.ComponentSystem;
+import app.packed.component.ComponentStream;
 import app.packed.container.BaseAssembly;
 import app.packed.request.Compute;
 
@@ -32,9 +32,10 @@ public class HelloWorldAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Main.main(new HelloWorldAssembly());
+        Main.run(new HelloWorldAssembly());
         System.out.println();
-        ComponentSystem.forEach(new HelloWorldAssembly(), c -> System.out.println(c.path()));
+        ComponentStream.of(new HelloWorldAssembly()).forEach(c -> System.out.println(c.path()));
+        //ComponentSystem.forEach(new HelloWorldAssembly(), c -> System.out.println(c.path()));
     }
 
     public static class HelloWorld {

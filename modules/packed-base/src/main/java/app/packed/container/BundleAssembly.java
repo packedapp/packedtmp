@@ -16,15 +16,13 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentClassDriver;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstanceDriver;
@@ -153,18 +151,6 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
     }
 
     /**
-     * The lookup object passed to this method is never made available through the public api. It is only used internally.
-     * Unless your private
-     * 
-     * @param lookup
-     *            the lookup object
-     */
-    protected final void lookup(Lookup lookup) {
-        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        configuration().lookup(lookup);
-    }
-
-    /**
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
@@ -216,19 +202,19 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
         return configuration().use(extensionType);
     }
 
-    protected final <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    protected final <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         return configuration().wire(driver, implementation, wirelets);
     }
 
-    protected final <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);
     }
 
-    protected final <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<I> factory, Wirelet... wirelets) {
+    protected final <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<I> factory, Wirelet... wirelets) {
         return configuration().wire(driver, factory, wirelets);
     }
 
-    protected final <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    protected final <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
         return configuration().wireInstance(driver, instance, wirelets);
     }
 }

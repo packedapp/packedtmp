@@ -33,11 +33,14 @@ public class ZestMe extends BaseAssembly {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
 //        ExtensionDescriptor ed = ExtensionDescriptor.of(MyExt.class);
-        App.of(new ZestMe() /*, BuildWirelets.printDebug().all() */);
+        App.start(new ZestMe() /* , BuildWirelets.printDebug().all() */);
         // System.out.println(ed.dependencies());
         System.out.println(System.currentTimeMillis() - start);
+        
+        
+        System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
     }
-    
+
     public static class MyExt extends Extension {
 
         MyExt() {}
@@ -55,7 +58,7 @@ public class ZestMe extends BaseAssembly {
         }
 
         static {
-            $AddDependency(ServiceExtension.class);
+            $addDependency(ServiceExtension.class);
         }
     }
 }

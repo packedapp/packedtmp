@@ -43,7 +43,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
 
         static {
-            $AddDependency(Ex2.class);
+            $addDependency(Ex2.class);
         }
 
     }
@@ -55,7 +55,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
 
         static {
-            $AddDependency(Ex3.class);
+            $addDependency(Ex3.class);
         }
     }
 

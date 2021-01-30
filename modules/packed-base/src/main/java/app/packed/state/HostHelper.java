@@ -13,30 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.request;
+package app.packed.state;
 
-import app.packed.cli.Main;
-import app.packed.container.BaseAssembly;
+import java.lang.invoke.MethodHandles;
+
+import app.packed.component.ArtifactDriver;
 
 /**
  *
  */
-public class ExecuteTest extends BaseAssembly {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(Comp.class);
-    }
-
-    public static void main(String[] args) {
-        Main.run(new ExecuteTest());
-        System.out.println("Bye");
-    }
-
-    public static class Comp {
-
-        @Compute
-        public void runMe() {}
-    }
+final class HostHelper {
+    static final ArtifactDriver<Void> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Void.class);
 }

@@ -35,7 +35,7 @@ import app.packed.component.ComponentDriver.Option;
 // Packed holder ikke nogen reference til den...
 // Vi scanner den ikke
 // Vi instantiere den ikke
-public interface ComponentFunctionDriver<C, F> {
+public interface ComponentFunctionDriver<C extends ComponentConfiguration, F> {
 
     /**
      * Binds the specified function and returns a final component driver.
@@ -46,8 +46,8 @@ public interface ComponentFunctionDriver<C, F> {
      */
     ComponentDriver<C> bind(F function);
 
-    static <C, F> ComponentFunctionDriver<C, F> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, TypeToken<? extends F> driverType,
-            Option... options) {
+    static <C extends ComponentConfiguration, F> ComponentFunctionDriver<C, F> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType,
+            TypeToken<? extends F> driverType, Option... options) {
         throw new UnsupportedOperationException();
     }
 
@@ -56,6 +56,13 @@ public interface ComponentFunctionDriver<C, F> {
     }
 }
 
-class MyWebConf {
+class MyWebConf extends ComponentConfiguration {
+
+    /**
+     * @param context
+     */
+    protected MyWebConf(ComponentConfigurationContext context) {
+        super(context);
+    }
 
 }

@@ -160,7 +160,7 @@ public enum ComponentModifier {
 
     /**
      * Indicates that a component has a shell attached. For example, an application created via
-     * {@link App#of(Assembly, Wirelet...)} to create a shell.
+     * {@link App#start(Assembly, Wirelet...)} to create a shell.
      * <p>
      * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
      * users make
@@ -180,7 +180,7 @@ public enum ComponentModifier {
      * This modifier is typically checked by accessing {@link BuildInfo#modifiers()}, for example, via
      * {@link Extension#assembly()}.
      * <p>
-     * The modifier is set by the various methods in {@link ComponentAnalyzer} when specifying a bundle. Systems that are
+     * The modifier is set by the various methods in analyzer when specifying a bundle. Systems that are
      * already running will not have this modifier set when they are analysed.
      * 
      * Components with this property:
@@ -189,7 +189,6 @@ public enum ComponentModifier {
      * <li>Are never present at runtime.</li>
      * </ul>
      * 
-     * @see ComponentAnalyzer
      */
     ANALYSIS,
 

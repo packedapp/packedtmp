@@ -20,6 +20,6 @@ package app.packed.component;
  */
 @FunctionalInterface
 // T extends AbstractRealm
-public interface Composable<T extends Composer> {
+public interface Composable<T extends Composer<?>> {
     void compose(T composer);
 }

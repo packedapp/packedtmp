@@ -13,30 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.request;
-
-import app.packed.cli.Main;
-import app.packed.container.BaseAssembly;
+package app.packed.component;
 
 /**
- *
+ * Thrown by the runtime when a specified wirelet was not consumed.
  */
-public class ExecuteTest extends BaseAssembly {
+// IllegalArgumentException?
+public class WireletException extends RuntimeException {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(Comp.class);
+    /** */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * @param message
+     *            the message
+     */
+    public WireletException(String message) {
+        super(message);
     }
 
-    public static void main(String[] args) {
-        Main.run(new ExecuteTest());
-        System.out.println("Bye");
-    }
-
-    public static class Comp {
-
-        @Compute
-        public void runMe() {}
+    /**
+     * @param message
+     *            the message
+     * @param cause
+     *            the cause
+     */
+    public WireletException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

@@ -18,90 +18,103 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import java.io.PrintStream;
+import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import packed.internal.component.AssemblyHelper;
+import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponentDriver;
 
 /**
- * A bundle is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component. This
- * class is primary used through one of its subclasses such as {@link BaseAssembly}.
+ * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
+ * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
+ * <p>
+ * Trying to use an assembly more than once will fail with an {@link IllegalStateException}.
  * <p>
  * This class is not meant to be directly extended by ordinary users. But provides means for power users to extend the
  * basic functionality of Packed.
  * 
  * @param <C>
- *            the underlying component configuration this bundle wraps
+ *            the underlying component configuration this assembly wraps
  */
-// Build eller Assembly. syntes ikke det skal hedde bundle mere...
-// you write build classes
-// ComponentAssembly??? in lign with ComponentComposer
-// Ellers syntes jeg maaske vi omnavngive Composer
-public abstract class Assembly<C> extends Realm implements ComponentSystem {
+public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
 
     /**
-     * The configuration of this bundle. This field is set via a VarHandle from {@link AssemblyHelper}.
+     * The configuration of this bundle. This field is set via a VarHandle from {@link AssemblyHelper}. The value of this
+     * field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the bundle has not yet been consumed.
-     * <li>Then it is initialized with the actual configurations object. Cas'ed to prevent
-     * <li>Finally, a non-null placeholder is set to indicate that the bundle has been consumed
+     * <li>Initially, this field is null, indicating that the assembly has not yet been used.
+     * <li>Then, as a part of the build process, it is initialized with the actual component configuration object.
+     * <li>Finally, a non-null placeholder is set to indicate that the assembly has been used
      * </ul>
      */
     @Nullable
-    // Bundle: States-> Ready -> Assembling|Composing -> Consumed|Composed... Ready | Using | Used... Usable | Using | Used
-    // Unconfigured/Configuring/Configured (Failed??? well et can't bee Configured if it's failed)
-    // [afdf, state = Unusued]consuming|consumed]
     private Object configuration;
 
-    /** The driver of this bundle. This field is read via a VarHandle from {@link AssemblyHelper}. */
+    /** The driver of this assembly. This field is read via a VarHandle from {@link AssemblyHelper}. */
     @SuppressWarnings("unused")
     private final PackedComponentDriver<? extends C> driver;
 
     /**
-     * Creates a new bundle using the specified component driver.
+     * Creates a new assembly using the specified component driver.
      * 
      * @param driver
-     *            the driver to use for constructing this bundle's configuration object
+     *            the driver used for constructing the configuration of this assembly
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
     }
 
+    /** Invoked by the runtime as part of the build process. This method should never be invoked directly by the user. */
+    // This method is invoked via a MethodHandle at AssemblyHelper#invokeBuild
+    protected abstract void build();
+
     /**
-     * Returns the configuration object that this bundle wraps.
+     * Returns the configuration object that this assembly wraps.
      * <p>
      * This method must only be called from within the bounds of the {@link #build()} method.
      * 
-     * @return the configuration object that this bundle wraps
+     * @return the configuration object that this assembly wraps
      * @throws IllegalStateException
-     *             if called from outside of {@link #build()}
+     *             if called outside of the {@link #build()} method
      */
     @SuppressWarnings("unchecked")
     protected final C configuration() {
         Object c = configuration;
         if (c == null) {
-            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
-        } else if (c == AssemblyHelper.BUNDLE_CONSUMED) {
-            throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
+            throw new IllegalStateException("This method cannot called outside of the #build() method. Maybe you tried to call #build() directly");
+        } else if (c == AssemblyHelper.ASSEMBLY_CONSUMED) {
+            throw new IllegalStateException("This method cannot called outside of the #build() method. Maybe you tried to call #build() directly");
         } else {
             return (C) c;
         }
     }
-
-    /** Configures the bundle. This method should never be invoked directly by the user. */
-    protected abstract void build();
-
     
-    // Hmm lidt irriterende naar vi extender. Maaske vi kan smide den en anden sted...
-    protected static void bootstrap(Object param) {
-        //print(assembly, System.out);
+    /**
+     * The lookup object passed to this method is never made available through the public api. It is only used internally.
+     * Unless your private
+     * 
+     * @param lookup
+     *            the lookup object
+     */
+    protected final void lookup(Lookup lookup) {
+        requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
+        ((ComponentBuild) configuration().context).realm.lookup(lookup);
     }
-    
+}
+
+class ZAssembly {
+    protected static void bootstrap(Object param) {
+        // print(assembly, System.out);
+    }
+
     static void print(Assembly<?> assembly) {
         print(assembly, System.out);
     }
 
     static void print(Assembly<?> assembly, PrintStream ps) {}
+
+    // We do not support $ methods because they are seen by all subclasses...
 }

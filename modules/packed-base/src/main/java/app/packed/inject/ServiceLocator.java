@@ -24,10 +24,8 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.component.App;
 import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentSystem;
 import app.packed.component.Wirelet;
 import app.packed.hooks.sandbox.DynamicService;
 import packed.internal.inject.service.build.PackedServiceTransformer;
@@ -116,13 +114,6 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     ServiceSelection<?> selectAll();
 
-    // kan ikk
-    default <T> ServiceSelection<T> selectAnyQualifiers(Class<T> key) {
-        return selectAnyQualifiers(Key.of(key));
-    }
-
-    <T> ServiceSelection<T> selectAnyQualifiers(Key<T> key);
-
     /**
      * Returns a service selection with all services where the raw type of the key is assignable to the specified type.
      * 
@@ -133,6 +124,13 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return the service selection
      */
     <T> ServiceSelection<T> selectAssignableTo(Class<T> type);
+
+    // selectWithAnyQualifiers
+    default <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> key) {
+        return selectWithAnyQualifiers(Key.of(key));
+    }
+
+    <T> ServiceSelection<T> selectWithAnyQualifiers(Key<T> key);
 
     /**
      * Transforms this locator to a new locator.
@@ -210,13 +208,10 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * Creates a new service locator from the specified assembly.
-     * <p>
-     * Unlike, for example, {@link App} the returned service locator does not implement {@link ComponentSystem} so there are
-     * no ways to inspect it using the normal tools.
+     * Creates a new service locator from the specified assembly and optional wirelets.
      * 
      * @param assembly
-     *            the assembly to use for construction
+     *            the assembly using for building the service locator
      * @param wirelets
      *            optional wirelets
      * @return a new service locator

@@ -15,27 +15,22 @@
  */
 package app.packed.container;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 import java.util.Set;
 
-import app.packed.base.Nullable;
-import app.packed.component.AbstractComponentConfiguration;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentDriver.Option;
 import app.packed.component.StatelessConfiguration;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentBuild;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link BundleAssembly} or {@link BaseAssembly}.
  */
-public final class BundleConfiguration extends AbstractComponentConfiguration {
+public final class BundleConfiguration extends BaseComponentConfiguration {
 
     /** A driver that create container components. */
     private static final ComponentDriver<BundleConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), BundleConfiguration.class, Option.bundle());
@@ -116,26 +111,6 @@ public final class BundleConfiguration extends AbstractComponentConfiguration {
      */
     public StatelessConfiguration installStateless(Class<?> implementation) {
         return wire(StatelessConfiguration.driver().bind(implementation));
-    }
-
-    /**
-     * Registers a {@link Lookup} object that will be used for accessing members on components that are registered with the
-     * container.
-     * <p>
-     * Lookup objects passed to this method are never made directly available to extensions. Instead the lookup is used to
-     * create {@link MethodHandle} and {@link VarHandle} that are passed along to extensions.
-     * <p>
-     * This method allows passing null, which clears any lookup object that has previously been set. This is useful if allow
-     * 
-     * 
-     * @param lookup
-     *            the lookup object
-     */
-    // If you are creating resulable stuff, you should remember to null the lookup object out.
-    // So child modules do not have the power of the lookup object.
-
-    public void lookup(@Nullable Lookup lookup) {
-        ((ComponentBuild) super.context).realm.lookup(lookup);
     }
 
     /** {@inheritDoc} */

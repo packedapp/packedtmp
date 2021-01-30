@@ -27,12 +27,11 @@ import java.util.stream.Stream;
 
 import app.packed.attribute.AttributedElementStream;
 import app.packed.container.Extension;
-import packed.internal.component.PackedBuildInfo;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by {@link App#stream(Option...)} or {@link Image#stream(Option...)}.
+ * of this class is normally acquired by {@link App#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -161,18 +160,20 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //    }
 
     /**
+     * 
+     * using {@link ArtifactDriver#defaultAnalyzer()} as the artifact driver.
      * <p>
      * If the specified system is a subclass of {@link Assembly}. The {@link ComponentModifier#ANALYSIS} modifier will be
      * set for the root component.
      * 
-     * @param system
-     *            the system to create a stream for
+     * @param assembly
+     *            the assembly to create a stream for
      * @param options
      *            streaming options
      * @return the new stream
      */
-    public static ComponentStream of(ComponentSystem system, Option... options) {
-        return PackedBuildInfo.forAnalysis(system).stream(options);
+    public static ComponentStream of(Assembly<?> assembly, Option... options) {
+        return ArtifactDriver.defaultAnalyzer().analyze(assembly).stream(options);
     }
 
     /********** Overridden to provide ComponentStream as a return value. **********/
@@ -256,7 +257,6 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      * 
      * @see Component#stream(Option...)
      * @see App#stream(Option...)
-     * @see Image#stream(Option...)
      */
     // I virkeligheden er det system view options.
     // Noget af det vil jeg mene..
@@ -276,7 +276,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
         public static ComponentStream.Option partOfSame(ComponentSystemType boundaryType) {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
-        
+
         /**
          * Include components that belongs to an extension .
          * 

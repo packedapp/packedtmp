@@ -43,24 +43,24 @@ import app.packed.container.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final Image<App> EMPTY = App.imageOf(new BaseAssembly() {
+    static final Image<App> EMPTY = App.buildImage(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final Image<App> USE_EXTENSION = App.imageOf(new BaseAssembly() {
+    static final Image<App> USE_EXTENSION = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final Image<App> INSTALL = App.imageOf(new BaseAssembly() {
+    static final Image<App> INSTALL = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final Image<App> INSTALL_AUTO_ACTIVATE = App.imageOf(new BaseAssembly() {
+    static final Image<App> INSTALL_AUTO_ACTIVATE = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());

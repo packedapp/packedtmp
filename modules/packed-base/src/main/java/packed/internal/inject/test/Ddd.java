@@ -45,7 +45,7 @@ class Ddd extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        System.out.println(App.of(new Ddd()).services());
+        System.out.println(App.start(new Ddd()).services());
     }
 
     public static class FooAssembly extends BaseAssembly {

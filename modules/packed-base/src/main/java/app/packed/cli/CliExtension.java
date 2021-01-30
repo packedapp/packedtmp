@@ -18,10 +18,15 @@ package app.packed.cli;
 import app.packed.container.Extension;
 
 /**
- * A extension that can make it easier to create command line
+ * A extension that can make it easier to work with command line parameters.
+ * <p>
+ * The goal of this extension is to provide basic support for command line parameters. Not be a full-blown framework
+ * like the picocli.
  */
 public final class CliExtension extends Extension {
 
     /** It's not you it's me. */
     private CliExtension() {}
+
+    // Taenker man kan styre hvordan den kommer ned til
 }

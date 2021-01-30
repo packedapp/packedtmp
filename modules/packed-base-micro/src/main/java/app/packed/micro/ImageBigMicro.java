@@ -41,7 +41,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final Image<App> INSTALL31 = App.imageOf(new BaseAssembly() {
+    static final Image<App> INSTALL31 = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             // install(A.class);
@@ -58,7 +58,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final Image<App> INSTALL253 = App.imageOf(new BaseAssembly() {
+    static final Image<App> INSTALL253 = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             for (int i = 0; i < 4; i++) {
@@ -90,7 +90,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final Image<App> INSTALL253_NOS = App.imageOf(new BaseAssembly() {
+    static final Image<App> INSTALL253_NOS = App.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             for (int i = 0; i < 4; i++) {

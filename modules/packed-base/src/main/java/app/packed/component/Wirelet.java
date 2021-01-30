@@ -15,12 +15,14 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.component.wirelet.InternalWirelet;
-import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
+import packed.internal.component.wirelet.BaseWirelet;
+import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
+import packed.internal.component.wirelet.WireletPreModel;
 
 /**
  * Wirelets are an umbrella term for small pieces of glue code, that is used to wire together the components that make
@@ -52,38 +54,32 @@ import packed.internal.component.wirelet.WireletList;
 // Saa man skal stadig haves Extension??? IDK
 // Giver mere mening med at det skal vaere det intermediate element.
 public abstract class Wirelet {
+    
+    /** A stack walker used by various methods. */
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
-    final int modifiers;
-
-    protected Wirelet() {
-        modifiers = 0;
-    }
-
-    protected Wirelet(ComponentModifier modifier) {
-        this.modifiers = PackedComponentModifierSet.intOf(modifier);
-    }
-
-    public final Wirelet andThen(Wirelet wirelets) {
-        throw new UnsupportedOperationException();
+    public final Wirelet andThen(Wirelet wirelet) {
+        requireNonNull(wirelet, "wirelet is null");
+        return Wirelet.combine(this, wirelet);
     }
 
     public final Wirelet andThen(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return Wirelet.combine(this, wirelets);
     }
 
     // BeforeThis? PrecededBy
-    public final Wirelet beforeThis(Wirelet w) {
-        throw new UnsupportedOperationException();
+    public final Wirelet beforeThis(Wirelet wirelet) {
+        return Wirelet.combine(wirelet, this);
     }
 
     public final Wirelet beforeThis(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return Wirelet.combine(wirelets, this);
     }
 
-    protected ComponentSystemType scope() {
-        // Does not work with combine..
-        return ComponentSystemType.NAMESPACE;
-    }
+//    protected ComponentSystemType scope() {
+//        // Does not work with combine..
+//        return ComponentSystemType.NAMESPACE;
+//    }
 
     /**
      * This
@@ -97,9 +93,7 @@ public abstract class Wirelet {
 
     // Skal vi tage en Component???
     // Eller kan vi kun validere med modifiers...
-    protected final void validate() {
-
-    }
+    protected final void validate() {}
 
     /**
      * Combines an array or wirelets
@@ -148,7 +142,7 @@ public abstract class Wirelet {
 
     /**
      * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually receive it
-     * using {@link WireletConsume}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
+     * using {@link WireletReceive}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
      * However, by wrapping the wire
      * 
      * @param wirelet
@@ -157,7 +151,7 @@ public abstract class Wirelet {
      */
     // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
     public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
-        return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
+        return new BaseWirelet.IgnoreUnhandled(combine(wirelet));
     }
 
     // will invoke the specified runnable if the wirelet cannot be processed
@@ -165,7 +159,7 @@ public abstract class Wirelet {
     // orElseIgnore();
     // andThen()
     public static Wirelet ignoreUnhandled(Wirelet wirelet, Runnable orElseRun) {
-        return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
+        return new BaseWirelet.IgnoreUnhandled(combine(wirelet));
     }
 
     static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
@@ -187,7 +181,7 @@ public abstract class Wirelet {
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * Overriding any default naming scheme, or any name that might already have been set, for example, via
-     * {@link AbstractComponentConfiguration#setName(String)}.
+     * {@link BaseComponentConfiguration#setName(String)}.
      * 
      * @param name
      *            the name of the component
@@ -195,7 +189,7 @@ public abstract class Wirelet {
      */
     // String intrapolation?
     public static Wirelet named(String name) {
-        return new ComponentNameWirelet(name);
+        return new SetComponentNameWirelet(name);
     }
 
 //    /**
@@ -210,4 +204,30 @@ public abstract class Wirelet {
 //    public static Wirelet requireModifier(Wirelet wirelet, ComponentModifier property) {
 //        return wirelet;
 //    }
+
+    public static Wirelet extractable(Wirelet wirelet) {
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
+     */
+    // Is inherited
+    // parent wirelet dpp.doo.FooWirelet is already declared buildtimeOnly()
+    
+    // I think you can only have wirelets injected at build-time if they are build-time only...
+    // Nej, vi skal fx bruge @Provide naar vi linker assemblies...
+    protected static final void $buildtimeOnly() {
+        WireletPreModel.buildtimeOnly(STACK_WALKER.getCallerClass());
+    }
+
+    // cannot be consumed individually. Only as either 
+    // List or Set.... 
+    // Must be a super type of this wirelet type
+    // Is inherited
+    // Can only be a part of one aggregate type...
+    // And can only be injected as an aggregate type
+    protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
+        WireletPreModel.stackBy(STACK_WALKER.getCallerClass(), wireletType);
+    }
 }

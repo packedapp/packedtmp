@@ -34,6 +34,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
@@ -52,7 +53,7 @@ import packed.internal.bundle.ExtensionBuild;
 import packed.internal.bundle.ExtensionModel;
 import packed.internal.component.source.RealmBuild;
 import packed.internal.component.source.SourceBuild;
-import packed.internal.component.wirelet.InternalWirelet.ComponentNameWirelet;
+import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
@@ -108,7 +109,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
-    final PackedBuildInfo build;
+    final PackedBuildContext build;
 
     /**
      * Creates a new instance of this class
@@ -116,7 +117,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentBuild(PackedBuildInfo build, RealmBuild realm, PackedComponentDriver<?> driver, @Nullable ComponentBuild parent,
+    ComponentBuild(PackedBuildContext build, RealmBuild realm, PackedComponentDriver<?> driver, @Nullable ComponentBuild parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
@@ -264,7 +265,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.ARTIFACT)) {
-            PackedArtifactDriver<?> psd = build().shellDriver();
+            PackedArtifactDriver<?> psd = build().artifactDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, psd.artifactRawType());
         }
         return dam;
@@ -293,7 +294,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public PackedBuildInfo build() {
+    public PackedBuildContext build() {
         return build;
     }
 
@@ -357,26 +358,25 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     // loop situations, for example, if a bundle recursively links itself which fails by throwing
     // java.lang.StackOverflowError instead of an infinite loop.
     @Override
-    public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        // Get the driver from the bundle
-        PackedComponentDriver<?> driver = AssemblyHelper.getDriver(bundle);
+    public void link(Assembly<?> assembly, Wirelet... wirelets) {
+        // Extract the component driver from the assembly
+        PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
 
-        WireletPack wp = WireletPack.from(driver, wirelets);
-
-        // ConfigSite cs = ConfigSiteSupport.captureStackFrame(configSite(), ConfigSiteInjectOperations.INJECTOR_OF);
-        // ConfigSite cs = ConfigSite.UNKNOWN;
+        // Create a wirelet pack from any inherited wirelets and any specified wirelets
+        WireletPack wp = WireletPack.ofChild(this.wirelets, driver, wirelets);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
-        ComponentBuild parent = extension == null ? this : treeParent;
+        ComponentBuild parent = extension == null ? this : /* (Container) */ treeParent;
 
-        // Create the new component
-        ComponentBuild compConf = new ComponentBuild(build, new RealmBuild(bundle.getClass()), driver, parent, wp);
+        // Create the new component and a new realm
+        ComponentBuild compConf = new ComponentBuild(build, new RealmBuild(assembly.getClass()), driver, parent, wp);
 
-        // Invoke Bundle::configure
-        AssemblyHelper.configure(bundle, driver.toConfiguration(compConf));
+        // Invokes Assembly::build
+        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(compConf));
 
-        // Close the the linked realm, no further configuration of it is possible after Bundle::configure has been invoked
+        // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
+        // Maybe we should have close on the realm instead???
         compConf.close();
     }
 
@@ -417,7 +417,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
     @Override
     public void setName(String name) {
         // First lets check the name is valid
-        ComponentNameWirelet.checkName(name);
+        SetComponentNameWirelet.checkName(name);
         int s = nameState;
 
         checkConfigurable();
@@ -537,9 +537,9 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
-        WireletPack wp = WireletPack.from(d, wirelets);
+        WireletPack wp = WireletPack.ofChild(this.wirelets, d, wirelets);
         //ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         // When an extension adds new components they are added to the container (the extension's parent)

@@ -58,7 +58,7 @@ public class FooBar extends BaseAssembly {
 
     public static void main(String[] args) {
         System.out.println(ServiceContract.of(new Child()));
-        App a = App.of(new FooBar());
+        App a = App.start(new FooBar());
         a.use(Runnable.class).run();
     }
 

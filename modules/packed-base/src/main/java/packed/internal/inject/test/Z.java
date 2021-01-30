@@ -30,9 +30,9 @@ class Z {
     public static void main(ServiceLocator sl) {
 
         List<CharSequence> l = new ArrayList<>();
-        sl.selectAnyQualifiers(String.class).forEachInstance((s, i) -> l.add(i));
+        sl.selectWithAnyQualifiers(String.class).forEachInstance((s, i) -> l.add(i));
         Map<Integer, String> m = new HashMap<>();
-        sl.selectAnyQualifiers(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
+        sl.selectWithAnyQualifiers(String.class).forEachInstance((s, st) -> m.put(s.attributes().keys().size(), st));
 
     }
 }

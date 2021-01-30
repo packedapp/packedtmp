@@ -22,13 +22,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
 import app.packed.component.Assembly;
+import app.packed.component.ComponentConfiguration;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Helper class to access non-public members in {@link Assembly}. */
 public final class AssemblyHelper {
 
-    public static final AssemblyHelper BUNDLE_CONSUMED = new AssemblyHelper();
+    public static final AssemblyHelper ASSEMBLY_CONSUMED = new AssemblyHelper();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "configuration",
@@ -44,38 +45,44 @@ public final class AssemblyHelper {
     /** No instances for you. */
     private AssemblyHelper() {}
 
-    static void configure(Assembly<?> bundle, Object configuration) {
+    /**
+     * @param assembly
+     *            the assembly for which to invoke the build method
+     * @param configuration
+     *            the configuration object to set before invoking the build method
+     */
+    static void invokeBuild(Assembly<?> assembly, Object configuration) {
         // We perform a compare and exchange. Guarding against concurrent usage of this bundle.
-        Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(bundle, null, configuration);
+        Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(assembly, null, configuration);
         if (existing == null) {
             try {
-                MH_BUNDLE_CONFIGURE.invoke(bundle); // Invokes app.packed.component.Assembly#configure()
+                MH_BUNDLE_CONFIGURE.invoke(assembly); // Invokes app.packed.component.Assembly#configure()
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
                 // sets Bundle.configuration to a marker that indicates the bundle has been consumed
-                VH_BUNDLE_CONFIGURATION.setVolatile(bundle, AssemblyHelper.BUNDLE_CONSUMED);
+                VH_BUNDLE_CONFIGURATION.setVolatile(assembly, AssemblyHelper.ASSEMBLY_CONSUMED);
             }
         } else if (existing instanceof AssemblyHelper) {
             // Bundle has already been used successfully or unsuccessfully
-            throw new IllegalStateException("This bundle has already been used, type = " + bundle.getClass());
+            throw new IllegalStateException("This assembly has already been used, type = " + assembly.getClass());
         } else {
             // Can be this thread or another thread that is already using the bundle.
-            throw new IllegalStateException("This bundle is currently being used elsewhere, type = " + bundle.getClass());
+            throw new IllegalStateException("This assembly is currently being used elsewhere, type = " + assembly.getClass());
         }
     }
 
     /**
      * Extracts the component driver from the specified bundle.
      * 
-     * @param bundle
+     * @param assembly
      *            the bundle to extract the component driver from
      * @return the specified bundle's component driver
      * @see #VH_BUNDLE_DRIVER
      */
-    static <C> PackedComponentDriver<? extends C> getDriver(Assembly<C> bundle) {
-        requireNonNull(bundle, "bundle is null");
-        return (PackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(bundle);
+    static <C extends ComponentConfiguration> PackedComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
+        requireNonNull(assembly, "assembly is null");
+        return (PackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(assembly);
     }
 }
 /// Some extensions that I don't think we will do

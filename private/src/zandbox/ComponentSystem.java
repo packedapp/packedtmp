@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package zandbox;
 
-import java.util.function.Consumer;
+import app.packed.component.Assembly;
 
 /**
  *
@@ -34,8 +34,8 @@ import java.util.function.Consumer;
 // ComponentBranch
 public interface ComponentSystem {
 
-    // hmmm, efterhaanden lidt for mange metoder???
-    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
-        ComponentStream.of(s).forEach(action);
-    }
+//    // hmmm, efterhaanden lidt for mange metoder???
+//    public static void forEach(ComponentSystem s, Consumer<? super Component> action) {
+//        ComponentStream.of(s).forEach(action);
+//    }
 }

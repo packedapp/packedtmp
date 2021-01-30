@@ -26,6 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
@@ -271,7 +272,7 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return compConf.wire(driver, wirelets);
     }
 

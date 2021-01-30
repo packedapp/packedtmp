@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.component.WireletConsume;
+import app.packed.component.WireletReceive;
 import app.packed.container.ConnectExtensions;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
@@ -362,7 +362,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         private void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
-            builder.addAnnoClassMapper(WireletConsume.class, ExtensionBuild.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(WireletReceive.class, ExtensionBuild.MH_FIND_WIRELET, index);
         }
 
         /**
@@ -374,7 +374,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         ExtensionModel build() {
             // See if the extension is annotated with @ExtensionSidecar
 
-            for (Class<? extends Extension> c : ExtensionTmpModel.consume(extensionType)) {
+            for (Class<? extends Extension> c : ExtensionPreModel.consume(extensionType)) {
                 addDependency(c);
             }
 

@@ -16,12 +16,9 @@
 package app.packed.component;
 
 /**
- * A set of wirelets that can be specified at build-time only. Attempts to use them on an pre-generated image will
- * result in an {@link IllegalStateException} being thrown.
+ * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link Image} will result in
+ * an {@link WireletException} being thrown.
  */
-// Er ikke sikker paa ISE, vi maa generelt smide den samme exception for alle misplaced wirelets...
-// Og der passer IAE altsaa bedre paa de fleste
-
 //Features
 // Debuggin
 // We could have app.packed.build package.

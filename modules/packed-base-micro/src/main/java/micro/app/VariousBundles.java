@@ -24,10 +24,10 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousBundles {
 
-    public static final Image<App> EMPTY_IMAGE = App.imageOf(empty());
-    public static final Image<App> ONE_COMPONENT_IMAGE = App.imageOf(oneComponent());
-    public static final Image<App> FIVE_CONTAINER_IMAGE = App.imageOf(fiveComponents());
-    public static final Image<App> ONE_CONTAINER_IMAGE = App.imageOf(oneContainer());
+    public static final Image<App> EMPTY_IMAGE = App.buildImage(empty());
+    public static final Image<App> ONE_COMPONENT_IMAGE = App.buildImage(oneComponent());
+    public static final Image<App> FIVE_CONTAINER_IMAGE = App.buildImage(fiveComponents());
+    public static final Image<App> ONE_CONTAINER_IMAGE = App.buildImage(oneContainer());
 
     public static BaseAssembly empty() {
         return new BaseAssembly() {

@@ -18,7 +18,7 @@ package app.packed.component;
 import app.packed.container.Extension;
 
 /**
- * A wirelet
+ * By default a wirelet is only processed by the single component it is applied to. However, 
  */
 // Ideen er at man som default ikke bliver inherited...
 // Men at man kan
@@ -30,20 +30,6 @@ import app.packed.container.Extension;
 
 // Skal lige finde ud af omkring build-time/run-time
 public abstract class InheritableWirelet extends Wirelet {
-
-    /**
-     * 
-     */
-    public InheritableWirelet() {
-        super();
-    }
-
-    /**
-     * @param modifier
-     */
-    public InheritableWirelet(ComponentModifier modifier) {
-        super(modifier);
-    }
 
     public final InheritableWirelet assembledBy(Class<? extends Assembly<?>> assemblyType) {
         throw new UnsupportedOperationException();
@@ -70,13 +56,13 @@ public abstract class InheritableWirelet extends Wirelet {
     }
 
     /**
-     * By default an inheritable wirelet will be inherited
+     * Returns a wirelet whose inheritance strategy can no longer be changed. This method is mainly useful if you want to
+     * expose an inheritable wirelet to end-users. But you do not want the end-users be able to change the inheritance
+     * strategy
      * 
-     * @return the wirelet
+     * @return this wirelet as an immutable wirelet
      */
-    // Maybe just call it wirelet()???
-    // We simply just say that you cannot change how it is inherited
     public final Wirelet wirelet() {
-        throw new UnsupportedOperationException();
+        return Wirelet.extractable(this);
     }
 }

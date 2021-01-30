@@ -25,9 +25,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
+import app.packed.component.ArtifactDriver;
+import app.packed.component.Assembly;
 import app.packed.component.Component;
-import app.packed.component.ComponentAnalyzer;
-import app.packed.component.ComponentSystem;
 import app.packed.container.ExtensionNest;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.service.ServiceManager;
@@ -137,6 +137,11 @@ public final class ServiceContract {
         return true;
     }
 
+    /**
+     * Returns whether or not this contract has any clauses.
+     * 
+     * @return whether or not this contract has any clauses
+     */
     public boolean isEmpty() {
         return optional.isEmpty() && provides.isEmpty() && requires.isEmpty();
     }
@@ -233,7 +238,7 @@ public final class ServiceContract {
      * Returns a service contract from the specified image. Or fails with {@link UnsupportedOperationException}. if the a
      * contract
      * 
-     * @param system
+     * @param assembly
      *            the image to return a contract for
      * @return the contract
      */
@@ -243,8 +248,11 @@ public final class ServiceContract {
     // ofElseEmpty();
     // I Think optional, jeg kunne godt forstille mig en contract som ikke har noget der svarer til empty.
     // Men det er ogsaa fint.. Det her gaelder kun for ServiceContract...
-    public static ServiceContract of(ComponentSystem system) {
-        Component c = ComponentAnalyzer.analyze(system);
+
+    // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
+    // Vil mene kontrakter primaert er en composition/build ting
+    public static ServiceContract of(Assembly<?> assembly) {
+        Component c = ArtifactDriver.daemon().analyze(assembly);
         if (!c.modifiers().isBundle()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }

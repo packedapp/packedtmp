@@ -17,6 +17,7 @@ package packed.internal.bundle;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.ref.WeakReference;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -29,37 +30,36 @@ import packed.internal.util.ClassUtil;
  *
  */
 // Maaske flytte de statiske metoder til ExtensionModel.builder
-public final class ExtensionTmpModel   {
+public final class ExtensionPreModel   {
 
-    private static final ClassValue<AtomicReference<ExtensionTmpModel>> HOLDERS = new ClassValue<>() {
+    private static final ClassValue<AtomicReference<ExtensionPreModel>> HOLDERS = new ClassValue<>() {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected AtomicReference<ExtensionTmpModel> computeValue(Class<?> type) {
-            return new AtomicReference<>(new ExtensionTmpModel((Class<? extends Extension>) type));
+        protected AtomicReference<ExtensionPreModel> computeValue(Class<?> type) {
+            return new AtomicReference<>(new ExtensionPreModel((Class<? extends Extension>) type));
         }
     };
 
     /** A set of extension this extension depends on. */
     private Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
-    private final Thread thread = Thread.currentThread();
+    private final WeakReference<Thread> thread = new WeakReference<>(Thread.currentThread());
 
     final Class<? extends Extension> type;
 
-    ExtensionTmpModel(Class<? extends Extension> type) {
+    ExtensionPreModel(Class<? extends Extension> type) {
         this.type = requireNonNull(type);
     }
 
-
     public static void addStaticDependency(Class<?> callerClass, Class<? extends Extension> dependencyType) {
-        ExtensionTmpModel m = m(callerClass);
+        ExtensionPreModel m = m(callerClass);
         m.dependencies.add(dependencyType);
     }
 
     static Set<Class<? extends Extension>> consume(Class<? extends Extension> extensionType) {
         ClassUtil.initializeClass(extensionType);
-                ExtensionTmpModel existing = m(extensionType);
+                ExtensionPreModel existing = m(extensionType);
         HOLDERS.get(extensionType).set(null);
         if (existing != null) {
             return existing.dependencies;
@@ -67,15 +67,19 @@ public final class ExtensionTmpModel   {
         return Set.of();
     }
 
-    static ExtensionTmpModel m(Class<?> callerClass) {
+    static ExtensionPreModel m(Class<?> callerClass) {
         if (!Extension.class.isAssignableFrom(callerClass)) {
-            throw new InternalExtensionException("This method can only be called directly from an extension, was " + callerClass);
+            throw new InternalExtensionException("This method can only be called directly a class that extends Extension, was " + callerClass);
         }
-        ExtensionTmpModel m = HOLDERS.get(callerClass).get();
+        ExtensionPreModel m = HOLDERS.get(callerClass).get();
         if (m == null) {
             throw new InternalExtensionException("This method must be called within the extensions class initializer, extension = " + callerClass);
         }
-        if (Thread.currentThread() != m.thread) {
+        // Tror vi maa dropper den her traad...
+        // Hvis class initializeren fejler et eller andet sted. 
+        // Saa har vi stadig en reference til traaden...
+        // Som minimum skal vi koere en weak reference
+        if (Thread.currentThread() != m.thread.get()) {
             throw new InternalExtensionException("Expected thread " + m.thread + " but was " + Thread.currentThread());
         }
         return m;

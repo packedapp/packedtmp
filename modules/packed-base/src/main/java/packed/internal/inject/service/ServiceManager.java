@@ -183,7 +183,7 @@ public final class ServiceManager {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedArtifactDriver<?> psd = (PackedArtifactDriver<?>) container.compConf.build().shellDriver();
+        PackedArtifactDriver<?> psd = (PackedArtifactDriver<?>) container.compConf.build().artifactDriver();
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {

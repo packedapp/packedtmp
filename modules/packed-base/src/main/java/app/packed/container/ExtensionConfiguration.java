@@ -29,6 +29,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentClassDriver;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;
 import app.packed.component.ComponentInstaller;
@@ -178,7 +179,7 @@ public interface ExtensionConfiguration extends ComponentInstaller {
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 
-    default <C, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+    default <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
@@ -194,14 +195,14 @@ public interface ExtensionConfiguration extends ComponentInstaller {
      *            any wirelets that should be used when creating the component
      * @return a configuration for the component
      */
-    <C> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+    <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    default <C, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+    default <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bind(implementation);
         return wire(cd, wirelets);
     }
 
-    default <C, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+    default <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
         ComponentDriver<C> cd = driver.bindInstance(instance);
         return wire(cd, wirelets);
     }

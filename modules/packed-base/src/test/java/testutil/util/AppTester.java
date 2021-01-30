@@ -37,7 +37,7 @@ public class AppTester {
     }
 
     public AppTester(Assembly<?> source, Wirelet... wirelets) {
-        this(App.of(source, wirelets));
+        this(App.start(source, wirelets));
     }
 
     public AppTester(Image<App> img, Wirelet... wirelets) {
@@ -62,6 +62,6 @@ public class AppTester {
     }
 
     public static AppTester of(Assembly<?> source, Wirelet... wirelets) {
-        return new AppTester(App.of(source, wirelets));
+        return new AppTester(App.start(source, wirelets));
     }
 }

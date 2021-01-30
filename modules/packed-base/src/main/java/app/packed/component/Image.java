@@ -40,17 +40,34 @@ import app.packed.cli.MainArgs;
  * @apiNote In the future, if the Java language permits, {@link Image} may become a {@code sealed} interface, which
  *          would prohibit subclassing except by explicitly permitted types.
  * 
- * @see App#imageOf(Assembly, Wirelet...)
+ * @see App#buildImage(Assembly, Wirelet...)
  */
-public interface Image<A> extends ComponentDelegate {
+// Maybe artifact image anyway?? ArtifactDriver er jo lidt mere flex nu... 
+public interface Image<A> {
 
     /**
-     * A shortcut for using an image. Is typically used from main methods
+     * Returns the root component of the image.
      * 
-     * List example
+     * @return the root component of the image
+     */
+    Component component();
+
+    /**
+     * A helper method that makes it easier to provide command-line arguments to your program. Is typically used from a
+     * program's main method:
+     * 
+     * <pre> {@code
+     * private final static Image<Void> IMG = Main.imageOf(new SomeAssembly());
+     *
+     * public static void main(String[] args) {
+     *   IMG.use(args, any additional wirelets...);
+     * }}</pre>
+     * <p>
+     * Invoking this method is identical to invoking
+     * {@code image.use(assembly, Wirelet.combine(MainArgs.of(args), wirelets))}.
      * 
      * @param args
-     *            string args
+     *            command line arguments
      * @param wirelets
      *            optional wirelets
      * @return the result of using the image
@@ -67,4 +84,10 @@ public interface Image<A> extends ComponentDelegate {
      * @return the result of using the image
      */
     A use(Wirelet... wirelets);
+}
+
+interface ZImage<A> {
+    // Hmmmmmmm IDK
+    // Could do sneaky throws instead
+    A throwingUse(Wirelet... wirelets);
 }

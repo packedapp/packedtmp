@@ -16,29 +16,15 @@
 package app.packed.component;
 
 /**
- * Thrown by the runtime when a specified wirelet was not consumed.
+ *
  */
-// IllegalArgumentException?
-public class UnconsumedWireletException extends RuntimeException {
+// Eller hvis vi skal koere noget debugging er det maaske meget godt...
+// Men den kan ikke tage en klasse taenker jeg...
+// Den target en rigtig instance...  saa maaske WireletInfo
 
-    /** */
-    private static final long serialVersionUID = 1L;
+// Descriptor -> Class
+// Info -> Instance
+interface WireletDescriptor {
 
-    /**
-     * @param message
-     *            the message
-     */
-    public UnconsumedWireletException(String message) {
-        super(message);
-    }
-
-    /**
-     * @param message
-     *            the message
-     * @param cause
-     *            the cause
-     */
-    public UnconsumedWireletException(String message, Throwable cause) {
-        super(message, cause);
-    }
+    // .debugWirelet(BiConsumer<Component, WireletDescriptor> c);
 }

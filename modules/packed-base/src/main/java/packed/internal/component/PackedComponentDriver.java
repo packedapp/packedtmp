@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentClassDriver;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentFactoryDriver;
@@ -34,7 +35,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class PackedComponentDriver<C> implements ComponentDriver<C> {
+public final class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
     final Meta meta;
 
@@ -103,28 +104,28 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         return new Meta(mh, modifiers);
     }
 
-    public static <C> ComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+    public static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(caller, false, driverType, options);
         return new PackedComponentDriver<>(meta, null);
     }
 
-    public static <C, I> PackedClassComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+    public static <C extends ComponentConfiguration, I> PackedClassComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(caller, true, driverType, options);
         return new PackedClassComponentDriver<>(meta);
     }
 
-    public static <C, I> PackedFactoryComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+    public static <C extends ComponentConfiguration, I> PackedFactoryComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(caller, true, driverType, options);
         return new PackedFactoryComponentDriver<>(meta);
     }
 
-    public static <C, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(caller, true, driverType, options);
@@ -169,7 +170,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    static class PackedClassComponentDriver<C, I> implements ComponentClassDriver<C, I> {
+    static class PackedClassComponentDriver<C extends ComponentConfiguration, I> implements ComponentClassDriver<C, I> {
         final Meta meta;
 
         public PackedClassComponentDriver(Meta meta) {
@@ -184,7 +185,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    static class PackedFactoryComponentDriver<C, I> extends PackedClassComponentDriver<C, I> implements ComponentFactoryDriver<C, I> {
+    static class PackedFactoryComponentDriver<C extends ComponentConfiguration, I> extends PackedClassComponentDriver<C, I> implements ComponentFactoryDriver<C, I> {
 
         public PackedFactoryComponentDriver(Meta meta) {
             super(meta);
@@ -198,7 +199,7 @@ public final class PackedComponentDriver<C> implements ComponentDriver<C> {
         }
     }
 
-    private static class PackedInstanceComponentDriver<C, I> extends PackedFactoryComponentDriver<C, I> implements ComponentInstanceDriver<C, I> {
+    private static class PackedInstanceComponentDriver<C extends ComponentConfiguration, I> extends PackedFactoryComponentDriver<C, I> implements ComponentInstanceDriver<C, I> {
 
         private PackedInstanceComponentDriver(Meta meta) {
             super(meta);

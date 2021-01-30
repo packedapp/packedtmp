@@ -27,7 +27,7 @@ import app.packed.component.Wirelet;
 import app.packed.state.Host.StopOption;
 
 /**
- * Wirelets that can be used when wiring containers. For example, via {@link App#of(Assembly, Wirelet...)}.
+ * Wirelets that can be used when wiring containers. For example, via {@link App#start(Assembly, Wirelet...)}.
  * <p>
  * All wirelets on this class requires the {@link ComponentModifier#CONTAINER} modifier on the component being wired.
  */
@@ -147,7 +147,7 @@ public interface StateWirelets {
      * @see Runtime#addShutdownHook(Thread)
      */
     static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Host.StopOption... options) {
-        throw new UnsupportedOperationException();
+        return new Wirelet() {};
     }
 
     /**

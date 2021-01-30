@@ -33,7 +33,7 @@ public class AppTest {
     @Test
     public void emptyApp() {
         AtomicReference<BundleConfiguration> ar = new AtomicReference<>();
-        App app = App.of(new BaseAssembly() {
+        App app = App.start(new BaseAssembly() {
             @Override
             public void build() {
                 ar.set(configuration());

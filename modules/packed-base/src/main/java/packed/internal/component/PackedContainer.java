@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
@@ -24,14 +22,9 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.component.Assembly;
-import app.packed.component.Component;
-import app.packed.component.Image;
-import app.packed.component.ArtifactDriver;
-import app.packed.component.Wirelet;
+import app.packed.state.Host;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
-import app.packed.state.Host;
 import packed.internal.component.BuildtimeRegion.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
@@ -116,7 +109,7 @@ public class PackedContainer implements Host {
     }
 
     void onInitialized(ComponentBuild component, PackedInitializationContext pic) {
-        boolean isMain = component.build.shellDriver() == null;
+        boolean isMain = component.build.artifactDriver() == null;
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -216,35 +209,35 @@ public class PackedContainer implements Host {
         }
     }
 
-    /** An implementation of {@link Image} used by {@link ArtifactDriver#newImage(Assembly, Wirelet...)}. */
-    public static final class ExecutingImage implements Image<Void> {
-
-        /** The assembled image node. */
-        private final PackedBuildInfo build;
-
-        /**
-         * Create a new image from the specified component.
-         * 
-         * @param build
-         *            the assembled component
-         */
-        public ExecutingImage(PackedBuildInfo build) {
-            this.build = requireNonNull(build);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Component component() {
-            return build.asComponent();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Void use(Wirelet... wirelets) {
-            build.process(wirelets);
-            return null;
-        }
-    }
+//    /** An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}. */
+//    public static final class ExecutingImage implements Image<Void> {
+//
+//        /** The assembled image node. */
+//        private final PackedBuildInfo build;
+//
+//        /**
+//         * Create a new image from the specified component.
+//         * 
+//         * @param build
+//         *            the assembled component
+//         */
+//        public ExecutingImage(PackedBuildInfo build) {
+//            this.build = requireNonNull(build);
+//        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public Component component() {
+//            return build.asComponent();
+//        }
+//
+//        /** {@inheritDoc} */
+//        @Override
+//        public Void use(Wirelet... wirelets) {
+//            build.process(wirelets);
+//            return null;
+//        }
+//    }
 
     @SuppressWarnings("serial") // Guest is not synchronized
     public static final class Sync extends AbstractQueuedSynchronizer {

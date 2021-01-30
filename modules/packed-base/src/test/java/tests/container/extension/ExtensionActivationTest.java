@@ -37,7 +37,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceMethod() {
-        App.of(new BaseAssembly() {
+        App.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -51,7 +51,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticField() {
-        App.of(new BaseAssembly() {
+        App.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -63,7 +63,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void instanceField() {
-        App.of(new BaseAssembly() {
+        App.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -75,7 +75,7 @@ public class ExtensionActivationTest extends AbstractArtifactTest {
 
     @Test
     public void staticMethod() {
-        App.of(new BaseAssembly() {
+        App.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();

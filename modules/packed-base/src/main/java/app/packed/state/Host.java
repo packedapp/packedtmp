@@ -23,8 +23,6 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import packed.internal.component.PackedBuildInfo;
-import packed.internal.component.PackedContainer.ExecutingImage;
 
 /**
  * A component instance.
@@ -144,22 +142,23 @@ public interface Host {
 
     // Vs main?????
     // Tror main er bl.a. propper det ind som et system image...
-    
+
     static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        //TODO skal erstattes af en ArtifactDriver<Void>
-        PackedBuildInfo.build(assembly, false, false, null, wirelets).process(null);
+        HostHelper.DRIVER.use(assembly, wirelets);
     }
 
     // TODO return Image<Host>?
-    static Image<Void> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
-        return new ExecutingImage(build);
+    static Image<Void> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+        return HostHelper.DRIVER.buildImage(assembly, wirelets);
+//
+//        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
+//        return new ExecutingImage(build);
     }
-    
-    static Image<Void> imageOfMain(Assembly<?> assembly, Wirelet... wirelets) {
-        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
-        return new ExecutingImage(build);
-    }
+
+//    static Image<Void> imageOfMain(Assembly<?> assembly, Wirelet... wirelets) {
+//        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
+//        return new ExecutingImage(build);
+//    }
 
 //
 //    static <T> T execute(Assembly<?> assembly, Class<T> resultType, Wirelet... wirelets) {

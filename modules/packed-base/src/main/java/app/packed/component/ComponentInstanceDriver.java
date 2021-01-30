@@ -23,11 +23,11 @@ import packed.internal.component.PackedComponentDriver;
 /**
  *
  */
-public interface ComponentInstanceDriver<C, I> extends ComponentFactoryDriver<C, I> {
+public interface ComponentInstanceDriver<C extends ComponentConfiguration, I> extends ComponentFactoryDriver<C, I> {
 
     ComponentDriver<C> bindInstance(I instance);
 
-    static <C, I> ComponentInstanceDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
+    static <C extends ComponentConfiguration, I> ComponentInstanceDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
         return PackedComponentDriver.ofInstance(lookup, driverType, options);
     }
 

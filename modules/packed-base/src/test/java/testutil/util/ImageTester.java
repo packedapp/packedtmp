@@ -31,7 +31,7 @@ public class ImageTester {
     private final Image<App> image;
 
     public ImageTester(BaseAssembly source, Wirelet... wirelets) {
-        this(App.imageOf(source, wirelets));
+        this(App.buildImage(source, wirelets));
     }
 
     public AppTester newApp(Wirelet... wirelets) {
