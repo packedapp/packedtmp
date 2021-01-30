@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
@@ -25,7 +26,6 @@ import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.Composable;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import packed.internal.component.source.RealmBuild;
@@ -155,7 +155,7 @@ public final class PackedBuildContext implements BuildInfo {
     }
 
     public static <C extends Composer<?>, D extends ComponentConfiguration> PackedBuildContext compose(PackedArtifactDriver<?> artifactDriver, PackedComponentDriver<D> componentDriver,
-            Function<? super D, ? extends C> factory, Composable<? super C> consumer, Wirelet... wirelets) {
+            Function<? super D, ? extends C> factory, Consumer<? super C> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.ofRoot(artifactDriver, componentDriver, wirelets);
 
         PackedBuildContext pac = new PackedBuildContext(artifactDriver, 0, wp);
@@ -164,7 +164,7 @@ public final class PackedBuildContext implements BuildInfo {
 
         D conf = componentDriver.toConfiguration(compConf);
         C cc = requireNonNull(factory.apply(conf));
-        consumer.compose(cc);
+        consumer.accept(cc);
 
         compConf.close();
         return pac;

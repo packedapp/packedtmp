@@ -17,6 +17,7 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
@@ -66,7 +67,7 @@ public interface ArtifactDriver<A> {
     Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
 
     <CO extends Composer<?>, CC extends ComponentConfiguration> A compose(ComponentDriver<CC> componentDriver,
-            Function<? super CC, ? extends CO> composerFactory, Composable<? super CO> consumer, Wirelet... wirelets);
+            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
 
     /**
      * Create a new artifact using the specified assembly.

@@ -17,11 +17,11 @@ package packed.internal.inject.service.sandbox;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.Consumer;
 
 import app.packed.component.App;
 import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
-import app.packed.component.Composable;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
@@ -156,7 +156,7 @@ public interface Injector extends ServiceLocator {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    static Injector configure(Composable<? super InjectorComposer> configurator, Wirelet... wirelets) {
+    static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return InjectorComposer.configure(configurator, wirelets);
     }
 

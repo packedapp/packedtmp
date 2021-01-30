@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
@@ -28,7 +29,6 @@ import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Composable;
 import app.packed.component.Composer;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
@@ -98,7 +98,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     /** {@inheritDoc} */
     @Override
     public <CO extends Composer<?>, CC extends ComponentConfiguration> A compose(ComponentDriver<CC> componentDriver,
-            Function<? super CC, ? extends CO> composerFactory, Composable<? super CO> consumer, Wirelet... wirelets) {
+            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
         PackedBuildContext pbc = PackedBuildContext.compose(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
         PackedInitializationContext ac = pbc.process();
         return newArtifact(ac);

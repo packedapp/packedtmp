@@ -15,10 +15,11 @@
  */
 package packed.internal.inject.service.sandbox;
 
+import java.util.function.Consumer;
+
 import app.packed.base.Qualifier;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.Composable;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
@@ -30,7 +31,7 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
- * {@link Injector#configure(Composable, Wirelet...)}. This is thought of a alternative to using a {@link BaseAssembly}.
+ * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link BaseAssembly}.
  * Unlike bundles all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
@@ -201,7 +202,7 @@ public final class InjectorComposer extends Composer<BundleConfiguration> {
     }
 
     // configure()
-    static Injector configure(Composable<? super InjectorComposer> configurator, Wirelet... wirelets) {
+    static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return InjectorArtifactHelper.DRIVER.compose(BundleConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
     }
 
