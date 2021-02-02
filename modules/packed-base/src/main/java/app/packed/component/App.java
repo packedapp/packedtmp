@@ -15,11 +15,14 @@
  */
 package app.packed.component;
 
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
+import app.packed.component.drivers.ArtifactDriver;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import app.packed.state.RunState;
@@ -183,24 +186,6 @@ public interface App extends AutoCloseable {
         return DefaultApp.DRIVER;
     }
 
-    // An image that can be used exactly, will drop any memory references...
-    // Maybe make a more generic low-memory profile
-    // Which drops this. And keeps
-    // It is is more like single instantiable..
-    // Because we can analyze it as many times as we want..
-    // singleImageOf
-    /**
-     * 
-     * @param assembly
-     *            the assembly to use for creating the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     */
-    static Image<App> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
-    }
-
     /**
      * Build and start a new application using the specified assembly. The state of the returned application is
      * {@link RunState#RUNNING}.
@@ -221,6 +206,50 @@ public interface App extends AutoCloseable {
      */
     static App start(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().use(assembly, wirelets);
+    }
+}
+
+class Ddd extends BaseAssembly {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {}
+
+    public static void main(String[] args) {
+        try (App app = App.start(new Ddd())) {
+            app.use(Map.class).isEmpty();
+        }
+    }
+}
+
+interface Zapp extends App {
+
+    static App lazyStart(Assembly<?> assembly, Wirelet... wirelets) {
+        // Altsaa der er vel disse interessant
+
+        // initialized - lazy start
+        // initialized - require explicit start
+        // Starting
+        // Started
+        return App.driver().use(assembly, StateWirelets.lazyStart().andThen(wirelets));
+    }
+
+    // An image that can be used exactly, will drop any memory references...
+    // Maybe make a more generic low-memory profile
+    // Which drops this. And keeps
+    // It is is more like single instantiable..
+    // Because we can analyze it as many times as we want..
+    // singleImageOf
+    /**
+     * 
+     * @param assembly
+     *            the assembly to use for creating the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     */
+    static Image<App> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return App.driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
 ///**

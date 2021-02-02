@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivers;
+
+import app.packed.base.TypeToken;
+import app.packed.component.ComponentConfiguration;
+import app.packed.inject.Factory;
 
 /**
  *
  */
-public interface ComponentClassDriver<C extends ComponentConfiguration, I> {
-
-    /**
-     * @param implementation
-     *            the implementation to bind
-     * @return a new bound component driver
-     */
-    ComponentDriver<C> bind(Class<? extends I> implementation);
+// Ved ikke om 
+public interface SourceableComponentDriver<C extends ComponentConfiguration, S> {
+    ComponentDriver<C> fromFunction(S function);
+    ComponentDriver<C> fromClass(Class<S> implementation);
+    ComponentDriver<C> fromTypeToken(TypeToken<S> typeToken);
+    ComponentDriver<C> fromFactory(Factory<S> factory);
+    ComponentDriver<C> fromInstance(S instance);
 }

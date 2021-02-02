@@ -25,10 +25,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
+import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.ExtensionNest;
+import app.packed.validate.Validation;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.service.ServiceManager;
 
@@ -93,6 +94,18 @@ public final class ServiceContract {
         this.requires = requireNonNull(requires);
         this.optional = requireNonNull(optional);
         this.provides = requireNonNull(provides);
+    }
+
+    public ServiceContract assertIsEmpty() {
+        if (!isEmpty()) {
+
+        }
+        return this;
+    }
+
+    public ServiceContract assertEquals(ServiceContract other) {
+        // nicer 
+        return this;
     }
 
     /** {@inheritDoc} */
@@ -208,6 +221,13 @@ public final class ServiceContract {
         return sb.toString();
     }
 
+    // Altsaa Validation giver kun mening hvis noget skal praecenteres til brugere...
+    // Det giver ikke "machine-to-machine"
+    public Validation validateXXXX() {
+        // Man kan let kombinere 2 Validatation
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Creates a new service contract by performing the specified action on a new {@link ServiceContract.Builder } instance.
      * Usage:
@@ -234,6 +254,16 @@ public final class ServiceContract {
         return new ServiceContract.Builder(null);
     }
 
+    public static ServiceContract of(ArtifactDriver<?> driver, Assembly<?> assembly) {
+        Component c = driver.analyze(assembly);
+        if (!c.modifiers().isBundle()) {
+            throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
+        }
+        ComponentBuild compConf = ComponentBuild.unadapt(null, c);
+        ServiceManager sm = compConf.cube.getServiceManager();
+        return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
+    }
+
     /**
      * Returns a service contract from the specified image. Or fails with {@link UnsupportedOperationException}. if the a
      * contract
@@ -252,13 +282,7 @@ public final class ServiceContract {
     // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
     // Vil mene kontrakter primaert er en composition/build ting
     public static ServiceContract of(Assembly<?> assembly) {
-        Component c = ArtifactDriver.daemon().analyze(assembly);
-        if (!c.modifiers().isBundle()) {
-            throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
-        }
-        ComponentBuild compConf = ComponentBuild.unadapt(null, c);
-        ServiceManager sm = compConf.cube.getServiceManager();
-        return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
+        return of(ArtifactDriver.defaultAnalyzer(), assembly);
     }
 
     /**

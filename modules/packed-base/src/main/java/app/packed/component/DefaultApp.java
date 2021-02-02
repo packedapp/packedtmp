@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 

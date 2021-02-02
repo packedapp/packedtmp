@@ -16,33 +16,70 @@
 package app.packed.cli;
 
 import app.packed.component.App;
-import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
+import app.packed.component.BuildException;
+import app.packed.component.Completion;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ArtifactDriver;
+import app.packed.container.BaseAssembly;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
 
 /**
- *
+ * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
+ * written use Packed.
  */
 public final class Main {
 
     /** The artifact driver used by this class. */
-    private static final ArtifactDriver<Void> DRIVER = ArtifactDriver.daemon().with(StateWirelets.shutdownHook());
+    private static final ArtifactDriver<Completion> DRIVER = ArtifactDriver.daemon().with(StateWirelets.shutdownHook());
 
     /** Not today Satan, not today. */
     private Main() {}
 
-    public static Image<Void> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    // Vi skal vel have et dev-tools projekt, ved ikke lige om den skal vaere her
+    public static void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
+        driver().assertValid(assembly, wirelets);
+    }
+
+    /**
+     * Creates a new image from the specified assembly.
+     * 
+     * @param assembly
+     *            the assembly used for building the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     * @throws BuildException
+     *             if the image could not be build
+     * @see ArtifactDriver#buildImage(Assembly, Wirelet...)
+     */
+    public static Image<Completion> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().buildImage(assembly, wirelets);
     }
 
-    public static ArtifactDriver<Void> driver() {
+    /**
+     * Returns the artifact driver that this class use.
+     * 
+     * @return the artifact driver that this class use
+     */
+    public static ArtifactDriver<Completion> driver() {
         return DRIVER;
     }
 
-    // rename to execute?
+    /**
+     * Runs the application.
+     * 
+     * @param assembly
+     *            the assembly to use for running
+     * @param args
+     *            program arguments
+     * @param wirelets
+     *            optional wirelets
+     * @throws RuntimeException
+     *             if the application failed to run properly
+     */
     public static void run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
         driver().use(assembly, MainArgs.of(args).andThen(wirelets));
     }
@@ -61,10 +98,36 @@ public final class Main {
      * @param wirelets
      *            wirelets
      * @throws RuntimeException
-     *             if the application did not execute properly
-     * @see StateWirelets#shutdownHook(app.packed.state.Host.StopOption...)
+     *             if the application failed to run properly
      */
     public static void run(Assembly<?> assembly, Wirelet... wirelets) {
         driver().use(assembly, wirelets);
+    }
+}
+
+class MainTester {
+
+    // assertValid();
+    // ServiceTester
+    // <T extends ExtensionTester> use(Class<T> testerType);
+
+    // contract(ServiceContract).assertContains();
+    //// Hmm det er jo lidt et "Politisk" spoergsmaal...
+    //// Fx validation skal koden fejle og kompilere???
+    //// Ellers skal vi have en notifaction om det...
+
+    // use(ServiceTester.class).assertContractContains();
+
+    // Altsaa tit vil man jo ogsaa gerne starte noget...
+
+    public static void main(String[] args) {
+        Main.run(new BaseAssembly() {
+            @Override
+            protected void build() {}
+        }, args);
+    }
+
+    static MainTester of(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
     }
 }

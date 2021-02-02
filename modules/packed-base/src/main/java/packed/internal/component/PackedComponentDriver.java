@@ -21,13 +21,13 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentFactoryDriver;
-import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.drivers.ComponentClassDriver;
+import app.packed.component.drivers.ComponentDriver;
+import app.packed.component.drivers.ComponentFactoryDriver;
+import app.packed.component.drivers.ComponentInstanceDriver;
 import app.packed.inject.Factory;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
@@ -207,12 +207,12 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
 
         /** {@inheritDoc} */
         @Override
-        public ComponentDriver<C> bindInstance(I instance) {
+        public ComponentDriver<C> applyInstance(I instance) {
             requireNonNull(instance, "instance is null");
             if (instance instanceof Class) {
-                throw new IllegalStateException("Cannot specify a Class instance, was " + instance);
+                throw new IllegalArgumentException("Cannot specify a Class instance, was " + instance);
             } else if (instance instanceof Factory) {
-                throw new IllegalStateException("Cannot specify a Factory instance, was " + instance);
+                throw new IllegalArgumentException("Cannot specify a Factory instance, was " + instance);
             }
             return new PackedComponentDriver<>(meta, instance);
         }

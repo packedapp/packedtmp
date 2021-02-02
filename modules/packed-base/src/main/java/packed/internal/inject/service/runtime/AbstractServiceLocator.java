@@ -32,7 +32,7 @@ import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceSelection;
 import packed.internal.inject.service.AbstractServiceRegistry;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
  * An abstract implementation of {@link ServiceLocator}. {@link #asMap()} must always return an immutable map, with
@@ -118,7 +118,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     public final ServiceLocator transform(Consumer<ServiceComposer> transformer) {
-        return PackedServiceTransformer.transform(transformer, (Collection) asMap().values());
+        return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
     }
 
     /** {@inheritDoc} */

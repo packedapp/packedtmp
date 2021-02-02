@@ -13,15 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
-
-import java.lang.invoke.MethodHandles;
-
-import app.packed.component.drivers.ArtifactDriver;
+package app.packed.base;
 
 /**
  *
  */
-final class HostHelper {
-    static final ArtifactDriver<Void> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Void.class);
+// Vi maa have en for hver...
+// Kan jo godt have en anden jar af web paa
+class PackedBase {
+
+    // Per module layer??? Maybe not here
+    public static boolean isJavaLoggingAvailable() {
+        return true;
+    }
+    
+    public static boolean isJavaManagementAvailable() {
+        return true;
+    }
+    
+    public static boolean isJdkJfrAvailable() {
+        return true;
+    }
+    
+    public static Runtime.Version version() {
+        // I think we long term want out own version class..
+        throw new UnsupportedOperationException();
+    }
 }

@@ -29,15 +29,26 @@ public abstract class ComponentConfiguration {
     protected final ComponentConfigurationContext context;
 
     /**
-     * Creates a new component configuration.
+     * Create a new component configuration.
      * 
      * @param context
-     *            the component's configuration context
+     *            the configuration context
      */
     protected ComponentConfiguration(ComponentConfigurationContext context) {
         this.context = requireNonNull(context, "context is null");
     }
 
+    /**
+     * Creates a new container with this container as its parent by linking the specified bundle.
+     * 
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            any wirelets
+     */
+    protected void link(Assembly<?> bundle, Wirelet... wirelets) {
+        context.link(bundle, wirelets);
+    }
     // $methods???
 }
 

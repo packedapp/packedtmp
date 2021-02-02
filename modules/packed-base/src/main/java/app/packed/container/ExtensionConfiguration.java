@@ -28,14 +28,10 @@ import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.Component;
-import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentFactoryDriver;
-import app.packed.component.ComponentInstaller;
-import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.bundle.ExtensionBuild;
@@ -53,7 +49,7 @@ import packed.internal.component.ComponentBuild;
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 // Does not extend CC as install/installinstance used parent as target
-public interface ExtensionConfiguration extends ComponentInstaller {
+public interface ExtensionConfiguration  {
 
     // ComponentAttributes
 
@@ -179,10 +175,10 @@ public interface ExtensionConfiguration extends ComponentInstaller {
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 
-    default <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
+//    default <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
+//        ComponentDriver<C> cd = driver.bind(implementation);
+//        return wire(cd, wirelets);
+//    }
 
     /**
      * Wires a new child component using the specified driver
@@ -197,15 +193,15 @@ public interface ExtensionConfiguration extends ComponentInstaller {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    default <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
-
-    default <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bindInstance(instance);
-        return wire(cd, wirelets);
-    }
+//    default <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
+//        ComponentDriver<C> cd = driver.bind(implementation);
+//        return wire(cd, wirelets);
+//    }
+//
+//    default <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
+//        ComponentDriver<C> cd = driver.applyInstance(instance);
+//        return wire(cd, wirelets);
+//    }
 
     @Nullable
     private static ExtensionBuild getExtensionBuild(MethodHandles.Lookup lookup, Component component) {

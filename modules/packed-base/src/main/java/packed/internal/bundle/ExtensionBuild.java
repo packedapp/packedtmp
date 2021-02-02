@@ -27,8 +27,8 @@ import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -177,21 +177,21 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> install(Class<T> implementation) {
-        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.driver(implementation);
+        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.bind(implementation);
         return compConf.wire(cd);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.driver(factory);
+        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.bind(factory);
         return compConf.wire(cd);
     }
 
     /** {@inheritDoc} */
     @Override
     public <T> BeanConfiguration<T> installInstance(T instance) {
-        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.driverInstance(instance);
+        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.bindInstance(instance);
         return compConf.wire(cd);
     }
 

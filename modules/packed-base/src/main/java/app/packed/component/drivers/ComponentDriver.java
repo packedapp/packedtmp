@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivers;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.TypeToken;
+import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
+import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import packed.internal.component.PackedComponentDriver;
 
 /**
  * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
- * Instead Packed defines a number of commonly used drivers such as ....
+ * And it is possible to use Packed without every being directly exposed to component drivers.
+ * Instead users would normally used some of the predifined used drivers such as ....
  * <p>
  * 
  * Every time you, for example, call {@link BaseAssembly#install(Class)} it actually de
@@ -38,12 +44,6 @@ import packed.internal.component.PackedComponentDriver;
  * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-// TODO maybe remove all methods... And have attributes???
-// And just retain implementations for internal usage...
-
-// TODO vi kunne expose noget om hvad den laver den her driver...
-// Saa kan man lave checks via ContainerConfigurationContext
-// sourceModel.doo().hasAnnotation(Actor.class);
 public interface ComponentDriver<C extends ComponentConfiguration> {
 
     /**
@@ -55,14 +55,14 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
      */
     ComponentModifierSet modifiers();
 
-    // Ideen er at man kan putte wirelets paa der vil blive applied.
-    // Hver gang man bruger driveren
-    // Ligesom med ArtifactDriver...
-    // Maaske rename til with() as well
-    default ComponentDriver<C> withWirelet(Wirelet wirelet) {
+    default ComponentDriver<C> with(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
-
+    
+    default ComponentDriver<C> with(Wirelet... wirelet) {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * @param <C>
      *            the type of configuration that is returned to the user when the driver is wired
@@ -73,7 +73,6 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
      * @param options
      *            optional options
      * @return a component driver
-     * @see ComponentInstanceDriver#of(MethodHandles.Lookup, Class, Option...)
      */
     static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup lookup, Class<? extends C> configurationType, Option... options) {
         return PackedComponentDriver.of(lookup, configurationType, options);
@@ -95,11 +94,22 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
     }
 
     /**
-     *
      * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
      *          which would prohibit subclassing except by explicitly permitted types.
      */
     public interface Option {
+
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         * @see ComponentModifier#BUNDLE_ROOT
+         */
+        static Option bundle() {
+            return PackedComponentDriver.OptionImpl.BUNDLE;
+        }
 
         /**
          * The component the driver will be a container.
@@ -112,18 +122,6 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
         // InstanceComponentDriver automatically sets the source...
         static Option constantSource() {
             return PackedComponentDriver.OptionImpl.CONSTANT;
-        }
-
-        /**
-         * The component the driver will be a container.
-         * <p>
-         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
-         * 
-         * @return stuff
-         * @see ComponentModifier#BUNDLE_ROOT
-         */
-        static Option bundle() {
-            return PackedComponentDriver.OptionImpl.BUNDLE;
         }
 
         static Option sourceAssignableTo(Class<?> rawType) {
@@ -165,7 +163,12 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
         // at expose funktionaliteten.
     }
 }
+//TODO maybe remove all methods... And have attributes???
+//And just retain implementations for internal usage...
 
+//TODO vi kunne expose noget om hvad den laver den her driver...
+//Saa kan man lave checks via ContainerConfigurationContext
+//sourceModel.doo().hasAnnotation(Actor.class);
 //Error handling top->down and then as a static bundle method as last resort.
 //The bundle XX.... defines a non-static error handler method. But it was never installed
 

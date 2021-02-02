@@ -154,20 +154,24 @@ public final class PackedBuildContext implements BuildInfo {
         return pac;
     }
 
-    public static <C extends Composer<?>, D extends ComponentConfiguration> PackedBuildContext compose(PackedArtifactDriver<?> artifactDriver, PackedComponentDriver<D> componentDriver,
-            Function<? super D, ? extends C> factory, Consumer<? super C> consumer, Wirelet... wirelets) {
+    public static <CO extends Composer<?>, CC extends ComponentConfiguration> PackedBuildContext compose(PackedArtifactDriver<?> artifactDriver, PackedComponentDriver<CC> componentDriver,
+            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.ofRoot(artifactDriver, componentDriver, wirelets);
 
-        PackedBuildContext pac = new PackedBuildContext(artifactDriver, 0, wp);
+        PackedBuildContext pbc = new PackedBuildContext(artifactDriver, 0, wp);
 
-        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(consumer.getClass()), componentDriver, null, wp);
+        ComponentBuild compBuild = pbc.root = new ComponentBuild(pbc, new RealmBuild(consumer.getClass()), componentDriver, null, wp);
 
-        D conf = componentDriver.toConfiguration(compConf);
-        C cc = requireNonNull(factory.apply(conf));
-        consumer.accept(cc);
+        CC componentConfiguration = componentDriver.toConfiguration(compBuild);
+        
+        // Used the supplied composer factory to create a composer from a component configuration instance
+        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
+        
+        // Invoked the consumer supplied by the end-user
+        consumer.accept(composer);
 
-        compConf.close();
-        return pac;
+        compBuild.close();
+        return pbc;
     }
 
 //    /**

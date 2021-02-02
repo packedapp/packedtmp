@@ -38,7 +38,10 @@ package app.packed.component;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 
-// Pod/Capsule/Bundle
+// Pod/Capsule/Bundle/ Kan godt lide det hedder noget med build
+
+// BuildTree / BuildSystem / 
+
 public interface BuildInfo {
 
     // Root vs non-root build or system-build, vs non-system builds

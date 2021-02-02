@@ -24,11 +24,12 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
+import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ArtifactDriver;
 import app.packed.hooks.sandbox.DynamicService;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
@@ -194,6 +195,19 @@ public interface ServiceLocator extends ServiceRegistry {
         return t.get();
     }
 
+    /**
+     * Creates a new service locator image from the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly to use for creating the image
+     * @param wirelets
+     *            optional wirelets
+     * @return a new app image
+     */
+    static Image<ServiceLocator> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().buildImage(assembly, wirelets);
+    }
+
     static ArtifactDriver<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
@@ -228,7 +242,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a new service locator
      */
     static ServiceLocator of(Consumer<? super ServiceComposer> transformation) {
-        return PackedServiceTransformer.toServiceLocator(new HashMap<>(), transformation);
+        return PackedServiceComposer.toServiceLocator(new HashMap<>(), transformation);
     }
 }
 

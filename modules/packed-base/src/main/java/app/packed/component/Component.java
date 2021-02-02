@@ -37,21 +37,6 @@ public interface Component extends AttributedElement {
     Collection<Component> children();
 
     /**
-     * Returns the configuration site of this component.
-     * 
-     * @return the configuration site of this component
-     */
-//    /**
-//     * Returns the configuration site of this application.
-//     * <p>
-//     * If this application was created from an {@link Image image}, this method will return the site where the image was
-//     * created. Unless the AI.Wiring option is used when construction the application.
-//     * 
-//     * @return the configuration site of this application
-//     */
-//    ConfigSite configSite();
-
-    /**
      * Returns the distance to the root component. The root component having depth 0.
      * 
      * @return the distance to the root component
@@ -157,19 +142,19 @@ public interface Component extends AttributedElement {
         throw new UnsupportedOperationException();
     }
 
-    // The returned component is always a system component
-    default Component viewAs(Object options) {
-        // F.eks. tage et system. Og saa sige vi kun vil
-        // se paa den aktuelle container
-
-        // Ideen er lidt at vi kan taege en component
-        // Og f.eks. lave den om til en rod...
-        // IDK. F.eks. hvis jeg har guests app.
-        // Saa vil jeg gerne kunne sige til brugere...
-        // Her er en clean Guest... Og du kan ikke se hvad
-        // der sker internt...
-        throw new UnsupportedOperationException();
-    }
+//    // The returned component is always a system component
+//    default Component viewAs(Object options) {
+//        // F.eks. tage et system. Og saa sige vi kun vil
+//        // se paa den aktuelle container
+//
+//        // Ideen er lidt at vi kan taege en component
+//        // Og f.eks. lave den om til en rod...
+//        // IDK. F.eks. hvis jeg har guests app.
+//        // Saa vil jeg gerne kunne sige til brugere...
+//        // Her er en clean Guest... Og du kan ikke se hvad
+//        // der sker internt...
+//        throw new UnsupportedOperationException();
+//    }
        
 }
 

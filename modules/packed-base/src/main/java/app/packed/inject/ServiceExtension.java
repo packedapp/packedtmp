@@ -28,7 +28,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.ComponentFactoryDriver;
+import app.packed.component.drivers.ComponentFactoryDriver;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -113,7 +113,7 @@ public final class ServiceExtension extends Extension {
 
     // Validates the outward facing contract
     public void checkContract(Validator<? super ServiceContract> validator) {
-
+        //Hmm maaske man ville lave et unit test istedet for...
     }
 
     public void checkExactContract(ServiceContract sc) {
@@ -279,7 +279,8 @@ public final class ServiceExtension extends Extension {
      * @return a service configuration for the service
      */
     public <T> BeanConfiguration<T> provideInstance(T instance) {
-        return configuration().wireInstance(BeanConfiguration.driver(), instance).provide();
+        // installer().wire(SCD.fromInstance(instance).provide();
+        return configuration().wire(BeanConfiguration.bindInstance(instance)).provide();
     }
 
     // Will install a ServiceStatelessConfiguration...
@@ -395,25 +396,14 @@ public final class ServiceExtension extends Extension {
 
 class ZExtraFunc {
 
-    final class SidecarHelper {
-
-    }
-
     protected void addAlias(Class<?> existing, Class<?> newKey) {}
+
+    protected void addAlias(Key<?> existing, Key<?> newKey) {}
 
     // Maaske er det her mere injection then service
 
     // Vi vil gerne tilfoejer
 //    protected ExportedServiceConfiguration<ServiceSelection> addSelectin(Function<>) {}
-
-    protected void addAlias(Key<?> existing, Key<?> newKey) {}
-
-    <T> ExportedServiceConfiguration<T> assistedInject(Class<T> interfase) {
-        // or abstract class can have state which can be merge in some way?
-        // well def not ver 1.
-
-        throw new UnsupportedOperationException();
-    }
 
     <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
@@ -428,15 +418,10 @@ class ZExtraFunc {
         throw new UnsupportedOperationException();
     }
 
-//    <S, U> void breakCycle(OP2<S, U> op) {
-//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
-//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
-//        // Eller kan bruge det...
-//        throw new UnsupportedOperationException();
-//    }
+    <T> ExportedServiceConfiguration<T> assistedInject(Class<T> interfase) {
+        // or abstract class can have state which can be merge in some way?
+        // well def not ver 1.
 
-    <S, U> void breakCycle(Key<S> key1, Key<U> key2, BiConsumer<S, U> consumer) {
-        // cycleBreaker
         throw new UnsupportedOperationException();
     }
 
@@ -459,6 +444,13 @@ class ZExtraFunc {
         // Den er meget mere explicit.
         // Den her skal jo pakke initialisering af U ind i en consumer
     }
+
+//    <S, U> void breakCycle(OP2<S, U> op) {
+//        // Denne kraever at vi paa en eller anden maade kan bruge OP2...
+//        // MethodHandle op.invoker() <--- Saa maaske er det bare ikke hemmeligt mere.
+//        // Eller kan bruge det...
+//        throw new UnsupportedOperationException();
+//    }
 
     <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
 
@@ -510,6 +502,11 @@ class ZExtraFunc {
         throw new UnsupportedOperationException();
     }
 
+    <S, U> void cycleBreaker(Key<S> key1, Key<U> key2, BiConsumer<? super S, ? super U> consumer) {
+        // 
+        throw new UnsupportedOperationException();
+    }
+
     // Vi venter med den...
     // Altsaa det er jo kun services den kan exportere...
     // Altsaa vi kan jo have nogle
@@ -533,6 +530,10 @@ class ZExtraFunc {
     // Det er vel en slags Wirelet
     // CycleBreaker(SE, ...);
     // CycleBreaker(SE, ...);
+
+    final class SidecarHelper {
+
+    }
 
     // autoExport
 

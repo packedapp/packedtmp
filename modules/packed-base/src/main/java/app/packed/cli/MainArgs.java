@@ -48,12 +48,19 @@ import app.packed.container.ExtensionNest;
 
 // Jeg tror ikke det er en inheritable wirelet...
 // Men styres gennem selve extensionen...
+// Saa den har noget AutoService paa... dvs man kan injecte den paa 2 forskellige maader
+// @WireletConsume <--- kan kun bruges af CliExtension
+// @AutoService <--- kan bruges af alle andre
 @ExtensionNest(CliExtension.class)
 public final class MainArgs extends Wirelet {
 
+    // Det gode ved declarativt er at 
+    
     public static MainArgs of(String... args) {
         requireNonNull(args, "args is null");
         throw new UnsupportedOperationException();
     }
+    
+    // som default wirelet er den nok unconsumed
 }
 // Er ikke en service, men en extension type

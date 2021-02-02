@@ -19,23 +19,22 @@ package app.packed.component;
  * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link Image} will result in
  * an {@link WireletException} being thrown.
  */
-//Features
-// Debuggin
-// We could have app.packed.build package.
-
-// Taenker de kan bruges paa alle componenter. Og ikke kun rod..
-// Eller??? Skal de fx. cachnes af en host???
-// Saa nye guests ogsaa skal kunne overtage dem??
-// Det samme gaelder med NameSpaceRules
-
-// De her regner gaelder for build'et...
-
-// Return InheritableWirelet().
-
-// Wirelet printDebug().inherit();
-// printDebug().inherit();
 public final class BuildWirelets {
+    // Features
+    // Debuggin
+    // We could have app.packed.build package.
 
+    // Taenker de kan bruges paa alle componenter. Og ikke kun rod..
+    // Eller??? Skal de fx. cachnes af en host???
+    // Saa nye guests ogsaa skal kunne overtage dem??
+    // Det samme gaelder med NameSpaceRules
+
+    // De her regner gaelder for build'et...
+
+    // Return InheritableWirelet().
+
+    // Wirelet printDebug().inherit();
+    // printDebug().inherit();
     /** Not for you my friend. */
     private BuildWirelets() {}
     // NO FAIL <--- maaske brugbart for analyse

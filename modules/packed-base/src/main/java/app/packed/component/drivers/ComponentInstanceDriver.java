@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivers;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.ComponentDriver.Option;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.drivers.ComponentDriver.Option;
 import packed.internal.component.PackedComponentDriver;
 
 /**
@@ -25,9 +26,17 @@ import packed.internal.component.PackedComponentDriver;
  */
 public interface ComponentInstanceDriver<C extends ComponentConfiguration, I> extends ComponentFactoryDriver<C, I> {
 
-    ComponentDriver<C> bindInstance(I instance);
+    /**
+     * Applies the specified instance in order to create a component driver.
+     * 
+     * @param instance
+     *            the instance
+     * @return a component driver with applied instance
+     */
+    ComponentDriver<C> applyInstance(I instance);
 
-    static <C extends ComponentConfiguration, I> ComponentInstanceDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType, Option... options) {
+    static <C extends ComponentConfiguration, I> ComponentInstanceDriver<C, I> of(MethodHandles.Lookup lookup, Class<? extends C> driverType,
+            Option... options) {
         return PackedComponentDriver.ofInstance(lookup, driverType, options);
     }
 

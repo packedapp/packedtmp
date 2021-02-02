@@ -25,9 +25,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import app.packed.hooks.ClassHook;
+import app.packed.hooks.ClassHook.Bootstrap;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
-import app.packed.hooks.ClassHook.Bootstrap;
 import packed.internal.hooks.ClassHookBootstrapModel;
 import packed.internal.hooks.FieldHookBootstrapModel;
 import packed.internal.hooks.MethodHookBootstrapModel;

@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
+
+import java.lang.invoke.MethodHandles;
+
+import app.packed.component.Completion;
 
 /**
- * Information about an artifact.
+ *
  */
-// Maybe info...
-// If descriptor takes a class...
-// Nah tror ikke rigtig vi skal bruge den nogen steder...
-// Taenker vi kan lave det som attributer???
-// og metoder paa selve driveren...
-interface ArtifactDescriptor {
+public final class CompletionMhs {
+
     
-    boolean isStatefull();
-    // class
-    // Statefull, Stateless
-    // ThrowablesToThrow on X
+    static {
+        MethodHandles.constant(Completion.class, Completion.success());
+        
+    }
 }

@@ -33,7 +33,7 @@ import app.packed.inject.ServiceRegistry;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.ExportedBuildtimeService;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -225,7 +225,7 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
     }
 
     public void transform(BiConsumer<? super ServiceComposer, ? super ServiceContract> transformer) {
-        PackedServiceTransformer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
+        PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
     }
 
     /**
@@ -235,6 +235,6 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      *            the transformer to use
      */
     public void transform(Consumer<? super ServiceComposer> transformer) {
-        PackedServiceTransformer.transformInplace(resolvedExports, transformer);
+        PackedServiceComposer.transformInplace(resolvedExports, transformer);
     }
 }

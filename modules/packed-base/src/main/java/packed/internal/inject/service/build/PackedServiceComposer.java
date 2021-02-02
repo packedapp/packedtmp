@@ -32,7 +32,6 @@ import app.packed.inject.Factory;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.ServiceRegistry;
 import packed.internal.inject.service.AbstractService;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -41,7 +40,7 @@ import packed.internal.util.CollectionUtil.ForwardingMap;
 import packed.internal.util.CollectionUtil.ForwardingStrategy;
 
 /** Implementation of {@link ServiceComposer}. */
-public final class PackedServiceTransformer extends ServiceComposer implements  ServiceRegistry {
+public final class PackedServiceComposer extends ServiceComposer {
 
     /** A lazily initialized map that is exposed via {@link #asMap}. */
     private ForwardingMap<Key<?>, Service> asMap;
@@ -51,7 +50,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements  
     private final Map<Key<?>, AbstractService> services;
 
     @SuppressWarnings("unchecked")
-    private PackedServiceTransformer(Map<Key<?>, ? extends AbstractService> services) {
+    private PackedServiceComposer(Map<Key<?>, ? extends AbstractService> services) {
         super(null);
         this.services = (Map<Key<?>, AbstractService>) requireNonNull(services);
     }
@@ -167,7 +166,7 @@ public final class PackedServiceTransformer extends ServiceComposer implements  
      */
     public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
-        PackedServiceTransformer psm = new PackedServiceTransformer(services);
+        PackedServiceComposer psm = new PackedServiceComposer(services);
         transformation.accept(psm);
 
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
@@ -188,13 +187,13 @@ public final class PackedServiceTransformer extends ServiceComposer implements  
     }
 
     public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceComposer> transformer) {
-        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst);
     }
 
     public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
             BiConsumer<? super ServiceComposer, ? super T> transformer, T attachment) {
-        PackedServiceTransformer dst = new PackedServiceTransformer(services);
+        PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst, attachment);
     }
 }

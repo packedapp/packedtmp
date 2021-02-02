@@ -19,7 +19,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.component.ComponentDriver.Option;
+import app.packed.component.drivers.ComponentDriver;
+import app.packed.component.drivers.ComponentDriver.Option;
+import app.packed.component.drivers.ComponentInstanceDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
 
@@ -100,19 +102,18 @@ public final class BeanConfiguration<T> extends BaseComponentConfiguration {
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentInstanceDriver<BeanConfiguration<T>, T> driver() {
-        return ICD;
+    public static <T> ComponentDriver<BeanConfiguration<T>> bind(Class<T> implementation) {
+        return ICD.bind(implementation);
     }
 
-    public static <T> ComponentDriver<BeanConfiguration<T>> driver(Class<T> implementation) {
-        return BeanConfiguration.<T>driver().bind(implementation);
+    @SuppressWarnings("unchecked")
+    public static <T> ComponentDriver<BeanConfiguration<T>> bind(Factory<T> factory) {
+        return ICD.bind(factory);
     }
 
-    public static <T> ComponentDriver<BeanConfiguration<T>> driver(Factory<T> factory) {
-        return BeanConfiguration.<T>driver().bind(factory);
+    @SuppressWarnings("unchecked")
+    public static <T> ComponentDriver<BeanConfiguration<T>> bindInstance(T instance) {
+        return ICD.applyInstance(instance);
     }
 
-    public static <T> ComponentDriver<BeanConfiguration<T>> driverInstance(T instance) {
-        return BeanConfiguration.<T>driver().bindInstance(instance);
-    }
 }

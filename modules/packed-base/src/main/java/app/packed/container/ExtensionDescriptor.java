@@ -15,6 +15,7 @@
  */
 package app.packed.container;
 
+import java.lang.Runtime.Version;
 import java.util.Optional;
 import java.util.Set;
 
@@ -131,6 +132,22 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         return ExtensionModel.of(extensionType);
+    }
+
+    default Optional<Version> version() {
+        return Optional.empty();
+        // Bliver noedt til at have en version klasse...
+        // Problemet er lidt om vi kan slippe uden om noget semantic omkring det...
+        // IDK
+        
+        //return module().getDescriptor().version();
+    }
+    default Optional<Version> libraryVersion() {
+        // Ideen er lidt som AppVersion fra Helm charts
+        // Syntes den er rigtig smart
+        // A library is typically something that is released separately from PAcked
+        // But where an extension acts as a kind of bridge
+        return Optional.empty();
     }
 }
 

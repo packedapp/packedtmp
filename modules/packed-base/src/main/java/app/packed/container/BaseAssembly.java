@@ -30,8 +30,8 @@ import app.packed.state.OnStart;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * A convenience extension of {@link BundleAssembly} which contains shortcut access to common functionality defined by the
- * various extension available in this module.
+ * A convenience extension of {@link BundleAssembly} which contains shortcut access to common functionality defined by
+ * the various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -83,7 +83,7 @@ public abstract class BaseAssembly extends BundleAssembly {
      * @throws IllegalArgumentException
      *             if the specified extension type is {@link Extension}
      */
-    protected final boolean isUsed(Class<? extends Extension> extensionType) {
+    protected final boolean isInUse(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         if (extensionType == Extension.class) {
             throw new IllegalArgumentException("Cannot specify Extension.class");
@@ -228,8 +228,10 @@ public abstract class BaseAssembly extends BundleAssembly {
 
     /**
      * Returns a {@link ServiceExtension} instance.
-     * 
+     * <p>
+     * Calling this method is short for {@code use(ServiceExtension.class)}
      * @return a service extension instance
+     * @see #use(Class)
      */
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);

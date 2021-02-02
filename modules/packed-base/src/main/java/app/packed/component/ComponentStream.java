@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.attribute.AttributedElementStream;
+import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 

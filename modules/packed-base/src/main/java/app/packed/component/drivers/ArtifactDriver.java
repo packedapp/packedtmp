@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivers;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
+import app.packed.cli.Main;
+import app.packed.component.App;
+import app.packed.component.Assembly;
+import app.packed.component.BuildException;
+import app.packed.component.Completion;
+import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.Composer;
+import app.packed.component.Image;
+import app.packed.component.Wirelet;
+import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import app.packed.state.InitializationException;
 import app.packed.state.PanicException;
+import app.packed.validate.Validation;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedInitializationContext;
@@ -43,18 +54,44 @@ import packed.internal.component.PackedInitializationContext;
  *            The type of artifacts this driver creates.
  * 
  * @see App#driver()
+ * @see Main#driver()
+ * @see ServiceLocator#driver()
+ * 
  * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // Environment + Shell + Result
 public interface ArtifactDriver<A> {
 
-    // forAnalysis? Ville gerne vaere explicit om at vi ikke analysere
-    // inde i metoden.. Men at folk kan bruge componenten.
+    // analyze
+    // validate
+    // check
+    ///// Kunne vaere interessant fx
+    // ComponentAnalysis = Either<Component, Validatable>
+    // ComponentAnalysis extends Validatable
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
+     * 
+     * @param assembly
+     * @param wirelets
+     *            optional wirelets
+     * @throws AssertionError
+     *             if something is invalid
+     */
+    // Validation vs Build exceptions
+    // Smider vi
+    // Altsaa maaske skal det starte i devtools
+    default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
+        validate(assembly, wirelets).assertValid();
+    }
+
+    /**
      * Builds a new image using the specified assembly and optional wirelets.
+     * <p>
+     * This method is typical not called directly by end-users. But indirectly through methods such as
+     * {@link App#buildImage(Assembly, Wirelet...)}, {@link Main#buildImage(Assembly, Wirelet...)} and
+     * {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the assembly that should be used to build the image
@@ -63,14 +100,45 @@ public interface ArtifactDriver<A> {
      * @return a new image
      * @throws BuildException
      *             if the image could not build
+     * @see App#buildImage(Assembly, Wirelet...)
+     * @see Main#buildImage(Assembly, Wirelet...)
+     * @see ServiceLocator#buildImage(Assembly, Wirelet...)
      */
     Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
 
-    <CO extends Composer<?>, CC extends ComponentConfiguration> A compose(ComponentDriver<CC> componentDriver,
+    /**
+     * Used by composers such as {@link ServiceComposer}.
+     * <p>
+     * This method is is rarely called directly by end-users. But indirectly through methods such as
+     * {@link ServiceLocator#of(Consumer)}.
+     * 
+     * @param <CC>
+     *            the type of component configuration the composer wraps
+     * @param <CO>
+     *            the type of composer that is exposed to the user
+     * @param componentDriver
+     *            a component driver that is responsible for creating the component configuration that the composer wraps
+     * @param composerFactory
+     *            a factory function responsible for creating a composer instance from a component configuration
+     * @param consumer
+     *            the consumer specified by the end user
+     * @param wirelets
+     *            optional wirelets
+     * @return the artifact
+     * 
+     * @see Composer
+     * @see ServiceComposer
+     * @see ServiceLocator#of(Consumer)
+     */
+    <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
 
     /**
      * Create a new artifact using the specified assembly.
+     * 
+     * <p>
+     * This method is typical not called directly by end-users. But indirectly through methods such as
+     * {@link Main#run(Assembly, Wirelet...)} and {@link App#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the system bundle
@@ -83,9 +151,16 @@ public interface ArtifactDriver<A> {
      *             if the artifact failed to initializing
      * @throws PanicException
      *             if the artifact had an executing phase and it fails
+     * @see App#start(Assembly, Wirelet...)
+     * @see Main#run(Assembly, Wirelet...)
+     * @see ServiceLocator#of(Assembly, Wirelet...)
      */
-    @Nullable
-    A use(Assembly<?> assembly, Wirelet... wirelets);
+    A use(Assembly<?> assembly, Wirelet... wirelets); // apply?
+
+    // Smider vi build exception??? Eller
+    // Bare invalid???
+    // Vil mene invalid...
+    Validation validate(Assembly<?> assembly, Wirelet... wirelets);
 
     // driver.use(A, W1, W2) == driver.with(W1).use(A, W2)
     // Hmmm, saa er den jo lige pludselig foerend..
@@ -102,7 +177,7 @@ public interface ArtifactDriver<A> {
      * @return a daemon artifact driver
      */
     // Hvad skal default lifestate vaere for
-    static ArtifactDriver<Void> daemon() {
+    static ArtifactDriver<Completion> daemon() {
         return PackedArtifactDriver.DAEMON;
         // ArtifactDriver.Builder<Void> daemonBuilder()
         // ArtifactDriver.Builder<T> result(...)
@@ -170,10 +245,20 @@ public interface ArtifactDriver<A> {
 
 interface ZArtifactDriver<A> {
 
-    default void analyze(Assembly<?> assembly, Wirelet... wirelets) {
+    // Det ville vaere rigtig rart tror hvis BuildException have en liste af
+    // validation violations...
+    // Tit vil man gerne have alle fejlene eller en Component...
+    // Either<Component, Validation>
+    // Validataion
+    default Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
+    // I don't think it tests missing contract clauses
+    // assertValid(..., hasContract);
+    // I navnet valid ligger ikke fullfilled. Laver jeg en hjaelpe assembly.
+    // er den jo stadig valid... selvom vi ikke propper fake parametere ind..
+    //
     default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
         // Checks that the container can be sucessfully build...
         // What about fullfilled??? Er den ok hvis vi f.eks.
@@ -192,15 +277,24 @@ interface ZArtifactDriver<A> {
         // App.assertValid(new FooAssembly()), ServiceWirelets.checkExactContract(adasdasd.));
         // App.assertValid(new FooAssembly()), ServiceWirelets.validateExactContract(adasdasd.));
 
+        // App.assertValid(new FooAssembly(), ContractWirelets.checkFullfilled());
+        // App.assertValid(new FooAssembly(), ContractWirelets.validateFullfilled());
         // A specific type of analyze that throws ValidationError...
         throw new UnsupportedOperationException();
     }
 
     // Ideen er at man kan smide checked exceptions...
     default A invoke(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
+        // Tror den bliver brugt via noget ErrorHandler...
+        // Hvor man specificere hvordan exceptions bliver handled
+
         // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
 
         // Her er ihvertfald noget der skal kunne konfigureres
+        throw new UnsupportedOperationException();
+    }
+
+    default Validation validate(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

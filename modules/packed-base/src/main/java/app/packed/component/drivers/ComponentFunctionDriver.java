@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.component.drivers;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
 
 import app.packed.base.TypeToken;
-import app.packed.component.ComponentDriver.Option;
+import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.drivers.ComponentDriver.Option;
 
 /**
  *
@@ -52,17 +55,16 @@ public interface ComponentFunctionDriver<C extends ComponentConfiguration, F> {
     }
 
     public static void main(String[] args) {
-        of(null, MyWebConf.class, new TypeToken<Supplier<String>>() {});
+        of(null, TestWebConf.class, new TypeToken<Supplier<String>>() {});
     }
 }
 
-class MyWebConf extends ComponentConfiguration {
+class TestWebConf extends BaseComponentConfiguration {
 
     /**
      * @param context
      */
-    protected MyWebConf(ComponentConfigurationContext context) {
+    protected TestWebConf(ComponentConfigurationContext context) {
         super(context);
     }
-
 }

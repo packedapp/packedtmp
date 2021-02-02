@@ -20,10 +20,10 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.component.App;
-import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;

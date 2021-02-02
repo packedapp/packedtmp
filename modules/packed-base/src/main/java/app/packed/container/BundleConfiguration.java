@@ -18,12 +18,14 @@ package app.packed.container;
 import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
+import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentDriver.Option;
 import app.packed.component.StatelessConfiguration;
+import app.packed.component.Wirelet;
+import app.packed.component.drivers.ComponentDriver;
+import app.packed.component.drivers.ComponentDriver.Option;
 import app.packed.inject.Factory;
 
 /**
@@ -43,6 +45,12 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      */
     private BundleConfiguration(ComponentConfigurationContext context) {
         super(context);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void link(Assembly<?> bundle, Wirelet... wirelets) {
+        super.link(bundle, wirelets);
     }
 
     /**
@@ -70,7 +78,7 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return wire(BeanConfiguration.<T> driver().bind(implementation));
+        return wire(BeanConfiguration.bind(implementation));
     }
 
     /**
@@ -84,7 +92,7 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @see BundleAssembly#install(Factory)
      */
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return wire(BeanConfiguration.<T>driver().bind(factory));
+        return wire(BeanConfiguration.bind(factory));
     }
 
     /**
@@ -96,7 +104,7 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @see BundleAssembly#installInstance(Object)
      */
     public <T> BeanConfiguration<T> installInstance(T instance) {
-        return wire(BeanConfiguration.<T>driver().bindInstance(instance));
+        return wire(BeanConfiguration.bindInstance(instance));
     }
 
     /**

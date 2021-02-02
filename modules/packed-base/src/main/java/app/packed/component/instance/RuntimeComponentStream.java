@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
-
-import java.lang.invoke.MethodHandles;
-
-import app.packed.component.drivers.ArtifactDriver;
+package app.packed.component.instance;
 
 /**
  *
  */
-final class HostHelper {
-    static final ArtifactDriver<Void> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Void.class);
+public interface RuntimeComponentStream {
+
 }

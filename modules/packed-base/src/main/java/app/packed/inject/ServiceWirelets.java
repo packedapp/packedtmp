@@ -29,7 +29,7 @@ import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.inject.service.build.PackedServiceTransformer;
+import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
@@ -148,7 +148,7 @@ public final class ServiceWirelets {
         return new Service2ndPassWirelet() {
             @Override
             protected void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map) {
-                PackedServiceTransformer.transformInplaceAttachment(map, transformation, child.newServiceContract());
+                PackedServiceComposer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
     }
@@ -158,7 +158,7 @@ public final class ServiceWirelets {
         return new Service2ndPassWirelet() {
             @Override
             protected void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map) {
-                PackedServiceTransformer.transformInplace(map, transformation);
+                PackedServiceComposer.transformInplace(map, transformation);
             }
         };
     }
@@ -211,6 +211,12 @@ class ServiceWSandbox {
     }
 
     static Wirelet exportTransitiveIf(Predicate<? extends Service> filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Maybe check... 
+    // If validateXXX should always Validation
+    static Wirelet validateExactRequirements() {
         throw new UnsupportedOperationException();
     }
 

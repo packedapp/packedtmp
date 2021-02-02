@@ -36,6 +36,15 @@ public final class Validation {
         this.violations = violations;
     }
 
+    // ServiceContract validate...
+    public Validation and(Validation validation) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Validation and(Validation... validations) {
+        throw new UnsupportedOperationException();
+    }
+
     public void assertValid() {
 
     }

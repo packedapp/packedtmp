@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.component.drivers;
 
-import java.lang.invoke.MethodHandles;
-
-import app.packed.component.drivers.ArtifactDriver;
+import app.packed.component.ComponentConfiguration;
 
 /**
  *
  */
-final class HostHelper {
-    static final ArtifactDriver<Void> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Void.class);
+public interface ComponentClassDriver<C extends ComponentConfiguration, I> {
+
+    /**
+     * @param implementation
+     *            the implementation to bind
+     * @return a new bound component driver
+     */
+    ComponentDriver<C> bind(Class<? extends I> implementation);
 }

@@ -17,10 +17,10 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.PrintStream;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import packed.internal.component.AssemblyHelper;
 import packed.internal.component.ComponentBuild;
@@ -30,7 +30,7 @@ import packed.internal.component.PackedComponentDriver;
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
- * Trying to use an assembly more than once will fail with an {@link IllegalStateException}.
+ * All assemblies are single use. Trying to use it more than once will fail with {@link IllegalStateException}.
  * <p>
  * This class is not meant to be directly extended by ordinary users. But provides means for power users to extend the
  * basic functionality of Packed.
@@ -67,7 +67,13 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
     }
 
-    /** Invoked by the runtime as part of the build process. This method should never be invoked directly by the user. */
+    /**
+     * Compose the Implements the composition logic.
+     * <p>
+     * Invoked by the runtime as part of the build process.
+     * <p>
+     * This method should never be invoked directly by the user.
+     */
     // This method is invoked via a MethodHandle at AssemblyHelper#invokeBuild
     protected abstract void build();
 
@@ -91,7 +97,7 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
             return (C) c;
         }
     }
-    
+
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
@@ -104,17 +110,5 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         ((ComponentBuild) configuration().context).realm.lookup(lookup);
     }
 }
+// We do not support $ methods because they are seen by all subclasses...
 
-class ZAssembly {
-    protected static void bootstrap(Object param) {
-        // print(assembly, System.out);
-    }
-
-    static void print(Assembly<?> assembly) {
-        print(assembly, System.out);
-    }
-
-    static void print(Assembly<?> assembly, PrintStream ps) {}
-
-    // We do not support $ methods because they are seen by all subclasses...
-}

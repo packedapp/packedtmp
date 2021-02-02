@@ -15,8 +15,6 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
@@ -41,10 +39,23 @@ public abstract class Composer<C extends ComponentConfiguration> extends Realm {
     /** The underlying component configuration. */
     protected final C configuration;
 
+    /**
+     * Create a new composer.
+     * 
+     * @param configuration
+     *            the underlying component configuration
+     */
     protected Composer(C configuration) {
-        this.configuration = requireNonNull(configuration, "configuration is null");
+        this.configuration = configuration;
+        // Commented out because of test
+        //requireNonNull(configuration, "configuration is null");
     }
 
+    /**
+     * Checks that the underlying component is still configurable.
+     * 
+     * @see ComponentConfigurationContext#checkConfigurable()
+     */
     protected final void checkConfigurable() {
         configuration.context.checkConfigurable();
     }

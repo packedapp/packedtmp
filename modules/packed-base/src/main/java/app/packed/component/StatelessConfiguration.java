@@ -17,6 +17,8 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.component.drivers.ComponentClassDriver;
+import app.packed.component.drivers.ComponentDriver;
 import packed.internal.component.PackedComponentDriver;
 
 /**

@@ -3,6 +3,7 @@ module app.packed.base {
     exports app.packed.base; // then have @Preview @DeprecatedWithReason
     exports app.packed.cli;
     exports app.packed.component;
+    exports app.packed.component.drivers;
     exports app.packed.container;
     exports app.packed.inject;
     exports app.packed.inject.sandbox;

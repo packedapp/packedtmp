@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
-
-import java.lang.invoke.MethodHandles;
-
-import app.packed.component.drivers.ArtifactDriver;
+package app.packed.validate;
 
 /**
  *
  */
-final class HostHelper {
-    static final ArtifactDriver<Void> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Void.class);
+// BuildException extends Validatable
+// ValidationException extends Validtable
+// Validation extends Validatable
+// ValidatedThingy extens Validate() // Either<Validation, T>
+public interface Validatable {
+    Validation and(Validatable t); // Eller hmm ValidatedThingy??? vil maaske returnere validatedThingy
 }

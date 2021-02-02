@@ -43,7 +43,7 @@ import app.packed.component.Wirelet;
 // Hmm, efter vi er begyndt lidt at flytte dem ud...
 // Saa er det maaske primaert en builder a.la. cli.Main
 
-final class ComponentAnalyzer {
+final class ComponentAnalysis {
 
     // Maybe on Component???
 //    public static Component analyze(ComponentSystem s) {

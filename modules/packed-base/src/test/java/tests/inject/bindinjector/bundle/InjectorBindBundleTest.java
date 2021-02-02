@@ -41,7 +41,7 @@ public class InjectorBindBundleTest {
             protected void build() {}
         };
 
-        npe(() -> Injector.configure(c -> c.link((BaseAssembly) null)), "bundle");
+        npe(() -> Injector.configure(c -> c.link((BaseAssembly) null)), "assembly");
         npe(() -> Injector.configure(c -> c.link(b, (Wirelet[]) null)), "wirelets");
     }
 

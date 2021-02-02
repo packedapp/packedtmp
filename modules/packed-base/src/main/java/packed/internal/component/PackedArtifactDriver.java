@@ -24,22 +24,28 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.component.ArtifactDriver;
 import app.packed.component.Assembly;
+import app.packed.component.Completion;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ArtifactDriver;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.container.Extension;
+import app.packed.validate.Validation;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ArtifactDriver}. */
 public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     /** A daemon driver. */
-    public static final PackedArtifactDriver<Void> DAEMON = new PackedArtifactDriver<>(true,
+    public static final PackedArtifactDriver<Completion> COMPLETABLE = new PackedArtifactDriver<>(true,
+            MethodHandles.dropArguments(MethodHandles.constant(Completion.class, Completion.success()), 0, PackedInitializationContext.class));
+
+    /** A daemon driver. */
+    public static final PackedArtifactDriver<Completion> DAEMON = new PackedArtifactDriver<>(true,
             MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
 
     /** The initial set of modifiers for any system that uses this driver. */
@@ -97,11 +103,19 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public <CO extends Composer<?>, CC extends ComponentConfiguration> A compose(ComponentDriver<CC> componentDriver,
+    public <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
+        requireNonNull(componentDriver, "componentDriver is null");
+        requireNonNull(composerFactory, "composerFactory is null");
+        requireNonNull(consumer, "consumer is null");
+        // Assemble the system
         PackedBuildContext pbc = PackedBuildContext.compose(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
-        PackedInitializationContext ac = pbc.process();
-        return newArtifact(ac);
+
+        // Initialize the system. And start it if necessary (if it is a guest)
+        PackedInitializationContext pic = pbc.process();
+
+        // Return the system in a new shell
+        return newArtifact(pic);
     }
 
     public boolean isStateful() {
@@ -134,6 +148,14 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
         // Return the system in a new shell
         return newArtifact(pic);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Validation validate(Assembly<?> assembly, Wirelet... wirelets) {
+        // Denne metoder siger ikke noget om at alle kontrakter er fullfilled.
+        // Det er fuldt ud "Lovligt" ikke at specificere alt muligt...
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */

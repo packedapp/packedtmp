@@ -21,13 +21,10 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.ComponentClassDriver;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentFactoryDriver;
-import app.packed.component.ComponentInstanceDriver;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.inject.Factory;
 
 /**
@@ -97,7 +94,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * @return the configuration of the component
      */
     protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return configuration().wire(BeanConfiguration.driver(implementation));
+        return configuration().wire(BeanConfiguration.bind(implementation));
     }
 
     /**
@@ -112,7 +109,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * @see BaseAssembly#install(Factory)
      */
     protected final <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return configuration().wire(BeanConfiguration.driver(factory));
+        return configuration().wire(BeanConfiguration.bind(factory));
     }
 
     protected final StatelessConfiguration installHelper(Class<?> implementation) {
@@ -134,7 +131,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * @return this configuration
      */
     protected final <T> BeanConfiguration<T> installInstance(T instance) {
-        return configuration().wire(BeanConfiguration.driverInstance(instance));
+        return configuration().wire(BeanConfiguration.bindInstance(instance));
     }
 
     /**
@@ -201,21 +198,9 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
-
-    protected final <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-        return configuration().wire(driver, implementation, wirelets);
-    }
-
+    // Maaske kan man kun tilfoeje dem via extensions...
     protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);
-    }
-
-    protected final <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<I> factory, Wirelet... wirelets) {
-        return configuration().wire(driver, factory, wirelets);
-    }
-
-    protected final <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-        return configuration().wireInstance(driver, instance, wirelets);
     }
 }
 
