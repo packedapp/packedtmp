@@ -117,7 +117,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public final ServiceLocator transform(Consumer<ServiceComposer> transformer) {
+    public final ServiceLocator spawn(Consumer<ServiceComposer> transformer) {
         return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
     }
 

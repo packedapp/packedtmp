@@ -22,14 +22,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import testutil.util.AbstractArtifactTest;
 
-/** Tests {@link BundleConfiguration#extensions()} and {@link BundleConfiguration#use(Class)}. */
+/** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
 public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
 
-    /** Tests basic use of {@link BundleConfiguration#use(Class)}. */
+    /** Tests basic use of {@link ContainerConfiguration#use(Class)}. */
     @Test
     public void use() {
         appOf(e -> e.use(TestExtension1.class, i -> {
@@ -41,7 +41,7 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
         }));
     }
 
-    /** Tests basic use of {@link BundleConfiguration#extensions()}. */
+    /** Tests basic use of {@link ContainerConfiguration#extensions()}. */
     @Test
     public void extensions() {
         appOf(e -> {
@@ -57,13 +57,13 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
 
     /**
      * Tests what happens if people try to use any of the extension methods outside of the configure of the defining bundle.
-     * We allow invoking {@link BundleConfiguration#extensions()} and allow {@link BundleConfiguration#use(Class)} for extension
-     * that have already been installed. Calling {@link BundleConfiguration#use(Class)} with an extension that have not
+     * We allow invoking {@link ContainerConfiguration#extensions()} and allow {@link ContainerConfiguration#use(Class)} for extension
+     * that have already been installed. Calling {@link ContainerConfiguration#use(Class)} with an extension that have not
      * previously been installed will throw an {@link IllegalStateException}.
      */
     @Test
     public void unconfigurable() {
-        AtomicReference<BundleConfiguration> r = new AtomicReference<>();
+        AtomicReference<ContainerConfiguration> r = new AtomicReference<>();
 
         // Test empty
         appOf(e -> r.set(e.configuration()));

@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.base;
 
 import static java.util.Objects.requireNonNull;
-
-import app.packed.base.Nullable;
 
 /**
  *

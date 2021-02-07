@@ -25,30 +25,34 @@ import app.packed.state.RunState;
 /**
  *
  */
-// Tror bedre man kan snakke om component instances
+// Taekner ikke noget control...
+// Det er alt sammmen ikke styre paa component
 
-// Hvorfor runtime component
+// RunState
+// Monitoring
+// Custom attributes (add/remove?? Fixed on component af build, fixed here efter instantiation)
+// Adding listeners?? (when state=...->)
 
-// Vi har et kaempe trae. Men vi instantiater kun noget af det
+// Persistance... (state = Hibernating)
+// Still here if persistet I would think... 
 
-// Syntes instance er et daarligt signal at sende... naar man f.eks.
-// kun har nogle lambdas... eller statiske componneter
-public interface RuntimeComponent extends AttributedElement {
-
-    // ComponentDefinition...
-    /**
-     * Returns the component that is behind this instance.
-     * 
-     * @return the component that is behind this instance
-     */
-    Component component();
+/// MHT til restart.. Taenker jeg lidt det betyder
+/// forskellige navne
+public interface Instance extends AttributedElement {
 
     /**
      * Returns an unmodifiable view of all of this component's children.
      *
      * @return an unmodifiable view of all of this component's children
      */
-    Collection<RuntimeComponent> children();
+    Collection<Instance> children();
+
+    /**
+     * Returns the definition of this component instance.
+     * 
+     * @return the definition of this component instance
+     */
+    Component component();
 
     /**
      * Returns the distance to the root component. The root component having depth 0.
@@ -59,12 +63,9 @@ public interface RuntimeComponent extends AttributedElement {
     int depth();
 
     /**
-     * Returns the name of this component.
-     * <p>
-     * If no name is explicitly set by the user when configuring the component. The runtime will automatically generate a
-     * name that is unique among other components with the same parent.
+     * Returns the name of this component instance.
      *
-     * @return the name of this component
+     * @return the name of this component instance
      */
     String name();
 
@@ -75,9 +76,20 @@ public interface RuntimeComponent extends AttributedElement {
      */
     NamespacePath path();
 
-
+    boolean isStateless(); //en component metode???
+    // What if stateless? empty string
+    String state();
 }
+//Tror bedre man kan snakke om component instances
 
+//Hvorfor runtime component
+
+//Vi har et kaempe trae. Men vi instantiater kun noget af det
+
+//Syntes instance er et daarligt signal at sende... naar man f.eks.
+//kun har nogle lambdas... eller statiske componneter
+
+//Maybe just instance...
 interface ZInstance {
 
     // Restart, reInitialize...
@@ -85,7 +97,7 @@ interface ZInstance {
     // Also, fx syntes maaske ikke det giver mening at en
     // function har en state...
     RunState runState();
-    
+
     Object sourceInstances();
 }
 

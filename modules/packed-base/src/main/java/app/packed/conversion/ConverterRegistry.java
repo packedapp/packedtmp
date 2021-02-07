@@ -15,14 +15,14 @@
  */
 package app.packed.conversion;
 
-import app.packed.hooks.sandbox.DynamicService;
+import app.packed.hooks.sandbox.AutoService;
 
 /**
  * A collection of converters
  */
 // Giver det mening ikke at kunne konvertere direkte???
 // Altsaa fx ServiceRegistry er kun info
-@DynamicService
+@AutoService
 public interface ConverterRegistry {
 
     <T> T convert(Object o, Class<T> to);

@@ -106,7 +106,7 @@ public interface ExtensionConfiguration  {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BundleConfiguration#installInstance(Object)
+     * @see ContainerConfiguration#installInstance(Object)
      */
     <T> BeanConfiguration<T> installInstance(T instance);
 
@@ -158,7 +158,7 @@ public interface ExtensionConfiguration  {
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
-     * This method works similar to {@link BundleConfiguration#use(Class)}.
+     * This method works similar to {@link ContainerConfiguration#use(Class)}.
      * 
      * @param <E>
      *            the type of extension to return
@@ -171,7 +171,7 @@ public interface ExtensionConfiguration  {
      * @throws UnsupportedOperationException
      *             if the specified extension type is not specified when bootstrapping
      * 
-     * @see BundleConfiguration#use(Class)
+     * @see ContainerConfiguration#use(Class)
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
+package zandbox;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.cli.MainArgs;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;

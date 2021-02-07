@@ -26,7 +26,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 
 /**
@@ -34,16 +34,16 @@ import app.packed.container.Extension;
  */
 public class ContainerConfigurationTester {
 
-    private final BundleConfiguration cc;
+    private final ContainerConfiguration cc;
 
-    public ContainerConfigurationTester(BundleConfiguration cc) {
+    public ContainerConfigurationTester(ContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
     /**
      * @return the cc
      */
-    public BundleConfiguration configuration() {
+    public ContainerConfiguration configuration() {
         return cc;
     }
 

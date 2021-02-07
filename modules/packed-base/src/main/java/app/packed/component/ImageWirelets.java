@@ -18,6 +18,12 @@ package app.packed.component;
 /**
  * A collection of wirelets that can be specified when building an {@link Image image}.
  */
+// Hmm Vi vil gerne kunne specificere en ArtifactDriver med ImageWirelets
+// Og hvor use() stadig kan bruges...
+// Saa paa en eller anden maade skal de ignoreres hvis de bliver brugt normalt via ArtifactDriver.use()...
+
+// De virker dog kun paa en artifact rod...
+// Og kun paa build time
 class ImageWirelets {
     // Kun aktuelt for system images, ikke for sub-system images
     static Wirelet retainImage() {
@@ -29,6 +35,8 @@ class ImageWirelets {
      * 
      * @return the wirelet
      */
+    // MainImage kunne faktisk godt vaere et der kun bliver brugt en gang...
+    // Og saa clearet...
     static Wirelet single() {
         throw new UnsupportedOperationException();
     }

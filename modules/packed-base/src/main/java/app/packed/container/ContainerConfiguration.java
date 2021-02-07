@@ -30,12 +30,12 @@ import app.packed.inject.Factory;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link BundleAssembly} or {@link BaseAssembly}.
+ * extending {@link ContainerAssembly} or {@link BaseAssembly}.
  */
-public final class BundleConfiguration extends BaseComponentConfiguration {
+public final class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver that create container components. */
-    private static final ComponentDriver<BundleConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), BundleConfiguration.class, Option.bundle());
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, Option.bundle());
 
     /**
      * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.
@@ -43,14 +43,14 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @param context
      *            the component configuration context
      */
-    private BundleConfiguration(ComponentConfigurationContext context) {
+    private ContainerConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
 
     /** {@inheritDoc} */
     @Override
     public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        super.link(bundle, wirelets);
+        context.link(bundle, wirelets);
     }
 
     /**
@@ -59,7 +59,7 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @return an unmodifiable view of the extensions that are currently used
      * 
      * @see #use(Class)
-     * @see BundleAssembly#extensions()
+     * @see ContainerAssembly#extensions()
      */
     public Set<Class<? extends Extension>> extensions() {
         // getAttribute(EXTENSIONS);
@@ -78,7 +78,7 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return wire(BeanConfiguration.bind(implementation));
+        return context.wire(BeanConfiguration.bind(implementation));
     }
 
     /**
@@ -89,10 +89,10 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see BundleAssembly#install(Factory)
+     * @see ContainerAssembly#install(Factory)
      */
     public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return wire(BeanConfiguration.bind(factory));
+        return context.wire(BeanConfiguration.bind(factory));
     }
 
     /**
@@ -101,10 +101,10 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BundleAssembly#installInstance(Object)
+     * @see ContainerAssembly#installInstance(Object)
      */
     public <T> BeanConfiguration<T> installInstance(T instance) {
-        return wire(BeanConfiguration.bindInstance(instance));
+        return context.wire(BeanConfiguration.bindInstance(instance));
     }
 
     /**
@@ -118,13 +118,13 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public StatelessConfiguration installStateless(Class<?> implementation) {
-        return wire(StatelessConfiguration.driver().bind(implementation));
+        return context.wire(StatelessConfiguration.driver().bind(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
-    public BundleConfiguration setName(String name) {
-        super.setName(name);
+    public ContainerConfiguration setName(String name) {
+        context.setName(name);
         return this;
     }
 
@@ -155,7 +155,7 @@ public final class BundleConfiguration extends BaseComponentConfiguration {
      * 
      * @return the default driver for containers
      */
-    public static ComponentDriver<BundleConfiguration> driver() {
+    public static ComponentDriver<ContainerConfiguration> driver() {
         return DRIVER;
     }
 }

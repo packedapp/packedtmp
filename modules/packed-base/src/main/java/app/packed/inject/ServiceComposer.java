@@ -40,7 +40,7 @@ import app.packed.component.Composer;
  * order. A service transformation requires that any dependencies are available whenever performing a transformation of
  * some kind.
  * 
- * @see ServiceLocator#transform(java.util.function.Consumer)
+ * @see ServiceLocator#spawn(java.util.function.Consumer)
  * @see ServiceLocator#of(java.util.function.Consumer)
  * @see ServiceWirelets#to(java.util.function.Consumer)
  * @see ServiceWirelets#from(java.util.function.Consumer)
@@ -72,6 +72,10 @@ import app.packed.component.Composer;
 // For future use
 
 // Bliver noedt til at checke at vi ikke f.eks. bruger @OnStart....
+// Altsaa skal vi have en special ServiceConfigurationClass....
+// Den configuration vi skal kalde er jo ikke helt ContainerConfiguration
+// F.eks. hvis vi bruger den i forbindelse med filterExports eller wirelets
+// Det er jo mere en slags tilretning, hvor vi gerne vil registrere nogle componenter...
 public abstract class ServiceComposer extends Composer<ComponentConfiguration> implements ServiceRegistry {
 
     /**

@@ -57,14 +57,14 @@ public final class ServiceManager {
     private final BundleBuild container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceRequirementsComposer dependencies;
+    public ServiceRequirementsManager dependencies;
 
     /** An error manager that is lazily initialized. */
     @Nullable
     private InjectionErrorManager em;
 
     /** A service exporter handles everything to do with exports of services. */
-    private final ServiceExportComposer exports = new ServiceExportComposer(this);
+    private final ServiceExportManager exports = new ServiceExportManager(this);
 
     /** All explicit added build entries. */
     private final ArrayList<BuildtimeService> localServices = new ArrayList<>();
@@ -113,10 +113,10 @@ public final class ServiceManager {
      * 
      * @return the dependency manager for this builder
      */
-    public ServiceRequirementsComposer dependencies() {
-        ServiceRequirementsComposer d = dependencies;
+    public ServiceRequirementsManager dependencies() {
+        ServiceRequirementsManager d = dependencies;
         if (d == null) {
-            d = dependencies = new ServiceRequirementsComposer();
+            d = dependencies = new ServiceRequirementsManager();
         }
         return d;
     }
@@ -135,11 +135,11 @@ public final class ServiceManager {
     }
 
     /**
-     * Returns the {@link ServiceExportComposer} for this builder.
+     * Returns the {@link ServiceExportManager} for this builder.
      * 
      * @return the service exporter for this builder
      */
-    public ServiceExportComposer exports() {
+    public ServiceExportManager exports() {
         return exports;
     }
 
@@ -306,7 +306,7 @@ public final class ServiceManager {
 
         // If Processere wirelets...
 
-        ServiceRequirementsComposer srm = dependencies;
+        ServiceRequirementsManager srm = dependencies;
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
                 BuildtimeService sa = map.get(r.key);

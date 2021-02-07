@@ -29,6 +29,7 @@ import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.ExtensionNest;
+import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentBuild;
 import packed.internal.inject.service.ServiceManager;
@@ -73,7 +74,7 @@ import packed.internal.inject.service.ServiceManager;
 
 // provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
 @ExtensionNest(ServiceExtension.class)
-public final class ServiceContract {
+public final class ServiceContract extends Contract {
 
     /** A contract with no requirements and no services provided. */
     public static final ServiceContract EMPTY = new ServiceContract(Set.of(), Set.of(), Set.of());
@@ -104,7 +105,7 @@ public final class ServiceContract {
     }
 
     public ServiceContract assertEquals(ServiceContract other) {
-        // nicer 
+        // nicer
         return this;
     }
 

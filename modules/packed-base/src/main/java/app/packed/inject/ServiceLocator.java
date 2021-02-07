@@ -28,7 +28,7 @@ import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
-import app.packed.hooks.sandbox.DynamicService;
+import app.packed.hooks.sandbox.AutoService;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
@@ -38,7 +38,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@DynamicService
+@AutoService
 public interface ServiceLocator extends ServiceRegistry {
 
     /**
@@ -134,13 +134,14 @@ public interface ServiceLocator extends ServiceRegistry {
     <T> ServiceSelection<T> selectWithAnyQualifiers(Key<T> key);
 
     /**
-     * Transforms this locator to a new locator.
+     * Creates a new locator using this locator as base.
      * 
      * @param transformation
      *            the transformation to perform
      * @return the new service locator
      */
-    ServiceLocator transform(Consumer<ServiceComposer> transformation);
+    // Lyder transform som in-place?? Maybe spawn after all
+    ServiceLocator spawn(Consumer<ServiceComposer> transformation);
 
     /**
      * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide

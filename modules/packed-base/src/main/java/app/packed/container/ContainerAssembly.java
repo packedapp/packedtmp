@@ -29,7 +29,7 @@ import app.packed.inject.Factory;
 
 /**
  * Bundles are the main source of system configuration. Basically a bundle is just a thin wrapper around
- * {@link BundleConfiguration}. Delegating every invocation in the class to an instance of {@link BundleConfiguration}
+ * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of {@link ContainerConfiguration}
  * available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
@@ -37,11 +37,11 @@ import app.packed.inject.Factory;
  * 
  * A generic bundle. Normally you would extend {@link BaseAssembly}
  */
-public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
+public abstract class ContainerAssembly extends Assembly<ContainerConfiguration> {
 
     /** Creates a new bundle. */
-    protected BundleAssembly() {
-        super(BundleConfiguration.driver());
+    protected ContainerAssembly() {
+        super(ContainerConfiguration.driver());
     }
 
     /**
@@ -50,7 +50,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see BundleConfiguration#checkConfigurable()
+     * @see ContainerConfiguration#checkConfigurable()
      */
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
@@ -60,7 +60,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * Returns an unmodifiable view of the extensions that have been configured so far.
      * 
      * @return an unmodifiable view of the extensions that have been configured so far
-     * @see BundleConfiguration#extensions()
+     * @see ContainerConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -76,7 +76,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * 
      * @return the name of the container
      * @see #setName(String)
-     * @see BundleConfiguration#setName(String)
+     * @see ContainerConfiguration#setName(String)
      */
     protected final String getName() {
         return configuration().getName();
@@ -141,7 +141,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      *            the bundle to link
      * @param wirelets
      *            an optional array of wirelets
-     * @see BundleConfiguration#link(Assembly, Wirelet...)
+     * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
     protected final void link(Assembly<?> bundle, Wirelet... wirelets) {
         configuration().link(bundle, wirelets);
@@ -151,7 +151,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * Returns the full path of the container that this bundle creates.
      * 
      * @return the full path of the container that this bundle creates
-     * @see BundleConfiguration#path()
+     * @see ContainerConfiguration#path()
      */
     protected final NamespacePath path() {
         return configuration().path();
@@ -169,7 +169,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * @param name
      *            the name of the container
      * @see #getName()
-     * @see BundleConfiguration#setName(String)
+     * @see ContainerConfiguration#setName(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -193,7 +193,7 @@ public abstract class BundleAssembly extends Assembly<BundleConfiguration> {
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #build()}
-     * @see BundleConfiguration#use(Class)
+     * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

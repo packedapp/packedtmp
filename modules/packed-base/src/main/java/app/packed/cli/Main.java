@@ -15,10 +15,10 @@
  */
 package app.packed.cli;
 
+import app.packed.base.Completion;
 import app.packed.component.App;
 import app.packed.component.Assembly;
 import app.packed.component.BuildException;
-import app.packed.component.Completion;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
@@ -30,9 +30,16 @@ import app.packed.state.StateWirelets;
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
  * written use Packed.
  */
+// Return an int????
 public final class Main {
 
     /** The artifact driver used by this class. */
+    // Maybe use single-use-image as well...
+    // Man kan sige det er en slags Profile+SystemInterface i et.
+    // Men saa betyder det jo ogsaa at det er 2 forskellige drivere...
+    // Eller ogsaa skal ImageWirelets lazy bruges
+    
+    // Install as System Namespace
     private static final ArtifactDriver<Completion> DRIVER = ArtifactDriver.daemon().with(StateWirelets.shutdownHook());
 
     /** Not today Satan, not today. */
@@ -60,9 +67,9 @@ public final class Main {
     }
 
     /**
-     * Returns the artifact driver that this class use.
+     * Returns the artifact driver this class uses.
      * 
-     * @return the artifact driver that this class use
+     * @return the artifact driver this class uses
      */
     public static ArtifactDriver<Completion> driver() {
         return DRIVER;
@@ -123,7 +130,9 @@ class MainTester {
     public static void main(String[] args) {
         Main.run(new BaseAssembly() {
             @Override
-            protected void build() {}
+            protected void build() {
+                link(null);
+            }
         }, args);
     }
 

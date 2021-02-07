@@ -19,5 +19,8 @@ package app.packed.component;
  *
  */
 public enum ComponentSourceType {
-    CLASS, FUNCTION;
+    CLASS,
+
+    /** A functional interface. */
+    FUNCTION;
 }

@@ -36,7 +36,7 @@ import packed.internal.bundle.ExtensionPreModel;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseAssembly#use(Class)} or {@link BundleConfiguration#use(Class)}.
+ * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
@@ -44,7 +44,7 @@ import packed.internal.bundle.ExtensionPreModel;
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
- * do not try an manually instantiate it, but instead use {@link BundleConfiguration#use(Class)}. It is also recommended
+ * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
  * that the extension itself is declared final.
  */
 
@@ -244,7 +244,7 @@ public abstract class Extension extends Realm {
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see BundleConfiguration#installInstance(Object)
+     * @see ContainerConfiguration#installInstance(Object)
      */
     protected final <T> BeanConfiguration<T> installInstance(T instance) {
         return configuration().installInstance(instance);
@@ -287,7 +287,7 @@ public abstract class Extension extends Realm {
      * Only extension types that have been explicitly registered using {@link #$addDependency(Class)}may be specified as
      * arguments to this method.
      * <p>
-     * Invoking this method is similar to calling {@link BundleConfiguration#use(Class)}. However, this method also keeps
+     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
      * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
      * with a runtime exception.
      * 

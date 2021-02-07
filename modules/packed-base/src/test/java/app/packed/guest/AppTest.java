@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 
 /** Tests {@link App} (PackedApp). */
 public class AppTest {
@@ -32,7 +32,7 @@ public class AppTest {
     /** Tests an empty app. */
     @Test
     public void emptyApp() {
-        AtomicReference<BundleConfiguration> ar = new AtomicReference<>();
+        AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
         App app = App.start(new BaseAssembly() {
             @Override
             public void build() {
@@ -44,7 +44,7 @@ public class AppTest {
         assertThat(app.name()).isNotNull();
         assertThat(app.stream()).size().isEqualTo(1);
 
-        BundleConfiguration cc = requireNonNull(ar.get());
+        ContainerConfiguration cc = requireNonNull(ar.get());
 
         // Checks that no extensions are installed by default
         assertThat(cc.extensions()).isEmpty();

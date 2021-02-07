@@ -23,9 +23,9 @@ import java.lang.invoke.MethodType;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.base.Completion;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.Completion;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;

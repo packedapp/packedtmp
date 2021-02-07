@@ -50,3 +50,4 @@ public abstract class Realm {
 // Realm -> Composer
 // Realm -> Assembly
 // Realm -> Extension
+// Hvad med deploy paa runtime...

@@ -54,15 +54,27 @@ import packed.internal.component.wirelet.WireletPreModel;
 // Saa man skal stadig haves Extension??? IDK
 // Giver mere mening med at det skal vaere det intermediate element.
 public abstract class Wirelet {
-    
+
     /** A stack walker used by various methods. */
     private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
+    /**
+     * 
+     * @param wirelet
+     *            the wirelet to process after this wirelet
+     * @return the combined wirelet
+     */
     public final Wirelet andThen(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
         return Wirelet.combine(this, wirelet);
     }
 
+    /**
+     * 
+     * @param wirelets
+     *            the wirelets to process after this wirelet
+     * @return the combined wirelet
+     */
     public final Wirelet andThen(Wirelet... wirelets) {
         return Wirelet.combine(this, wirelets);
     }
@@ -94,6 +106,34 @@ public abstract class Wirelet {
     // Skal vi tage en Component???
     // Eller kan vi kun validere med modifiers...
     protected final void validate() {}
+
+    // cannot be consumed individually. Only as either
+    // List or Set....
+    // Must be a super type of this wirelet type
+    // Is inherited
+    // Can only be a part of one aggregate type...
+    // And can only be injected as an aggregate type
+    protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
+        WireletPreModel.stackBy(STACK_WALKER.getCallerClass(), wireletType);
+    }
+
+    /**
+     * A static initializer method that indicates that the wirelet must be specified at build-time.
+     * 
+     * <p>
+     * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
+     * 
+     * <p>
+     * If this method is called from an {@link InheritableWirelet}. All subclasses of the wirelet will retain build-time
+     * only status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
+     * exception(or error).
+     * <p>
+     * I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
+     * bruge @Provide naar vi linker assemblies...
+     */
+    protected static final void $buildtimeOnly() {
+        WireletPreModel.buildtimeOnly(STACK_WALKER.getCallerClass());
+    }
 
     /**
      * Combines an array or wirelets
@@ -140,6 +180,15 @@ public abstract class Wirelet {
         return WireletList.of(last, first);
     }
 
+    public static Wirelet extractable(Wirelet wirelet) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Altsaa den ville vaere god for MainArgsWirelet...
+    // Folk maa gerne smide en MainArgsWirelet ind.
+    // Vi kan nemlig ikke rigtig wrappe den.
+    // Da det ikke er en statisk metode.
+
     /**
      * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually receive it
      * using {@link WireletReceive}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
@@ -153,6 +202,19 @@ public abstract class Wirelet {
     public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
         return new BaseWirelet.IgnoreUnhandled(combine(wirelet));
     }
+
+//    /**
+//     * @param wirelet
+//     *            the wirelet to wrap
+//     * @param property
+//     *            the property that is required of the component
+//     * @return the wrapped wirelet
+//     */
+//    // Det betyder at vi vel skal starte med kalkulere properties som noget af det foerste?
+//    // Eller ogsaa at vi Wirelet skal vaere abstract
+//    public static Wirelet requireModifier(Wirelet wirelet, ComponentModifier property) {
+//        return wirelet;
+//    }
 
     // will invoke the specified runnable if the wirelet cannot be processed
     // could be Wirelet.orElseRun(Runnable)...
@@ -172,11 +234,6 @@ public abstract class Wirelet {
         throw new UnsupportedOperationException();
     }
 
-    // Altsaa den ville vaere god for MainArgsWirelet...
-    // Folk maa gerne smide en MainArgsWirelet ind.
-    // Vi kan nemlig ikke rigtig wrappe den.
-    // Da det ikke er en statisk metode.
-
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
@@ -190,44 +247,5 @@ public abstract class Wirelet {
     // String intrapolation?
     public static Wirelet named(String name) {
         return new SetComponentNameWirelet(name);
-    }
-
-//    /**
-//     * @param wirelet
-//     *            the wirelet to wrap
-//     * @param property
-//     *            the property that is required of the component
-//     * @return the wrapped wirelet
-//     */
-//    // Det betyder at vi vel skal starte med kalkulere properties som noget af det foerste?
-//    // Eller ogsaa at vi Wirelet skal vaere abstract
-//    public static Wirelet requireModifier(Wirelet wirelet, ComponentModifier property) {
-//        return wirelet;
-//    }
-
-    public static Wirelet extractable(Wirelet wirelet) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
-     */
-    // Is inherited
-    // parent wirelet dpp.doo.FooWirelet is already declared buildtimeOnly()
-    
-    // I think you can only have wirelets injected at build-time if they are build-time only...
-    // Nej, vi skal fx bruge @Provide naar vi linker assemblies...
-    protected static final void $buildtimeOnly() {
-        WireletPreModel.buildtimeOnly(STACK_WALKER.getCallerClass());
-    }
-
-    // cannot be consumed individually. Only as either 
-    // List or Set.... 
-    // Must be a super type of this wirelet type
-    // Is inherited
-    // Can only be a part of one aggregate type...
-    // And can only be injected as an aggregate type
-    protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
-        WireletPreModel.stackBy(STACK_WALKER.getCallerClass(), wireletType);
     }
 }

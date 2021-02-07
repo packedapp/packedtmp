@@ -30,7 +30,7 @@ import app.packed.state.OnStart;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * A convenience extension of {@link BundleAssembly} which contains shortcut access to common functionality defined by
+ * A convenience extension of {@link ContainerAssembly} which contains shortcut access to common functionality defined by
  * the various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
@@ -65,7 +65,7 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 // CommonBundle, StarterBundle
 // GoBundle
 // Base is fine....
-public abstract class BaseAssembly extends BundleAssembly {
+public abstract class BaseAssembly extends ContainerAssembly {
 
     protected final void requireGuest() {
         // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...

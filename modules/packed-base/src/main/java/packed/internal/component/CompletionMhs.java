@@ -17,7 +17,7 @@ package packed.internal.component;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.Completion;
+import app.packed.base.Completion;
 
 /**
  *

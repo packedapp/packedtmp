@@ -24,27 +24,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
-import app.packed.attribute.AttributedElementStream;
 import app.packed.base.Key;
-import app.packed.hooks.sandbox.DynamicService;
+import app.packed.hooks.sandbox.AutoService;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
- * A collection of services where each service has a unique {@link Service#key() key}. Unlike {@link ServiceLocator} and
- * {@link ServiceSelection} this interface does not contain methods to acquire actual service instances. It merely
- * provides information about the types of services that are available.
+ * A collection of services with each service having a unique {@link Service#key() key}. Unlike {@link ServiceLocator}
+ * and {@link ServiceSelection} this interface does not contain any methods to acquire actual service instances. It
+ * merely provides information about the type of services that are available.
  * <p>
- * Unless otherwise specified instances of this interface are immutable collections. One notable exception is the
- * {@link ServiceComposer} interface. Which support mutation operations on the iterators returned by {@link #iterator()}
- * and sets returned by {@link #keys()}. Kun remove operationer jo
+ * Unless otherwise specified, implementations of this interface does not instances of this interface are immutable
+ * collections. One notable exception is the {@link ServiceComposer} interface. Which support mutation operations on the
+ * iterators returned by {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
  * <p>
- * Unless otherwise specified a service registry never overrides hashCode/equals.
+ * Unless otherwise specified, implementations of this interface does not override hashCode/equals.
  * <p>
  * If used as an auto activating variable sidecar the registry injected will be an immutable
  */
-@DynamicService
+@AutoService
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
@@ -146,7 +146,7 @@ public interface ServiceRegistry extends Iterable<Service> {
      *
      * @return a unordered {@code Stream} of all services in this registry
      */
-    default AttributedElementStream<Service> services() {
+    default Stream<Service> services() {
         return new PackedAttributeHolderStream<>(asMap().values().stream());
     }
 

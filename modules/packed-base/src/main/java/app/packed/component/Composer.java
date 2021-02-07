@@ -23,16 +23,10 @@ import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 
 /**
- *
+ * Composers does not usually have any public constructors.
  */
-// Can take a CCC context. And cast it and provide lookup??
-// Maaske er det altid en container????
-// This class should be inlign with Assembly so Either ComponentComposer or just Composer
-//Composer<T>?
-// Maaske skal Composer bare vaere en special Assembly...
-// Jamen, saa skal vi tage noget andet end Assembly til de forskellige metoder.
-// Assembly extended by Composer|
-// Class<?> configurator = Assembly|Composer | Extension????<-- naah Assembly|Composer  
+// Syntes bare den skal vaere ligesom Assembly
+// Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
 public abstract class Composer<C extends ComponentConfiguration> extends Realm {
 
     // I don't think we have access to component configuration context...
@@ -100,3 +94,11 @@ public abstract class Composer<C extends ComponentConfiguration> extends Realm {
         throw new UnsupportedOperationException();
     }
 }
+//Can take a CCC context. And cast it and provide lookup??
+//Maaske er det altid en container????
+//This class should be inlign with Assembly so Either ComponentComposer or just Composer
+//Composer<T>?
+//Maaske skal Composer bare vaere en special Assembly...
+//Jamen, saa skal vi tage noget andet end Assembly til de forskellige metoder.
+//Assembly extended by Composer|
+//Class<?> configurator = Assembly|Composer | Extension????<-- naah Assembly|Composer  

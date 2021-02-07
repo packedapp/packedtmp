@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 // Previously this interface also contained information about where
 // the instances came from. However, this information is now only
 // available from InjectionContext
+// To avoid storing all this static information if we don't need to 
 
 // We let people implement this in order to help with testing.
 // For example, 

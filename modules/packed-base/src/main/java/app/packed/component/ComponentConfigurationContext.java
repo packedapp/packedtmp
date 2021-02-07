@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.component.drivers.ComponentDriver;
 import app.packed.component.drivers.ComponentFactoryDriver;
-import app.packed.container.BundleAssembly;
+import app.packed.container.ContainerAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -62,7 +62,7 @@ public interface ComponentConfigurationContext {
      * 
      * @return an unmodifiable view of the extensions that are currently in use
      * 
-     * @see BundleAssembly#extensions()
+     * @see ContainerAssembly#extensions()
      */
     // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
     // for bundle components. Makes sense because we would need for interating 

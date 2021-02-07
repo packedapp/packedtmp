@@ -43,7 +43,7 @@ class Xxx extends BaseAssembly {
     public static void main(String[] args) {
         App a = App.start(new Xxx());
         System.out.println(a.services().keys());
-        ServiceLocator l = a.services().transform(s -> {
+        ServiceLocator l = a.services().spawn(s -> {
             s.provideInstance(123);
             s.decorate(String.class, t -> t + t);
             s.decorate(String.class, t -> t + t);

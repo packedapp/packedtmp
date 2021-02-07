@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 
 // VariableInjectable?
 // AutoService
-public @interface DynamicService {
+public @interface AutoService {
 
     // boolean includeSubclasses(); <-- only works on abstract classes???
 

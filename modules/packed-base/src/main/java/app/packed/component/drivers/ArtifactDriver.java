@@ -20,12 +20,12 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.base.Completion;
 import app.packed.base.TypeToken;
 import app.packed.cli.Main;
 import app.packed.component.App;
 import app.packed.component.Assembly;
 import app.packed.component.BuildException;
-import app.packed.component.Completion;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
@@ -130,8 +130,18 @@ public interface ArtifactDriver<A> {
      * @see ServiceComposer
      * @see ServiceLocator#of(Consumer)
      */
+    // Hvad hvis vi laver composeren om til at tage en ComponentDriver... ligesom assembly.
+    // Og saa tager vi en composer
     <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
+
+    default <C extends Composer<?>> A compose2(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
+        // enable composer
+        // consumer.apply
+        // disable consuper
+        // return a
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Create a new artifact using the specified assembly.

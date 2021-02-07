@@ -54,13 +54,26 @@ import app.packed.container.ExtensionNest;
 @ExtensionNest(CliExtension.class)
 public final class MainArgs extends Wirelet {
 
-    // Det gode ved declarativt er at 
-    
+    private final String[] args = {};
+    // Det gode ved declarativt er at
+
+    /**
+     * Returns an array containing all string arguments.
+     * <p>
+     * The returned array will be "safe" in that no references to it are maintained by this class. The caller is thus free
+     * to modify the returned array.
+     *
+     * @return an array containing all of the elements in this list in proper sequence
+     */
+    public String[] toArray() {
+        return args.clone();
+    }
+
+    // som default wirelet er den nok unconsumed
+
     public static MainArgs of(String... args) {
         requireNonNull(args, "args is null");
         throw new UnsupportedOperationException();
     }
-    
-    // som default wirelet er den nok unconsumed
 }
 // Er ikke en service, men en extension type

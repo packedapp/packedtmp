@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.instance;
+package app.packed.contract;
 
 /**
- *
+ * This class is the base class for contracts in Packed.
  */
-public interface RuntimeComponentStream {
+public abstract class Contract {
 
+    /** {@inheritDoc} */
+    @Override
+    public abstract boolean equals(Object obj);
+
+    /** {@inheritDoc} */
+    @Override
+    public abstract int hashCode();
 }

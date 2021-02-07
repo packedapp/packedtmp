@@ -21,6 +21,6 @@ package app.packed.cli;
 public class CliContract {
 
     public boolean requiresMain() {
-        return false;
+        return true;
     }
 }

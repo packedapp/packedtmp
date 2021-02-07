@@ -29,4 +29,9 @@ public final class CliExtension extends Extension {
     private CliExtension() {}
 
     // Taenker man kan styre hvordan den kommer ned til
+
+    void setDefault(String... args) {
+        // If MainArgs is not provided as a wirelet to the container
+        // Use these sensible values
+    }
 }

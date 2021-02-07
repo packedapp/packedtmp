@@ -23,7 +23,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BundleConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
@@ -38,7 +38,7 @@ import app.packed.inject.sandbox.PrototypeConfiguration;
  * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
  * default.
  */
-public final class InjectorComposer extends Composer<BundleConfiguration> {
+public final class InjectorComposer extends Composer<ContainerConfiguration> {
 
     private boolean initialized;
 
@@ -48,7 +48,7 @@ public final class InjectorComposer extends Composer<BundleConfiguration> {
      * @param configuration
      *            the configuration to wrap
      */
-    InjectorComposer(BundleConfiguration configuration) {
+    InjectorComposer(ContainerConfiguration configuration) {
         super(configuration);
     }
 
@@ -203,7 +203,7 @@ public final class InjectorComposer extends Composer<BundleConfiguration> {
 
     // configure()
     static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return InjectorArtifactHelper.DRIVER.compose(BundleConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
+        return InjectorArtifactHelper.DRIVER.compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
     }
 
 }

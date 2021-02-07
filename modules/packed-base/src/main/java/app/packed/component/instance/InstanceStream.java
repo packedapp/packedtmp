@@ -13,25 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.test;
-
-import app.packed.inject.ServiceLocator;
+package app.packed.component.instance;
 
 /**
  *
  */
-public class TestIt {
-
-    public static void main(String[] args) {
-        ServiceLocator sl = ServiceLocator.of(t -> {
-            t.provideInstance("goo");
-            t.provideInstance(123);
-        });
-        System.out.println(sl.getClass());
-        System.out.println(sl.keys());
-        sl = sl.spawn(t -> t.provideInstance(123L));
-        sl.selectAll().use(Long.class);
-        System.out.println("Bye");
-    }
+public interface InstanceStream {
 
 }

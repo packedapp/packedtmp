@@ -42,7 +42,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ServiceExportComposer implements Iterable<BuildtimeService> {
+public final class ServiceExportManager implements Iterable<BuildtimeService> {
 
     /** The config site, if we export all entries. */
     private boolean exportAll;
@@ -70,7 +70,7 @@ public final class ServiceExportComposer implements Iterable<BuildtimeService> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceExportComposer(ServiceManager sm) {
+    ServiceExportManager(ServiceManager sm) {
         this.sm = requireNonNull(sm);
     }
 
