@@ -96,7 +96,7 @@ public class MethodInstanceTest {
     // }
     // }
 
-    static class MixedMethods {
+    public   static class MixedMethods {
 
         // Long l = 1L;
 
@@ -141,11 +141,11 @@ public class MethodInstanceTest {
         }
     }
 
-    static class PrototypeMethod {
+public static class PrototypeMethod {
 
         Short s = 1;
 
-        PrototypeMethod(AtomicBoolean b) {
+        public    PrototypeMethod(AtomicBoolean b) {
             b.set(true);
         }
 
@@ -155,11 +155,11 @@ public class MethodInstanceTest {
         }
     }
 
-    static class SingletonMethod {
+public  static class SingletonMethod {
 
         Short s = 1;
 
-        SingletonMethod(AtomicBoolean b) {
+        public    SingletonMethod(AtomicBoolean b) {
             b.set(true);
         }
 

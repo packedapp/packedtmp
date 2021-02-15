@@ -18,10 +18,11 @@ package app.packed.component;
 import app.packed.container.Extension;
 
 /**
- * By default a wirelet is only processed by the single component it is applied to. However, 
+ * By default a wirelet is only processed by the single component it is applied to. However,
  */
 // Ideen er at man som default ikke bliver inherited...
 // Men at man kan
+// Jaaa eller omvendt... F.eks. debug... vil du vel som regel gerne alle sammen
 
 // I selektionen minder den meget om component stream...
 
@@ -39,10 +40,12 @@ public abstract class InheritableWirelet extends Wirelet {
         throw new UnsupportedOperationException();
     }
 
+    // Maybe this is the last so return Wirelet
     public final InheritableWirelet ignoreThis() {
         throw new UnsupportedOperationException();
     }
 
+    //relativ til indsaetnings stedet...
     public final InheritableWirelet matchPath(String regexp) {
         throw new UnsupportedOperationException();
     }
@@ -55,6 +58,11 @@ public abstract class InheritableWirelet extends Wirelet {
         throw new UnsupportedOperationException();
     }
 
+    // disabled()
+    public final Wirelet noInheritance() {
+        return Wirelet.extractable(this);
+    }
+
     /**
      * Returns a wirelet whose inheritance strategy can no longer be changed. This method is mainly useful if you want to
      * expose an inheritable wirelet to end-users. But you do not want the end-users be able to change the inheritance
@@ -62,6 +70,7 @@ public abstract class InheritableWirelet extends Wirelet {
      * 
      * @return this wirelet as an immutable wirelet
      */
+    // fixed()? immutable()?
     public final Wirelet wirelet() {
         return Wirelet.extractable(this);
     }

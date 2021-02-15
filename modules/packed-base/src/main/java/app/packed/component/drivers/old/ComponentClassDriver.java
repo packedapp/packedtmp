@@ -13,33 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.component.drivers.old;
 
-import java.lang.invoke.MethodHandle;
-
-import app.packed.base.Nullable;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.drivers.ComponentDriver;
 
 /**
  *
  */
-public interface Getter<T> {
+public interface ComponentClassDriver<C extends ComponentConfiguration, I> {
 
     /**
-     * Gets the value.
-     * 
-     * @return the value
+     * @param implementation
+     *            the implementation to bind
+     * @return a new bound component driver
      */
-    @Nullable
-    T get(); // getNullable
-
-    Class<?> rawType();
-
-    /**
-     * Returns a new parameter-less method handle. The return type of the method handle will be the exact return type of the
-     * underlying executable.
-     * 
-     * @return the method handle
-     */
-    // Same problem as
-    MethodHandle toMethodHandle();
+    ComponentDriver<C> bind(Class<? extends I> implementation);
 }

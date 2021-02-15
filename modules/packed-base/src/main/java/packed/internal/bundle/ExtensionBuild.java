@@ -24,7 +24,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
@@ -176,22 +176,22 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanConfiguration<T> install(Class<T> implementation) {
-        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.bind(implementation);
+    public BaseComponentConfiguration install(Class<?> implementation) {
+        ComponentDriver<BaseComponentConfiguration> cd = BaseComponentConfiguration.driverInstall(implementation);
         return compConf.wire(cd);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.bind(factory);
+    public BaseComponentConfiguration install(Factory<?> factory) {
+        ComponentDriver<BaseComponentConfiguration> cd = BaseComponentConfiguration.driverInstall(factory);
         return compConf.wire(cd);
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> BeanConfiguration<T> installInstance(T instance) {
-        ComponentDriver<BeanConfiguration<T>> cd = BeanConfiguration.bindInstance(instance);
+    public BaseComponentConfiguration installInstance(Object instance) {
+        ComponentDriver<BaseComponentConfiguration> cd =  BaseComponentConfiguration.driverInstallInstance(instance);
         return compConf.wire(cd);
     }
 

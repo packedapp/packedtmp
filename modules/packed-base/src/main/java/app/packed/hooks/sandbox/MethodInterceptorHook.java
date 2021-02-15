@@ -13,12 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.hooks.sandbox;
 
 /**
  *
  */
-public @interface MethodDecoratorHook {
+// tror den er 100% separat fra MethodHook...
+// Eller maaske er den ikke..:)
+
+// Det store issue er jo ordering...
+public @interface MethodInterceptorHook {
 
 }
 

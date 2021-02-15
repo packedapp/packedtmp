@@ -15,7 +15,7 @@
  */
 package app.packed.hooks.usage;
 
-import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
 import app.packed.state.OnInitialize;
 
@@ -32,7 +32,7 @@ public class ClassUseIt {
         // Hvis man vil have mulighed for at kunne se hvad der sker...
         // @HintCallInvoker <---
         @OnInitialize
-        public void invoke(Invoker<?> i) throws Throwable {
+        public void invoke(MethodAccessor<?> i) throws Throwable {
             i.call(); // another method could just set the invoker...
             // for later invocation, a.la. web
             // So we will never be able to see what exactly is going on

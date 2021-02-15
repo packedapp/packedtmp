@@ -19,15 +19,14 @@ import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceComponentConfiguration;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import app.packed.inject.sandbox.PrototypeConfiguration;
 
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
@@ -107,9 +106,8 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
      */
-    public <T> BeanConfiguration<T> provide(Class<T> implementation) {
-        extension(); // call exportAll
-        return configuration.install(implementation).provide();
+    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+        return extension().provide(implementation);
     }
 
     /**
@@ -124,9 +122,8 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> BeanConfiguration<T> provide(Factory<T> factory) {
-        extension(); // call exportAll
-        return configuration.install(factory).provide();
+    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
+        return extension().provide(factory);
     }
 
     /**
@@ -187,17 +184,15 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     // All annotations will be processed like provide() except that constructors will not be processed
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
-    public <T> BeanConfiguration<T> provideInstance(T instance) {
-        extension(); // call exportAll
-        return configuration.installInstance(instance).provide();
+    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
+        return extension().provideInstance(instance);
     }
 
-    public <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
-        extension(); // call exportAll
-        return providePrototype(Factory.of(implementation));
+    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
+        return extension().providePrototype(Factory.of(implementation));
     }
 
-    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
 

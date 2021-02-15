@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.hooks.sandbox2;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -45,7 +45,7 @@ public interface InvocationBinder {
     void bindArgument(int position, MethodHandle transformer, int... argumentIndexes);
 
     /**
-     * A successful invocation of this method will reduce the {@link #variableCount() variable count} with <{@code 1}.
+     * A successful invocation of this method will reduce the {@link #variableCount() variable count} with {@code 1}.
      * <p>
      * If the parameter type is a primitive, the argument object must be a wrapper, and will be unboxed to produce the
      * primitive value. (Throws NPE or CCE? on null for primitive)
@@ -53,7 +53,7 @@ public interface InvocationBinder {
      * @param position
      *            the position of the variable
      * @param constant
-     *            the constant to bind
+     *            the constant to bindW
      * @throws IndexOutOfBoundsException
      *             if the specified position is not valid
      * @throws ClassCastException

@@ -18,11 +18,16 @@ package app.packed.hooks.sandbox;
 import java.lang.annotation.Annotation;
 
 import app.packed.hooks.FieldHook;
+import app.packed.hooks.MethodHook;
+import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Inject;
 
 /**
  *
  */
+// I sidste ende har vi bare brug for en @MetaAnnotation....
+
+// Kan puttes paa Composer, Assembly, ComponentSource (Class) not function I think
 @interface Support {
 
     Class<? extends Annotation>[] annotatedFieldsActivators() default {};
@@ -41,11 +46,15 @@ class XUsage {
 // Kraever ikke noget.. men ser lidt underligt ud
 @Support(annotatedFieldsActivators = { Inject.class, Inject.class }, annotatedFields = { @FieldHook(allowGet = true, bootstrap = FieldHook.Bootstrap.class),
         @FieldHook(allowGet = true, bootstrap = FieldHook.Bootstrap.class) })
-class UsageAlternativ {
+@MethodHook(matchesAnnotation = Inject.class, bootstrap = RealMethodSidecarBootstrap.class)
+class MyAssembly {
 
 }
+@interface MetaAnnotation {
+    
+}
 
-///////// Kraever many annotations
-// @ActivateFieldSidecar(activatedBy = Inject.class, allowGet = true, sidecar = FieldSidecar.class)
-// @ActivateFieldSidecar(activatedBy = Inject.class, allowGet = true, sidecar = FieldSidecar.class)
+@MethodHook(matchesAnnotation = Inject.class, bootstrap = RealMethodSidecarBootstrap.class)
+@MethodHook(matchesAnnotation = Inject.class, bootstrap = RealMethodSidecarBootstrap.class)
+@MetaAnnotation
 @interface UsageAnotherAlternative {}

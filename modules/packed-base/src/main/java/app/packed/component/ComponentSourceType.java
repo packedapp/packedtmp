@@ -16,11 +16,27 @@
 package app.packed.component;
 
 /**
- *
+ * 
  */
+
+// Altsaa taenker at vi fx kan faa en Kotlin faetter...
+// Er ikke super vild med en enum her
 public enum ComponentSourceType {
+
     CLASS,
 
     /** A functional interface. */
-    FUNCTION;
+    FUNCTION,
+
+    // Altsaa vi skal jo angive hvor @Provide X kommer fra saa selvfoelgelig har vi brug for wirelets.
+    // Som jeg ser det 
+    WIRELET; // ??? Jeg taenker paa at vi har brug for den...
 }
+// 3 attributer eller en??? COMPONENT_SOURCE_TYPE, 
+//COMPONENT_SOURCE_CLASS_TYPE
+//COMPONENT_SOURCE_FUNCTION_TYPE
+//COMPONENT_SOURCE_WIRELET_TYPE
+
+// Template...
+
+// JPA -> Class... 

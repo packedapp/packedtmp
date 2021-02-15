@@ -60,7 +60,7 @@ public class MembersProvideTest {
         assertThat(i.use(new Key<@StringQualifier("m_private") String>() {})).isEqualTo("private_m");
     }
 
-    static class VisibilityNonStatic {
+public  static class VisibilityNonStatic {
 
         @Provide
         @StringQualifier("f_package")
@@ -103,7 +103,7 @@ public class MembersProvideTest {
         }
     }
 
-    static class VisibilityStatic {
+public  static class VisibilityStatic {
 
         @Provide
         @StringQualifier("f_package")

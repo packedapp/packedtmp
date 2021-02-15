@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.drivers;
+package app.packed.component.drivers.old;
 
 import java.lang.invoke.MethodHandles;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.component.drivers.ComponentDriver.Option;
 import app.packed.inject.Factory;
 import packed.internal.component.PackedComponentDriver;

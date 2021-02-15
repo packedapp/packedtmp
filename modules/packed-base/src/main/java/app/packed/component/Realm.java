@@ -42,6 +42,8 @@ import java.lang.invoke.MethodHandles;
 // Og hvad mad ServiceComposer???
 // Vil mene den bliver noedt til at vaere en konkret klasse der extender Composer...
 
+// Som minimum RealmConfiguration...  En realm taenker jeg ikke er et configurering product
+
 // IDK er det to begreber vi blander sammen her???
 public abstract class Realm {
 

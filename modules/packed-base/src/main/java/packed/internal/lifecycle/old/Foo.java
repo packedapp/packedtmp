@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import app.packed.base.Tag;
 import app.packed.component.App;
 import app.packed.container.BaseAssembly;
-import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
@@ -84,7 +84,7 @@ class TestIt extends RealMethodSidecarBootstrap {
     }
 
     @OnInitialize
-    public void foo(Invoker<?> i) throws Throwable {
+    public void foo(MethodAccessor<?> i) throws Throwable {
         i.call();
     }
 

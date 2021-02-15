@@ -15,7 +15,7 @@
  */
 package packed.internal.hooks;
 
-import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodAccessor;
 
 /**
  *
@@ -31,7 +31,7 @@ public class VariableSidecarModel {
 
         public void provideInvoker() {
             if (invoker != null) {
-                throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
+                throw new IllegalStateException("Cannot provide more than 1 " + MethodAccessor.class.getSimpleName());
             }
             invoker = Object.class;
         }

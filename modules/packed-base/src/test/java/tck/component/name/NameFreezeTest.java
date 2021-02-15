@@ -22,9 +22,10 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
+import app.packed.inject.ServiceComponentConfiguration;
 import testutil.util.AbstractArtifactTest;
 import testutil.util.ContainerConfigurationTester;
 
@@ -40,12 +41,12 @@ import testutil.util.ContainerConfigurationTester;
 public class NameFreezeTest extends AbstractArtifactTest {
 
     /**
-     * Tests that we cannot call {@link BeanConfiguration#setName(String)}. After {@link BeanConfiguration#getName()}.
+     * Tests that we cannot call {@link ServiceComponentConfiguration#setName(String)}. After {@link ServiceComponentConfiguration#getName()}.
      */
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {
-            BeanConfiguration<?> ci = c.installInstance(1);
+            BaseComponentConfiguration ci = c.installInstance(1);
             ci.getName();
             ci.setName("foo");
         }, "Cannot call #setName(String) after the name has been initialized via calls to #getName()");
@@ -55,7 +56,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void component_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> {
-            BeanConfiguration<?> ci = c.installInstance(1);
+            BaseComponentConfiguration ci = c.installInstance(1);
             c.installInstance(1L);
             ci.setName("foo");
         }, "Cannot call this method after having installed components or used extensions");
@@ -68,7 +69,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
-            BeanConfiguration<?> ci = c.installInstance(1);
+            BaseComponentConfiguration ci = c.installInstance(1);
             c.link(emptyBundle());
             ci.setName("foo");
         }, "Cannot call this method after #link() has been invoked");
@@ -77,7 +78,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void component_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> {
-            BeanConfiguration<?> ci = c.installInstance(1);
+            BaseComponentConfiguration ci = c.installInstance(1);
             ci.path();
             ci.setName("foo");
         }, "Cannot call #setName(String) after name has been initialized via calls to #path()");
@@ -86,7 +87,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     public void component_setName_cannotBeCalledAfter_setName() {
         checkThrowsISE(c -> {
-            BeanConfiguration<?> ci = c.installInstance(1);
+            BaseComponentConfiguration ci = c.installInstance(1);
             ci.setName("foo");
             ci.setName("foo");
         }, "#setName(String) can only be called once");

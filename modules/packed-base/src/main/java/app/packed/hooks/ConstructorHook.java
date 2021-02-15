@@ -25,6 +25,10 @@ public @interface ConstructorHook {
 
     abstract class Bootstrap {
         
+        /** Disables any further processing of the Constructor. */
+        public final void disable() {
+        }
+        
         /**
          * Returns true if an annotation for the specified type is <em>present</em> on the hooked class, else false.
          * 
@@ -37,5 +41,6 @@ public @interface ConstructorHook {
         public final boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
            throw new UnsupportedOperationException();
         }
+
     }
 }

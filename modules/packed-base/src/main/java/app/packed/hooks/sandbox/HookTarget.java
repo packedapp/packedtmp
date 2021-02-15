@@ -15,30 +15,31 @@
  */
 package app.packed.hooks.sandbox;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-
 /**
  *
  */
-// En gammel klasse Tror vi bruger et hook...
-interface MethodInterceptor {
+// Den fungere jo kun paa Class/Member hook taenker jeg
+public enum HookTarget {
+    BUILD_TIME_COMPONENT_SOURCE,
 
-    default MethodType sourceType() {
-        throw new UnsupportedOperationException();
+    RUNTIME_COMPONENT_SOURCE,
+
+    HOOK;
+}
+
+class FooBootstrap {
+
+    // Saa kan man seatte buildtime/runtime target efter det
+    // Det betyder ogsaa at vi koere en bootstrap per target...
+    // Det betyder ogsaa at
+    public final HookTarget target() {
+        return HookTarget.BUILD_TIME_COMPONENT_SOURCE;
     }
-
-    void source(MethodHandle mh);
-
-    /**
-     * The method handle to invoke or intercept.
-     * 
-     * @return the method handle to invoke or intercept
-     */
-    MethodHandle target();
-
-    default MethodType targetType() {
-        return target().type();
+    
+    protected static final void $target(HookTarget... targets) {
+        // default is BUILD_TIME_COMPONENT_SOURCE
+        
+        // Alternativet er at smide det paa MethodHook...
+        // Men er sgu lidt grimt...
     }
 }
-// source changes as we

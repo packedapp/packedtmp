@@ -27,18 +27,18 @@ import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.component.BeanConfiguration;
-import app.packed.component.drivers.ComponentFactoryDriver;
+import app.packed.component.drivers.old.ComponentFactoryDriver;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
+import app.packed.state.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.bundle.BundleBuild;
 import packed.internal.bundle.ExtensionBuild;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
  * The main configuration point for services.
@@ -264,7 +264,39 @@ public final class ServiceExtension extends Extension {
         checkConfigurable();
         services.provideAll((PackedInjector) locator /*, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
     }
+    /**
+     * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
+     * constructor or method to instantiate the service instance once the injector is created.
+     * <p>
+     * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
+     * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
+     *
+     * @param <T>
+     *            the type of service to bind
+     * @param implementation
+     *            the implementation to bind
+     * @return a service configuration for the service
+     * @see InjectorComposer#provide(Class)
+     */
+    public final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+        return configuration().wire(ServiceComponentConfiguration.provide(implementation)).provide();
+    }
 
+    /**
+     *
+     * <p>
+     * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
+     *
+     * @param <T>
+     *            the type of component to install
+     * @param factory
+     *            the factory used for creating the component instance
+     * @return the configuration of the component that was installed
+     */
+    public final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
+        return configuration().wire(ServiceComponentConfiguration.provide(factory)).provide();
+    }
+    
     /**
      * Binds a new service constant to the specified instance.
      * <p>
@@ -278,15 +310,15 @@ public final class ServiceExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> BeanConfiguration<T> provideInstance(T instance) {
+    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         // installer().wire(SCD.fromInstance(instance).provide();
-        return configuration().wire(BeanConfiguration.bindInstance(instance)).provide();
+        return configuration().wire(ServiceComponentConfiguration.provideInstance(instance)).provide();
     }
 
     // Will install a ServiceStatelessConfiguration...
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
-    public <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
         return bundle.compConf.wire(prototype(), factory);
     }
 
@@ -358,8 +390,8 @@ public final class ServiceExtension extends Extension {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
-    public static <T> ComponentFactoryDriver<PrototypeConfiguration<T>, T> prototype() {
-        return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), PrototypeConfiguration.class);
+    public static <T> ComponentFactoryDriver<ServiceComponentConfiguration<T>, T> prototype() {
+        return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class);
     }
 
     /**

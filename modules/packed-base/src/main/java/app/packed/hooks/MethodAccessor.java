@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 // Men ved ikke hvordan det vil fungere end gang med generics specialization.
 // Kan vi ende ud i en situation hvor vi har @Nullable paa en metode
 // Og saa kan den lige pludselig ikke specialiseres???
-public interface Invoker<R> {
+public interface MethodAccessor<R> {
 
     /**
      * Invokes the underlying method handle discards any result.
@@ -34,6 +34,10 @@ public interface Invoker<R> {
      * @throws Throwable
      */
     void call() throws Throwable;
+
+    default void call(Object... arguments) throws Throwable {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Invokes the underlying method (or constructor)
@@ -52,6 +56,9 @@ public interface Invoker<R> {
      * @throws Throwable
      *             anything thrown by the underlying executable propagates unchanged through the method handle call
      */
+    // Nej Saa folk have Invoker<@Nullable R>
+    // Giver ikke meningen at annotatere en parameterizere type???
+    // Det betyder ogsaa at Nullable skal fjernes fra Invoker1
     @Nullable
     R invokeNullable() throws Throwable;
 }

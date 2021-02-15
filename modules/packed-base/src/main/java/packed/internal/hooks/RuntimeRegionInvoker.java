@@ -21,20 +21,20 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
-import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodAccessor;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**
- * A implementation of {@link Invoker} that takes a method handle that needs a single {@link RuntimeRegion} to be
+ * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link RuntimeRegion} to be
  * invoked.
  */
-public final class RuntimeRegionInvoker<T> implements Invoker<T> {
+public final class RuntimeRegionInvoker<T> implements MethodAccessor<T> {
 
     /** A method handle for creating new Invoker instance. We explicitly cast return type from PackedInvoker->Invoker. */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
-            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, RuntimeRegion.class), Invoker.class);
+            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, RuntimeRegion.class), MethodAccessor.class);
 
     /** The method handle to invoke */
     private final MethodHandle mh;

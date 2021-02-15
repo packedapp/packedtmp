@@ -90,7 +90,7 @@ public class QualifierTest {
         });
     }
 
-    static class MultipleIdenticalQualifiedFieldKeys {
+    public static class MultipleIdenticalQualifiedFieldKeys {
 
         @Provide(constant = true)
         @StringQualifier("A")
@@ -101,7 +101,7 @@ public class QualifierTest {
         private Long B = 0L;
     }
 
-    static class MultipleIdenticalQualifiedMemberKeys {
+    public static class MultipleIdenticalQualifiedMemberKeys {
 
         @Provide(constant = true)
         @StringQualifier("A")
@@ -114,7 +114,7 @@ public class QualifierTest {
         }
     }
 
-    static class MultipleIdenticalQualifiedMethodKeys {
+    public static class MultipleIdenticalQualifiedMethodKeys {
 
         @Provide(constant = true)
         @StringQualifier("A")
@@ -129,7 +129,7 @@ public class QualifierTest {
         }
     }
 
-    static class Stub {
+    public static class Stub {
 
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // @StringQualifier("A")

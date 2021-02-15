@@ -39,7 +39,7 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
-import app.packed.container.ExtensionNest;
+import app.packed.container.MemberOfExtension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
@@ -67,8 +67,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
                         "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
             }
 
-            if (type.isAnnotationPresent(ExtensionNest.class)) {
-                throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + ExtensionNest.class.getSimpleName()
+            if (type.isAnnotationPresent(MemberOfExtension.class)) {
+                throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + MemberOfExtension.class.getSimpleName()
                         + " annotation, for  '" + StringFormatter.format(type));
             }
             return Loader.load((Class<? extends Extension>) type, null);
@@ -234,18 +234,18 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Returns any value of {@link ExtensionNest} annotation.
+     * Returns any value of {@link MemberOfExtension} annotation.
      * 
      * @param type
      *            the type look for an ExtensionMember annotation on
      * @return an extension the specified type is a member of
      * @throws InternalExtensionException
      *             if an annotation is present and the specified is not in the same module as the extension specified in
-     *             {@link ExtensionNest#value()}
+     *             {@link MemberOfExtension#value()}
      */
     @Nullable
     public static Class<? extends Extension> getExtensionMemberOf(Class<?> type) {
-        ExtensionNest ue = type.getAnnotation(ExtensionNest.class);
+        MemberOfExtension ue = type.getAnnotation(MemberOfExtension.class);
         if (ue != null) {
             Class<? extends Extension> eType = ue.value();
             if (type.getModule() != eType.getModule()) {

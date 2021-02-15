@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.inject;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.Component;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.drivers.ComponentDriver;
 import app.packed.component.drivers.ComponentDriver.Option;
-import app.packed.component.drivers.ComponentInstanceDriver;
+import app.packed.component.drivers.old.ComponentInstanceDriver;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.Factory;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -31,12 +33,12 @@ import app.packed.inject.Factory;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
-public final class BeanConfiguration<T> extends BaseComponentConfiguration {
+public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentInstanceDriver ICD = ComponentInstanceDriver.of(MethodHandles.lookup(), BeanConfiguration.class, Option.constantSource());
+    private static final ComponentInstanceDriver DRIVER = ComponentInstanceDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class, Option.constantSource());
 
-    private BeanConfiguration(ComponentConfigurationContext context) {
+    public ServiceComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
 
@@ -49,7 +51,7 @@ public final class BeanConfiguration<T> extends BaseComponentConfiguration {
      * @return this configuration
      * @see #as(Key)
      */
-    public BeanConfiguration<T> as(Class<? super T> key) {
+    public ServiceComponentConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -64,23 +66,30 @@ public final class BeanConfiguration<T> extends BaseComponentConfiguration {
      * @return this configuration
      * @see #as(Class)
      */
-    public BeanConfiguration<T> as(Key<? super T> key) {
+    public ServiceComponentConfiguration<T> as(Key<? super T> key) {
         context.sourceProvideAs(key);
         return this;
     }
-
+    
+    public ServiceComponentConfiguration<T> asNone() {
+        // Ideen er vi f.eks. kan 
+        // asNone().exportAs(Doo.class);
+        context.sourceProvideAs(null);
+        return this;
+    }
+    
     // Once a bean has been exported, its key cannot be changed...
-    public BeanConfiguration<T> export() {
+    public ServiceComponentConfiguration<T> export() {
         context.sourceExport();
         return this;
     }
 
-    public BeanConfiguration<T> exportAs(Class<? super T> key) {
+    public ServiceComponentConfiguration<T> exportAs(Class<? super T> key) {
         export().as(key);
         return this;
     }
 
-    public BeanConfiguration<T> exportAs(Key<? super T> key) {
+    public ServiceComponentConfiguration<T> exportAs(Key<? super T> key) {
         export().as(key);
         return this;
     }
@@ -89,31 +98,30 @@ public final class BeanConfiguration<T> extends BaseComponentConfiguration {
         return context.sourceProvideAsKey();
     }
 
-    public BeanConfiguration<T> provide() {
+    public ServiceComponentConfiguration<T> provide() {
         context.sourceProvide();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public BeanConfiguration<T> setName(String name) {
+    public ServiceComponentConfiguration<T> setName(String name) {
         context.setName(name);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<BeanConfiguration<T>> bind(Class<T> implementation) {
-        return ICD.bind(implementation);
+    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provide(Class<T> implementation) {
+        return DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<BeanConfiguration<T>> bind(Factory<T> factory) {
-        return ICD.bind(factory);
+    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provide(Factory<T> factory) {
+        return DRIVER.bind(factory);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<BeanConfiguration<T>> bindInstance(T instance) {
-        return ICD.applyInstance(instance);
+    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provideInstance(T instance) {
+        return DRIVER.applyInstance(instance);
     }
-
 }

@@ -25,6 +25,14 @@ import java.lang.invoke.MethodHandles;
 // er vi ved at vaere klar til app.packed.util
 // TreePath
 // Maaske de descriptors...
+
+// Eneste problem er at vi helst ikke vil loade klassen foerend til allersidst...
+// Gaetter paa det bliver indy saa...
+// Vi har maaske en abstract klasse, som man extender saa vi ikke behoever at
+// at implmentere alle metoder...
+// Problemet er primaert med Graal
+
+// new AnnotatedElementMaker<@Foo T>(){};
 public final class AnnotationMaker<T extends Annotation> {
 
     AnnotationMaker() {

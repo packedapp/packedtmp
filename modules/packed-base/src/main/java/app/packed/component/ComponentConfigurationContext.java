@@ -21,8 +21,9 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.ComponentFactoryDriver;
+import app.packed.component.drivers.old.ComponentFactoryDriver;
 import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -58,27 +59,6 @@ public interface ComponentConfigurationContext {
     BuildInfo build();
 
     /**
-     * Returns an unmodifiable view of the extensions that are currently in use.
-     * 
-     * @return an unmodifiable view of the extensions that are currently in use
-     * 
-     * @see ContainerAssembly#extensions()
-     */
-    // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
-    // for bundle components. Makes sense because we would need for interating 
-    // through the build
-    Set<Class<? extends Extension>> bundleExtensions();
-
-    /**
-     * @param <T>
-     * @param extensionType
-     * @return the extension
-     * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#BUNDLE_ROOT} modifier
-     */
-    <T extends Extension> T bundleUse(Class<T> extensionType);
-
-    /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
      * <p>
      * A component is typically only configurable inside of {@link Assembly#build()}.
@@ -87,6 +67,28 @@ public interface ComponentConfigurationContext {
      *             if the component is no longer configurable.
      */
     void checkConfigurable();
+
+    /**
+     * Returns an unmodifiable view of the extensions that are currently in use.
+     * 
+     * @return an unmodifiable view of the extensions that are currently in use
+     * 
+     * @see ContainerAssembly#extensions()
+     */
+    // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
+    // for bundle components. Makes sense because we would need for interating
+    // through the build
+    Set<Class<? extends Extension>> containerExtensions();
+
+    /**
+     * @param <T>
+     * @param extensionType
+     * @return the extension
+     * @throws UnsupportedOperationException
+     *             if the component does not have the {@link ComponentModifier#BUNDLE_ROOT} modifier
+     * @see ContainerConfiguration#use(Class)
+     */
+    <T extends Extension> T containerUse(Class<T> extensionType);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is

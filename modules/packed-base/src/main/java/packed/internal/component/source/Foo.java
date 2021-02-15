@@ -79,7 +79,7 @@ class MethodBootstrap extends RealMethodSidecarBootstrap {
 
     @Override
     protected void bootstrap() {
-        System.out.println(manageWithClassHook(ClassBootstrap.class));
+        System.out.println(manageByClassHook(ClassBootstrap.class));
         // bindParameterToArguement(0, 0);
     }
 }

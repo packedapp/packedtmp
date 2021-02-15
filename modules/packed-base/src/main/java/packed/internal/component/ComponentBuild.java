@@ -581,14 +581,14 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> bundleExtensions() {
+    public Set<Class<? extends Extension>> containerExtensions() {
         checkHasContainer();
         return cube.extensionView();
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Extension> T bundleUse(Class<T> extensionType) {
+    public <T extends Extension> T containerUse(Class<T> extensionType) {
         checkHasContainer();
         return cube.useExtension(extensionType);
     }

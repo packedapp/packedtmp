@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package app.packed.component.drivers.old;
 
-import java.util.Map;
-
-import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
-import app.packed.container.MemberOfExtension;
-import app.packed.inject.ServiceExtension;
-import packed.internal.inject.service.build.BuildtimeService;
+import app.packed.base.TypeToken;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.drivers.ComponentDriver;
+import app.packed.inject.Factory;
 
 /**
  *
  */
-@MemberOfExtension(ServiceExtension.class)
-public abstract class Service2ndPassWirelet extends Wirelet {
-    protected abstract void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map);
+// Ved ikke om 
+public interface XourceableComponentDriver<C extends ComponentConfiguration, S> {
+    ComponentDriver<C> fromFunction(S function);
+
+    ComponentDriver<C> fromClass(Class<S> implementation);
+
+    ComponentDriver<C> fromTypeToken(TypeToken<S> typeToken);
+
+    ComponentDriver<C> fromFactory(Factory<S> factory);
+
+    ComponentDriver<C> fromInstance(S instance);
 }

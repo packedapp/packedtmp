@@ -15,23 +15,39 @@
  */
 package app.packed.component;
 
+import java.lang.invoke.MethodHandles;
+
 import app.packed.base.NamespacePath;
 import app.packed.component.drivers.ComponentDriver;
+import app.packed.component.drivers.ComponentDriver.Option;
+import app.packed.component.drivers.old.ComponentClassDriver;
+import app.packed.component.drivers.old.ComponentInstanceDriver;
+import app.packed.inject.Factory;
+import app.packed.inject.ServiceComponentConfiguration;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * An base component configuration class that can serve as basis for actual component configuration types. 
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public abstract class BaseComponentConfiguration extends ComponentConfiguration {
-
+public class BaseComponentConfiguration extends ComponentConfiguration {
+   
+    @SuppressWarnings("rawtypes")
+    private static final ComponentInstanceDriver INSTALL_DRIVER = ComponentInstanceDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class, Option.constantSource());
+    
+    /** A driver for this configuration. */
+    @SuppressWarnings("rawtypes")
+    private static final ComponentClassDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
+            ComponentDriver.Option.statelessSource());
+    
     /**
      * Creates a new base component configuration.
      * 
      * @param context
      *            the configuration context for the component
      */
-    protected BaseComponentConfiguration(ComponentConfigurationContext context) {
+    public BaseComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
 
@@ -43,7 +59,7 @@ public abstract class BaseComponentConfiguration extends ComponentConfiguration 
      * @throws IllegalStateException
      *             if the component is no long configurable.
      */
-    public final void checkConfigurable() {
+    public void checkConfigurable() {
         context.checkConfigurable();
     }
 
@@ -57,7 +73,7 @@ public abstract class BaseComponentConfiguration extends ComponentConfiguration 
      * @return the name of the component
      * @see #setName(String)
      */
-    public final String getName() {
+    public String getName() {
         return context.getName();
     }
 
@@ -75,7 +91,7 @@ public abstract class BaseComponentConfiguration extends ComponentConfiguration 
      * 
      * @return the path of this configuration.
      */
-    public final NamespacePath path() {
+    public NamespacePath path() {
         return context.path();
     }
 
@@ -106,33 +122,35 @@ public abstract class BaseComponentConfiguration extends ComponentConfiguration 
         return context.toString();
     }
 
-//    public final <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-//        ComponentDriver<C> cd = driver.bind(implementation);
-//        return wire(cd, wirelets);
-//    }
-
     /**
-     * Wires a new child component using the specified driver
+     * Returns a driver that can be used to create stateless components.
      * 
-     * @param <C>
-     *            the type of configuration returned by the driver
-     * @param driver
-     *            the driver to use for creating the component
-     * @param wirelets
-     *            any wirelets that should be used when creating the component
-     * @return a configuration for the component
+     * @param <T>
+     *            the type
+     * @return a driver
      */
-    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return context.wire(driver, wirelets);
+    @SuppressWarnings("unchecked")
+    private static <T> ComponentClassDriver<BaseComponentConfiguration, T> driver() {
+        return STATELESS_DRIVER;
     }
 
-//    public final <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> factory, Wirelet... wirelets) {
-//        ComponentDriver<C> cd = driver.bind(factory);
-//        return wire(cd, wirelets);
-//    }
+    // Not sure we want this public or ma
+    @SuppressWarnings("unchecked")
+    public static final ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
+        return INSTALL_DRIVER.bind(implementation);
+    }
 
-//    public final <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-//        ComponentDriver<C> cd = driver.applyInstance(instance);
-//        return wire(cd, wirelets);
-//    }
+    @SuppressWarnings("unchecked")
+    public static final ComponentDriver<BaseComponentConfiguration> driverInstall(Factory<?> factory) {
+        return INSTALL_DRIVER.bind(factory);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static final ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
+        return INSTALL_DRIVER.applyInstance(instance);
+    }
+    
+    public static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
+        return driver().bind(implementation);
+    }
 }

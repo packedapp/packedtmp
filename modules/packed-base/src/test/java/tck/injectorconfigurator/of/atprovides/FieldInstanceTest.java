@@ -139,7 +139,7 @@ public class FieldInstanceTest {
     // }
     // }
 
-    static class MixedFields {
+    public  static class MixedFields {
 
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
@@ -171,22 +171,22 @@ public class FieldInstanceTest {
         }
     }
 
-    static class PrototypeField {
+    public  static class PrototypeField {
 
         @Provide(constant = false)
         Short s = 1;
 
-        PrototypeField(AtomicBoolean b) {
+        public  PrototypeField(AtomicBoolean b) {
             b.set(true);
         }
     }
 
-    static class SingletonField {
+    public static class SingletonField {
 
         @Provide(constant = true)
         Short s = 1;
 
-        SingletonField(AtomicBoolean b) {
+        public  SingletonField(AtomicBoolean b) {
             b.set(true);
         }
     }

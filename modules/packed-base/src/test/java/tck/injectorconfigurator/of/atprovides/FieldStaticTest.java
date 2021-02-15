@@ -52,7 +52,7 @@ public class FieldStaticTest {
     }
 
     /** A helper class that can be instantiated. */
-    static class MixedFieldsInstantiable {
+public  static class MixedFieldsInstantiable {
         //
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;
@@ -63,7 +63,7 @@ public class FieldStaticTest {
         @Provide(constant = true)
         private static Short S;
 
-        MixedFieldsInstantiable() {
+        public   MixedFieldsInstantiable() {
             // assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
@@ -98,7 +98,7 @@ public class FieldStaticTest {
      * A helper class that should never be instantiated. Because we can read the value of the fields without an instance of
      * BindStaticNoInstantiation.
      */
-    static class MixedFieldsNoInstantiation {
+public    static class MixedFieldsNoInstantiation {
 
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // private static Long L;

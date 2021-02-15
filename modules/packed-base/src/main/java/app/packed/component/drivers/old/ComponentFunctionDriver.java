@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.drivers;
+package app.packed.component.drivers.old;
 
 import java.lang.invoke.MethodHandles;
 import java.util.function.Supplier;
@@ -22,6 +22,7 @@ import app.packed.base.TypeToken;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.drivers.ComponentDriver;
 import app.packed.component.drivers.ComponentDriver.Option;
 
 /**

@@ -18,7 +18,7 @@ package app.packed.cli;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Wirelet;
-import app.packed.container.ExtensionNest;
+import app.packed.container.MemberOfExtension;
 
 /**
  *
@@ -51,7 +51,7 @@ import app.packed.container.ExtensionNest;
 // Saa den har noget AutoService paa... dvs man kan injecte den paa 2 forskellige maader
 // @WireletConsume <--- kan kun bruges af CliExtension
 // @AutoService <--- kan bruges af alle andre
-@ExtensionNest(CliExtension.class)
+@MemberOfExtension(CliExtension.class)
 public final class MainArgs extends Wirelet {
 
     private final String[] args = {};

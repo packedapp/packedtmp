@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
-
-import java.util.Map;
-
-import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
-import app.packed.container.MemberOfExtension;
-import app.packed.inject.ServiceExtension;
-import packed.internal.inject.service.build.BuildtimeService;
+package app.packed.hooks.sandbox;
 
 /**
  *
  */
-@MemberOfExtension(ServiceExtension.class)
-public abstract class Service2ndPassWirelet extends Wirelet {
-    protected abstract void process(@Nullable ServiceManager parent, ServiceManager child, Map<Key<?>, BuildtimeService> map);
+// Debug...
+// No_hook_caching
+public class HookWirelets {
+
 }

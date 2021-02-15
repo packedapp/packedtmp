@@ -20,9 +20,8 @@ import java.util.Set;
 
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ComponentDriver;
 import app.packed.component.drivers.ComponentDriver.Option;
@@ -32,7 +31,7 @@ import app.packed.inject.Factory;
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
  * extending {@link ContainerAssembly} or {@link BaseAssembly}.
  */
-public final class ContainerConfiguration extends BaseComponentConfiguration {
+public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver that create container components. */
     private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, Option.bundle());
@@ -43,14 +42,8 @@ public final class ContainerConfiguration extends BaseComponentConfiguration {
      * @param context
      *            the component configuration context
      */
-    private ContainerConfiguration(ComponentConfigurationContext context) {
+    public ContainerConfiguration(ComponentConfigurationContext context) {
         super(context);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        context.link(bundle, wirelets);
     }
 
     /**
@@ -63,7 +56,7 @@ public final class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public Set<Class<? extends Extension>> extensions() {
         // getAttribute(EXTENSIONS);
-        return context.bundleExtensions();
+        return context.containerExtensions();
     }
 
     /**
@@ -71,40 +64,34 @@ public final class ContainerConfiguration extends BaseComponentConfiguration {
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
-     * @param <T>
-     *            the type of the component
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    public <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return context.wire(BeanConfiguration.bind(implementation));
+    public BaseComponentConfiguration install(Class<?> implementation) {
+        return context.wire(BaseComponentConfiguration.driverInstall(implementation));
     }
-
+    
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * 
-     * @param <T>
-     *            the type of the component
      * @param factory
      *            the factory to install
      * @return the configuration of the component
      * @see ContainerAssembly#install(Factory)
      */
-    public <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return context.wire(BeanConfiguration.bind(factory));
+    public BaseComponentConfiguration install(Factory<?> factory) {
+        return context.wire(BaseComponentConfiguration.driverInstall(factory));
     }
 
     /**
-     * @param <T>
-     *            the type of the component
      * @param instance
      *            the instance to install
      * @return the configuration of the component
      * @see ContainerAssembly#installInstance(Object)
      */
-    public <T> BeanConfiguration<T> installInstance(T instance) {
-        return context.wire(BeanConfiguration.bindInstance(instance));
+    public BaseComponentConfiguration installInstance(Object instance) {
+        return context.wire(BaseComponentConfiguration.driverInstallInstance(instance));
     }
 
     /**
@@ -117,8 +104,14 @@ public final class ContainerConfiguration extends BaseComponentConfiguration {
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    public StatelessConfiguration installStateless(Class<?> implementation) {
-        return context.wire(StatelessConfiguration.driver().bind(implementation));
+    public BaseComponentConfiguration stateless(Class<?> implementation) {
+        return context.wire(BaseComponentConfiguration.driverStateless(implementation));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void link(Assembly<?> bundle, Wirelet... wirelets) {
+        context.link(bundle, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -147,13 +140,28 @@ public final class ContainerConfiguration extends BaseComponentConfiguration {
     // Mest taenkt hvis vi faa hurtig metoder for attributes.
     // a.la. cc.with(
     public <T extends Extension> T use(Class<T> extensionType) {
-        return context.bundleUse(extensionType);
+        return context.containerUse(extensionType);
     }
 
     /**
-     * Returns the default driver for containers.
+     * Wires a new child component using the specified driver
      * 
-     * @return the default driver for containers
+     * @param <C>
+     *            the type of configuration returned by the driver
+     * @param driver
+     *            the driver to use for creating the component
+     * @param wirelets
+     *            any wirelets that should be used when creating the component
+     * @return a configuration for the component
+     */
+    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return context.wire(driver, wirelets);
+    }
+
+    /**
+     * Returns a driver for creating new containers.
+     * 
+     * @return a driver for creating new containers
      */
     public static ComponentDriver<ContainerConfiguration> driver() {
         return DRIVER;

@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -49,7 +49,7 @@ import packed.internal.component.ComponentBuild;
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 // Does not extend CC as install/installinstance used parent as target
-public interface ExtensionConfiguration  {
+public interface ExtensionConfiguration {
 
     // ComponentAttributes
 
@@ -96,19 +96,26 @@ public interface ExtensionConfiguration  {
      */
     Class<? extends Extension> extensionType();
 
-    <T> BeanConfiguration<T> install(Class<T> factory);
+    // Will install the class in the specified Container
+    
+    // maybe userInstall
+    // or maybe we just have userWire()
+    // customWire
+    // For hvorfor skal brugen installere en alm component via denne extension???
+    // Vi skal vel altid have en eller anden specific component driver
+    // BaseComponentConfiguration containerInstall(Class<?> factory);
 
-    <T> BeanConfiguration<T> install(Factory<T> factory);
+    BaseComponentConfiguration install(Class<?> factory);
+
+    BaseComponentConfiguration install(Factory<?> factory);
 
     /**
-     * @param <T>
-     *            the type of the component
      * @param instance
      *            the instance to install
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    <T> BeanConfiguration<T> installInstance(T instance);
+    BaseComponentConfiguration installInstance(Object instance);
 
     /**
      * Returns whether or not the extension is part of an {@link Image}.

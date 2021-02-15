@@ -43,6 +43,11 @@ import packed.internal.component.source.FieldHookModel;
 @Documented
 public @interface FieldHook {
 
+    // Maybe it should be mandatory... We don't currently support method hooks that
+    // maybe annotation() instead. Sounds better if we, for example, adds
+    // nameStartsWith()
+    Class<? extends Annotation>[] annotation() default {};
+    
     /** Whether or not the sidecar is allow to get the contents of a field. */
     boolean allowGet() default false;
 
@@ -50,6 +55,7 @@ public @interface FieldHook {
     boolean allowSet() default false;
 
     // om extension's automatisk skal aktiveres...
+    // Har endnu ikke fundet
     boolean autoActivate() default true;
 
     /** The {@link Bootstrap} class the hook will use. */
@@ -80,22 +86,22 @@ public @interface FieldHook {
          * @return this sidecar's builder object
          */
         private FieldHookModel.Builder builder() {
-            FieldHookModel.Builder c = builder;
-            if (c == null) {
+            FieldHookModel.Builder b = builder;
+            if (b == null) {
                 throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
             }
-            return c;
+            return b;
         }
 
         /**
-         * 
+         * Check not final??
          */
         protected final void checkWritable() {}
 
         // Taenker vi har lov til at smide reflection exception???
         protected void bootstrap() {}
 
-        /** Disables any further processing of the particular field. */
+        /** Disables any further processing of the field. */
         public final void disable() {
             builder().disable();
         }
@@ -189,7 +195,7 @@ public @interface FieldHook {
          */
         protected final void provideInvoker() {
             if (invoker != null) {
-                throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
+                throw new IllegalStateException("Cannot provide more than 1 " + MethodAccessor.class.getSimpleName());
             }
             invoker = Object.class;
         }

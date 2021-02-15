@@ -19,19 +19,18 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.component.BeanConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
+import app.packed.inject.ServiceComponentConfiguration;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.sandbox.PrototypeConfiguration;
 import app.packed.state.OnStart;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * A convenience extension of {@link ContainerAssembly} which contains shortcut access to common functionality defined by
- * the various extension available in this module.
+ * A convenience extension of {@link ContainerAssembly} which contains shortcut access to common functionality defined
+ * by the various extension available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -66,31 +65,6 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 // GoBundle
 // Base is fine....
 public abstract class BaseAssembly extends ContainerAssembly {
-
-    protected final void requireGuest() {
-        // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
-
-        // Vi skal have en eller anden maade at kunne specificere det her
-
-    }
-
-    /**
-     * Returns whether or not the specified extension type is in use.
-     * 
-     * @param extensionType
-     *            the extension type to test
-     * @return whether or not the specified extension is in use
-     * @throws IllegalArgumentException
-     *             if the specified extension type is {@link Extension}
-     */
-    protected final boolean isInUse(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        if (extensionType == Extension.class) {
-            throw new IllegalArgumentException("Cannot specify Extension.class");
-        }
-        throw new UnsupportedOperationException();
-        // return container.extensions.keySet().contains(extensionType);
-    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
@@ -151,6 +125,28 @@ public abstract class BaseAssembly extends ContainerAssembly {
         return service().export(key);
     }
 
+    protected final void exportAll() {
+        service().exportAll();
+    }
+
+    /**
+     * Returns whether or not the specified extension type is in use.
+     * 
+     * @param extensionType
+     *            the extension type to test
+     * @return whether or not the specified extension is in use
+     * @throws IllegalArgumentException
+     *             if the specified extension type is {@link Extension}
+     */
+    protected final boolean isInUse(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        if (extensionType == Extension.class) {
+            throw new IllegalArgumentException("Cannot specify Extension.class");
+        }
+        throw new UnsupportedOperationException();
+        // return container.extensions.keySet().contains(extensionType);
+    }
+
 //    /**
 //     * Returns a lifecycle extension instance, installing it if it has not already been installed.
 //     * 
@@ -159,10 +155,6 @@ public abstract class BaseAssembly extends ContainerAssembly {
 //    protected final EntryPointExtension lifecycle() {
 //        return use(EntryPointExtension.class);
 //    }
-
-    protected final void exportAll() {
-        service().exportAll();
-    }
 
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
@@ -178,8 +170,8 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return a service configuration for the service
      * @see InjectorComposer#provide(Class)
      */
-    protected final <T> BeanConfiguration<T> provide(Class<T> implementation) {
-        return install(implementation).provide();
+    protected final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+        return service().provide(implementation);
     }
 
     /**
@@ -193,16 +185,8 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> BeanConfiguration<T> provide(Factory<T> factory) {
-        return install(factory).provide();
-    }
-
-    protected final <T> PrototypeConfiguration<T> providePrototype(Class<T> implementation) {
-        return providePrototype(Factory.of(implementation));
-    }
-
-    protected final <T> PrototypeConfiguration<T> providePrototype(Factory<T> factory) {
-        return service().providePrototype(factory);
+    protected final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
+        return service().provide(factory);
     }
 
     protected final void provideAll(ServiceLocator locator) {
@@ -222,14 +206,30 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    protected final <T> BeanConfiguration<T> provideInstance(T instance) {
+    protected final <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
         return service().provideInstance(instance);
+    }
+
+    protected final <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
+        return providePrototype(Factory.of(implementation));
+    }
+
+    protected final <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+        return service().providePrototype(factory);
+    }
+
+    protected final void requireGuest() {
+        // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
+
+        // Vi skal have en eller anden maade at kunne specificere det her
+
     }
 
     /**
      * Returns a {@link ServiceExtension} instance.
      * <p>
      * Calling this method is short for {@code use(ServiceExtension.class)}
+     * 
      * @return a service extension instance
      * @see #use(Class)
      */

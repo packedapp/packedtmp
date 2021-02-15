@@ -58,7 +58,7 @@ public class MethodStaticTest {
     }
 
     /** A helper class that can be instantiated. */
-    static class MixedMethodsInstantiable {
+    public   static class MixedMethodsInstantiable {
 
         // private static Long L;
 
@@ -66,7 +66,7 @@ public class MethodStaticTest {
 
         private static Short S;
 
-        MixedMethodsInstantiable() {
+        public     MixedMethodsInstantiable() {
             // assertThat(L).isEqualByComparingTo(1L);
             assertThat(P).isEqualByComparingTo(1);
             assertThat(S).isEqualByComparingTo((short) 1);
@@ -116,7 +116,7 @@ public class MethodStaticTest {
      * A helper class that should never be instantiated. Because we can read the value of the fields without an instance of
      * BindStaticNoInstantiation.
      */
-    static class MixedMethodsNoInstantiation {
+    public   static class MixedMethodsNoInstantiation {
 
         // private static Long L;
 

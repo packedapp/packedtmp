@@ -20,7 +20,8 @@ import app.packed.base.Nullable;
 /**
  * A special version of an invoker that takes an invocation template as argument.
  */
-public interface Invoker1<T, R> {
+// Folk kan lave deres egen via et functional interface
+public interface MethodAccessor1<T, R> {
 
     /**
      * Invokes the underlying method handle discards any result.

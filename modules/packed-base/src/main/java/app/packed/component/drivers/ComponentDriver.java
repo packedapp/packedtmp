@@ -55,6 +55,16 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
      */
     ComponentModifierSet modifiers();
 
+    default ComponentDriverDescriptor descriptor() {
+        // Grunden til vi splitter det op er egenlig at vi tillader private
+        // component drivere. Saa hvis vi gerne vil have 
+        // ComponentDriverDescriptor Component.driver();
+        // og ikke Component.driver();
+        throw new UnsupportedOperationException();
+    }
+    
+    // Er det prefixes?? eller specifike ting...
+    // SCD.with(Wirelet.Name("sdfsdff?")) // kunne ogsaa vaere configuration...    
     default ComponentDriver<C> with(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
@@ -89,9 +99,6 @@ public interface ComponentDriver<C extends ComponentConfiguration> {
     // Eller ogsaa maa vi bide the bullet og faa en ComponentSourceDriver
     // Det gode ved options, er man kun har en metode.
     // Det daarlige er at det alt andet lige er lidt mere forvirrende
-    class Builder {
-
-    }
 
     /**
      * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,

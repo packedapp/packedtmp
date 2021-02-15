@@ -31,10 +31,10 @@ public class NameChildrenTest extends AbstractArtifactTest {
     public void childName() {
         class Fff {}
 
-        AppTester a = appOf(c -> assertThat(c.installHelper(Fff.class).getName()).isEqualTo("Fff"));
+        AppTester a = appOf(c -> assertThat(c.stateless(Fff.class).getName()).isEqualTo("Fff"));
         a.assertPathExist("/Fff");
 
-        a = appOf(c -> assertThat(c.installHelper(Fff.class).path().toString()).isEqualTo("/Fff"));
+        a = appOf(c -> assertThat(c.stateless(Fff.class).path().toString()).isEqualTo("/Fff"));
         a.assertPathExist("/Fff");
 
         // TODO FIX names for anonymous classes...
@@ -46,12 +46,12 @@ public class NameChildrenTest extends AbstractArtifactTest {
         class Gff {}
         class Fff {}
         AppTester a = appOf(c -> {
-            assertThat(c.installHelper(Fff.class).path().toString()).isEqualTo("/Fff");
-            assertThat(c.installHelper(Gff.class).path().toString()).isEqualTo("/Gff");
+            assertThat(c.stateless(Fff.class).path().toString()).isEqualTo("/Fff");
+            assertThat(c.stateless(Gff.class).path().toString()).isEqualTo("/Gff");
             for (int i = 1; i < 10; i++) {
-                assertThat(c.installHelper(Fff.class).path().toString()).isEqualTo("/Fff" + i);
+                assertThat(c.stateless(Fff.class).path().toString()).isEqualTo("/Fff" + i);
             }
-            assertThat(c.installHelper(Gff.class).path().toString()).isEqualTo("/Gff1");
+            assertThat(c.stateless(Gff.class).path().toString()).isEqualTo("/Gff1");
         });
         a.assertPathExist("/Fff");
         for (int i = 1; i < 10; i++) {

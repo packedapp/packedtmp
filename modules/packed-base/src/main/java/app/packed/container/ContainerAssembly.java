@@ -20,17 +20,17 @@ import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.StatelessConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ComponentDriver;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceComponentConfiguration;
 
 /**
  * Bundles are the main source of system configuration. Basically a bundle is just a thin wrapper around
- * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of {@link ContainerConfiguration}
- * available via {@link #configuration()}.
+ * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
+ * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
  * A bundle instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
  * {@link IllegalStateException}.
@@ -87,33 +87,25 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
-     * @param <T>
-     *            the type of the component
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
-        return configuration().wire(BeanConfiguration.bind(implementation));
+    protected final BaseComponentConfiguration install(Class<?> implementation) {
+        return configuration().install(implementation);
     }
 
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
      * 
-     * @param <T>
-     *            the type of the component
      * @param factory
      *            the factory to install
      * @return the configuration of the component
      * @see BaseAssembly#install(Factory)
      */
-    protected final <T> BeanConfiguration<T> install(Factory<T> factory) {
-        return configuration().wire(BeanConfiguration.bind(factory));
-    }
-
-    protected final StatelessConfiguration installHelper(Class<?> implementation) {
-        return configuration().installStateless(implementation);
+    protected final BaseComponentConfiguration install(Factory<?> factory) {
+        return configuration().install(factory);
     }
 
     /**
@@ -122,16 +114,14 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this bundle will have have component as its
      * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link BeanConfiguration} can be used to specify a specific parent.
+     * {@link ServiceComponentConfiguration} can be used to specify a specific parent.
      *
-     * @param <T>
-     *            the type of component to install
      * @param instance
      *            the component instance to install
      * @return this configuration
      */
-    protected final <T> BeanConfiguration<T> installInstance(T instance) {
-        return configuration().wire(BeanConfiguration.bindInstance(instance));
+    protected final BaseComponentConfiguration installInstance(Object instance) {
+        return configuration().installInstance(instance);
     }
 
     /**
@@ -180,6 +170,10 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
         configuration().setName(name);
     }
 
+    protected final BaseComponentConfiguration stateless(Class<?> implementation) {
+        return configuration().stateless(implementation);
+    }
+
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -198,6 +192,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
+
     // Maaske kan man kun tilfoeje dem via extensions...
     protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);

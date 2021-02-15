@@ -25,7 +25,7 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
-import app.packed.hooks.Invoker;
+import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.MethodHook.Bootstrap;
 import app.packed.hooks.RealMethodSidecarBootstrap;
@@ -37,7 +37,7 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** A model of a {@link RealMethodSidecarBootstrap}. */
+/** A model of a {@link Bootstrap} class. */
 public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<RealMethodSidecarBootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
@@ -148,7 +148,7 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
 
         public void provideInvoker() {
             if (invoker != null) {
-                throw new IllegalStateException("Cannot provide more than 1 " + Invoker.class.getSimpleName());
+                throw new IllegalStateException("Cannot provide more than 1 " + MethodAccessor.class.getSimpleName());
             }
             invoker = Object.class;
         }

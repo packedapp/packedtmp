@@ -15,35 +15,36 @@
  */
 package app.packed.hooks;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
-
-import app.packed.base.Nullable;
-
 /**
- * a setter is a method that updates the value of a variable
+ *
+ * 
  */
-public interface Setter<T> {
 
+// Sealed
+
+// Sammenslutning af Setter+Getter
+// Q) What exception to throw, UOE? Or illegal access?
+// It is determined alone by FieldHook#allowX
+// No matter what MethodHook#newInvokerMust (Which currently throws UOE)
+public interface VarAccessor<T> {
+    
     /**
-     * Sets a value.
+     * Gets the value of the variable.
+     * 
+     * @return the value
+     */
+    T get();
+    
+    /**
+     * Sets the value of the variable.
      * 
      * @param value
      *            the value to set
      */
-    void set(@Nullable T value);
-
-    void setNullable(T value);// IDK
+    void set(T value);
 
     Class<?> type();
-
-    /**
-     * Returns a new parameter-less method handle.
-     * <p>
-     * The {@link MethodType} of the method handle returned by this method is always
-     * {@code MethodType.methodType(void.class, type())}.
-     * 
-     * @return the method handle
-     */
-    MethodHandle toMethodHandle();
 }
+// Originally the functionality of this class was spread into Setter.java and Getter.java
+// However, it was much simpler to have a single class that could be injected.
+// On top of that it allow for compare and swap operations/update und so weither...

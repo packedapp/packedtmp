@@ -25,7 +25,6 @@ import packed.internal.component.source.ClassHookModel;
 /**
  *
  */
-// SubClassHook... ClassExtendHook
 public @interface ClassHook {
 
     // Maybe we allow injection of a Lookup object.
@@ -38,17 +37,16 @@ public @interface ClassHook {
 
     boolean allowAllAccess() default false;
 
+    // Hvordan passer den med ConstructorHook???
     // boolean allowInstantiate() default false; <-- allows custom instantiation
-
-    // Must have
-    Class<? extends Annotation>[] annotatedWith() default {};
 
     /** The sidecar that is activated. */
     Class<? extends ClassHook.Bootstrap> bootstrap();
+
+    // Must have
+    Class<? extends Annotation>[] matchesAnnotation() default {};
     
-    Class<?>[] extending() default {};
-    
-    Class<?>[] inheriting() default {};
+    Class<?>[] matchesAssignableTo() default {};
     
     // Kan vi annotere Bootstrap med 
     // @MethodHook(annotatations = ...)
@@ -123,7 +121,7 @@ public @interface ClassHook {
          * 
          * @return a list of all methods that are explicitly managed by this bootstrap instance
          * @see FieldHook.Bootstrap#manageBy(Class)
-         * @see MethodHook.Bootstrap#manageWithClassHook(Class)
+         * @see MethodHook.Bootstrap#manageByClassHook(Class)
          */
         // Tror maaske det er godt at specificere type... dvs ikke denne metode...
         // Fordi saa kan vi checke at det er samme extension
@@ -163,6 +161,7 @@ public @interface ClassHook {
         }
     }
     
+    // Tror det er noget med vi kan filtere fields/constructor/method/...
     public interface MemberOption {
         
         public static MemberOption declaredOnly() { 
@@ -170,3 +169,4 @@ public @interface ClassHook {
         }
     }
 }
+// matchesAssignableTo was Inherited, Extending... men 

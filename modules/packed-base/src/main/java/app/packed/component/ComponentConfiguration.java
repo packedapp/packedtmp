@@ -17,6 +17,8 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.component.drivers.ComponentDriver;
+
 /**
  * The base class for build-time configurations of components. The class is basically a thin wrapper on top of
  * {@link ComponentConfigurationContext}. All component configuration classes must extend from this class.
@@ -26,6 +28,8 @@ import static java.util.Objects.requireNonNull;
 public abstract class ComponentConfiguration {
 
     /** The component's configuration context. */
+    // Assembly needs access to this context for lookup() which is the main reason
+    // We have this field...
     protected final ComponentConfigurationContext context;
 
     /**
@@ -47,10 +51,18 @@ public abstract class ComponentConfiguration {
      *            any wirelets
      */
     protected void link(Assembly<?> bundle, Wirelet... wirelets) {
+        // Altsaa vi goer jo det her pga at det er lettere med javadocs
         context.link(bundle, wirelets);
     }
-    // $methods???
+    
+    protected <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return context.wire(driver, wirelets);
+    }
+
 }
+// I don't expect this class to have any $ methods
+// This should most likely be located in the driver instead
+// A component configuration is just a thin wrapper
 
 ///** A stack walker used from {@link #captureStackFrame(String)}. */
 //private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);

@@ -21,7 +21,10 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
@@ -30,113 +33,128 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.base.MetaAnnotation;
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
+import app.packed.component.ComponentDefinitionException;
+import app.packed.component.Composer;
+import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionNest;
+import app.packed.container.MemberOfExtension;
+import app.packed.hooks.sandbox.InstanceHandle;
+import app.packed.inject.Factory;
+import app.packed.inject.Provide;
+import app.packed.state.OnInitialize;
 import packed.internal.component.source.MethodHookModel;
 
 /**
- *
+ * A method hook allows for run-time customization of methods.
+ * <p>
+ * This annotation can be applied the following places:
+ * 
+ * On an annotation with target Method... The annotation must declare itself in {@link #matchesAnnotation()}
+ * 
+ * On a subclass of {@link Assembly} (will not match components that part of an extension (different realm))
+ * 
+ * On a subclass of {@link Composer}
+ * 
+ * On a subclass of {@link Extension} (Only target classes
+ * 
+ * On a class used as a component source
+ * 
+ * On a meta annotation which can the applied on one of the above targets
+ * <p>
+ * In order to be usable with {@link MetaAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its targets.
  */
-@Target(ElementType.ANNOTATION_TYPE)
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
+@Repeatable(MethodHook.All.class)
 @Documented
-// Taenker den ogsaa kan vaere paa ExtensionClass... Problemet er bare den ikke angiver en annotation
+// Tag noget tekst fra den nederste comment
+// https://stackoverflow.com/questions/4797465/difference-between-hooks-and-abstract-methods-in-java
 public @interface MethodHook {
 
     /**
-     * Whether or not the extension method is allowed to invoke the method.
-     * 
-     * @see Bootstrap#methodHandle()
-     */
-
-    /**
-     * Indicates whether the hook is allowed to invoke the target method. The default value is {@code false}.
+     * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
      * <p>
      * Methods {@link Bootstrap#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless the value
      * of this attribute is {@code true}
      * 
-     * @return whether the hook is allowed to invoke the target method
+     * @return whether or not the implementation is allowed to invoke the target method
+     * 
+     * @see Bootstrap#methodHandle()
      */
     boolean allowInvoke() default false;
 
-    // Maybe it should be mandatory... We don't currently support method hooks that
-    Class<? extends Annotation>[] annotatedWith() default {};
-
-    /** The {@link Bootstrap} class the hook will use. */
-    Class<? extends RealMethodSidecarBootstrap> bootstrap();
+    /**
+     * A {@link Bootstrap} class that will be instantiated and {@link Bootstrap#bootstrap() bootstrapped} for every matching
+     * method.
+     * <p>
+     * noget med at vi ikke instantiere mere end en bootstrap per implementation/method
+     */
+    Class<? extends MethodHook.Bootstrap> bootstrap();
 
     /**
-     * A bootstrap class that must be extended to configure how the method is processed.
+     * Any annotations that activates the method hook.
+     * 
+     * @return annotations that activates the method hook
      */
-    abstract class Bootstrap {
+    // Maybe just matches... Annotations er default...
+    // Kan jo vaere rar nok paa ClassHook
+    // matchesSuperClass(Doo)
+    // matchesAssignableTo(....)
+    // Ville vaere rart for Startable() fx...
+    // Kan faa injected en InstanceHandle<X> paa runtime
+    Class<? extends Annotation>[] matchesAnnotation() default {};
+
+    /**
+     * An annotation that allows for placing multiple {@linkplain MethodHook @MethodHook} annotations on a single target. Is
+     * typically used to define meta annotations with multiple method hook annotations.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+    @Inherited
+    @Documented
+    @interface All {
+
+        /** An array of {@linkplain MethodHook @MethodHook} declarations. */
+        MethodHook[] value();
+    }
+
+    /**
+     * A bootstrap class that must be extended to configure how the method is processed. Implementations must have a no-args
+     * constructor.
+     */
+    abstract class Bootstrap implements BuildContext {
 
         /** The builder used for bootstrapping. Updated by {@link MethodHookModel}. */
         private MethodHookModel.@Nullable Builder builder;
 
-        /** Bootstraps the hook method. */
+        /** Create a new bootstrap instance. */
+        protected Bootstrap() {}
+
+        /** Bootstrap the hook for a matching method. */
         protected void bootstrap() {}
 
+        /**
+         * Returns this hook's builder object.
+         * 
+         * @return this hook's builder object
+         * @throws IllegalStateException
+         *             if called from outside {@link #bootstrap()}.
+         */
+        /* private (RealTimeBootstrap) */ final MethodHookModel.Builder builder() {
+            MethodHookModel.Builder b = builder;
+            if (b == null) {
+                throw new IllegalStateException("This method cannot called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
+            }
+            return b;
+        }
         /** Disables any further processing of the method. */
         public final void disable() {
             // No I think disable... Clears out runtime and build time...
             // nulls about
             builder().disable();
-        }
-        
-        /**
-         * Returns this sidecar's builder object.
-         * 
-         * @return this sidecar's builder object
-         */
-        final MethodHookModel.Builder builder() {
-            MethodHookModel.Builder c = builder;
-            if (c == null) {
-                throw new IllegalStateException("This method cannot called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
-            }
-            return c;
-        }
-        // Build Injection
-        // Bootstrap obviously (Not on itself, but on buildWith)
-        // BuildContext
-        // Extension
-        // ExtensionContext
-
-        public final Optional<Class<?>> buildType() {
-            return Optional.empty();
-        }
-
-        //// Invoker.. <- first runtime
-        // replaces the sidecar with another class that can be used
-        // Vi kan jo faktisk generere kode her..
-        // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
-        // Method (No) because then people would assume it was also present at runtime
-        // Which would it must be present at build-time because we can exchange the runtime
-        // object at build time
-        /**
-         * @param instance
-         *            the build object
-         * 
-         * @throws IllegalStateException
-         *             if called outside of the {@link #bootstrap()} method. Or if managed by another bootstrap class, outside
-         *             of its bootstrap method
-         * 
-         */
-        public final void buildWith(Object instance) {
-            // Also overrides any runtime...
-            builder().buildWith(instance);
-        }
-
-        /**
-         * Returns any extension this bootstrap class belongs to. Or empty if this bootstrap class does not belong to any
-         * extension.
-         * 
-         * @return any extension the source is a member of of
-         * @see ExtensionNest
-         */
-        // Hmm, det er mest taenkt hvis vi skule passe den til nogle andre ikke?
-        public final Optional<Class<? extends Extension>> extension() {
-            return builder().extensionMember();
         }
 
         /**
@@ -169,7 +187,7 @@ public @interface MethodHook {
             return builder().methodUnsafe().getModifiers();
         }
 
-        public boolean hasInvokePrivilidge() {
+        public final boolean hasInvokeAccess() {
             return true;
         }
 
@@ -183,47 +201,117 @@ public @interface MethodHook {
          * @see Method#isAnnotationPresent(Class)
          */
         public final boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
+            // TODO process meta annotations...
             return builder().methodUnsafe().isAnnotationPresent(annotationClass);
         }
 
         /**
          * @param <T>
+         *            the type of class hook that will manage this book
          * @param classBootstrap
+         *            the class hook bootstrap that will manage this hook
          * @return an instance of the specified class hook bootstrap
          * @throws IllegalArgumentException
-         *             if an extension hook and the specified class bootstrap is not from the same extension
+         *             if both this bootstrap class and the specified bootstrap class is annotated with
+         *             {@link MemberOfExtension} and their two extension types are not identical
          */
-        public final <T extends ClassHook.Bootstrap> T manageWithClassHook(Class<T> classBootstrap) {
-            requireNonNull(classBootstrap, "bootstrapType is null");
+        public final <T extends ClassHook.Bootstrap> T manageByClassHook(Class<T> classBootstrap) {
+            requireNonNull(classBootstrap, "classBootstrap is null");
             return builder().manageBy(classBootstrap);
         }
 
         /**
-         * Returns the hooked method.
+         * Returns the matching method.
          * 
-         * @return the hooked method
+         * @return the matching method
          */
         public final Method method() {
             return builder().methodSafe();
         }
 
         /**
-         * Returns a direct method handle to the hooked method (without any intervening argument bindings or transformations
+         * Returns a direct method handle to the matching method (without any intervening argument bindings or transformations
          * that may have been configured elsewhere).
          * 
-         * @return a direct method handle to the hooked method
+         * @return a direct method handle to the matching method
          * @see Lookup#unreflect(Method)
          * @see MethodHook#allowInvoke()
          * @see ClassHook#allowAllAccess()
          * 
          * @throws UnsupportedOperationException
-         *             if the extension method does not invocation access via {@link MethodHook#allowInvoke()}
+         *             if invocation access has not been granted via {@link MethodHook#allowInvoke()}
          */
         public final MethodHandle methodHandle() {
             return builder().methodHandle();
         }
 
-        protected static final void $ddd() {}
+        // A new instanceof of implementation will be created at build-time
+        // for every matching method
+        
+        // ***** Available for injection...*** Same as @OnBuild
+        // This Bootstrap obviously (Not on itself, but on buildWith)
+        // BuildContext
+        // Extension
+        // ExtensionContext
+        
+        public final void replaceWith(Class<?> implementation) {
+            replaceWith(Factory.of(implementation));
+        }
+
+        public final void replaceWith(Factory<?> factory) {
+            throw new UnsupportedOperationException();
+        }
+
+        //// Invoker.. <- first runtime
+        // replaces the sidecar with another class that can be used
+        // Vi kan jo faktisk generere kode her..
+        // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
+        // Method (No) because then people would assume it was also present at runtime
+        // Which would it must be present at build-time because we can exchange the runtime
+        // object at build time
+        /**
+         * Replaces this bootstrap with the specified instance at build-time (and run-time).
+         * 
+         * @param instance
+         *            the instance to replace this bootstrap with
+         * 
+         * @throws IllegalStateException
+         *             if called outside of the {@link #bootstrap()} method. Or if managed by another bootstrap class, outside
+         *             of its bootstrap method
+         * 
+         */
+        public final void replaceWithInstance(Object instance) {
+            builder().buildWith(instance);
+        }
+
+        // @Inject, @Get, ...
+        protected static final void $inputMethod() {}
+
+        /**
+         * Ignore default methods.
+         * 
+         * @throws IllegalStateException
+         *             if called from outside a bootstrap's static initializer block.
+         */
+           // Fail???
+           // onDefaultMethod(Fail)
+           // onStaticMethodFail();
+        protected static final void $onDefaultMethodIgnore() {}
+
+        protected static final void $onInstanceMethodFail() {}
+
+        // I think I like require better.. 3 words instead of 4
+        // and
+        /**
+         * 
+         * Will fail with {@link ComponentDefinitionException}.
+         */
+        protected static final void $onStaticMethodFail() {}
+
+        // @Provide
+        // Maybe input it default, and you need to call output
+        protected static final void $outputMethod() {}
+
     }
 
     /**
@@ -231,9 +319,8 @@ public @interface MethodHook {
     */
     // Vi har et interface istedet for en konkret klasse fordi
     // 1. Den skal kunne injectes i metoder f.eks. paa en Bootstrap klasse
-     
-    
-    //build context object man kan faa injected via @Build
+
+    // build context object man kan faa injected via @Build
     // istedet for en abstract klasse man implementere.
     // 1. Kan ikke overskrive baade bootstrap og build.
     // saa skal tit have 2 klasser.
@@ -246,7 +333,7 @@ public @interface MethodHook {
         // hvordan fungere den for pooled components???
         // Instance Sidecar...
         // Maybe specify a class
-        void runWith(Object o); // skal vel ogsaa vaere paa bootstrap...
+        void replaceWithInstance(Object o); // skal vel ogsaa vaere paa bootstrap...
         // Men fjerner man saa @Build??? Eller saetter man bare en default....
 
         // hvorfor kun initialize??? vi kan ogsaa have start/stop
@@ -261,17 +348,57 @@ public @interface MethodHook {
     }
 }
 
+class RBadIdeas {
+
+    public final Optional<Class<?>> buildType() {
+        // Vil ikke mene vi behoever den her.. Tror den forvirre mere end den gavner
+        return Optional.empty();
+    }
+
+}
+
 @interface Sandbox {
 
     /** Whether or not the extension will be activated automatically. The default is true. */
     // Skal lige have nogle use cases
     boolean activateExtension() default true;
+
+    /**
+     * Whether or not the extension method is allowed to invoke the method.
+     * 
+     * @see MethodHook.Bootstrap#methodHandle()
+     */
+
+    // activatedByPrefix = "get"
+    // Maybe just MatchesName -> Compiles to pattern and matched against the method name
+    // "get*"
+    // Hmmmmmm Der er ikke meget sparet
+    String matchesNamePrefix() default "*";
+
+    Class<?> matchesReturnType() default Object.class;
 }
 
 // invoke...
 // provide, but someone else invokes
 class SandboxBootstrap {
 
+
+    /**
+     * Returns any extension this bootstrap class belongs to. Or empty if this bootstrap class does not belong to any
+     * extension.
+     * 
+     * @return any extension the source is a member of of
+     * @see MemberOfExtension
+     */
+    // Hmm, det er mest taenkt hvis vi skule passe den til nogle andre ikke?
+    // Og de saa skal have mulighed for at validere hvilken en extension
+    // det passer til
+    public final Optional<Class<? extends Extension>> extension() {
+        throw new UnsupportedOperationException();
+        //return builder().extensionMember();
+    }
+
+    
     /**
      * Returns an immutable set of the method hooks that activated this bootstrap class. The size of the returned set is
      * normally. Unless there are multiple method hooks that each activate the same bootstrap type. In which each all of
@@ -279,6 +406,10 @@ class SandboxBootstrap {
      * 
      * @return the method hook(s) that activated the bootstrap
      */
+    // Maybe it should be mandatory... We don't currently support method hooks that
+    // maybe annotation() instead. Sounds better if we, for example, adds
+    // nameStartsWith()
+    // Taenker den ogsaa kan vaere paa ExtensionClass... Problemet er bare den ikke angiver en annotation
     public final Set<MethodHook> activatedBy() {
 
         // @ScheduleAtFixedRate + @ScheduledAtVariableRate paa samme metode hvis de har samme bootstrap
@@ -327,15 +458,42 @@ class SandboxBootstrap {
     public final Optional<Class<? extends ClassHook.Bootstrap>> managedBy() {
         throw new UnsupportedOperationException();
     }
-
 }
 
-class ZOldSidecar {
+@ZuperSupport // same
+@MethodHook(matchesAnnotation = Provide.class, bootstrap = Zester.Scan.class)
+class Zester extends BaseAssembly {
+
+    /** {@inheritDoc} */
+    // build vs assemble... Vi har jo ogsaa composer. Compose??
+    // Men det er jo stadig en del af build/compose processen
+    @Override
+    protected void build() {}
+
+    class Scan extends MethodHook.Bootstrap {
+
+        @OnInitialize
+        public void doo(InstanceHandle<Runnable> ih) {
+            ih.instance().run();
+        }
+
+        @OnInitialize
+        public void doo(Method m) {
+            System.out.println(m);
+        }
+    }
+
     // public <T> void buildWithContext(Consumer<BuildContext> con) {}
     // public <T> void buildWithContext(T o, BiConsumer<T, BuildContext> con) {}
     //
     // public void buildWithNew(Class<? extends Build> buildType) {}
 }
+
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@MetaAnnotation
+@MethodHook(matchesAnnotation = Provide.class, bootstrap = Zester.Scan.class)
+@interface ZuperSupport {}
 
 // Man kan ogsaa have en BuildContext som man kan faa injected...
 // Why not just extended...

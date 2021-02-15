@@ -27,12 +27,14 @@ import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedComponentDriver;
 
 /**
+ * Assemblies are the main way to configure a component based system in Packed.
+ * 
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * All assemblies are single use. Trying to use it more than once will fail with {@link IllegalStateException}.
  * <p>
- * This class is not meant to be directly extended by ordinary users. But provides means for power users to extend the
+ * This class is rarely extended directly by end-users. But provides means for power users to extend the
  * basic functionality of Packed.
  * 
  * @param <C>
@@ -110,5 +112,5 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         ((ComponentBuild) configuration().context).realm.lookup(lookup);
     }
 }
-// We do not support $ methods because they are seen by all subclasses...
+// We do not support $ methods because they can be seen by all subclasses...
 

@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.Image;
 import app.packed.component.Realm;
@@ -230,23 +230,21 @@ public abstract class Extension extends Realm {
     // Vil mene det, her bliver vi jo ogsaa noedt til at checke man ikke bruger
     // annoteringer fra andre extensions...
     // Saa bliver noedt til at holde
-    protected final <T> BeanConfiguration<T> install(Class<T> implementation) {
+    protected final BaseComponentConfiguration install(Class<?> implementation) {
         return install(Factory.of(implementation));
     }
 
-    protected final <T> BeanConfiguration<T> install(Factory<T> factory) {
+    protected final BaseComponentConfiguration install(Factory<?> factory) {
         return configuration().install(factory);
     }
 
     /**
-     * @param <T>
-     *            the type of the component
      * @param instance
      *            the instance to install
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    protected final <T> BeanConfiguration<T> installInstance(T instance) {
+    protected final BaseComponentConfiguration installInstance(Object instance) {
         return configuration().installInstance(instance);
     }
 
@@ -325,6 +323,8 @@ public abstract class Extension extends Realm {
         // $ = Static Init (s + i = $)
     }
 
+    // protected static void libraryWrapper(Module m);
+    
 //    // consumeren bliver kun kaldt hvis extension'en bliver installeret af brugeren (eller en anden extension)
 //    protected final <T extends Extension.Subtension> void optionalUse(Class<T> extensionType, Consumer<T> c) {
 //        // Vil maaske vaere federe bare at have ene

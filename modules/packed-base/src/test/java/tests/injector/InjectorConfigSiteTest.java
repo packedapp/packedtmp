@@ -27,8 +27,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
-import app.packed.component.BeanConfiguration;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.config.ConfigSite;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
@@ -81,7 +81,7 @@ public class InjectorConfigSiteTest {
     }
 
     /** A helper method for {@link #binding()}. */
-    private void binding0(BeanConfiguration<?> sc) {
+    private void binding0(ServiceComponentConfiguration<?> sc) {
         // A hack where we use the binding key of the service, to figure out the line number.
         // int index = sc.key().get().rawType().getSimpleName().toString().charAt(0) - 'A';
         // ConfigSite cs = sc.configSite();

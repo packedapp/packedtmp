@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks.sandbox;
+package app.packed.hooks;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,7 +33,27 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OnBuild {
-    boolean runtimeBundle() default false;
 
-    boolean buildtimeBundle() default true;
 }
+
+// Had this attributes.. Men syntes vi skal finde en anden maade...
+//boolean runtimeBundle() default false;
+
+//boolean buildtimeBundle() default true;
+
+// Maybe allow for static methods on component sources
+
+// @OnBuild
+// public void building(Component c) {
+//   sysout(Adding this component as part of c);
+// }
+
+// Extension???? Skal vel treates paa samme maade component... Paa naer at instance er fin.
+
+
+// Hook Target>
+// Buildtime-Components
+// Runtime Components
+// Hooks (meta)
+
+//  

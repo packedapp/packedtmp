@@ -38,7 +38,8 @@ import app.packed.component.Wirelet;
 // I don't like member because of the overloaded field/method/constructor
 // @GroupWithExtension()
 // ExtensionCompound
-public @interface ExtensionNest {
+// MemberOfExtension(Injection
+public @interface MemberOfExtension {
 
     /**
      * Returns the extension to nest with.

@@ -16,16 +16,21 @@
 package app.packed.component.drivers;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 
 /**
- *
+ * Jeg syntes ikke man som udgangspunkt bliver noedt til at dele denne klasse..
+ * Hvis man har klassen kan man lave en component af den type...
  */
-public interface ComponentClassDriver<C extends ComponentConfiguration, I> {
+// Altsaa det ville vaere rart at kunne beskrive component driveren
+public abstract class BindableComponentDriver<C extends ComponentConfiguration> {
 
-    /**
-     * @param implementation
-     *            the implementation to bind
-     * @return a new bound component driver
-     */
-    ComponentDriver<C> bind(Class<? extends I> implementation);
+    protected abstract C create(ComponentConfigurationContext context);
+}
+
+class CompDriver2 {
+
+    public <C extends ComponentConfiguration> C bindClass(BindableComponentDriver<C> bcd, Class<?> clazz) {
+        throw new UnsupportedOperationException();
+    }
 }

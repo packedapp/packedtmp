@@ -15,30 +15,32 @@
  */
 package app.packed.hooks.sandbox;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
+import static java.util.Objects.requireNonNull;
 
 /**
  *
  */
-// En gammel klasse Tror vi bruger et hook...
-interface MethodInterceptor {
+// Ideen er at den bliver en primitive class ligesom optional
+// 
+public final class InstanceHandle<T> {
 
-    default MethodType sourceType() {
-        throw new UnsupportedOperationException();
+    /** The instance we wrap. */
+    private final T instance;
+
+    private InstanceHandle(T instance) {
+        this.instance = requireNonNull(instance, "instance is null");
     }
-
-    void source(MethodHandle mh);
 
     /**
-     * The method handle to invoke or intercept.
+     * Returns the wrapped instance.
      * 
-     * @return the method handle to invoke or intercept
+     * @return the wrapped instance
      */
-    MethodHandle target();
+    public final T instance() {
+        return instance;
+    }
 
-    default MethodType targetType() {
-        return target().type();
+    public static <T> InstanceHandle<T> of(T instance) {
+        return new InstanceHandle<T>(instance);
     }
 }
-// source changes as we

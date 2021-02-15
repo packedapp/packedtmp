@@ -24,9 +24,8 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
-import app.packed.component.BeanConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.sandbox.PrototypeConfiguration;
+import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.inject.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
@@ -44,20 +43,20 @@ public class ProvideTest {
     public void configSite() throws Throwable {
         Injector inj = Injector.configure(conf -> {
             conf.lookup(MethodHandles.lookup());// The module where letter classes are in are not exported
-            BeanConfiguration<A> a = conf.provide(A.class);
-            BeanConfiguration<B> b = conf.provide(Factory.of(B.class));
-            BeanConfiguration<C> c = conf.provideInstance(C0);
+            ServiceComponentConfiguration<A> a = conf.provide(A.class);
+            ServiceComponentConfiguration<B> b = conf.provide(Factory.of(B.class));
+            ServiceComponentConfiguration<C> c = conf.provideInstance(C0);
             // ServiceComponentConfiguration<E> e = conf.provide(E.class).lazy();
             // ServiceComponentConfiguration<F> f = conf.provide(Factory.findInjectable(F.class)).lazy();
-            PrototypeConfiguration<H> h = conf.providePrototype(H.class);
-            PrototypeConfiguration<I> i = conf.providePrototype(Factory.of(I.class));
+            ServiceComponentConfiguration<H> h = conf.providePrototype(H.class);
+            ServiceComponentConfiguration<I> i = conf.providePrototype(Factory.of(I.class));
         });
     }
 
     @Test
     public void bindInstance() {
         Injector i = Injector.configure(e -> {
-            BeanConfiguration<A> sc = e.provideInstance(A0);
+            ServiceComponentConfiguration<A> sc = e.provideInstance(A0);
             testConfiguration(sc, true, Key.of(A.class));
         });
         testSingleton(i, Key.of(A.class), A0);
@@ -75,7 +74,7 @@ public class ProvideTest {
         }
     }
 
-    static void testConfiguration(BeanConfiguration<?> sc, boolean isConstant, Key<?> key) {
+    static void testConfiguration(ServiceComponentConfiguration<?> sc, boolean isConstant, Key<?> key) {
 
         // assertThat(sc.instantiationMode()).isSameAs(ServiceMode.SINGLETON);
         // configSite;

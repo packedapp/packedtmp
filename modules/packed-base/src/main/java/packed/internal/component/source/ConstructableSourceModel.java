@@ -13,20 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.drivers;
-
-import app.packed.base.TypeToken;
-import app.packed.component.ComponentConfiguration;
-import app.packed.inject.Factory;
+package packed.internal.component.source;
 
 /**
  *
  */
-// Ved ikke om 
-public interface SourceableComponentDriver<C extends ComponentConfiguration, S> {
-    ComponentDriver<C> fromFunction(S function);
-    ComponentDriver<C> fromClass(Class<S> implementation);
-    ComponentDriver<C> fromTypeToken(TypeToken<S> typeToken);
-    ComponentDriver<C> fromFactory(Factory<S> factory);
-    ComponentDriver<C> fromInstance(S instance);
+// Ideen er lidt, at vi egentlig har begge 2... 
+// IDK
+// Saa 2 class values...
+// Alt sammen for at undgaa et volatile field???
+public class ConstructableSourceModel /* extends SourceModel */  {
+
 }
