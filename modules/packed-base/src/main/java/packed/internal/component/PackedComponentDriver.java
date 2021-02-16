@@ -25,7 +25,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.old.ComponentClassDriver;
 import app.packed.component.drivers.old.ComponentFactoryDriver;
 import app.packed.component.drivers.old.ComponentInstanceDriver;
 import app.packed.inject.Factory;
@@ -68,7 +67,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
     }
 
-    public static Meta newMeta(MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
+    public static Meta newMeta(Type type, MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         // Parse all options
@@ -101,35 +100,42 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentBuild.class);
         ib.addKey(ComponentConfigurationContext.class, 0);
         MethodHandle mh = ib.build();
-        return new Meta(mh, modifiers);
+        return new Meta(type, mh, modifiers);
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
-        Meta meta = newMeta(caller, false, driverType, options);
+        Meta meta = newMeta(Type.OTHER, caller, false, driverType, options);
         return new PackedComponentDriver<>(meta, null);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedClassComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+    public static <C extends ComponentConfiguration, I> PackedFactoryComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
+            Option... options) {
         requireNonNull(options, "options is null");
 
-        Meta meta = newMeta(caller, true, driverType, options);
-        return new PackedClassComponentDriver<>(meta);
-    }
-
-    public static <C extends ComponentConfiguration, I> PackedFactoryComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
-        requireNonNull(options, "options is null");
-
-        Meta meta = newMeta(caller, true, driverType, options);
+        Meta meta = newMeta(Type.CLASS, caller, true, driverType, options);
         return new PackedFactoryComponentDriver<>(meta);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
+    public static <C extends ComponentConfiguration, I> PackedFactoryComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
+            Option... options) {
         requireNonNull(options, "options is null");
 
-        Meta meta = newMeta(caller, true, driverType, options);
+        Meta meta = newMeta(Type.FACTORY, caller, true, driverType, options);
+        return new PackedFactoryComponentDriver<>(meta);
+    }
+
+    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
+            Class<? extends C> driverType, Option... options) {
+        requireNonNull(options, "options is null");
+
+        Meta meta = newMeta(Type.INSTANCE, caller, true, driverType, options);
         return new PackedInstanceComponentDriver<>(meta);
+    }
+
+    enum Type {
+        OTHER, CLASS, FACTORY, INSTANCE;
     }
 
     static class Meta {
@@ -138,7 +144,10 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
 
         ComponentModifierSet modifiers;
 
-        Meta(MethodHandle mh, int modifiers) {
+        final Type type;
+
+        Meta(Type type, MethodHandle mh, int modifiers) {
+            this.type = requireNonNull(type);
             this.mh = mh;
             this.modifiers = new PackedComponentModifierSet(modifiers);
             if (this.modifiers.isEmpty()) {
@@ -170,11 +179,21 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
     }
 
-    static class PackedClassComponentDriver<C extends ComponentConfiguration, I> implements ComponentClassDriver<C, I> {
+    static class PackedFactoryComponentDriver<C extends ComponentConfiguration, I> implements ComponentFactoryDriver<C, I> {
         final Meta meta;
 
-        public PackedClassComponentDriver(Meta meta) {
+        public PackedFactoryComponentDriver(Meta meta) {
             this.meta = meta;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentDriver<C> bind(Factory<? extends I> factory) {
+            requireNonNull(factory, "factory is null");
+            if (meta.type == Type.CLASS) {
+                throw new UnsupportedOperationException("Can only specify a class");
+            }
+            return new PackedComponentDriver<>(meta, factory);
         }
 
         /** {@inheritDoc} */
@@ -185,21 +204,8 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
     }
 
-    static class PackedFactoryComponentDriver<C extends ComponentConfiguration, I> extends PackedClassComponentDriver<C, I> implements ComponentFactoryDriver<C, I> {
-
-        public PackedFactoryComponentDriver(Meta meta) {
-            super(meta);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDriver<C> bind(Factory<? extends I> factory) {
-            requireNonNull(factory, "factory is null");
-            return new PackedComponentDriver<>(meta, factory);
-        }
-    }
-
-    private static class PackedInstanceComponentDriver<C extends ComponentConfiguration, I> extends PackedFactoryComponentDriver<C, I> implements ComponentInstanceDriver<C, I> {
+    private static class PackedInstanceComponentDriver<C extends ComponentConfiguration, I> extends PackedFactoryComponentDriver<C, I>
+            implements ComponentInstanceDriver<C, I> {
 
         private PackedInstanceComponentDriver(Meta meta) {
             super(meta);

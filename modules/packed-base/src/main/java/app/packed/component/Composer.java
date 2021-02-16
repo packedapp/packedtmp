@@ -18,7 +18,6 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-import app.packed.container.Extension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentBuild;
 
@@ -41,8 +40,8 @@ public abstract class Composer<C extends ComponentConfiguration> extends Realm {
      */
     protected Composer(C configuration) {
         this.configuration = configuration;
-        // Commented out because of test
-        //requireNonNull(configuration, "configuration is null");
+        // Disabled because of test
+        // requireNonNull(configuration, "configuration is null");
     }
 
     /**
@@ -74,26 +73,27 @@ public abstract class Composer<C extends ComponentConfiguration> extends Realm {
     public final void lookup(MethodHandles.Lookup lookup) {
         ((ComponentBuild) configuration.context).realm.lookup(lookup);
     }
-
-    @SafeVarargs
-    protected static void $AllowExtensions(Class<? extends Extension>... extensions) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Eller ogsaa har vi en anden driver??? ComposerDriver...
-
-    // Hmm. vi kan jo godt have flere forskellige configurationer...
-    // Altsaa fx tillader vi ikke andre extensions hvis vi laver en ServiceLocator i nogen tilfaelde
-    // Mens vi nok goere det i andre...
-    // Men
-
-    // De her bliver kaldt fra en statisks initializer
-    // Ikke hvis man skal bruge en ArtifactDriver...
-    @SafeVarargs
-    protected static void $RejectExtensions(Class<? extends Extension>... extensions) {
-        throw new UnsupportedOperationException();
-    }
 }
+
+// Er det ikke noget vi skal definere i vores ArtifactDriver...
+//@SafeVarargs
+//protected static void $AllowExtensions(Class<? extends Extension>... extensions) {
+//    throw new UnsupportedOperationException();
+//}
+//
+//// Eller ogsaa har vi en anden driver??? ComposerDriver...
+//
+//// Hmm. vi kan jo godt have flere forskellige configurationer...
+//// Altsaa fx tillader vi ikke andre extensions hvis vi laver en ServiceLocator i nogen tilfaelde
+//// Mens vi nok goere det i andre...
+//// Men
+//
+//// De her bliver kaldt fra en statisks initializer
+//// Ikke hvis man skal bruge en ArtifactDriver...
+//@SafeVarargs
+//protected static void $RejectExtensions(Class<? extends Extension>... extensions) {
+//    throw new UnsupportedOperationException();
+//}
 //Can take a CCC context. And cast it and provide lookup??
 //Maaske er det altid en container????
 //This class should be inlign with Assembly so Either ComponentComposer or just Composer

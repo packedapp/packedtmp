@@ -24,6 +24,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.drivers.ComponentDriver;
 import app.packed.component.drivers.ComponentDriver.Option;
+import app.packed.component.drivers.old.ComponentFactoryDriver;
 import app.packed.component.drivers.old.ComponentInstanceDriver;
 import app.packed.container.BaseAssembly;
 
@@ -33,11 +34,16 @@ import app.packed.container.BaseAssembly;
  * <p>
  * It it also possible to install components at runtime via {@link Component}.
  */
+//ProvidableComponentConfiguration
 public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentInstanceDriver DRIVER = ComponentInstanceDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class, Option.constantSource());
+    private static final ComponentInstanceDriver DRIVER = ComponentInstanceDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+            Option.constantSource());
 
+    @SuppressWarnings("rawtypes")
+    private static final ComponentFactoryDriver PROTOTYPE_DRIVER = ComponentFactoryDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class);
+    
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
@@ -56,6 +62,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     }
 
     // addQualififer();
+    // Nahh
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
@@ -70,14 +77,14 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
         context.sourceProvideAs(key);
         return this;
     }
-    
+
     public ServiceComponentConfiguration<T> asNone() {
-        // Ideen er vi f.eks. kan 
+        // Ideen er vi f.eks. kan
         // asNone().exportAs(Doo.class);
         context.sourceProvideAs(null);
         return this;
     }
-    
+
     // Once a bean has been exported, its key cannot be changed...
     public ServiceComponentConfiguration<T> export() {
         context.sourceExport();
@@ -94,6 +101,9 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
         return this;
     }
 
+    // The key unless asNone()
+    
+    // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
         return context.sourceProvideAsKey();
     }
@@ -123,5 +133,29 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     @SuppressWarnings("unchecked")
     public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provideInstance(T instance) {
         return DRIVER.applyInstance(instance);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Class<T> implementation) {
+        return PROTOTYPE_DRIVER.bind(implementation);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Factory<T> factory) {
+        return PROTOTYPE_DRIVER.bind(factory);
+    }
+}
+
+class Zandb0x<T> extends ServiceComponentConfiguration<T> {
+    
+    /**
+     * @param context
+     */
+    public Zandb0x(ComponentConfigurationContext context) {
+        super(context);
+    }
+
+    public Zandb0x<T> aliasAs(Class<? super T> key) {
+        return this;
     }
 }

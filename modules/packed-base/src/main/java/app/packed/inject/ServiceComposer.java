@@ -79,10 +79,13 @@ import app.packed.component.Composer;
 public abstract class ServiceComposer extends Composer<ComponentConfiguration> implements ServiceRegistry {
 
     /**
-     * @param cc
+     * Creates a new service composer.
+     * 
+     * @param configuration
+     *            the component configuration this composer wraps
      */
-    protected ServiceComposer(ComponentConfiguration cc) {
-        super(cc);
+    protected ServiceComposer(ComponentConfiguration configuration) {
+        super(configuration);
     }
 
     /**
@@ -231,7 +234,7 @@ public abstract class ServiceComposer extends Composer<ComponentConfiguration> i
      */
     // How useful is this. It is only for downcasting
     // FooImpl -> Foo
-    public final void rekey(Class<?> existingKey, Class<?> newKey) {
+    public void rekey(Class<?> existingKey, Class<?> newKey) {
         requireNonNull(existingKey, "existingKey is null");
         requireNonNull(newKey, "newKey is null");
         rekey(Key.of(existingKey), Key.of(newKey));
@@ -305,6 +308,10 @@ public abstract class ServiceComposer extends Composer<ComponentConfiguration> i
         rekeyAll(s -> s.key().with(qualifier));
     }
 
+    public void rekeyAllWithClassTag(Class<?> tag) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Rekey all service
      * 
@@ -314,10 +321,6 @@ public abstract class ServiceComposer extends Composer<ComponentConfiguration> i
     public void rekeyAllWithTag(String tag) {
         requireNonNull(tag, "tagis null");
         rekeyAll(s -> s.key().withTag(tag));
-    }
-
-    public void rekeyAllWithClassTag(Class<?> tag) {
-        throw new UnsupportedOperationException();
     }
 
     /**

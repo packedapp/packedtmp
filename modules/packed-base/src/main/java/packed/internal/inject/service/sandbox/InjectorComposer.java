@@ -189,7 +189,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     }
 
     public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
-        return extension().providePrototype(Factory.of(implementation));
+        return extension().providePrototype(implementation);
     }
 
     public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {

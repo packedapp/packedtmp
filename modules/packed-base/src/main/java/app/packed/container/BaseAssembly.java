@@ -211,7 +211,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
     }
 
     protected final <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
-        return providePrototype(Factory.of(implementation));
+        return service().providePrototype(implementation);
     }
 
     protected final <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {

@@ -236,14 +236,14 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * Creates a new service locator using a provided service composer.
+     * Creates a new service locator using a service composer.
      * 
-     * @param transformation
-     *            the transformation to use
+     * @param action
+     *            the composition action
      * @return a new service locator
      */
-    static ServiceLocator of(Consumer<? super ServiceComposer> transformation) {
-        return PackedServiceComposer.toServiceLocator(new HashMap<>(), transformation);
+    static ServiceLocator of(Consumer<? super ServiceComposer> action) {
+        return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
     }
 }
 

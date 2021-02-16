@@ -33,7 +33,7 @@ import app.packed.inject.Factory;
  */
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
-    /** A driver that create container components. */
+    /** A driver for configuring containers. */
     private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, Option.bundle());
 
     /**
@@ -95,6 +95,26 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     }
 
     /**
+     * Creates a new container with this container as its parent by linking the specified bundle.
+     * 
+     * @param bundle
+     *            the bundle to link
+     * @param wirelets
+     *            any wirelets
+     */
+    public void link(Assembly<?> bundle, Wirelet... wirelets) {
+        context.link(bundle, wirelets);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerConfiguration setName(String name) {
+        context.setName(name);
+        return this;
+    }
+
+    /**
      * Installs a stateless component.
      * <p>
      * Extensions might still contain state. So Stateless is better under the assumption that extensions are better tested
@@ -106,19 +126,6 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public BaseComponentConfiguration stateless(Class<?> implementation) {
         return context.wire(BaseComponentConfiguration.driverStateless(implementation));
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        context.link(bundle, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContainerConfiguration setName(String name) {
-        context.setName(name);
-        return this;
     }
 
     /**

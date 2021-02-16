@@ -104,6 +104,7 @@ public interface ArtifactDriver<A> {
      * @see Main#buildImage(Assembly, Wirelet...)
      * @see ServiceLocator#buildImage(Assembly, Wirelet...)
      */
+    // newImage()?
     Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
 
     /**

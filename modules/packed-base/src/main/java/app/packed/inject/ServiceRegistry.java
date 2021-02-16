@@ -41,6 +41,7 @@ import packed.internal.util.PackedAttributeHolderStream;
  * iterators returned by {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
  * <p>
  * Unless otherwise specified, implementations of this interface does not override hashCode/equals.
+ * Hvorfor kan vi ikke definere den udfra asMap?
  * <p>
  * If used as an auto activating variable sidecar the registry injected will be an immutable
  */
@@ -60,7 +61,7 @@ public interface ServiceRegistry extends Iterable<Service> {
     Map<Key<?>, Service> asMap();
 
     /**
-     * Returns whether or not this registry contains a service with the specified key.
+     * Returns {@code true} if this registry contains a service with the specified key.
      *
      * @param key
      *            key whose presence in this registry is to be tested
@@ -72,7 +73,7 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns whether or not this registry contains a service with the specified key.
+     * Returns {@code true} if this registry contains a service with the specified key.
      *
      * @param key
      *            key whose presence in this registry is to be tested

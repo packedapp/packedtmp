@@ -17,7 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -27,7 +26,6 @@ import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.component.drivers.old.ComponentFactoryDriver;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -113,7 +111,7 @@ public final class ServiceExtension extends Extension {
 
     // Validates the outward facing contract
     public void checkContract(Validator<? super ServiceContract> validator) {
-        //Hmm maaske man ville lave et unit test istedet for...
+        // Hmm maaske man ville lave et unit test istedet for...
     }
 
     public void checkExactContract(ServiceContract sc) {
@@ -171,7 +169,7 @@ public final class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return services.exports().export(key /*, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();
@@ -215,7 +213,7 @@ public final class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        services.exports().exportAll( /*captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
@@ -262,8 +260,9 @@ public final class ServiceExtension extends Extension {
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        services.provideAll((PackedInjector) locator /*, captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
+        services.provideAll((PackedInjector) locator /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
     }
+
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
      * constructor or method to instantiate the service instance once the injector is created.
@@ -296,7 +295,7 @@ public final class ServiceExtension extends Extension {
     public final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         return configuration().wire(ServiceComponentConfiguration.provide(factory)).provide();
     }
-    
+
     /**
      * Binds a new service constant to the specified instance.
      * <p>
@@ -318,8 +317,13 @@ public final class ServiceExtension extends Extension {
     // Will install a ServiceStatelessConfiguration...
     // Spoergmaalet er om vi ikke bare skal have en driver...
     // og en metode paa BaseBundle...
+
+    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
+        return bundle.compConf.wire(ServiceComponentConfiguration.providePrototype(implementation));
+    }
+    
     public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
-        return bundle.compConf.wire(prototype(), factory);
+        return bundle.compConf.wire(ServiceComponentConfiguration.providePrototype(factory));
     }
 
     // requires bliver automatisk anchoret...
@@ -387,11 +391,6 @@ public final class ServiceExtension extends Extension {
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
         services.exports().addExportTransformer(transformer);
-    }
-
-    @SuppressWarnings({ "rawtypes", "unchecked" }) // javac
-    public static <T> ComponentFactoryDriver<ServiceComponentConfiguration<T>, T> prototype() {
-        return (ComponentFactoryDriver) ComponentFactoryDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class);
     }
 
     /**
@@ -535,7 +534,7 @@ class ZExtraFunc {
     }
 
     <S, U> void cycleBreaker(Key<S> key1, Key<U> key2, BiConsumer<? super S, ? super U> consumer) {
-        // 
+        //
         throw new UnsupportedOperationException();
     }
 

@@ -17,13 +17,12 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.drivers.ComponentDriver;
-
 /**
  * The base class for build-time configurations of components. The class is basically a thin wrapper on top of
- * {@link ComponentConfigurationContext}. All component configuration classes must extend from this class.
+ * {@link ComponentConfigurationContext}. All component configuration classes must extend, directly or indirectly, from
+ * this class.
  * <p>
- * Instead of directly extending this class you most likely want to extend {@link BaseComponentConfiguration} instead.
+ * Instead of extending this class directly, you typically want to extend {@link BaseComponentConfiguration} instead.
  */
 public abstract class ComponentConfiguration {
 
@@ -41,24 +40,6 @@ public abstract class ComponentConfiguration {
     protected ComponentConfiguration(ComponentConfigurationContext context) {
         this.context = requireNonNull(context, "context is null");
     }
-
-    /**
-     * Creates a new container with this container as its parent by linking the specified bundle.
-     * 
-     * @param bundle
-     *            the bundle to link
-     * @param wirelets
-     *            any wirelets
-     */
-    protected void link(Assembly<?> bundle, Wirelet... wirelets) {
-        // Altsaa vi goer jo det her pga at det er lettere med javadocs
-        context.link(bundle, wirelets);
-    }
-    
-    protected <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return context.wire(driver, wirelets);
-    }
-
 }
 // I don't expect this class to have any $ methods
 // This should most likely be located in the driver instead
