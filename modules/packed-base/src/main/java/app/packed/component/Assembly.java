@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
-import app.packed.component.drivers.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import packed.internal.component.AssemblyHelper;
 import packed.internal.component.ComponentBuild;

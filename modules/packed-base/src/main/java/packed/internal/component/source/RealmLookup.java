@@ -52,7 +52,8 @@ public abstract class RealmLookup {
     abstract RealmModel realm();
 
     final OpenClass newClassProcessor(Class<?> clazz, boolean registerNatives) {
-        return new OpenClass(lookup(), clazz, registerNatives);
+        Lookup lookup = lookup();
+        return new OpenClass(lookup, clazz, registerNatives);
     }
 
     public final MethodHandle toMethodHandle(Factory<?> factory) {

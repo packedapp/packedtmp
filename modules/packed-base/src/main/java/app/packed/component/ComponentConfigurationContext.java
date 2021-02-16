@@ -20,12 +20,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
-import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.old.ComponentFactoryDriver;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
 /**
@@ -174,11 +171,6 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
-
-    default <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-        ComponentDriver<C> cd = driver.bind(implementation);
-        return wire(cd, wirelets);
-    }
 }
 //
 ///**

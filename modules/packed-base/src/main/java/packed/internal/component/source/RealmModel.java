@@ -71,8 +71,10 @@ final class RealmModel extends RealmLookup {
         // Making a lookup for the realm.
         MethodHandles.Lookup l = cachedLookup;
         if (l == null) {
-            l = MethodHandles.lookup();
-            l = cachedLookup = l.in(type);
+            l = cachedLookup = MethodHandles.lookup();
+            // This does not work properly with Java 16...
+            // And have no idea why I originally put it in.
+            //l = cachedLookup = l.in(type);
         }
         return l;
     }

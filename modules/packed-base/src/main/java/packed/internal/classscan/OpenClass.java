@@ -133,7 +133,7 @@ public final class OpenClass {
         try {
             return privateLookup = MethodHandles.privateLookupIn(type, lookup);
         } catch (IllegalAccessException e) {
-            throw new InaccessibleMemberException("Could not create private lookup", e);
+            throw new InaccessibleMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }
     }
 

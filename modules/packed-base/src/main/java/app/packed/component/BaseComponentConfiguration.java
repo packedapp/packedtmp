@@ -18,10 +18,6 @@ package app.packed.component;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.ComponentDriver.Option;
-import app.packed.component.drivers.old.ComponentClassDriver;
-import app.packed.component.drivers.old.ComponentInstanceDriver;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.component.PackedComponentDriver;
@@ -34,12 +30,12 @@ import packed.internal.component.PackedComponentDriver;
 public class BaseComponentConfiguration extends ComponentConfiguration {
    
     @SuppressWarnings("rawtypes")
-    private static final ComponentInstanceDriver INSTALL_DRIVER = ComponentInstanceDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class, Option.constantSource());
+    private static final BindableComponentDriver INSTALL_DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, PackedComponentDriver.Option.constantSource());
     
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
-    private static final ComponentClassDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
-            ComponentDriver.Option.statelessSource());
+    private static final BindableComponentDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
+            PackedComponentDriver.Option.statelessSource());
     
     /**
      * Creates a new base component configuration.
@@ -130,7 +126,7 @@ public class BaseComponentConfiguration extends ComponentConfiguration {
      * @return a driver
      */
     @SuppressWarnings("unchecked")
-    private static <T> ComponentClassDriver<BaseComponentConfiguration, T> driver() {
+    private static <T> BindableComponentDriver<BaseComponentConfiguration, T> driver() {
         return STATELESS_DRIVER;
     }
 

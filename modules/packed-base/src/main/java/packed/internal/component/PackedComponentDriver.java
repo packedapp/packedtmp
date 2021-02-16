@@ -19,14 +19,20 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
+import app.packed.component.BindableComponentDriver;
+import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentDriverDescriptor;
+import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.old.ComponentFactoryDriver;
-import app.packed.component.drivers.old.ComponentInstanceDriver;
+import app.packed.component.Wirelet;
+import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.Factory;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
@@ -36,12 +42,12 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
+    // Holds ExtensionModel for extensions, source for sourced components
+    public final Object data;
+
     final Meta meta;
 
     final int modifiers;
-
-    // Holds ExtensionModel for extensions, source for sourced components
-    public final Object data;
 
     PackedComponentDriver(Meta meta, Object data) {
         this.meta = requireNonNull(meta);
@@ -65,6 +71,18 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDriver<C> with(Wirelet wirelet) {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDriver<C> with(Wirelet... wirelet) {
+        return null;
     }
 
     public static Meta newMeta(Type type, MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
@@ -110,20 +128,20 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         return new PackedComponentDriver<>(meta, null);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedFactoryComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
+    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
             Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(Type.CLASS, caller, true, driverType, options);
-        return new PackedFactoryComponentDriver<>(meta);
+        return new PackedInstanceComponentDriver<>(meta);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedFactoryComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
-            Option... options) {
+    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
+            Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(Type.FACTORY, caller, true, driverType, options);
-        return new PackedFactoryComponentDriver<>(meta);
+        return new PackedInstanceComponentDriver<>(meta);
     }
 
     public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
@@ -132,10 +150,6 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
 
         Meta meta = newMeta(Type.INSTANCE, caller, true, driverType, options);
         return new PackedInstanceComponentDriver<>(meta);
-    }
-
-    enum Type {
-        OTHER, CLASS, FACTORY, INSTANCE;
     }
 
     static class Meta {
@@ -160,14 +174,14 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
     // Kunne ogsaa encode det i ComponentDriver.option..
     // Og saa bruge MethodHandles til at extract id, data?
     // Nahhh
-    public static class OptionImpl implements ComponentDriver.Option {
+    public static class OptionImpl implements PackedComponentDriver.Option {
 
-        static final int OPT_STATEFUL = 3;
-        static final int OPT_CONSTANT = 2;
         static final int OPT_BUNDLE = 1;
+        static final int OPT_CONSTANT = 2;
+        static final int OPT_STATEFUL = 3;
         public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
-        public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
         public static final OptionImpl BUNDLE = new OptionImpl(OPT_BUNDLE, null);
+        public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
 
         @Nullable
         final Object data;
@@ -179,11 +193,35 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
     }
 
-    static class PackedFactoryComponentDriver<C extends ComponentConfiguration, I> implements ComponentFactoryDriver<C, I> {
+    private static class PackedInstanceComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
         final Meta meta;
 
-        public PackedFactoryComponentDriver(Meta meta) {
+        private PackedInstanceComponentDriver(Meta meta) {
             this.meta = meta;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentDriver<C> applyInstance(I instance) {
+            requireNonNull(instance, "instance is null");
+            if (instance instanceof Class) {
+                throw new IllegalArgumentException("Cannot specify a Class instance, was " + instance);
+            } else if (instance instanceof Factory) {
+                throw new IllegalArgumentException("Cannot specify a Factory instance, was " + instance);
+            }
+            if (meta.type == Type.CLASS) {
+                throw new UnsupportedOperationException("Can only specify a class");
+            } else if (meta.type == Type.FACTORY) {
+                throw new UnsupportedOperationException("Can only specify a class or factory");
+            }
+            return new PackedComponentDriver<>(meta, instance);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentDriver<C> bind(Class<? extends I> implementation) {
+            requireNonNull(implementation, "implementation is null");
+            return new PackedComponentDriver<>(meta, implementation);
         }
 
         /** {@inheritDoc} */
@@ -198,29 +236,86 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
 
         /** {@inheritDoc} */
         @Override
-        public ComponentDriver<C> bind(Class<? extends I> implementation) {
-            requireNonNull(implementation, "implementation is null");
-            return new PackedComponentDriver<>(meta, implementation);
+        public ComponentDriver<C> bindFunction(Object function) {
+            throw new UnsupportedOperationException(); 
         }
     }
 
-    private static class PackedInstanceComponentDriver<C extends ComponentConfiguration, I> extends PackedFactoryComponentDriver<C, I>
-            implements ComponentInstanceDriver<C, I> {
+    enum Type {
+        CLASS, FACTORY, INSTANCE, OTHER;
+    }
+    /**
+     * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
+     *          which would prohibit subclassing except by explicitly permitted types.
+     */
+    public interface Option {
 
-        private PackedInstanceComponentDriver(Meta meta) {
-            super(meta);
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         * @see ComponentModifier#BUNDLE_ROOT
+         */
+        static Option bundle() {
+            return PackedComponentDriver.OptionImpl.BUNDLE;
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDriver<C> applyInstance(I instance) {
-            requireNonNull(instance, "instance is null");
-            if (instance instanceof Class) {
-                throw new IllegalArgumentException("Cannot specify a Class instance, was " + instance);
-            } else if (instance instanceof Factory) {
-                throw new IllegalArgumentException("Cannot specify a Factory instance, was " + instance);
-            }
-            return new PackedComponentDriver<>(meta, instance);
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         * @see ComponentModifier#CONSTANT
+         */
+        // InstanceComponentDriver automatically sets the source...
+        static Option constantSource() {
+            return PackedComponentDriver.OptionImpl.CONSTANT;
         }
+
+        static Option sourceAssignableTo(Class<?> rawType) {
+            throw new UnsupportedOperationException();
+        }
+
+        static Option statelessSource() {
+            return PackedComponentDriver.OptionImpl.STATELESS;
+        }
+
+        static Option validateParent(Predicate<? super Component> validator, String msg) {
+            return validateWiring((c, d) -> {
+                if (validator.test(c)) {
+                    throw new IllegalArgumentException(msg);
+                }
+            });
+        }
+
+        static Option validateParentIsContainer() {
+            return validateParent(c -> c.hasModifier(ComponentModifier.BUNDLE_ROOT), "This component can only be wired to a container");
+        }
+
+        // The parent + the driver
+        //
+
+        /**
+         * Returns an option that
+         * 
+         * @param validator
+         * @return the option
+         */
+        // Hmm integration with vaildation
+        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Option serviceable()
+        // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
+        // at expose funktionaliteten.
+    }
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDriverDescriptor descriptor() {
+        throw new UnsupportedOperationException();
     }
 }

@@ -26,7 +26,7 @@ public class ZestMe extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-        installInstance("sdd");
+        install(Foo.class);
         use(MyExt.class);
     }
 
@@ -36,9 +36,12 @@ public class ZestMe extends BaseAssembly {
         App.start(new ZestMe() /* , BuildWirelets.printDebug().all() */);
         // System.out.println(ed.dependencies());
         System.out.println(System.currentTimeMillis() - start);
-        
-        
-        System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
+
+        //System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
+    }
+
+    public static class Foo {
+
     }
 
     public static class MyExt extends Extension {

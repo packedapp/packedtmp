@@ -22,10 +22,10 @@ import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.ComponentDriver.Option;
 import app.packed.inject.Factory;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -34,7 +34,7 @@ import app.packed.inject.Factory;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = ComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, Option.bundle());
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = PackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, PackedComponentDriver.Option.bundle());
 
     /**
      * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.

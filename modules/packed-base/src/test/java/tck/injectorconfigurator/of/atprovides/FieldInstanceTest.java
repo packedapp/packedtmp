@@ -139,7 +139,7 @@ public class FieldInstanceTest {
     // }
     // }
 
-    public  static class MixedFields {
+    public static class MixedFields {
 
         // @Provide(instantionMode = InstantiationMode.LAZY)
         // Long l = 1L;
@@ -151,7 +151,8 @@ public class FieldInstanceTest {
         Short s = 1;
 
         static void test(Consumer<? super InjectorComposer> configurator) {
-            Injector i = create(c -> {
+            Injector i = Injector.configure(c -> {
+                c.lookup(MethodHandles.lookup());
                 configurator.accept(c);
             });
             MixedFields f = i.use(MixedFields.class);
@@ -171,12 +172,12 @@ public class FieldInstanceTest {
         }
     }
 
-    public  static class PrototypeField {
+    public static class PrototypeField {
 
         @Provide(constant = false)
         Short s = 1;
 
-        public  PrototypeField(AtomicBoolean b) {
+        public PrototypeField(AtomicBoolean b) {
             b.set(true);
         }
     }
@@ -186,7 +187,7 @@ public class FieldInstanceTest {
         @Provide(constant = true)
         Short s = 1;
 
-        public  SingletonField(AtomicBoolean b) {
+        public SingletonField(AtomicBoolean b) {
             b.set(true);
         }
     }

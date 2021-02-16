@@ -20,13 +20,12 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.BindableComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
-import app.packed.component.drivers.ComponentDriver;
-import app.packed.component.drivers.ComponentDriver.Option;
-import app.packed.component.drivers.old.ComponentFactoryDriver;
-import app.packed.component.drivers.old.ComponentInstanceDriver;
+import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -38,11 +37,11 @@ import app.packed.container.BaseAssembly;
 public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentInstanceDriver DRIVER = ComponentInstanceDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class,
-            Option.constantSource());
+    private static final BindableComponentDriver DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+            PackedComponentDriver.Option.constantSource());
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentFactoryDriver PROTOTYPE_DRIVER = ComponentFactoryDriver.of(MethodHandles.lookup(), ServiceComponentConfiguration.class);
+    private static final BindableComponentDriver PROTOTYPE_DRIVER = PackedComponentDriver.ofFactory(MethodHandles.lookup(), ServiceComponentConfiguration.class);
     
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
@@ -146,14 +145,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     }
 }
 
-class Zandb0x<T> extends ServiceComponentConfiguration<T> {
-    
-    /**
-     * @param context
-     */
-    public Zandb0x(ComponentConfigurationContext context) {
-        super(context);
-    }
+class Zandb0x<T> {
 
     public Zandb0x<T> aliasAs(Class<? super T> key) {
         return this;

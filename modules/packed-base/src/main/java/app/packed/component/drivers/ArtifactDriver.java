@@ -28,6 +28,7 @@ import app.packed.component.Assembly;
 import app.packed.component.BuildException;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
