@@ -18,8 +18,6 @@ package app.packed.cli;
 import app.packed.base.Completion;
 import app.packed.component.App;
 import app.packed.component.Assembly;
-import app.packed.component.BuildException;
-import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.BaseAssembly;
@@ -48,22 +46,6 @@ public final class Main {
     // Vi skal vel have et dev-tools projekt, ved ikke lige om den skal vaere her
     public static void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
         driver().assertValid(assembly, wirelets);
-    }
-
-    /**
-     * Creates a new image from the specified assembly.
-     * 
-     * @param assembly
-     *            the assembly used for building the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     * @throws BuildException
-     *             if the image could not be build
-     * @see ArtifactDriver#buildImage(Assembly, Wirelet...)
-     */
-    public static Image<Completion> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().buildImage(assembly, wirelets);
     }
 
     /**

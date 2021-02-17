@@ -315,7 +315,7 @@ public abstract class Extension extends Realm {
         requireNonNull(dependency, "dependency is null");
         ExtensionPreModel.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
     }
-
+    
     protected static <T extends Extension, S extends Extension> void $addDependencyLazyInit(Class<T> thisExtension, Class<S> dependsOn,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret

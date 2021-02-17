@@ -15,8 +15,6 @@
  */
 package app.packed.component;
 
-import app.packed.cli.MainArgs;
-
 /**
  * Images are immutable ahead-of-time configured component systems. By configuring an system ahead of time, the actual
  * time to instantiation the system can be severely decreased often down to a couple of microseconds. In addition to
@@ -42,7 +40,8 @@ import app.packed.cli.MainArgs;
  * 
  * @see App#buildImage(Assembly, Wirelet...)
  */
-// Maybe artifact image anyway?? ArtifactDriver er jo lidt mere flex nu... 
+// Maybe artifact image anyway?? ArtifactDriver er jo lidt mere flex nu...
+// Image<void>
 public interface Image<A> {
 
     /**
@@ -51,30 +50,6 @@ public interface Image<A> {
      * @return the root component of the image
      */
     Component component();
-
-    /**
-     * A helper method that makes it easier to provide command-line arguments to your program. Is typically used from a
-     * program's main method:
-     * 
-     * <pre> {@code
-     * private final static Image<Void> IMG = Main.imageOf(new SomeAssembly());
-     *
-     * public static void main(String[] args) {
-     *   IMG.use(args, any additional wirelets...);
-     * }}</pre>
-     * <p>
-     * Invoking this method is identical to invoking
-     * {@code image.use(assembly, Wirelet.combine(MainArgs.of(args), wirelets))}.
-     * 
-     * @param args
-     *            command line arguments
-     * @param wirelets
-     *            optional wirelets
-     * @return the result of using the image
-     */
-    default A use(String[] args, Wirelet... wirelets) {
-        return use(Wirelet.combine(MainArgs.of(args), wirelets));
-    }
 
     /**
      * Uses the image.

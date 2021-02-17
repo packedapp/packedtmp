@@ -25,6 +25,8 @@ import java.lang.annotation.Target;
  *
  */
 
+// Metoder der selekter
+
 // A trait generating method???
 
 @Target(ElementType.METHOD)
@@ -35,8 +37,10 @@ public @interface AssistedInject {
     // only looks for @Inject??
     // Den traels at skulle putte hver member
     // Taenker maaske det er default og ikke noget man kan styre...
+    // Problemet er lidt, forventer vi så også initialize???
     boolean injectMembers() default false;
 
+    /* De næste 3 attributer styre praecis hvilken metode/constructor vi rammer. */
     Class<?> actualType() default Object.class;
 
     // If defined looks for a static method

@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
+import app.packed.component.ComponentDriver;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceComponentConfiguration;
@@ -65,6 +66,19 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 // GoBundle
 // Base is fine....
 public abstract class BaseAssembly extends ContainerAssembly {
+
+    /** Creates a new BaseAssembly using {@link ContainerConfiguration#driver()}. */
+    protected BaseAssembly() {}
+
+    /**
+     * Creates a new BaseAssembly using a custom driver.
+     * 
+     * @param driver
+     *            the (container) driver to use
+     */
+    protected BaseAssembly(ComponentDriver<ContainerConfiguration> driver) {
+        super(driver);
+    }
 
     /**
      * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use

@@ -140,14 +140,24 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack ofRoot(PackedArtifactDriver<?> artifactDriver, PackedComponentDriver<?> driver, Wirelet... wirelets) {
+    public static WireletPack ofRoot(PackedArtifactDriver<?> pac, PackedComponentDriver<?> pcd, Wirelet... wirelets) {
         Wirelet w = Wirelet.combine(wirelets);
-        if (artifactDriver.wirelet != null) {
-            w = artifactDriver.wirelet.andThen(w);
+        if (pac.wirelet != null) {
+            w = pac.wirelet.andThen(w);
         }
-        if (driver.modifiers().isBundle()) {
+        if (pcd.modifiers().isBundle()) {
             return create(null, wirelets);
         }
+        
+//        Wirelet w = pac.wirelet;
+//        if (pcd.wirelet != null) {
+//            w = pcd.wirelet.andThen(w);
+//        }
+//        Wirelet all = Wirelet.combine(wirelets);
+//        w = all.beforeThis(w);
+//        if (pcd.modifiers().isBundle()) {
+//            return create(null, wirelets);
+//        }
         return null;
     }
 

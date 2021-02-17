@@ -182,11 +182,6 @@ public interface ExtensionConfiguration {
      */
     <E extends Extension> E useOld(Class<E> extensionType);
 
-//    default <C extends ComponentConfiguration, I> C wire(ComponentClassDriver<C, I> driver, Class<? extends I> implementation, Wirelet... wirelets) {
-//        ComponentDriver<C> cd = driver.bind(implementation);
-//        return wire(cd, wirelets);
-//    }
-
     /**
      * Wires a new child component using the specified driver
      * 
@@ -200,15 +195,9 @@ public interface ExtensionConfiguration {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-//    default <C extends ComponentConfiguration, I> C wire(ComponentFactoryDriver<C, I> driver, Factory<? extends I> implementation, Wirelet... wirelets) {
-//        ComponentDriver<C> cd = driver.bind(implementation);
-//        return wire(cd, wirelets);
-//    }
-//
-//    default <C extends ComponentConfiguration, I> C wireInstance(ComponentInstanceDriver<C, I> driver, I instance, Wirelet... wirelets) {
-//        ComponentDriver<C> cd = driver.applyInstance(instance);
-//        return wire(cd, wirelets);
-//    }
+    // Ideen er lidt at det er paa den her maade at extensionen
+    // registrere bruger objekter...
+    <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     @Nullable
     private static ExtensionBuild getExtensionBuild(MethodHandles.Lookup lookup, Component component) {

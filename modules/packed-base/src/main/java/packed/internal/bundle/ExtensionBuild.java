@@ -329,4 +329,10 @@ public final class ExtensionBuild implements ExtensionConfiguration, Comparable<
         }
         return assembly;
     }
+
+    /** {@inheritDoc} */
+    @Override
+    public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return null;
+    }
 }

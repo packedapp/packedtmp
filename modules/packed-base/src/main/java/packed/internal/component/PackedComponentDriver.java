@@ -49,6 +49,9 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
 
     final int modifiers;
 
+    @Nullable
+    public final Wirelet wirelet = null;
+    
     PackedComponentDriver(Meta meta, Object data) {
         this.meta = requireNonNull(meta);
         this.data = data;
@@ -128,28 +131,28 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         return new PackedComponentDriver<>(meta, null);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
+    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
             Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(Type.CLASS, caller, true, driverType, options);
-        return new PackedInstanceComponentDriver<>(meta);
+        return new PackedBindableComponentDriver<>(meta);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
+    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
             Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(Type.FACTORY, caller, true, driverType, options);
-        return new PackedInstanceComponentDriver<>(meta);
+        return new PackedBindableComponentDriver<>(meta);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedInstanceComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
+    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
             Class<? extends C> driverType, Option... options) {
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(Type.INSTANCE, caller, true, driverType, options);
-        return new PackedInstanceComponentDriver<>(meta);
+        return new PackedBindableComponentDriver<>(meta);
     }
 
     static class Meta {
@@ -193,10 +196,10 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
     }
 
-    private static class PackedInstanceComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
+    private static class PackedBindableComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
         final Meta meta;
 
-        private PackedInstanceComponentDriver(Meta meta) {
+        private PackedBindableComponentDriver(Meta meta) {
             this.meta = meta;
         }
 

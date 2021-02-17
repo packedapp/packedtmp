@@ -18,19 +18,18 @@ package app.packed.component;
 /**
  *
  */
-// Eller hvis vi skal koere noget debugging er det maaske meget godt...
-// Men den kan ikke tage en klasse taenker jeg...
-// Den target en rigtig instance...  saa maaske WireletInfo
+public class Wirelet2 {
 
-// Det jeg mener er at det maaske ikke er en rigtig descriptor...
-// Altsaa hvis vi skal tage realmen med ind (F.eks. den assembly de er blevet linket i)
-
-
-
-
-// Descriptor -> Class
-// Info -> Instance
-interface WireletDescriptor {
-
-    // .debugWirelet(BiConsumer<Component, WireletDescriptor> c);
+    protected static final void $needsRealm() {
+        // f.x provide(Doo.class);
+        // Hvad hvis vi koere composer.lookup()...
+        // Saa laver vi jo saadan set en realm...
+    }
+    
+    
+    /** Internal use only. */
+    protected final void $targetImage() {
+        // Only on images
+        // Altsaa kan end-useren overhoved bruge den??
+    }
 }

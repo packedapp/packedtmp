@@ -534,7 +534,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         }
         name = n;
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
@@ -721,4 +721,5 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
             }
         }
     }
+
 }

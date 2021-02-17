@@ -13,24 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.container;
+
+import app.packed.state.StateWirelets;
 
 /**
  *
  */
-// Eller hvis vi skal koere noget debugging er det maaske meget godt...
-// Men den kan ikke tage en klasse taenker jeg...
-// Den target en rigtig instance...  saa maaske WireletInfo
+public class Dddd extends BaseAssembly {
 
-// Det jeg mener er at det maaske ikke er en rigtig descriptor...
-// Altsaa hvis vi skal tage realmen med ind (F.eks. den assembly de er blevet linket i)
+    Dddd() {
+        super(ContainerConfiguration.driver().with(StateWirelets.enterToStop()));
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {}
 
-
-
-
-// Descriptor -> Class
-// Info -> Instance
-interface WireletDescriptor {
-
-    // .debugWirelet(BiConsumer<Component, WireletDescriptor> c);
 }

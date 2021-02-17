@@ -450,8 +450,16 @@ class ZExtraFunc {
     }
 
     <T> ExportedServiceConfiguration<T> assistedInject(Class<T> interfase) {
+        // Only support interface to start with
+        // Will never try and implement default methods
+        
         // or abstract class can have state which can be merge in some way?
         // well def not ver 1.
+        
+        
+        // GeneratingComponentConfiguration
+        
+        // userWire
 
         throw new UnsupportedOperationException();
     }

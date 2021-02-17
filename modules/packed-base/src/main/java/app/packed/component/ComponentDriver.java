@@ -28,13 +28,15 @@ import app.packed.container.BaseAssembly;
  * install a
  * 
  * @param <C>
- *            the type of configuration this driver exposes
- * 
- * @apiNote In the future, if the Java language permits, {@link ComponentDriver} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
+ *            the type of component configuration this driver create
  */
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
 
+    /**
+     * Returns a descriptor for this driver.
+     * 
+     * @return a descriptor for this driver
+     */
     ComponentDriverDescriptor descriptor();
 
     /**

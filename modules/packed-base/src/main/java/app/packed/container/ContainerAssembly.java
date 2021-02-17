@@ -39,11 +39,15 @@ import app.packed.inject.ServiceComponentConfiguration;
  */
 public abstract class ContainerAssembly extends Assembly<ContainerConfiguration> {
 
-    /** Creates a new bundle. */
+    /** Creates a new container assembly using {@link ContainerConfiguration#driver()}. */
     protected ContainerAssembly() {
         super(ContainerConfiguration.driver());
     }
 
+    protected ContainerAssembly(ComponentDriver<ContainerConfiguration> driver) {
+        super(driver);
+    }
+    
     /**
      * Checks that the {@link #build()} method has not already been invoked. This is typically used to make sure that users
      * of extensions does not try to configure the extension after it has been configured.

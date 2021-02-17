@@ -91,8 +91,7 @@ public interface ArtifactDriver<A> {
      * Builds a new image using the specified assembly and optional wirelets.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link App#buildImage(Assembly, Wirelet...)}, {@link Main#buildImage(Assembly, Wirelet...)} and
-     * {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
+     * {@link App#buildImage(Assembly, Wirelet...)} and {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the assembly that should be used to build the image
@@ -102,7 +101,6 @@ public interface ArtifactDriver<A> {
      * @throws BuildException
      *             if the image could not build
      * @see App#buildImage(Assembly, Wirelet...)
-     * @see Main#buildImage(Assembly, Wirelet...)
      * @see ServiceLocator#buildImage(Assembly, Wirelet...)
      */
     // newImage()?
