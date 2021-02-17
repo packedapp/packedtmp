@@ -167,8 +167,6 @@ public final class WireletPack {
     }
 
     public static class Ent {
-
-        @Nullable
         public final Class<? extends Extension> extensionType;
 
         public boolean isReceived;

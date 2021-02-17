@@ -24,7 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import app.packed.container.Extension;
-import app.packed.container.MemberOfExtension;
+import app.packed.container.ExtensionNest;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
@@ -55,7 +55,7 @@ public @interface ExtendWith {
 }
 
 // Meta Annotations should normally be declared Inheritable
-@MemberOfExtension(Extension.class) // <--- what if one bundle...
+@ExtensionNest(Extension.class) // <--- what if one bundle...
 // Maybe we allow extension less these annotations
 @ExtendWith(annotation = Provide.class, field = @FieldHook(allowGet = true, bootstrap = FieldHook.Bootstrap.class), method = @MethodHook(allowInvoke = true, bootstrap = RealMethodSidecarBootstrap.class))
 @ExtendWith(annotation = Deprecated.class, method = @MethodHook(allowInvoke = true, bootstrap = RealMethodSidecarBootstrap.class))

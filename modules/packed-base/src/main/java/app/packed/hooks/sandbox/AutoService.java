@@ -32,6 +32,10 @@ import java.lang.annotation.Target;
 
 // VariableInjectable?
 // AutoService
+
+
+// Taenker ikke man kan registere AutoServices...
+// Det er maaske det der interessant..
 public @interface AutoService {
 
     // boolean includeSubclasses(); <-- only works on abstract classes???

@@ -40,7 +40,7 @@ import app.packed.component.ComponentDefinitionException;
 import app.packed.component.Composer;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.container.MemberOfExtension;
+import app.packed.container.ExtensionNest;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
@@ -213,7 +213,7 @@ public @interface MethodHook {
          * @return an instance of the specified class hook bootstrap
          * @throws IllegalArgumentException
          *             if both this bootstrap class and the specified bootstrap class is annotated with
-         *             {@link MemberOfExtension} and their two extension types are not identical
+         *             {@link ExtensionNest} and their two extension types are not identical
          */
         public final <T extends ClassHook.Bootstrap> T manageByClassHook(Class<T> classBootstrap) {
             requireNonNull(classBootstrap, "classBootstrap is null");
@@ -388,7 +388,7 @@ class SandboxBootstrap {
      * extension.
      * 
      * @return any extension the source is a member of of
-     * @see MemberOfExtension
+     * @see ExtensionNest
      */
     // Hmm, det er mest taenkt hvis vi skule passe den til nogle andre ikke?
     // Og de saa skal have mulighed for at validere hvilken en extension

@@ -31,8 +31,7 @@ import app.packed.inject.Provide;
  * And allows extensions to connect across container boundaries both at build-time and at runtime.
  * 
  * <p>
- * This annotation can be used on subclasses of {@link Extension} or any singleton services that is annotated with
- * {@link MemberOfExtension}. In which case the extension can be injected
+ * This annotation can be used on subclasses of {@link Extension}. In which case the extension can be injected
  */
 @Target(ElementType.METHOD)
 // TODO add Field + Parameter
@@ -51,6 +50,11 @@ import app.packed.inject.Provide;
 
 // Giver det mening at have en for components???? Maaske bare en alm listener???
 //
+
+
+// Extension @OnBuild
+/// Kan tage child extensions...
+/// Wirelets
 
 // ExtensionLinker???
 

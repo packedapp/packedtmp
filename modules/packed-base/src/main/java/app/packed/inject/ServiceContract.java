@@ -28,7 +28,6 @@ import app.packed.base.Key;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.drivers.ArtifactDriver;
-import app.packed.container.MemberOfExtension;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentBuild;
@@ -73,7 +72,6 @@ import packed.internal.inject.service.ServiceManager;
 // This class is typically used at container level.
 
 // provides -> exports??? Nej.. taenker vi tager termerne fra Module systems
-@MemberOfExtension(ServiceExtension.class)
 public final class ServiceContract extends Contract {
 
     /** A contract with no requirements and no services provided. */

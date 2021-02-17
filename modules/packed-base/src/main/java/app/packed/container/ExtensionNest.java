@@ -39,7 +39,7 @@ import app.packed.component.Wirelet;
 // @GroupWithExtension()
 // ExtensionCompound
 // MemberOfExtension(Injection
-public @interface MemberOfExtension {
+public @interface ExtensionNest {
 
     /**
      * Returns the extension to nest with.

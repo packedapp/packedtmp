@@ -54,10 +54,10 @@ public /* primitive */ final class MainImage {
      * program's main method:
      * 
      * <pre> {@code
-     * private final static Image<Void> IMG = Main.imageOf(new SomeAssembly());
+     * private final static Image<Void> MAIN = Main.imageOf(new SomeAssembly());
      *
      * public static void main(String[] args) {
-     *   IMG.use(args, any additional wirelets...);
+     *   MAIN.use(args, any additional wirelets...);
      * }}</pre>
      * <p>
      * Invoking this method is identical to invoking
@@ -69,6 +69,7 @@ public /* primitive */ final class MainImage {
      *            optional wirelets
      * @return the result of using the image
      */
+    // Move example to class javadoc
     public Completion use(String[] args, Wirelet... wirelets) {
         return image.use(Wirelet.combine(MainArgs.of(args), wirelets));
     }
