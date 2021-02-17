@@ -39,7 +39,6 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
-import app.packed.container.ExtensionNest;
 import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.classscan.MethodHandleBuilder;
@@ -67,10 +66,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
                         "The specified type '" + StringFormatter.format(type) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
             }
 
-            if (type.isAnnotationPresent(ExtensionNest.class)) {
-                throw new IllegalArgumentException("An extension is trivially member of itself, so cannot use @" + ExtensionNest.class.getSimpleName()
-                        + " annotation, for  '" + StringFormatter.format(type));
-            }
             return Loader.load((Class<? extends Extension>) type, null);
         }
     };
@@ -234,28 +229,23 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Returns any value of {@link ExtensionNest} annotation.
+     * Returns any value of nest annotation.
      * 
-     * @param type
+     * @param eType
      *            the type look for an ExtensionMember annotation on
      * @return an extension the specified type is a member of
      * @throws InternalExtensionException
      *             if an annotation is present and the specified is not in the same module as the extension specified in
-     *             {@link ExtensionNest#value()}
+     *             next
      */
     @Nullable
-    public static Class<? extends Extension> getExtensionMemberOf(Class<?> type) {
-        ExtensionNest ue = type.getAnnotation(ExtensionNest.class);
-        if (ue != null) {
-            Class<? extends Extension> eType = ue.value();
-            if (type.getModule() != eType.getModule()) {
-                throw new InternalExtensionException("The extension " + eType + " and type " + type + " must be defined in the same module, was "
-                        + eType.getModule() + " and " + type.getModule());
-            }
-            of(eType); // Make sure a valid model for the extension has been created
-            return eType;
+    public Class<? extends Extension> checkSameModule(Class<? extends Extension> eType) {
+        if (type.getModule() != eType.getModule()) {
+            throw new InternalExtensionException("The extension " + eType + " and type " + type + " must be defined in the same module, was "
+                    + eType.getModule() + " and " + type.getModule());
         }
-        return null;
+        of(eType); // Make sure a valid model for the extension has been created
+        return eType;
     }
 
     /**

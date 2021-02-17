@@ -24,7 +24,6 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.component.InheritableWirelet;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponentDriver;
@@ -51,10 +50,9 @@ public final class WireletPack {
      */
     private void create0(Wirelet w) {
         WireletModel m = WireletModel.of(w.getClass());
-        Class<? extends Extension> extensionType = m.extension;
 
         if (w instanceof InheritableWirelet) {
-            inherited.add(new Ent(w, extensionType));
+            inherited.add(new Ent(w));
         }
 
         if (w instanceof BaseWirelet) {
@@ -64,9 +62,9 @@ public final class WireletPack {
                 create0(ww);
             }
         } else {
-            list.add(new Ent(w, extensionType));
+            list.add(new Ent(w));
             if (m.stackBy == null) {
-                wirelets.put(w.getClass(), new Ent(w, extensionType));
+                wirelets.put(w.getClass(), new Ent(w));
             } else {
 
             }
@@ -167,15 +165,12 @@ public final class WireletPack {
     }
 
     public static class Ent {
-        public final Class<? extends Extension> extensionType;
-
         public boolean isReceived;
 
         public final Wirelet wirelet;
 
-        Ent(Wirelet wirelet, @Nullable Class<? extends Extension> extensionType) {
+        Ent(Wirelet wirelet) {
             this.wirelet = requireNonNull(wirelet);
-            this.extensionType = extensionType;
         }
     }
 }

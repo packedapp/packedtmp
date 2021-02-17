@@ -40,7 +40,6 @@ import app.packed.component.ComponentDefinitionException;
 import app.packed.component.Composer;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionNest;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
@@ -213,7 +212,7 @@ public @interface MethodHook {
          * @return an instance of the specified class hook bootstrap
          * @throws IllegalArgumentException
          *             if both this bootstrap class and the specified bootstrap class is annotated with
-         *             {@link ExtensionNest} and their two extension types are not identical
+         *             nest and their two extension types are not identical
          */
         public final <T extends ClassHook.Bootstrap> T manageByClassHook(Class<T> classBootstrap) {
             requireNonNull(classBootstrap, "classBootstrap is null");
@@ -382,21 +381,6 @@ class RBadIdeas {
 // provide, but someone else invokes
 class SandboxBootstrap {
 
-
-    /**
-     * Returns any extension this bootstrap class belongs to. Or empty if this bootstrap class does not belong to any
-     * extension.
-     * 
-     * @return any extension the source is a member of of
-     * @see ExtensionNest
-     */
-    // Hmm, det er mest taenkt hvis vi skule passe den til nogle andre ikke?
-    // Og de saa skal have mulighed for at validere hvilken en extension
-    // det passer til
-    public final Optional<Class<? extends Extension>> extension() {
-        throw new UnsupportedOperationException();
-        //return builder().extensionMember();
-    }
 
     
     /**

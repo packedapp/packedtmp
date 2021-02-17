@@ -28,9 +28,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
-import packed.internal.bundle.ExtensionModel;
 import packed.internal.classscan.OpenClass;
 import packed.internal.component.ComponentBuild;
 import packed.internal.hooks.ClassHookBootstrapModel;
@@ -132,9 +130,6 @@ public final class SourceModel {
 
         final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
 
-        /** */
-        @Nullable
-        final Class<? extends Extension> extensionType;
 
 
         public Class<?> type() {
@@ -151,7 +146,6 @@ public final class SourceModel {
         private Builder(RealmModel realm, OpenClass cp) {
             this.realm = requireNonNull(realm);
             this.cp = requireNonNull(cp);
-            this.extensionType = ExtensionModel.getExtensionMemberOf(cp.type());
         }
 
         ClassHookModel.Builder manageMemberBy(MemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {

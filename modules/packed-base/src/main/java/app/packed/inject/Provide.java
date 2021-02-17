@@ -23,7 +23,6 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
-import app.packed.container.ExtensionNest;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
@@ -76,7 +75,6 @@ import app.packed.hooks.RealMethodSidecarBootstrap;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ExtensionNest(ServiceExtension.class)
 @FieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 @MethodHook(matchesAnnotation = Provide.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Provide {

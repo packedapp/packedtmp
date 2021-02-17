@@ -17,8 +17,6 @@ package packed.internal.component.wirelet;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
-import packed.internal.bundle.ExtensionModel;
 
 public final class WireletModel {
 
@@ -33,10 +31,6 @@ public final class WireletModel {
         }
     };
 
-    /** Any extension this wirelet is a member of. */
-    @Nullable
-    final Class<? extends Extension> extension;
-
     @Nullable
     final Class<? extends Wirelet> stackBy;
 
@@ -49,7 +43,6 @@ public final class WireletModel {
      *            the wirelet type
      */
     private WireletModel(Class<? extends Wirelet> type) {
-        this.extension = ExtensionModel.getExtensionMemberOf(type);
         WireletPreModel m = WireletPreModel.consume(type);
         this.stackBy = m.stackBy;
         this.buildtimeOnly = m.buildtimeOnly;

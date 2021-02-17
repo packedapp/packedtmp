@@ -22,12 +22,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.reflect.Method;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentBuild;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
@@ -155,10 +153,6 @@ public final class MethodHookModel extends MemberHookModel {
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
-        }
-
-        public Optional<Class<? extends Extension>> extensionMember() {
-            return Optional.ofNullable(shared.source.extensionType);
         }
 
         public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
