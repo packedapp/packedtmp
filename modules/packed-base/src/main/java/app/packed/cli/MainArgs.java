@@ -18,7 +18,7 @@ package app.packed.cli;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Wirelet;
-import app.packed.hooks.sandbox.AutoService;
+import app.packed.hooks.AutoService;
 
 /**
  *

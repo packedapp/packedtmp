@@ -17,6 +17,7 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.container.Extension;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.wirelet.BaseWirelet;
@@ -135,6 +136,11 @@ public abstract class Wirelet {
         WireletPreModel.buildtimeOnly(STACK_WALKER.getCallerClass());
     }
 
+    protected static final void $requireExtension(Class<? extends Extension> extensionType) {
+        // Will fail at runtime and at buildtime if extension is not installed...
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Combines an array or wirelets
      * 

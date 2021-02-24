@@ -44,10 +44,16 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
         super(ContainerConfiguration.driver());
     }
 
+    /**
+     * Creates a new container assembly using the specified driver.
+     * 
+     * @param driver
+     *            the container driver to use
+     */
     protected ContainerAssembly(ComponentDriver<ContainerConfiguration> driver) {
         super(driver);
     }
-    
+
     /**
      * Checks that the {@link #build()} method has not already been invoked. This is typically used to make sure that users
      * of extensions does not try to configure the extension after it has been configured.

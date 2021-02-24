@@ -48,12 +48,12 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.ProvidableAttributeModel;
 import packed.internal.base.attribute.ProvidableAttributeModel.Attt;
-import packed.internal.bundle.BundleBuild;
-import packed.internal.bundle.ExtensionBuild;
-import packed.internal.bundle.ExtensionModel;
 import packed.internal.component.source.RealmBuild;
-import packed.internal.component.source.SourceBuild;
+import packed.internal.component.source.ClassSourceConfiguration;
 import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
+import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.ExtensionModel;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
@@ -80,19 +80,19 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
     /** A cube build if this component is an cube, otherwise null. */
     @Nullable
-    public final BundleBuild cube;
+    public final PackedContainerConfiguration cube;
 
     /** Any cube this component is part of. A cube is part of it self. */
     @Nullable
-    public final BundleBuild memberOfCube;
+    public final PackedContainerConfiguration memberOfCube;
 
     /** An extension build if this component is an extension, otherwise null. */
     @Nullable
-    public final ExtensionBuild extension;
+    public final PackedExtensionConfiguration extension;
 
     /** A source build if this component has a source, otherwise null. */
     @Nullable
-    public final SourceBuild source;
+    public final ClassSourceConfiguration source;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -144,7 +144,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
         // Setup Container
         if (modifiers().isBundle()) {
-            this.memberOfCube = this.cube = new BundleBuild(this);
+            this.memberOfCube = this.cube = new PackedContainerConfiguration(this);
         } else {
             this.cube = null;
             this.memberOfCube = parent == null ? null : parent.memberOfCube;
@@ -157,7 +157,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
         // Setup Source
         if (modifiers().isSource()) {
-            this.source = SourceBuild.create(this, driver);
+            this.source = ClassSourceConfiguration.create(this, driver);
         } else {
             this.source = null;
         }
@@ -179,7 +179,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
         this.build = parent.build;
         this.cube = null;
         this.memberOfCube = parent.cube;
-        this.extension = new ExtensionBuild(this, model);
+        this.extension = new PackedExtensionConfiguration(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmBuild(model.type());
         this.region = parent.region;
@@ -337,7 +337,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
      * @return the container this component is a part of
      */
     @Nullable
-    public BundleBuild getMemberOfBundle() {
+    public PackedContainerConfiguration getMemberOfBundle() {
         return memberOfCube;
     }
 
@@ -466,7 +466,7 @@ public final class ComponentBuild extends OpenTreeNode<ComponentBuild> implement
 
         if (n == null) {
             if (source != null) {
-                n = source.model.defaultPrefix();
+                n = source.model.simpleName();
             } else if (cube != null) {
                 // I think try and move some of this to ComponentNameWirelet
                 @Nullable

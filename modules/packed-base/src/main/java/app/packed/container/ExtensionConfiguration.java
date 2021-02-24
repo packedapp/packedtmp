@@ -34,8 +34,8 @@ import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.bundle.ExtensionBuild;
 import packed.internal.component.ComponentBuild;
+import packed.internal.container.PackedExtensionConfiguration;
 
 /**
  * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into
@@ -49,11 +49,12 @@ import packed.internal.component.ComponentBuild;
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 // Does not extend CC as install/installinstance used parent as target
+// Det er jo ikke rigtig tilfaeldet mere... efter vi har lavet om...
 public interface ExtensionConfiguration {
 
     // ComponentAttributes
 
-    // Thinking about removing this
+    // Thinking about removing this 
     // Altsaa det den er god for er at tilfoeje callbacks...
     // Men det behoever vi jo ikke have et interface for..
     BuildInfo build();
@@ -159,8 +160,6 @@ public interface ExtensionConfiguration {
      */
     NamespacePath path();
 
-    <E extends Subtension> E use(Class<E> extensionType);
-
     /**
      * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
      * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
@@ -180,7 +179,7 @@ public interface ExtensionConfiguration {
      * 
      * @see ContainerConfiguration#use(Class)
      */
-    <E extends Extension> E useOld(Class<E> extensionType);
+    <E extends Subtension> E use(Class<E> extensionType);
 
     /**
      * Wires a new child component using the specified driver
@@ -199,8 +198,9 @@ public interface ExtensionConfiguration {
     // registrere bruger objekter...
     <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
 
+    @SuppressWarnings("deprecation")
     @Nullable
-    private static ExtensionBuild getExtensionBuild(MethodHandles.Lookup lookup, Component component) {
+    private static PackedExtensionConfiguration getExtensionBuild(MethodHandles.Lookup lookup, Component component) {
         requireNonNull(lookup, "component is null");
 
         // lookup.lookupClass() must point to the extension that should be extracted
@@ -271,7 +271,7 @@ public interface ExtensionConfiguration {
             throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
         }
 
-        ExtensionBuild eb = getExtensionBuild(lookup, component);
+        PackedExtensionConfiguration eb = getExtensionBuild(lookup, component);
         return eb == null ? Optional.empty() : Optional.of((T) eb.extension());
     }
 }

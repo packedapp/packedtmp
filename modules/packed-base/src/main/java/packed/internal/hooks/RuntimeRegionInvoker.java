@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Nullable;
 import app.packed.hooks.MethodAccessor;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.util.LookupUtil;
@@ -56,13 +55,6 @@ public final class RuntimeRegionInvoker<T> implements MethodAccessor<T> {
     /** {@inheritDoc} */
     @Override
     public T invoke() throws Throwable {
-        return (T) mh.invoke(region);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public T invokeNullable() throws Throwable {
         return (T) mh.invoke(region);
     }
 }

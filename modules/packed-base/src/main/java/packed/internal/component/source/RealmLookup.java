@@ -35,15 +35,15 @@ public abstract class RealmLookup {
             MethodHandle.class, Lookup.class);
 
     /** A cache of component class descriptors. */
-    private final ClassValue<SourceModel> components = new ClassValue<>() {
+    private final ClassValue<ClassSourceModel> components = new ClassValue<>() {
 
         @Override
-        protected SourceModel computeValue(Class<?> type) {
-            return SourceModel.newInstance(realm(), RealmLookup.this.newClassProcessor(type, true));
+        protected ClassSourceModel computeValue(Class<?> type) {
+            return ClassSourceModel.newModel(realm(), RealmLookup.this.newClassProcessor(type, true));
         }
     };
 
-    final SourceModel modelOf(Class<?> componentType) {
+    final ClassSourceModel modelOf(Class<?> componentType) {
         return components.get(componentType);
     }
 

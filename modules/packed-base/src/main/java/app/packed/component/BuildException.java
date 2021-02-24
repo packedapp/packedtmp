@@ -35,8 +35,8 @@ public class BuildException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BuildException(String message) {
-        super(message);
+    public BuildException(CharSequence message) {
+        super(message.toString());
     }
 
     /**
@@ -49,8 +49,8 @@ public class BuildException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BuildException(String message, Throwable cause) {
-        super(message, cause);
+    public BuildException(CharSequence message, Throwable cause) {
+        super(message.toString(), cause);
     }
 }
 //Or in lifecycle???? or base??? Hmmmmmm

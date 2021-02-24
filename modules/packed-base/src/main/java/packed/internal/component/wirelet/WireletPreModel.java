@@ -17,12 +17,13 @@ package packed.internal.component.wirelet;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import packed.internal.util.ClassUtil;
+import app.packed.container.InternalExtensionException;
 
 /**
  *
@@ -68,7 +69,11 @@ public final class WireletPreModel {
 
     @Nullable
     static WireletPreModel consume(Class<? extends Wirelet> extensionType) {
-        ClassUtil.initializeClass(extensionType);
+        try {
+            MethodHandles.lookup().ensureInitialized(extensionType);
+        } catch (IllegalAccessException e) {
+            throw new InternalExtensionException("Oops");
+        }
         WireletPreModel existing = m(extensionType);
         HOLDERS.get(extensionType).set(null);
         return existing;

@@ -16,6 +16,7 @@
 package app.packed.component;
 
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerConfiguration;
 
 /**
  * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
@@ -51,4 +52,12 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     ComponentDriver<C> with(Wirelet wirelet);
 
     ComponentDriver<C> with(Wirelet... wirelet);
+    
+    public static ComponentDriver<ContainerConfiguration> container() {
+        return ContainerConfiguration.driver();
+    }
+    
+    public static ComponentDriver<BaseComponentConfiguration> stateless(Class<?> implementation) {
+        return BaseComponentConfiguration.driverStateless(implementation);
+    }
 }

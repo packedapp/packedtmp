@@ -21,8 +21,8 @@ import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
-import packed.internal.bundle.BundleBuild;
 import packed.internal.component.BuildtimeRegion;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
@@ -55,14 +55,14 @@ final class ServiceComposerTree {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    void finish(BuildtimeRegion region, BundleBuild container) {
+    void finish(BuildtimeRegion region, PackedContainerConfiguration container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private DependencyCycle dependencyCyclesFind(BuildtimeRegion region, BundleBuild container) {
+    private DependencyCycle dependencyCyclesFind(BuildtimeRegion region, PackedContainerConfiguration container) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
@@ -70,7 +70,7 @@ final class ServiceComposerTree {
     }
 
     private DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, BuildtimeRegion region,
-            BundleBuild container) {
+            PackedContainerConfiguration container) {
         for (Dependant node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
@@ -81,7 +81,7 @@ final class ServiceComposerTree {
         }
 
         if (container.children != null) {
-            for (BundleBuild c : container.children) {
+            for (PackedContainerConfiguration c : container.children) {
                 dependencyCyclesFind(stack, dependencies, region, c);
             }
         }

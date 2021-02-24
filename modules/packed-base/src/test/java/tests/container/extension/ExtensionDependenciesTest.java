@@ -17,6 +17,7 @@ package tests.container.extension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
@@ -25,6 +26,7 @@ import testutil.util.AbstractArtifactTest;
 /**
  *
  */
+@Disabled
 public class ExtensionDependenciesTest extends AbstractArtifactTest {
 
     /** Test that we can depend on an uninstalled extension via. */
@@ -37,29 +39,38 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
     }
 
     static final class Ex1 extends Extension {
-        @Override
-        protected void extensionAdded() {
-            useOld(Ex2.class);
-        }
-
         static {
             $addDependency(Ex2.class);
         }
 
+        @Override
+        protected void extensionAdded() {
+            use(Ex2.Sub.class);
+        }
+
+
     }
 
     static final class Ex2 extends Extension {
-        @Override
-        protected void extensionAdded() {
-            useOld(Ex3.class);
-        }
-
         static {
             $addDependency(Ex3.class);
         }
+
+        @Override
+        protected void extensionAdded() {
+            use(Ex3.Sub.class);
+        }
+
+        class Sub extends Subtension {
+
+        }
+
     }
 
     static final class Ex3 extends Extension {
 
+        class Sub extends Subtension {
+
+        }
     }
 }

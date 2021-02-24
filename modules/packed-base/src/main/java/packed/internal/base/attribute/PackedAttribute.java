@@ -78,6 +78,7 @@ public class PackedAttribute<T> implements Attribute<T> {
         return owner.getSimpleName() + ":" + name;
     }
 
+    @SuppressWarnings("deprecation")
     public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeToken<T> type, Option<?>[] options) {
         requireNonNull(lookup, "lookup is null");
         requireNonNull(name, "name is null");

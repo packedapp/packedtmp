@@ -19,6 +19,8 @@ package app.packed.component;
  * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link Image} will result in
  * an {@link WireletException} being thrown.
  */
+
+// Maaske hedder det BuildWireret... og saa definere den disse metoder...
 public final class BuildWirelets {
     // Features
     // Debuggin
@@ -60,6 +62,7 @@ public final class BuildWirelets {
      * 
      * @return the wirelet
      */
+    // Maaske til DevWirelets
     public static InheritableWirelet printDebug() {
         throw new UnsupportedOperationException();
     }

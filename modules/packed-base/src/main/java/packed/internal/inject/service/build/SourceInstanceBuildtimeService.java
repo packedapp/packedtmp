@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentBuild;
-import packed.internal.component.source.SourceBuild;
+import packed.internal.component.source.ClassSourceConfiguration;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
@@ -34,7 +34,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 public final class SourceInstanceBuildtimeService extends BuildtimeService {
 
     /** The singleton source we are wrapping */
-    private final SourceBuild source;
+    private final ClassSourceConfiguration source;
 
     /**
      * Creates a new node from an instance.

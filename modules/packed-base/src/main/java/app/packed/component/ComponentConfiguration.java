@@ -40,6 +40,13 @@ public abstract class ComponentConfiguration {
     protected ComponentConfiguration(ComponentConfigurationContext context) {
         this.context = requireNonNull(context, "context is null");
     }
+    
+    /**
+     * A callback method invoked by Packed immediatly before it is marked as no longer configurable
+     */
+    protected void onConfigured() {
+        // Ideen er lidt at man kan lave lidt validering eller andet Goejl
+    }
 }
 // I don't expect this class to have any $ methods
 // This should most likely be located in the driver instead

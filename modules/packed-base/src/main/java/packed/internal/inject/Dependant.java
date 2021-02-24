@@ -24,15 +24,15 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentDefinitionException;
+import app.packed.component.BuildException;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.component.source.SourceBuild;
-import packed.internal.component.source.SourceModel;
+import packed.internal.component.source.ClassSourceConfiguration;
+import packed.internal.component.source.ClassSourceModel;
 import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.Wrapper;
@@ -78,14 +78,14 @@ public class Dependant {
     public final DependencyProvider[] providers;
 
     /** The source (component) this dependent is or is a part of. */
-    public final SourceBuild source;
+    public final ClassSourceConfiguration source;
 
     @Nullable
     private final MemberHookModel sourceMember;
 
     public final int providerDelta;
 
-    public Dependant(SourceBuild source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public Dependant(ClassSourceConfiguration source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -97,13 +97,13 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentBuild compConf, SourceBuild source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentBuild compConf, ClassSourceConfiguration source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
-                throw new ComponentDefinitionException("Not okay)");
+                throw new BuildException("Not okay)");
             }
             ServiceManager sbm = compConf.memberOfCube.getServiceManagerOrCreate();
             BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
@@ -233,7 +233,7 @@ public class Dependant {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProvider e = null;
                 if (source != null) {
-                    SourceModel sm = source.model;
+                    ClassSourceModel sm = source.model;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }
@@ -251,3 +251,4 @@ public class Dependant {
         }
     }
 }
+

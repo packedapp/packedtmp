@@ -23,6 +23,25 @@ import java.lang.annotation.Target;
 /**
  *
  */
+
+// Alternativ hvad hvis man angiver noget via en Wirelet???
+// configFrom(ConfigSource source)
+// configFromFile("application.properties");
+// configFromClasspath("application.properties");
+// configFromClasspath();
+
+// Targets (Components... and their sources)
+
+// Extension yes
+
+// Assembly (Bliver koert for build())
+// Det er saa meningen at super klasser kan configure noget hvis de vil...
+// Inden controllen bliver sendt videre...
+//// Tror altid det er foer.. Vil man checke noget.. maa man tilfoejere noget
+//// validering....
+
+// hooks
+
 // Ville helst kalde den @OnBuild... Men vi gider ikke have den dukker op hver gang.
 // Folk laver code complete
 // Den er god fordi vi kan injecte andet end bare build context...

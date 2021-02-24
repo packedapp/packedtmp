@@ -49,7 +49,11 @@ public enum ComponentSystemType {
      * 
      */
     BUILD,
-
+    
+    /** A single component. */
+    COMPONENT,
+    
+    
     /**
      * A system where all components are part of the same image. An image may itself contain other images.
      */
@@ -60,9 +64,7 @@ public enum ComponentSystemType {
     
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
     REQUEST,
-    
-    /** A single component. */
-    COMPONENT;
+
 }
 
 // interessant at
@@ -91,7 +93,6 @@ class XComp2 {
     public static void main(XComp2 c) {
         c.rootOf(ComponentSystemType.IMAGE);
         c.isPartOfSame(ComponentSystemType.IMAGE, c);
-
         c.isPartOf(ComponentSystemType.IMAGE);
     }
 }

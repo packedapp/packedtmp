@@ -17,6 +17,17 @@ package app.packed.component;
 
 import app.packed.container.Extension;
 
+
+// Hmm tror maaske ikke den skal bruges alligevel...
+// Fx time extension. Vi kunne lave den inheritable...
+// Saaledes at en rod assembly ikke behoevede at have
+// TimeExtensionen installeret...
+// Men nej.. Syntes det andet er klarere...
+// Problemet med inheritable er ogsaa at det ikke umiddelbart er klart
+// hvordan vi haandtere consumation
+
+// IDK de er ret brugbare med
+
 /**
  * By default a wirelet is only processed by the single component it is applied to. However,
  */

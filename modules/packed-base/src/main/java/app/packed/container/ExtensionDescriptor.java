@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.container.Extension.Subtension;
-import packed.internal.bundle.ExtensionModel;
+import packed.internal.container.ExtensionModel;
 
 /**
  * An extension descriptor.
@@ -70,7 +70,7 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
     /**
      * Returns the full name of the extension. The full name is always the canonical name of the {@link #type() extension
-     * type} as returned by {@link Class#getSimpleName()}.
+     * type} as returned by {@link Class#getCanonicalName()}.
      * 
      * @return the full name of the extension
      * @see Class#getCanonicalName()
@@ -96,29 +96,11 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     String name();
 
     /**
-     * If the extension can be used from other extensions return the subtension type. Otherwise empty.
-     * 
-     * @return the subtension type if any
-     * 
-     * @see Subtension
-     */
-    Optional<Class<? extends Subtension>> subtensionType();
-
-    /**
      * Returns the type of extension this descriptor describes.
      * 
      * @return the type of extension this descriptor describes
      */
     Class<? extends Extension> type();
-
-//    /**
-//     * Returns a set of all the optional dependencies defined in {@link UsesExtensions#optionalDependencies()} that could
-//     * not be successfully resolved.
-//     * 
-//     * @return a set of all optional dependencies that could not be successfully resolved
-//     * @see UsesExtensions#optionalDependencies()
-//     */
-//    Set<String> unresolvedDependencies();
 
     /**
      * Returns a descriptor for the specified extension type.
@@ -133,15 +115,27 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         return ExtensionModel.of(extensionType);
     }
+}
 
-    default Optional<Version> version() {
+interface ExtensionDescriptor2 {
+
+//  /**
+//   * Returns a set of all the optional dependencies defined in {@link UsesExtensions#optionalDependencies()} that could
+//   * not be successfully resolved.
+//   * 
+//   * @return a set of all optional dependencies that could not be successfully resolved
+//   * @see UsesExtensions#optionalDependencies()
+//   */
+//  Set<String> unresolvedDependencies();
+
+    default Optional<Module> libraryModule() {
+        // Ideen er lidt som AppVersion fra Helm charts
+        // Syntes den er rigtig smart
+        // A library is typically something that is released separately from PAcked
+        // But where an extension acts as a kind of bridge
         return Optional.empty();
-        // Bliver noedt til at have en version klasse...
-        // Problemet er lidt om vi kan slippe uden om noget semantic omkring det...
-        // IDK
-        
-        //return module().getDescriptor().version();
     }
+
     default Optional<Version> libraryVersion() {
         // Ideen er lidt som AppVersion fra Helm charts
         // Syntes den er rigtig smart
@@ -149,8 +143,29 @@ public interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
         // But where an extension acts as a kind of bridge
         return Optional.empty();
     }
-}
 
+    /**
+     * If the extension can be used from other extensions return the subtension type. Otherwise empty.
+     * 
+     * @return the subtension type if any
+     * 
+     * @see Subtension
+     */
+    // Syntes det aerligtalt ikke...
+    // Den er let at finde.
+    // For end brugere er den kun forvirrende
+    Optional<Class<? extends Subtension>> subtensionType();
+
+    default Optional<Version> version() {
+        return Optional.empty();
+        // Bliver noedt til at have en version klasse...
+        // Problemet er lidt om vi kan slippe uden om noget semantic omkring det...
+        // IDK
+
+        // return module().getDescriptor().version();
+    }
+
+}
 /**
  * Returns all the different types of contracts the extension exposes.
  * 

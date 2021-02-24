@@ -81,6 +81,11 @@ public @interface ConnectExtensions {
     // onDirectConnect(C
 }
 
+@Target(ElementType.PARAMETER)
+@interface LinkExtension {
+    // Taenker vi dropper ConnectExtensions og koere @OnBuild...
+}
+
 class Sidecar extends RealMethodSidecarBootstrap {
 
     @Provide

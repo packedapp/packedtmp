@@ -32,8 +32,8 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
 import app.packed.state.OnStart;
 import app.packed.validate.Validator;
-import packed.internal.bundle.BundleBuild;
-import packed.internal.bundle.ExtensionBuild;
+import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
@@ -74,11 +74,11 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 // Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
-public final class ServiceExtension extends Extension {
+public class ServiceExtension extends Extension {
 
     /** The containers injection manager which controls all service functionality. */
     // we use this for provideProtoype for now But should go away at some point
-    private final BundleBuild bundle;
+    private final PackedContainerConfiguration bundle;
 
     /** The service build manager. */
     private final ServiceManager services;
@@ -90,7 +90,7 @@ public final class ServiceExtension extends Extension {
      *            the configuration of the extension
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.bundle = ((ExtensionBuild) extension).bundle();
+        this.bundle = ((PackedExtensionConfiguration) extension).bundle();
         this.services = bundle.newServiceManagerFromServiceExtension();
     }
 
@@ -277,7 +277,7 @@ public final class ServiceExtension extends Extension {
      * @return a service configuration for the service
      * @see InjectorComposer#provide(Class)
      */
-    public final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
         return configuration().wire(ServiceComponentConfiguration.provide(implementation)).provide();
     }
 
@@ -292,7 +292,7 @@ public final class ServiceExtension extends Extension {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
+    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
         return configuration().wire(ServiceComponentConfiguration.provide(factory)).provide();
     }
 
@@ -321,7 +321,7 @@ public final class ServiceExtension extends Extension {
     public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
         return bundle.compConf.wire(ServiceComponentConfiguration.providePrototype(implementation));
     }
-    
+
     public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
         return bundle.compConf.wire(ServiceComponentConfiguration.providePrototype(factory));
     }
@@ -452,13 +452,12 @@ class ZExtraFunc {
     <T> ExportedServiceConfiguration<T> assistedInject(Class<T> interfase) {
         // Only support interface to start with
         // Will never try and implement default methods
-        
+
         // or abstract class can have state which can be merge in some way?
         // well def not ver 1.
-        
-        
+
         // GeneratingComponentConfiguration
-        
+
         // userWire
 
         throw new UnsupportedOperationException();

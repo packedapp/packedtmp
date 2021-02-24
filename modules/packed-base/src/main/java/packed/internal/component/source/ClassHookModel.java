@@ -55,7 +55,7 @@ public final class ClassHookModel {
 
         final LinkedHashSet<MemberHookModel.Builder> managedMembers = new LinkedHashSet<>();
 
-        Builder(SourceModel.Builder source, ClassHookBootstrapModel model) {
+        Builder(ClassSourceModel.Builder source, ClassHookBootstrapModel model) {
             super(source);
             this.bootstrapModel = model;
             this.instance = (Bootstrap) bootstrapModel.newInstance();

@@ -27,6 +27,8 @@ import app.packed.state.StateWirelets;
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
  * written use Packed.
+ * 
+ * @see MainImage
  */
 // Return an int????
 public final class Main {
@@ -36,7 +38,7 @@ public final class Main {
     // Man kan sige det er en slags Profile+SystemInterface i et.
     // Men saa betyder det jo ogsaa at det er 2 forskellige drivere...
     // Eller ogsaa skal ImageWirelets lazy bruges
-    
+
     // Install as System Namespace
     private static final ArtifactDriver<Completion> DRIVER = ArtifactDriver.daemon().with(StateWirelets.shutdownHook());
 
@@ -44,14 +46,27 @@ public final class Main {
     private Main() {}
 
     // Vi skal vel have et dev-tools projekt, ved ikke lige om den skal vaere her
+    /**
+     * Validates the specified assembly.
+     * 
+     * Will build but not initialize or start
+     * 
+     * @param assembly
+     *            the assembly to validate
+     * @param wirelets
+     *            optional wirelets
+     * @throws AssertionError
+     * 
+     * @see ArtifactDriver#assertValid(Assembly, Wirelet...)
+     */
     public static void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
         driver().assertValid(assembly, wirelets);
     }
 
     /**
-     * Returns the artifact driver this class uses.
+     * Returns the artifact driver used by this class.
      * 
-     * @return the artifact driver this class uses
+     * @return the artifact driver used by this class
      */
     public static ArtifactDriver<Completion> driver() {
         return DRIVER;

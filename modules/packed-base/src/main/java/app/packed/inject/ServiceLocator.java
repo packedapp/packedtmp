@@ -28,7 +28,7 @@ import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
-import app.packed.hooks.sandbox.AutoService;
+import app.packed.hooks.AutoService;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 

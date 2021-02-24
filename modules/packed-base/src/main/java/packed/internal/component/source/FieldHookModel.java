@@ -51,20 +51,22 @@ import packed.internal.util.ThrowableUtil;
 
 public final class FieldHookModel extends MemberHookModel {
 
-    /** A MethodHandle that can invoke MethodSidecar#configure. */
-    private static final MethodHandle MH_FIELD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
+    /** A MethodHandle that can invoke {@link FieldHook.Bootstrap#bootstrap}. */
+    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
             "bootstrap", void.class);
 
-    /** A VarHandle that can access MethodSidecar#configuration. */
-    private static final VarHandle VH_FIELD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
+    /** A VarHandle that can access {@link FieldHook.Bootstrap#builder}. */
+    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
             "builder", FieldHookModel.Builder.class);
 
-    /** A direct method handle to the method. */
+    /** A direct method handle to the field. */
     public final VarHandle directMethodHandle;
 
-    public final Field field;
+    /** The field this model models. */
+    private final Field field;
 
-    public final FieldHookBootstrapModel model;
+    /** A model of the field hooks bootstrap. */
+    private final FieldHookBootstrapModel model;
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
@@ -76,25 +78,6 @@ public final class FieldHookModel extends MemberHookModel {
         // FieldDescriptor m = FieldDescriptor.from(method);
         // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
         this.directMethodHandle = requireNonNull(mh);
-    }
-
-    static void process(SourceModel.Builder source, Field field) {
-        VarHandle varHandle = null;
-        for (Annotation a : field.getAnnotations()) {
-            FieldHookBootstrapModel model = FieldHookBootstrapModel.getModelForAnnotatedMethod(a.annotationType());
-            if (model != null) {
-                // We can have more than 1 sidecar attached to a method
-                if (varHandle == null) {
-                    varHandle = source.cp.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                }
-                Builder builder = new Builder(source, model, field);
-                builder.configure();
-                if (builder.buildtimeModel != null) {
-                    FieldHookModel smm = new FieldHookModel(builder, field, model, varHandle);
-                    source.fields.add(smm);
-                }
-            }
-        }
     }
 
     @Override
@@ -127,6 +110,25 @@ public final class FieldHookModel extends MemberHookModel {
         return MethodHandleUtil.getFromField(field, directMethodHandle);
     }
 
+    static void process(ClassSourceModel.Builder source, Field field) {
+        VarHandle varHandle = null;
+        for (Annotation a : field.getAnnotations()) {
+            FieldHookBootstrapModel model = FieldHookBootstrapModel.getModelForAnnotatedMethod(a.annotationType());
+            if (model != null) {
+                // We can have more than 1 sidecar attached to a method
+                if (varHandle == null) {
+                    varHandle = source.oc.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                }
+                Builder builder = new Builder(source, model, field);
+                builder.configure();
+                if (builder.buildtimeModel != null) {
+                    FieldHookModel smm = new FieldHookModel(builder, field, model, varHandle);
+                    source.fields.add(smm);
+                }
+            }
+        }
+    }
+
     public static final class Builder extends MemberHookModel.Builder {
         final Field field;
 
@@ -139,22 +141,13 @@ public final class FieldHookModel extends MemberHookModel {
             this.managedBy = classBuilder;
         }
 
-        Builder(SourceModel.Builder source, FieldHookBootstrapModel model, Field field) {
+        Builder(ClassSourceModel.Builder source, FieldHookBootstrapModel model, Field field) {
             super(source, model);
             this.model = model;
             this.field = field;
         }
 
-        Object initialize() {
-            Object instance = model.newInstance();
-            VH_FIELD_SIDECAR_CONFIGURATION.set(instance, this);
-            try {
-                MH_FIELD_SIDECAR_CONFIGURE.invoke(instance); // Invokes sidecar#configure()
-                return instance;
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
-        }
+        public void checkWritable() {}
 
         private void configure() {
             // We perform a compare and exchange with configuration. Guarding against
@@ -162,18 +155,29 @@ public final class FieldHookModel extends MemberHookModel {
             // Don't think it makes sense to register
             Object instance = model.newInstance();
 
-            VH_FIELD_SIDECAR_CONFIGURATION.set(instance, this);
+            VH_FIELD_HOOK_BUILDER.set(instance, this);
             try {
-                MH_FIELD_SIDECAR_CONFIGURE.invoke(instance); // Invokes sidecar#configure()
+                MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes sidecar#configure()
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
-                VH_FIELD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
+                VH_FIELD_HOOK_BUILDER.set(instance, null); // clears the configuration
             }
         }
 
         public Field field() {
             return field;
+        }
+
+        Object initialize() {
+            Object instance = model.newInstance();
+            VH_FIELD_HOOK_BUILDER.set(instance, this);
+            try {
+                MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes sidecar#configure()
+                return instance;
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
 
         public void provideAsService(boolean isConstant) {
@@ -186,12 +190,14 @@ public final class FieldHookModel extends MemberHookModel {
         }
 
         public void set(Object argument) {}
+    }
 
-        public void checkWritable() {}
+    public enum RunAt {
+        INITIALIZATION;
     }
 
     /**
-     * This class mainly exists because {@link Method} is mutable. We want to avoid situations where a method activates two
+     * This class mainly exists because {@link Field} is mutable. We want to avoid situations where a method activates two
      * different sidecars. And both sidecars access the Method instance. And one of them may call
      * {@link Method#setAccessible(boolean)} which could then allow the other sidecar to unintentional have access to an
      * accessible method.
@@ -199,31 +205,27 @@ public final class FieldHookModel extends MemberHookModel {
     @SuppressWarnings("unused")
     private static class Shared {
 
-        private VarHandle varHandle;
+        /** The method we are processing. */
+        private final Field fieldUnsafe;
 
         /** Whether or not {@link #fieldUnsafe} has been exposed to users. */
         private boolean isFieldUsed;
 
-        /** The method we are processing. */
-        private final Field fieldUnsafe;
-
         /** The source. */
-        private final SourceModel.Builder source;
+        private final ClassSourceModel.Builder source;
 
-        private Shared(SourceModel.Builder source, Field field) {
+        private VarHandle varHandle;
+
+        private Shared(ClassSourceModel.Builder source, Field field) {
             this.source = requireNonNull(source);
             this.fieldUnsafe = requireNonNull(field);
         }
 
         VarHandle direct() {
             if (varHandle == null) {
-                varHandle = source.cp.unreflectVarHandle(fieldUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                varHandle = source.oc.unreflectVarHandle(fieldUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             }
             return varHandle;
         }
-    }
-
-    public enum RunAt {
-        INITIALIZATION;
     }
 }

@@ -21,14 +21,14 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.BuildtimeRegion;
-import packed.internal.component.source.SourceBuild;
+import packed.internal.component.source.ClassSourceConfiguration;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.service.build.BuildtimeService;
 
 /**
  * Something that
  * 
- * {@link SourceBuild} for methods or fields that needs an instance of the component source
+ * {@link ClassSourceConfiguration} for methods or fields that needs an instance of the component source
  * 
  * {@link ContextMethodProvide} for methods annotated with {@link Provide}
  * 

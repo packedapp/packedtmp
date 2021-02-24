@@ -62,3 +62,15 @@ final class DefaultApp implements App {
         return "App[state = " + host.state() + "] " + component.path();
     }
 }
+//
+///** The default implementation of {@link App}. */
+//record DefaultApp(Component component, ServiceLocator services, Host host) implements App {
+//
+//    /** An driver for creating PackedApp instances. */
+//    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), DefaultApp.class);
+//
+//    @Override
+//    public String toString() {
+//        return "App[state = " + host.state() + "] " + component.path();
+//    }
+//}

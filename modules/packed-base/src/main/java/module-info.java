@@ -9,6 +9,7 @@ module app.packed.base {
     exports app.packed.inject.sandbox;
     exports app.packed.hooks;
     exports app.packed.state;
+    exports app.packed.time;
     exports app.packed.validate;
     
     opens app.packed.cli to foo;

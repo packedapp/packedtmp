@@ -19,10 +19,8 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.attribute.AttributedElementStream;
@@ -140,17 +138,6 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //        return this;
 //    }
 
-    /**
-     * Returns a new list containing all of the components in this stream in the order they where encountered. Invoking this
-     * method is identical to invoking {@code stream.collect(Collectors.toList())}.
-     * <p>
-     * This is a <em>terminal operation</em>.
-     *
-     * @return a new list containing all of the components in this stream
-     */
-    default List<Component> toList() {
-        return collect(Collectors.toList());
-    }
 
     // Er det components med sidecars der provider mindst en feature instans???
     // Forstaaet paa den maade at vi bliver noedt til at kalde en metode paa sidecaren..

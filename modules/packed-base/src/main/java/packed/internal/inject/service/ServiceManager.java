@@ -29,13 +29,13 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.bundle.BundleBuild;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentBuild;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
+import packed.internal.container.PackedContainerConfiguration;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.SourceInstanceBuildtimeService;
@@ -54,7 +54,7 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 public final class ServiceManager {
 
     /** The bundle this service manager is a part of. */
-    private final BundleBuild container;
+    private final PackedContainerConfiguration container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceRequirementsManager dependencies;
@@ -86,7 +86,7 @@ public final class ServiceManager {
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceManager(BundleBuild container, @Nullable ServiceManager parent) {
+    public ServiceManager(PackedContainerConfiguration container, @Nullable ServiceManager parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
         this.tree = parent == null ? new ServiceComposerTree() : parent.tree;
@@ -234,7 +234,7 @@ public final class ServiceManager {
 
         // Process exports from any children
         if (container.children != null) {
-            for (BundleBuild c : container.children) {
+            for (PackedContainerConfiguration c : container.children) {
                 ServiceManager child = c.getServiceManager();
 
                 WireletPack wp = c.compConf.wirelets;
@@ -269,7 +269,7 @@ public final class ServiceManager {
 
         // Process child requirements to children
         if (container.children != null) {
-            for (BundleBuild c : container.children) {
+            for (PackedContainerConfiguration c : container.children) {
                 ServiceManager m = c.getServiceManager();
                 if (m != null) {
                     m.processIncomingPipelines(this);

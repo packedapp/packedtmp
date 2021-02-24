@@ -98,7 +98,7 @@ public abstract class MemberHookModel {
         @Nullable
         Key<?> provideAsKey;
 
-        Builder(SourceModel.Builder source, AbstractHookBootstrapModel<?> model) {
+        Builder(ClassSourceModel.Builder source, AbstractHookBootstrapModel<?> model) {
             super(source);
             this.buildtimeModel = model;
         }

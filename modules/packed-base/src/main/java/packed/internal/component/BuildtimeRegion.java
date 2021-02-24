@@ -18,7 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
-import packed.internal.component.source.SourceBuild;
+import packed.internal.component.source.ClassSourceConfiguration;
 import packed.internal.inject.Dependant;
 import packed.internal.util.ThrowableUtil;
 
@@ -30,8 +30,8 @@ import packed.internal.util.ThrowableUtil;
 // Idet de kan dependende paa hinanden
 public final class BuildtimeRegion {
 
-    /** Components that contains constants that should be stored in a region. Is only written by {@link SourceBuild}. */
-    public final ArrayList<SourceBuild> constants = new ArrayList<>();
+    /** Components that contains constants that should be stored in a region. Is only written by {@link ClassSourceConfiguration}. */
+    public final ArrayList<ClassSourceConfiguration> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
@@ -53,7 +53,7 @@ public final class BuildtimeRegion {
         }
 
         // We start by storing all constant instances in the region array
-        for (SourceBuild sa : constants) {
+        for (ClassSourceConfiguration sa : constants) {
             region.store(sa.regionIndex, sa.instance);
         }
 

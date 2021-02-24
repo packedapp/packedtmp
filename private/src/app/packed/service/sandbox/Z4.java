@@ -104,6 +104,10 @@ public class Z4 extends BaseAssembly {
         protected void extensionBeforeDescendents() {
             // System.out.println(ai + "E-PreChildContainers");
         }
+        
+        class Sub extends Subtension {
+            
+        }
     }
 
     public static class F extends Extension {
@@ -124,7 +128,7 @@ public class Z4 extends BaseAssembly {
         @Override
         protected void extensionBeforeDescendents() {
             System.out.println("F-PreChildContainers");
-            useOld(E.class);
+            use(E.Sub.class);
         }
     }
 }

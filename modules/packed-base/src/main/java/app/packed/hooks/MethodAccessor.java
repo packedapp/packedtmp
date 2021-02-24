@@ -15,8 +15,6 @@
  */
 package app.packed.hooks;
 
-import app.packed.base.Nullable;
-
 /**
  *
  * @param <R>
@@ -48,17 +46,6 @@ public interface MethodAccessor<R> {
      * 
      */
     R invoke() throws Throwable;
-
-    /**
-     * Invokes the underlying executable.
-     * 
-     * @return the result
-     * @throws Throwable
-     *             anything thrown by the underlying executable propagates unchanged through the method handle call
-     */
-    // Nej Saa folk have Invoker<@Nullable R>
-    // Giver ikke meningen at annotatere en parameterizere type???
-    // Det betyder ogsaa at Nullable skal fjernes fra Invoker1
-    @Nullable
-    R invokeNullable() throws Throwable;
 }
+// We do not have methods that takes null into consideration
+// You can do <@Nullable R>

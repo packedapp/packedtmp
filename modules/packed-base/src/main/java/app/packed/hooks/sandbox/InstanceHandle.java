@@ -20,9 +20,7 @@ import static java.util.Objects.requireNonNull;
 /**
  *
  */
-// Ideen er at den bliver en primitive class ligesom optional
-// 
-public final class InstanceHandle<T> {
+public /* primitive */ final class InstanceHandle<T> {
 
     /** The instance we wrap. */
     private final T instance;

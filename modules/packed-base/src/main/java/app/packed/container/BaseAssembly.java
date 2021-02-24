@@ -27,6 +27,8 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.state.OnStart;
+import app.packed.time.SchedulerExtension;
+import app.packed.time.TimeExtension;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
@@ -36,6 +38,11 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
  * <p>
+ * All extensions defined in this module
+ * 
+ * time() TimeExtension
+ * <p>
+ * 
  * 
  * With common functionality provide by app.packed.base
  * 
@@ -240,6 +247,18 @@ public abstract class BaseAssembly extends ContainerAssembly {
     }
 
     /**
+     * Returns a {@link SchedulerExtension} instance.
+     * <p>
+     * Calling this method is short for {@code use(SchedulerExtension.class)}
+     * 
+     * @return a time extension instance
+     * @see #use(Class)
+     */
+    protected final SchedulerExtension scheduler() {
+        return use(SchedulerExtension.class);
+    }
+   
+    /**
      * Returns a {@link ServiceExtension} instance.
      * <p>
      * Calling this method is short for {@code use(ServiceExtension.class)}
@@ -249,6 +268,18 @@ public abstract class BaseAssembly extends ContainerAssembly {
      */
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);
+    }
+    
+    /**
+     * Returns a {@link TimeExtension} instance.
+     * <p>
+     * Calling this method is short for {@code use(TimeExtension.class)}
+     * 
+     * @return a time extension instance
+     * @see #use(Class)
+     */
+    protected final TimeExtension time() {
+        return use(TimeExtension.class);
     }
 }
 

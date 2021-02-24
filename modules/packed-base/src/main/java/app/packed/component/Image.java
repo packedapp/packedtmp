@@ -35,14 +35,11 @@ package app.packed.component;
  * An image can be used to create new instances of {@link app.packed.component.App} or other artifact images. Artifact
  * images can not be used as a part of other containers, for example, via
  * 
- * @apiNote In the future, if the Java language permits, {@link Image} may become a {@code sealed} interface, which
- *          would prohibit subclassing except by explicitly permitted types.
- * 
  * @see App#buildImage(Assembly, Wirelet...)
  */
 // Maybe artifact image anyway?? ArtifactDriver er jo lidt mere flex nu...
 // Image<void>
-public interface Image<A> {
+public /* sealed */ interface Image<A> {
 
     /**
      * Returns the root component of the image.

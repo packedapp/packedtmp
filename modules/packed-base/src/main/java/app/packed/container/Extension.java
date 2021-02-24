@@ -17,7 +17,7 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
@@ -26,10 +26,12 @@ import app.packed.component.BuildInfo;
 import app.packed.component.Image;
 import app.packed.component.Realm;
 import app.packed.inject.Factory;
-import packed.internal.bundle.ExtensionPreModel;
+import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.ExtensionModel;
 
 /**
- * Extensions are the primary way to add features to Packed.
+ * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
+ * using the same extension mechanism available to any user.
  * 
  * For example, allows you to extend the basic functionality of containers.
  * <p>
@@ -39,36 +41,18 @@ import packed.internal.bundle.ExtensionPreModel;
  * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
+ * Step1 // package private constructor // open to app.packed.base // exported to other users to use
+ * 
+ * <p>
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
- * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. It is also recommended
- * that the extension itself is declared final.
+ * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. The extension
+ * subclass should not be declared final as Packed supports some debug configuration that relies on extending
+ * extensions.
  */
-
-// Step1
-// final Extension
-// package private constructor
-// open to app.packed.base
-// exported to other users to use
-
-// ErrorHandle, Logging
-
-// ErrorHandling / Notifications ???
-/// Taenker det ligger paa Extension'en fordi vi har jo ogsaa en InstantiationContext
-// hvor errors jo ogsaa kan ske..
-// hasErrors()...
-//// Maybe we want to log the actual extension as well.
-// so extension.log("fooo") instead
-/// Yes, why not use it to log errors...
-
-// Den eneste ting jeg kunne forstille mig at kunne vaere public.
-// Var en maade at se paa hvordan en extension blev aktiveret..
-// Men er det ikke bare noget logning istedet for metoder...
-// "InjectorExtension:" Activate
-//// Her er der noget vi gerne vil have viral.
 public abstract class Extension extends Realm {
 
     /** A stack walker used by various methods. */
@@ -76,9 +60,9 @@ public abstract class Extension extends Realm {
 
     /**
      * The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}.
-     *
-     * We do not null out this field once the extension has been configured. Because people should allowed to keep calling
-     * the various isX methods.
+     * 
+     * @apiNote This field is not nulled out after the extensions has been configured to allow for calling methods such as
+     *          {@link #checkConfigurable()} after configuration is done.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -99,56 +83,6 @@ public abstract class Extension extends Realm {
         return configuration().build();
     }
 
-//    /**
-//     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-//     * not located on any subclasses of {@link Extension} or any class that implements
-//     * <p>
-//     * Invoking this method typically takes in the order of 1-2 microseconds.
-//     * <p>
-//     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-//     * {@link ConfigSite#UNKNOWN}.
-//     * 
-//     * @param operation
-//     *            the operation
-//     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-//     * @see StackWalker
-//     */
-//    // TODO add stuff about we also ignore non-concrete container sources...
-//    protected final ConfigSite captureStackFrame(String operation) {
-//        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-//        // to the extension class in order to simplify the filtering mechanism.
-//
-//        // TODO!!!! I virkeligheden skal man vel bare fange den sidste brug i et bundle....
-//        // Kan ogsaa sammenligne med configure navnet...
-//
-//        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-//            return ConfigSite.UNKNOWN;
-//        }
-//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-//        return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-//    }
-
-//    /**
-//     * @param frame
-//     *            the frame to filter
-//     * @return whether or not to filter the frame
-//     */
-//    private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-//        Class<?> c = frame.getDeclaringClass();
-//        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-//        // Syntes bare vi filtrer app.packed.base modulet fra...
-//        // Kan vi ikke checke om imod vores container source.
-//
-//        // ((PackedExtensionContext) context()).container().source
-//        // Nah hvis man koere fra config er det jo fint....
-//        // Fra config() paa en bundle er det fint...
-//        // Fra alt andet ikke...
-//
-//        // Dvs ourContainerSource
-//        return Extension.class.isAssignableFrom(c)
-//                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
-//    }
-
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
@@ -166,34 +100,34 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Returns a configuration for this extension. This is useful, for example, if the extension delegates some
-     * responsibility to classes that are not define in the same package as the extension.
+     * Returns the underlying configuration object that this extension wraps. The configuration object returned by this
+     * method, can be used if the extension delegates some responsibility to classes that are not define in the same package
+     * as the extension itself.
      * <p>
-     * An instance of this class can also be dependency injected into any subclass. This is useful, for example, if you want
-     * to setup some external classes in the constructor that needs access to the configuration object.
+     * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
+     * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
+     * access to the configuration object.
      * <p>
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
      * 
      * @throws IllegalStateException
-     *             if invoked from the constructor of the extension
-     * @return a configuration object for the extension
+     *             if invoked from the constructor of the extension, as an alternative dependency inject the configuration
+     *             object into the constructor
+     * @return a configuration object for this extension
      */
-    // Hvad goer vi med alle metoderne naar extension er konfigureret?
-    // f.eks. isPartOf Image vil jo aldrig virke..
-    // Syntes maaske vi gemmer den
     protected final ExtensionConfiguration configuration() {
         ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
-                    + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#added()");
+                    + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#extensionAdded()");
         }
         return c;
     }
 
     /**
-     * A method that is invoked (by the runtime) immediately after the extension's constructor has returned. Since most
-     * methods on this class cannot be invoked from within the extension's constructor. This method can be used to perform
-     * post instantiation, before the extension instance is returned to the user.
+     * A method that is invoked (by the runtime) immediately after the extension's constructor has been successfully
+     * invoked. Since most methods on this class cannot be invoked from within the extension's constructor. This method can
+     * be used to perform post instantiation, before the extension instance is returned to the user.
      * <p>
      * The reason for prohibiting configuration from the constructor. Is to avoid situations.. that users might then link
      * other components that in turn requires access to the actual extension instance. Which is not possible since it is
@@ -226,12 +160,8 @@ public abstract class Extension extends Realm {
      */
     protected void extensionConfigured() {}
 
-    // TODO skal vi have andre metoder, hvis vi wrapper componenter fra brugeren???
-    // Vil mene det, her bliver vi jo ogsaa noedt til at checke man ikke bruger
-    // annoteringer fra andre extensions...
-    // Saa bliver noedt til at holde
     protected final BaseComponentConfiguration install(Class<?> implementation) {
-        return install(Factory.of(implementation));
+        return configuration().install(implementation);
     }
 
     protected final BaseComponentConfiguration install(Factory<?> factory) {
@@ -262,25 +192,12 @@ public abstract class Extension extends Realm {
         return configuration().isPartOfImage();
     }
 
-    protected final void lookup(Lookup lookup) {
-        // Den fungere ligesom Bundle.lookup()
-        // Her har vi selve extension'en som
+    protected final void lookup(MethodHandles.Lookup lookup) {
+        ((PackedExtensionConfiguration) configuration()).lookup(lookup);
     }
-
-    protected final <E extends Subtension> E use(Class<E> extensionType) {
-        return configuration().use(extensionType);
-    }
-
-    // Naah, taenker vi tillader at lave inline klasser her...
-    // Saa vi gider ikke have user..
-    // Problemet er den funcking constructor...
-    // Er rimlig sikker paa at inline klasser altid er statiske...
-
-    // HMMM, hvis vi faar public constructor ligesom records
-    // giver det jo ingen mening. IDK
 
     /**
-     * Returns an extension of the specified type.
+     * Used to lookup other extensions.
      * <p>
      * Only extension types that have been explicitly registered using {@link #$addDependency(Class)}may be specified as
      * arguments to this method.
@@ -299,45 +216,93 @@ public abstract class Extension extends Realm {
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified when bootstrapping the extension
-     * @see ExtensionConfiguration#useOld(Class)
      * @see #$addDependency(Class)
      */
-    // This will be removed in the future..
-    protected final <E extends Extension> E useOld(Class<E> extensionType) {
-        return configuration().useOld(extensionType);
+    protected final <E extends Subtension> E use(Class<E> extensionType) {
+        return configuration().use(extensionType);
     }
 
     /**
+     * Add the specified extension as a dependency.
+     * <p>
+     * to use it
+     * <p>
+     * Installing components that make use of fx Provide you need ServiceExtension
+     * 
+     * 
      * @param dependency
      *            the dependency that this dependency depends on
+     * @see #$addDependencyLazyInit(Class, Class, Consumer)
      */
     protected static void $addDependency(Class<? extends Extension> dependency) {
         requireNonNull(dependency, "dependency is null");
-        ExtensionPreModel.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
+        ExtensionModel.PreLoader.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
     }
-    
-    protected static <T extends Extension, S extends Extension> void $addDependencyLazyInit(Class<T> thisExtension, Class<S> dependsOn,
+
+    // Tilfoejer en dependency hvor callbacket. Bliver kaldt. Hvis dependency bliver tilfoejet
+    // Hvis den dependency extension allerede existere naar man tilfoejere extension. Bliver den kaldt med det samme
+
+    // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
+    // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
+    // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
+    /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
+    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret
         // Registeres ogsaa som dependeenc
         // $ = Static Init (s + i = $)
     }
 
-    // protected static void libraryWrapper(Module m);
-    
-//    // consumeren bliver kun kaldt hvis extension'en bliver installeret af brugeren (eller en anden extension)
-//    protected final <T extends Extension.Subtension> void optionalUse(Class<T> extensionType, Consumer<T> c) {
-//        // Vil maaske vaere federe bare at have ene
-//        // @OnOptional(DooExtension.clas)
-//
-//    }
+    static final void preFinalMethod() {
+        // Lav versioner der tager 1,2,3 og vargs parametere...
+
+        // Ideen er lidt at vi kan capture alle kald...
+        // Ogsaa dem fra final metoder...
+        // Hvor vi ikke kan dekore
+
+        // Saa denne klasser bliver kun noedt til at blive kaldt af end-brugere hvis de har en abstract
+        // extension klasse... Men har folk det?? I don't think so
+
+        // Man kunne ogsaa bruge en final metode.. Hvis man vil increase sikkerheden...
+        // fx setPassword(String password) {
+        //// preFinalMethod("******");
+        //// ....
+        // }
+        // Her vil man nok ikke vaelge at
+    }
+
+    // protected static void $libraryVersion(Module m);
+    // protected static void $libraryWrapper(Module m);
 
     /**
-     * There are no annotations that make sense for this class
+     * Subtensions are the main that extensions communicate with other extensions. If you are end-user you will most likely
+     * never have to deal with these type of classes.
+     * 
+     * An extension There are no annotations that make sense for this class
+     * <p>
+     * Subtensions are how extensions
+     * 
+     * On the basis that is the end-user that determines.
      * 
      * <p>
-     * Instances of this class is automatically created by the runtime as needed. The instances are never cached. A new one
-     * is created every it is requested.
+     * Subtensions must have a non-public constructor. And should not be declared final... Ideen er lidt at vi saa kan
+     * dekorere den... og returnere en subclasse... Og paa den maade se hvem der kalder hvilke metoder paa den...
+     * 
+     * Hvis mig hvad FooExtension laver. Installere Y Compoennt Kalder F metode paa Subtension...
+     * 
+     * <p>
+     * Subclasses of this class supports 2 types of arguments. The extension instance that it belongs to. This is typically
+     * easiest expressed by making the subclass an inner class.
+     * 
+     * {@code Class<? extends Extension>} which is the
+     * 
+     * <p>
+     * New instances of this class is automatically created by the runtime when needed. The instances are never cached,
+     * instead a fresh one is created every time it is requested.
+     * <p>
+     * Subtensions are only available through Extension#use(Class)
+     * 
+     * @see Extension#use(Class)
      */
     // Should we require that extensions that want to expose services
     // to other extensions must implement them via @Provide
@@ -351,8 +316,58 @@ public abstract class Extension extends Realm {
 //        // Vi kan sagtens lave nogle ting final paa sub extensions...
 //        // Det er jo bare andre extensions der kalde den.
     }
-
 }
+
+///**
+//* Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+//* not located on any subclasses of {@link Extension} or any class that implements
+//* <p>
+//* Invoking this method typically takes in the order of 1-2 microseconds.
+//* <p>
+//* If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+//* {@link ConfigSite#UNKNOWN}.
+//* 
+//* @param operation
+//*            the operation
+//* @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+//* @see StackWalker
+//*/
+//// TODO add stuff about we also ignore non-concrete container sources...
+//protected final ConfigSite captureStackFrame(String operation) {
+//  // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+//  // to the extension class in order to simplify the filtering mechanism.
+//
+//  // TODO!!!! I virkeligheden skal man vel bare fange den sidste brug i et bundle....
+//  // Kan ogsaa sammenligne med configure navnet...
+//
+//  if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+//      return ConfigSite.UNKNOWN;
+//  }
+//  Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+//  return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+//}
+
+///**
+//* @param frame
+//*            the frame to filter
+//* @return whether or not to filter the frame
+//*/
+//private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+//  Class<?> c = frame.getDeclaringClass();
+//  // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+//  // Syntes bare vi filtrer app.packed.base modulet fra...
+//  // Kan vi ikke checke om imod vores container source.
+//
+//  // ((PackedExtensionContext) context()).container().source
+//  // Nah hvis man koere fra config er det jo fint....
+//  // Fra config() paa en bundle er det fint...
+//  // Fra alt andet ikke...
+//
+//  // Dvs ourContainerSource
+//  return Extension.class.isAssignableFrom(c)
+//          || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
+//}
+
 // final void runWithLookup(Lookup lookup, Runnable runnable) {
 // // Extensions bliver bare noedt til at vaere aabne for
 //
@@ -365,3 +380,18 @@ public abstract class Extension extends Realm {
 // // Men vi vel helst have at de giver adgang via module-info...
 // // Eller via Factory.withLookup();
 // }
+//ErrorHandle, Logging
+
+//ErrorHandling / Notifications ???
+/// Taenker det ligger paa Extension'en fordi vi har jo ogsaa en InstantiationContext
+//hvor errors jo ogsaa kan ske..
+//hasErrors()...
+////Maybe we want to log the actual extension as well.
+//so extension.log("fooo") instead
+/// Yes, why not use it to log errors...
+
+//Den eneste ting jeg kunne forstille mig at kunne vaere public.
+//Var en maade at se paa hvordan en extension blev aktiveret..
+//Men er det ikke bare noget logning istedet for metoder...
+//"InjectorExtension:" Activate
+////Her er der noget vi gerne vil have viral.

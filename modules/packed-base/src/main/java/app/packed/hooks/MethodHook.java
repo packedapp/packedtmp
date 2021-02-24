@@ -33,10 +33,10 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.base.MetaAnnotation;
+import app.packed.base.ComposedAnnotation;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentDefinitionException;
+import app.packed.component.BuildException;
 import app.packed.component.Composer;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -63,7 +63,7 @@ import packed.internal.component.source.MethodHookModel;
  * 
  * On a meta annotation which can the applied on one of the above targets
  * <p>
- * In order to be usable with {@link MetaAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its targets.
+ * In order to be usable with {@link ComposedAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its targets.
  */
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
@@ -149,6 +149,7 @@ public @interface MethodHook {
             }
             return b;
         }
+
         /** Disables any further processing of the method. */
         public final void disable() {
             // No I think disable... Clears out runtime and build time...
@@ -211,8 +212,8 @@ public @interface MethodHook {
          *            the class hook bootstrap that will manage this hook
          * @return an instance of the specified class hook bootstrap
          * @throws IllegalArgumentException
-         *             if both this bootstrap class and the specified bootstrap class is annotated with
-         *             nest and their two extension types are not identical
+         *             if both this bootstrap class and the specified bootstrap class is annotated with nest and their two
+         *             extension types are not identical
          */
         public final <T extends ClassHook.Bootstrap> T manageByClassHook(Class<T> classBootstrap) {
             requireNonNull(classBootstrap, "classBootstrap is null");
@@ -246,13 +247,13 @@ public @interface MethodHook {
 
         // A new instanceof of implementation will be created at build-time
         // for every matching method
-        
+
         // ***** Available for injection...*** Same as @OnBuild
         // This Bootstrap obviously (Not on itself, but on buildWith)
         // BuildContext
         // Extension
         // ExtensionContext
-        
+
         public final void replaceWith(Class<?> implementation) {
             replaceWith(Factory.of(implementation));
         }
@@ -283,29 +284,26 @@ public @interface MethodHook {
             builder().buildWith(instance);
         }
 
-        // @Inject, @Get, ...
-        protected static final void $inputMethod() {}
-
-        /**
-         * Ignore default methods.
-         * 
-         * @throws IllegalStateException
-         *             if called from outside a bootstrap's static initializer block.
-         */
-           // Fail???
-           // onDefaultMethod(Fail)
-           // onStaticMethodFail();
-        protected static final void $onDefaultMethodIgnore() {}
-
-        protected static final void $onInstanceMethodFail() {}
+        protected static final void $failOnInstanceMethods() {}
 
         // I think I like require better.. 3 words instead of 4
         // and
         /**
          * 
-         * Will fail with {@link ComponentDefinitionException}.
+         * Will fail with {@link BuildException}.
          */
-        protected static final void $onStaticMethodFail() {}
+        protected static final void $failOnStaticMethods() {}
+
+        /**
+         * Ignore default methods. A bootstrap instance will not be created for any methods that are default methods.
+         * 
+         * @throws IllegalStateException
+         *             if called from outside a bootstrap's static initializer block.
+         */
+        protected static final void $ignoreDefaultMethods() {}
+
+        // @Inject, @Get, ...
+        protected static final void $inputMethod() {}
 
         // @Provide
         // Maybe input it default, and you need to call output
@@ -381,8 +379,6 @@ class RBadIdeas {
 // provide, but someone else invokes
 class SandboxBootstrap {
 
-
-    
     /**
      * Returns an immutable set of the method hooks that activated this bootstrap class. The size of the returned set is
      * normally. Unless there are multiple method hooks that each activate the same bootstrap type. In which each all of
@@ -475,7 +471,7 @@ class Zester extends BaseAssembly {
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@MetaAnnotation
+@ComposedAnnotation
 @MethodHook(matchesAnnotation = Provide.class, bootstrap = Zester.Scan.class)
 @interface ZuperSupport {}
 

@@ -34,7 +34,8 @@ import packed.internal.component.PackedComponentDriver;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = PackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class, PackedComponentDriver.Option.bundle());
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = PackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
+            PackedComponentDriver.Option.bundle());
 
     /**
      * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.
@@ -71,7 +72,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     public BaseComponentConfiguration install(Class<?> implementation) {
         return context.wire(BaseComponentConfiguration.driverInstall(implementation));
     }
-    
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * 
@@ -106,7 +107,6 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
         context.link(bundle, wirelets);
     }
 
-
     /** {@inheritDoc} */
     @Override
     public ContainerConfiguration setName(String name) {
@@ -129,9 +129,9 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     }
 
     /**
-     * Returns an extension of the specified type. If this is the first time an extension of the specified type is
-     * requested. This method will create a new instance of the extension and return it for all subsequent calls to this
-     * method with the same extension type.
+     * Returns an extension of the specified type. If this is the first time an extension of the specified type has been
+     * requested. This method will create a new instance of the extension. This instance will be returned for all subsequent
+     * calls to this method with the same extension type.
      * 
      * @param <T>
      *            the type of extension to return
@@ -143,23 +143,20 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      *             been installed
      * @see #extensions()
      */
-    // extension() // extendWith(ServiceExtension.class).
-    // Mest taenkt hvis vi faa hurtig metoder for attributes.
-    // a.la. cc.with(
     public <T extends Extension> T use(Class<T> extensionType) {
         return context.containerUse(extensionType);
     }
 
     /**
-     * Wires a new child component using the specified driver
+     * Wires a new child component using the specified component driver and optional wirelets.
      * 
      * @param <C>
-     *            the type of configuration returned by the driver
+     *            the type of configuration returned by the specified driver
      * @param driver
      *            the driver to use for creating the component
      * @param wirelets
      *            any wirelets that should be used when creating the component
-     * @return a configuration for the component
+     * @return a configuration for the new child component
      */
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return context.wire(driver, wirelets);

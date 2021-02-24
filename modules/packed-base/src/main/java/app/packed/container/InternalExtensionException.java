@@ -27,6 +27,8 @@ public class InternalExtensionException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
+     * Creates a new exception.
+     * 
      * @param message
      *            the message
      */
@@ -35,6 +37,8 @@ public class InternalExtensionException extends RuntimeException {
     }
 
     /**
+     * Creates a new exception.
+     * 
      * @param message
      *            the message
      * @param cause

@@ -15,7 +15,7 @@
  */
 package app.packed.conversion;
 
-import app.packed.hooks.sandbox.AutoService;
+import app.packed.hooks.AutoService;
 
 /**
  * A collection of converters

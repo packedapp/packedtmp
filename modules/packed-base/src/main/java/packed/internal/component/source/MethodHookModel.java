@@ -96,7 +96,7 @@ public final class MethodHookModel extends MemberHookModel {
         return directMethodHandle;
     }
 
-    static void process(SourceModel.Builder source, Method method) {
+    static void process(ClassSourceModel.Builder source, Method method) {
         Shared shared = null;
         for (Annotation a : method.getAnnotations()) {
             MethodHookBootstrapModel model = MethodHookBootstrapModel.getForAnnotatedMethod(a.annotationType());
@@ -140,7 +140,7 @@ public final class MethodHookModel extends MemberHookModel {
             this.unsafeMethod = shared.methodUnsafe;
         }
 
-        Builder(SourceModel.Builder source, MethodHookBootstrapModel model, Method method) {
+        Builder(ClassSourceModel.Builder source, MethodHookBootstrapModel model, Method method) {
             this(model, new Shared(source, method));
         }
 
@@ -241,16 +241,16 @@ public final class MethodHookModel extends MemberHookModel {
         private final Method methodUnsafe;
 
         /** The source. */
-        private final SourceModel.Builder source;
+        private final ClassSourceModel.Builder source;
 
-        private Shared(SourceModel.Builder source, Method method) {
+        private Shared(ClassSourceModel.Builder source, Method method) {
             this.source = requireNonNull(source);
             this.methodUnsafe = requireNonNull(method);
         }
 
         MethodHandle direct() {
             if (directMethodHandle == null) {
-                directMethodHandle = source.cp.unreflect(methodUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                directMethodHandle = source.oc.unreflect(methodUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             }
             return directMethodHandle;
         }

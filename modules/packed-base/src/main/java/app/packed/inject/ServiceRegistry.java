@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.hooks.sandbox.AutoService;
+import app.packed.hooks.AutoService;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 

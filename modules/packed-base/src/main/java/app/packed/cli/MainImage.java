@@ -26,6 +26,8 @@ import app.packed.container.BaseAssembly;
 /**
  * A specialization of {@link Image} that is targeted use from the main method of a Java program. This is typically used
  * for running GraalVM native image.
+ * 
+ * @see Main
  */
 // Optimized for running once
 
@@ -43,7 +45,9 @@ public /* primitive */ final class MainImage {
      * Creates a new main image.
      * 
      * @param assembly
+     *            the assembly
      * @param wirelets
+     *            optional wirelets
      */
     private MainImage(Assembly<?> assembly, Wirelet... wirelets) {
         this.image = Main.driver().buildImage(assembly, wirelets);
@@ -68,6 +72,8 @@ public /* primitive */ final class MainImage {
      * @param wirelets
      *            optional wirelets
      * @return the result of using the image
+     * @throws IllegalStateException
+     *             if the image has already been used
      */
     // Move example to class javadoc
     public Completion use(String[] args, Wirelet... wirelets) {
@@ -82,7 +88,7 @@ public /* primitive */ final class MainImage {
      * Creates a new main image from the specified assembly and optional wirelets.
      * 
      * @param assembly
-     *            the assembly used for building the image
+     *            the assembly to use for building the image
      * @param wirelets
      *            optional wirelets
      * @return the new image
@@ -92,7 +98,7 @@ public /* primitive */ final class MainImage {
      */
     public static MainImage of(Assembly<?> assembly, Wirelet... wirelets) {
         return new MainImage(assembly, wirelets);
-    } 
+    }
 }
 
 class MyAppMain extends BaseAssembly {
@@ -103,6 +109,8 @@ class MyAppMain extends BaseAssembly {
     }
 
     public static void main(String[] args) {
+        Main.run(new MyAppMain());
+        
         MAIN.use(args);
     }
 }

@@ -34,7 +34,7 @@ import packed.internal.component.PackedComponentDriver;
  * It it also possible to install components at runtime via {@link Component}.
  */
 //ProvidableComponentConfiguration
-public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
+public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration implements ServiceConfiguration<T>{
 
     @SuppressWarnings("rawtypes")
     private static final BindableComponentDriver DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
