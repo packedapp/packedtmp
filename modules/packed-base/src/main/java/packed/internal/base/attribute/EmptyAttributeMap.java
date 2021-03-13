@@ -28,9 +28,7 @@ import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.Nullable;
 
-/**
- *
- */
+/** An attribute map containing no attributes. */
 public final class EmptyAttributeMap implements AttributeMap {
 
     public static final EmptyAttributeMap INSTANCE = new EmptyAttributeMap();

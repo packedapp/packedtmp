@@ -18,6 +18,7 @@ package app.packed.contract;
 /**
  * This class is the base class for contracts in Packed.
  */
+// Det er end slags beskrivelse. Og 
 public abstract class Contract {
 
     /** {@inheritDoc} */

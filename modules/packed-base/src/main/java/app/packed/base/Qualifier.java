@@ -23,6 +23,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
+ * Declares an annotation type to be a qualifier. Qualifier annotations allow unambiguously identify a suitable mapping
+ * method in case several methods qualify to map a bean property,
+ * 
  * Qualifiers are used to distinguish different objects of the same type.
  * <p>
  * This framework does not provide any facilities to dynamically apply qualifiers to annotations. For example, in order

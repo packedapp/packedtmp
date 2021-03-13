@@ -40,7 +40,7 @@ public final class RuntimeComponentModel {
 
     final int modifiers;
 
-    RuntimeComponentModel(ComponentBuild compConf) {
+    RuntimeComponentModel(ComponentSetup compConf) {
         this.depth = compConf.treeDepth;
         // this.extension = context.extension();
         int p = compConf.modifiers;
@@ -52,7 +52,7 @@ public final class RuntimeComponentModel {
         return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CONTAINER);
     }
 
-    static RuntimeComponentModel of(ComponentBuild context) {
+    static RuntimeComponentModel of(ComponentSetup context) {
         return new RuntimeComponentModel(context);
     }
 }

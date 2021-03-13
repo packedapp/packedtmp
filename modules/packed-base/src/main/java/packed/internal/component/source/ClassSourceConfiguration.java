@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.Dependant;
@@ -56,20 +56,20 @@ public final class ClassSourceConfiguration implements DependencyProvider {
     @Nullable
     public BuildtimeService service;
 
-    private ClassSourceConfiguration(ComponentBuild compConf, int regionIndex, Object source) {
+    private ClassSourceConfiguration(ComponentSetup compConf, int regionIndex, Object source) {
         this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
         Class<?> sourceType;
-        if (source instanceof Class) {
-            sourceType = (Class<?>) source;
+        if (source instanceof Class<?> cl) {
+            sourceType = cl;
             this.instance = null;
             // We need to start putting stateful on every component...
             // We need to stateful on all components...
             this.factory = compConf.modifiers().isStateful() ? null : Factory.of(sourceType);
-        } else if (source instanceof Factory) {
+        } else if (source instanceof Factory<?> fac) {
             this.instance = null;
-            this.factory = (Factory<?>) source;
+            this.factory = fac;
             sourceType = factory.rawType();
         } else {
             this.instance = source;
@@ -77,12 +77,12 @@ public final class ClassSourceConfiguration implements DependencyProvider {
             sourceType = source.getClass();
         }
 
-        this.model = compConf.realm.lookup.modelOf(sourceType);
+        this.model = compConf.realm.accessor().modelOf(sourceType);
 
         if (factory == null) {
             this.dependant = null;
         } else {
-            MethodHandle mh = compConf.realm.lookup.toMethodHandle(factory);
+            MethodHandle mh = compConf.realm.accessor().toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
@@ -90,7 +90,7 @@ public final class ClassSourceConfiguration implements DependencyProvider {
         }
     }
 
-    public static ClassSourceConfiguration create(ComponentBuild compConf, PackedComponentDriver<?> driver) {
+    public static ClassSourceConfiguration create(ComponentSetup compConf, PackedComponentDriver<?> driver) {
         // Reserve a place in the regions runtime memory, if the component is a singleton
         int regionIndex = compConf.modifiers().isSingleton() ? compConf.region.reserve() : -1;
         // Create the source
@@ -99,7 +99,7 @@ public final class ClassSourceConfiguration implements DependencyProvider {
         if (s.instance != null) {
             compConf.region.constants.add(s);
         } else if (s.dependant != null) {
-            compConf.memberOfCube.addDependant(s.dependant);
+            compConf.memberOfContainer.addDependant(s.dependant);
         }
 
         // Apply any sidecars
@@ -126,7 +126,7 @@ public final class ClassSourceConfiguration implements DependencyProvider {
         return dependant;
     }
 
-    public BuildtimeService provide(ComponentBuild compConf) {
+    public BuildtimeService provide(ComponentSetup compConf) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         BuildtimeService s = service;
         if (s == null) {
@@ -136,7 +136,7 @@ public final class ClassSourceConfiguration implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = compConf.memberOfCube.getServiceManagerOrCreate().provideSource(compConf, key);
+            s = service = compConf.memberOfContainer.getServiceManagerOrCreate().provideSource(compConf, key);
         }
         return s;
     }

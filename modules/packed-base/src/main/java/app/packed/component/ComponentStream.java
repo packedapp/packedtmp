@@ -290,12 +290,12 @@ public interface ComponentStream extends AttributedElementStream<Component> {
          * Include components that belongs to any of the specified extension types is non-empty and contained in the specified
          * varargs).
          * 
-         * @param extensionTypes
-         *            extension types that should be included in the stream
+         * @param extensionClass
+         *            extension classes that should be included in the stream
          * @return an option that includes all components that belongs to any of the specified extension types
          */
         @SafeVarargs
-        public static ComponentStream.Option includeExtensions(Class<? extends Extension>... extensionTypes) {
+        public static ComponentStream.Option includeExtensions(Class<? extends Extension>... extensionClass) {
             throw new UnsupportedOperationException();
         }
 

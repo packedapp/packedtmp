@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import app.packed.base.Key;
+import app.packed.base.TypeToken;
 import app.packed.inject.Provider;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
@@ -35,16 +36,11 @@ import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
- * An abstract implementation of {@link ServiceLocator}. {@link #asMap()} must always return an immutable map, with
- * effectively immutable (frozen) services.
+ * An abstract implementation of {@link ServiceLocator}.
+ * 
+ * @implNote {@link #asMap()} must always return an immutable map, with effectively immutable (frozen) services.
  **/
 public abstract class AbstractServiceLocator extends AbstractServiceRegistry implements ServiceLocator {
-
-    /** {@inheritDoc} */
-    @Override
-    public Map<Key<?>, Service> asMap() {
-        return null;
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -104,14 +100,14 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceSelection<T> selectWithAnyQualifiers(Key<T> key) {
-        return select(s -> key.isSuperKeyOf(s.key()));
+    public final <T> ServiceSelection<T> selectWithAnyQualifiers(TypeToken<T> type) {
+        return select(s -> s.key().typeToken().equals(type));
     }
 
     /** {@inheritDoc} */
     @Override
-    public final <T> ServiceSelection<T> selectAssignableTo(Class<T> key) {
-        return select(s -> key.isAssignableFrom(s.key().rawType()));
+    public final <T> ServiceSelection<T> selectAssignableTo(Class<T> type) {
+        return select(s -> type.isAssignableFrom(s.key().rawType()));
     }
 
     /** {@inheritDoc} */

@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
 
-import app.packed.component.BuildException;
+import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import packed.internal.component.source.MethodHookModel;

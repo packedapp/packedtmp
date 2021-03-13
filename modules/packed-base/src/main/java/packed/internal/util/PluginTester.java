@@ -15,10 +15,11 @@
  */
 package packed.internal.util;
 
-import app.packed.cli.Main;
+import java.util.ServiceLoader;
+
+import app.packed.component.App;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.ServiceLocator;
-import app.packed.state.OnInitialize;
+import app.packed.inject.ServiceWirelets;
 
 /**
  *
@@ -31,36 +32,19 @@ public class PluginTester extends BaseAssembly {
     /** {@inheritDoc} */
     @Override
     protected void build() {
-//        service().anchorAll();
-//        for (Plugin p : ServiceLoader.load(Plugin.class)) {
-//            String pluginName = p.getClass().getCanonicalName();
-//            link(p, ServiceWirelets.to(t -> t.rekeyAllWithTag(pluginName)));
-//        }
-        provide(UseIt.class);
+        for (Plugin p : ServiceLoader.load(Plugin.class)) {
+            String pluginName = p.getClass().getCanonicalName();
+            link(p, ServiceWirelets.anchorAll(), ServiceWirelets.to(t -> t.rekeyAllWithTag(pluginName)));
+        }
+        exportAll();
     }
 
     public static void main(String[] args) {
-        Main.run(new PluginTester());
-    }
-
-    public static class UseIt {
-
-        public UseIt() {
-            System.out.println("NEWIT");
-        }
-        @OnInitialize
-        public void show(ServiceLocator l) {
-            l.selectWithAnyQualifiers(Runnable.class).forEachInstance((s, r) -> r.run());
+        try (App app = App.start(new PluginTester())) {
+            app.services().selectWithAnyQualifiers(Runnable.class).forEachInstance(Runnable::run);
         }
     }
 }
-//
-//@Retention(RetentionPolicy.RUNTIME)
-//@Qualifier
-//// Visibility problemer mht til PluginType...
-//// Taenker det er fint bare Packed har adgang...
-//// Men altsaa saa kan vi jo instantiere annotationer
-//// Maaske er det en instans metode paa ServiceExtension, BaseBundle...
-//@interface PluginType {
-//    Class<? extends Plugin> value();
-//}
+// Normally a container will only retain those service that any
+// of the components that belongs to the container needs.
+// Discarding any other service. However, by using ServiceWirelets.anchorAll()

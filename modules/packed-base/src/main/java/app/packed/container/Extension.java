@@ -18,16 +18,21 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
+import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDriver;
 import app.packed.component.Image;
 import app.packed.component.Realm;
+import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.container.PackedExtensionConfiguration;
 import packed.internal.container.ExtensionModel;
+import packed.internal.container.ExtensionSetup;
 
 /**
  * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
@@ -144,15 +149,15 @@ public abstract class Extension extends Realm {
      */
     protected void extensionAdded() {}
 
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
-
     // Hvad hvis den selv tilfoejer komponenter med en child container???
     // Problemet er hvis den bruger extensions som den ikke har defineret
     // Det tror jeg maaske bare ikke den kan
     protected void extensionBeforeDescendents() {}
+
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    // extensionPreambleDone
 
     /**
      * Invoked by the runtime when the configuration of the bundle is completed.
@@ -193,7 +198,7 @@ public abstract class Extension extends Realm {
     }
 
     protected final void lookup(MethodHandles.Lookup lookup) {
-        ((PackedExtensionConfiguration) configuration()).lookup(lookup);
+        ((ExtensionSetup) configuration()).lookup(lookup);
     }
 
     /**
@@ -208,7 +213,7 @@ public abstract class Extension extends Realm {
      * 
      * @param <E>
      *            the type of extension to return
-     * @param extensionType
+     * @param extensionClass
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
@@ -218,8 +223,12 @@ public abstract class Extension extends Realm {
      *             if the specified extension type has not been specified when bootstrapping the extension
      * @see #$addDependency(Class)
      */
-    protected final <E extends Subtension> E use(Class<E> extensionType) {
-        return configuration().use(extensionType);
+    protected final <E extends Subtension> E use(Class<E> extensionClass) {
+        return configuration().use(extensionClass);
+    }
+
+    public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return configuration().userWire(driver, wirelets);
     }
 
     /**
@@ -253,6 +262,9 @@ public abstract class Extension extends Realm {
         // $ = Static Init (s + i = $)
     }
 
+    public static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionClass, Component containerComponent) {
+        throw new UnsupportedOperationException();
+    }
     static final void preFinalMethod() {
         // Lav versioner der tager 1,2,3 og vargs parametere...
 

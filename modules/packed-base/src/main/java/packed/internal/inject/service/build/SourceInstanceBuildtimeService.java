@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.source.ClassSourceConfiguration;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManager;
@@ -42,7 +42,7 @@ public final class SourceInstanceBuildtimeService extends BuildtimeService {
      * @param compConf
      *            the component we provide for
      */
-    public SourceInstanceBuildtimeService(ServiceManager im, ComponentBuild compConf, Key<?> key) {
+    public SourceInstanceBuildtimeService(ServiceManager im, ComponentSetup compConf, Key<?> key) {
         super(key);
         this.source = requireNonNull(compConf.source);
     }

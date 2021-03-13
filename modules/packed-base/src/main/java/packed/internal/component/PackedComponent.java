@@ -65,7 +65,7 @@ public final class PackedComponent implements Component {
      * @param pic
      *            initialization context
      */
-    PackedComponent(@Nullable PackedComponent parent, ComponentBuild compBuild, PackedInitializationContext pic) {
+    PackedComponent(@Nullable PackedComponent parent, ComponentSetup compBuild, PackedInitializationContext pic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(compBuild);
         if (parent == null) {
@@ -83,7 +83,7 @@ public final class PackedComponent implements Component {
             // Maybe ordered is the default...
             LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(compBuild.numberOfChildren());
 
-            for (ComponentBuild cc = compBuild.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
+            for (ComponentSetup cc = compBuild.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 // We never carry over extensions into the runtime
                 if (cc.extension == null) {
                     PackedComponent ac = new PackedComponent(this, cc, pic);

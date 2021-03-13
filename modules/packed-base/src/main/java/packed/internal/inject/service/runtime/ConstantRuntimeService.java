@@ -21,16 +21,15 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.inject.service.build.BuildtimeService;
 
-/** An entry holding a constant. */
+/** An runtime service holding a constant. */
 public final class ConstantRuntimeService extends RuntimeService {
 
-    /** The singleton instance. */
+    /** The constant the runtime service is holding. */
     private final Object constant;
 
     /**
@@ -47,9 +46,9 @@ public final class ConstantRuntimeService extends RuntimeService {
     /**
      * @param key
      */
-    public ConstantRuntimeService(Key<?> key, @Nullable Object instance) {
+    public ConstantRuntimeService(Key<?> key, Object constant) {
         super(key);
-        this.constant = requireNonNull(instance);
+        this.constant = requireNonNull(constant);
     }
 
     /** {@inheritDoc} */

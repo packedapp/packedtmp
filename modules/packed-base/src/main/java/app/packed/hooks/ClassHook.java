@@ -15,7 +15,13 @@
  */
 package app.packed.hooks;
 
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.List;
 
@@ -23,8 +29,11 @@ import app.packed.base.Nullable;
 import packed.internal.component.source.ClassHookModel;
 
 /**
- *
+ * A class hook allows for runtime
  */
+@Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
+@Retention(RUNTIME)
+@Documented
 public @interface ClassHook {
 
     // Maybe we allow injection of a Lookup object.
@@ -40,44 +49,63 @@ public @interface ClassHook {
     // Hvordan passer den med ConstructorHook???
     // boolean allowInstantiate() default false; <-- allows custom instantiation
 
-    /** The sidecar that is activated. */
+    /** The hook's {@link Bootstrap} class. */
     Class<? extends ClassHook.Bootstrap> bootstrap();
 
-    // Must have
+    /**
+     * Returns annotations
+     * 
+     * @return
+     */
     Class<? extends Annotation>[] matchesAnnotation() default {};
-    
+
     Class<?>[] matchesAssignableTo() default {};
-    
-    // Kan vi annotere Bootstrap med 
+
+    // Kan vi annotere Bootstrap med
     // @MethodHook(annotatations = ...)
+    /**
+     * The bootstrap class for a class hook. A new bootstrap instance will be created for every class hook that matches.
+     * <p>
+     * Implementations of this class must have a no-argument constructor.
+     * 
+     * @see ClassHook#bootstrap()
+     */
     public abstract class Bootstrap {
 
-        /** The builder used for bootstrapping. Updated by {@link ClassHookModel}. */
+        /** The builder used for bootstrapping. Accessed by {@link ClassHookModel}. */
         private ClassHookModel.@Nullable Builder builder;
 
+        /** Invoked by Packed at bootstrap time. */
         protected void bootstrap() {}
-        
+
         /**
-         * Returns this sidecar's builder object.
+         * Returns a builder object for this bootstrap.
          * 
-         * @return this sidecar's builder object
+         * @return a builder object for this bootstrap
          */
-        final ClassHookModel.Builder builder() {
-            ClassHookModel.Builder c = builder;
-            if (c == null) {
-                throw new IllegalStateException("This method cannot called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
+        private final ClassHookModel.Builder builder() {
+            ClassHookModel.Builder b = builder;
+            if (b == null) {
+                throw new IllegalStateException(
+                        "This method cannot be called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
             }
-            return c;
+            return b;
         }
 
+        /**
+         * Returns a list of bootstraps for all of the constructors of the hooked class. If {@link #hasFullAccess()} is true,
+         * {@link ConstructorHook.Bootstrap#methodHandle()} returns a valid method handle for the constructor.
+         * 
+         * @return a list of bootstraps for all of the constructors of the hooked class
+         */
         protected final List<ConstructorHook.Bootstrap> constructors() {
-            throw new UnsupportedOperationException();
+            return builder().constructors();
         }
 
         // We need to have some kind of isGettable, isSettable paa bootstrap tror jeg...
         // Og det skal ikke inkludere om brugere har givet adgang. f.eks. med et lookup object.
         // Det er altsammen separat fra bootstrap...
-        
+
         // Must use buildWith, or manageByClassBootstrap();
         protected final List<FieldHook.Bootstrap> fields() {
             return fields(false, Object.class);
@@ -137,12 +165,13 @@ public @interface ClassHook {
         protected final List<MethodHook.Bootstrap> methods() {
             return methods(false, false, Object.class);
         }
-        
+
         /**
          * @param declaredMethodsOnly
          *            whether or not to only include
          * @param ignoreDefaultMethods
-         *            whether or not ignore default methods? Do we want to filter now? Maybe includeInterface is more interesting?
+         *            whether or not ignore default methods? Do we want to filter now? Maybe includeInterface is more
+         *            interesting?
          * @param skipClasses
          *            classes to skip when processing
          * @return a list of method bootstraps
@@ -152,19 +181,19 @@ public @interface ClassHook {
         }
 
         /**
-         * Returns the class that is being bootstrapped.
+         * Returns the class for which this bootstrap has been created.
          * 
-         * @return the class that is being bootstrapped
+         * @return the class for which this bootstrap has been created
          */
         public final Class<?> type() {
-            throw new UnsupportedOperationException();
+            return builder().type();
         }
     }
-    
+
     // Tror det er noget med vi kan filtere fields/constructor/method/...
     public interface MemberOption {
-        
-        public static MemberOption declaredOnly() { 
+
+        public static MemberOption declaredOnly() {
             throw new UnsupportedOperationException();
         }
     }

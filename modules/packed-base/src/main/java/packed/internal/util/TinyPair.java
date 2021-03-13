@@ -22,14 +22,7 @@ import app.packed.base.Nullable;
 /**
  *
  */
-public class TinyPair<E1, E2> {
-
-    public final E1 element1;
-
-    public final E2 element2;
-
-    @Nullable
-    public final TinyPair<E1, E2> next;
+public record TinyPair<E1, E2> (E1 element1, E2 element2, @Nullable TinyPair<E1, E2> next) {
 
     public TinyPair(E1 element1, E2 element2, @Nullable TinyPair<E1, E2> next) {
         this.element1 = requireNonNull(element1);

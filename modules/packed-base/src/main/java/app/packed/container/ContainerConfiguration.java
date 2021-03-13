@@ -70,7 +70,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public BaseComponentConfiguration install(Class<?> implementation) {
-        return context.wire(BaseComponentConfiguration.driverInstall(implementation));
+        return context.wire(ComponentDriver.driverInstall(implementation));
     }
 
     /**
@@ -82,7 +82,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see ContainerAssembly#install(Factory)
      */
     public BaseComponentConfiguration install(Factory<?> factory) {
-        return context.wire(BaseComponentConfiguration.driverInstall(factory));
+        return context.wire(ComponentDriver.driverInstall(factory));
     }
 
     /**
@@ -92,7 +92,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see ContainerAssembly#installInstance(Object)
      */
     public BaseComponentConfiguration installInstance(Object instance) {
-        return context.wire(BaseComponentConfiguration.driverInstallInstance(instance));
+        return context.wire(ComponentDriver.driverInstallInstance(instance));
     }
 
     /**
@@ -125,7 +125,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public BaseComponentConfiguration stateless(Class<?> implementation) {
-        return context.wire(BaseComponentConfiguration.driverStateless(implementation));
+        return context.wire(ComponentDriver.driverStateless(implementation));
     }
 
     /**
@@ -135,7 +135,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * 
      * @param <T>
      *            the type of extension to return
-     * @param extensionType
+     * @param extensionClass
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
@@ -143,8 +143,8 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      *             been installed
      * @see #extensions()
      */
-    public <T extends Extension> T use(Class<T> extensionType) {
-        return context.containerUse(extensionType);
+    public <T extends Extension> T use(Class<T> extensionClass) {
+        return context.containerUse(extensionClass);
     }
 
     /**

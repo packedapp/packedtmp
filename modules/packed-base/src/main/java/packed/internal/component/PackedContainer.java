@@ -108,7 +108,7 @@ public class PackedContainer implements Host {
         return null;
     }
 
-    void onInitialized(ComponentBuild component, PackedInitializationContext pic) {
+    void onInitialized(ComponentSetup component, PackedInitializationContext pic) {
         boolean isMain = component.build.artifactDriver() == null;
         boolean start = isMain;
         final ReentrantLock lock = this.lock;

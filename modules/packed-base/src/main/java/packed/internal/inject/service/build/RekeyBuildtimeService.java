@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceComposer;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -27,48 +27,50 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.util.MethodHandleUtil;
 
 /**
- * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
- * exported.
+ * A build entry representing an existing service that has been given a new key.
+ * 
+ * @see ServiceComposer#rekey(Class, Class)
+ * @see ServiceComposer#rekey(Key, Key)
  */
 public final class RekeyBuildtimeService extends BuildtimeService {
 
-    /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
-    public final BuildtimeService entryToRekey;
+    /** The service that has been given a new key. */
+    public final BuildtimeService serviceToRekey;
 
     /**
-     * Exports an entry via its key.
+     * Create a new service.
      * 
-     * @param s
-     *            the injector configuration this node is being added to
-     * @see ServiceExtension#export(Class)
-     * @see ServiceExtension#export(Key)
+     * @param service
+     *            the service that is given a new key.
+     * @param key
+     *            the new key
      */
-    public RekeyBuildtimeService(BuildtimeService s, Key<?> key) {
+    public RekeyBuildtimeService(BuildtimeService service, Key<?> key) {
         super(key);
-        this.entryToRekey = s;
+        this.serviceToRekey = service;
     }
 
     @Override
     @Nullable
     public Dependant dependant() {
-        return entryToRekey.dependant();
+        return serviceToRekey.dependant();
     }
 
     @Override
     public MethodHandle dependencyAccessor() {
-        MethodHandle mh = entryToRekey.dependencyAccessor();
+        MethodHandle mh = serviceToRekey.dependencyAccessor();
         return MethodHandleUtil.castReturnType(mh, key().rawType());
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return entryToRekey.isConstant();
+        return serviceToRekey.isConstant();
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(this, entryToRekey.toRuntimeEntry(context));
+        return new DelegatingRuntimeService(this, serviceToRekey.toRuntimeEntry(context));
     }
 }

@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.source.MethodHookModel.RunAt;
 import packed.internal.hooks.AbstractHookBootstrapModel;
 import packed.internal.hooks.ClassHookBootstrapModel;
@@ -44,7 +44,7 @@ public abstract class MemberHookModel {
     public final List<DependencyDescriptor> dependencies;
 
     @Nullable
-    public final Consumer<? super ComponentBuild> processor;
+    public final Consumer<? super ComponentSetup> processor;
 
     public final boolean provideAsConstant;
 
@@ -89,7 +89,7 @@ public abstract class MemberHookModel {
         ClassHookModel.@Nullable Builder managedBy;
 
         @Nullable
-        Consumer<? super ComponentBuild> processor;
+        Consumer<? super ComponentSetup> processor;
 
         /** If the member is being provided as a service whether or not it is constant. */
         boolean provideAsConstant;

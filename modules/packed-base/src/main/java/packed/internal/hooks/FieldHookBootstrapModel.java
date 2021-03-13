@@ -27,7 +27,7 @@ import app.packed.hooks.FieldHook;
 import app.packed.hooks.FieldHook.Bootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.classscan.OpenClass;
+import packed.internal.classscan.ClassMemberAccessor;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
@@ -89,7 +89,7 @@ public final class FieldHookBootstrapModel extends AbstractHookBootstrapModel<Fi
         /** {@inheritDoc} */
         @Override
         protected FieldHookBootstrapModel build() {
-            OpenClass oc = ib.oc();
+            ClassMemberAccessor oc = ib.oc();
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
                 if (ap != null) {

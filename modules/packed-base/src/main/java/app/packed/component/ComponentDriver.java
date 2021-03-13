@@ -16,7 +16,8 @@
 package app.packed.component;
 
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.inject.Factory;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
@@ -52,12 +53,36 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     ComponentDriver<C> with(Wirelet wirelet);
 
     ComponentDriver<C> with(Wirelet... wirelet);
-    
-    public static ComponentDriver<ContainerConfiguration> container() {
-        return ContainerConfiguration.driver();
+
+    /**
+     * Returns a driver that can be used to create stateless components.
+     * 
+     * @param <T>
+     *            the type
+     * @return a driver
+     */
+    @SuppressWarnings("unchecked")
+    private static <T> BindableComponentDriver<BaseComponentConfiguration, T> driver() {
+        return PackedComponentDriver.STATELESS_DRIVER;
     }
-    
-    public static ComponentDriver<BaseComponentConfiguration> stateless(Class<?> implementation) {
-        return BaseComponentConfiguration.driverStateless(implementation);
+
+    // Not sure we want this public or ma
+    @SuppressWarnings("unchecked")
+    static ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
+        return PackedComponentDriver.INSTALL_DRIVER.bind(implementation);
+    }
+
+    @SuppressWarnings("unchecked")
+    static ComponentDriver<BaseComponentConfiguration> driverInstall(Factory<?> factory) {
+        return PackedComponentDriver.INSTALL_DRIVER.bind(factory);
+    }
+
+    @SuppressWarnings("unchecked")
+    static ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
+        return PackedComponentDriver.INSTALL_DRIVER.applyInstance(instance);
+    }
+
+    static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
+        return driver().bind(implementation);
     }
 }

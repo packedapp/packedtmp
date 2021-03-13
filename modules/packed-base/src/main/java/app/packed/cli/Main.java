@@ -30,7 +30,7 @@ import app.packed.state.StateWirelets;
  * 
  * @see MainImage
  */
-// Return an int????
+// Tror maaske bare den doer med PanicException som standard hvis der gaar noget galt...
 public final class Main {
 
     /** The artifact driver used by this class. */
@@ -40,6 +40,8 @@ public final class Main {
     // Eller ogsaa skal ImageWirelets lazy bruges
 
     // Install as System Namespace
+    // Virker underlige at den returnere Complietion... Det betyder jo ogsaa at vi ikke skal smide
+    // PanicException hvad jeg syntes vi skal
     private static final ArtifactDriver<Completion> DRIVER = ArtifactDriver.daemon().with(StateWirelets.shutdownHook());
 
     /** Not today Satan, not today. */

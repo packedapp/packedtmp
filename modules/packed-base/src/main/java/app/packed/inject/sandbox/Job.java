@@ -21,10 +21,16 @@ package app.packed.inject.sandbox;
 // Er det en speciel shell?? Ja det ville jeg mene
 
 // Altsaa det giver sjaeldent mening at lave den direkte 
-
+//Is not a system namespace by default..
+//What about shutdown... I don't think it is active...
 interface Job<R> {
 
     // Job<Void> of()
-    
+}
+// A job consists of 1 or more tasks ordered in a tree...
+// But why not use the Component API...
+
+// Basically it is the job-class that is the root 
+interface Task {
     
 }

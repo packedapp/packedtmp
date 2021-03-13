@@ -24,15 +24,15 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
+import app.packed.exceptionhandling.BuildException;
 import packed.internal.component.BuildtimeRegion;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.RuntimeRegion;
+import packed.internal.component.source.ClassSourceConfiguration;
+import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.component.source.ClassSourceConfiguration;
-import packed.internal.component.source.ClassSourceModel;
 import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.Wrapper;
@@ -97,7 +97,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentBuild compConf, ClassSourceConfiguration source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentSetup compConf, ClassSourceConfiguration source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManager sbm = compConf.memberOfCube.getServiceManagerOrCreate();
+            ServiceManager sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
             BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
@@ -201,8 +201,7 @@ public class Dependant {
                     // the method on the sidecar: sourceMember.model.onInitialize
 
                     // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                    if (sourceMember instanceof MethodHookModel) {
-                        MethodHookModel msm = (MethodHookModel) sourceMember;
+                    if (sourceMember instanceof MethodHookModel msm) {
                         if (msm.bootstrapModel.onInitialize != null) {
                             // System.out.println(msm.model.onInitialize);
                             MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);

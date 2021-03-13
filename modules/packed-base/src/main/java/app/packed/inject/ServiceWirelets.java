@@ -49,6 +49,18 @@ public final class ServiceWirelets {
     private ServiceWirelets() {}
 
     public static Wirelet anchorAll() {
+        return anchorIf(t -> true);
+    }
+
+    public static Wirelet anchor(Class<?> key) {
+        return anchor(Key.of(key));
+    }
+
+    public static Wirelet anchor(Key<?> key) {
+        return anchorIf(s -> s.key().equals(key));
+    }
+
+    public static Wirelet anchorIf(Predicate<? super Service> filter) {
         throw new UnsupportedOperationException();
     }
 
@@ -214,7 +226,7 @@ class ServiceWSandbox {
         throw new UnsupportedOperationException();
     }
 
-    // Maybe check... 
+    // Maybe check...
     // If validateXXX should always Validation
     static Wirelet validateExactRequirements() {
         throw new UnsupportedOperationException();

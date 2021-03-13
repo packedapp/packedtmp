@@ -36,10 +36,10 @@ import java.util.Set;
 import app.packed.base.ComposedAnnotation;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BuildException;
 import app.packed.component.Composer;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
+import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
@@ -61,9 +61,10 @@ import packed.internal.component.source.MethodHookModel;
  * 
  * On a class used as a component source
  * 
- * On a meta annotation which can the applied on one of the above targets
+ * On a meta annotation which can then be applied on one of the above targets.
  * <p>
- * In order to be usable with {@link ComposedAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its targets.
+ * In order to be usable with {@link ComposedAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its
+ * targets.
  */
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
@@ -76,8 +77,8 @@ public @interface MethodHook {
     /**
      * Whether or not the implementation is allowed to invoke the target method. The default value is {@code false}.
      * <p>
-     * Methods {@link Bootstrap#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless the value
-     * of this attribute is {@code true}
+     * Methods such as {@link Bootstrap#methodHandle()} and... will fail with {@link UnsupportedOperationException} unless
+     * the value of this attribute is {@code true}.
      * 
      * @return whether or not the implementation is allowed to invoke the target method
      * 
@@ -85,12 +86,7 @@ public @interface MethodHook {
      */
     boolean allowInvoke() default false;
 
-    /**
-     * A {@link Bootstrap} class that will be instantiated and {@link Bootstrap#bootstrap() bootstrapped} for every matching
-     * method.
-     * <p>
-     * noget med at vi ikke instantiere mere end en bootstrap per implementation/method
-     */
+    /** The hook's {@link Bootstrap} class. */
     Class<? extends MethodHook.Bootstrap> bootstrap();
 
     /**
@@ -98,12 +94,6 @@ public @interface MethodHook {
      * 
      * @return annotations that activates the method hook
      */
-    // Maybe just matches... Annotations er default...
-    // Kan jo vaere rar nok paa ClassHook
-    // matchesSuperClass(Doo)
-    // matchesAssignableTo(....)
-    // Ville vaere rart for Startable() fx...
-    // Kan faa injected en InstanceHandle<X> paa runtime
     Class<? extends Annotation>[] matchesAnnotation() default {};
 
     /**
@@ -121,8 +111,10 @@ public @interface MethodHook {
     }
 
     /**
-     * A bootstrap class that must be extended to configure how the method is processed. Implementations must have a no-args
-     * constructor.
+     * A method hooks bootstrap class is responsible for the detailed configuration of the hook. And one must always be set
+     * via {@link MethodHook#bootstrap()).
+     * <p>
+     * Implementations must have a no-args constructor.
      */
     abstract class Bootstrap implements BuildContext {
 
@@ -230,7 +222,7 @@ public @interface MethodHook {
         }
 
         /**
-         * Returns a direct method handle to the matching method (without any intervening argument bindings or transformations
+         * Returns a direct method handle to {@link #method()} (without any intervening argument bindings or transformations
          * that may have been configured elsewhere).
          * 
          * @return a direct method handle to the matching method
@@ -284,10 +276,17 @@ public @interface MethodHook {
             builder().buildWith(instance);
         }
 
+        /**
+         * Ignore default methods. A bootstrap instance will not be created for any methods that are default methods.
+         * 
+         * @throws IllegalStateException
+         *             if called from outside of the static initializer block of a bootstrap class.
+         */
         protected static final void $failOnInstanceMethods() {}
 
         // I think I like require better.. 3 words instead of 4
         // and
+        // requireStaticModifier
         /**
          * 
          * Will fail with {@link BuildException}.
@@ -295,10 +294,10 @@ public @interface MethodHook {
         protected static final void $failOnStaticMethods() {}
 
         /**
-         * Ignore default methods. A bootstrap instance will not be created for any methods that are default methods.
+         * Ignore default methods. No bootstrap instance will be created for default methods.
          * 
          * @throws IllegalStateException
-         *             if called from outside a bootstrap's static initializer block.
+         *             if called from outside of the static initializer block of a bootstrap class.
          */
         protected static final void $ignoreDefaultMethods() {}
 

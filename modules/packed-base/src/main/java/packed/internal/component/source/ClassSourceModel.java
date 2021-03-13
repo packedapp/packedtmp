@@ -29,15 +29,13 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.classscan.OpenClass;
-import packed.internal.component.ComponentBuild;
+import packed.internal.classscan.ClassMemberAccessor;
+import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.ClassHookBootstrapModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.Dependant;
 
-/**
- * A model of a class source, a instance of this class is normally acquired via {@link RealmModel#of(Class)}.
- */
+/** A model of a class source. */
 public final class ClassSourceModel {
 
     /** All field hooks. */
@@ -68,7 +66,7 @@ public final class ClassSourceModel {
         this.sourceServices = Map.copyOf(builder.sourceContexts);
     }
 
-    public <T> void register(ComponentBuild compConf, ClassSourceConfiguration source) {
+    public <T> void register(ComponentSetup compConf, ClassSourceConfiguration source) {
         for (FieldHookModel f : fields) {
             registerMember(compConf, source, f);
         }
@@ -78,11 +76,11 @@ public final class ClassSourceModel {
         }
     }
 
-    private void registerMember(ComponentBuild compConf, ClassSourceConfiguration source, MemberHookModel m) {
+    private void registerMember(ComponentSetup compConf, ClassSourceConfiguration source, MemberHookModel m) {
         requireNonNull(source);
         Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {
-        compConf.memberOfCube.addDependant(i);
+        compConf.memberOfContainer.addDependant(i);
         // }
         if (m.processor != null) {
             m.processor.accept(compConf);
@@ -111,8 +109,8 @@ public final class ClassSourceModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static ClassSourceModel newModel(RealmModel realm, OpenClass oc) {
-        return new Builder(realm, oc).build();
+    public static ClassSourceModel newModel(ClassMemberAccessor oc) {
+        return new Builder(oc).build();
     }
 
     /** A builder object for {@link ClassSourceModel}. */
@@ -126,9 +124,7 @@ public final class ClassSourceModel {
         /** All method hooks. */
         final ArrayList<MethodHookModel> methods = new ArrayList<>();
 
-        final OpenClass oc;
-
-        final RealmModel realm;
+        final ClassMemberAccessor oc;
 
         final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
 
@@ -139,8 +135,7 @@ public final class ClassSourceModel {
          *            a class processor usable by hooks
          * 
          */
-        private Builder(RealmModel realm, OpenClass cp) {
-            this.realm = requireNonNull(realm);
+        private Builder(ClassMemberAccessor cp) {
             this.oc = requireNonNull(cp);
         }
 

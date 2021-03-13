@@ -44,7 +44,7 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // prefixed with source() <--- throws UOE if no source tag
 // prefixed with guest() <--- throws UOE if no guest tag
 
-// componentName();
+// component Name();
 // componentPath();
 
 // sourceExport();
@@ -79,13 +79,13 @@ public interface ComponentConfigurationContext {
 
     /**
      * @param <T>
-     * @param extensionType
+     * @param extensionClass
      * @return the extension
      * @throws UnsupportedOperationException
      *             if the component does not have the {@link ComponentModifier#BUNDLE_ROOT} modifier
      * @see ContainerConfiguration#use(Class)
      */
-    <T extends Extension> T containerUse(Class<T> extensionType);
+    <T extends Extension> T containerUse(Class<T> extensionClass);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is

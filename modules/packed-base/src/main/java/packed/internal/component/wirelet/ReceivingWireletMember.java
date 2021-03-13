@@ -35,7 +35,7 @@ public class ReceivingWireletMember {
     boolean isOptional;
 
     @Nullable
-    Class<? extends Extension> extensionType;
+    Class<? extends Extension> extensionClass;
 
     void injectIfField(WireletPack wirelets) {
 

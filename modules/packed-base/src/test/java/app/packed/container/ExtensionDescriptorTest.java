@@ -33,14 +33,14 @@ public class ExtensionDescriptorTest {
     public void empty() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(EmptyExtension.class);
         assertThat(ed.dependencies()).isEmpty();
-        assertThat(ed.type()).isSameAs(EmptyExtension.class);
+        assertThat(ed.extensionClass()).isSameAs(EmptyExtension.class);
     }
 
     @Test
     public void various() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(VariousExtension.class);
         assertThat(ed.dependencies()).containsExactly(EmptyExtension.class);
-        assertThat(ed.type()).isSameAs(VariousExtension.class);
+        assertThat(ed.extensionClass()).isSameAs(VariousExtension.class);
     }
 
     static class VariousExtension extends Extension {
@@ -49,7 +49,7 @@ public class ExtensionDescriptorTest {
             $addDependency(EmptyExtension.class);
         }
 
-        @ExposeAttribute(from = ExtensionDescriptorTest.class, name = "description")
+        @ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")
         SomeContract expose() {
             return new SomeContract();
         }

@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
@@ -207,7 +207,7 @@ public final class MethodHookModel extends MemberHookModel {
             provideAsKey = key;
         }
 
-        public static void registerProcessor(MethodHook.Bootstrap sidecar, Consumer<? super ComponentBuild> processor) {
+        public static void registerProcessor(MethodHook.Bootstrap sidecar, Consumer<? super ComponentSetup> processor) {
             Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
             b.processor = processor;
         }

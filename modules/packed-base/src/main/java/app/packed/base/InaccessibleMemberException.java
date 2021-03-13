@@ -24,6 +24,9 @@ package app.packed.base;
 // NotOpenedException
 // UndeclaredAccessException
 // Was UncheckedIllegalAccessException
+
+// InaccessibleRealmException or
+// InaccessibleModuleException
 public class InaccessibleMemberException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

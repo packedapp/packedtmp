@@ -41,10 +41,10 @@ final class ExtensionDependencyValidator {
 
     private static final Map<Class<? extends Extension>, List<Class<? extends Extension>>> VALIDATED = Collections.synchronizedMap(new WeakHashMap<>());
 
-    private static Node collect(Class<? extends Extension> extensionType, IdentityHashMap<Class<? extends Extension>, Node> nodes) {
-        Node n = nodes.get(extensionType);
+    private static Node collect(Class<? extends Extension> extensionClass, IdentityHashMap<Class<? extends Extension>, Node> nodes) {
+        Node n = nodes.get(extensionClass);
         if (n == null) {
-            nodes.put(extensionType, n = new Node(extensionType));
+            nodes.put(extensionClass, n = new Node(extensionClass));
             for (int i = 0; i < n.nodes.length; i++) {
                 n.nodes[i] = collect(n.dependencies.get(i), nodes);
             }
@@ -52,18 +52,18 @@ final class ExtensionDependencyValidator {
         return n;
     }
 
-    static List<Class<? extends Extension>> dependenciesOf(Class<? extends Extension> extensionType) {
-        List<Class<? extends Extension>> result = VALIDATED.get(extensionType);
+    static List<Class<? extends Extension>> dependenciesOf(Class<? extends Extension> extensionClass) {
+        List<Class<? extends Extension>> result = VALIDATED.get(extensionClass);
         if (result != null) {
             return result;
         }
-        return dependenciesOf0(extensionType);
+        return dependenciesOf0(extensionClass);
     }
 
-    static List<Class<? extends Extension>> dependenciesOf0(Class<? extends Extension> extensionType) {
+    static List<Class<? extends Extension>> dependenciesOf0(Class<? extends Extension> extensionClass) {
         // Create nodes and resolve edges
         IdentityHashMap<Class<? extends Extension>, Node> nodes = new IdentityHashMap<>();
-        collect(extensionType, nodes);
+        collect(extensionClass, nodes);
 
         // Run Tarjan's strongly connected components
         // TarjanSCC tscc = new TarjanSCC();
@@ -77,27 +77,27 @@ final class ExtensionDependencyValidator {
         // No circles was found, add all extensions to validated.
         for (Node n : nodes.values()) {
             // We add an unmodifiable linked set too m
-            VALIDATED.putIfAbsent(n.extensionType, n.dependencies);
+            VALIDATED.putIfAbsent(n.extensionClass, n.dependencies);
         }
 
-        return VALIDATED.get(extensionType);
+        return VALIDATED.get(extensionClass);
     }
 
     private static class Node {
         private final List<Class<? extends Extension>> dependencies;
-        final Class<? extends Extension> extensionType;
+        final Class<? extends Extension> extensionClass;
         private int index;
 
         private int lowLink;
         private final Node[] nodes;
         private boolean onStack;
 
-        Node(Class<? extends Extension> extensionType) {
-            this.extensionType = requireNonNull(extensionType);
-            this.dependencies = ExtensionUtil.fromUseExtension(extensionType);
+        Node(Class<? extends Extension> extensionClass) {
+            this.extensionClass = requireNonNull(extensionClass);
+            this.dependencies = ExtensionUtil.fromUseExtension(extensionClass);
             for (Class<? extends Extension> c : dependencies) {
-                if (c == extensionType) {
-                    throw new InternalExtensionException("Extension " + StringFormatter.format(extensionType) + " cannot depend on itself via " + c);
+                if (c == extensionClass) {
+                    throw new InternalExtensionException("Extension " + StringFormatter.format(extensionClass) + " cannot depend on itself via " + c);
                 }
             }
             this.nodes = new Node[dependencies.size()];
@@ -105,7 +105,7 @@ final class ExtensionDependencyValidator {
 
         @Override
         public String toString() {
-            return extensionType.getCanonicalName();
+            return extensionClass.getCanonicalName();
         }
     }
 
@@ -132,7 +132,7 @@ final class ExtensionDependencyValidator {
 
             // System.out.println();
             // System.out.println("Finishing " + n);
-            // System.out.println(stack.stream().map(e -> e.extensionType.getCanonicalName()).collect(Collectors.joining(", ")));
+            // System.out.println(stack.stream().map(e -> e.extensionClass.getCanonicalName()).collect(Collectors.joining(", ")));
 
             if (n.index == n.lowLink) {
                 if (stack.size() > 1 && stack.peek() != n) {
@@ -141,11 +141,11 @@ final class ExtensionDependencyValidator {
                     Node n1 = stack.pop();
                     // System.out.println("Popping " + n1);
                     while (n1 != n) {
-                        scc.add(n1.extensionType);
+                        scc.add(n1.extensionClass);
                         n1 = stack.pop();
                         // System.out.println("Popping " + n1);
                     }
-                    scc.add(n1.extensionType);
+                    scc.add(n1.extensionClass);
                     if (scc.size() > 1) {
                         throw new InternalExtensionException("There is a dependency circle between multiple extensions" + scc);
                     }

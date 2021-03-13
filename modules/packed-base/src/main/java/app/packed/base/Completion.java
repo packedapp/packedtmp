@@ -20,6 +20,11 @@ import static java.util.Objects.requireNonNull;
 /**
  *
  */
+
+// MainResult
+// int
+// Throwable
+
 // Vi har ikke null artifacts mere...
 // som minimum returnere 
 //skal ikke returnere null fra de der void artifacts....

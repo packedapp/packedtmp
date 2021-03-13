@@ -17,11 +17,11 @@ package app.packed.cli;
 
 import app.packed.base.Completion;
 import app.packed.component.Assembly;
-import app.packed.component.BuildException;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.BaseAssembly;
+import app.packed.exceptionhandling.BuildException;
 
 /**
  * A specialization of {@link Image} that is targeted use from the main method of a Java program. This is typically used
@@ -36,6 +36,8 @@ import app.packed.container.BaseAssembly;
 // @UseSiteIgnoreForStackWalks (ClassValue er O(1) i fremtidige versioner)
 // Ideen er lidt at kunne annotere allerede klasser som ikke er direkte Assembly bruger klasser...
 // IDK
+
+// Typically used for CLI applications
 public /* primitive */ final class MainImage {
 
     /** The image we are wrapping. */
@@ -75,9 +77,8 @@ public /* primitive */ final class MainImage {
      * @throws IllegalStateException
      *             if the image has already been used
      */
-    // Move example to class javadoc
-    public Completion use(String[] args, Wirelet... wirelets) {
-        return image.use(Wirelet.combine(MainArgs.of(args), wirelets));
+    public void use(String[] args, Wirelet... wirelets) {
+        image.use(Wirelet.combine(MainArgs.of(args), wirelets));
     }
 
     public void use(Wirelet... wirelets) {
@@ -109,8 +110,6 @@ class MyAppMain extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Main.run(new MyAppMain());
-        
         MAIN.use(args);
     }
 }

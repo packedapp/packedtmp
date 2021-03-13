@@ -27,7 +27,7 @@ import app.packed.container.InternalExtensionException;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.util.MethodHandleUtil;
 
-/** A model of a subclass of {@link Extension.Subtension}. */
+/** A model of a subclass of {@link Extension.Subtension}. Not used outside of this package. */
 final class SubtensionModel {
     
     /** Models of all subtensions. */
@@ -46,12 +46,12 @@ final class SubtensionModel {
             }
             
             @SuppressWarnings("unchecked")
-            Class<? extends Extension> extensionType = (Class<? extends Extension>) declaringClass;
-            ExtensionModel.of(extensionType); // make sure the extension is valid
+            Class<? extends Extension> extensionClass = (Class<? extends Extension>) declaringClass;
+            ExtensionModel.of(extensionClass); // make sure the extension is valid
 
             // Build a constructor
-            InstantiatorBuilder ib = InstantiatorBuilder.of(MethodHandles.lookup(), type, extensionType, Class.class);
-            ib.addKey(extensionType, 0);
+            InstantiatorBuilder ib = InstantiatorBuilder.of(MethodHandles.lookup(), type, extensionClass, Class.class);
+            ib.addKey(extensionClass, 0);
             ib.addKey(new Key<Class<? extends Extension>>() {}, 1);
 
             MethodHandle constructor = ib.build(); // MethodHandle(SomeExtension,Class)SomeSubtension
@@ -61,7 +61,7 @@ final class SubtensionModel {
             constructor = constructor.asType(constructor.type().changeParameterType(0, Extension.class));
             constructor = MethodHandleUtil.castReturnType(constructor, Subtension.class);
 
-            return new SubtensionModel(extensionType, constructor);
+            return new SubtensionModel(extensionClass, constructor);
         }
     };
 
@@ -69,18 +69,18 @@ final class SubtensionModel {
     private final MethodHandle constructor;
 
     /** The declaring extension. */
-    final Class<? extends Extension> extensionType;
+    final Class<? extends Extension> extensionClass;
 
     /**
      * Creates a new model.
      * 
-     * @param extensionType
+     * @param extensionClass
      *            the declaring extension type
      * @param constructor
      *            a constructor for the subtensions
      */
-    private SubtensionModel(Class<? extends Extension> extensionType, MethodHandle constructor) {
-        this.extensionType = requireNonNull(extensionType);
+    private SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle constructor) {
+        this.extensionClass = requireNonNull(extensionClass);
         this.constructor = requireNonNull(constructor);
     }
 

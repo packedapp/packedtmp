@@ -23,6 +23,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
+import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BindableComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -34,6 +35,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
@@ -42,6 +44,14 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
+    @SuppressWarnings("rawtypes")
+    public static final BindableComponentDriver INSTALL_DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, PackedComponentDriver.Option.constantSource());
+    
+    /** A driver for this configuration. */
+    @SuppressWarnings("rawtypes")
+    public static final BindableComponentDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
+            PackedComponentDriver.Option.statelessSource());
+    
     // Holds ExtensionModel for extensions, source for sourced components
     public final Object data;
 
@@ -118,7 +128,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         // AttributeProvide could make sense... And then some way to say retain this info at runtime...
         // But maybe this is sidecars instead???
 
-        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentBuild.class);
+        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentSetup.class);
         ib.addKey(ComponentConfigurationContext.class, 0);
         MethodHandle mh = ib.build();
         return new Meta(type, mh, modifiers);

@@ -18,6 +18,7 @@ package packed.internal.component.wirelet;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,14 +69,17 @@ public final class WireletPreModel {
     }
 
     @Nullable
-    static WireletPreModel consume(Class<? extends Wirelet> extensionType) {
+    static WireletPreModel consume(Class<? extends Wirelet> extensionClass) {
+        Lookup l = MethodHandles.lookup();
+        l.lookupClass().getModule().addReads(extensionClass.getModule());
         try {
-            MethodHandles.lookup().ensureInitialized(extensionType);
+            l = MethodHandles.privateLookupIn(extensionClass, l);
+            l.ensureInitialized(extensionClass);
         } catch (IllegalAccessException e) {
-            throw new InternalExtensionException("Oops");
+            throw new InternalExtensionException("Oops " + extensionClass);
         }
-        WireletPreModel existing = m(extensionType);
-        HOLDERS.get(extensionType).set(null);
+        WireletPreModel existing = m(extensionClass);
+        HOLDERS.get(extensionClass).set(null);
         return existing;
     }
 

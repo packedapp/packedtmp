@@ -31,7 +31,7 @@ import app.packed.hooks.MethodHook.Bootstrap;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.classscan.OpenClass;
+import packed.internal.classscan.ClassMemberAccessor;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.LookupUtil;
@@ -122,7 +122,7 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
         /** {@inheritDoc} */
         @Override
         protected MethodHookBootstrapModel build() {
-            OpenClass oc = ib.oc();
+            ClassMemberAccessor oc = ib.oc();
             oc.findMethods(m -> {
                 Provide ap = m.getAnnotation(Provide.class);
                 if (ap != null) {

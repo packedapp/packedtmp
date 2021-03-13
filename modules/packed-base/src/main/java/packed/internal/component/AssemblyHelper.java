@@ -64,7 +64,7 @@ public final class AssemblyHelper {
                 VH_BUNDLE_CONFIGURATION.setVolatile(assembly, AssemblyHelper.ASSEMBLY_CONSUMED);
             }
         } else if (existing instanceof AssemblyHelper) {
-            // Bundle has already been used successfully or unsuccessfully
+            // Bundle has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, type = " + assembly.getClass());
         } else {
             // Can be this thread or another thread that is already using the bundle.
@@ -85,11 +85,3 @@ public final class AssemblyHelper {
         return (PackedComponentDriver<? extends C>) VH_BUNDLE_DRIVER.get(assembly);
     }
 }
-/// Some extensions that I don't think we will do
-// Do we want to cache exceptions?
-// Do we want better error messages, for example, This bundle has already been used to create an artifactImage
-// Do we want to store the calling thread in case of recursive linking..
-
-// We should have some way to mark it failed????
-// If configure() fails. The ContainerConfiguration still works...
-/// Well we should probably catch the exception from where ever we call his method

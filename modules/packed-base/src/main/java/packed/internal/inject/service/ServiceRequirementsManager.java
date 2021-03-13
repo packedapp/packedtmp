@@ -27,9 +27,9 @@ import java.util.StringJoiner;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Variable;
-import app.packed.component.BuildException;
+import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.ContainerSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -65,7 +65,7 @@ public final class ServiceRequirementsManager {
 
     final LinkedHashMap<Key<?>, Requirement> requirements = new LinkedHashMap<>();
 
-    public void checkForMissingDependencies(PackedContainerConfiguration node) {
+    public void checkForMissingDependencies(ContainerSetup node) {
         if (unresolvedRequirements != null) {
             // if (!box.source.unresolvedServicesAllowed()) {
             for (ServiceDependencyRequirement e : unresolvedRequirements) {
@@ -86,15 +86,15 @@ public final class ServiceRequirementsManager {
                         Executable ed = ((PackedParameterDescriptor) dependency.variable().get()).unsafeExecutable();
                         sb.append(ReflectionUtil.typeOf(ed)).append(": ");
                         sb.append(ed.getDeclaringClass().getCanonicalName());
-                        if (ed instanceof Method) {
-                            sb.append("#").append(((Method) ed).getName());
+                        if (ed instanceof Method met) {
+                            sb.append("#").append(met.getName());
                         }
                         sb.append("(");
                         if (dependencies.size() > 1) {
                             StringJoiner sj = new StringJoiner(", ");
                             for (int j = 0; j < dependencies.size(); j++) {
                                 Variable vd = dependency.variable().orElse(null);
-                                int pindex = vd instanceof PackedParameterDescriptor ? ((PackedParameterDescriptor) vd).index() : -1;
+                                int pindex = vd instanceof PackedParameterDescriptor ppd ? ppd.index() : -1;
                                 if (j == pindex) {
                                     sj.add("-> " + dependency.key().toString() + " <-");
                                 } else {
@@ -153,7 +153,7 @@ public final class ServiceRequirementsManager {
      * @see ServiceExtension#require(Key...)
      * @see ServiceExtension#requireOptionally(Key...)
      */
-    public void require(Key<?> key, boolean isOptional /*, ConfigSite configSite*/) {
+    public void require(Key<?> key, boolean isOptional /* , ConfigSite configSite */) {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 }

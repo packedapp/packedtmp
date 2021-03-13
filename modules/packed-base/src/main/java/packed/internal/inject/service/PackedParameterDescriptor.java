@@ -63,8 +63,8 @@ public final class PackedParameterDescriptor implements Variable {
     public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof PackedParameterDescriptor) {
-            return ((PackedParameterDescriptor) obj).parameter.equals(parameter);
+        } else if (obj instanceof PackedParameterDescriptor ppd) {
+            return ppd.parameter.equals(parameter);
         }
         return false;
     }

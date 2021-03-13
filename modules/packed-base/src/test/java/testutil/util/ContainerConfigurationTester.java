@@ -105,12 +105,12 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public <T extends Extension> T use(Class<T> extensionType) {
-        return cc.use(extensionType);
+    public <T extends Extension> T use(Class<T> extensionClass) {
+        return cc.use(extensionClass);
     }
 
-    public <T extends Extension> ContainerConfigurationTester use(Class<T> extensionType, Consumer<? super T> consumer) {
-        consumer.accept(cc.use(extensionType));
+    public <T extends Extension> ContainerConfigurationTester use(Class<T> extensionClass, Consumer<? super T> consumer) {
+        consumer.accept(cc.use(extensionClass));
         return this;
     }
 }

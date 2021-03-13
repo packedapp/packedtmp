@@ -5,11 +5,11 @@ module app.packed.base {
     exports app.packed.component;
     exports app.packed.component.drivers;
     exports app.packed.container;
+    exports app.packed.conversion;
     exports app.packed.inject;
     exports app.packed.inject.sandbox;
     exports app.packed.hooks;
     exports app.packed.state;
-    exports app.packed.time;
     exports app.packed.validate;
     
     opens app.packed.cli to foo;
@@ -32,6 +32,8 @@ module app.packed.base {
 //    exports packed.internal.hook.applicator to app.packed.errorhandling, app.packed.cli;
 
     // opens app.packed.service to app.packed.service;
+    
+    uses packed.internal.util.Plugin;
 }
 
 // requires static org.graalvm.sdk;

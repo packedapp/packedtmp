@@ -28,7 +28,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
-import packed.internal.component.source.RealmBuild;
+import packed.internal.component.source.RealmConfiguration;
 import packed.internal.component.wirelet.WireletPack;
 
 /** The build context. */
@@ -41,7 +41,7 @@ public final class PackedBuildContext implements BuildInfo {
     final int modifiers;
 
     /** The root component, set in build. */
-    ComponentBuild root;
+    ComponentSetup root;
 
     /** The thread that is assembling the system. */
     // We need WeakReference, or some try-final
@@ -146,7 +146,7 @@ public final class PackedBuildContext implements BuildInfo {
         PackedBuildContext pac = new PackedBuildContext(artifactDriver, modifiers, wp);
 
         // Create the root component
-        ComponentBuild compConf = pac.root = new ComponentBuild(pac, new RealmBuild(assembly.getClass()), componentDriver, null, wp);
+        ComponentSetup compConf = pac.root = new ComponentSetup(pac, new RealmConfiguration(assembly.getClass()), componentDriver, null, wp);
         Object conf = componentDriver.toConfiguration(compConf);
         AssemblyHelper.invokeBuild(assembly, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
 
@@ -160,7 +160,7 @@ public final class PackedBuildContext implements BuildInfo {
 
         PackedBuildContext pbc = new PackedBuildContext(artifactDriver, 0, wp);
 
-        ComponentBuild compBuild = pbc.root = new ComponentBuild(pbc, new RealmBuild(consumer.getClass()), componentDriver, null, wp);
+        ComponentSetup compBuild = pbc.root = new ComponentSetup(pbc, new RealmConfiguration(consumer.getClass()), componentDriver, null, wp);
 
         CC componentConfiguration = componentDriver.toConfiguration(compBuild);
         

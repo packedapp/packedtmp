@@ -32,14 +32,13 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
 import app.packed.state.OnStart;
 import app.packed.validate.Validator;
-import packed.internal.container.PackedContainerConfiguration;
-import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManager;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * The main configuration point for services.
+ * An extension that deals with the service functionality of a container.
  * <p>
  * This extension provides the following functionality:
  * 
@@ -76,22 +75,17 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 // Ellers selvfoelgelig hvis man bruger provide/@Provides\
 public class ServiceExtension extends Extension {
 
-    /** The containers injection manager which controls all service functionality. */
-    // we use this for provideProtoype for now But should go away at some point
-    private final PackedContainerConfiguration bundle;
-
-    /** The service build manager. */
-    private final ServiceManager services;
+    /** The service manager. */
+    private final ServiceManager sm;
 
     /**
-     * Invoked by the runtime to create a new service extension.
+     * Create a new service extension.
      * 
-     * @param extension
-     *            the configuration of the extension
+     * @param configuration
+     *            an extension configuration object
      */
-    /* package-private */ ServiceExtension(ExtensionConfiguration extension) {
-        this.bundle = ((PackedExtensionConfiguration) extension).bundle();
-        this.services = bundle.newServiceManagerFromServiceExtension();
+    /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
+        this.sm = ((ExtensionSetup) configuration).container().newServiceManagerFromServiceExtension();
     }
 
     /**
@@ -103,10 +97,22 @@ public class ServiceExtension extends Extension {
      * 
      * @see ServiceWirelets#anchorAll()
      */
-    public void anchorAll() {}
+    // export does not anchor I think..
+    // only if a service...
+    public void anchorAll() {
+        anchorIf(t -> true);
+    }
 
+    /**
+     * @param filter
+     *            the filter
+     * @see ServiceWirelets#anchorIf(Predicate)
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void anchorIf(Predicate<? super Service> filter) {
-        // Only anchrored services???
+        requireNonNull(filter, "filter is null");
+        Predicate<? super Service> a = sm.anchorFilter;
+        sm.anchorFilter = a == null ? filter : ((Predicate) a).or(filter);
     }
 
     // Validates the outward facing contract
@@ -169,7 +175,7 @@ public class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        return sm.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();
@@ -188,7 +194,7 @@ public class ServiceExtension extends Extension {
     // Ignores other exports
     // interacts with other exports in some way
     /**
-     * Exports all internal services.
+     * Exports all container services and any services that have been explicitly anchored via of anchoring methods.
      * <p>
      * 
      * <ul>
@@ -213,15 +219,16 @@ public class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        sm.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
-
+        // Hmm
     }
 
     public void exportIf(Predicate<? super Service> filter) {
-        // Only anchrored services???
+        // Only anchrored services??? Yes
+        // ContainerServices and Ac
     }
 
     /**
@@ -229,9 +236,9 @@ public class ServiceExtension extends Extension {
      * 
      * @return a service contract for this extension
      */
-    @ExposeAttribute(from = ServiceAttributes.class, name = "contract")
+    @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract exposeContract() {
-        return services.newServiceContract();
+        return sm.newServiceContract();
     }
 
     /**
@@ -239,28 +246,10 @@ public class ServiceExtension extends Extension {
      * 
      * @return any exported services. Or null if there are no exports
      */
-    @ExposeAttribute(from = ServiceAttributes.class, name = "exported-services")
+    @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return services.exports().exportsAsServiceRegistry();
-    }
-
-    /**
-     * Provides every service from the specified locator.
-     * 
-     * @param locator
-     *            the locator to provide services from
-     * @throws IllegalArgumentException
-     *             if the specified locator is not implemented by Packed
-     */
-    public void provideAll(ServiceLocator locator) {
-        requireNonNull(locator, "locator is null");
-        if (!(locator instanceof PackedInjector)) {
-            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-                    + " are currently not supported, injector type = " + locator.getClass().getName());
-        }
-        checkConfigurable();
-        services.provideAll((PackedInjector) locator /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
+        return sm.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -297,6 +286,24 @@ public class ServiceExtension extends Extension {
     }
 
     /**
+     * Provides every service from the specified locator.
+     * 
+     * @param locator
+     *            the locator to provide services from
+     * @throws IllegalArgumentException
+     *             if the specified locator is not implemented by Packed
+     */
+    public void provideAll(ServiceLocator locator) {
+        requireNonNull(locator, "locator is null");
+        if (!(locator instanceof PackedInjector)) {
+            throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
+                    + " are currently not supported, injector type = " + locator.getClass().getName());
+        }
+        checkConfigurable();
+        sm.provideAll((PackedInjector) locator /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
+    }
+
+    /**
      * Binds a new service constant to the specified instance.
      * <p>
      * The default key for the service will be {@code instance.getClass()}. If the type returned by
@@ -310,20 +317,15 @@ public class ServiceExtension extends Extension {
      * @return a service configuration for the service
      */
     public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
-        // installer().wire(SCD.fromInstance(instance).provide();
         return configuration().wire(ServiceComponentConfiguration.provideInstance(instance)).provide();
     }
 
-    // Will install a ServiceStatelessConfiguration...
-    // Spoergmaalet er om vi ikke bare skal have en driver...
-    // og en metode paa BaseBundle...
-
     public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
-        return bundle.compConf.wire(ServiceComponentConfiguration.providePrototype(implementation));
+        return userWire(ServiceComponentConfiguration.providePrototype(implementation));
     }
 
     public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
-        return bundle.compConf.wire(ServiceComponentConfiguration.providePrototype(factory));
+        return userWire(ServiceComponentConfiguration.providePrototype(factory));
     }
 
     // requires bliver automatisk anchoret...
@@ -354,7 +356,7 @@ public class ServiceExtension extends Extension {
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            services.dependencies().require(key, false /* , cs */);
+            sm.dependencies().require(key, false /* , cs */);
         }
     }
 
@@ -379,28 +381,31 @@ public class ServiceExtension extends Extension {
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            services.dependencies().require(key, true /* , cs */);
+            sm.dependencies().require(key, true /* , cs */);
         }
     }
 
     /**
-     * Performs a transformation of any exported services. Final adjustments before services are visible a parent container.
+     * Performs a transformation of any exported services. This method can perform any final adjustments of services before
+     * they are made available to any parent container.
+     * <p>
+     * The transformation takes place xxxx
      * 
      * @param transformer
      *            transforms the exports
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
-        services.exports().addExportTransformer(transformer);
+        sm.exports().addExportTransformer(transformer);
     }
 
     /**
-     * A subtension useable from other extensions.
+     * A subtension that can be used by other extensions via {@link Extension#use(Class)} or
+     * {@link ExtensionConfiguration#use(Class)}.
      * <p>
-     * There is no support for exporting services. The user is always in full control of what is being exported out from the
-     * container via the various export methods on {@link ServiceExtension}.
-     * 
+     * There are no support for exporting services. The end-user is always in full control of exactly what is being exported
+     * out from the container.
      **/
-    public final class Sub extends Subtension {
+    public class Sub extends Subtension {
 
         // Require???
         // This is very limited as we can only require services from other
@@ -410,17 +415,17 @@ public class ServiceExtension extends Extension {
         /// This would apply locally to the extension...
         /// limited usefullness
 
-        /** The other extension type. */
-        final Class<? extends Extension> extensionType;
+        /** The requesting extension. */
+        final Class<? extends Extension> requestingExtension;
 
         /**
-         * sdsd.
+         * Creates a new sub.
          * 
-         * @param extensionType
-         *            the type this is a sub extension for
+         * @param requestingExtension
+         *            the requesting extension
          */
-        /* package-private */ Sub(Class<? extends Extension> extensionType) {
-            this.extensionType = requireNonNull(extensionType, "extensionType is null");
+        /* package-private */ Sub(Class<? extends Extension> requestingExtension) {
+            this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
         }
     }
 }

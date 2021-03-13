@@ -768,8 +768,8 @@ public abstract class Factory<T> {
                 if (Modifier.isPrivate(executable.getModifiers())) {
                     lookup = lookup.in(executable.getDeclaringClass());
                 }
-                if (executable instanceof Constructor) {
-                    methodHandle = lookup.unreflectConstructor((Constructor<?>) executable);
+                if (executable instanceof Constructor<?> c) {
+                    methodHandle = lookup.unreflectConstructor(c);
                 } else {
                     methodHandle = lookup.unreflect((Method) executable);
                 }

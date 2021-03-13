@@ -36,6 +36,7 @@ import java.lang.annotation.Target;
  * The annotation can also be applied to
  * 
  * <p>
+ * Injection of services into static fields or method are not supported.
  * There is no general support for injecting into static fields or methods. If you absolutely need it, it is fairly easy
  * to support using sidecars... TODO example
  */
@@ -43,17 +44,3 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Inject {}
-
-//Maaske skal vi endda at hvis man ikke har en sidecar, og kun @OnLifecycle... Saa koerer man setField/invokeMethod
-//naar
-//man naar det den givne lifecycle... Ja det taenker jeg man goer. Saa slipper man ogsaa for at lave baade en
-//InjectFieldSidecar + InjectMethodSidecar
-//
-
-// Field injection first
-// Maybe run @Inject noArgConstruct() last
-// Used on annotation types, to avoid having to use @Inject @QA("sdsd") to
-// It is valid to use @Inject on a method with no parameters, in which it just indicates that the method should be
-// invoked during the injection phase
-
-// TODO taenker vi bare bruger en sidecar... Hvis der ikke er nogle services, bruger invoker

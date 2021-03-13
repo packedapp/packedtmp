@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.classscan.OpenClass;
+import packed.internal.classscan.ClassMemberAccessor;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /**
@@ -32,9 +32,9 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
  */
 public final class MethodScan {
 
-    final OpenClass oc;
+    final ClassMemberAccessor oc;
 
-    MethodScan(OpenClass oc) {
+    MethodScan(ClassMemberAccessor oc) {
         this.oc = requireNonNull(oc);
     }
 

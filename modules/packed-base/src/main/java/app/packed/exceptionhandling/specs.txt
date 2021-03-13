@@ -1,0 +1,20 @@
+package name
+  .failure
+  .errorhandling
+  .resilience
+   https://en.wikipedia.org/wiki/Exception_handling
+   (smid den i .component)
+Vi er java.. saa  
+  
+  
+Skal vi have en Extension???
+Eller skal vi bruge BaseExtension
+Eller skal vi vaere nogle nogle metoder paa ContainerConfiguration
+Syntes det er en en aandsvag extension. 
+Fordi den skal jo vaere on altid... 
+
+# Strictly hirachical
+
+# NoConfigFiles
+
+# YesToWirelets

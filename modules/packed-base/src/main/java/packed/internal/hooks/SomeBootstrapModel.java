@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
-import packed.internal.hooks.SomeBuilder.ExtensionType;
+import packed.internal.hooks.SomeBuilder.extensionClass;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -34,7 +34,7 @@ public class SomeBootstrapModel extends SomeBuildModel {
         @Override
         protected SomeBootstrapModel computeValue(Class<?> type) {
             MethodHook ams = type.getAnnotation(MethodHook.class);
-            return ams == null ? null : new SomeBuilder(ams.bootstrap(), ExtensionType.METHOD, 0).bootstrap();
+            return ams == null ? null : new SomeBuilder(ams.bootstrap(), extensionClass.METHOD, 0).bootstrap();
         }
     };
 

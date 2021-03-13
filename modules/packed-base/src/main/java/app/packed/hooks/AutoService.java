@@ -54,9 +54,13 @@ public @interface AutoService {
     // Altsaa man kan jo bruge den til at lave en klasse
     // Repo<FooBat>, men typisk taenker jeg man bruger en 
     // specifik metode til at lave saadan en
+    
     abstract class Bootstrap {
-        
-        
+    
+        // Kunne vaere rart maaske at kunne tilfoeje noget der havde lifecycles...
+        // Men taenker at det maa kalde noget med livscykles i foerste omgang..
+        // Altsaa det wrapper f.eks. en FileSystemManager og et id...
+        // F.eks. et fil system...
     }
 }
 // ServiceRegistry

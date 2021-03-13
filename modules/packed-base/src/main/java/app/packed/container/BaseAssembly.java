@@ -27,13 +27,10 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.state.OnStart;
-import app.packed.time.SchedulerExtension;
-import app.packed.time.TimeExtension;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * A convenience extension of {@link ContainerAssembly} which contains shortcut access to common functionality defined
- * by the various extension available in this module.
+ * Extends {@link ContainerAssembly} with commonly used methods from the extensions available in this module.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -72,16 +69,19 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 // CommonBundle, StarterBundle
 // GoBundle
 // Base is fine....
+
+// TODO tror vi sortere metoderne efter extension og saa efter navn
+
 public abstract class BaseAssembly extends ContainerAssembly {
 
-    /** Creates a new BaseAssembly using {@link ContainerConfiguration#driver()}. */
+    /** Creates a new assembly using {@link ContainerConfiguration#driver()}. */
     protected BaseAssembly() {}
 
     /**
-     * Creates a new BaseAssembly using a custom driver.
+     * Creates a new assembly using the specified driver.
      * 
      * @param driver
-     *            the (container) driver to use
+     *            the container driver to use
      */
     protected BaseAssembly(ComponentDriver<ContainerConfiguration> driver) {
         super(driver);
@@ -151,21 +151,21 @@ public abstract class BaseAssembly extends ContainerAssembly {
     }
 
     /**
-     * Returns whether or not the specified extension type is in use.
+     * Returns whether or not the specified extension is in use.
      * 
-     * @param extensionType
-     *            the extension type to test
+     * @param extensionClass
+     *            the extension class to test
      * @return whether or not the specified extension is in use
      * @throws IllegalArgumentException
      *             if the specified extension type is {@link Extension}
      */
-    protected final boolean isInUse(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionType is null");
-        if (extensionType == Extension.class) {
+    protected final boolean isInUse(Class<? extends Extension> extensionClass) {
+        requireNonNull(extensionClass, "extensionClass is null");
+        if (extensionClass == Extension.class) {
             throw new IllegalArgumentException("Cannot specify Extension.class");
         }
         throw new UnsupportedOperationException();
-        // return container.extensions.keySet().contains(extensionType);
+        // return container.extensions.keySet().contains(extensionClass);
     }
 
 //    /**
@@ -245,19 +245,19 @@ public abstract class BaseAssembly extends ContainerAssembly {
         // Vi skal have en eller anden maade at kunne specificere det her
 
     }
+//
+//    /**
+//     * Returns a {@link ScheduledJobExtension} instance.
+//     * <p>
+//     * Calling this method is short for {@code use(SchedulerExtension.class)}
+//     * 
+//     * @return a time extension instance
+//     * @see #use(Class)
+//     */
+//    protected final ScheduledJobExtension scheduler() {
+//        return use(ScheduledJobExtension.class);
+//    }
 
-    /**
-     * Returns a {@link SchedulerExtension} instance.
-     * <p>
-     * Calling this method is short for {@code use(SchedulerExtension.class)}
-     * 
-     * @return a time extension instance
-     * @see #use(Class)
-     */
-    protected final SchedulerExtension scheduler() {
-        return use(SchedulerExtension.class);
-    }
-   
     /**
      * Returns a {@link ServiceExtension} instance.
      * <p>
@@ -269,18 +269,18 @@ public abstract class BaseAssembly extends ContainerAssembly {
     protected final ServiceExtension service() {
         return use(ServiceExtension.class);
     }
-    
-    /**
-     * Returns a {@link TimeExtension} instance.
-     * <p>
-     * Calling this method is short for {@code use(TimeExtension.class)}
-     * 
-     * @return a time extension instance
-     * @see #use(Class)
-     */
-    protected final TimeExtension time() {
-        return use(TimeExtension.class);
-    }
+
+//    /**
+//     * Returns a {@link TimeExtension} instance.
+//     * <p>
+//     * Calling this method is short for {@code use(TimeExtension.class)}
+//     * 
+//     * @return a time extension instance
+//     * @see #use(Class)
+//     */
+//    protected final TimeExtension time() {
+//        return use(TimeExtension.class);
+//    }
 }
 
 // I don't think they are used that often...

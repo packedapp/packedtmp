@@ -32,31 +32,40 @@ import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
- * A collection of services with each service having a unique {@link Service#key() key}. Unlike {@link ServiceLocator}
- * and {@link ServiceSelection} this interface does not contain any methods to acquire actual service instances. It
- * merely provides information about the type of services that are available.
+ * A collection of services where each service have a unique {@link Service#key() key}. This interface does not directly
+ * support any way to acquire actual service instances. Instead this functionality is available via some of its
+ * subinterfaces.
  * <p>
- * Unless otherwise specified, implementations of this interface does not instances of this interface are immutable
- * collections. One notable exception is the {@link ServiceComposer} interface. Which support mutation operations on the
- * iterators returned by {@link #iterator()} and sets returned by {@link #keys()}. Kun remove operationer jo
+ * Packed provides a number of subinterfaces and abstract implementations of this interface:
+ * <ul>
+ * <li>{@link ServiceLocator}, extends this interface with various method for obtaining service instances or service
+ * instance providers.</li>
+ * <li>{@link ServiceSelection}, extends service locator (and this interface) and</li>
+ * <li>{@link ServiceComposer}, an abstract implementation of this interface that is used for configuring service
+ * registry. Unlike service locator and service selection this is mutable
+ * <li>
  * <p>
- * Unless otherwise specified, implementations of this interface does not override hashCode/equals.
- * Hvorfor kan vi ikke definere den udfra asMap?
+ * Unless otherwise specified, implementations of this interface holds an unchangeable collection of services. One notable
+ * exception is the {@link ServiceComposer} interface.
  * <p>
- * If used as an auto activating variable sidecar the registry injected will be an immutable
+ * Implementations of this interface does not normally override hashCode/equals.
+ * <p>
+ * If this interface is used as an auto service. The registry will contain all services that available to a given component instance.
+ * It will not include auto services.
  */
 @AutoService
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
-     * Returns a map view of every service in this registry in no particular order.
+     * Returns a map view of every entry (key-service pair) in this registry in no particular order.
      * <p>
-     * If this registry supports removals. The returned map will also support removals. However, the map will never support
-     * insertions or updates.
+     * If this registry supports removals, the returned map will also support removal operations: {@link Map#clear()},
+     * {@link Map#remove(Object)}, and {@link Map#remove(Object, Object)} or via views on {@link Map#keySet()},
+     * {@link Map#values()} and {@link Map#entrySet()}. The returned map will never support insertion or update operations.
      * <p>
-     * The returned map will support any thread-safety guarantees provided by this registry instance.
+     * The returned map will retain any thread-safety guarantees provided by the registry itself.
      * 
-     * @return a map of every service in this registry in no particular order
+     * @return a map view of every entry in this registry in no particular order
      */
     Map<Key<?>, Service> asMap();
 
@@ -132,11 +141,16 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns a set containing the keys of every service in this registry.
+     * Returns a set view containing the keys for every service in this registry.
      * <p>
-     * There are no guarantees on the mutability, serializability, or thread-safety of the {@code Set} returned.
+     * If this registry supports removals, the returned set will also support removal operations: {@link Set#clear()},
+     * {@link Set#remove(Object)}, {@link Set#removeAll(java.util.Collection)},
+     * {@link Set#removeIf(java.util.function.Predicate)} and {@link Set#retainAll(java.util.Collection)}. or via any set
+     * iterators. The returned map will never support insertion or update operations.
+     * <p>
+     * The returned map will retain any thread-safety guarantees provided by the registry itself.
      * 
-     * @return a set containing the keys of every service in this registry
+     * @return a set view containing the keys for every service in this registry
      */
     default Set<Key<?>> keys() {
         return asMap().keySet();
@@ -167,12 +181,22 @@ public interface ServiceRegistry extends Iterable<Service> {
     }
 
     /**
-     * Returns an empty immutable service registry.
+     * Returns an unmodifiable registry containing no services.
      * 
-     * @return an empty immutable service registry.
+     * @return an unmodifiable registry containing no services
      */
     static ServiceRegistry of() {
         return AbstractServiceRegistry.EMPTY;
+    }
+    
+    static ServiceRegistry copyOf(ServiceRegistry other) {
+        // Vi vil gerne expose en immutable tingeling
+        throw new UnsupportedOperationException();
+    }
+    static ServiceRegistry of(Map<Key<?>, Service> services) {
+        // IDK hvad skal den bruges til???
+        // Vi vil gerne have noget immutable???
+        throw new UnsupportedOperationException();
     }
 }
 // --------- NOTES --------

@@ -159,6 +159,10 @@ public final class PackedServiceComposer extends ServiceComposer {
         add(factory, true, false, true);
     }
 
+    public static ServiceLocator of(Consumer<? super ServiceComposer> action) {
+        return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
+   
+    }
     /**
      * Creates a new service locator.
      * 

@@ -21,8 +21,9 @@ import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerAssembly;
 import packed.internal.component.AssemblyHelper;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 
 /**
@@ -31,24 +32,27 @@ import packed.internal.component.PackedComponentDriver;
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
- * All assemblies are single use. Trying to use it more than once will fail with {@link IllegalStateException}.
+ * An assembly can only be used a single time. Trying to use it more than once will fail with
+ * {@link IllegalStateException}.
  * <p>
- * This class is rarely extended directly by end-users. But provides means for power users to extend the
- * basic functionality of Packed.
+ * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
+ * functionality of Packed.
  * 
  * @param <C>
  *            the underlying component configuration this assembly wraps
+ * @see ContainerAssembly
+ * @see BaseAssembly
  */
 public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
 
     /**
-     * The configuration of this bundle. This field is set via a VarHandle from {@link AssemblyHelper}. The value of this
-     * field goes through 3 states:
+     * The configuration of this bundle. This field is updated via a VarHandle from {@link AssemblyHelper}. The value of
+     * this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the assembly has not yet been used.
-     * <li>Then, as a part of the build process, it is initialized with the actual component configuration object.
-     * <li>Finally, a non-null placeholder is set to indicate that the assembly has been used
+     * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
+     * <li>Then, as a part of the build process, it is initialized with the actual configuration object of the component.
+     * <li>Finally, {@link AssemblyHelper#ASSEMBLY_CONSUMED} is set to indicate that the assembly has been used
      * </ul>
      */
     @Nullable
@@ -108,8 +112,8 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        ((ComponentBuild) configuration().context).realm.lookup(lookup);
+        ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
 }
-// We do not support $ methods because they can be seen by all subclasses...
-
+//// Design notices
+// We do not support $ methods because they can be seen by all subclasses.

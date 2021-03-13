@@ -40,7 +40,7 @@ import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
 import app.packed.base.Variable;
-import app.packed.component.BuildException;
+import app.packed.exceptionhandling.BuildException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
@@ -308,8 +308,8 @@ public final class DependencyDescriptor implements OldVariable {
         Annotation[] qa = QualifierUtil.findQualifier(annotations);
 
         Optionality optionalType = null;
-        if (type instanceof ParameterizedType && ((ParameterizedType) type).getRawType() == Optional.class) {
-            type = ((ParameterizedType) type).getActualTypeArguments()[0];
+        if (type instanceof ParameterizedType pt && pt.getRawType() == Optional.class) {
+            type = pt.getActualTypeArguments()[0];
             // TODO check that we do not have optional of OptionalX, also ServiceRequest can never be optionally
             // Also Provider cannot be optionally...
             // TODO include annotation

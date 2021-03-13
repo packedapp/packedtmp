@@ -150,7 +150,7 @@ public abstract class TypeToken<T> {
     /** {@inheritDoc} */
     @Override
     public final boolean equals(@Nullable Object obj) {
-        return obj instanceof TypeToken && type.equals(((TypeToken<?>) obj).type);
+        return obj instanceof TypeToken<?> tt && type.equals(tt.type);
     }
 
     /**

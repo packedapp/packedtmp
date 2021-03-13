@@ -33,7 +33,6 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     public static void main(String[] args) {
         Main.run(new HelloWorldAssembly());
-        System.out.println();
         ComponentStream.of(new HelloWorldAssembly()).forEach(c -> System.out.println(c.path()));
         //ComponentSystem.forEach(new HelloWorldAssembly(), c -> System.out.println(c.path()));
     }

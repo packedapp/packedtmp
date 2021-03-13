@@ -52,11 +52,11 @@ public final class PackedInitializationContext {
     /** The component node we are building. */
     PackedComponent component;
 
-    final ComponentBuild root;
+    final ComponentSetup root;
 
     private final WireletPack wirelets;
 
-    private PackedInitializationContext(ComponentBuild root, WireletPack wirelets) {
+    private PackedInitializationContext(ComponentSetup root, WireletPack wirelets) {
         this.root = root;
         this.wirelets = wirelets;
     }
@@ -82,7 +82,7 @@ public final class PackedInitializationContext {
     // Check for any runtime wirelets that have been specified.
     // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
     // Maybe this can be written in PodInstantiationContext
-    String rootName(ComponentBuild configuration) {
+    String rootName(ComponentSetup configuration) {
         String n = configuration.name;
         String ol = wirelets() == null ? null : wirelets().nameWirelet();
         if (ol != null) {
@@ -101,8 +101,8 @@ public final class PackedInitializationContext {
      * @return a service locator for the system
      */
     public ServiceLocator services() {
-        ServiceManager sc = root.cube.getServiceManager();
-        return sc == null ? ServiceLocator.of() : sc.newServiceLocator(component, component.region);
+        ServiceManager sm = root.container.getServiceManager();
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.region);
     }
 
     /**
@@ -115,7 +115,7 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    static PackedInitializationContext process(ComponentBuild root, Wirelet[] imageWirelets) {
+    static PackedInitializationContext process(ComponentSetup root, Wirelet[] imageWirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root,
                 root.build.isImage() ? WireletPack.ofImage(root, imageWirelets) : root.wirelets);
 

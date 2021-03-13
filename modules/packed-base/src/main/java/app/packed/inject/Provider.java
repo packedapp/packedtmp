@@ -20,19 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.util.stream.Stream;
 
 /**
- * A provider of instances.
- * 
+ * A provider of values.
+ * <p>
+ *  
  * @param <T>
  *            the type of instances that are provided
  */
-// Previously this interface also contained information about where
-// the instances came from. However, this information is now only
-// available from InjectionContext
-// To avoid storing all this static information if we don't need to 
-
-// We let people implement this in order to help with testing.
-// For example, 
-@FunctionalInterface // I don't know if we want this... Det er ikke meningen brugere skal implementere dette interface
+@FunctionalInterface
 public interface Provider<T> {
 
     /**
@@ -44,6 +38,7 @@ public interface Provider<T> {
      * 
      * @return true if this provider is guaranteed to return the same instance on every invocation. Otherwise false.
      */
+    // I'm not sure if we want this...
     default boolean isConstant() {
         return false;
     }
@@ -51,9 +46,7 @@ public interface Provider<T> {
     /**
      * Provides an instance of type {@code T}.
      *
-     * @return the provided value
-     * @throws RuntimeException
-     *             if an exception is encountered while providing an instance
+     * @return the provided instance
      */
     T provide();
 
@@ -67,24 +60,26 @@ public interface Provider<T> {
     }
 
     /**
+     * Returns a provider that will be provide the provided constant on every invocation of {@link #provide()}.
+     * 
      * @param <T>
      *            the type of the specified instance
      * @param constant
      *            the constant
-     * @return a new provider that provides the specified constant everytime
+     * @return a new provider that provides the specified constant
      */
     static <T> Provider<T> ofConstant(T constant) {
-        return new ProviderConstant<>(constant);
+        return new ConstantProvider<>(constant);
     }
 }
 
 /** An implementation of {@link Provider} that returns the instance on every invocation. */
-final class ProviderConstant<T> implements Provider<T> {
+/* primitive */ final class ConstantProvider<T> implements Provider<T> {
 
     /** The constant to provide on every invocation. */
     private final T constant;
 
-    ProviderConstant(T constant) {
+    ConstantProvider(T constant) {
         this.constant = requireNonNull(constant, "constant is null");
     }
 
@@ -100,10 +95,9 @@ final class ProviderConstant<T> implements Provider<T> {
         return constant;
     }
 }
-// default Provider<T> lazyConstant() {
-//    if (isConstant()) {
-//        return this;
-//    }
-//    // Create lazy sync provider...
-//    throw new UnsupportedOperationException();
-//}
+
+//Previously this interface also contained information about where
+//the instances came from. However, this information is now only
+//available from InjectionContext or ServiceProvider.. ServiceProvider
+//To avoid storing all this static information if we don't need to 
+//We let people implement this in order to help with testing.

@@ -95,13 +95,13 @@ final class ExtensionModelWithCachedSupplier<T> {
      * 
      * @param <T>
      *            the type of extension
-     * @param extensionType
+     * @param extensionClass
      *            the type of extension
      * @return a new instance of the extension
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> T newInstance(Class<T> extensionType) {
+    static <T extends Extension> T newInstance(Class<T> extensionClass) {
         // Time goes from around 1000 ns to 10 ns when we cache
-        return (T) CACHE.get(extensionType).get();
+        return (T) CACHE.get(extensionClass).get();
     }
 }

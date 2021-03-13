@@ -41,14 +41,6 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-// run on initialize
-// run on start
-// run on stop
-
-// En per annotering
-
-// Altsaa alle source metoder skal jo resolves paa assembly time
-
 public final class FieldHookModel extends MemberHookModel {
 
     /** A MethodHandle that can invoke {@link FieldHook.Bootstrap#bootstrap}. */

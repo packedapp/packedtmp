@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.BuildException;
+import app.packed.exceptionhandling.BuildException;
 import testutil.stubs.Throwables.Exception1;
 
 /** Tests {@link BuildException}. */

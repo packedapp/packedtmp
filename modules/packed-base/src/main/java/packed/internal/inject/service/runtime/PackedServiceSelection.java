@@ -18,6 +18,7 @@ package packed.internal.inject.service.runtime;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -30,11 +31,20 @@ import app.packed.inject.ServiceSelection;
 /** Implementation of {@link ServiceSelection}. */
 final class PackedServiceSelection<S> extends AbstractServiceLocator implements ServiceSelection<S> {
 
-    /** The services that we wrap */
-    // An alternative implementation would be to have a backing map and a filter
-    // However then asMap() would be a lot of effort to implement.
+    /**
+     * The services that we wrap.
+     * 
+     * @implNote An alternative implementation would be to have a backing map and a filter. However then asMap() would be a
+     *           lot of effort to implement.
+     */
     private final Map<Key<?>, RuntimeService> services;
 
+    /**
+     * Create a new selection.
+     * 
+     * @param services
+     *            the services in this selection
+     */
     PackedServiceSelection(Map<Key<?>, RuntimeService> services) {
         this.services = requireNonNull(services);
     }
@@ -95,6 +105,27 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     @Override
     public Stream<S> instances() {
         return (Stream<S>) services.values().stream();
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public Stream<Provider<S>> providers() {
+        return (Stream) services.values().stream().map(r -> r.getInstanceForLocator(this));
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public Stream<Entry<Service, S>> serviceInstances() {
+        return (Stream) services.values().stream().map(r -> Map.entry(r, r.getInstanceForLocator(this)));
+    }
+
+    /** {@inheritDoc} */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    public Stream<Entry<Service, S>> serviceProviders() {
+        return (Stream) services.values().stream().map(r -> Map.entry(r, r.getProviderForLocator(this)));
     }
 
     /** {@inheritDoc} */

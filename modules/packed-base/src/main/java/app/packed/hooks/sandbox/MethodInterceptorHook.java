@@ -22,7 +22,8 @@ package app.packed.hooks.sandbox;
 // Eller maaske er den ikke..:)
 
 // Det store issue er jo ordering...
-public @interface MethodInterceptorHook {
+// https://docs.micronaut.io/2.4.0/guide/index.html#aop
+@interface MethodInterceptorHook {
 
 }
 

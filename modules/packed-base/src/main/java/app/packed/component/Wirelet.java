@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008 Kasper Nielsen.
+v * Copyright (c) 2008 Kasper Nielsen.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ public abstract class Wirelet {
         WireletPreModel.buildtimeOnly(STACK_WALKER.getCallerClass());
     }
 
-    protected static final void $requireExtension(Class<? extends Extension> extensionType) {
+    protected static final void $requireExtension(Class<? extends Extension> extensionClass) {
         // Will fail at runtime and at buildtime if extension is not installed...
         throw new UnsupportedOperationException();
     }

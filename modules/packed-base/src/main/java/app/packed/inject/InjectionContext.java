@@ -52,7 +52,7 @@ public interface InjectionContext {
      * Note: Even though The set of keys returned by this method does not take into consideration that depending on them
      * will lead to cycles in the dependency graph.
      * 
-     * @return an immutable set of keys that are available for injection at the injection site
+     * @return an immutable set of keys for services that are available for injection at the injection site
      */
     // maybe this is more context. And the use a ServiceRegistry to get services
     // The returned set does not include services that are available...

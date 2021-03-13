@@ -17,7 +17,6 @@ package app.packed.component;
 
 import java.lang.reflect.Modifier;
 
-import app.packed.cli.Main;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -73,7 +72,7 @@ public enum ComponentModifier {
      * </ul>
      */
     IMAGE_ROOT,
-    
+
     // System wide.. what is part of the system and what is part of the environment
     // System boundary
     // Bondary vs Environment...
@@ -90,7 +89,6 @@ public enum ComponentModifier {
      */
     // Hmm, hvad med en exstern database????
     EXTERNAL, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...ENVIRONMENT
-
 
     /**
      * Indicates that the component is an {@link Extension} class.
@@ -166,7 +164,7 @@ public enum ComponentModifier {
      * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
      * users make
      * <p>
-     * Systems that are created via the various methods on {@link Main} never has a shell.
+     * Systems that are created via the various methods on {@link Cli} never has a shell.
      * 
      * @see App
      * @see ArtifactDriver
@@ -181,8 +179,8 @@ public enum ComponentModifier {
      * This modifier is typically checked by accessing {@link BuildInfo#modifiers()}, for example, via
      * {@link Extension#assembly()}.
      * <p>
-     * The modifier is set by the various methods in analyzer when specifying a bundle. Systems that are
-     * already running will not have this modifier set when they are analysed.
+     * The modifier is set by the various methods in analyzer when specifying a bundle. Systems that are already running
+     * will not have this modifier set when they are analysed.
      * 
      * Components with this property:
      * <ul>
@@ -243,15 +241,15 @@ public enum ComponentModifier {
 // requests er jo f.eks. runtime
 // men nye componententer er buildtime
 enum NamespaceType {
-    
+
     STATELESS,
-    
+
     // Cannot have requests
     STATEFUL_NO_GUESTS,
-    
+
     // Only works via images
     STATEFUL_NO_REDEFINITION,
-    
+
     // Cannot be used with graal
     STATEFUL_DYNAMIC;
 }
@@ -287,7 +285,7 @@ enum Sandbox {
     // IDK er det interessant??? F.eks. requests er jo guests...
     // Dynamic host er lang mere interessant
     HOSTLESS,
-    
+
     VIRTUAL,
 
     FOREIGN, // A non-JVM language...
@@ -336,11 +334,9 @@ enum Sandbox {
     TASK, // I don't think Task... A job it split into tasks
     // Tasks are not present in the system
 
-    
     // For example, a FileSystem...
     RESOURCE,
-    
-    
+
     REQUEST,
 
     // IDK if we will ever use it... But just a reminder.

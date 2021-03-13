@@ -27,9 +27,7 @@ import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/**
- *
- */
+/** A build-time service for a constant. */
 public final class ConstantBuildtimeService extends BuildtimeService {
 
     /** The constant we are wrapping. */

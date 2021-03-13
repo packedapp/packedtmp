@@ -63,8 +63,7 @@ public final class PackedTreePath implements NamespacePath {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof PackedTreePath) {
-            PackedTreePath pcp = (PackedTreePath) obj;
+        if (obj instanceof PackedTreePath pcp) {
             if (pcp.elements.length != elements.length) {
                 return false;
             }
@@ -74,8 +73,7 @@ public final class PackedTreePath implements NamespacePath {
                 }
             }
             return true;
-        } else if (obj instanceof NamespacePath) {
-            NamespacePath pcp = (NamespacePath) obj;
+        } else if (obj instanceof NamespacePath pcp) {
             if (pcp.depth() != elements.length) {
                 return false;
             }

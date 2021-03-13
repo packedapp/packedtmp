@@ -30,7 +30,7 @@ import app.packed.component.Component;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.inject.service.ServiceManager;
 
 /**
@@ -110,13 +110,8 @@ public final class ServiceContract extends Contract {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
-        if (other == this) {
-            return true;
-        } else if (other instanceof ServiceContract) {
-            ServiceContract sc = (ServiceContract) other;
-            return optional.equals(sc.optional) && provides.equals(sc.provides) && requires.equals(sc.requires);
-        }
-        return false;
+        return other == this
+                || (other instanceof ServiceContract sc && optional.equals(sc.optional) && provides.equals(sc.provides) && requires.equals(sc.requires));
     }
 
     /** {@inheritDoc} */
@@ -258,8 +253,8 @@ public final class ServiceContract extends Contract {
         if (!c.modifiers().isBundle()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }
-        ComponentBuild compConf = ComponentBuild.unadapt(null, c);
-        ServiceManager sm = compConf.cube.getServiceManager();
+        ComponentSetup compConf = ComponentSetup.unadapt(null, c);
+        ServiceManager sm = compConf.container.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

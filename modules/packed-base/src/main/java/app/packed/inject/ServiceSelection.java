@@ -31,21 +31,10 @@ import app.packed.base.Key;
  * {@code <S>}. Instances of this interface are normally created via the various select methods on ServiceLocator.
  * 
  * @see ServiceLocator#selectAll()
+ * @see ServiceLocator#selectAssignableTo(Class)
+ * @see ServiceLocator#selectWithAnyQualifiers(Class)
+ * @see ServiceLocator#selectWithAnyQualifiers(app.packed.base.TypeToken)
  */
-
-// Metoder
-
-// forEach
-// Stream?
-// ToList/ToMap
-
-// Instance
-// Provider
-// Service + Instance
-// Service + Provider
-
-// Hmm hvordan haandtere vi Injector????
-// Vi bliver noedt til ogsaa at have den paa plads..
 public interface ServiceSelection<S> extends ServiceLocator {
 
     void forEachInstance(BiConsumer<? super Service, ? super S> action);
@@ -53,19 +42,39 @@ public interface ServiceSelection<S> extends ServiceLocator {
     void forEachInstance(Consumer<? super S> action);
 
     void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
-    
+
     void forEachProvider(Consumer<? super Provider<S>> action);
-    
+
     /**
-     * Returns a stream of all instances in the selection.
+     * Returns a stream all instances in the selection.
      * 
      * @return a stream of all instances in the selection
      */
     Stream<S> instances();
+
+    Stream<Provider<S>> providers();
+
+    Stream<Map.Entry<Service, S>> serviceInstances();
+
+    Stream<Map.Entry<Service, S>> serviceProviders();
 }
 
-interface Zandbox<S> extends ServiceSelection<S> {
+//Metoder
 
+//forEach
+//Stream?
+
+
+//ToList/ToMap
+//Instance
+//Provider
+//Service + Instance
+//Service + Provider
+
+//Hmm hvordan haandtere vi Injector????
+//Vi bliver noedt til ogsaa at have den paa plads..
+
+interface Zandbox<S> extends ServiceSelection<S> {
 
     // does not support regexp
     ServiceSelection<S> named(String name);
@@ -73,15 +82,10 @@ interface Zandbox<S> extends ServiceSelection<S> {
     // select(Foo.class).withName()
     // select().withName()
 
-    Stream<Provider<S>> providers();
 
     ServiceSelection<S> qualifiedWith(Annotation qualifier);
 
     ServiceSelection<S> qualifiedWith(Class<? extends Annotation> qualifier);
-
-    Stream<Map.Entry<Service, S>> serviceInstances();
-
-    Stream<Map.Entry<Service, S>> serviceProvides();
 
     /**
      * Returns an immutable list containing a provided service instance for every service in this selection in any order.
@@ -89,7 +93,7 @@ interface Zandbox<S> extends ServiceSelection<S> {
      * @return an immutable list containing a provided service instance for every service in this selection in any order
      */
     // Tror vi skal fikse ServiceRegistry.toList();
-    // instances().toList();
+    // instances().toList(); //its fine
     List<S> toInstanceList();
 
     Map<Key<? extends S>, S> toMapKeyInstances();

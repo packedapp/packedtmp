@@ -16,7 +16,10 @@
 package app.packed.hooks;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 /**
  *
@@ -41,6 +44,21 @@ public @interface ConstructorHook {
         public final boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
            throw new UnsupportedOperationException();
         }
-
+        
+        /**
+         * Returns a direct method handle to the matching method (without any intervening argument bindings or transformations
+         * that may have been configured elsewhere).
+         * 
+         * @return a direct method handle to the matching method
+         * @see Lookup#unreflect(Method)
+         * @see MethodHook#allowInvoke()
+         * @see ClassHook#allowAllAccess()
+         * 
+         * @throws UnsupportedOperationException
+         *             if invocation access has not been granted via {@link MethodHook#allowInvoke()}
+         */
+        public final MethodHandle methodHandle() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

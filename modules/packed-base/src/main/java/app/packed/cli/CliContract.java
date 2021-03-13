@@ -20,6 +20,7 @@ package app.packed.cli;
  */
 public class CliContract {
 
+    // Or else we just give them empty parameters...
     public boolean requiresMain() {
         return true;
     }

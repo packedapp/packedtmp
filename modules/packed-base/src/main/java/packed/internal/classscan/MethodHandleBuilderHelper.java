@@ -41,7 +41,7 @@ import packed.internal.util.MethodHandleUtil;
  *
  */
 //Allow multiple constructors, For example take a list of MethodType...
-//Custom ExtensionTypes
+//Custom extensionClasss
 
 //Maybe a little customization of error messages...
 //Maybe just a protected method that creates the message that can then be overridden.
@@ -62,15 +62,15 @@ class MethodHandleBuilderHelper {
 
     final Class<?> declaringClass;
 
-    MethodHandleBuilderHelper(OpenClass oc, Executable e, MethodHandleBuilder aa) {
+    MethodHandleBuilderHelper(ClassMemberAccessor oc, Executable e, MethodHandleBuilder aa) {
         this.aa = aa;
         input = aa.targetType();
 
         boolean isInstanceMethod = false;
 
         // Setup MethodHandle for constructor or method
-        if (e instanceof Constructor) {
-            executable = oc.unreflectConstructor((Constructor<?>) e, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+        if (e instanceof Constructor<?> con) {
+            executable = oc.unreflectConstructor(con, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         } else {
             Method m = (Method) e;
             executable = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
@@ -132,7 +132,7 @@ class MethodHandleBuilderHelper {
                         MethodHandle transformer = entry.transformer;
                         if (sd.isOptional()) {
                             // We need to the return value of transformer to an optional
-                            transformer = MethodHandles.filterReturnValue(transformer, MethodHandleBuilderStatics.optionalOfTo(askingForType));
+                            transformer = MethodHandles.filterReturnValue(transformer, MethodHandleBuilderConstants.optionalOfTo(askingForType));
                         }
                         mh = MethodHandles.collectArguments(mh, is.size() + add, transformer);
                     } else {
@@ -149,7 +149,7 @@ class MethodHandleBuilderHelper {
                             // } // else should fail...
                         }
                         if (sd.isOptional()) {
-                            mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleBuilderStatics.optionalOfTo(askingForType));
+                            mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleBuilderConstants.optionalOfTo(askingForType));
                         }
                     }
                     is.push(entry.indexes);
@@ -171,7 +171,7 @@ class MethodHandleBuilderHelper {
                 tmp = MethodHandles.explicitCastArguments(tmp, MethodType.methodType(askingForType, tmp.type().parameterArray()[0]));
                 if (sd.isOptional()) {
                     // We need to the return value of transformer to an optional, may be null
-                    tmp = MethodHandles.filterReturnValue(tmp, MethodHandleBuilderStatics.optionalOfNullableTo(askingForType));
+                    tmp = MethodHandles.filterReturnValue(tmp, MethodHandleBuilderConstants.optionalOfNullableTo(askingForType));
                 }
 
                 mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, tmp);

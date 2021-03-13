@@ -60,10 +60,9 @@ public final class StringFormatter {
      */
     private static void formatSimple(Type type, StringBuilder sb) {
         requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            sb.append(((Class<?>) type).getSimpleName());
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
+        if (type instanceof Class<?> cl) {
+            sb.append(cl.getSimpleName());
+        } else if (type instanceof ParameterizedType pt) {
             formatSimple(pt.getRawType(), sb);
             Type[] actualTypeArguments = pt.getActualTypeArguments();
             // The array can be empty according to #ParameterizedType.getActualTypeArguments()
@@ -76,14 +75,12 @@ public final class StringFormatter {
                 }
                 sb.append(">");
             }
-        } else if (type instanceof GenericArrayType) {
-            formatSimple(((GenericArrayType) type).getGenericComponentType(), sb);
+        } else if (type instanceof GenericArrayType gat) {
+            formatSimple(gat.getGenericComponentType(), sb);
             sb.append("[]");
-        } else if (type instanceof TypeVariable) {
-            TypeVariable<?> tv = (TypeVariable<?>) type;
+        } else if (type instanceof TypeVariable<?> tv) {
             sb.append(tv.getName());
-        } else if (type instanceof WildcardType) {
-            WildcardType wt = (WildcardType) type;
+        } else if (type instanceof WildcardType wt) {
             Type[] lowerBounds = wt.getLowerBounds();
             if (lowerBounds.length == 1) {
                 sb.append("? super ");

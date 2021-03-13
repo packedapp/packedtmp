@@ -223,7 +223,10 @@ public abstract class Key<T> {
         return qualifiers == null && typeToken.type() == c;
     }
 
-    public final boolean isSuperKeyOf(Key<?> key) {
+    // Tror vi dropper det her concept...
+    // Vi brugte den i forbindelse med ServiceSelection.
+    // Men nu bruger vi bare type token...
+    final boolean isSuperKeyOf(Key<?> key) {
         requireNonNull(key, "key is null");
         if (!typeToken.equals(key.typeToken)) {
             return false;

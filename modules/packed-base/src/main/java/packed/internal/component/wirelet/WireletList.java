@@ -48,16 +48,15 @@ public final class WireletList extends Wirelet {
         int size = wirelets.length;
         for (int i = 0; i < wirelets.length; i++) {
             Wirelet w = Objects.requireNonNull(wirelets[i]);
-            if (w instanceof WireletList) {
-                size += ((WireletList) w).wirelets.length - 1;
+            if (w instanceof WireletList wl) {
+                size += wl.wirelets.length - 1;
             }
         }
         Wirelet[] tmp = new Wirelet[size];
         int c = 0;
         for (int i = 0; i < wirelets.length; i++) {
             Wirelet w = wirelets[i];
-            if (w instanceof WireletList) {
-                WireletList wl = (WireletList) w;
+            if (w instanceof WireletList wl) {
                 for (int j = 0; j < wl.wirelets.length; j++) {
                     tmp[c++] = wl.wirelets[j];
                 }
@@ -243,8 +242,8 @@ public final class WireletList extends Wirelet {
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
         // Maaden vi rekursiv processere them betyder at jeg ikke tror vi behoever at pakke dem ud....
-        if (w1 instanceof WireletList) {
-            l.addAll(List.of(((WireletList) w1).wirelets));
+        if (w1 instanceof WireletList wl) {
+            l.addAll(List.of((wl).wirelets));
         } else {
             l.add(w1);
         }

@@ -373,8 +373,8 @@ public abstract class ServiceComposer extends Composer<ComponentConfiguration> i
             requireNonNull(o, "Specified collection contains a null");
             if (o instanceof Key) {
                 asMap().remove(o);
-            } else if (o instanceof Class) {
-                asMap().remove(Key.of((Class) o));
+            } else if (o instanceof Class c) {
+                asMap().remove(Key.of(c));
             } else {
                 throw new IllegalArgumentException(
                         "The specified collection must only contain instances of " + Key.class.getCanonicalName() + " or " + Class.class.getCanonicalName());

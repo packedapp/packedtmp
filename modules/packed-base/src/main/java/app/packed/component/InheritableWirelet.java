@@ -26,6 +26,9 @@ import app.packed.container.Extension;
 // Problemet med inheritable er ogsaa at det ikke umiddelbart er klart
 // hvordan vi haandtere consumation
 
+// Hvis vi faar en 
+
+
 // IDK de er ret brugbare med
 
 /**
@@ -47,7 +50,7 @@ public abstract class InheritableWirelet extends Wirelet {
         throw new UnsupportedOperationException();
     }
 
-    public final InheritableWirelet forExtension(Class<? extends Extension> extensionType) {
+    public final InheritableWirelet forExtension(Class<? extends Extension> extensionClass) {
         throw new UnsupportedOperationException();
     }
 

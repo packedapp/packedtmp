@@ -34,27 +34,25 @@ import app.packed.component.Image;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentBuild;
-import packed.internal.container.PackedExtensionConfiguration;
+import packed.internal.component.ComponentSetup;
+import packed.internal.container.ExtensionSetup;
 
 /**
- * An instance of this interface is available via {@link Extension#configuration()} or via constructor injection into
- * any subclass of {@link Extension}. Since the extension itself defines most methods in this interface via protected
- * final methods. This interface is typically used to be able to provide these methods to code that is not located on
- * the extension implementation or in the same package as the extension itself.
+ * A configuration object for extensions. An instance of this interface is available via
+ * {@link Extension#configuration()} or via constructor injection into any subclass of {@link Extension}. Since the
+ * extension itself defines most methods in this interface via protected final methods. This interface is typically used
+ * in order to provide these methods to code that is defined outside of the actual extension implementation, for
+ * example, code that is placed in another package.
  * <p>
  * <strong>Note:</strong> Instances of this class should never be exposed to end-users.
- * 
- * @apiNote In the future, if the Java language permits, {@link ExtensionConfiguration} may become a {@code sealed}
- *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
 // Does not extend CC as install/installinstance used parent as target
 // Det er jo ikke rigtig tilfaeldet mere... efter vi har lavet om...
-public interface ExtensionConfiguration {
+public /* sealed */ interface ExtensionConfiguration {
 
     // ComponentAttributes
 
-    // Thinking about removing this 
+    // Thinking about removing this
     // Altsaa det den er god for er at tilfoeje callbacks...
     // Men det behoever vi jo ikke have et interface for..
     BuildInfo build();
@@ -74,13 +72,6 @@ public interface ExtensionConfiguration {
      */
     void checkIsLeafBundle();
 
-//    /**
-//     * Returns the config site of the container the extension is registered with.
-//     * 
-//     * @return the config site of the container the extension is registered with
-//     */
-//    ConfigSite containerConfigSite();
-
     /**
      * Returns the extension instance.
      * 
@@ -91,14 +82,14 @@ public interface ExtensionConfiguration {
     Extension extension();
 
     /**
-     * Returns the type of extension that is being configured.
+     * Tells which extension class is being configured.
      * 
-     * @return the type of extension that is being configured
+     * @return the extension class
      */
-    Class<? extends Extension> extensionType();
+    Class<? extends Extension> extensionClass();
 
     // Will install the class in the specified Container
-    
+
     // maybe userInstall
     // or maybe we just have userWire()
     // customWire
@@ -127,7 +118,7 @@ public interface ExtensionConfiguration {
      */
     boolean isPartOfImage(); // BoundaryTypes
 
-    default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
+    default <E extends Subtension> void lazyUse(Class<E> extensionClass, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
         // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
 
@@ -150,13 +141,14 @@ public interface ExtensionConfiguration {
      * @param wirelets
      *            optional wirelets
      */
+    // I think the assembly needs to be annotated with @ExtensionMember IDK
     void link(Assembly<?> bundle, Wirelet... wirelets);
 
     /**
-     * Returns the component path of the extension. The path of the extension's container, can be obtained by calling
-     * <code>path.parent().get()</code>.
+     * Returns the path of the extension. The path of the extension's container, can be obtained by calling
+     * <code>path().parent().get()</code>.
      * 
-     * @return the component path of the extension
+     * @return the path of the extension
      */
     NamespacePath path();
 
@@ -168,7 +160,7 @@ public interface ExtensionConfiguration {
      * 
      * @param <E>
      *            the type of extension to return
-     * @param extensionType
+     * @param extensionClass
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
@@ -179,7 +171,11 @@ public interface ExtensionConfiguration {
      * 
      * @see ContainerConfiguration#use(Class)
      */
-    <E extends Subtension> E use(Class<E> extensionType);
+    <E extends Subtension> E use(Class<E> extensionClass);
+
+    // Ideen er lidt at det er paa den her maade at extensionen
+    // registrere bruger objekter...
+    <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     /**
      * Wires a new child component using the specified driver
@@ -194,14 +190,15 @@ public interface ExtensionConfiguration {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    // Ideen er lidt at det er paa den her maade at extensionen
-    // registrere bruger objekter...
-    <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
-
-    @SuppressWarnings("deprecation")
     @Nullable
-    private static PackedExtensionConfiguration getExtensionBuild(MethodHandles.Lookup lookup, Component component) {
-        requireNonNull(lookup, "component is null");
+    private static ExtensionSetup getExtensionConfiguration(MethodHandles.Lookup lookup, Component containerComponent) {
+        requireNonNull(lookup, "containerComponent is null");
+
+        // We only allow to call in directly on the container itself
+        if (!containerComponent.modifiers().isContainer()) {
+            throw new IllegalArgumentException("The specified component '" + containerComponent.path() + "' must have the Container modifier, modifiers = "
+                    + containerComponent.modifiers());
+        }
 
         // lookup.lookupClass() must point to the extension that should be extracted
         if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
@@ -210,21 +207,15 @@ public interface ExtensionConfiguration {
         }
 
         @SuppressWarnings("unchecked")
-        Class<? extends Extension> extensionType = (Class<? extends Extension>) lookup.lookupClass();
+        Class<? extends Extension> extensionClass = (Class<? extends Extension>) lookup.lookupClass();
         // Must have full access to the extension class
-        if (!lookup.hasPrivateAccess()) {
-            throw new IllegalArgumentException("The specified lookup object must have full access to " + extensionType
-                    + ", try creating a new lookup object using MethodHandle.privateLookupIn(lookup, " + extensionType.getSimpleName() + ".class)");
+        if (!lookup.hasFullPrivilegeAccess()) {
+            throw new IllegalArgumentException("The specified lookup object must have full privilege access to " + extensionClass
+                    + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
         }
 
-        // We only allow to call in directly on the container itself
-        if (!component.modifiers().isContainer()) {
-            throw new IllegalArgumentException(
-                    "The specified component '" + component.path() + "' must have the Container modifier, modifiers = " + component.modifiers());
-        }
-
-        ComponentBuild compConf = ComponentBuild.unadapt(lookup, component);
-        return compConf.cube.getExtensionContext(extensionType);
+        ComponentSetup compConf = ComponentSetup.unadapt(lookup, containerComponent);
+        return compConf.container.getExtensionContext(extensionClass);
     }
 
     /**
@@ -238,8 +229,8 @@ public interface ExtensionConfiguration {
      * containers never retain extensions at runtime. I don't even know if you can call it doing initialization
      * 
      * @param caller
-     *            a lookup for an extension subclass with full privileges
-     * @param component
+     *            a lookup object for an extension class with {@link Lookup#hasFullPrivilegeAccess() full privilege access}
+     * @param containerComponent
      *            the component to extract the configuration from.
      * @return an optional containing the extension if it has been configured, otherwise empty
      * @throws IllegalStateException
@@ -248,30 +239,33 @@ public interface ExtensionConfiguration {
      *             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
      *             specified lookup object does not have full privileges
      */
-    static Optional<ExtensionConfiguration> privateLookup(MethodHandles.Lookup caller, Component component) {
+    static Optional<ExtensionConfiguration> privateLookup(MethodHandles.Lookup caller, Component containerComponent) {
         requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(getExtensionBuild(caller, component));
+        return Optional.ofNullable(getExtensionConfiguration(caller, containerComponent));
     }
 
     /**
      * @param <T>
      *            the type of extension to return
      * @param lookup
-     *            a lookup object that must have full ac
-     * @param extensionType
-     *            the type of extension to return
-     * @param component
-     *            the component
-     * @return stuff
+     *            a lookup object for the specified extension class with {@link Lookup#hasFullPrivilegeAccess() full
+     *            privilege access}
+     * @param extensionClass
+     *            the extension that we are trying to find
+     * @param containerComponent
+     *            the container component
+     * @return the extension, or empty if no extension of the specified type is registered in the container
      */
     @SuppressWarnings("unchecked")
-    static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionType, Component component) {
+    static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionClass, Component containerComponent) {
         requireNonNull(lookup, "lookup is null");
-        if (lookup.lookupClass() != extensionType) {
-            throw new IllegalArgumentException("The specified lookup object must match the specified extensionType " + extensionType + " as lookupClass()");
+        requireNonNull(extensionClass, "extensionClass is null");
+        if (lookup.lookupClass() != extensionClass) {
+            throw new IllegalArgumentException(
+                    "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + lookup.lookupClass());
         }
 
-        PackedExtensionConfiguration eb = getExtensionBuild(lookup, component);
+        ExtensionSetup eb = getExtensionConfiguration(lookup, containerComponent);
         return eb == null ? Optional.empty() : Optional.of((T) eb.extension());
     }
 }

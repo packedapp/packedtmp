@@ -149,8 +149,7 @@ public final class TypeVariableExtractor {
 
     boolean fromInterface0(Class<?> cc, Type[] result) {
         for (Type t : cc.getGenericInterfaces()) {
-            if (t instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) t;
+            if (t instanceof ParameterizedType pt) {
                 if (pt.getRawType() == baseType) {
                     Type[] typeArguments = pt.getActualTypeArguments();
                     for (int i = 0; i < result.length; i++) {
@@ -163,8 +162,8 @@ public final class TypeVariableExtractor {
                     System.out.println(tt);
                     // Ahh fuck skal lave noget ledt her ogsaa....
                 }
-            } else if (t instanceof Class) {
-                if (fromInterface0((Class<?>) t, result)) {
+            } else if (t instanceof Class<?> cl) {
+                if (fromInterface0(cl, result)) {
                     return true;
                 }
             }

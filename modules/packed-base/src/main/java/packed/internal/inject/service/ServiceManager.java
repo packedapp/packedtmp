@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -30,12 +31,12 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.BuildtimeRegion;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.container.PackedContainerConfiguration;
+import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.SourceInstanceBuildtimeService;
@@ -54,7 +55,7 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 public final class ServiceManager {
 
     /** The bundle this service manager is a part of. */
-    private final PackedContainerConfiguration container;
+    private final ContainerSetup container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     public ServiceRequirementsManager dependencies;
@@ -82,11 +83,16 @@ public final class ServiceManager {
     /** The composer tree this composer is a part of. */
     private final ServiceComposerTree tree;
 
+
+    @Nullable
+    public Predicate<? super Service> anchorFilter;
+
+    
     /**
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceManager(PackedContainerConfiguration container, @Nullable ServiceManager parent) {
+    public ServiceManager(ContainerSetup container, @Nullable ServiceManager parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
         this.tree = parent == null ? new ServiceComposerTree() : parent.tree;
@@ -202,7 +208,7 @@ public final class ServiceManager {
         p.add(pi);
     }
 
-    public <T> BuildtimeService provideSource(ComponentBuild compConf, Key<T> key) {
+    public <T> BuildtimeService provideSource(ComponentSetup compConf, Key<T> key) {
         BuildtimeService e = new SourceInstanceBuildtimeService(this, compConf, key);
         localServices.add(e);
         return e;
@@ -234,7 +240,7 @@ public final class ServiceManager {
 
         // Process exports from any children
         if (container.children != null) {
-            for (PackedContainerConfiguration c : container.children) {
+            for (ContainerSetup c : container.children) {
                 ServiceManager child = c.getServiceManager();
 
                 WireletPack wp = c.compConf.wirelets;
@@ -269,7 +275,7 @@ public final class ServiceManager {
 
         // Process child requirements to children
         if (container.children != null) {
-            for (PackedContainerConfiguration c : container.children) {
+            for (ContainerSetup c : container.children) {
                 ServiceManager m = c.getServiceManager();
                 if (m != null) {
                     m.processIncomingPipelines(this);

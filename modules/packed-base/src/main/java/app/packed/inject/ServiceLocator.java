@@ -17,7 +17,6 @@ package app.packed.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -44,12 +43,13 @@ public interface ServiceLocator extends ServiceRegistry {
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional.
      * <p>
-     * If you know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
+     * If you know for certain that a service exists for the specified key, {@link #use(Class)} usually gives more fluent
+     * code.
      *
      * @param <T>
      *            the type of service that this method returns
      * @param key
-     *            the key for which to return a service instance
+     *            the key of the service to find
      * @return an optional containing the service instance if present, or an empty optional if not present
      * @see #use(Class)
      */
@@ -60,14 +60,15 @@ public interface ServiceLocator extends ServiceRegistry {
     /**
      * Returns a service instance for the given key if available, otherwise an empty optional.
      * <p>
-     * If you know for certain that a service exists for the specified key, use {@link #use(Class)} for more fluent code.
+     * If you know for certain that a service exists for the specified key, {@link #use(Class)} usually gives more fluent
+     * code.
      *
      * @param <T>
      *            the type of service that this method returns
      * @param key
-     *            the key for which to return a service instance
+     *            the key of the service to find
      * @return an optional containing the service instance if present, or an empty optional if not present
-     * @see #use(Class)
+     * @see #use(Key)
      */
     <T> Optional<T> findInstance(Key<T> key);
 
@@ -100,11 +101,11 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the action to be performed, if a service with the specified key is present
      */
     default <T> void ifPresent(Key<T> key, Consumer<? super T> action) {
-        Optional<T> t = findInstance(key);
         requireNonNull(action, "action is null");
-        if (t.isPresent()) {
-            T tt = t.get();
-            action.accept(tt);
+        Optional<T> o = findInstance(key);
+        if (o.isPresent()) {
+            T instance = o.get();
+            action.accept(instance);
         }
     }
 
@@ -116,7 +117,9 @@ public interface ServiceLocator extends ServiceRegistry {
     ServiceSelection<?> selectAll();
 
     /**
-     * Returns a service selection with all services where the raw type of the key is assignable to the specified type.
+     * Returns a service selection where the raw type of every service key is assignable to the specified type.
+     * <p>
+     * Unlike this method {@link #selectWithAnyQualifiers(Class)} this method will also select any
      * 
      * @param <T>
      *            the assignable type
@@ -126,27 +129,39 @@ public interface ServiceLocator extends ServiceRegistry {
      */
     <T> ServiceSelection<T> selectAssignableTo(Class<T> type);
 
-    // selectWithAnyQualifiers
-    default <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> key) {
-        return selectWithAnyQualifiers(Key.of(key));
+    // Maaske drop withAnyQualifiers
+    default <T> ServiceSelection<T> selectWithAnyQualifiers(Class<T> typePart) {
+        return selectWithAnyQualifiers(TypeToken.of(typePart));
     }
 
-    <T> ServiceSelection<T> selectWithAnyQualifiers(Key<T> key);
+    /**
+     * @param <T>
+     *            the service type
+     * @param typePart
+     *            the type part of the key
+     * @return
+     */
+    <T> ServiceSelection<T> selectWithAnyQualifiers(TypeToken<T> typePart);
 
     /**
-     * Creates a new locator using this locator as base.
+     * Spawns a new service locator by using a {@link ServiceComposer} to transmute this locator.
+     * <p>
+     * INSERT EXAMPLE
      * 
-     * @param transformation
-     *            the transformation to perform
+     * <p>
+     * If you
+     * 
+     * @param action
+     *            the transmutation action
      * @return the new service locator
      */
-    // Lyder transform som in-place?? Maybe spawn after all
-    ServiceLocator spawn(Consumer<ServiceComposer> transformation);
+    ServiceLocator spawn(Consumer<ServiceComposer> transmuter);
 
     /**
-     * Returns a service of the specified type. Or throws a {@link NoSuchElementException} if this injector does not provide
-     * a service with the specified key. The semantics method is identical to {@link #findInstance(Class)} except that an
-     * exception is thrown instead of returning if the service does not exist.
+     * Returns a service with the specified key. Or throws a {@link NoSuchElementException} if no such service is available.
+     * <p>
+     * The semantics of this method are identical to {@link #findInstance(Class)} except that an exception is thrown instead
+     * of returning if the service does not exist.
      *
      * @param <T>
      *            the type of service to return
@@ -155,7 +170,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a service for the specified key
      * @throws NoSuchElementException
      *             if no service with the specified key exist
-     * @see #contains(Class)
+     * @see #find(Class)
      */
     default <T> T use(Class<T> key) {
         return use(Key.of(key));
@@ -163,14 +178,14 @@ public interface ServiceLocator extends ServiceRegistry {
 
     /**
      * Returns a service with the specified type, or throws a {@link NoSuchElementException} if no such service exists. This
-     * is typically used to create fluent APIs such as:
+     * method is typically used to create fluent APIs such as:
      *
      * <pre>{@code
      * Key<WebServer> key = Key.of(WebServer.class);
-     * registry.use(WebServer.class).printAllLiveConnections();}
+     * locator.use(key).printAllLiveConnections();}
      * </pre>
      *
-     * Invoking this method is equivalent to:
+     * The default implementation of this method does:
      *
      * <pre>{@code
      *  Optional<T> t = find(key);
@@ -181,34 +196,39 @@ public interface ServiceLocator extends ServiceRegistry {
      * </pre>
      *
      * @param <T>
-     *            the type of service this method returns
+     *            the type of service instance this method returns
      * @param key
-     *            the key of the service to return
-     * @return a service with the specified key
+     *            the key of the service instance to return
+     * @return a service instance for the specified key
      * @throws NoSuchElementException
      *             if no service with the specified key exist
      */
     default <T> T use(Key<T> key) {
         Optional<T> t = findInstance(key);
         if (!t.isPresent()) {
-            throw new NoSuchElementException("A service with the specified key could not be found, key = " + key);
+            throw new NoSuchElementException("A service with the specified key does not exist, key = " + key);
         }
         return t.get();
     }
 
     /**
-     * Creates a new service locator image from the specified assembly and optional wirelets.
+     * Creates a new (service locator) image from the specified assembly and optional wirelets.
      * 
      * @param assembly
      *            the assembly to use for creating the image
      * @param wirelets
      *            optional wirelets
-     * @return a new app image
+     * @return the image
      */
     static Image<ServiceLocator> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().buildImage(assembly, wirelets);
     }
 
+    /**
+     * Returns an artifact driver that can be used to create new service locator instances.
+     * 
+     * @return an artifact driver for this interface
+     */
     static ArtifactDriver<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
@@ -226,24 +246,24 @@ public interface ServiceLocator extends ServiceRegistry {
      * Creates a new service locator from the specified assembly and optional wirelets.
      * 
      * @param assembly
-     *            the assembly using for building the service locator
+     *            the assembly that should be used to build the service locator
      * @param wirelets
      *            optional wirelets
      * @return a new service locator
      */
     static ServiceLocator of(Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedInjector.EMPTY_SERVICE_LOCATOR;
+        return driver().use(assembly, wirelets);
     }
 
     /**
-     * Creates a new service locator using a service composer.
+     * Creates a new service locator via a service composer.
      * 
      * @param action
      *            the composition action
      * @return a new service locator
      */
     static ServiceLocator of(Consumer<? super ServiceComposer> action) {
-        return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
+        return PackedServiceComposer.of(action);
     }
 }
 

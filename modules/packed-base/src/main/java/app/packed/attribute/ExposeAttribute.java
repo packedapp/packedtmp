@@ -35,35 +35,32 @@ import java.lang.annotation.Target;
 public @interface ExposeAttribute {
 
     /** The class that declares the attribute. */
-    Class<?> from();
+    Class<?> declaredBy();
 
     /**
      * The name of the attribute that the annotated member provides a value for.
      * 
      * @return the name of the attribute that the member provides a value for
      */
-    // Wow hvis vi nu tager metode/field navnet...
-    // Goer at vi ikke kan bruge - og andre limiting ting...
-    // Men maaske er det ok
-
-    // Maaske attributer er camel case?
-    // _ bliver translatet til -
-
-    // Maaske ignorer vi case... //equalsIgnoreCase
-
-    // Ignore alt paa naer letters
-
-    // Eller maaske proever vi foerst at matche paa type...
-    // Er der flere end et hit skal man specificere et navn...
-
-    // Nahh det er sgu nok fint nok, at skulle specificere et navn...
-
-    // Men maaske hellere field name en attribute name...
-    // maaske begge dele og saa kan man vaelge
-    // Eller leder man efter 1 match...
     String name(); // named()???
 }
 
+// Wow hvis vi nu tager metode/field navnet...
+// Goer at vi ikke kan bruge - og andre limiting ting...
+// Men maaske er det ok
+// Maaske attributer er camel case?
+// _ bliver translatet til -
+// Maaske ignorer vi case... //equalsIgnoreCase
+// Ignore alt paa naer letters
+
+// Eller maaske proever vi foerst at matche paa type...
+// Er der flere end et hit skal man specificere et navn...
+
+// Nahh det er sgu nok fint nok, at skulle specificere et navn...
+
+// Men maaske hellere field name en attribute name...
+// maaske begge dele og saa kan man vaelge
+// Eller leder man efter 1 match...
 //declared by extension, vi kan vel bare tage @ExtensionMember value??
 
 //Must map the exact type of attribute

@@ -24,7 +24,7 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.component.InheritableWirelet;
 import app.packed.component.Wirelet;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponentDriver;
 
@@ -55,10 +55,10 @@ public final class WireletPack {
             inherited.add(new Ent(w));
         }
 
-        if (w instanceof BaseWirelet) {
-            ((BaseWirelet) w).process(this);
-        } else if (w instanceof WireletList) {
-            for (Wirelet ww : ((WireletList) w).wirelets) {
+        if (w instanceof BaseWirelet bw) {
+            bw.process(this);
+        } else if (w instanceof WireletList wl) {
+            for (Wirelet ww : wl.wirelets) {
                 create0(ww);
             }
         } else {
@@ -160,7 +160,7 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack ofImage(ComponentBuild cnc, Wirelet... wirelets) {
+    public static WireletPack ofImage(ComponentSetup cnc, Wirelet... wirelets) {
         return create(null, wirelets);
     }
 

@@ -29,9 +29,9 @@ public final class SomeBuilder {
 
     final Class<?> implementation;
 
-    final ExtensionType type;
+    final extensionClass type;
 
-    SomeBuilder(Class<?> implementation, ExtensionType type, int modifiers) {
+    SomeBuilder(Class<?> implementation, extensionClass type, int modifiers) {
         this.implementation = requireNonNull(implementation);
         this.type = requireNonNull(type);
         this.ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
@@ -40,7 +40,7 @@ public final class SomeBuilder {
     SomeBootstrapModel bootstrap() {
         throw new UnsupportedOperationException();
     }
-    enum ExtensionType {
+    enum extensionClass {
         CLASS, CONSTRUCTOR, FIELD, METHOD;
     }
 

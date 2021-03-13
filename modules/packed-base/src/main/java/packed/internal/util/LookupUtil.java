@@ -47,7 +47,7 @@ public final class LookupUtil {
      * @return whether it is default
      */
     public static boolean isLookupDefault(Lookup lookup) {
-        return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && (PREVIOUS_LOOKUP_CLASS == null || previousLookupClass(lookup) == null);
+        return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && (PREVIOUS_LOOKUP_CLASS == null || lookup.previousLookupClass() == null);
     }
 
     public static MethodHandle lookupConstructor(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
@@ -135,17 +135,6 @@ public final class LookupUtil {
             return MethodHandles.publicLookup().findVirtual(refc, name, mt);
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
-        }
-    }
-
-    private static Class<?> previousLookupClass(Lookup lookup) {
-//        if (PREVIOUS_LOOKUP_CLASS == null) {
-//            return null;
-//        }
-        try {
-            return (Class<?>) PREVIOUS_LOOKUP_CLASS.invokeExact(lookup);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
         }
     }
 

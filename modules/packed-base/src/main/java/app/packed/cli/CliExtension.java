@@ -20,8 +20,8 @@ import app.packed.container.Extension;
 /**
  * A extension that can make it easier to work with command line parameters.
  * <p>
- * The goal of this extension is to provide basic support for command line parameters. Not be a full-blown framework
- * like picocli.
+ * The goal of this extension is to provide basic support for command line arguments. If you need advanced features take
+ * a look at the excellent <a href="https://picocli.info">https://picocli.info</a> framework.
  */
 public final class CliExtension extends Extension {
 
@@ -33,5 +33,6 @@ public final class CliExtension extends Extension {
     void setDefault(String... args) {
         // If MainArgs is not provided as a wirelet to the container
         // Use these sensible values
+        // Maybe we will use [] as the default value
     }
 }

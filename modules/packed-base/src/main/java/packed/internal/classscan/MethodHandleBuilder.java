@@ -83,7 +83,7 @@ public final class MethodHandleBuilder {
         add(key, requireNonNull(transformer, "transformer is null"), indexes);
     }
 
-    public MethodHandle build(OpenClass oc, Executable e) {
+    public MethodHandle build(ClassMemberAccessor oc, Executable e) {
         return new MethodHandleBuilderHelper(oc, e, this).find();
     }
 
@@ -93,7 +93,7 @@ public final class MethodHandleBuilder {
     }
 
     /**
-     * Returns the target type of the method handle to build. Calling {@link #build(OpenClass, Executable)} will return a
+     * Returns the target type of the method handle to build. Calling {@link #build(ClassMemberAccessor, Executable)} will return a
      * method handle with this exact type.
      * 
      * @return the target type of the method handle to build

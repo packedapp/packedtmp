@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentBuild;
+import packed.internal.component.ComponentSetup;
 
 /**
  * Composers does not usually have any public constructors.
@@ -71,7 +71,7 @@ public abstract class Composer<C extends ComponentConfiguration> extends Realm {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        ((ComponentBuild) configuration.context).realm.lookup(lookup);
+        ((ComponentSetup) configuration.context).realm.setLookup(lookup);
     }
 }
 

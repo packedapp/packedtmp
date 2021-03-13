@@ -183,7 +183,7 @@ public interface App extends AutoCloseable {
      * @return an artifact driver for App
      */
     static ArtifactDriver<App> driver() {
-        return DefaultApp.DRIVER;
+        return AppDefault.DRIVER;
     }
 
     /**

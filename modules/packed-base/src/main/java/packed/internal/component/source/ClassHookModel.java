@@ -34,9 +34,7 @@ import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/**
- *
- */
+/** A model of class hook */
 public final class ClassHookModel {
 
     /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
@@ -44,14 +42,15 @@ public final class ClassHookModel {
             ClassHook.Bootstrap.class, "bootstrap", void.class);
 
     /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
-    private static final VarHandle VH_EXTENSION_METHOD_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
-            ClassHook.Bootstrap.class, "builder", ClassHookModel.Builder.class);
+    private static final VarHandle VH_EXTENSION_METHOD_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
+            "builder", ClassHookModel.Builder.class);
 
+    /** A builder object for a class hook */
     public static final class Builder extends AbstractBootstrapBuilder {
 
-        final ClassHook.Bootstrap instance;
-
         public final ClassHookBootstrapModel bootstrapModel;
+
+        final ClassHook.Bootstrap instance;
 
         final LinkedHashSet<MemberHookModel.Builder> managedMembers = new LinkedHashSet<>();
 
@@ -74,6 +73,10 @@ public final class ClassHookModel {
             VH_EXTENSION_METHOD_BOOTSTRAP_BUILDER.set(instance, null);
         }
 
+        public List<app.packed.hooks.ConstructorHook.Bootstrap> constructors() {
+            throw new UnsupportedOperationException();
+        }
+
         public List<FieldHook.Bootstrap> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
             ArrayList<FieldHook.Bootstrap> list = new ArrayList<>();
             for (Field f : source.type().getDeclaredFields()) {
@@ -92,12 +95,16 @@ public final class ClassHookModel {
             return List.copyOf(list);
         }
 
-        static class ExposedMethodBootstrap extends MethodHook.Bootstrap {
-            static final MethodHookBootstrapModel MODEL = MethodHookBootstrapModel.getModelForFake(ExposedMethodBootstrap.class);
+        public Class<?> type() {
+            throw new UnsupportedOperationException();
         }
 
         static class ExposedFieldBootstrap extends FieldHook.Bootstrap {
             static final FieldHookBootstrapModel MODEL = FieldHookBootstrapModel.getModelForFake(ExposedFieldBootstrap.class);
+        }
+
+        static class ExposedMethodBootstrap extends MethodHook.Bootstrap {
+            static final MethodHookBootstrapModel MODEL = MethodHookBootstrapModel.getModelForFake(ExposedMethodBootstrap.class);
         }
     }
 }

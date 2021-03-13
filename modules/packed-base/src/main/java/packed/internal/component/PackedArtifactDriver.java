@@ -276,7 +276,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
      */
     private final class PackedImage implements Image<A> {
 
-        private final ComponentBuild root;
+        private final ComponentSetup root;
 
         /**
          * Create a new image from the specified build info.

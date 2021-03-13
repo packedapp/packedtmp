@@ -38,6 +38,8 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public abstract class BuildtimeService extends AbstractService implements DependencyProvider, Service {
 
+    private boolean isFrozen;
+
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
      * instance methods annotated with {@link Provide}. In which the case the declaring class needs to be constructor
@@ -59,19 +61,22 @@ public abstract class BuildtimeService extends AbstractService implements Depend
         this.key = requireNonNull(key, "key is null");
     }
 
-    private boolean isFrozen;
+    @Override
+    public final <T> BuildtimeService decorate(Function<? super T, ? extends T> decoratingFunction) {
+        return new MappingBuildtimeService(this, key, decoratingFunction);
+    }
 
     public final void freeze() {
         isFrozen = true;
     }
 
     @Override
+    public abstract boolean isConstant();
+
+    @Override
     public final Key<?> key() {
         return key;
     }
-
-    @Override
-    public abstract boolean isConstant();
 
     /**
      * Creates a new runtime node from this node.
@@ -79,18 +84,6 @@ public abstract class BuildtimeService extends AbstractService implements Depend
      * @return the new runtime node
      */
     protected abstract RuntimeService newRuntimeNode(ServiceInstantiationContext context);
-
-    public final Service toService() {
-        if (isFrozen) {
-            return this;
-        }
-        return new PackedService(key, isConstant());
-    }
-
-    @Override
-    public final <T> BuildtimeService decorate(Function<? super T, ? extends T> decoratingFunction) {
-        return new MappingBuildtimeService(this, key, decoratingFunction);
-    }
 
     @Override
     public final BuildtimeService rekeyAs(Key<?> key) {
@@ -106,25 +99,15 @@ public abstract class BuildtimeService extends AbstractService implements Depend
         });
     }
 
-    /** An implementation of {@link Service} because {@link BuildtimeService} is mutable. */
-    private final class PackedService implements Service {
-
-        /** The key of the service. */
-        private final Key<?> key;
-
-        /** Whether or not the service is a constant. */
-        private final boolean isConstant;
-
-        /**
-         * Creates a new descriptor.
-         * 
-         * @param key
-         *            the key of the service
-         */
-        private PackedService(Key<?> key, boolean isConstant) {
-            this.key = requireNonNull(key);
-            this.isConstant = isConstant;
+    public final Service toService() {
+        if (isFrozen) {
+            return this;
         }
+        return new PackedService(key, isConstant());
+    }
+
+    /** An implementation of {@link Service} because {@link BuildtimeService} is mutable. */
+    private static final record PackedService(Key<?> key, boolean isConstant) implements Service {
 
         /** {@inheritDoc} */
         @Override
@@ -134,20 +117,8 @@ public abstract class BuildtimeService extends AbstractService implements Depend
 
         /** {@inheritDoc} */
         @Override
-        public Key<?> key() {
-            return key;
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public String toString() {
             return "ServiceDescriptor[key=" + key + "]";
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isConstant() {
-            return isConstant;
         }
     }
 }

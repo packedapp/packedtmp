@@ -43,22 +43,22 @@ import packed.internal.component.source.FieldHookModel;
 @Documented
 public @interface FieldHook {
 
+    /** Whether or not the sidecar is allow to get the contents of a field. */
+    boolean allowGet() default false;
+    
+    /** Whether or not the sidecar is allow to set the contents of a field. */
+    boolean allowSet() default false;
+
     // Maybe it should be mandatory... We don't currently support method hooks that
     // maybe annotation() instead. Sounds better if we, for example, adds
     // nameStartsWith()
     Class<? extends Annotation>[] annotation() default {};
-    
-    /** Whether or not the sidecar is allow to get the contents of a field. */
-    boolean allowGet() default false;
-
-    /** Whether or not the sidecar is allow to set the contents of a field. */
-    boolean allowSet() default false;
 
     // om extension's automatisk skal aktiveres...
     // Har endnu ikke fundet
     boolean autoActivate() default true;
 
-    /** The {@link Bootstrap} class the hook will use. */
+    /** The hook's {@link Bootstrap} class. */
     Class<? extends FieldHook.Bootstrap> bootstrap();
 
     abstract class Bootstrap {
@@ -80,6 +80,9 @@ public @interface FieldHook {
             attach((Class) instance.getClass(), instance);
         }
 
+        // Taenker vi har lov til at smide reflection exception???
+        protected void bootstrap() {}
+
         /**
          * Returns this sidecar's builder object.
          * 
@@ -97,9 +100,6 @@ public @interface FieldHook {
          * Check not final??
          */
         protected final void checkWritable() {}
-
-        // Taenker vi har lov til at smide reflection exception???
-        protected void bootstrap() {}
 
         /** Disables any further processing of the field. */
         public final void disable() {

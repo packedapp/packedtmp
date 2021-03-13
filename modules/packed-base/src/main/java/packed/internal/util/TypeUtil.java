@@ -93,20 +93,17 @@ public final class TypeUtil {
      *            the type to analyse
      */
     private static void findTypeVariableNames0(LinkedHashSet<String> addTo, Type type) {
-        if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
+        if (type instanceof ParameterizedType pt) {
             findTypeVariableNames0(addTo, pt.getOwnerType());
             for (Type t : pt.getActualTypeArguments()) {
                 findTypeVariableNames0(addTo, t);
             }
             findTypeVariableNames0(addTo, pt.getRawType());
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType gat = (GenericArrayType) type;
+        } else if (type instanceof GenericArrayType gat) {
             findTypeVariableNames0(addTo, gat.getGenericComponentType());
-        } else if (type instanceof TypeVariable) {
-            addTo.add(((TypeVariable<?>) type).getName());
-        } else if (type instanceof WildcardType) {
-            WildcardType wt = (WildcardType) type;
+        } else if (type instanceof TypeVariable<?> tv) {
+            addTo.add(tv.getName());
+        } else if (type instanceof WildcardType wt) {
             if (wt.getLowerBounds().length > 0) {
                 findTypeVariableNames0(addTo, wt.getLowerBounds()[0]);
             }
@@ -127,8 +124,7 @@ public final class TypeUtil {
         requireNonNull(type, "type is null");
         if (type instanceof Class<?>) {
             return true;
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType pt = (ParameterizedType) type;
+        } else if (type instanceof ParameterizedType pt) {
             if (pt.getOwnerType() != null && !isFreeFromTypeVariables(pt.getOwnerType())) {
                 return false;
             }
@@ -140,13 +136,11 @@ public final class TypeUtil {
             // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
             // something else
             return isFreeFromTypeVariables(pt.getRawType());
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType gat = (GenericArrayType) type;
+        } else if (type instanceof GenericArrayType gat) {
             return isFreeFromTypeVariables(gat.getGenericComponentType());
         } else if (type instanceof TypeVariable) {
             return false;
-        } else if (type instanceof WildcardType) {
-            WildcardType wt = (WildcardType) type;
+        } else if (type instanceof WildcardType wt) {
             for (Type t : wt.getLowerBounds()) {
                 if (!isFreeFromTypeVariables(t)) {
                     return false;
@@ -200,12 +194,12 @@ public final class TypeUtil {
      */
     public static Class<?> rawTypeOf(Type type) {
         requireNonNull(type, "type is null");
-        if (type instanceof Class<?>) {
-            return (Class<?>) type;
-        } else if (type instanceof ParameterizedType) {
-            return (Class<?>) ((ParameterizedType) type).getRawType();
-        } else if (type instanceof GenericArrayType) {
-            return Array.newInstance(rawTypeOf(((GenericArrayType) type).getGenericComponentType()), 0).getClass();
+        if (type instanceof Class<?> cl) {
+            return cl;
+        } else if (type instanceof ParameterizedType pt) {
+            return (Class<?>) pt.getRawType();
+        } else if (type instanceof GenericArrayType gat) {
+            return Array.newInstance(rawTypeOf(gat.getGenericComponentType()), 0).getClass();
         } else if (type instanceof TypeVariable || type instanceof WildcardType) {
             return Object.class;
         } else {

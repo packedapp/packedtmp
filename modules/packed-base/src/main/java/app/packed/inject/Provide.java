@@ -72,7 +72,7 @@ import app.packed.hooks.RealMethodSidecarBootstrap;
  * Proving a null value, for example, via a null field or by returning null from a method is illegal unless the
  * dependency is optional.
  */
-@Target({ ElementType.FIELD, ElementType.METHOD })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @FieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)

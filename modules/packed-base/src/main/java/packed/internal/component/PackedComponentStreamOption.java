@@ -104,11 +104,11 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
     }
 
     public boolean processThisDeeper(PackedComponent origin, PackedComponent actual) {
-        // Class<? extends Extension> extensionType = actual.model.extension().orElse(null);
+        // Class<? extends Extension> extensionClass = actual.model.extension().orElse(null);
         // if (s==0) return;
-        // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionType))) to &&, dobbel check
+        // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionClass))) to &&, dobbel check
         // Also in next method
-//        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionType)))) {
+//        if (extensionClass != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionClass)))) {
 //            return false;
 //        }
         if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {
@@ -117,10 +117,10 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
         return true;
     }
 
-    public boolean processThisDeeper(ComponentBuild origin, ComponentBuild actual) {
-//        Class<? extends Extension> extensionType = actual.extension().orElse(null);
+    public boolean processThisDeeper(ComponentSetup origin, ComponentSetup actual) {
+//        Class<? extends Extension> extensionClass = actual.extension().orElse(null);
 //        // if (s==0) return;
-//        if (extensionType != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionType)))) {
+//        if (extensionClass != null && ((s & INCLUDE_EXTENSIONS) != 0 || (includeExtensions == null || !includeExtensions.contains(extensionClass)))) {
 //            return false;
 //        }
 //        if ((s & IN_SAME_CONTAINER) != 0 && !origin.isInSameContainer(actual)) {

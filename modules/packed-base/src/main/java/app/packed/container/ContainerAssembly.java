@@ -28,6 +28,9 @@ import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 
 /**
+ * A container assembly. Typically you
+ * 
+ * 
  * Bundles are the main source of system configuration. Basically a bundle is just a thin wrapper around
  * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
  * {@link ContainerConfiguration} available via {@link #configuration()}.
@@ -36,16 +39,18 @@ import app.packed.inject.ServiceComponentConfiguration;
  * {@link IllegalStateException}.
  * 
  * A generic bundle. Normally you would extend {@link BaseAssembly}
+ * 
+ * @see BaseAssembly
  */
 public abstract class ContainerAssembly extends Assembly<ContainerConfiguration> {
 
-    /** Creates a new container assembly using {@link ContainerConfiguration#driver()}. */
+    /** Creates a new assembly using {@link ContainerConfiguration#driver()}. */
     protected ContainerAssembly() {
         super(ContainerConfiguration.driver());
     }
 
     /**
-     * Creates a new container assembly using the specified driver.
+     * Creates a new assembly using the specified driver.
      * 
      * @param driver
      *            the container driver to use
@@ -55,21 +60,29 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     }
 
     /**
-     * Checks that the {@link #build()} method has not already been invoked. This is typically used to make sure that users
-     * of extensions does not try to configure the extension after it has been configured.
+     * Checks that the assembly has not already been used. This method is typically used
+     * 
+     * 
+     * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions
+     * does not try to configure the extension after it has been configured.
+     * 
+     * <p>
+     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkConfigurable()}.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
      * @see ContainerConfiguration#checkConfigurable()
      */
+    // Before build is started?? or do we allow to call these method
+    // checkPreBuild()??
     protected final void checkConfigurable() {
         configuration().checkConfigurable();
     }
 
     /**
-     * Returns an unmodifiable view of the extensions that have been configured so far.
+     * Returns an unmodifiable view of every used extension.
      * 
-     * @return an unmodifiable view of the extensions that have been configured so far
+     * @return an unmodifiable view of every used extension
      * @see ContainerConfiguration#extensions()
      * @see #use(Class)
      */
@@ -135,22 +148,22 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     }
 
     /**
-     * A special type of wiring. That Links the specified bundle as a child to this bundle.
+     * Links the specified assembly.
      * 
-     * @param bundle
-     *            the bundle to link
+     * @param assembly
+     *            the assembly to link
      * @param wirelets
-     *            an optional array of wirelets
+     *            optional wirelets
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
-    protected final void link(Assembly<?> bundle, Wirelet... wirelets) {
-        configuration().link(bundle, wirelets);
+    protected final void link(Assembly<?> assembly, Wirelet... wirelets) {
+        configuration().link(assembly, wirelets);
     }
 
     /**
-     * Returns the full path of the container that this bundle creates.
+     * Returns the full path of the container.
      * 
-     * @return the full path of the container that this bundle creates
+     * @return the full path of the container
      * @see ContainerConfiguration#path()
      */
     protected final NamespacePath path() {
@@ -192,18 +205,26 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * 
      * @param <T>
      *            the type of extension to return
-     * @param extensionType
+     * @param extensionClass
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
      *             if called from outside {@link #build()}
      * @see ContainerConfiguration#use(Class)
      */
-    protected final <T extends Extension> T use(Class<T> extensionType) {
-        return configuration().use(extensionType);
+    protected final <T extends Extension> T use(Class<T> extensionClass) {
+        return configuration().use(extensionClass);
     }
 
-    // Maaske kan man kun tilfoeje dem via extensions...
+    /**
+     * @param <C>
+     *            the type of configuration returned by this method
+     * @param driver
+     *            the component driver
+     * @param wirelets
+     *            optional wirelets
+     * @return the configuration of the component
+     */
     protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);
     }

@@ -15,12 +15,7 @@
  */
 package app.packed.component;
 
-import java.lang.invoke.MethodHandles;
-
 import app.packed.base.NamespacePath;
-import app.packed.inject.Factory;
-import app.packed.inject.ServiceComponentConfiguration;
-import packed.internal.component.PackedComponentDriver;
 
 /**
  * An base component configuration class that can serve as basis for actual component configuration types. 
@@ -29,14 +24,6 @@ import packed.internal.component.PackedComponentDriver;
  */
 public class BaseComponentConfiguration extends ComponentConfiguration {
    
-    @SuppressWarnings("rawtypes")
-    private static final BindableComponentDriver INSTALL_DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, PackedComponentDriver.Option.constantSource());
-    
-    /** A driver for this configuration. */
-    @SuppressWarnings("rawtypes")
-    private static final BindableComponentDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
-            PackedComponentDriver.Option.statelessSource());
-    
     /**
      * Creates a new base component configuration.
      * 
@@ -116,37 +103,5 @@ public class BaseComponentConfiguration extends ComponentConfiguration {
     @Override
     public String toString() {
         return context.toString();
-    }
-
-    /**
-     * Returns a driver that can be used to create stateless components.
-     * 
-     * @param <T>
-     *            the type
-     * @return a driver
-     */
-    @SuppressWarnings("unchecked")
-    private static <T> BindableComponentDriver<BaseComponentConfiguration, T> driver() {
-        return STATELESS_DRIVER;
-    }
-
-    // Not sure we want this public or ma
-    @SuppressWarnings("unchecked")
-    public static final ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
-        return INSTALL_DRIVER.bind(implementation);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static final ComponentDriver<BaseComponentConfiguration> driverInstall(Factory<?> factory) {
-        return INSTALL_DRIVER.bind(factory);
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static final ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
-        return INSTALL_DRIVER.applyInstance(instance);
-    }
-    
-    public static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
-        return driver().bind(implementation);
     }
 }
