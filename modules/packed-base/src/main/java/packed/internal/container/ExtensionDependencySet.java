@@ -25,13 +25,13 @@ import java.util.stream.Collectors;
 
 import app.packed.container.Extension;
 
-/** Immutable implementation of {@link ExtensionSet}. */
-final class ExtensionSet extends AbstractSet<Class<? extends Extension>> {
+/** Immutable implementation of {@link ExtensionDependencySet}. */
+final class ExtensionDependencySet extends AbstractSet<Class<? extends Extension>> {
 
     /** The extension types this set contains */
     final List<Class<? extends Extension>> extensions;
 
-    private ExtensionSet(List<Class<? extends Extension>> extensions) {
+    private ExtensionDependencySet(List<Class<? extends Extension>> extensions) {
         this.extensions = requireNonNull(extensions);
     }
 
@@ -54,7 +54,7 @@ final class ExtensionSet extends AbstractSet<Class<? extends Extension>> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
-        return obj == this || obj instanceof ExtensionSet oes && oes.extensions.equals(extensions);
+        return obj == this || obj instanceof ExtensionDependencySet oes && oes.extensions.equals(extensions);
     }
 
     /** {@inheritDoc} */
@@ -85,8 +85,8 @@ final class ExtensionSet extends AbstractSet<Class<? extends Extension>> {
      *             if trying to add BaseExtension
      */
     @SuppressWarnings("unchecked")
-    public static ExtensionSet of(Collection<Class<? extends Extension>> extensions) {
+    public static ExtensionDependencySet of(Collection<Class<? extends Extension>> extensions) {
         List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.extensionClass()).collect(Collectors.toList());
-        return new ExtensionSet((List<Class<? extends Extension>>) l);
+        return new ExtensionDependencySet((List<Class<? extends Extension>>) l);
     }
 }

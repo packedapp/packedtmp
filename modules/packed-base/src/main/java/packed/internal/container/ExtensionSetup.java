@@ -39,6 +39,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** The internal configuration of an extension. */
+// This class is comparable because we sort the dependencies at some point...
 public final class ExtensionSetup implements ExtensionConfiguration, Comparable<ExtensionSetup> {
 
     /** A MethodHandle for invoking {@link Extension#extensionAdded()}. */

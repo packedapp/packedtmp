@@ -80,7 +80,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private final int depth;
 
     /** The direct dependencies of the extension. */
-    private final ExtensionSet directDependencies;
+    private final ExtensionDependencySet directDependencies;
 
     /** The extension we model. */
     private final Class<? extends Extension> extensionClass;
@@ -119,7 +119,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.id = builder.id;
         this.depth = builder.depth;
         // All direct dependencies of this extension
-        this.directDependencies = ExtensionSet.of(builder.dependencies);
+        this.directDependencies = ExtensionDependencySet.of(builder.dependencies);
 
         // Cache some frequently used strings.
         this.nameFull = extensionClass.getCanonicalName();
@@ -193,7 +193,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionSet dependencies() {
+    public ExtensionDependencySet dependencies() {
         return directDependencies;
     }
 
