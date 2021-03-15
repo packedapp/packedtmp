@@ -252,13 +252,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * <p>
      * // Hmm if static initalizer fails this stays around // This is also a problem if we have more complex objects... // I
      * don't know how much of a problem it is... // If the static initializer fails it does so with an error...
-     * 
      */
+    // Maaske kan vi dropper den her bootstrap, og bare smide direkte ind i builder...
+    // Det er maaske fedt nok at instantiere sine dependencies fra class initializer...
     private static final class Bootstrap {
 
         /** A set of extension this extension depends on. */
 
         /** All dependencies of the extension */
+
+        // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
         private Set<Class<? extends Extension>> dependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
         final Class<? extends Extension> extensionClass;
@@ -390,6 +393,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private static final class Loader {
 
         /** A map that contains */
+        // Bootstrap, Builder or Throwable
         private static final WeakHashMap<Class<? extends Extension>, Object> DATA = new WeakHashMap<>();
 
         /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */
@@ -403,9 +407,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         private ExtensionModel loadLocked(Class<? extends Extension> extensionClass) {
             // Check for cyclic dependencies between extensions
-            if (stack.contains(extensionClass)) {
-                String st = stack.stream().map(e -> e.getCanonicalName()).collect(Collectors.joining(" -> "));
-                throw new InternalExtensionException("Cyclic dependencies between extensions encountered: " + st + " -> " + extensionClass.getCanonicalName());
+            if (stack.peek() != extensionClass) {
+                if (!stack.isEmpty() && stack.contains(extensionClass)) {
+                    String st = stack.stream().map(e -> e.getCanonicalName()).collect(Collectors.joining(" -> "));
+                    throw new InternalExtensionException(
+                            "Cyclic dependencies between extensions encountered: " + st + " -> " + extensionClass.getCanonicalName());
+                }
             }
             stack.push(extensionClass);
 
@@ -420,7 +427,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                     // Better error message
                     throw new InternalExtensionException("Extension is not readable for Packed", e);
                 }
-                
+
                 // Get any bootstrap data that was create as part of the class initialization
                 @Nullable
                 Bootstrap b = (Bootstrap) DATA.get(extensionClass);
@@ -471,7 +478,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 GLOBAL_LOCK.unlock();
             }
         }
-
         private static ExtensionModel load(Class<? extends Extension> extensionClass, @Nullable Loader loader) {
             GLOBAL_LOCK.lock();
             try {
