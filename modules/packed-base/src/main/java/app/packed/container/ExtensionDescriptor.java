@@ -15,7 +15,8 @@
  */
 package app.packed.container;
 
-import java.lang.Runtime.Version;
+import java.lang.module.ModuleDescriptor;
+import java.lang.module.ModuleDescriptor.Version;
 import java.util.Optional;
 import java.util.Set;
 
@@ -107,21 +108,33 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     String name();
 
     /**
-     * Returns a descriptor for the specified extension type.
+     * Returns the version of the extension if present. The version is only valid if the extension has been loaded on the
+     * module path. And
+     * 
+     * This method relies on a build system that writes the module xxx to the class file
+     * 
+     * @return the version of the extension if present
+     * @see Module#getDescriptor()
+     * @see ModuleDescriptor#version()
+     */
+    default Optional<Version> version() {
+        ModuleDescriptor descriptor = module().getDescriptor(); // is null for an unnamed module
+        return descriptor == null ? Optional.empty() : descriptor.version();
+    }
+
+    /**
+     * Returns a descriptor for the specified extension class.
      * 
      * @param extensionClass
-     *            the extension type to return a descriptor for
-     * @return a descriptor for the specified extension type
-     * 
-     * @throws InternalExtensionException
-     *             if a descriptor for the specified extension type could not be generated
+     *            the extension to return a descriptor for
+     * @return a descriptor for the specified extension
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionClass) {
         return ExtensionModel.of(extensionClass);
     }
 }
 
-interface ExtensionDescriptor2 {
+interface ExtensionDescriptor2 extends ExtensionDescriptor {
 
 //  /**
 //   * Returns a set of all the optional dependencies defined in {@link UsesExtensions#optionalDependencies()} that could
@@ -130,9 +143,10 @@ interface ExtensionDescriptor2 {
 //   * @return a set of all optional dependencies that could not be successfully resolved
 //   * @see UsesExtensions#optionalDependencies()
 //   */
+// Nahh 
 //  Set<String> unresolvedDependencies();
 
-    default Optional<Module> libraryModule() {
+    default Optional<Module> library() {
         // Ideen er lidt som AppVersion fra Helm charts
         // Syntes den er rigtig smart
         // A library is typically something that is released separately from PAcked
@@ -141,11 +155,8 @@ interface ExtensionDescriptor2 {
     }
 
     default Optional<Version> libraryVersion() {
-        // Ideen er lidt som AppVersion fra Helm charts
-        // Syntes den er rigtig smart
-        // A library is typically something that is released separately from PAcked
-        // But where an extension acts as a kind of bridge
-        return Optional.empty();
+        Optional<Module> m = library();
+        return m.isEmpty() ? Optional.empty() : m.get().getDescriptor().version();
     }
 
     /**
@@ -157,23 +168,16 @@ interface ExtensionDescriptor2 {
      */
     // Syntes det aerligtalt ikke...
     // Den er let at finde.
-    // For end brugere er den kun forvirrende
+    // For end-user er den kun forvirrende.. De bruger den aldrig...
+    // Og hvis vi nu faar flere...
+    // Kunne ogsaa bare vaere en automatisk build service...
     Optional<Class<? extends Subtension>> subtensionType();
-
-    default Optional<Version> version() {
-        return Optional.empty();
-        // Bliver noedt til at have en version klasse...
-        // Problemet er lidt om vi kan slippe uden om noget semantic omkring det...
-        // IDK
-
-        // return module().getDescriptor().version();
-    }
 
 }
 /**
- * Returns all the different types of contracts the extension exposes.
+ * Returns all the different types of contracts this extension exposes.
  * 
- * @return all the different types of contracts the extension exposes
+ * @return all the different types of contracts this extension exposes
  */
 // Set<Class<? extends Contract>> contracts();
 // 

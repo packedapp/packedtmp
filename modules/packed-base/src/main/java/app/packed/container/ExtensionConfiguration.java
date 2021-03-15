@@ -38,11 +38,19 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A configuration object for extensions. An instance of this interface is available via
- * {@link Extension#configuration()} or via constructor injection into any subclass of {@link Extension}. Since the
- * extension itself defines most methods in this interface via protected final methods. This interface is typically used
- * in order to provide these methods to code that is defined outside of the actual extension implementation, for
- * example, code that is placed in another package.
+ * A configuration object for an {@link Extension}.
+ * <p>
+ * Normally all configuration of extensions are done through the various protected final methods available when
+ * extending {@link Extension}. However, for complex extensions where the logic cannot easily fit into a single class.
+ * An extension configuration can be passed around. Make the fff available
+ * 
+ * <p>
+ * An instance of this interface is normally acquired via {@link Extension#configuration()} or via constructor injected
+ * it into any subclass of {@link Extension} (or any of its minors).
+ * <p>
+ * Since the extension itself defines most methods in this interface via protected final methods. This interface is
+ * typically used in order to provide these methods to code that is defined outside of the actual extension
+ * implementation, for example, code that is placed in another package.
  * <p>
  * <strong>Note:</strong> Instances of this class should never be exposed to end-users.
  */
@@ -73,20 +81,20 @@ public /* sealed */ interface ExtensionConfiguration {
     void checkIsLeafBundle();
 
     /**
+     * Returns the extension class.
+     * 
+     * @return the extension class
+     */
+    Class<? extends Extension> extensionClass();
+
+    /**
      * Returns the extension instance.
      * 
      * @return the extension instance
      * @throws IllegalStateException
      *             if trying to call this method from the constructor of the extension
      */
-    Extension extension();
-
-    /**
-     * Tells which extension class is being configured.
-     * 
-     * @return the extension class
-     */
-    Class<? extends Extension> extensionClass();
+    Extension extensionInstance();
 
     // Will install the class in the specified Container
 
@@ -264,6 +272,6 @@ public /* sealed */ interface ExtensionConfiguration {
         }
 
         ExtensionSetup eb = getExtensionSetup(lookup, containerComponent);
-        return eb == null ? Optional.empty() : Optional.of((T) eb.extension());
+        return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
     }
 }

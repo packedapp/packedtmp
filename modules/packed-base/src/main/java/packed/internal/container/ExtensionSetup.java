@@ -140,7 +140,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @throws IllegalStateException
      *             if trying to call this method from the constructor of the extension
      */
-    public Extension extension() {
+    public Extension extensionInstance() {
         Extension e = instance;
         if (e == null) {
             throw new IllegalStateException("Cannot call this method from the constructor of " + model.name());

@@ -6,6 +6,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionSupportClass;
 import app.packed.container.ExtensionSupportClass.Scope;
 
+@SuppressWarnings("unused")
 public final class ExtensionSupportClassModel {
 
     private static final ClassValue<ExtensionSupportClassModel> MODELS = new ClassValue<>() {

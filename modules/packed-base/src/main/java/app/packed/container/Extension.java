@@ -18,6 +18,8 @@ package app.packed.container;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.module.ModuleDescriptor.Version;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -232,7 +234,7 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Add the specified extension as a dependency.
+     * Adds the specified dependecies extension as a dependency. Must only be invoked
      * <p>
      * to use it
      * <p>
@@ -240,15 +242,47 @@ public abstract class Extension extends Realm {
      * 
      * 
      * @param dependency
-     *            the dependency that this dependency depends on
+     *            a dependency of the extension
      * @throws InternalExtensionException
-     *             if the dependency could not be added for some reason
+     *             if the dependency could not be added for some reason, for example, if it would lead to a cyclic
+     *             dependency between extensions. Or if not called directly from a class initializer
      * 
      * @see #$addDependencyLazyInit(Class, Class, Consumer)
      */
-    protected static void $addDependency(Class<? extends Extension> dependency) {
-        requireNonNull(dependency, "dependency is null");
-        ExtensionModel.bootstrapAddDependency(STACK_WALKER.getCallerClass(), dependency);
+    @SafeVarargs
+    protected static void $addDependency(Class<? extends Extension>... dependencies) {
+        requireNonNull(dependencies, "dependency is null");
+        ExtensionModel.bootstrapAddDependency(STACK_WALKER.getCallerClass(), List.of(dependencies));
+    }
+
+    // Object -> T???
+    protected static Optional<Object> $addOptionalDependency(String dependency, String bootstrap) {
+        // Will try to load callerClass$bootstrapClassName and execute (static) Class#bootstrapMethod and return Object
+        // else null
+
+        // Jeg taenker man typisk vil returnere et interface som er implementeret af den "optional class wrapper"
+        // Maaske kan signature vaere (eller have begge 2)
+
+        // <T> Optional<T> $addOptionalDependency(Class<T> wrapper, String dependency, String bootstrapClassName) {
+        // bootstrapClassName must implement T
+        // Evt
+        // <T> T $addOptionalDependency(Class<T> wrapper, String dependency, String bootstrapClassName) {
+        // Her er wrapper en klasse som bliver overskrevet at bootstrap
+
+        // addOptionalDependency("app.packed.converter.ConverterExtension, doo stuff if available)
+        return null;
+    }
+
+    // If contains # -> method otherwise class 
+    protected static <T> T $addOptionalDependency(String dependency, String bootstrap, T alternative) {
+        // bootstrap class name will be loaded and returned if present. otherwise alternative
+        throw new UnsupportedOperationException();
+    }
+
+    protected static void $addOptionalDependency(String... dependencies) {
+        // Ala. hvis den
+        // Kan vi tage en MethodHandle...
+        // Altsaa jeg taenker at vi goer
     }
 
     // Tilfoejer en dependency hvor callbacket. Bliver kaldt. Hvis dependency bliver tilfoejet
@@ -287,7 +321,30 @@ public abstract class Extension extends Realm {
         // Her vil man nok ikke vaelge at
     }
 
-    // protected static void $libraryVersion(Module m);
+    static void $libraryFor(String module) {
+
+    }
+
+    // Er det mere et foreignLibray???
+    // ConverterExtension er jo sin egen version
+    static void $libraryFor(Module module) {
+        // will extract verions
+    }
+
+    static void $libraryVersionFromClass(Class<?> clazz) {
+        $libraryVersion(clazz.getModule());
+    }
+
+    static void $libraryVersion(Module m) {
+        Optional<Version> version = m.getDescriptor().version();
+        if (version.isEmpty()) {
+            throw new InternalExtensionException("The module " + m.getName() + " does not have version");
+        }
+        System.out.println(version);
+    }
+
+    // Will fail if the module, class does not have version
+    // protected static void $libraryVersion(Module|Class m);
     // protected static void $libraryWrapper(Module m);
 
     /**

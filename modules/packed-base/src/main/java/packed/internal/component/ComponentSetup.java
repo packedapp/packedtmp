@@ -243,7 +243,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
             PackedAttributeModel pam = extension.model().attributes();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
-                    Extension ex = extension.extension();
+                    Extension ex = extension.extensionInstance();
                     Object val;
                     MethodHandle mh = e.getValue().mh;
                     try {

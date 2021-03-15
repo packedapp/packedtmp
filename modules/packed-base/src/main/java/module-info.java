@@ -1,6 +1,6 @@
 module app.packed.base {
     exports app.packed.attribute; // then have @Preview @DeprecatedWithReason
-    exports app.packed.base; // then have @Preview @DeprecatedWithReason
+    exports app.packed.base;
     exports app.packed.cli;
     exports app.packed.component;
     exports app.packed.component.drivers;

@@ -132,7 +132,7 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
      *            the build entry to export
      * @return a configuration object that can be exposed to the user
      */
-    private <T> PackedExportedServiceConfiguration<T> export0(ExportedBuildtimeService entry) {
+    private <T> ExportedServiceSetup<T> export0(ExportedBuildtimeService entry) {
         // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
         // F.eks. hvis en extension publisher en service vi gerne vil exportere
         // Saa sker det maaske foerst naar den completer.
@@ -142,7 +142,7 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
             e = exportedEntries = new ArrayList<>(5);
         }
         e.add(entry);
-        return new PackedExportedServiceConfiguration<>(entry);
+        return new ExportedServiceSetup<>(entry);
     }
 
     /**

@@ -30,7 +30,7 @@ import packed.internal.inject.service.build.ExportedBuildtimeService;
  * @see ServiceExtension#export(Key)
  */
 // Move to ExportManager when we key + check configurable has been finalized
-public final class PackedExportedServiceConfiguration<T> implements ExportedServiceConfiguration<T> {
+public final class ExportedServiceSetup<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
     private final ExportedBuildtimeService entry;
@@ -41,7 +41,7 @@ public final class PackedExportedServiceConfiguration<T> implements ExportedServ
      * @param entry
      *            the entry to export
      */
-    public PackedExportedServiceConfiguration(ExportedBuildtimeService entry) {
+    public ExportedServiceSetup(ExportedBuildtimeService entry) {
         this.entry = requireNonNull(entry);
     }
 

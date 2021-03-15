@@ -44,7 +44,7 @@ public final class ContainerSetup {
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
 
-    /** All extensions that are in use in no particular order. */
+    /** All extensions in use, in no particular order. */
     private final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
@@ -273,6 +273,6 @@ public final class ContainerSetup {
 
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
-        return (T) useDependencyCheckedExtension(extensionClass, null).extension();
+        return (T) useDependencyCheckedExtension(extensionClass, null).extensionInstance();
     }
 }

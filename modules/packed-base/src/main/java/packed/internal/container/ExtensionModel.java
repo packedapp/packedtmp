@@ -26,6 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -237,11 +238,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * @param dependency
      *            the extension to depend on
      * @throws InternalExtensionException
-     *             if the dependency could not be added for some reason 
+     *             if the dependency could not be added for some reason
      * @see Extension#$addDependency(Class)
      */
-    public static void bootstrapAddDependency(Class<?> callerClass, Class<? extends Extension> dependency) {
-        Loader.forBootstrapAccess(callerClass).addStaticDependency(dependency);
+    public static void bootstrapAddDependency(Class<?> callerClass, List<Class<? extends Extension>> dependencies) {
+        Loader.forBootstrapAccess(callerClass).addStaticDependency(dependencies);
     }
 
     /**
@@ -255,6 +256,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     public static ExtensionModel of(Class<? extends Extension> extensionClass) {
         return MODELS.get(extensionClass);
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(nameFull);
+        version().ifPresent(v -> sb.append("[" + v + "]"));
+        return sb.toString();
     }
 
     /**
@@ -282,11 +290,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.extensionClass = requireNonNull(extensionClass);
         }
 
-        private void addStaticDependency(Class<? extends Extension> dependencyType) {
-            if (extensionClass == dependencyType) {
-                throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
+        private void addStaticDependency(List<Class<? extends Extension>> dependencies) {
+            for (Class<? extends Extension> dependencyType : dependencies) {
+                if (extensionClass == dependencyType) {
+                    throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
+                } else if (this.dependencies.contains(dependencyType)) {
+                    throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
+                }
+                this.dependencies.add(dependencyType);
             }
-            dependencies.add(dependencyType);
         }
     }
 
@@ -432,6 +444,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
             try {
                 // Ensure that the class initializer of the extension has been run before we progress
                 try {
+                    if (!ExtensionModel.class.getModule().canRead(extensionClass.getModule())) {
+                        ExtensionModel.class.getModule().addReads(extensionClass.getModule());
+                    }
                     Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
                     l.ensureInitialized(extensionClass);
                 } catch (IllegalAccessException e) {
