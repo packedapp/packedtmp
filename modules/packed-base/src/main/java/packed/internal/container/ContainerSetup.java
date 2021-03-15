@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
-import java.util.TreeSet;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
@@ -30,9 +29,9 @@ import app.packed.inject.ServiceExtension;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentSetup;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 
-/** The internal representation of a container configuration. */
+/** The internal configuration of a container. */
 public final class ContainerSetup {
 
     /** Child containers, lazy initialized */
@@ -40,7 +39,7 @@ public final class ContainerSetup {
     public ArrayList<ContainerSetup> children;
 
     /** The component this container is a part of. */
-    public final ComponentSetup compConf;
+    public final ComponentSetup component;
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
@@ -53,13 +52,13 @@ public final class ContainerSetup {
     @Nullable
     private Boolean isImage;
 
-    /** Any parent container this container might have. */
+    /** Any parent container of this container. */
     @Nullable
     final ContainerSetup parent;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
-    private ServiceManager sm;
+    private ServiceManagerSetup sm;
 
     private ArrayList<ExtensionSetup> tmpExtensions;
 
@@ -70,7 +69,7 @@ public final class ContainerSetup {
      *            the configuration of the component the container is a part of
      */
     public ContainerSetup(ComponentSetup compConf) {
-        this.compConf = requireNonNull(compConf);
+        this.component = requireNonNull(compConf);
 
         this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
         if (parent != null) {
@@ -107,7 +106,9 @@ public final class ContainerSetup {
         // Complete all extensions in order
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
-        TreeSet<ExtensionSetup> extensionsOrdered = new TreeSet<>(extensions.values());
+        // TreeSet<ExtensionSetup> extensionsOrdered = new TreeSet<>(extensions.values(), );
+        ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
+        Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
         for (ExtensionSetup pec : extensionsOrdered) {
             pec.complete();
         }
@@ -148,7 +149,7 @@ public final class ContainerSetup {
      *            the type of extension to return a context for
      * @return an extension's context, iff the specified extension type has already been added
      * @see #useExtension(Class)
-     * @see #useExtension(Class, ExtensionSetup)
+     * @see #useDependencyCheckedExtension(Class, ExtensionSetup)
      */
     @Nullable
     public ExtensionSetup getExtensionContext(Class<? extends Extension> extensionClass) {
@@ -157,12 +158,12 @@ public final class ContainerSetup {
     }
 
     @Nullable
-    public ServiceManager getServiceManager() {
+    public ServiceManagerSetup getServiceManager() {
         return sm;
     }
 
-    public ServiceManager getServiceManagerOrCreate() {
-        ServiceManager s = sm;
+    public ServiceManagerSetup getServiceManagerOrCreate() {
+        ServiceManagerSetup s = sm;
         if (s == null) {
             useExtension(ServiceExtension.class);
             s = sm;
@@ -175,7 +176,7 @@ public final class ContainerSetup {
         if (b != null) {
             return b;
         }
-        ComponentSetup cc = compConf.getParent();
+        ComponentSetup cc = component.getParent();
         while (cc != null) {
             if (cc.modifiers().isImage()) {
                 return isImage = Boolean.TRUE;
@@ -186,12 +187,13 @@ public final class ContainerSetup {
     }
 
     /**
-     * This method is invoked from the constructor of a {@link ServiceExtension} to create a new {@link ServiceManager}.
+     * This method is invoked from the constructor of a {@link ServiceExtension} to create a new
+     * {@link ServiceManagerSetup}.
      * 
      * @return the new service manager
      */
-    public ServiceManager newServiceManagerFromServiceExtension() {
-        return sm = new ServiceManager(this, sm);
+    public ServiceManagerSetup newServiceManagerFromServiceExtension() {
+        return sm = new ServiceManagerSetup(this, sm);
     }
 
     private void runPredContainerChildren() {
@@ -233,7 +235,8 @@ public final class ContainerSetup {
      * @throws InternalExtensionException
      *             if the
      */
-    ExtensionSetup useExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup caller) {
+    // Any dependencies needed have been checked
+    ExtensionSetup useDependencyCheckedExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup caller) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
@@ -247,7 +250,7 @@ public final class ContainerSetup {
 
             // Checks that we are still configurable
             if (caller == null) {
-                compConf.checkConfigurable();
+                component.checkConfigurable();
             } else {
                 caller.checkConfigurable();
             }
@@ -270,6 +273,6 @@ public final class ContainerSetup {
 
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
-        return (T) useExtension(extensionClass, null).extension();
+        return (T) useDependencyCheckedExtension(extensionClass, null).extension();
     }
 }

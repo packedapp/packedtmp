@@ -33,7 +33,7 @@ import app.packed.inject.sandbox.ServiceAttributes;
 import app.packed.state.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
@@ -76,7 +76,7 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 public class ServiceExtension extends Extension {
 
     /** The service manager. */
-    private final ServiceManager sm;
+    private final ServiceManagerSetup services;
 
     /**
      * Create a new service extension.
@@ -85,7 +85,7 @@ public class ServiceExtension extends Extension {
      *            an extension configuration object
      */
     /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.sm = ((ExtensionSetup) configuration).container().newServiceManagerFromServiceExtension();
+        this.services = ((ExtensionSetup) configuration).container().newServiceManagerFromServiceExtension();
     }
 
     /**
@@ -111,8 +111,8 @@ public class ServiceExtension extends Extension {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void anchorIf(Predicate<? super Service> filter) {
         requireNonNull(filter, "filter is null");
-        Predicate<? super Service> a = sm.anchorFilter;
-        sm.anchorFilter = a == null ? filter : ((Predicate) a).or(filter);
+        Predicate<? super Service> a = services.anchorFilter;
+        services.anchorFilter = a == null ? filter : ((Predicate) a).or(filter);
     }
 
     // Validates the outward facing contract
@@ -175,7 +175,7 @@ public class ServiceExtension extends Extension {
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
         checkConfigurable();
-        return sm.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     // Altsaa skal vi hellere have noget services().filter().exportall();
@@ -219,7 +219,7 @@ public class ServiceExtension extends Extension {
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
-        sm.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+        services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
     public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
@@ -238,7 +238,7 @@ public class ServiceExtension extends Extension {
      */
     @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "contract")
     /* package-private */ ServiceContract exposeContract() {
-        return sm.newServiceContract();
+        return services.newServiceContract();
     }
 
     /**
@@ -249,7 +249,7 @@ public class ServiceExtension extends Extension {
     @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "exported-services")
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
-        return sm.exports().exportsAsServiceRegistry();
+        return services.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -300,7 +300,7 @@ public class ServiceExtension extends Extension {
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        sm.provideAll((PackedInjector) locator /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
+        services.provideAll((PackedInjector) locator /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
     }
 
     /**
@@ -356,7 +356,7 @@ public class ServiceExtension extends Extension {
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
-            sm.dependencies().require(key, false /* , cs */);
+            services.dependencies().require(key, false /* , cs */);
         }
     }
 
@@ -381,7 +381,7 @@ public class ServiceExtension extends Extension {
         checkConfigurable();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
-            sm.dependencies().require(key, true /* , cs */);
+            services.dependencies().require(key, true /* , cs */);
         }
     }
 
@@ -395,7 +395,7 @@ public class ServiceExtension extends Extension {
      *            transforms the exports
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
-        sm.exports().addExportTransformer(transformer);
+        services.exports().addExportTransformer(transformer);
     }
 
     /**

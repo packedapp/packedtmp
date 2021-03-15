@@ -41,7 +41,6 @@ import app.packed.inject.Provide;
 // 2 metoder med nullable.... IDK
 // Syntes det ville vaere ret rart at faa den injected i den nye extension
 
-
 // Er i virkeligheden en maade at linke paa across bundle boundaries
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -50,7 +49,6 @@ import app.packed.inject.Provide;
 
 // Giver det mening at have en for components???? Maaske bare en alm listener???
 //
-
 
 // Extension @OnBuild
 /// Kan tage child extensions...
@@ -62,6 +60,10 @@ import app.packed.inject.Provide;
 // Maaske er det en parameter annotation istedet for
 // og saa @Build foo(@SubExtension(onlyDirectLink = true) extension)
 @MethodHook(allowInvoke = true, bootstrap = RealMethodSidecarBootstrap.class)
+
+// Alternativ @Parent qualifier... @Parent(any = true) 
+// @Descendent(parentOnly=false)
+// Maaske have begge to...
 public @interface ConnectExtensions {
 
     // Only children not anything farther removed...
@@ -77,7 +79,7 @@ public @interface ConnectExtensions {
     boolean onlyDirectLink() default false;// onlyDirectLink
 
     // boolean crossArtifacts default ???
-    
+
     // onDirectConnect(C
 }
 

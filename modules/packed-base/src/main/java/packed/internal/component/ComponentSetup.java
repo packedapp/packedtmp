@@ -348,14 +348,18 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return name;
     }
 
-    // Previously this method returned the specified bundle. However, to encourage people to configure the bundle before
-    // calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have void return
-    // type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
-
-    // Implementation note: We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent
-    // has been fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite
-    // loop situations, for example, if a bundle recursively links itself which fails by throwing
-    // java.lang.StackOverflowError instead of an infinite loop.
+    /**
+     * {@inheritDoc}
+     * 
+     * @apiNote Previously this method returned the specified bundle. However, to encourage people to configure the bundle
+     *          before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have
+     *          void return type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
+     * 
+     * @implNote We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent has been
+     *           fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite loop
+     *           situations, for example, if a bundle recursively links itself which fails by throwing
+     *           java.lang.StackOverflowError instead of an infinite loop.
+     */
     @Override
     public void link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
@@ -371,7 +375,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Create the new component and a new realm
         ComponentSetup compConf = new ComponentSetup(build, new RealmConfiguration(assembly.getClass()), driver, parent, wp);
 
-        // Invokes Assembly::build
+        // Invoke Assembly::build
         AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(compConf));
 
         // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
@@ -570,7 +574,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     }
 
     /** Checks that this component has a source. */
-    private void checkHasContainer() {
+    private void checkIsContainer() {
         if (container == null) {
             throw new UnsupportedOperationException(
                     "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".CONTAINER modifier set");
@@ -580,14 +584,14 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /** {@inheritDoc} */
     @Override
     public Set<Class<? extends Extension>> containerExtensions() {
-        checkHasContainer();
+        checkIsContainer();
         return container.extensionView();
     }
 
     /** {@inheritDoc} */
     @Override
     public <T extends Extension> T containerUse(Class<T> extensionClass) {
-        checkHasContainer();
+        checkIsContainer();
         return container.useExtension(extensionClass);
     }
 

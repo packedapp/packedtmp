@@ -16,8 +16,10 @@
 package app.packed.container;
 
 /**
- *
+ * This is actually not 
  */
+// Maybe it is just a fake extension...
+// 
 public final class BaseExtension extends Extension {
 
     /** Not today Satan, not today. */

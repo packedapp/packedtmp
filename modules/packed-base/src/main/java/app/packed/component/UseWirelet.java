@@ -29,18 +29,18 @@ import java.lang.annotation.Target;
 @Documented
 // Collect, Receive, Accept, Consume
 
-// Grunden til jeg ikke kan WireletInject er den kan puttes paa en parameter...
+// Grunden til jeg ikke kan lide WireletInject er den kan puttes paa en parameter...
 // Men det kan @Inject ikke.
 // @Nullable, Optional, List
 // VarHandle, MethodHandle doesn't really work with WireletHandle...
 // methods are conditional invoked.....
 
 // Hmm Hvad hvis jeg har foo(Optional<EEE>)
+
 // Skal den virkelig invokes alligevel???
 //  
-
 // @WireletLink...  Nah @WireletLink Optional<>
-public @interface WireletReceive {}
+public @interface UseWirelet {}
 
 /// Metode??? det giver jo god mening...
 /// Men maaske hellere i forbindelse med @Initialize

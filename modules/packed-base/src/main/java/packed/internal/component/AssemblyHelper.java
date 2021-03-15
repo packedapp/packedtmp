@@ -29,7 +29,8 @@ import packed.internal.util.ThrowableUtil;
 /** Helper class to access non-public members in {@link Assembly}. */
 public final class AssemblyHelper {
 
-    public static final AssemblyHelper ASSEMBLY_CONSUMED = new AssemblyHelper();
+    /** An object that marks that an assembly has been used. */
+    public static final Object ASSEMBLY_USED = new Object();
 
     /** A VarHandle that can access Bundle#configuration. */
     private static final VarHandle VH_BUNDLE_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "configuration",
@@ -52,18 +53,20 @@ public final class AssemblyHelper {
      *            the configuration object to set before invoking the build method
      */
     static void invokeBuild(Assembly<?> assembly, Object configuration) {
-        // We perform a compare and exchange. Guarding against concurrent usage of this bundle.
+        // We perform a compare and exchange. Guarding against concurrent usage of this assembly.
+        // I actually don't think we need to use volatile...IDK
+        // I'm pretty sure you will get an exception one way or the other... 
         Object existing = VH_BUNDLE_CONFIGURATION.compareAndExchange(assembly, null, configuration);
         if (existing == null) {
             try {
-                MH_BUNDLE_CONFIGURE.invoke(assembly); // Invokes app.packed.component.Assembly#configure()
+                MH_BUNDLE_CONFIGURE.invoke(assembly); // Invokes Assembly#configure()
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
-                // sets Bundle.configuration to a marker that indicates the bundle has been consumed
-                VH_BUNDLE_CONFIGURATION.setVolatile(assembly, AssemblyHelper.ASSEMBLY_CONSUMED);
+                // sets Assembly.configuration to a marker that indicates the assembly has been consumed
+                VH_BUNDLE_CONFIGURATION.setVolatile(assembly, AssemblyHelper.ASSEMBLY_USED);
             }
-        } else if (existing instanceof AssemblyHelper) {
+        } else if (existing == ASSEMBLY_USED) {
             // Bundle has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, type = " + assembly.getClass());
         } else {

@@ -25,6 +25,9 @@ import app.packed.hooks.AutoService;
 /**
  * Represents the arguments to a method main.
  */
+// Maaske skal den ikke vaere offentlig...
+// Problemet er at alle nu kan faa den injected...
+// CliWirelets.mainArgs(); import static CliWirelet.mainArgs...
 @AutoService
 public final class MainArgs extends Wirelet {
 

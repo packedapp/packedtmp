@@ -41,7 +41,7 @@ import packed.internal.util.ReflectionUtil;
  * @see ServiceExtension#require(Key...)
  * @see ServiceExtension#requireOptionally(Key...)
  */
-public final class ServiceRequirementsManager {
+public final class ServiceManagerRequirementsSetup {
 
     /**
      * Explicit requirements, typically added via {@link ServiceExtension#require(Key...)} or

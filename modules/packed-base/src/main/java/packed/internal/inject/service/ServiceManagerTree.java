@@ -27,7 +27,7 @@ import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
 /**
- * A service multi-composer is responsible for managing 1 or more {@link ServiceManager service composers} that are
+ * A service multi-composer is responsible for managing 1 or more {@link ServiceManagerSetup service composers} that are
  * directly connected and part of the same build.
  * <p>
  * This class server two main purposes:
@@ -46,7 +46,7 @@ import packed.internal.inject.DependencyProvider;
 
 //TODO WE NEED TO CHECK INTRA BUNDLE REFERENCES
 // BitMap???
-final class ServiceComposerTree {
+final class ServiceManagerTree {
 
     /**
      * Tries to find a dependency cycle.

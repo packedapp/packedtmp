@@ -45,6 +45,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 import packed.internal.component.source.MethodHookModel;
+import packed.internal.util.StackWalkerUtil;
 
 /**
  * A method hook allows for run-time customization of methods.
@@ -134,15 +135,19 @@ public @interface MethodHook {
          * @throws IllegalStateException
          *             if called from outside {@link #bootstrap()}.
          */
-        /* private (RealTimeBootstrap) */ final MethodHookModel.Builder builder() {
+        /* Todoprivate (RealTimeBootstrap) */ final MethodHookModel.Builder builder() {
             MethodHookModel.Builder b = builder;
             if (b == null) {
+                if (StackWalkerUtil.containsConstructorOf(getClass())) {
+                    throw new IllegalStateException("This method cannot be called from the constructor of " + getClass()
+                            + ". You will need to call this method from within #bootstrap()");
+                }
                 throw new IllegalStateException("This method cannot called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
             }
             return b;
         }
 
-        /** Disables any further processing of the method. */
+        /** Disables any further processing of the hook. */
         public final void disable() {
             // No I think disable... Clears out runtime and build time...
             // nulls about

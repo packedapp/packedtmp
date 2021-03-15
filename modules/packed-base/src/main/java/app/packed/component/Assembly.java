@@ -52,7 +52,7 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      * <ul>
      * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
      * <li>Then, as a part of the build process, it is initialized with the actual configuration object of the component.
-     * <li>Finally, {@link AssemblyHelper#ASSEMBLY_CONSUMED} is set to indicate that the assembly has been used
+     * <li>Finally, {@link AssemblyHelper#ASSEMBLY_USED} is set to indicate that the assembly has been used
      * </ul>
      */
     @Nullable
@@ -79,8 +79,7 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      * <p>
      * This method should never be invoked directly by the user.
      */
-    // This method is invoked via a MethodHandle at AssemblyHelper#invokeBuild
-    protected abstract void build();
+    protected abstract void build(); // Invoked via a MethodHandle at AssemblyHelper#invokeBuild
 
     /**
      * Returns the configuration object that this assembly wraps.
@@ -94,13 +93,10 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
     @SuppressWarnings("unchecked")
     protected final C configuration() {
         Object c = configuration;
-        if (c == null) {
+        if (c == null || c == AssemblyHelper.ASSEMBLY_USED) {
             throw new IllegalStateException("This method cannot called outside of the #build() method. Maybe you tried to call #build() directly");
-        } else if (c == AssemblyHelper.ASSEMBLY_CONSUMED) {
-            throw new IllegalStateException("This method cannot called outside of the #build() method. Maybe you tried to call #build() directly");
-        } else {
-            return (C) c;
         }
+        return (C) c;
     }
 
     /**

@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 import app.packed.container.Extension;
 
 /** Immutable implementation of {@link ExtensionDependencySet}. */
-final class ExtensionDependencySet extends AbstractSet<Class<? extends Extension>> {
+final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension>> {
 
     /** The extension types this set contains */
     final List<Class<? extends Extension>> extensions;

@@ -49,23 +49,23 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
  * A service composer is responsible for managing the services for a single bundle at build time. A
- * {@link ServiceComposerTree} is responsible for managing 1 or more service composers that are directly connected and
+ * {@link ServiceManagerTree} is responsible for managing 1 or more service composers that are directly connected and
  * part of the same build.
  */
-public final class ServiceManager {
+public final class ServiceManagerSetup {
 
-    /** The bundle this service manager is a part of. */
+    /** The container this service manager is a part of. */
     private final ContainerSetup container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceRequirementsManager dependencies;
+    public ServiceManagerRequirementsSetup dependencies;
 
     /** An error manager that is lazily initialized. */
     @Nullable
     private InjectionErrorManager em;
 
     /** A service exporter handles everything to do with exports of services. */
-    private final ServiceExportManager exports = new ServiceExportManager(this);
+    private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
 
     /** All explicit added build entries. */
     private final ArrayList<BuildtimeService> localServices = new ArrayList<>();
@@ -78,11 +78,10 @@ public final class ServiceManager {
 
     /** Any parent this composer might have. */
     @Nullable
-    private final ServiceManager parent;
+    private final ServiceManagerSetup parent;
 
     /** The composer tree this composer is a part of. */
-    private final ServiceComposerTree tree;
-
+    private final ServiceManagerTree tree;
 
     @Nullable
     public Predicate<? super Service> anchorFilter;
@@ -92,10 +91,10 @@ public final class ServiceManager {
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceManager(ContainerSetup container, @Nullable ServiceManager parent) {
+    public ServiceManagerSetup(ContainerSetup container, @Nullable ServiceManagerSetup parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
-        this.tree = parent == null ? new ServiceComposerTree() : parent.tree;
+        this.tree = parent == null ? new ServiceManagerTree() : parent.tree;
     }
 
     public void close(BuildtimeRegion region) {
@@ -119,10 +118,10 @@ public final class ServiceManager {
      * 
      * @return the dependency manager for this builder
      */
-    public ServiceRequirementsManager dependencies() {
-        ServiceRequirementsManager d = dependencies;
+    public ServiceManagerRequirementsSetup dependencies() {
+        ServiceManagerRequirementsSetup d = dependencies;
         if (d == null) {
-            d = dependencies = new ServiceRequirementsManager();
+            d = dependencies = new ServiceManagerRequirementsSetup();
         }
         return d;
     }
@@ -141,11 +140,11 @@ public final class ServiceManager {
     }
 
     /**
-     * Returns the {@link ServiceExportManager} for this builder.
+     * Returns the {@link ServiceManagerExportSetup} for this builder.
      * 
      * @return the service exporter for this builder
      */
-    public ServiceExportManager exports() {
+    public ServiceManagerExportSetup exports() {
         return exports;
     }
 
@@ -189,7 +188,7 @@ public final class ServiceManager {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedArtifactDriver<?> psd = (PackedArtifactDriver<?>) container.compConf.build().artifactDriver();
+        PackedArtifactDriver<?> psd = (PackedArtifactDriver<?>) container.component.build().artifactDriver();
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
@@ -241,9 +240,9 @@ public final class ServiceManager {
         // Process exports from any children
         if (container.children != null) {
             for (ContainerSetup c : container.children) {
-                ServiceManager child = c.getServiceManager();
+                ServiceManagerSetup child = c.getServiceManager();
 
-                WireletPack wp = c.compConf.wirelets;
+                WireletPack wp = c.component.wirelets;
                 List<Service1stPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service1stPassWirelet.class);
                 if (wirelets != null) {
                     for (Service1stPassWirelet f : wirelets) {
@@ -276,7 +275,7 @@ public final class ServiceManager {
         // Process child requirements to children
         if (container.children != null) {
             for (ContainerSetup c : container.children) {
-                ServiceManager m = c.getServiceManager();
+                ServiceManagerSetup m = c.getServiceManager();
                 if (m != null) {
                     m.processIncomingPipelines(this);
                 }
@@ -284,7 +283,7 @@ public final class ServiceManager {
         }
     }
 
-    private void processIncomingPipelines(@Nullable ServiceManager parent) {
+    private void processIncomingPipelines(@Nullable ServiceManagerSetup parent) {
 
         LinkedHashMap<Key<?>, BuildtimeService> map = new LinkedHashMap<>();
 
@@ -298,7 +297,7 @@ public final class ServiceManager {
         }
 
         System.out.println("HMMM " + map);
-        WireletPack wp = container.compConf.wirelets;
+        WireletPack wp = container.component.wirelets;
         List<Service2ndPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service2ndPassWirelet.class);
         System.out.println("WWW" + wp);
 
@@ -312,7 +311,7 @@ public final class ServiceManager {
 
         // If Processere wirelets...
 
-        ServiceRequirementsManager srm = dependencies;
+        ServiceManagerRequirementsSetup srm = dependencies;
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
                 BuildtimeService sa = map.get(r.key);

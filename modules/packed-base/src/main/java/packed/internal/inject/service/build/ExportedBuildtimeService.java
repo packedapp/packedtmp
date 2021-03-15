@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -50,7 +50,7 @@ public final class ExportedBuildtimeService extends BuildtimeService {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedBuildtimeService(ServiceManager builder, Key<?> exportAsKey) {
+    public ExportedBuildtimeService(ServiceManagerSetup builder, Key<?> exportAsKey) {
         super(exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }

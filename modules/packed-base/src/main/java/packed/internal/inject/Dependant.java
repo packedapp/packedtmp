@@ -34,7 +34,7 @@ import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
 import packed.internal.hooks.RuntimeRegionInvoker;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.Wrapper;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.SourceMemberBuildtimeService;
@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManager sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
+            ServiceManagerSetup sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
             BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
@@ -225,7 +225,7 @@ public class Dependant {
         this.providers[providerIndex] = requireNonNull(p);
     }
 
-    public void resolve(ServiceManager sbm) {
+    public void resolve(ServiceManagerSetup sbm) {
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {

@@ -22,5 +22,5 @@ import app.packed.component.Wirelet;
  */
 public abstract class Service1stPassWirelet extends Wirelet {
 
-    protected abstract void process(ServiceManager child);
+    protected abstract void process(ServiceManagerSetup child);
 }

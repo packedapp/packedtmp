@@ -153,25 +153,23 @@ public /* sealed */ interface ExtensionConfiguration {
     NamespacePath path();
 
     /**
-     * Returns an extension of the specified type. The specified type must be among the extension's dependencies as
-     * specified via.... Otherwise an {@link InternalExtensionException} is thrown.
+     * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
+     * dependencies as specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)}.
      * 
      * @param <E>
-     *            the type of extension to return
-     * @param extensionClass
-     *            the type of extension to return
-     * @return an extension of the specified type
+     *            the type of subtension to return
+     * @param subtensionClass
+     *            the type of subtension that should be returned
+     * @return the subtension
      * @throws IllegalStateException
-     *             If invoked from the constructor of the extension. Or if the underlying container is no longer
-     *             configurable and an extension of the specified type has not already been installed
-     * @throws UnsupportedOperationException
-     *             if the specified extension type is not specified when bootstrapping
+     *             If invoked from the constructor of an extension. Or if the underlying container is no longer configurable
+     *             and the subtensions underlying extension have not already been created
      * 
      * @see ContainerConfiguration#use(Class)
      */
-    <E extends Subtension> E use(Class<E> extensionClass);
+    <E extends Subtension> E use(Class<E> subtensionClass);
 
     // Ideen er lidt at det er paa den her maade at extensionen
     // registrere bruger objekter...
@@ -191,7 +189,7 @@ public /* sealed */ interface ExtensionConfiguration {
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     @Nullable
-    private static ExtensionSetup getExtensionConfiguration(MethodHandles.Lookup lookup, Component containerComponent) {
+    private static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
         requireNonNull(lookup, "containerComponent is null");
 
         // We only allow to call in directly on the container itself
@@ -241,7 +239,7 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     static Optional<ExtensionConfiguration> privateLookup(MethodHandles.Lookup caller, Component containerComponent) {
         requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(getExtensionConfiguration(caller, containerComponent));
+        return Optional.ofNullable(getExtensionSetup(caller, containerComponent));
     }
 
     /**
@@ -265,7 +263,7 @@ public /* sealed */ interface ExtensionConfiguration {
                     "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + lookup.lookupClass());
         }
 
-        ExtensionSetup eb = getExtensionConfiguration(lookup, containerComponent);
+        ExtensionSetup eb = getExtensionSetup(lookup, containerComponent);
         return eb == null ? Optional.empty() : Optional.of((T) eb.extension());
     }
 }

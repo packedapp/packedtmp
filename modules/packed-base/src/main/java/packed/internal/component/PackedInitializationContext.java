@@ -24,7 +24,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -101,7 +101,7 @@ public final class PackedInitializationContext {
      * @return a service locator for the system
      */
     public ServiceLocator services() {
-        ServiceManager sm = root.container.getServiceManager();
+        ServiceManagerSetup sm = root.container.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.region);
     }
 

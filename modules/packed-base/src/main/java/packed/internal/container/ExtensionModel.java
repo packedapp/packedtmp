@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
-import app.packed.component.WireletReceive;
+import app.packed.component.UseWirelet;
 import app.packed.container.ConnectExtensions;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -52,7 +52,7 @@ import packed.internal.util.StringFormatter;
 public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A cache of extension models. */
-    private static final ClassValue<ExtensionModel> EXTENSIONS = new ClassValue<>() {
+    private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
@@ -92,7 +92,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     final int id; // We don't currently use it... Ideen er at kunne indexere en extension istedet for en hashtable
 
     /** A method handle for creating extension instances. */
-    private final MethodHandle mhConstructor; // (PackedExtensionConfiguration)Extension
+    private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
     /** A method handle to an optional method annotated with {@link ConnectExtensions} on the extension. */
     @Nullable
@@ -222,31 +222,31 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Creates a new instance of the extension.
+     * Creates a new extension instance.
      * 
-     * @param pec
-     *            the configuration of the extension
-     * @return a new instance of the extension
+     * @param es
+     *            the extension setup
+     * @return a new extension instance
      */
-    Extension newInstance(ExtensionSetup pec) {
+    Extension newInstance(ExtensionSetup es) {
         try {
-            return (Extension) mhConstructor.invokeExact(pec);
+            return (Extension) mhConstructor.invokeExact(es);
         } catch (Throwable e) {
-            throw new InternalExtensionException("An instanceof of " + nameFull + "  could not be created.", e);
+            throw new InternalExtensionException("An instance of the extension " + nameFull + "  could not be created.", e);
         }
     }
 
     /**
-     * Returns an model for the specified extension type.
+     * Returns an model for the specified extension class.
      * 
      * @param extensionClass
-     *            the type of extension to return a model for
-     * @return an extension model for the specified extension type
+     *            the extension class to return a model for
+     * @return an extension model for the specified extension class
      * @throws InternalExtensionException
      *             if a valid model could not be created
      */
     public static ExtensionModel of(Class<? extends Extension> extensionClass) {
-        return EXTENSIONS.get(extensionClass);
+        return MODELS.get(extensionClass);
     }
 
     /** A builder of {@link ExtensionModel}. */
@@ -273,7 +273,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         private Method linked;
 
-        /** The loader used to load the extension. */
+        /** The extension loader used to load the extension. */
         private final Loader loader;
 
         /** A model of all methods that provide attributes. */
@@ -302,7 +302,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         private void addExtensionContextElements(MethodHandleBuilder builder, int index) {
             builder.addKey(ExtensionConfiguration.class, index);
-            builder.addAnnoClassMapper(WireletReceive.class, ExtensionSetup.MH_FIND_WIRELET, index);
+            builder.addAnnoClassMapper(UseWirelet.class, ExtensionSetup.MH_FIND_WIRELET, index);
         }
 
         /**
@@ -313,7 +313,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         ExtensionModel build() {
             // See if the extension is annotated with @ExtensionSidecar
 
-            for (Class<? extends Extension> c : ExtensionModel.PreLoader.consume(extensionClass)) {
+            for (Class<? extends Extension> c : ExtensionBootstrap.consume(extensionClass)) {
                 addDependency(c);
             }
 
@@ -366,11 +366,85 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * This loader is responsible for loading an extension and any of its dependencies (including transitive dependencies)
-     * that have not already been loaded.
+     * This
+     */
+    public static final class ExtensionBootstrap {
+
+        private static final ClassValue<AtomicReference<ExtensionBootstrap>> HOLDERS = new ClassValue<>() {
+
+            @SuppressWarnings("unchecked")
+            @Override
+            protected AtomicReference<ExtensionBootstrap> computeValue(Class<?> type) {
+                return new AtomicReference<>(new ExtensionBootstrap((Class<? extends Extension>) type));
+            }
+        };
+
+        /** A set of extension this extension depends on. */
+        // Hmm if static initalizer fails this stays around
+        // This is also a problem if we have more complex objects...
+        // I don't know how much of a problem it is...
+        // If the static initializer fails it does so with an error...
+
+        private Set<Class<? extends Extension>> dependencies = Collections.newSetFromMap(new WeakHashMap<>());
+
+        private final WeakReference<Thread> thread = new WeakReference<>(Thread.currentThread());
+
+        final Class<? extends Extension> type;
+
+        ExtensionBootstrap(Class<? extends Extension> type) {
+            this.type = requireNonNull(type);
+        }
+
+        public static void addStaticDependency(Class<?> callerClass, Class<? extends Extension> dependencyType) {
+            ExtensionBootstrap m = m(callerClass);
+            m.dependencies.add(dependencyType);
+        }
+
+        static Set<Class<? extends Extension>> consume(Class<? extends Extension> extensionClass) {
+            try {
+                // MethodHandles.lookup().ensureInitialized(extensionClass);
+                Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
+                l.ensureInitialized(extensionClass);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                throw new InternalExtensionException("Oops");
+            }
+            ExtensionBootstrap existing = m(extensionClass);
+            HOLDERS.get(extensionClass).set(null);
+            if (existing != null) {
+                return existing.dependencies;
+            }
+            return Set.of();
+        }
+
+        static ExtensionBootstrap m(Class<?> callerClass) {
+            if (!Extension.class.isAssignableFrom(callerClass)) {
+                throw new InternalExtensionException("This method can only be called directly a class that extends Extension, was " + callerClass);
+            }
+            ExtensionBootstrap m = HOLDERS.get(callerClass).get();
+            if (m == null) {
+                throw new InternalExtensionException("This method must be called within the extensions class initializer, extension = " + callerClass);
+            }
+            // Tror vi maa dropper den her traad...
+            // Hvis class initializeren fejler et eller andet sted.
+            // Saa har vi stadig en reference til traaden...
+            // Som minimum skal vi koere en weak reference
+            if (Thread.currentThread() != m.thread.get()) {
+                throw new InternalExtensionException("Expected thread " + m.thread + " but was " + Thread.currentThread());
+            }
+            return m;
+        }
+    }
+
+    /**
+     * An (extension) loader is responsible for loading an extension and any of its dependencies (including transitive
+     * dependencies) that have not already been loaded.
+     * <p>
+     * We do not currently attempt to load extension concurrently, but instead use a single global lock.
      */
     private static final class Loader {
 
+        /** A map that contains */
         private static final WeakHashMap<Class<? extends Extension>, Object> DATA = new WeakHashMap<>();
 
         /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */
@@ -378,11 +452,14 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         private static int nextExtensionId;
 
-        /** A stack used for checking for cyclic dependencies. We do not expect deep stacks, so it is okay to check for membership in linear time. */
+        /**
+         * A stack used for checking for cyclic dependencies between extension. We do not expect deep stacks (or at least very
+         * few of them), so it is okay to check for membership in linear time.
+         */
         private final ArrayDeque<Class<? extends Extension>> stack = new ArrayDeque<>();
 
         private ExtensionModel load0(Class<? extends Extension> extensionClass) {
-            // Check for cyclic dependencies
+            // Check for cyclic dependencies between extensions
             if (stack.contains(extensionClass)) {
                 String st = stack.stream().map(e -> e.getCanonicalName()).collect(Collectors.joining(" -> "));
                 throw new InternalExtensionException("Cyclic dependencies between extensions encountered: " + st + " -> " + extensionClass.getCanonicalName());
@@ -400,14 +477,20 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 // ALSO nextExtensionID should probably be reset...
                 m = builder.build();
             } catch (Throwable t) {
+                // We failed to either load this extension, or one of the extensions
+                // dependencies failed to load.
+
+                // We save the throwable in case we try to use the extension from somewhere else
                 DATA.put(extensionClass, t);
                 throw t;
             } finally {
                 stack.pop();
             }
 
-            // All dependencies have been successfully validated before we add the actual extension
-            // to permanent storage
+            // The dependency and all of its dependencies have been successfully loaded.
+            // We store the model in DATA so that ExtensionModel#MODELS can access it when
+            // needed. In case the model for a transitive dependency is being calculated
+            // This might not be immediately.
             DATA.put(extensionClass, m);
 
             return m;
@@ -416,12 +499,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
         private static ExtensionModel load(Class<? extends Extension> extensionClass, @Nullable Loader loader) {
             GLOBAL_LOCK.lock();
             try {
-                // Let us see if we have previously processed the extension
+                // Check if we have attempted to load (possible unsuccessful) the extension
                 Object data = DATA.get(extensionClass);
-                if (data instanceof ExtensionModel e) {
-                    return e;
+                if (data instanceof ExtensionModel model) {
+                    return model;
                 } else if (data instanceof Throwable t) {
-                    throw new InternalExtensionException("Extension " + extensionClass + " failed to be configured previously", t);
+                    throw new InternalExtensionException("Extension " + extensionClass + " failed to load previously", t);
                 }
 
                 // Create a new loader if we are not already part of one
@@ -429,77 +512,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
             } finally {
                 GLOBAL_LOCK.unlock();
             }
-        }
-    }
-
-    /**
-     * This
-     */
-    public static final class PreLoader {
-
-        private static final ClassValue<AtomicReference<PreLoader>> HOLDERS = new ClassValue<>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            protected AtomicReference<PreLoader> computeValue(Class<?> type) {
-                return new AtomicReference<>(new PreLoader((Class<? extends Extension>) type));
-            }
-        };
-
-        /** A set of extension this extension depends on. */
-        // Hmm if static initalizer fails this stays around
-        // This is also a problem if we have more complex objects...
-        // I don't know how much of a problem it is...
-        // If the static initializer fails it does so with an error...
-
-        private Set<Class<? extends Extension>> dependencies = Collections.newSetFromMap(new WeakHashMap<>());
-
-        private final WeakReference<Thread> thread = new WeakReference<>(Thread.currentThread());
-
-        final Class<? extends Extension> type;
-
-        PreLoader(Class<? extends Extension> type) {
-            this.type = requireNonNull(type);
-        }
-
-        public static void addStaticDependency(Class<?> callerClass, Class<? extends Extension> dependencyType) {
-            PreLoader m = m(callerClass);
-            m.dependencies.add(dependencyType);
-        }
-
-        static Set<Class<? extends Extension>> consume(Class<? extends Extension> extensionClass) {
-            try {
-                //MethodHandles.lookup().ensureInitialized(extensionClass);
-                Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
-                l.ensureInitialized(extensionClass);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                throw new InternalExtensionException("Oops");
-            }
-            PreLoader existing = m(extensionClass);
-            HOLDERS.get(extensionClass).set(null);
-            if (existing != null) {
-                return existing.dependencies;
-            }
-            return Set.of();
-        }
-
-        static PreLoader m(Class<?> callerClass) {
-            if (!Extension.class.isAssignableFrom(callerClass)) {
-                throw new InternalExtensionException("This method can only be called directly a class that extends Extension, was " + callerClass);
-            }
-            PreLoader m = HOLDERS.get(callerClass).get();
-            if (m == null) {
-                throw new InternalExtensionException("This method must be called within the extensions class initializer, extension = " + callerClass);
-            }
-            // Tror vi maa dropper den her traad...
-            // Hvis class initializeren fejler et eller andet sted.
-            // Saa har vi stadig en reference til traaden...
-            // Som minimum skal vi koere en weak reference
-            if (Thread.currentThread() != m.thread.get()) {
-                throw new InternalExtensionException("Expected thread " + m.thread + " but was " + Thread.currentThread());
-            }
-            return m;
         }
     }
 }

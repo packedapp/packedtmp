@@ -245,7 +245,7 @@ public abstract class Extension extends Realm {
      */
     protected static void $addDependency(Class<? extends Extension> dependency) {
         requireNonNull(dependency, "dependency is null");
-        ExtensionModel.PreLoader.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
+        ExtensionModel.ExtensionBootstrap.addStaticDependency(STACK_WALKER.getCallerClass(), dependency);
     }
 
     // Tilfoejer en dependency hvor callbacket. Bliver kaldt. Hvis dependency bliver tilfoejet

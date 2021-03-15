@@ -27,11 +27,14 @@ import packed.internal.util.CollectionUtil;
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     /** An empty service registry */
-    public static final ServiceRegistry EMPTY = new ImmutableRegistry(Map.of());
+    public static final ServiceRegistry EMPTY = new UnchangeableServiceRegistry(Map.of());
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @apiNote cannot create default methods for methods in java.lang.Object.
+     */
     @Override
-    // cannot create default methods for methods in java.lang.Object.
     public String toString() {
         return asMap().toString();
     }
@@ -44,29 +47,29 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      * @return a new service registry
      */
     public static ServiceRegistry copyOf(Map<Key<?>, ? extends BuildtimeService> map) {
-        return new ImmutableRegistry(CollectionUtil.copyOf(map, b -> b.toService()));
+        return new UnchangeableServiceRegistry(CollectionUtil.copyOf(map, b -> b.toService()));
     }
 
     /** The registry implementation returned by {@link #copyOf(Map)}. */
-    private static final class ImmutableRegistry extends AbstractServiceRegistry {
+    private static final class UnchangeableServiceRegistry extends AbstractServiceRegistry {
 
-        /** The services that are wrapped */
+        /** The services that we wrapped */
         private final Map<Key<?>, Service> services;
 
         /**
-         * Creates a new immutable service registry.
+         * Creates a new unchangeable service registry.
          * 
          * @param services
          *            the services that make of the registry
          */
-        private ImmutableRegistry(Map<Key<?>, Service> services) {
+        private UnchangeableServiceRegistry(Map<Key<?>, Service> services) {
             this.services = Map.copyOf(services);
         }
 
         /** {@inheritDoc} */
         @Override
         public Map<Key<?>, Service> asMap() {
-            return services; // services is immutable
+            return services; // services are immutable
         }
     }
 }

@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 import app.packed.base.Key;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.inject.service.build.RuntimeAdaptorBuildtimeService;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -31,7 +31,7 @@ import packed.internal.inject.service.runtime.PackedInjector;
 public final class ProvideAllFromServiceLocator {
 
     /** The injector builder from where the service will be provided. */
-    public final ServiceManager node;
+    public final ServiceManagerSetup node;
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
@@ -48,7 +48,7 @@ public final class ProvideAllFromServiceLocator {
      * @param injector
      *            the injector that is being imported
      */
-    public ProvideAllFromServiceLocator(ServiceManager node, PackedInjector injector) {
+    public ProvideAllFromServiceLocator(ServiceManagerSetup node, PackedInjector injector) {
         this.node = requireNonNull(node);
         this.injector = requireNonNull(injector);
 

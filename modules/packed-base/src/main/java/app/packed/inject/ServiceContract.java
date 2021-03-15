@@ -31,7 +31,7 @@ import app.packed.component.drivers.ArtifactDriver;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
-import packed.internal.inject.service.ServiceManager;
+import packed.internal.inject.service.ServiceManagerSetup;
 
 /**
  * A service contract details of a contractee.
@@ -254,7 +254,7 @@ public final class ServiceContract extends Contract {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }
         ComponentSetup compConf = ComponentSetup.unadapt(null, c);
-        ServiceManager sm = compConf.container.getServiceManager();
+        ServiceManagerSetup sm = compConf.container.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

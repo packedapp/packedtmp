@@ -38,9 +38,8 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The internal configuration of an extension. */
-// This class is comparable because we sort the dependencies at some point...
-public final class ExtensionSetup implements ExtensionConfiguration, Comparable<ExtensionSetup> {
+/** A setup class for an extension. Exposed to users as {@link ExtensionConfiguration}. */
+public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A MethodHandle for invoking {@link Extension#extensionAdded()}. */
     private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionAdded", void.class);
@@ -56,17 +55,17 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
     /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A VarHandle used by {@link #of(ContainerSetup, Class)} to access the field Extension#configuration. */
+    /** A VarHandle to access the field Extension#configuration, used by {@link #of(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    /** The component configuration of this container. */
-    private final ComponentSetup compConf;
+    /** The component setup of this extension. */
+    private final ComponentSetup component;
 
-    /** The container this extension is a part of. */
+    /** The setup of the container this extension belongs to. */
     private final ContainerSetup container;
 
-    /** The actual instance of the extension, instantiated in {@link #of(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated in {@link #of(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -78,22 +77,24 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
 
     /**
      * Creates a new instance of this class as part of creating the extension component.
+     * <p>
+     * This constructor is called from the constructor of {@link ComponentSetup}.
      * 
-     * @param compConf
-     *            the component configuration that this extension belongs to
+     * @param component
+     *            the component that this extension belongs to
      * @param model
      *            a model of the extension.
      */
-    public ExtensionSetup(ComponentSetup compConf, ExtensionModel model) {
-        this.compConf = requireNonNull(compConf);
-        this.container = requireNonNull(compConf.getMemberOfContainer());
+    public ExtensionSetup(ComponentSetup component, ExtensionModel model) {
+        this.component = requireNonNull(component);
+        this.container = requireNonNull(component.getMemberOfContainer());
         this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
     @Override
     public BuildInfo build() {
-        return compConf.build();
+        return component.build();
     }
 
     /** {@inheritDoc} */
@@ -110,12 +111,6 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
         if (container.children != null) {
             throw new IllegalStateException();
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public int compareTo(ExtensionSetup c) {
-        return -model.compareTo(c.model);
     }
 
     /** The extension is completed once the realm the container is part of is closed. */
@@ -144,9 +139,9 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
     }
 
     /**
-     * Returns the extension instance this class wraps.
+     * Returns the extension instance.
      * 
-     * @return the extension instance this class wraps
+     * @return the extension instance
      * @throws IllegalStateException
      *             if trying to call this method from the constructor of the extension
      */
@@ -173,25 +168,25 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
      */
     @Nullable
     Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return compConf.receiveWirelet(wireletType).orElse(null);
+        return component.receiveWirelet(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration install(Class<?> implementation) {
-        return compConf.wire(ComponentDriver.driverInstall(implementation));
+        return component.wire(ComponentDriver.driverInstall(implementation));
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration install(Factory<?> factory) {
-        return compConf.wire(ComponentDriver.driverInstall(factory));
+        return component.wire(ComponentDriver.driverInstall(factory));
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration installInstance(Object instance) {
-        return compConf.wire(ComponentDriver.driverInstallInstance(instance));
+        return component.wire(ComponentDriver.driverInstallInstance(instance));
     }
 
     /** {@inheritDoc} */
@@ -203,7 +198,7 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
     /** {@inheritDoc} */
     @Override
     public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        compConf.link(bundle, wirelets);
+        component.link(bundle, wirelets);
     }
 
     /**
@@ -214,9 +209,9 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
     }
 
     /**
-     * Returns the model of this extension.
+     * Returns the extension's model.
      * 
-     * @return the model of this extension
+     * @return the extension's model
      */
     public ExtensionModel model() {
         return model;
@@ -225,7 +220,7 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
     /** {@inheritDoc} */
     @Override
     public NamespacePath path() {
-        return compConf.path();
+        return component.path();
     }
 
     void preContainerChildren() {
@@ -239,87 +234,88 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public <E extends Subtension> E use(Class<E> subtensionType) {
-        requireNonNull(subtensionType, "subtensionType is null");
+    public <E extends Subtension> E use(Class<E> subtensionClass) {
+        requireNonNull(subtensionClass, "subtensionClass is null");
 
-        // Find a model for the subtension
-        SubtensionModel sm = SubtensionModel.of(subtensionType);
+        // Find a model and extension class for the subtension
+        SubtensionModel subModel = SubtensionModel.of(subtensionClass);
+        Class<? extends Extension> subExtensionClass = subModel.extensionClass;
 
-        // We need to check whether or not the extension is allowed to use the specified extension every time.
-        // An alternative would be to cache it in a map for each extension.
+        // We need to check whether or not the extension is allowed to another extension (or any of its subtension) every time.
+        // An alternative to explicit checks would be to cache the result of the check a map for each extension.
         // However this would incur extra memory usage. And if we only request an extension once
         // There would be significant overhead to instantiating a new map and caching the extension.
         // A better solution is that each extension caches the extensions they use (if they want to).
         // This saves a check + map lookup for each additional request.
-        if (!model.dependencies().contains(sm.extensionClass)) {
-            // We allow an extension to use itself, alternative would be to throw an exception, but why?
-            // You cannot use your own subs
-            if (model.extensionClass() == sm.extensionClass) {
-                throw new IllegalArgumentException("An extension cannot use their own subs " + model.extensionClass().getSimpleName() + ", extensionClass = "
-                        + subtensionType + ", valid dependencies = " + model.dependencies());
+        if (!model.dependencies().contains(subExtensionClass)) {
+            // You cannot use your own subtensions
+            if (model.extensionClass() == subExtensionClass) {
+                throw new IllegalArgumentException("An extension cannot use its own subs " + model.extensionClass().getSimpleName() + ", subtension = "
+                        + subtensionClass + ", valid dependencies = " + model.dependencies());
             } else {
-                throw new UnsupportedOperationException("The specified extension type is not among the direct dependencies of " + model.extensionClass().getSimpleName()
-                        + ", extensionClass = " + subtensionType + ", valid dependencies = " + model.dependencies());
+                throw new UnsupportedOperationException("The specified extension type is not among the direct dependencies of "
+                        + model.extensionClass().getSimpleName() + ", extensionClass = " + subtensionClass + ", valid dependencies = " + model.dependencies());
             }
         }
-        // Get the extension instance, creating it if needed
-        Extension e = container.useExtension(sm.extensionClass, this).instance;
 
-        // Create a new Subtension instance using the extension and this.extensionClass as the requesting extension
-        return (E) sm.newInstance(e, model.extensionClass());
+        // Get the extension instance (create it if needed) we are creating a subtension for
+        Extension ext = container.useDependencyCheckedExtension(subExtensionClass, this).instance;
+
+        // Create a new subtension instance using the extension and this.extensionClass as the requesting extension
+        return (E) subModel.newInstance(ext, extensionClass());
     }
 
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.compConf.wire(driver, wirelets);
+        return container.component.wire(driver, wirelets);
     }
 
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return compConf.wire(driver, wirelets);
+        return component.wire(driver, wirelets);
     }
 
     /**
      * Create and initialize a new extension.
      * 
      * @param container
-     *            the configuration of the container.
+     *            the setup of the container.
      * @param extensionClass
-     *            the type of extension to initialize
-     * @return the assembly of the extension
+     *            the extension to initialize
+     * @return a setup for the extension
      */
     static ExtensionSetup of(ContainerSetup container, Class<? extends Extension> extensionClass) {
-        // Create extension context and instantiate extension
+        // Create setups and instantiate extension.
         ExtensionModel model = ExtensionModel.of(extensionClass);
-        ComponentSetup compConf = new ComponentSetup(container.compConf, model);
-        ExtensionSetup assembly = compConf.extension;
+        ComponentSetup component = new ComponentSetup(container.component, model); // creates ExtensionSetup in ComponentSetup constructor
+        ExtensionSetup extension = component.extension;
 
-        // Creates a new extension instance and set extension.configuration = assembly
-        Extension extension = assembly.instance = model.newInstance(assembly);
-        VH_EXTENSION_CONFIGURATION.set(extension, assembly);
+        // Creates a new extension instance
+        Extension ext = extension.instance = model.newInstance(extension);
+        VH_EXTENSION_CONFIGURATION.set(ext, extension); // sets Extension.configuration = extension setup 
 
         // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
         // of the extensions existence. This is done first in order to let the remaining steps use any
         // information set by the parent or ancestor.
         if (model.mhExtensionLinked != null) {
             ExtensionSetup parentExtension = null;
-            ContainerSetup parent = container.parent;
+            ContainerSetup parentContainer = container.parent;
             if (!model.extensionLinkedDirectChildrenOnly) {
-                while (parentExtension == null && parent != null) {
-                    parentExtension = parent.getExtensionContext(extensionClass);
-                    parent = parent.parent;
+                while (parentExtension == null && parentContainer != null) {
+                    parentExtension = parentContainer.getExtensionContext(extensionClass);
+                    parentContainer = parentContainer.parent;
                 }
-            } else if (parent != null) {
-                parentExtension = parent.getExtensionContext(extensionClass);
+            } else if (parentContainer != null) {
+                parentExtension = parentContainer.getExtensionContext(extensionClass);
             }
 
             // set activate extension???
             // If not just parent link keep checking up until root/
             if (parentExtension != null) {
                 try {
-                    model.mhExtensionLinked.invokeExact(parentExtension.instance, assembly, extension);
+                    model.mhExtensionLinked.invokeExact(parentExtension.instance, extension, ext);
                 } catch (Throwable t) {
                     throw ThrowableUtil.orUndeclared(t);
                 }
@@ -328,10 +324,10 @@ public final class ExtensionSetup implements ExtensionConfiguration, Comparable<
 
         // Invoke Extension#add() (should we run this before we link???)
         try {
-            MH_EXTENSION_ADD.invoke(extension);
+            MH_EXTENSION_ADD.invoke(ext);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-        return assembly;
+        return extension;
     }
 }

@@ -42,7 +42,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ServiceExportManager implements Iterable<BuildtimeService> {
+public final class ServiceManagerExportSetup implements Iterable<BuildtimeService> {
 
     /** The config site, if we export all entries. */
     private boolean exportAll;
@@ -59,7 +59,7 @@ public final class ServiceExportManager implements Iterable<BuildtimeService> {
     private final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
-    private final ServiceManager sm;
+    private final ServiceManagerSetup sm;
 
     @Nullable
     Consumer<? super ServiceComposer> transformer;
@@ -70,7 +70,7 @@ public final class ServiceExportManager implements Iterable<BuildtimeService> {
      * @param sm
      *            the extension node this export manager belongs to
      */
-    ServiceExportManager(ServiceManager sm) {
+    ServiceManagerExportSetup(ServiceManagerSetup sm) {
         this.sm = requireNonNull(sm);
     }
 
