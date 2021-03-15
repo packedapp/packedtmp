@@ -38,24 +38,25 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** A setup class for an extension. Exposed to users as {@link ExtensionConfiguration}. */
+/** A setup class for an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup implements ExtensionConfiguration {
 
-    /** A MethodHandle for invoking {@link Extension#extensionAdded()}. */
-    private static final MethodHandle MH_EXTENSION_ADD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionAdded", void.class);
-
-    /** A MethodHandle for invoking {@link Extension#extensionConfigured()}. */
-    private static final MethodHandle MH_EXTENSION_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionConfigured",
+    /** A handle for invoking {@link Extension#extensionAdded()}, used by {@link #of(ContainerSetup, Class)}. */
+    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionAdded",
             void.class);
 
-    /** A MethodHandle for invoking {@link Extension#extensionBeforeDescendents()}. */
+    /** A handle for invoking {@link Extension#extensionConfigured()}. */
+    private static final MethodHandle MH_EXTENSION_CONFIGURED = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionConfigured",
+            void.class);
+
+    /** A handle for invoking {@link Extension#extensionBeforeDescendents()}. */
     private static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "extensionBeforeDescendents", void.class);
 
-    /** A MethodHandle for invoking {@link #findWirelet(Class)} used by {@link ExtensionModel}. */
+    /** A handle for invoking {@link #findWirelet(Class)}, used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A VarHandle to access the field Extension#configuration, used by {@link #of(ContainerSetup, Class)}. */
+    /** A handle for accessing the field Extension#configuration, used by {@link #of(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -72,7 +73,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** A static model of the extension. */
+    /** A model of the extension. */
     private final ExtensionModel model;
 
     /**
@@ -116,18 +117,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The extension is completed once the realm the container is part of is closed. */
     void complete() {
         try {
-            MH_EXTENSION_COMPLETE.invoke(instance);
+            MH_EXTENSION_CONFIGURED.invoke(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
         isConfigured = true;
     }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public ConfigSite containerConfigSite() {
-//        return bundle.compConf.configSite();
-//    }
 
     /**
      * Returns the bundle this extension is a part of.
@@ -294,7 +289,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Creates a new extension instance
         Extension ext = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(ext, extension); // sets Extension.configuration = extension setup 
+        VH_EXTENSION_CONFIGURATION.set(ext, extension); // sets Extension.configuration = extension setup
 
         // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
         // of the extensions existence. This is done first in order to let the remaining steps use any
@@ -324,7 +319,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Invoke Extension#add() (should we run this before we link???)
         try {
-            MH_EXTENSION_ADD.invoke(ext);
+            MH_EXTENSION_ADDED.invoke(ext);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
