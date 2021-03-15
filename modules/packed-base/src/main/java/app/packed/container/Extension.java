@@ -227,7 +227,7 @@ public abstract class Extension extends Realm {
         return configuration().use(extensionClass);
     }
 
-    public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    protected final <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().userWire(driver, wirelets);
     }
 
@@ -241,6 +241,9 @@ public abstract class Extension extends Realm {
      * 
      * @param dependency
      *            the dependency that this dependency depends on
+     * @throws InternalExtensionException
+     *             if the dependency could not be added for some reason
+     * 
      * @see #$addDependencyLazyInit(Class, Class, Consumer)
      */
     protected static void $addDependency(Class<? extends Extension> dependency) {
@@ -265,6 +268,7 @@ public abstract class Extension extends Realm {
     public static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionClass, Component containerComponent) {
         throw new UnsupportedOperationException();
     }
+
     static final void preFinalMethod() {
         // Lav versioner der tager 1,2,3 og vargs parametere...
 

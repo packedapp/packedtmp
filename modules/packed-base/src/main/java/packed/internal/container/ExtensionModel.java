@@ -229,8 +229,19 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     }
 
-    public static void bootstrapAddDependency(Class<?> callerClass, Class<? extends Extension> dependencyType) {
-        Loader.forAccess(callerClass).addStaticDependency(dependencyType);
+    /**
+     * Adds the specified dependency to the caller class if valid.
+     * 
+     * @param callerClass
+     *            the caller class (checked in forAccess)
+     * @param dependency
+     *            the extension to depend on
+     * @throws InternalExtensionException
+     *             if the dependency could not be added for some reason 
+     * @see Extension#$addDependency(Class)
+     */
+    public static void bootstrapAddDependency(Class<?> callerClass, Class<? extends Extension> dependency) {
+        Loader.forBootstrapAccess(callerClass).addStaticDependency(dependency);
     }
 
     /**
@@ -240,7 +251,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *            the extension class to return a model for
      * @return an extension model for the specified extension class
      * @throws InternalExtensionException
-     *             if a valid model could not be created
+     *             if a valid model does not exist
      */
     public static ExtensionModel of(Class<? extends Extension> extensionClass) {
         return MODELS.get(extensionClass);
@@ -262,15 +273,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** All dependencies of the extension */
 
         // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
+        // Skal lige gennemtaenkes, det er lidt kompliceret classloader
         private Set<Class<? extends Extension>> dependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
         final Class<? extends Extension> extensionClass;
 
-        Bootstrap(Class<? extends Extension> extensionClass) {
+        private Bootstrap(Class<? extends Extension> extensionClass) {
             this.extensionClass = requireNonNull(extensionClass);
         }
 
-        void addStaticDependency(Class<? extends Extension> dependencyType) {
+        private void addStaticDependency(Class<? extends Extension> dependencyType) {
             if (extensionClass == dependencyType) {
                 throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
             }
@@ -312,7 +324,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * @param extensionClass
          *            the type of extension we are building a model for
          */
-        Builder(Class<? extends Extension> extensionClass, Loader loader) {
+        private Builder(Class<? extends Extension> extensionClass, Loader loader) {
             this.extensionClass = requireNonNull(extensionClass);
             this.loader = requireNonNull(loader);
         }
@@ -327,7 +339,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * 
          * @return the extension model
          */
-        ExtensionModel build(@Nullable Bootstrap bootstrap) {
+        private ExtensionModel build(@Nullable Bootstrap bootstrap) {
             if (bootstrap != null) {
                 for (Class<? extends Extension> dependencyType : bootstrap.dependencies) {
                     ExtensionModel model = Loader.load(dependencyType, loader);
@@ -354,7 +366,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             return new ExtensionModel(this);
         }
 
-        protected ClassMemberAccessor scanClass() {
+        private ClassMemberAccessor scanClass() {
             MethodHandleBuilder spec = MethodHandleBuilder.of(Extension.class, ExtensionSetup.class);
             addExtensionContextElements(spec, 0);
             ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
@@ -455,7 +467,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             return model;
         }
 
-        static Bootstrap forAccess(Class<?> callerClass) {
+        private static Bootstrap forBootstrapAccess(Class<?> callerClass) {
             if (!Extension.class.isAssignableFrom(callerClass)) {
                 throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
             }
@@ -478,6 +490,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 GLOBAL_LOCK.unlock();
             }
         }
+
         private static ExtensionModel load(Class<? extends Extension> extensionClass, @Nullable Loader loader) {
             GLOBAL_LOCK.lock();
             try {
