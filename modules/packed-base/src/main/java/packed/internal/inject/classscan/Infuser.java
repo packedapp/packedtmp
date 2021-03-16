@@ -3,14 +3,17 @@ package packed.internal.inject.classscan;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import packed.internal.util.LookupUtil;
 
 public class Infuser {
 
@@ -40,6 +43,13 @@ public class Infuser {
         throw new UnsupportedOperationException();
     }
 
+    public static Infuser build(Consumer<? super Infuser.Builder> action, Class<?>... parameterTypes) {
+        requireNonNull(action, "action is null");
+        Infuser.Builder b = new Infuser.Builder(parameterTypes);
+        action.accept(b);
+        return b.build();
+    }
+
     public static Builder builder(Class<?>... parameterTypes) {
         return new Builder(parameterTypes);
     }
@@ -55,50 +65,83 @@ public class Infuser {
 
         private void add(Key<?> key, boolean isHidden, MethodHandle transformer, int... indexes) {
             requireNonNull(key, "key is null");
+            if (indexes.length == 0) {
+                if (parameterTypes.size() != 1) {
+                    throw new IllegalArgumentException("Must specify an index if the infuser has more than 1 parameter");
+                }
+                indexes = new int[] { 0 };
+            }
             for (int i = 0; i < indexes.length; i++) {
                 Objects.checkFromIndexSize(indexes[i], 0, parameterTypes.size());
             }
             // We might allow to override.. for example if we do not have parent infusers.
             // In which case it will just override parent keys...
-            if (entries.putIfAbsent(key, new Entry(transformer, indexes, isHidden)) != null) {
+            if (entries.putIfAbsent(key, new Entry(transformer, isHidden, indexes)) != null) {
                 throw new IllegalArgumentException("The specified key " + key + " has already been added");
             }
         }
 
-        public void direct(Class<?> key, int index) {
-            direct(key, index);
+        public EntryBuilder expose(Class<?> key) {
+            return expose(Key.of(key));
         }
 
-        public void direct(Key<?> key, int index) {
-            add(key, false, null, index);
+        public EntryBuilder expose(Key<?> key) {
+            return new EntryBuilder(this, key, false);
         }
 
-        public void directHidden(Class<?> key, int index) {
-            directHidden(Key.of(key), index);
+        public EntryBuilder hide(Class<?> key) {
+            return expose(Key.of(key));
         }
 
-        public void directHidden(Key<?> key, int index) {
-            add(key, true, null, index);
+        public EntryBuilder hide(Key<?> key) {
+            return new EntryBuilder(this, key, true);
         }
 
-        public void transform(Class<?> key, MethodHandle transformer, int... indexes) {
-            transform(Key.of(key), transformer, indexes);
-        }
-
-        public void transform(Key<?> key, MethodHandle transformer, int... indexes) {
-            requireNonNull(transformer, "transformer is null");
-            add(key, false, transformer, indexes);
-        }
-
-        public void transformHidden(Class<?> key, MethodHandle transformer, int... indexes) {
-            transformHidden(Key.of(key), transformer, indexes);
-        }
-
-        public void transformHidden(Key<?> key, MethodHandle transformer, int... indexes) {
-            requireNonNull(transformer, "transformer is null");
-            add(key, true, transformer, indexes);
+        public Infuser build() {
+            return new Infuser(this);
         }
     }
 
-    record Entry(@Nullable MethodHandle transformer, int[] indexes, boolean isHidden) {}
+    public static class EntryBuilder {
+        private final Builder builder;
+        private final Key<?> key;
+        private final boolean hide;
+
+        EntryBuilder(Builder builder, Key<?> key, boolean hide) {
+            this.builder = builder;
+            this.key = requireNonNull(key, "key is null");
+            this.hide = hide;
+        }
+
+        public void extract(MethodHandles.Lookup lookup, String methodName /* , Object... additional(Static)Arguments */ ) {
+            extract(lookup, methodName, 0);
+        }
+
+        public void extract(MethodHandles.Lookup lookup, String methodName, int index) {
+            Class<?> cl = builder.parameterTypes.get(index);
+            // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
+            MethodHandle mh = LookupUtil.lookupVirtualPrivate(lookup, cl, methodName, key.rawType());
+            transform(mh, index);
+        }
+
+        public void transform(MethodHandle transformer) {
+            transform(transformer, 0);
+        }
+
+        public void transform(MethodHandle transformer, int... indexes) {
+            requireNonNull(transformer, "transformer is null");
+            System.out.println("OK " + transformer);
+        }
+
+        public void cast() {
+            cast(0);
+        }
+
+        public void cast(int index) {
+            Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
+            builder.entries.put(key, new Entry(null, hide, index));
+        }
+    }
+
+    record Entry(@Nullable MethodHandle transformer, boolean isHidden, int... indexes) {}
 }

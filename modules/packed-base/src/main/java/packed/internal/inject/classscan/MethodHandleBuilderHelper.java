@@ -120,7 +120,7 @@ class MethodHandleBuilderHelper {
                     // TODO we have a non-constant injection context, when we have a dynamic injector
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section
                     PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
-                    aa.keys.putIfAbsent(kk, new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), new int[0], false));
+                    aa.keys.putIfAbsent(kk, new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false));
                 }
 
                 Infuser.Entry entry = aa.keys.get(kk);
