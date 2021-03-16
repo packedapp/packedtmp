@@ -34,7 +34,6 @@ import app.packed.inject.InjectionContext;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.PackedInjectionContext;
-import packed.internal.inject.classscan.MethodHandleBuilder.Entry;
 import packed.internal.util.MethodHandleUtil;
 
 /**
@@ -121,15 +120,15 @@ class MethodHandleBuilderHelper {
                     // TODO we have a non-constant injection context, when we have a dynamic injector
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section
                     PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
-                    aa.keys.putIfAbsent(kk, new Entry(new int[0], MethodHandles.constant(InjectionContext.class, pic)));
+                    aa.keys.putIfAbsent(kk, new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), new int[0], false));
                 }
 
-                Entry entry = aa.keys.get(kk);
+                Infuser.Entry entry = aa.keys.get(kk);
                 if (entry != null) {
                     // Vi have an explicit registered service.
 
-                    if (entry.transformer != null) {
-                        MethodHandle transformer = entry.transformer;
+                    if (entry.transformer() != null) {
+                        MethodHandle transformer = entry.transformer();
                         if (sd.isOptional()) {
                             // We need to the return value of transformer to an optional
                             transformer = MethodHandles.filterReturnValue(transformer, MethodHandleBuilderConstants.optionalOfTo(askingForType));
@@ -139,7 +138,7 @@ class MethodHandleBuilderHelper {
                         // We use a provided value directly. Wrap it in an Optional if needed
 
                         Class<?> actual = kk.rawType();
-                        Class<?> expected = input.parameterType(entry.indexes[0]);
+                        Class<?> expected = input.parameterType(entry.indexes()[0]);
 
                         // Upcast if needed, I don't think we need to do this if we create an optional
                         if (actual != expected) {
@@ -152,7 +151,7 @@ class MethodHandleBuilderHelper {
                             mh = MethodHandleUtil.replaceParameter(mh, is.size() + add, MethodHandleBuilderConstants.optionalOfTo(askingForType));
                         }
                     }
-                    is.push(entry.indexes);
+                    is.push(entry.indexes());
                 } else {
                     // Det er saa her, at vi kalder ind paa en virtuel injector...
                     if (sd.isOptional()) {

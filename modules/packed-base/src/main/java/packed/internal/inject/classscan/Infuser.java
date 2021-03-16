@@ -1,4 +1,4 @@
-package packed.internal.inject.infuser;
+package packed.internal.inject.classscan;
 
 import static java.util.Objects.requireNonNull;
 
@@ -19,17 +19,9 @@ public class Infuser {
 
     private final List<Class<?>> parameterTypes;
 
-    @Nullable
-    private final Infuser parent = null;
-
     private Infuser(Builder builder) {
         this.entries = Map.copyOf(builder.entries);
         this.parameterTypes = requireNonNull(builder.parameterTypes);
-    }
-
-    public Builder addTo(Class<?>... additionalParameters) {
-        // Adds key
-        throw new UnsupportedOperationException();
     }
 
     public Set<Key<?>> keys() {

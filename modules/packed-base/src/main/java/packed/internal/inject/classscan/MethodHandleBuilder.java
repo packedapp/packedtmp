@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 
 /**
  *
@@ -40,7 +39,7 @@ public final class MethodHandleBuilder {
 
     final HashMap<Class<? extends Annotation>, AnnoClassEntry> annoations = new HashMap<>();
 
-    final HashMap<Key<?>, Entry> keys = new HashMap<>();
+    final HashMap<Key<?>, Infuser.Entry> keys = new HashMap<>();
 
     /** Used for figuring out where the receiver is if instance method. -1 we only static methods. TODO implement */
     int receiverIndex = 0;
@@ -56,7 +55,7 @@ public final class MethodHandleBuilder {
             Objects.checkFromIndexSize(indexes[i], 0, targetType.parameterCount());
         }
         // Check the various types matches...
-        if (keys.putIfAbsent(key, new Entry(indexes, transformer)) != null) {
+        if (keys.putIfAbsent(key, new Infuser.Entry(transformer, indexes, false)) != null) {
             throw new IllegalArgumentException("The specified key " + key + " has already been added");
         }
     }
@@ -126,19 +125,6 @@ public final class MethodHandleBuilder {
             this.annotationType = annotationType;
             this.index = index;
             this.mh = mh;
-        }
-    }
-
-    static class Entry {
-        @Nullable
-        int[] indexes;
-
-        @Nullable
-        MethodHandle transformer;
-
-        Entry(int[] indexes, MethodHandle transformer) {
-            this.indexes = indexes;
-            this.transformer = transformer;
         }
     }
 
