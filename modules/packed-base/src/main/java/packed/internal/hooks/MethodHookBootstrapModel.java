@@ -31,9 +31,9 @@ import app.packed.hooks.MethodHook.Bootstrap;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.classscan.ClassMemberAccessor;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

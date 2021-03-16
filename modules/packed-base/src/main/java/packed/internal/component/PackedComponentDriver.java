@@ -36,7 +36,7 @@ import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
-import packed.internal.classscan.InstantiatorBuilder;
+import packed.internal.inject.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /**

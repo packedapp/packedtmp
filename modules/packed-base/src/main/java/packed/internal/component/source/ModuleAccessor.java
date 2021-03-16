@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.inject.Factory;
-import packed.internal.classscan.ClassMemberAccessor;
+import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
 import packed.internal.util.ThrowableUtil;

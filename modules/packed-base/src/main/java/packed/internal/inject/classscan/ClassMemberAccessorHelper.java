@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.inject.classscan;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ import packed.internal.util.ThrowableConsumer;
 /** Processes all fields and methods on a class. */
 final class ClassMemberAccessorHelper {
 
-    /** We never process any classes that are located in java.base. */
+    /** We never process classes that are located in the java.base module. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
     /** A pre-calculated hash. */

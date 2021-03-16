@@ -38,9 +38,9 @@ import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
-import packed.internal.classscan.InstantiatorBuilder;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedInitializationContext;
+import packed.internal.inject.classscan.InstantiatorBuilder;
 
 /**
  * Artifact drivers are responsible for creating artifacts, for example, instances of {@link App}.

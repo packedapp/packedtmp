@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.classscan.InstantiatorBuilder;
+import packed.internal.inject.classscan.InstantiatorBuilder;
 import packed.internal.util.MethodHandleUtil;
 
 /** A model of a subclass of {@link Extension.Subtension}. Not used outside of this package. */

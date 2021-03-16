@@ -18,8 +18,12 @@ package app.packed.container;
 /**
  * This is actually not 
  */
-// Maybe it is just a fake extension...
-// 
+// 2 implementations:
+//
+// 1: A fake extension. Fails if attempting to use it.
+// Will only support it for reporting core services where we need to specify an extension
+//
+// 2: Contaings actually functionality. But you cannot depend on it. And it will never show up under used extensions...
 public final class BaseExtension extends Extension {
 
     /** Not today Satan, not today. */

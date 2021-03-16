@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.inject.classscan;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
@@ -31,10 +31,10 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
-import packed.internal.classscan.MethodHandleBuilder.Entry;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.PackedInjectionContext;
+import packed.internal.inject.classscan.MethodHandleBuilder.Entry;
 import packed.internal.util.MethodHandleUtil;
 
 /**

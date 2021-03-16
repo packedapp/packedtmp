@@ -29,11 +29,11 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.classscan.ClassMemberAccessor;
 import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.ClassHookBootstrapModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.Dependant;
+import packed.internal.inject.classscan.ClassMemberAccessor;
 
 /** A model of a class source. */
 public final class ClassSourceModel {

@@ -20,5 +20,5 @@ public @interface ExtensionSupportClass {
 }
 // @OnBuild
 
-// @PlatformExtensionSupport(ServiceExtension.class)
+// @PlatformExt ensionSupport(ServiceExtension.class)
 // @ContainerExtensionSupport

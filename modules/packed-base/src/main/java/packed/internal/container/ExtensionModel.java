@@ -41,9 +41,9 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.PackedAttributeModel;
-import packed.internal.classscan.ClassMemberAccessor;
-import packed.internal.classscan.MethodHandleBuilder;
 import packed.internal.inject.FindInjectableConstructor;
+import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.inject.classscan.MethodHandleBuilder;
 import packed.internal.util.StringFormatter;
 
 /** A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}. */

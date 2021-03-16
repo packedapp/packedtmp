@@ -33,11 +33,8 @@ import app.packed.base.Variable;
  * <p>
  * <strong>Note:</strong> This class should only be used doing development. As the runtime needs to retain detailed
  * information about the dependency graph that is normally only available at build time.
- * 
- * @apiNote In the future, if the Java language permits, {@link InjectionContext} may become a {@code sealed} interface,
- *          which would prohibit subclassing except by explicitly permitted types.
  */
-public interface InjectionContext /* extends ServiceRegistry */ {
+public /* sealed */  interface InjectionContext /* extends ServiceRegistry */ {
 
     // Set<Class<Context>> contextTypes();
 
@@ -99,6 +96,7 @@ public interface InjectionContext /* extends ServiceRegistry */ {
 
     // The reason for why this key is here
     // Could also do codepath...
+    // Or it could be extra attributes...
     default String reason(Key<?> key) {
         throw new UnsupportedOperationException();
     }

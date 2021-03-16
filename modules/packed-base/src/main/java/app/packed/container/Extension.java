@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Image;
@@ -35,6 +34,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.util.StackWalkerUtil;
 
 /**
  * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
@@ -57,13 +57,11 @@ import packed.internal.container.ExtensionSetup;
  * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
  * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
  * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. The extension
- * subclass should not be declared final as Packed supports some debug configuration that relies on extending
- * extensions.
+ * subclass should not be declared final as it is expected that future versions of Packed will supports some debug
+ * configuration that relies on extending extensions. And capturing interactions with the extension.
  */
+// Maaske har vi findDescendent(Class<? extends Extension>)
 public abstract class Extension extends Realm {
-
-    /** A stack walker used by various methods. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
 
     /**
      * The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}.
@@ -74,7 +72,7 @@ public abstract class Extension extends Realm {
     @Nullable
     private ExtensionConfiguration configuration;
 
-    /** Create a new extension. Subclasses should have a package-protected constructor. */
+    /** Create a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
     /**
@@ -146,8 +144,8 @@ public abstract class Extension extends Realm {
      * But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
      * installed a component that uses other extensions....????? IDK
      * 
-     * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration} can be invoked from
-     * this method. Is typically used to add new runtime components.
+     * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
+     * from this method. Is typically used to add new runtime components.
      */
     protected void extensionAdded() {}
 
@@ -252,7 +250,24 @@ public abstract class Extension extends Realm {
     @SafeVarargs
     protected static void $addDependency(Class<? extends Extension>... dependencies) {
         requireNonNull(dependencies, "dependency is null");
-        ExtensionModel.bootstrapAddDependency(STACK_WALKER.getCallerClass(), List.of(dependencies));
+        ExtensionModel.bootstrapAddDependency(StackWalkerUtil.SW.getCallerClass(), List.of(dependencies));
+    }
+
+    // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
+    // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
+    // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
+    /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
+    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
+            Consumer<? super T> action) {
+        // Bliver kaldt hvis den specificeret
+        // Registeres ogsaa som dependeenc
+        // $ = Static Init (s + i = $)
+    }
+
+    protected static void $addOptionalDependency(String... dependencies) {
+        // Ala. hvis den
+        // Kan vi tage en MethodHandle...
+        // Altsaa jeg taenker at vi goer
     }
 
     // Object -> T???
@@ -273,34 +288,35 @@ public abstract class Extension extends Realm {
         return null;
     }
 
-    // If contains # -> method otherwise class 
+    // Tilfoejer en dependency hvor callbacket. Bliver kaldt. Hvis dependency bliver tilfoejet
+    // Hvis den dependency extension allerede existere naar man tilfoejere extension. Bliver den kaldt med det samme
+
+    // If contains # -> method otherwise class
     protected static <T> T $addOptionalDependency(String dependency, String bootstrap, T alternative) {
         // bootstrap class name will be loaded and returned if present. otherwise alternative
         throw new UnsupportedOperationException();
     }
 
-    protected static void $addOptionalDependency(String... dependencies) {
-        // Ala. hvis den
-        // Kan vi tage en MethodHandle...
-        // Altsaa jeg taenker at vi goer
+    // Er det mere et foreignLibray???
+    // ConverterExtension er jo sin egen version
+    static void $libraryFor(Module module) {
+        // will extract verions
     }
 
-    // Tilfoejer en dependency hvor callbacket. Bliver kaldt. Hvis dependency bliver tilfoejet
-    // Hvis den dependency extension allerede existere naar man tilfoejere extension. Bliver den kaldt med det samme
+    static void $libraryFor(String module) {
 
-    // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
-    // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
-    // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
-    /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
-    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
-            Consumer<? super T> action) {
-        // Bliver kaldt hvis den specificeret
-        // Registeres ogsaa som dependeenc
-        // $ = Static Init (s + i = $)
     }
 
-    public static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionClass, Component containerComponent) {
-        throw new UnsupportedOperationException();
+    static void $libraryVersion(Module m) {
+        Optional<Version> version = m.getDescriptor().version();
+        if (version.isEmpty()) {
+            throw new InternalExtensionException("The module " + m.getName() + " does not have version");
+        }
+        System.out.println(version);
+    }
+
+    static void $libraryVersionFromClass(Class<?> clazz) {
+        $libraryVersion(clazz.getModule());
     }
 
     static final void preFinalMethod() {
@@ -319,28 +335,6 @@ public abstract class Extension extends Realm {
         //// ....
         // }
         // Her vil man nok ikke vaelge at
-    }
-
-    static void $libraryFor(String module) {
-
-    }
-
-    // Er det mere et foreignLibray???
-    // ConverterExtension er jo sin egen version
-    static void $libraryFor(Module module) {
-        // will extract verions
-    }
-
-    static void $libraryVersionFromClass(Class<?> clazz) {
-        $libraryVersion(clazz.getModule());
-    }
-
-    static void $libraryVersion(Module m) {
-        Optional<Version> version = m.getDescriptor().version();
-        if (version.isEmpty()) {
-            throw new InternalExtensionException("The module " + m.getName() + " does not have version");
-        }
-        System.out.println(version);
     }
 
     // Will fail if the module, class does not have version

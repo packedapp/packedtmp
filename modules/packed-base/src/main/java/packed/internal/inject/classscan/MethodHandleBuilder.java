@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.classscan;
+package packed.internal.inject.classscan;
 
 import static java.util.Objects.requireNonNull;
 
@@ -127,12 +127,6 @@ public final class MethodHandleBuilder {
             this.index = index;
             this.mh = mh;
         }
-    }
-
-    public static class AnnotationResolutionStrategy {
-
-        Class<?> baseType;
-
     }
 
     static class Entry {

@@ -18,7 +18,7 @@ package packed.internal.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.classscan.InstantiatorBuilder;
+import packed.internal.inject.classscan.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /** An abstract base class for bootstrap hook classes. */

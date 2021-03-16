@@ -3,7 +3,7 @@ package packed.internal.util;
 import java.lang.StackWalker.Option;
 
 public class StackWalkerUtil {
-    static final StackWalker SW = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+    public static final StackWalker SW = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     // Maybe we want to take an additional parameter. That says stop here..
     // Typically we know some class on stack that makes the actual call
