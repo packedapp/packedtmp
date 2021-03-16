@@ -32,7 +32,7 @@ import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.MethodHandleUtil;
 
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
-public final class ClassSourceConfiguration implements DependencyProvider {
+public final class SourceClassSetup implements DependencyProvider {
 
     /** A factory that can used to create instances. */
     @Nullable
@@ -56,7 +56,7 @@ public final class ClassSourceConfiguration implements DependencyProvider {
     @Nullable
     public BuildtimeService service;
 
-    private ClassSourceConfiguration(ComponentSetup compConf, int regionIndex, Object source) {
+    private SourceClassSetup(ComponentSetup compConf, int regionIndex, Object source) {
         this.regionIndex = regionIndex;
 
         // The specified source is either a Class, a Factory, or an instance
@@ -90,11 +90,11 @@ public final class ClassSourceConfiguration implements DependencyProvider {
         }
     }
 
-    public static ClassSourceConfiguration create(ComponentSetup compConf, PackedComponentDriver<?> driver) {
+    public static SourceClassSetup create(ComponentSetup compConf, PackedComponentDriver<?> driver) {
         // Reserve a place in the regions runtime memory, if the component is a singleton
         int regionIndex = compConf.modifiers().isSingleton() ? compConf.region.reserve() : -1;
         // Create the source
-        ClassSourceConfiguration s = new ClassSourceConfiguration(compConf, regionIndex, driver.data);
+        SourceClassSetup s = new SourceClassSetup(compConf, regionIndex, driver.data);
 
         if (s.instance != null) {
             compConf.region.constants.add(s);

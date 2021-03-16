@@ -106,19 +106,22 @@ public abstract class BuildtimeService extends AbstractService implements Depend
         return new PackedService(key, isConstant());
     }
 
+    public static Service simple(Key<?> key, boolean isConstant) {
+        return new PackedService(key, isConstant);
+    }
     /** An implementation of {@link Service} because {@link BuildtimeService} is mutable. */
-    private static final record PackedService(Key<?> key, boolean isConstant) implements Service {
+    public static final record PackedService(Key<?> key, boolean isConstant) implements Service {
 
         /** {@inheritDoc} */
         @Override
         public AttributeMap attributes() {
-            throw new UnsupportedOperationException();
+            return AttributeMap.of();
         }
 
         /** {@inheritDoc} */
         @Override
         public String toString() {
-            return "ServiceDescriptor[key=" + key + "]";
+            return "Service[key=" + key + "]";
         }
     }
 }

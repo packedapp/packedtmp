@@ -18,8 +18,6 @@ package packed.internal.component;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 
 import app.packed.base.NamespacePath;
@@ -58,10 +56,10 @@ public class PackedTreePathTest {
         assertThatThrownBy(() -> p.charAt(expected.length())).isExactlyInstanceOf(StringIndexOutOfBoundsException.class);
 
         // chars()
-        assertThat(p.chars()).containsExactlyElementsOf(expected.chars().boxed().collect(Collectors.toList()));
+        assertThat(p.chars()).containsExactlyElementsOf(expected.chars().boxed().toList());
 
         // codePoints()
-        assertThat(p.codePoints()).containsExactlyElementsOf(expected.codePoints().boxed().collect(Collectors.toList()));
+        assertThat(p.codePoints()).containsExactlyElementsOf(expected.codePoints().boxed().toList());
 
         // length
         assertThat(p.length()).isEqualTo(expected.length());

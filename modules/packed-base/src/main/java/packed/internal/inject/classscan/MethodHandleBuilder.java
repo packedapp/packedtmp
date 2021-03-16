@@ -73,18 +73,10 @@ public final class MethodHandleBuilder {
         addKey(Key.of(key), index);
     }
 
-    public void addKey(Class<?> key, MethodHandle transformer, int... indexes) {
-        add(Key.of(key), transformer, indexes);
-    }
-
     public void addKey(Key<?> key, int index) {
         // Check that we can perform upcast?
         // if (targetType.parameterType(index))
         add(key, null, index);
-    }
-
-    public void addKey(Key<?> key, MethodHandle transformer, int... indexes) {
-        add(key, requireNonNull(transformer, "transformer is null"), indexes);
     }
 
     public MethodHandle build(ClassMemberAccessor oc, Executable e) {

@@ -17,27 +17,30 @@ package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Set;
+import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.inject.InjectionContext;
+import app.packed.inject.Service;
+import packed.internal.inject.service.AbstractServiceRegistry;
 
-/** The default implementation of {@link InjectionContext}. */
-public final class PackedInjectionContext implements InjectionContext {
+/** Implementation of {@link InjectionContext}. */
+public final class PackedInjectionContext extends AbstractServiceRegistry implements InjectionContext {
+
+    /** All services that available for injection. */
+    private final Map<Key<?>, Service> services;
 
     private final Class<?> target;
 
-    private final Set<Key<?>> keys;
-
-    public PackedInjectionContext(Class<?> target, Set<Key<?>> keys) {
+    public PackedInjectionContext(Class<?> target, Map<Key<?>, Service> services) {
         this.target = requireNonNull(target);
-        this.keys = requireNonNull(keys);
+        this.services = requireNonNull(services);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Set<Key<?>> keys() {
-        return keys;
+    public Map<Key<?>, Service> asMap() {
+        return services;
     }
 
     /** {@inheritDoc} */
@@ -46,8 +49,9 @@ public final class PackedInjectionContext implements InjectionContext {
         return target;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "InjectionContext[" + target.getCanonicalName() + "]: " + keys;
+        return "InjectionContext[" + target.getCanonicalName() + "]: " + services.keySet();
     }
 }

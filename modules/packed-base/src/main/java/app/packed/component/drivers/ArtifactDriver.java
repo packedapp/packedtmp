@@ -41,7 +41,6 @@ import app.packed.validate.Validation;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.inject.classscan.Infuser;
-import packed.internal.inject.classscan.InstantiatorBuilder;
 
 /**
  * Artifact drivers are responsible for creating artifacts, for example, instances of {@link App}.
@@ -236,21 +235,14 @@ public interface ArtifactDriver<A> {
 
         // Create an infuser (SomeExtension, Class)
         Infuser infuser = Infuser.build(caller, c -> {
-            c.expose(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
-            c.expose(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
+            c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
+            c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
             if (isGuest) {
-                c.expose(Host.class).transform(PackedInitializationContext.MH_CONTAINER);
+                c.provide(Host.class).transform(PackedInitializationContext.MH_CONTAINER);
             }
         }, PackedInitializationContext.class);
 
-        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);
-        ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
-        ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
-        if (isGuest) {
-            ib.addKey(Host.class, PackedInitializationContext.MH_CONTAINER, 0);
-        }
-
-        MethodHandle mh = ib.build();
+        MethodHandle mh = infuser.findConstructorFor(implementation);
         return new PackedArtifactDriver<>(isGuest, mh);
     }
 

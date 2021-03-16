@@ -24,7 +24,6 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import packed.internal.component.wirelet.WireletPack;
-import packed.internal.inject.classscan.Infuser;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.util.LookupUtil;
 
@@ -60,16 +59,6 @@ public final class PackedInitializationContext {
     private PackedInitializationContext(ComponentSetup root, WireletPack wirelets) {
         this.root = root;
         this.wirelets = wirelets;
-    }
-
-    public static void main(String[] args) {
-        Infuser i = Infuser.build(MethodHandles.lookup(), c -> {
-            c.expose(Component.class).extract("component");
-            c.expose(ServiceLocator.class).extract("services");
-        }, PackedInitializationContext.class);
-
-        i = i.withExposed(Host.class, c -> c.adapt(213));
-
     }
 
     /**

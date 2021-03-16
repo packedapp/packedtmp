@@ -16,7 +16,6 @@
 package tests.injector;
 
 import java.lang.invoke.MethodHandles;
-import java.util.stream.Collectors;
 
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Service;
@@ -41,7 +40,7 @@ public class BTest {
             c.provideInstance("123");
         });
         System.out.println("");
-        for (Service d : i.services().collect(Collectors.toList())) {
+        for (Service d : i.services().toList()) {
             System.out.println(d);
         }
 

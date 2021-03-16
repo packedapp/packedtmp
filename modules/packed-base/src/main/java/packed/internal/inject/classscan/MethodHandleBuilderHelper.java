@@ -24,16 +24,21 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
+import app.packed.inject.Service;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.PackedInjectionContext;
+import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.MethodHandleUtil;
 
 /**
@@ -68,7 +73,7 @@ class MethodHandleBuilderHelper {
         boolean isInstanceMethod = false;
 
         // Setup MethodHandle for constructor or method
-        if (e instanceof Constructor<?> con) {
+        if (e instanceof Constructor<?>con) {
             executable = oc.unreflectConstructor(con, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         } else {
             Method m = (Method) e;
@@ -119,7 +124,16 @@ class MethodHandleBuilderHelper {
                 if (kk.equalsTo(InjectionContext.class)) {
                     // TODO we have a non-constant injection context, when we have a dynamic injector
                     // Vi just add it as a normal entry with no indexes, will be picked up in the next section
-                    PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Set.copyOf(aa.keys.keySet()));
+                    HashSet<Key<?>> keys = new HashSet<>();
+                    Map<Key<?>, Service> services = new HashMap<>();
+                    for (Entry<Key<?>, Infuser.Entry> e : aa.keys.entrySet()) {
+                        if (!e.getValue().isHidden()) {
+                            keys.add(e.getKey());
+                            services.put(e.getKey(), BuildtimeService.simple(e.getKey(), false));
+                        }
+                    }
+
+                    PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Map.copyOf(services));
                     aa.keys.putIfAbsent(kk, new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false));
                 }
 

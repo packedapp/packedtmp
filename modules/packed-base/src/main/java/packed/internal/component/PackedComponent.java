@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import app.packed.attribute.AttributeMap;
@@ -235,7 +234,7 @@ public final class PackedComponent implements Component {
         Component c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)
-            List<?> list = stream().map(e -> e.path()).collect(Collectors.toList());
+            List<?> list = stream().map(e -> e.path()).toList();
             throw new IllegalArgumentException("Could not find component with path: " + path + " avilable components:" + list);
         }
         return c;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.classscan;
+package packed.internal.hooks;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,16 +22,16 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
-import app.packed.base.Key;
 import packed.internal.inject.FindInjectableConstructor;
+import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.inject.classscan.MethodHandleBuilder;
 import packed.internal.util.TypeUtil;
 
 /**
  *
  */
 // Den kunne vaere sjov at lave public...
-@Deprecated
-public final class InstantiatorBuilder {
+final class InstantiatorBuilder {
 
     final Executable executable;
 
@@ -47,22 +47,6 @@ public final class InstantiatorBuilder {
 
     public Class<?> type() {
         return oc.type();
-    }
-
-    public void addKey(Class<?> key, int index) {
-        mh.addKey(key, index);
-    }
-
-    public void addKey(Class<?> key, MethodHandle transformer, int... indexes) {
-        mh.addKey(key, transformer, indexes);
-    }
-
-    public void addKey(Key<?> key, int index) {
-        mh.addKey(key, index);
-    }
-
-    public void addKey(Key<?> key, MethodHandle transformer, int... indexes) {
-        mh.addKey(key, transformer, indexes);
     }
 
     public MethodHandle build() {

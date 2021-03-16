@@ -59,6 +59,8 @@ import packed.internal.util.StackWalkerUtil;
  * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. The extension
  * subclass should not be declared final as it is expected that future versions of Packed will supports some debug
  * configuration that relies on extending extensions. And capturing interactions with the extension.
+ * 
+ * @see ExtensionDescriptor
  */
 // Maaske har vi findDescendent(Class<? extends Extension>)
 public abstract class Extension extends Realm {

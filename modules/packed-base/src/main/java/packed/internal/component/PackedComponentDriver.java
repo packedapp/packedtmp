@@ -129,7 +129,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         // AttributeProvide could make sense... And then some way to say retain this info at runtime...
         // But maybe this is sidecars instead???
 
-        Infuser infuser = Infuser.build(caller, c -> c.expose(ComponentConfigurationContext.class).adapt(), ComponentSetup.class);
+        Infuser infuser = Infuser.build(caller, c -> c.provide(ComponentConfigurationContext.class).adapt(), ComponentSetup.class);
         MethodHandle constructor = infuser.findConstructorFor(driverType);
         
         return new Meta(type, constructor, modifiers);

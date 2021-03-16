@@ -25,9 +25,8 @@ import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.inject.classscan.Infuser;
-import packed.internal.util.MethodHandleUtil;
 
-/** A model of a subclass of {@link Extension.Subtension}. Not used outside of this package. */
+/** A model for a {@link Extension.Subtension}. Not used outside of this package. */
 final class SubtensionModel {
 
     /** Models of all subtensions. */
@@ -36,82 +35,82 @@ final class SubtensionModel {
         /** {@inheritDoc} */
         @Override
         protected SubtensionModel computeValue(Class<?> subtensionClass) {
-            // Extension havr called extension.use(Extension.Subtension.class)
+            // Check that user have specified Extension.Subtension.class as the type
             if (subtensionClass == Extension.Subtension.class) {
-                throw new IllegalArgumentException("Cannot specify " + Extension.Subtension.class.getCanonicalName());
+                throw new InternalExtensionException("Cannot specify " + Extension.Subtension.class.getCanonicalName());
             }
+
+            // Check that the subtension have an extension as declaring class
             Class<?> declaringClass = subtensionClass.getDeclaringClass();
             if (declaringClass == null || !Extension.class.isAssignableFrom(declaringClass)) {
-                throw new InternalExtensionException(
-                        subtensionClass + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
+                throw new InternalExtensionException(subtensionClass
+                        + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
             }
 
             @SuppressWarnings("unchecked")
             Class<? extends Extension> extensionClass = (Class<? extends Extension>) declaringClass;
-            ExtensionModel.of(extensionClass); // make sure the extension is valid
+            ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
-            // Create an infuser (SomeExtension, Class)
+            // Create an infuser (Class, Class) (Extension class, Extension that is requesting the extension)
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
-                c.expose(extensionClass).adapt(0); // The extension the Subtension belongs
-                c.expose(new Key<Class<? extends Extension>>() {}).adapt(1); // The requesting extension
-            }, extensionClass, Class.class);
+                c.provide(extensionClass).adapt(); // The extension the Subtension belongs
+                c.provide(new Key<Class<? extends Extension>>() {}).adapt(1); // The requesting extension
+            }, Extension.class, Class.class);
 
-            // Find the subtension constructor using the infuser
-            MethodHandle constructor = infuser.findConstructorFor(subtensionClass);// MethodHandle(SomeExtension,Class)SomeSubtension
-            
-            // We want to have the signature MethodHandle(Extension,Class)Subtension
-            // so we can use invokeExact in newInstance method
-            constructor = constructor.asType(constructor.type().changeParameterType(0, Extension.class));
-            constructor = MethodHandleUtil.castReturnType(constructor, Subtension.class);
+            // Find a valid constructor for the subtension
+            MethodHandle constructor = infuser.findConstructorFor(subtensionClass);// (Extension,Class)SomeSubtension
+
+            // We want to have the signature (Extension,Class)Subtension, so we can use invokeExact from #newInstance()
+            constructor = constructor.asType(constructor.type().changeReturnType(Subtension.class));
 
             return new SubtensionModel(extensionClass, constructor);
         }
     };
 
-    /** The constructor of the subtension that we model. */
-    private final MethodHandle constructor;
-
-    /** The declaring extension. */
+    /** The declaring extension class. */
     final Class<? extends Extension> extensionClass;
 
+    /** The constructor of the subtension that we model. */
+    private final MethodHandle mhConstructor; // (Extension,Class)Subtension
+
     /**
-     * Creates a new model.
+     * Create a new model.
      * 
      * @param extensionClass
-     *            the declaring extension type
-     * @param constructor
-     *            a constructor for the subtensions
+     *            the declaring extension class
+     * @param mhConstructor
+     *            a constructor for the subtension
      */
-    private SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle constructor) {
+    private SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle mhConstructor) {
         this.extensionClass = requireNonNull(extensionClass);
-        this.constructor = requireNonNull(constructor);
+        this.mhConstructor = requireNonNull(mhConstructor);
     }
 
     /**
-     * Creates a new subtension instance
+     * Creates a new subtension instance.
      * 
      * @param extension
-     *            an instance of the declaring extension type
-     * @param requestor
-     *            the extension that requested an instance
+     *            an instance of the declaring extension class
+     * @param requestingExtensionClass
+     *            the extension that is requesting an instance
      * @return the new subtension instance
      */
-    Subtension newInstance(Extension extension, Class<? extends Extension> requestor) {
+    Subtension newInstance(Extension extension, Class<? extends Extension> requestingExtensionClass) {
         try {
-            return (Subtension) constructor.invokeExact(extension, requestor);
+            return (Subtension) mhConstructor.invokeExact(extension, requestingExtensionClass);
         } catch (Throwable e) {
             throw new InternalExtensionException("Instantiation of " + Subtension.class.getSimpleName() + " failed", e);
         }
     }
 
     /**
-     * Returns a model from the specified subtension subclass.
+     * Returns a model from the specified subtension class.
      * 
-     * @param subType
-     *            the subtension subclass
-     * @return
+     * @param subtensionClass
+     *            the subtension class
+     * @return a model for the subtension class
      */
-    static SubtensionModel of(Class<? extends Extension.Subtension> subType) {
-        return MODELS.get(subType);
+    static SubtensionModel of(Class<? extends Extension.Subtension> subtensionClass) {
+        return MODELS.get(subtensionClass);
     }
 }

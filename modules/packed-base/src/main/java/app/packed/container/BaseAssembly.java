@@ -30,7 +30,7 @@ import app.packed.state.OnStart;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * Extends {@link ContainerAssembly} with commonly used methods from the extensions available in this module.
+ * Extends {@link ContainerAssembly} with functionality from some of the commonly used extensions available.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).

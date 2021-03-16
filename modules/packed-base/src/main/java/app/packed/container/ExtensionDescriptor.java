@@ -20,7 +20,6 @@ import java.lang.module.ModuleDescriptor.Version;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.container.Extension.Subtension;
 import packed.internal.container.ExtensionModel;
 
 /**
@@ -176,44 +175,7 @@ interface ExtensionDescriptor2 extends ExtensionDescriptor {
         return Optional.empty();
     }
 }
-
-interface Zditched {
-
-//  /**
-//   * Returns a set of all the optional dependencies defined in {@link UsesExtensions#optionalDependencies()} that could
-//   * not be successfully resolved.
-//   * 
-//   * @return a set of all optional dependencies that could not be successfully resolved
-//   * @see UsesExtensions#optionalDependencies()
-//   */
-// Nahh 
-//  Set<String> unresolvedDependencies();
-
-    /**
-     * If the extension can be used from other extensions return the subtension type. Otherwise empty.
-     * 
-     * @return the subtension type if any
-     * 
-     * @see Subtension
-     */
-    // Syntes det aerligtalt ikke...
-    // Den er let at finde.
-    // For end-user er den kun forvirrende.. De bruger den aldrig...
-    // Og hvis vi nu faar flere...
-    // Kunne ogsaa bare vaere en automatisk build service...
-    Optional<Class<? extends Subtension>> subtensionType();
-
-    /**
-     * Returns all the different types of contracts this extension exposes.
-     * 
-     * @return all the different types of contracts this extension exposes
-     */
-    // Set<Class<? extends Contract>> contracts();
-    //
-    // requiresExecution() // usesResources // ResourceUser
-    //
-    // default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {
-//        dependencies().stream().map(ExtensionDescriptor::of).flatMap(ExtensionDescriptor::dependenciesWithTransitiveDependencies);
-//        return null;
-    // }
-}
+// default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {
+//dependencies().stream().map(ExtensionDescriptor::of).flatMap(ExtensionDescriptor::dependenciesWithTransitiveDependencies);
+//return null;
+// }

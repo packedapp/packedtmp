@@ -16,7 +16,6 @@
 package app.packed.inject;
 
 import java.util.List;
-import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Variable;
@@ -34,27 +33,8 @@ import app.packed.base.Variable;
  * <strong>Note:</strong> This class should only be used doing development. As the runtime needs to retain detailed
  * information about the dependency graph that is normally only available at build time.
  */
-public /* sealed */  interface InjectionContext /* extends ServiceRegistry */ {
+public /* sealed */  interface InjectionContext extends ServiceRegistry {
 
-    // Set<Class<Context>> contextTypes();
-
-    // ServiceTrace trace(SomeKey<?>); // Angiver totalt hvordan den service ankommer...
-    // Alternativt er at faa injected en speciel type.. Men naeh taenker det her er lettest.
-    // Igen.. Hops after Hops... Fra den hvor den er registreret her, og saa en mapper.. og fra den her config fil...
-
-    /**
-     * An immutable set of keys for which dependencies are available for injection at the injection site (typically a method
-     * or constructor annotated with {@link Inject}).
-     * <p>
-     * Note: Even though The set of keys returned by this method does not take into consideration that depending on them
-     * will lead to cycles in the dependency graph.
-     * 
-     * @return an immutable set of keys for services that are available for injection at the injection site
-     */
-    // maybe this is more context. And the use a ServiceRegistry to get services
-    // The returned set does not include services that are available...
-    // Inject an instance of ServiceRegistry to see those...
-    Set<Key<?>> keys();
 
     default void printDependencyTree() {
         // Det er jo bare en trae af ServiceDependency
@@ -94,17 +74,30 @@ public /* sealed */  interface InjectionContext /* extends ServiceRegistry */ {
     // adgang til... Men
     Class<?> targetClass(); // Det er jo bare .getClass(); Med mindre det er en Composite...
 
-    // The reason for why this key is here
-    // Could also do codepath...
-    // Or it could be extra attributes...
-    default String reason(Key<?> key) {
-        throw new UnsupportedOperationException();
-    }
-
     default List<Variable> variables() {
         throw new UnsupportedOperationException();
     }
 }
+
+// Set<Class<Context>> contextTypes();
+
+// ServiceTrace trace(SomeKey<?>); // Angiver totalt hvordan den service ankommer...
+// Alternativt er at faa injected en speciel type.. Men naeh taenker det her er lettest.
+// Igen.. Hops after Hops... Fra den hvor den er registreret her, og saa en mapper.. og fra den her config fil...
+
+///**
+// * An immutable set of keys for which dependencies are available for injection at the injection site (typically a method
+// * or constructor annotated with {@link Inject}).
+// * <p>
+// * Note: Even though The set of keys returned by this method does not take into consideration that depending on them
+// * will lead to cycles in the dependency graph.
+// * 
+// * @return an immutable set of keys for services that are available for injection at the injection site
+// */
+//// maybe this is more context. And the use a ServiceRegistry to get services
+//// The returned set does not include services that are available...
+//// Inject an instance of ServiceRegistry to see those...
+//Set<Key<?>> keys();
 
 // Something about layers....
 // If you have 100 services.... And a Method hook adds 3 services...

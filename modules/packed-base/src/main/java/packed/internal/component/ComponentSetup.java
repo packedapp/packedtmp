@@ -48,8 +48,8 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.base.attribute.PackedAttributeModel.Attt;
-import packed.internal.component.source.ClassSourceConfiguration;
-import packed.internal.component.source.RealmConfiguration;
+import packed.internal.component.source.RealmSetup;
+import packed.internal.component.source.SourceClassSetup;
 import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerSetup;
@@ -57,11 +57,8 @@ import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.util.ThrowableUtil;
 
-/** The build time representation of a component. */
+/** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implements ComponentConfigurationContext {
-//
-//    /** A stack walker used from {@link #captureStackFrame(String)}. */
-//    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
 
     /** Any wirelets that was specified by the user when creating this configuration. */
     @Nullable
@@ -76,23 +73,23 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     public final BuildtimeRegion region;
 
     /** The realm this component is a part of. */
-    public final RealmConfiguration realm;
+    public final RealmSetup realm;
 
-    /** A cube build if this component is an cube, otherwise null. */
+    /** The container setup if this component represents an container, otherwise null. */
     @Nullable
     public final ContainerSetup container;
 
-    /** Any cube this component is part of. A cube is part of it self. */
+    /** Any container this component is part of. A container is a member of it self. */
     @Nullable
     public final ContainerSetup memberOfContainer;
 
-    /** An extension build if this component is an extension, otherwise null. */
+    /** The extension setup if this component represents an extension, otherwise null. */
     @Nullable
     public final ExtensionSetup extension;
 
-    /** A source build if this component has a source, otherwise null. */
+    /** The class source setup if this component has a class source, otherwise null. */
     @Nullable
-    public final ClassSourceConfiguration source;
+    public final SourceClassSetup source;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -116,7 +113,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentSetup(PackedBuildContext build, RealmConfiguration realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
+    ComponentSetup(PackedBuildContext build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
@@ -156,7 +153,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup Source
         if (modifiers().isSource()) {
-            this.source = ClassSourceConfiguration.create(this, driver);
+            this.source = SourceClassSetup.create(this, driver);
         } else {
             this.source = null;
         }
@@ -180,7 +177,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.memberOfContainer = parent.container;
         this.extension = new ExtensionSetup(this, model);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = new RealmConfiguration(model.extensionClass());
+        this.realm = new RealmSetup(model.extensionClass());
         this.region = parent.region;
         this.source = null;
         this.wirelets = null;
@@ -315,7 +312,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param realm
      *            the realm that was closed.
      */
-    public void onRealmClose(RealmConfiguration realm) {
+    public void onRealmClose(RealmSetup realm) {
         // Closes all components in the same realm depth first
         for (ComponentSetup compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
             // child components with a different realm, has either already been closed, or will be closed elsewhere
@@ -373,7 +370,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         ComponentSetup parent = extension == null ? this : /* (Container) */ treeParent;
 
         // Create the new component and a new realm
-        ComponentSetup compConf = new ComponentSetup(build, new RealmConfiguration(assembly.getClass()), driver, parent, wp);
+        ComponentSetup compConf = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, parent, wp);
 
         // Invoke Assembly::build
         AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(compConf));

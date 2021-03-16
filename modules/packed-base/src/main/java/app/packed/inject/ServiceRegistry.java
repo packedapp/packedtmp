@@ -45,13 +45,13 @@ import packed.internal.util.PackedAttributeHolderStream;
  * registry. Unlike service locator and service selection this is mutable
  * <li>
  * <p>
- * Unless otherwise specified, implementations of this interface holds an unchangeable collection of services. One notable
- * exception is the {@link ServiceComposer} interface.
+ * Unless otherwise specified, implementations of this interface holds an unchangeable collection of services. One
+ * notable exception is the {@link ServiceComposer} interface.
  * <p>
  * Implementations of this interface does not normally override hashCode/equals.
  * <p>
- * If this interface is used as an auto service. The registry will contain all services that available to a given component instance.
- * It will not include auto services.
+ * If this interface is used as an auto service. The registry will contain all services that available to a given
+ * component instance. It will not include auto services.
  */
 @AutoService
 public interface ServiceRegistry extends Iterable<Service> {
@@ -188,11 +188,12 @@ public interface ServiceRegistry extends Iterable<Service> {
     static ServiceRegistry of() {
         return AbstractServiceRegistry.EMPTY;
     }
-    
+
     static ServiceRegistry copyOf(ServiceRegistry other) {
         // Vi vil gerne expose en immutable tingeling
         throw new UnsupportedOperationException();
     }
+
     static ServiceRegistry of(Map<Key<?>, Service> services) {
         // IDK hvad skal den bruges til???
         // Vi vil gerne have noget immutable???

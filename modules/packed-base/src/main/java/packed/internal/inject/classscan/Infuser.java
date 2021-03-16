@@ -48,7 +48,7 @@ public class Infuser {
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
         Constructor<?> constructor = FindInjectableConstructor.findConstructorIAE(type);
-        return new InstantiatorBuilder(oc, mhb, constructor).build();
+        return mhb.build(oc, constructor);
     }
 
     public List<Class<?>> parameterTypes() {
@@ -88,19 +88,19 @@ public class Infuser {
             return new Infuser(this);
         }
 
-        public EntryBuilder expose(Class<?> key) {
-            return expose(Key.of(key));
+        public EntryBuilder provide(Class<?> key) {
+            return provide(Key.of(key));
         }
 
-        public EntryBuilder expose(Key<?> key) {
+        public EntryBuilder provide(Key<?> key) {
             return new EntryBuilder(this, key, false);
         }
 
-        public EntryBuilder hide(Class<?> key) {
-            return expose(Key.of(key));
+        public EntryBuilder provideHidden(Class<?> key) {
+            return provideHidden(Key.of(key));
         }
 
-        public EntryBuilder hide(Key<?> key) {
+        public EntryBuilder provideHidden(Key<?> key) {
             return new EntryBuilder(this, key, true);
         }
 
@@ -120,6 +120,19 @@ public class Infuser {
             this.hide = hide;
         }
 
+        public EntryBuilder description(String description) {
+            // Ideen er vi propper lidt descriptions paa igen, IDK
+            return this;
+        }
+
+        /**
+         * The service will be provided by adapting the infuser's first (index 0) parameter to the raw type of the key.
+         * <p>
+         * It does so by automatically inserting casts when needed
+         * 
+         * @throws IndexOutOfBoundsException
+         *             if the the infuser has no parameters
+         */
         public void adapt() {
             adapt(0);
         }
@@ -137,6 +150,17 @@ public class Infuser {
             Class<?> cl = builder.parameterTypes.get(index);
             // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
             MethodHandle mh = LookupUtil.lookupVirtualPrivate(builder.lookup, cl, methodName, key.rawType());
+            transform(mh, index);
+        }
+
+        public void extractPublic(String methodName /* , Object... additional(Static)Arguments */ ) {
+            extractPublic(methodName, 0);
+        }
+
+        public void extractPublic(String methodName, int index) {
+            Class<?> cl = builder.parameterTypes.get(index);
+            // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
+            MethodHandle mh = LookupUtil.lookupVirtualPublic(cl, methodName, key.rawType());
             transform(mh, index);
         }
 

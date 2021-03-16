@@ -27,14 +27,14 @@ import app.packed.container.Extension;
 /**
  *
  */
-public final class RealmConfiguration {
+public final class RealmSetup {
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private ModuleAccessor accessor;
 
     private final Class<?> realmType;
 
-    public RealmConfiguration(Class<?> realmType) {
+    public RealmSetup(Class<?> realmType) {
         this.realmType = requireNonNull(realmType);
     }
 

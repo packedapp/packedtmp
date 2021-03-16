@@ -28,7 +28,6 @@ public class SubtensionModelTest {
         assertThat(sm1.extensionClass).isSameAs(TestExtension.class);
         assertThat(sm2.extensionClass).isSameAs(TestExtension.class);
 
-        
         Sub s = (Sub) sm1.newInstance(te, ServiceExtension.class);
         assertThat(s.getOuter()).isSameAs(te);
         assertThat(s.requestor).isSameAs(ServiceExtension.class);
@@ -36,7 +35,7 @@ public class SubtensionModelTest {
         assertThat(sm2.newInstance(te, ServiceExtension.class)).isInstanceOf(SubStatic.class);
     }
 
-    /** Tests that the subtension has an extension as a declaring class. */
+    /** Tests that the subtension has an {@link Extension} as the declaring class. */
     @Test
     public void invalidDeclaringClass() {
         class NoDeclaringClass extends Subtension {}
@@ -55,6 +54,11 @@ public class SubtensionModelTest {
     /** Test that we throw {@link InternalExtensionException} for unresolvable parameters. */
     @Test
     public void unresolvedConstructor() {
+        // We do not currently fail on unresolved types???
+        
+        // SubtensionModel sm = SubtensionModel.of(TestExtension.UnresolvedConstructor.class);
+        // System.out.println(sm);
+        // sm.newInstance(new TestExtension(), ServiceExtension.class);
         // TODO fix...
         // Should throw an InternalExtensionException if illegal parameters
 //        assertThatThrownBy(() -> SubtensionModel.of(UnresolvedConstructor.class)).isExactlyInstanceOf(InternalExtensionException.class);
@@ -86,4 +90,5 @@ public class SubtensionModelTest {
             UnresolvedConstructor(String hmm) {}
         }
     }
+
 }

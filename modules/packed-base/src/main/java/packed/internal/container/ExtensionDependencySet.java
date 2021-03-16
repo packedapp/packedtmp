@@ -21,7 +21,6 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import app.packed.container.Extension;
 
@@ -86,7 +85,7 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
      */
     @SuppressWarnings("unchecked")
     public static ExtensionDependencySet of(Collection<Class<? extends Extension>> extensions) {
-        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.extensionClass()).collect(Collectors.toList());
+        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.extensionClass()).toList();
         return new ExtensionDependencySet((List<Class<? extends Extension>>) l);
     }
 }
