@@ -35,6 +35,8 @@ import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.Extension;
 import app.packed.validate.Validation;
+import packed.internal.component.source.RealmSetup;
+import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ArtifactDriver}. */
@@ -52,7 +54,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     private final boolean isStateful;
 
     /** The method handle used for creating new artifacts. */
-    private final MethodHandle newShellMH;
+    private final MethodHandle mhNewShell; // (PackedInitializationContext)Object
 
     /** May contain a wirelet that will be processed _after_ any other wirelets. */
     @Nullable
@@ -63,26 +65,26 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
      * 
      * @param isStateful
      *            whether or not the the artifact is stateful
-     * @param newArtifactMH
+     * @param mhNewShell
      *            a method handle that can create new artifacts
      */
-    public PackedArtifactDriver(boolean isStateful, MethodHandle newArtifactMH) {
+    public PackedArtifactDriver(boolean isStateful, MethodHandle mhNewShell) {
         this.isStateful = isStateful;
-        this.newShellMH = requireNonNull(newArtifactMH);
+        this.mhNewShell = requireNonNull(mhNewShell);
         this.wirelet = null;
     }
 
     private PackedArtifactDriver(boolean isStateful, MethodHandle newArtifactMH, Wirelet prefix) {
         this.isStateful = isStateful;
-        this.newShellMH = requireNonNull(newArtifactMH);
+        this.mhNewShell = requireNonNull(newArtifactMH);
         this.wirelet = prefix;
     }
 
     /** {@inheritDoc} */
     @Override
     public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        PackedBuildContext pbc = PackedBuildContext.build(this, assembly, wirelets, true, false);
-        return pbc.asComponent();
+        BuildSetup build = build(assembly, wirelets, true, false);
+        return build.asComponent();
     }
 
     /**
@@ -91,14 +93,57 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
      * @return the raw type of the artifacts that this driver creates
      */
     public Class<?> artifactRawType() {
-        return newShellMH.type().returnType();
+        return mhNewShell.type().returnType();
+    }
+
+    /**
+     * @param assembly
+     *            the root assembly
+     * @param wirelets
+     *            optional wirelets
+     * @param isAnalysis
+     *            is it an analysis
+     * @param isImage
+     *            is it an image
+     * @return a build setup
+     */
+    private BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
+        // Extract the component driver from the assembly
+        PackedComponentDriver<?> componentDriver = AssemblyHelper.getDriver(assembly);
+
+        // Process all wirelets
+        WireletPack wp = WireletPack.ofRoot(this, componentDriver, wirelets);
+
+        int modifiers = 0;
+
+        if (this != null) {
+            modifiers += PackedComponentModifierSet.I_ANALYSIS;
+            if (isStateful()) {
+                modifiers += PackedComponentModifierSet.I_CONTAINER;
+            }
+        }
+
+        if (isImage) {
+            modifiers += PackedComponentModifierSet.I_IMAGE;
+        }
+
+        // Create a new build context that we passe around
+        BuildSetup build = new BuildSetup(this, modifiers, wp);
+
+        // Create the root component
+        ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(assembly.getClass()), componentDriver, null, wp);
+        Object conf = componentDriver.toConfiguration(component);
+        AssemblyHelper.invokeAssemblyBuild(assembly, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
+
+        component.close();
+        return build;
     }
 
     /** {@inheritDoc} */
     @Override
     public Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        PackedBuildContext pbc = PackedBuildContext.build(this, assembly, wirelets, false, true);
-        return new PackedImage(pbc);
+        BuildSetup build = build(assembly, wirelets, false, true);
+        return new PackedImage(build);
     }
 
     /** {@inheritDoc} */
@@ -108,14 +153,35 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
         requireNonNull(componentDriver, "componentDriver is null");
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
-        // Assemble the system
-        PackedBuildContext pbc = PackedBuildContext.compose(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
+        
+        // Build the system
+        BuildSetup build = compose0((PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = pbc.process();
+        PackedInitializationContext pic = build.process();
 
         // Return the system in a new shell
         return newArtifact(pic);
+    }
+
+    public <CO extends Composer<?>, CC extends ComponentConfiguration> BuildSetup compose0(PackedComponentDriver<CC> componentDriver,
+            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
+        WireletPack wp = WireletPack.ofRoot(this, componentDriver, wirelets);
+
+        BuildSetup build = new BuildSetup(this, 0, wp);
+
+        ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(consumer.getClass()), componentDriver, null, wp);
+
+        CC componentConfiguration = componentDriver.toConfiguration(component);
+
+        // Used the supplied composer factory to create a composer from a component configuration instance
+        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
+
+        // Invoked the consumer supplied by the end-user
+        consumer.accept(composer);
+
+        component.close();
+        return build;
     }
 
     public boolean isStateful() {
@@ -131,7 +197,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
      */
     private A newArtifact(PackedInitializationContext pic) {
         try {
-            return (A) newShellMH.invoke(pic);
+            return (A) mhNewShell.invoke(pic);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -140,11 +206,11 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A use(Assembly<?> assembly, Wirelet... wirelets) {
-        // Assemble the system
-        PackedBuildContext pbc = PackedBuildContext.build(this, assembly, wirelets, false, false);
+        // Build the system
+        BuildSetup build = build(assembly, wirelets, false, false);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = pbc.process();
+        PackedInitializationContext pic = build.process();
 
         // Return the system in a new shell
         return newArtifact(pic);
@@ -162,7 +228,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     @Override
     public ArtifactDriver<A> with(Wirelet... wirelets) {
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new PackedArtifactDriver<>(isStateful, newShellMH, w);
+        return new PackedArtifactDriver<>(isStateful, mhNewShell, w);
     }
 
     /** {@inheritDoc} */
@@ -170,7 +236,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     public ArtifactDriver<A> with(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
         Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
-        return new PackedArtifactDriver<>(isStateful, newShellMH, w);
+        return new PackedArtifactDriver<>(isStateful, mhNewShell, w);
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
@@ -271,21 +337,19 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     }
 
-    /**
-     * An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}.
-     */
+    /** An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}. */
     private final class PackedImage implements Image<A> {
 
         private final ComponentSetup root;
 
         /**
-         * Create a new image from the specified build info.
+         * Create a new image from the specified build setup.
          * 
-         * @param pbc
-         *            the build context
+         * @param build
+         *            the build setup
          */
-        private PackedImage(PackedBuildContext pbc) {
-            this.root = pbc.root;
+        private PackedImage(BuildSetup build) {
+            this.root = build.rootComponent;
         }
 
         /** {@inheritDoc} */
@@ -305,102 +369,3 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
         }
     }
 }
-
-///**
-//* Returns a set of the various modifiers that will by set on the root component. whether or not the type of shell being
-//* created by this driver has an execution phase. This is determined by whether or not the shell implements
-//* {@link AutoCloseable}.
-//* 
-//* @return whether or not the shell being produced by this driver has an execution phase
-//*/
-//@Override
-//public ComponentModifierSet modifiers() {
-//  return new PackedComponentModifierSet(modifiers);
-//}
-// Ideen er lidt at vi har en OptionList som aggregere alle options
-// Det er en public klasse i packedapp.internal.shell.OptionAggregate
-// Den har en PackedContainerConfiguration saa adgang til. og f.eks. kalder
-// aggregate.addExtension(Class<? extends Extension>) <- may throw....
-//static class ArtifactOptionAggregate {
-//    ArtifactOptionAggregate(Option[] options) {}
-//
-//    ArtifactOptionAggregate with(Option[] options) {
-//        throw new UnsupportedOperationException();
-//    }
-//}
-//public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> shellType, Factory<? extends A> implementation) {
-//  throw new UnsupportedOperationException();
-//}
-//<E extends A> ArtifactDriver<A> mapTo(Class<E> decoratingType, Function<A, E> decorator) {
-//  // Ideen er egentlig at f.eks. kunne wrappe App, og tilfoeje en metode...
-//  // Men altsaa, maaske er det bare at kalde metoderne direkte i context...
-//  // PackedApp kalder jo bare direkte igennem
-//  throw new UnsupportedOperationException();
-//}
-
-//
-//static <A> A start(Class<A> shellType, ArtifactSource source, Wirelet... wirelets) {
-//    // The only thing we save is defining a driver..
-//    // But we need the driver for App#driver... so not much saved
-//    throw new UnsupportedOperationException();
-//}
-//Supplier<A> startingProvider(ArtifactSource a, Wirelet... wirelets) {
-//// Kunne ogsaa lave den paa image...
-//// Men altsaa taenker vi godt vil have noget wirelets med...
-//// <A> Supplier<A> ArtifactImage.supplier(ArtifactDriver<A> driver);
-//throw new UnsupportedOperationException();
-//}
-///** Options that can be specified when creating a new driver or via {@link #withOptions(Option...)}. */
-
-// Ideen er lidt at vi koerer ArchUnit igennem here....
-// Altsaa Skal vi have en BaseEnvironment.. hvor vi kan specificere nogle options for alle
-// F.eks. black liste ting...
-
-// Invoked by each driver??
-// List<ArtifactDriver.Option> BaseEnvironment.defaultOptions(Class<?> shellDriver);
-// BaseEnvironment via service loader. Exactly one... Extensions should never create one.
-// Users
-// Men skal man kunne overskriver den forstaaet paa den maade at stramme den...
-// F.eks. med en order... Alle skal have unik orders (ellers fejl)
-// D.v.s. CompanyBaseEnvironment(order = 1) , DivisionBaseEnvironment(order = 2)
-// Ellers ogsaa installere man en masse options... //Allowed algor
-
-// IDK Den fungere ikke lige skide godt med et image...
-// Can jo ikke prefix'e med noget som helst hvis foerst imaged er lavet...
-// Eller f.eks. Whitelist/Blacklist kan vi godt. fordi vi har listen af dem...
-// naar vi instantiere...
-// Saa vi kan checke ting...
-// Men ikke paavirke hvordan de bliver lavet...
-
-////// FRA SHELL CONTEXT
-//start() osv smider UnsupportedOperationException hvis LifeycleExtension ikke er installeret???
-//Naeh syntes bare man returnere oejeblikligt
-
-//Noget med lifecycle
-//Noget med Injector // Hvis vi har sidecars.... Er det maaske bare der...
-//Container tillader sidecar... App goer ikke. Saa kan man hvad man vil...
-
-//Entry point koere bare automatisk efter start....
-//Men ville vaere rart at vide
-
-//Distenction mellem business service or infrastructure service....
-//Hmm, problemet er vel at vi gerne vil injecte begge....
-
-//Noget med entrypoint?? Nej tror ikke vi har behov for at expose dett..
-
-//TypeLiteral??? Maaske returnere execute() et object...
-
-//Optional<?>??? Maybe a ResultClass
-//default Object result() {
-// // awaitResult()...
-// // awaitResultUninterruptable()...
-// // Ideen er lidt at vi kan vente paa det...
-// return null;
-//}
-//
-////En Attribute????
-//default Class<?> resultType() {
-// // Ideen er her taenkt at vi kan bruge den samme med Job...
-// //// En anden slags entry point annotering...
-// return void.class;
-//}

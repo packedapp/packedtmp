@@ -41,7 +41,7 @@ public interface Daemon extends AutoCloseable {
     void stopAsync();
 
     static Daemon run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return run(assembly, Wirelet.combine(MainArgs.of(args), wirelets));
+        return run(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     static Daemon run(Assembly<?> assembly, Wirelet... wirelets) {
@@ -50,7 +50,7 @@ public interface Daemon extends AutoCloseable {
 
     // Starts async... Builds/initializes sync
     static Daemon runAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-       return run(assembly, Wirelet.combine(MainArgs.of(args), wirelets));
+       return run(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     static Daemon runAsync(Assembly<?> assembly, Wirelet... wirelets) {
@@ -58,7 +58,7 @@ public interface Daemon extends AutoCloseable {
     }
 
     static Daemon start(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return start(assembly, Wirelet.combine(MainArgs.of(args), wirelets));
+        return start(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     static Daemon start(Assembly<?> assembly, Wirelet... wirelets) {
@@ -66,7 +66,7 @@ public interface Daemon extends AutoCloseable {
     }
 
     static Daemon startAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return startAsync(assembly, Wirelet.combine(MainArgs.of(args), wirelets));
+        return startAsync(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     static Daemon startAsync(Assembly<?> assembly, Wirelet... wirelets) {

@@ -105,7 +105,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
     private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
-    final PackedBuildContext build;
+    final BuildSetup build;
 
     /**
      * Creates a new instance of this class
@@ -113,7 +113,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentSetup(PackedBuildContext build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
+    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
             @Nullable WireletPack wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
@@ -233,15 +233,15 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.ARTIFACT)) {
-            PackedArtifactDriver<?> psd = build().artifactDriver();
-            dam.addValue(ComponentAttributes.SHELL_TYPE, psd.artifactRawType());
+            PackedArtifactDriver<?> pac = build().artifactDriver();
+            dam.addValue(ComponentAttributes.SHELL_TYPE, pac.artifactRawType());
         }
         return dam;
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedBuildContext build() {
+    public BuildSetup build() {
         return build;
     }
 
@@ -324,7 +324,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         ComponentSetup compConf = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, parent, wp);
 
         // Invoke Assembly::build
-        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(compConf));
+        AssemblyHelper.invokeAssemblyBuild(assembly, driver.toConfiguration(compConf));
 
         // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
         // Maybe we should have close on the realm instead???

@@ -46,8 +46,9 @@ import packed.internal.component.PackedComponentDriver;
 public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
 
     /**
-     * The configuration of this bundle. This field is updated via a VarHandle from {@link AssemblyHelper}. The value of
-     * this field goes through 3 states:
+     * The configuration of this assembly.
+     * <p>
+     * This field is updated via a VarHandle from {@link AssemblyHelper}. The value of this field goes through 3 states:
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
@@ -79,22 +80,24 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      * <p>
      * This method should never be invoked directly by the user.
      */
-    protected abstract void build(); // Invoked via a MethodHandle at AssemblyHelper#invokeBuild
+    protected abstract void build(); // Invoked from AssemblyHelper#invokeAssemblyBuild
 
     /**
      * Returns the configuration object that this assembly wraps.
      * <p>
-     * This method must only be called from within the bounds of the {@link #build()} method.
+     * This method must only be called from within the {@link #build()} method.
      * 
      * @return the configuration object that this assembly wraps
      * @throws IllegalStateException
-     *             if called outside of the {@link #build()} method
+     *             if called from outside of the {@link #build()} method
      */
     @SuppressWarnings("unchecked")
     protected final C configuration() {
         Object c = configuration;
-        if (c == null || c == AssemblyHelper.ASSEMBLY_USED) {
-            throw new IllegalStateException("This method cannot called outside of the #build() method. Maybe you tried to call #build() directly");
+        if (c == null) {
+            throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
+        } else if (c == AssemblyHelper.ASSEMBLY_USED) {
+            throw new IllegalStateException("This method must be called from within the #build() method of the assembly.");
         }
         return (C) c;
     }

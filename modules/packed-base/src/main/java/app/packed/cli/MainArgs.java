@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.component.Wirelet;
 import app.packed.hooks.AutoService;
 
 /**
@@ -29,7 +28,7 @@ import app.packed.hooks.AutoService;
 // Problemet er at alle nu kan faa den injected...
 // CliWirelets.mainArgs(); import static CliWirelet.mainArgs...
 @AutoService
-public final class MainArgs extends Wirelet {
+public final class MainArgs {
 
     private final String[] args = {};
     // Det gode ved declarativt er at

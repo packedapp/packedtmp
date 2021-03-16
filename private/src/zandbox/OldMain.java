@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.TimeUnit;
 
-import app.packed.cli.MainArgs;
 import app.packed.component.Assembly;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
@@ -75,7 +74,7 @@ final class OldMain {
         // Syntes maaske vi skal droppe Wirelet... wirelets)??
         // Og saa koere den lidt clean
 
-        execute(bundle, Wirelet.combine(wirelets, MainArgs.of(args)));
+       // execute(bundle, Wirelet.combine(wirelets, MainArgs.of(args)));
     }
 
     public void execute(Assembly<?> bundle, Wirelet... wirelets) {

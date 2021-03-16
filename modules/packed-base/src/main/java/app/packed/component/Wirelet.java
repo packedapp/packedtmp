@@ -140,7 +140,7 @@ public abstract class Wirelet {
         // Will fail at runtime and at buildtime if extension is not installed...
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Combines an array or wirelets
      * 
@@ -179,6 +179,9 @@ public abstract class Wirelet {
      * @return stuff
      */
     public static Wirelet combine(Wirelet first, Wirelet[] last) {
+        if (last.length == 0) {
+            return first;
+        }
         return WireletList.of(first, last);
     }
 
