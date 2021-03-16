@@ -23,12 +23,25 @@ import app.packed.component.Wirelet;
  *
  */
 // Tror meningen er at smide ind i .component igen...
-public abstract class BaseWirelet extends Wirelet {
+public abstract class InternalWirelet extends Wirelet {
 
     abstract void process(WireletPack c);
 
+
+    /** Internal use only. */
+    protected static final void $targetImage() {
+        // Only on images
+        // Altsaa kan end-useren overhoved bruge den??
+        // Det tror jeg ikke..
+        // Maaske har vi en internalWirelet som vi kan overskrive...
+        // Og den kan saa if (wp.isImage!=) {
+        // Du er en klovn...
+        //
+    }
+
+    
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class SetComponentNameWirelet extends BaseWirelet {
+    public static final class SetComponentNameWirelet extends InternalWirelet {
 
         /** The (checked) name to override with. */
         final String name;
@@ -66,7 +79,7 @@ public abstract class BaseWirelet extends Wirelet {
     }
 
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class IgnoreUnhandled extends BaseWirelet {
+    public static final class IgnoreUnhandled extends InternalWirelet {
 
         final Wirelet wirelet;
 

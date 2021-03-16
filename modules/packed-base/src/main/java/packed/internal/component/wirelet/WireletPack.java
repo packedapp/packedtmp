@@ -55,7 +55,7 @@ public final class WireletPack {
             inherited.add(new Ent(w));
         }
 
-        if (w instanceof BaseWirelet bw) {
+        if (w instanceof InternalWirelet bw) {
             bw.process(this);
         } else if (w instanceof WireletList wl) {
             for (Wirelet ww : wl.wirelets) {

@@ -50,7 +50,7 @@ import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.base.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.source.RealmSetup;
 import packed.internal.component.source.SourceClassSetup;
-import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
+import packed.internal.component.wirelet.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;

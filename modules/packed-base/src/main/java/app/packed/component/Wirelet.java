@@ -20,8 +20,8 @@ import static java.util.Objects.requireNonNull;
 import app.packed.container.Extension;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.component.wirelet.BaseWirelet;
-import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
+import packed.internal.component.wirelet.InternalWirelet;
+import packed.internal.component.wirelet.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPreModel;
 import packed.internal.util.StackWalkerUtil;
@@ -143,23 +143,18 @@ public abstract class Wirelet {
         WireletPreModel.buildtimeOnly(StackWalkerUtil.SW.getCallerClass());
     }
 
+    // Ideen er man ikke kan angives paa rod niveau
+    // 
     protected static final void $needsRealm() {
         // f.x provide(Doo.class);
         // Hvad hvis vi koere composer.lookup()...
         // Saa laver vi jo saadan set en realm...
     }
 
+    // ExtensionWirelet... tror jeg...
     protected static final void $requireExtension(Class<? extends Extension> extensionClass) {
         // Will fail at runtime and at buildtime if extension is not installed...
         throw new UnsupportedOperationException();
-    }
-
-    /** Internal use only. */
-    protected static final void $targetImage() {
-        // Only on images
-        // Altsaa kan end-useren overhoved bruge den??
-        // Det tror jeg ikke..
-        // Maaske har vi en internalWirelet som vi kan overskrive...
     }
 
     // Altsaa den ville vaere god for MainArgsWirelet...
@@ -170,19 +165,6 @@ public abstract class Wirelet {
     public static Wirelet extractable(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
-
-//    /**
-//     * @param wirelet
-//     *            the wirelet to wrap
-//     * @param property
-//     *            the property that is required of the component
-//     * @return the wrapped wirelet
-//     */
-//    // Det betyder at vi vel skal starte med kalkulere properties som noget af det foerste?
-//    // Eller ogsaa at vi Wirelet skal vaere abstract
-//    public static Wirelet requireModifier(Wirelet wirelet, ComponentModifier property) {
-//        return wirelet;
-//    }
 
     /**
      * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually consume it
@@ -195,7 +177,7 @@ public abstract class Wirelet {
      */
     // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
     public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
-        return new BaseWirelet.IgnoreUnhandled(of(wirelet));
+        return new InternalWirelet.IgnoreUnhandled(of(wirelet));
     }
 
     // will invoke the specified runnable if the wirelet cannot be processed
@@ -203,7 +185,7 @@ public abstract class Wirelet {
     // orElseIgnore();
     // andThen()
     public static Wirelet ignoreUnhandled(Wirelet wirelet, Runnable orElseRun) {
-        return new BaseWirelet.IgnoreUnhandled(of(wirelet));
+        return new InternalWirelet.IgnoreUnhandled(of(wirelet));
     }
 
     static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
@@ -219,8 +201,8 @@ public abstract class Wirelet {
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
-     * Overriding any default naming scheme, or any name that might already have been set, for example, via
-     * {@link BaseComponentConfiguration#setName(String)}.
+     * Using this wirelet overrides any default naming scheme, or name that might already have been set, for example,
+     * via {@link BaseComponentConfiguration#setName(String)}.
      * 
      * @param name
      *            the name of the component
@@ -241,5 +223,19 @@ public abstract class Wirelet {
     public static Wirelet of(Wirelet... wirelets) {
         return WireletList.of(wirelets);
     }
-
 }
+
+// Nej man har ikke saa mange luksuser som end-user taenker jeg???
+// E
+///**
+//* @param wirelet
+//*            the wirelet to wrap
+//* @param property
+//*            the property that is required of the component
+//* @return the wrapped wirelet
+//*/
+//// Det betyder at vi vel skal starte med kalkulere properties som noget af det foerste?
+//// Eller ogsaa at vi Wirelet skal vaere abstract
+//public static Wirelet requireModifier(Wirelet wirelet, ComponentModifier property) {
+//  return wirelet;
+//}

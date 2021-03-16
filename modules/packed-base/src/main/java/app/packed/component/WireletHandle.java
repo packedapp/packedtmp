@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 // ExtensionSetup
 // ComponentSetup
 // Component
-
+// WireletReceiver
 public /* sealed */ interface WireletHandle<T extends Wirelet> {
 
     void forEach(Consumer<? super T> action);

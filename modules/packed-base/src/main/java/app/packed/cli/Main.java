@@ -31,6 +31,7 @@ import app.packed.state.StateWirelets;
  * @see MainImage
  */
 // Tror maaske bare den doer med PanicException som standard hvis der gaar noget galt...
+// noHookCaching...
 public final class Main {
 
     /** The artifact driver used by this class. */

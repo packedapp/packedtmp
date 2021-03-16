@@ -17,7 +17,7 @@ package app.packed.component;
 
 /**
  * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link Image} will result in
- * an {@link WireletException} being thrown.
+ * an extension being thrown.
  */
 
 // Maaske hedder det BuildWireret... og saa definere den disse metoder...
