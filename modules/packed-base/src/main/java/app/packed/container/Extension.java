@@ -17,11 +17,12 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.module.ModuleDescriptor.Version;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
@@ -32,9 +33,13 @@ import app.packed.component.Image;
 import app.packed.component.Realm;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import app.packed.service.sandbox.UsesExtensions;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.StackWalkerUtil;
+import packed.internal.util.StringFormatter;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
@@ -234,28 +239,6 @@ public abstract class Extension extends Realm {
         return configuration().userWire(driver, wirelets);
     }
 
-    /**
-     * Adds the specified dependecies extension as a dependency. Must only be invoked
-     * <p>
-     * to use it
-     * <p>
-     * Installing components that make use of fx Provide you need ServiceExtension
-     * 
-     * 
-     * @param dependency
-     *            a dependency of the extension
-     * @throws InternalExtensionException
-     *             if the dependency could not be added for some reason, for example, if it would lead to a cyclic
-     *             dependency between extensions. Or if not called directly from a class initializer
-     * 
-     * @see #$addDependencyLazyInit(Class, Class, Consumer)
-     */
-    @SafeVarargs
-    protected static void $dependsOn(Class<? extends Extension>... dependencies) {
-        requireNonNull(dependencies, "dependency is null");
-        ExtensionModel.bootstrapAddDependency(StackWalkerUtil.SW.getCallerClass(), List.of(dependencies));
-    }
-
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
     // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
     // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
@@ -273,8 +256,28 @@ public abstract class Extension extends Realm {
         // Altsaa jeg taenker at vi goer
     }
 
+    /**
+     * Adds the specified dependencies to this extension. Must only be invoked Installing components that make use of fx
+     * Provide you need ServiceExtension
+     * <p>
+     * This method can only be invoked from the class initializer of an extension.
+     * 
+     * @param dependencies
+     *            dependencies of this extension
+     * @throws InternalExtensionException
+     *             if the dependency could not be added for some reason, for example, if it would lead to a cyclic
+     *             dependency between extensions. Or if not called directly from a class initializer
+     * 
+     * @see #$addDependencyLazyInit(Class, Class, Consumer)
+     */
+    @SafeVarargs
+    protected static void $dependsOn(Class<? extends Extension>... dependencies) {
+        requireNonNull(dependencies, "dependencies is null");
+        ExtensionModel.bootstrapAddDependency(StackWalkerUtil.SW.getCallerClass(), List.of(dependencies));
+    }
+
     // Object -> T???
-    protected static Optional<Object> $addOptionalDependency(String dependency, String bootstrap) {
+    protected static Optional<Object> $dependsOnOptionally(String dependency, String bootstrap) {
         // Will try to load callerClass$bootstrapClassName and execute (static) Class#bootstrapMethod and return Object
         // else null
 
@@ -294,32 +297,52 @@ public abstract class Extension extends Realm {
     // Tilfoejer en dependency hvor callbacket. Bliver kaldt. Hvis dependency bliver tilfoejet
     // Hvis den dependency extension allerede existere naar man tilfoejere extension. Bliver den kaldt med det samme
 
-    // If contains # -> method otherwise class
-    protected static <T> T $addOptionalDependency(String dependency, String bootstrap, T alternative) {
-        // bootstrap class name will be loaded and returned if present. otherwise alternative
-        throw new UnsupportedOperationException();
-    }
+    protected static <T> T $dependsOnOptionally(String dependency, String bootstrap, Supplier<T> alternative) {
+        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
+        ClassLoader cl = callerClass.getClassLoader(); // PrividligeAction???
+        Class<?> c = null;
+        try {
+            c = Class.forName(dependency, true, cl);
+        } catch (ClassNotFoundException ignore) {}
 
-    // Er det mere et foreignLibray???
-    // ConverterExtension er jo sin egen version
-    static void $libraryFor(Module module) {
-        // will extract verions
-    }
-
-    static void $libraryFor(String module) {
-
-    }
-
-    static void $libraryVersion(Module m) {
-        Optional<Version> version = m.getDescriptor().version();
-        if (version.isEmpty()) {
-            throw new InternalExtensionException("The module " + m.getName() + " does not have version");
+        if (c != null) {
+            // We check this in models also...
+            if (Extension.class == c) {
+                throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(callerClass)
+                        + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
+            } else if (!Extension.class.isAssignableFrom(c)) {
+                throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(callerClass)
+                        + " specified an invalid extension " + StringFormatter.format(c));
+            }
+            @SuppressWarnings("unchecked")
+            Class<? extends Extension> extensionClass = (Class<? extends Extension>) c;
+            //ExtensionModel.of(extensionClass); IDK
+            
+            String s = callerClass.getName() + "$" + bootstrap;
+            try {
+                c = Class.forName(s, true, cl);
+            } catch (ClassNotFoundException ignore) {
+                throw new IllegalArgumentException("Could not load class " + s, ignore);
+            }
+            MethodHandle mh = Infuser.of(MethodHandles.lookup()).findConstructorFor(c);
+            T result;
+            try {
+                result = (T) mh.invoke();
+            } catch (Throwable t) {
+                throw ThrowableUtil.orUndeclared(t);
+            }
+            ExtensionModel.bootstrapAddDependency(callerClass, List.of(extensionClass));
+            return result;
         }
-        System.out.println(version);
+
+        return alternative.get();
     }
 
-    static void $libraryVersionFromClass(Class<?> clazz) {
-        $libraryVersion(clazz.getModule());
+    static void $libraryFor(Module module) {
+        // libraryFor(
+        // Er det mere et foreignLibray???
+        // ConverterExtension er jo sin egen version
+        // will extract verions
     }
 
     static final void preFinalMethod() {

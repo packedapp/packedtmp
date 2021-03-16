@@ -60,10 +60,12 @@ public /* sealed */ interface ExtensionConfiguration {
 
     // ComponentAttributes
 
-    // Thinking about removing this
-    // Altsaa det den er god for er at tilfoeje callbacks...
-    // Men det behoever vi jo ikke have et interface for..
-    BuildInfo build();
+    /**
+     * Returns information about the build this extension is a part of.
+     * 
+     * @return information about the build this extension is a part of
+     */
+    BuildInfo build(); // I don't know if it should die...
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

@@ -483,7 +483,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         private static Bootstrap forBootstrapAccess(Class<?> callerClass) {
-            if (!Extension.class.isAssignableFrom(callerClass)) {
+
+            if (!Extension.class.isAssignableFrom(callerClass) || callerClass == Extension.class) {
                 throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
             }
             @SuppressWarnings("unchecked")

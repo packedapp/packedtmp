@@ -427,6 +427,10 @@ public class ServiceExtension extends Extension {
         /* package-private */ Sub(Class<? extends Extension> requestingExtension) {
             this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
         }
+        
+        public void check() {
+            System.out.println("Requested by " + requestingExtension);
+        }
     }
 }
 
