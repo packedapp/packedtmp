@@ -113,7 +113,7 @@ public class Z4 extends BaseAssembly {
     public static class F extends Extension {
         F() {}
         static {
-            $addDependency(E.class);
+            $dependsOn(E.class);
         }
         @Override
         protected void extensionAdded() {

@@ -63,11 +63,12 @@ public final class PackedInitializationContext {
     }
 
     public static void main(String[] args) {
-        Infuser i = Infuser.build(c -> {
-            c.expose(Component.class).extract(MethodHandles.lookup(), "componesnt");
-            c.expose(ServiceLocator.class).extract(MethodHandles.lookup(), "services");
+        Infuser i = Infuser.build(MethodHandles.lookup(), c -> {
+            c.expose(Component.class).extract("component");
+            c.expose(ServiceLocator.class).extract("services");
         }, PackedInitializationContext.class);
 
+        i = i.withExposed(Host.class, c -> c.adapt(213));
 
     }
 

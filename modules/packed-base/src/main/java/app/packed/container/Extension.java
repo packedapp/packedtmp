@@ -147,6 +147,7 @@ public abstract class Extension extends Realm {
      * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
      * from this method. Is typically used to add new runtime components.
      */
+    // hvorfor er det vi ikke kalder dem onAdd
     protected void extensionAdded() {}
 
     // Hvad hvis den selv tilfoejer komponenter med en child container???
@@ -204,7 +205,7 @@ public abstract class Extension extends Realm {
     /**
      * Used to lookup other extensions.
      * <p>
-     * Only extension types that have been explicitly registered using {@link #$addDependency(Class)}may be specified as
+     * Only extension types that have been explicitly registered using {@link #$dependsOn(Class)}may be specified as
      * arguments to this method.
      * <p>
      * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
@@ -221,7 +222,7 @@ public abstract class Extension extends Realm {
      *             configurable and an extension of the specified type has not already been installed
      * @throws UnsupportedOperationException
      *             if the specified extension type has not been specified when bootstrapping the extension
-     * @see #$addDependency(Class)
+     * @see #$dependsOn(Class)
      */
     protected final <E extends Subtension> E use(Class<E> extensionClass) {
         return configuration().use(extensionClass);
@@ -248,7 +249,7 @@ public abstract class Extension extends Realm {
      * @see #$addDependencyLazyInit(Class, Class, Consumer)
      */
     @SafeVarargs
-    protected static void $addDependency(Class<? extends Extension>... dependencies) {
+    protected static void $dependsOn(Class<? extends Extension>... dependencies) {
         requireNonNull(dependencies, "dependency is null");
         ExtensionModel.bootstrapAddDependency(StackWalkerUtil.SW.getCallerClass(), List.of(dependencies));
     }

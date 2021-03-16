@@ -239,7 +239,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      *            the extension to depend on
      * @throws InternalExtensionException
      *             if the dependency could not be added for some reason
-     * @see Extension#$addDependency(Class)
+     * @see Extension#$dependsOn(Class)
      */
     public static void bootstrapAddDependency(Class<?> callerClass, List<Class<? extends Extension>> dependencies) {
         Loader.forBootstrapAccess(callerClass).addStaticDependency(dependencies);

@@ -36,7 +36,7 @@ import app.packed.component.Wirelet;
 import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
-import packed.internal.inject.classscan.InstantiatorBuilder;
+import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -45,13 +45,14 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver INSTALL_DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, PackedComponentDriver.Option.constantSource());
-    
+    public static final BindableComponentDriver INSTALL_DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+            PackedComponentDriver.Option.constantSource());
+
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
     public static final BindableComponentDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
             PackedComponentDriver.Option.statelessSource());
-    
+
     // Holds ExtensionModel for extensions, source for sourced components
     public final Object data;
 
@@ -61,7 +62,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
 
     @Nullable
     public final Wirelet wirelet = null;
-    
+
     PackedComponentDriver(Meta meta, Object data) {
         this.meta = requireNonNull(meta);
         this.data = data;
@@ -128,10 +129,10 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         // AttributeProvide could make sense... And then some way to say retain this info at runtime...
         // But maybe this is sidecars instead???
 
-        InstantiatorBuilder ib = InstantiatorBuilder.of(caller, driverType, ComponentSetup.class);
-        ib.addKey(ComponentConfigurationContext.class, 0);
-        MethodHandle mh = ib.build();
-        return new Meta(type, mh, modifiers);
+        Infuser infuser = Infuser.build(caller, c -> c.expose(ComponentConfigurationContext.class).adapt(), ComponentSetup.class);
+        MethodHandle constructor = infuser.findConstructorFor(driverType);
+        
+        return new Meta(type, constructor, modifiers);
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
@@ -250,13 +251,14 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         /** {@inheritDoc} */
         @Override
         public ComponentDriver<C> bindFunction(Object function) {
-            throw new UnsupportedOperationException(); 
+            throw new UnsupportedOperationException();
         }
     }
 
     enum Type {
         CLASS, FACTORY, INSTANCE, OTHER;
     }
+
     /**
      * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
      *          which would prohibit subclassing except by explicitly permitted types.
@@ -326,6 +328,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
         // at expose funktionaliteten.
     }
+
     /** {@inheritDoc} */
     @Override
     public ComponentDriverDescriptor descriptor() {

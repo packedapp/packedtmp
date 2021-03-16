@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Executable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 
 import app.packed.base.Key;
@@ -63,6 +64,10 @@ public final class MethodHandleBuilder {
     public <T> void addAnnoClassMapper(Class<? extends Annotation> annotationType, MethodHandle mh, int index) {
         annoations.put(annotationType, new AnnoClassEntry(annotationType, index, mh));
     }
+    
+    public void add(Infuser infuser) {
+        keys.putAll(infuser.entries);
+    }
 
     public void addKey(Class<?> key, int index) {
         addKey(Key.of(key), index);
@@ -101,6 +106,9 @@ public final class MethodHandleBuilder {
         return targetType;
     }
 
+    public static MethodHandleBuilder of(Class<?> returnType, List<Class<?>> parameterTypes) {
+        return of(MethodType.methodType(returnType, parameterTypes));
+    }
     public static MethodHandleBuilder of(Class<?> returnType, Class<?>... parameterTypes) {
         return of(MethodType.methodType(returnType, parameterTypes));
     }

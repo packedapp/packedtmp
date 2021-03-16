@@ -40,6 +40,7 @@ import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedInitializationContext;
+import packed.internal.inject.classscan.Infuser;
 import packed.internal.inject.classscan.InstantiatorBuilder;
 
 /**
@@ -233,6 +234,15 @@ public interface ArtifactDriver<A> {
         // We currently do not support @Provide ect... Don't know if we ever will
         // Create a new MethodHandle that can create artifact instances.
 
+        // Create an infuser (SomeExtension, Class)
+        Infuser infuser = Infuser.build(caller, c -> {
+            c.expose(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
+            c.expose(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
+            if (isGuest) {
+                c.expose(Host.class).transform(PackedInitializationContext.MH_CONTAINER);
+            }
+        }, PackedInitializationContext.class);
+
         InstantiatorBuilder ib = InstantiatorBuilder.of(caller, implementation, PackedInitializationContext.class);
         ib.addKey(Component.class, PackedInitializationContext.MH_COMPONENT, 0);
         ib.addKey(ServiceLocator.class, PackedInitializationContext.MH_SERVICES, 0);
@@ -243,8 +253,6 @@ public interface ArtifactDriver<A> {
         MethodHandle mh = ib.build();
         return new PackedArtifactDriver<>(isGuest, mh);
     }
-    
- 
 
     static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         return PackedArtifactDriver.of(caller, artifactType, mh);

@@ -24,38 +24,41 @@ import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.inject.classscan.InstantiatorBuilder;
+import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.MethodHandleUtil;
 
 /** A model of a subclass of {@link Extension.Subtension}. Not used outside of this package. */
 final class SubtensionModel {
-    
+
     /** Models of all subtensions. */
     private final static ClassValue<SubtensionModel> MODELS = new ClassValue<>() {
 
+        /** {@inheritDoc} */
         @Override
-        protected SubtensionModel computeValue(Class<?> type) {
+        protected SubtensionModel computeValue(Class<?> subtensionClass) {
             // Extension havr called extension.use(Extension.Subtension.class)
-            if (type == Extension.Subtension.class) {
+            if (subtensionClass == Extension.Subtension.class) {
                 throw new IllegalArgumentException("Cannot specify " + Extension.Subtension.class.getCanonicalName());
             }
-            Class<?> declaringClass = type.getDeclaringClass();
+            Class<?> declaringClass = subtensionClass.getDeclaringClass();
             if (declaringClass == null || !Extension.class.isAssignableFrom(declaringClass)) {
                 throw new InternalExtensionException(
-                        type + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
+                        subtensionClass + " must have an Extension subclass as its declaring class, declaring class was [declaringClass = " + declaringClass + "]");
             }
-            
+
             @SuppressWarnings("unchecked")
             Class<? extends Extension> extensionClass = (Class<? extends Extension>) declaringClass;
             ExtensionModel.of(extensionClass); // make sure the extension is valid
 
-            // Build a constructor
-            InstantiatorBuilder ib = InstantiatorBuilder.of(MethodHandles.lookup(), type, extensionClass, Class.class);
-            ib.addKey(extensionClass, 0);
-            ib.addKey(new Key<Class<? extends Extension>>() {}, 1);
+            // Create an infuser (SomeExtension, Class)
+            Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
+                c.expose(extensionClass).adapt(0); // The extension the Subtension belongs
+                c.expose(new Key<Class<? extends Extension>>() {}).adapt(1); // The requesting extension
+            }, extensionClass, Class.class);
 
-            MethodHandle constructor = ib.build(); // MethodHandle(SomeExtension,Class)SomeSubtension
-
+            // Find the subtension constructor using the infuser
+            MethodHandle constructor = infuser.findConstructorFor(subtensionClass);// MethodHandle(SomeExtension,Class)SomeSubtension
+            
             // We want to have the signature MethodHandle(Extension,Class)Subtension
             // so we can use invokeExact in newInstance method
             constructor = constructor.asType(constructor.type().changeParameterType(0, Extension.class));

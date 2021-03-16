@@ -30,6 +30,7 @@ import packed.internal.util.TypeUtil;
  *
  */
 // Den kunne vaere sjov at lave public...
+@Deprecated
 public final class InstantiatorBuilder {
 
     final Executable executable;
@@ -38,7 +39,7 @@ public final class InstantiatorBuilder {
 
     final ClassMemberAccessor oc;
 
-    private InstantiatorBuilder(ClassMemberAccessor oc, MethodHandleBuilder mh, Executable executable) {
+    InstantiatorBuilder(ClassMemberAccessor oc, MethodHandleBuilder mh, Executable executable) {
         this.oc = requireNonNull(oc);
         this.mh = mh;
         this.executable = requireNonNull(executable);
