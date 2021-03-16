@@ -24,14 +24,15 @@ import app.packed.hooks.AutoService;
 /**
  * Represents the arguments to a method main.
  */
-// Maaske skal den ikke vaere offentlig...
-// Problemet er at alle nu kan faa den injected...
-// CliWirelets.mainArgs(); import static CliWirelet.mainArgs...
 @AutoService
 public final class MainArgs {
 
-    private final String[] args = {};
+    private final String[] args;
+
     // Det gode ved declarativt er at
+    MainArgs(String... args) {
+        this.args = args;
+    }
 
     /**
      * Returns an array containing all arguments.
@@ -68,7 +69,7 @@ public final class MainArgs {
      */
     public static MainArgs of(String... args) {
         requireNonNull(args, "args is null");
-        throw new UnsupportedOperationException();
+        return new MainArgs(args);
     }
 }
 // Er ikke en service, men en extension type

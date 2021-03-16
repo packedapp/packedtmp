@@ -41,17 +41,12 @@ package app.packed.component;
 // Pod/Capsule/Bundle/ Kan godt lide det hedder noget med build
 
 // BuildTree / BuildSystem / 
-
+// @ActiveService(phase=Building)
 public interface BuildInfo {
 
-    // Root vs non-root build or system-build, vs non-system builds
-    /**
-     * A system build is a root build that builds a system
-     * 
-     * @return A system build is a root build that builds a system
-     */
-    default boolean isSystemBuild() {
-        return false;
+    // Whether or not we are building????
+    default boolean isActive() {
+        return true;
     }
 
     // Maaske vi hellere vil tilfoeje det lokalt???
@@ -64,9 +59,13 @@ public interface BuildInfo {
     // Instead of lets say the extension?
     // void addError(ErrorMessage message);
 
-    // Whether or not we are building????
-    default boolean isActive() {
-        return true;
+    /**
+     * A root build is responsible for creating the root component of a system.
+     * 
+     * @return A system build is a root build that builds a system
+     */
+    default boolean isRoot() {
+        return false;
     }
 
     /**

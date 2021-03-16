@@ -24,6 +24,7 @@ import packed.internal.component.wirelet.BaseWirelet;
 import packed.internal.component.wirelet.BaseWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
 import packed.internal.component.wirelet.WireletPreModel;
+import packed.internal.util.StackWalkerUtil;
 
 /**
  * Wirelets are an umbrella term for small pieces of glue code, that is used to wire together the components that make
@@ -54,12 +55,18 @@ import packed.internal.component.wirelet.WireletPreModel;
 // Maaske soerger containeren for at videre delegere extension wirelets...
 // Saa man skal stadig haves Extension??? IDK
 // Giver mere mening med at det skal vaere det intermediate element.
+
+// Hvis vi kraever at alle WireletHandle
+// kun kan tage final eller sealed wirelets som parameter
+// Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret 
 public abstract class Wirelet {
 
-    /** A stack walker used by various methods. */
-    private static final StackWalker STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
-
     /**
+     * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
+     * operation. If performing either operation throws an exception, it is relayed to the caller of the composed operation.
+     * If performing this operation throws an exception, the {@code after} operation will not be performed.
+     * 
+     * Returns a new wirelet that acts as first this wirelet is processed then the specified wirelet
      * 
      * @param wirelet
      *            the wirelet to process after this wirelet
@@ -67,7 +74,7 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
-        return Wirelet.combine(this, wirelet);
+        return WireletList.of(this, wirelet);
     }
 
     /**
@@ -77,16 +84,16 @@ public abstract class Wirelet {
      * @return the combined wirelet
      */
     public final Wirelet andThen(Wirelet... wirelets) {
-        return Wirelet.combine(this, wirelets);
+        requireNonNull(wirelets, "wirelets is null");
+        if (wirelets.length == 0) {
+            return this;
+        }
+        return WireletList.of(this, wirelets);
     }
 
     // BeforeThis? PrecededBy
-    public final Wirelet beforeThis(Wirelet wirelet) {
-        return Wirelet.combine(wirelet, this);
-    }
-
     public final Wirelet beforeThis(Wirelet... wirelets) {
-        return Wirelet.combine(wirelets, this);
+        return WireletList.of(wirelets, this);
     }
 
 //    protected ComponentSystemType scope() {
@@ -115,7 +122,7 @@ public abstract class Wirelet {
     // Can only be a part of one aggregate type...
     // And can only be injected as an aggregate type
     protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
-        WireletPreModel.stackBy(STACK_WALKER.getCallerClass(), wireletType);
+        WireletPreModel.stackBy(StackWalkerUtil.SW.getCallerClass(), wireletType);
     }
 
     /**
@@ -133,7 +140,13 @@ public abstract class Wirelet {
      * bruge @Provide naar vi linker assemblies...
      */
     protected static final void $buildtimeOnly() {
-        WireletPreModel.buildtimeOnly(STACK_WALKER.getCallerClass());
+        WireletPreModel.buildtimeOnly(StackWalkerUtil.SW.getCallerClass());
+    }
+
+    protected static final void $needsRealm() {
+        // f.x provide(Doo.class);
+        // Hvad hvis vi koere composer.lookup()...
+        // Saa laver vi jo saadan set en realm...
     }
 
     protected static final void $requireExtension(Class<? extends Extension> extensionClass) {
@@ -141,56 +154,12 @@ public abstract class Wirelet {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Combines an array or wirelets
-     * 
-     * @param wirelets
-     *            the wirelets to combine
-     * @return a combined {@code Wirelet}
-     */
-    public static Wirelet combine(Wirelet... wirelets) {
-        return WireletList.of(wirelets);
-    }
-
-    /**
-     * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
-     * operation. If performing either operation throws an exception, it is relayed to the caller of the composed operation.
-     * If performing this operation throws an exception, the {@code after} operation will not be performed.
-     *
-     * @param w1
-     *            the operation to perform after this operation
-     * 
-     * @param w2
-     *            the operation to perform after this operation
-     * @return a combined {@code Wirelet} that performs in sequence this operation followed by the {@code after} operation
-     */
-    public static Wirelet combine(Wirelet w1, Wirelet w2) {
-        return WireletList.of(w1, w2);
-    }
-    // syntes andThen()... before()
-
-    /**
-     * Creates a wiring operation by composing a sequence of zero or more wiring operations.
-     * 
-     * @param first
-     *            stuff
-     * @param last
-     *            stuff
-     * @return stuff
-     */
-    public static Wirelet combine(Wirelet first, Wirelet[] last) {
-        if (last.length == 0) {
-            return first;
-        }
-        return WireletList.of(first, last);
-    }
-
-    public static Wirelet combine(Wirelet[] first, Wirelet... last) {
-        return WireletList.of(last, first);
-    }
-
-    public static Wirelet extractable(Wirelet wirelet) {
-        throw new UnsupportedOperationException();
+    /** Internal use only. */
+    protected static final void $targetImage() {
+        // Only on images
+        // Altsaa kan end-useren overhoved bruge den??
+        // Det tror jeg ikke..
+        // Maaske har vi en internalWirelet som vi kan overskrive...
     }
 
     // Altsaa den ville vaere god for MainArgsWirelet...
@@ -198,18 +167,8 @@ public abstract class Wirelet {
     // Vi kan nemlig ikke rigtig wrappe den.
     // Da det ikke er en statisk metode.
 
-    /**
-     * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually receive it
-     * using {@link UseWirelet}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
-     * However, by wrapping the wire
-     * 
-     * @param wirelet
-     *            the wirelet to wrap
-     * @return a new wrapped wirelet
-     */
-    // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
-    public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
-        return new BaseWirelet.IgnoreUnhandled(combine(wirelet));
+    public static Wirelet extractable(Wirelet wirelet) {
+        throw new UnsupportedOperationException();
     }
 
 //    /**
@@ -225,12 +184,26 @@ public abstract class Wirelet {
 //        return wirelet;
 //    }
 
+    /**
+     * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually consume it
+     * using {@link WireletHandle}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
+     * However, by wrapping the wire
+     * 
+     * @param wirelet
+     *            the wirelet to wrap
+     * @return a new wrapped wirelet
+     */
+    // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
+    public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
+        return new BaseWirelet.IgnoreUnhandled(of(wirelet));
+    }
+
     // will invoke the specified runnable if the wirelet cannot be processed
     // could be Wirelet.orElseRun(Runnable)...
     // orElseIgnore();
     // andThen()
     public static Wirelet ignoreUnhandled(Wirelet wirelet, Runnable orElseRun) {
-        return new BaseWirelet.IgnoreUnhandled(combine(wirelet));
+        return new BaseWirelet.IgnoreUnhandled(of(wirelet));
     }
 
     static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
@@ -257,4 +230,16 @@ public abstract class Wirelet {
     public static Wirelet named(String name) {
         return new SetComponentNameWirelet(name);
     }
+
+    /**
+     * Combines an array or wirelets
+     * 
+     * @param wirelets
+     *            the wirelets to combine
+     * @return a combined {@code Wirelet}
+     */
+    public static Wirelet of(Wirelet... wirelets) {
+        return WireletList.of(wirelets);
+    }
+
 }

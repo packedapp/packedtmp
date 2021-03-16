@@ -227,7 +227,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ArtifactDriver<A> with(Wirelet... wirelets) {
-        Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
+        Wirelet w = wirelet == null ? Wirelet.of(wirelets) : wirelet.andThen(wirelets);
         return new PackedArtifactDriver<>(isStateful, mhNewShell, w);
     }
 

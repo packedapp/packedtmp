@@ -30,9 +30,6 @@ import app.packed.component.Wirelet;
 /**
  * An immutable list of wirelets. Typically used for combining multiple wirelets into one.
  * 
- * @see Wirelet#combine(Wirelet...)
- * @see Wirelet#combine(Wirelet, Wirelet)
- * @see Wirelet#combine(Wirelet, Wirelet[])
  */
 // See hvor den bliver brugt fra ServiceExtension...
 // Maaske den skal vaere public alligevel...

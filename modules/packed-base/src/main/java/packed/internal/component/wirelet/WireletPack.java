@@ -139,7 +139,7 @@ public final class WireletPack {
 
     @Nullable
     public static WireletPack ofRoot(PackedArtifactDriver<?> pac, PackedComponentDriver<?> pcd, Wirelet... wirelets) {
-        Wirelet w = Wirelet.combine(wirelets);
+        Wirelet w = Wirelet.of(wirelets);
         if (pac.wirelet != null) {
             w = pac.wirelet.andThen(w);
         }

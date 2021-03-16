@@ -61,7 +61,7 @@ final class OldMain {
 
     OldMain add(Wirelet wirelet) {
         // vi laver copy of.. Saa kan Main altid blive sharet.
-        return new OldMain(Wirelet.combine(this.wirelet, wirelet));
+        return new OldMain(this.wirelet.andThen(wirelet));
     }
 
     void execute() {
@@ -78,7 +78,7 @@ final class OldMain {
     }
 
     public void execute(Assembly<?> bundle, Wirelet... wirelets) {
-        Host.execute(bundle, Wirelet.combine(wirelet, wirelets));
+        Host.execute(bundle, wirelet.andThen(wirelets));
     }
 
     Image<Void> image() {

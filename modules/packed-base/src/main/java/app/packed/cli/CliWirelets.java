@@ -11,7 +11,7 @@ public class CliWirelets {
     }
     
     static final class MainArgsWirelet extends Wirelet {
-        MainArgs args;
+        final MainArgs args;
 
         MainArgsWirelet(MainArgs args) {
             this.args = requireNonNull(args);
