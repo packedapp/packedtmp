@@ -49,7 +49,7 @@ public final class RuntimeComponentModel {
     }
 
     public boolean isContainer() {
-        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CONTAINER);
+        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.CONTAINEROLD);
     }
 
     static RuntimeComponentModel of(ComponentSetup context) {

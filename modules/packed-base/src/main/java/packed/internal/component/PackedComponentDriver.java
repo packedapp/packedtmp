@@ -271,7 +271,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
          * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
          * 
          * @return stuff
-         * @see ComponentModifier#BUNDLE_ROOT
+         * @see ComponentModifier#CONTAINER
          */
         static Option bundle() {
             return PackedComponentDriver.OptionImpl.BUNDLE;
@@ -307,7 +307,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
 
         static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.BUNDLE_ROOT), "This component can only be wired to a container");
+            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
         }
 
         // The parent + the driver

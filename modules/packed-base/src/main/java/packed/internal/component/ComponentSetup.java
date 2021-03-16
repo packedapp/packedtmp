@@ -64,15 +64,15 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Nullable
     public final WireletPack wirelets;
 
-    /** The modifiers of this configuration. */
+    /** The modifiers of this component. */
     final int modifiers;
 
-    /* *************** Builds **************** */
+    /* *************** Setup **************** */
 
     /** The region this component is a part of. */
     public final BuildtimeRegion region;
 
-    /** The realm this component is a part of. */
+    /** The realm this component belongs to. */
     public final RealmSetup realm;
 
     /** The container setup if this component represents an container, otherwise null. */
@@ -120,26 +120,27 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         this.build = requireNonNull(build);
         this.wirelets = wirelets;
+
         int mod = driver.modifiers;
         if (parent == null) {
             this.region = new BuildtimeRegion(); // Root always needs a nodestore
 
             mod = mod | build.modifiers;
             // mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
-            if (build.modifiers().isContainer()) {
+            if (build.modifiers().isContainerOld()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
-                mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINER);
+                mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINEROLD);
             }
         } else {
-            this.region = driver.modifiers().isContainer() ? new BuildtimeRegion() : parent.region;
+            this.region = driver.modifiers().isContainerOld() ? new BuildtimeRegion() : parent.region;
         }
         this.modifiers = mod;
 
         // Setup Realm
         this.realm = requireNonNull(realm);
 
-        // Setup Container
-        if (modifiers().isBundle()) {
+        // Setup any container
+        if (modifiers().isContainer()) {
             this.memberOfContainer = this.container = new ContainerSetup(this);
         } else {
             this.container = null;
@@ -147,11 +148,11 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         // Setup Guest
-        if (modifiers().isContainer()) {
+        if (modifiers().isContainerOld()) {
             region.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
-        // Setup Source
+        // Setup any source
         if (modifiers().isSource()) {
             this.source = SourceClassSetup.create(this, driver);
         } else {
@@ -167,17 +168,17 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * 
      * @param parent
      *            the parent (container) of the extension
-     * @param model
+     * @param extensionModel
      *            the extension model
      */
-    public ComponentSetup(ComponentSetup parent, ExtensionModel model) {
+    public ComponentSetup(ComponentSetup parent, ExtensionModel extensionModel) {
         super(parent);
         this.build = parent.build;
         this.container = null;
         this.memberOfContainer = parent.container;
-        this.extension = new ExtensionSetup(this, model);
+        this.extension = new ExtensionSetup(this, extensionModel);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = new RealmSetup(model.extensionClass());
+        this.realm = new RealmSetup(extensionModel.extensionClass());
         this.region = parent.region;
         this.source = null;
         this.wirelets = null;
@@ -192,35 +193,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     public Component adaptToComponent() {
         return new ComponentAdaptor(this);
     }
-
-//    /**
-//     * Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-//     * not located on any subclasses of {@link Extension} or any class that implements
-//     * <p>
-//     * Invoking this method typically takes in the order of 1-2 microseconds.
-//     * <p>
-//     * If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-//     * {@link ConfigSite#UNKNOWN}.
-//     * 
-//     * @param operation
-//     *            the operation
-//     * @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-//     * @see StackWalker
-//     */
-//    // TODO add stuff about we also ignore non-concrete container sources...
-//    ConfigSite captureStackFrame(String operation) {
-//        // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-//        // to the extension class in order to simplify the filtering mechanism.
-//
-//        // Vi kan spoerge "if context.captureStackFrame() ...."
-//
-//        if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-//            return ConfigSite.UNKNOWN;
-//        }
-//        Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-//        return ConfigSite.UNKNOWN;
-//        //return sf.isPresent() ? Config configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-//    }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
@@ -266,27 +238,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
         return dam;
     }
-
-//    /**
-//     * @param frame
-//     *            the frame to filter
-//     * @return whether or not to filter the frame
-//     */
-//    private boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-//        Class<?> c = frame.getDeclaringClass();
-//        // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-//        // Syntes bare vi filtrer app.packed.base modulet fra...
-//        // Kan vi ikke checke om imod vores container source.
-//
-//        // ((PackedExtensionContext) context()).container().source
-//        // Nah hvis man koere fra config er det jo fint....
-//        // Fra config() paa en bundle er det fint...
-//        // Fra alt andet ikke...
-//
-//        // Dvs ourContainerSource
-//        return Extension.class.isAssignableFrom(c)
-//                || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
-//    }
 
     /** {@inheritDoc} */
     @Override
@@ -348,13 +299,13 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /**
      * {@inheritDoc}
      * 
-     * @apiNote Previously this method returned the specified bundle. However, to encourage people to configure the bundle
-     *          before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have
-     *          void return type. Maybe in the future LinkedBundle<- (LinkableContainerSource)
+     * @apiNote Previously this method returned the specified assembly. However, to encourage people to configure the
+     *          assembly before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we
+     *          now have void return type. Maybe in the future we will introduce some kind of LinkedAssembly
      * 
      * @implNote We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent has been
      *           fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite loop
-     *           situations, for example, if a bundle recursively links itself which fails by throwing
+     *           situations, for example, if a assembly recursively links itself which fails by throwing
      *           java.lang.StackOverflowError instead of an infinite loop.
      */
     @Override
@@ -721,5 +672,54 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
             }
         }
     }
-
 }
+
+///**
+//* @param frame
+//*            the frame to filter
+//* @return whether or not to filter the frame
+//*/
+//private boolean captureStackFrameIgnoreFilter(StackFrame frame) {
+//  Class<?> c = frame.getDeclaringClass();
+//  // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+//  // Syntes bare vi filtrer app.packed.base modulet fra...
+//  // Kan vi ikke checke om imod vores container source.
+//
+//  // ((PackedExtensionContext) context()).container().source
+//  // Nah hvis man koere fra config er det jo fint....
+//  // Fra config() paa en bundle er det fint...
+//  // Fra alt andet ikke...
+//
+//  // Dvs ourContainerSource
+//  return Extension.class.isAssignableFrom(c)
+//          || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
+//}
+
+///**
+//* Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
+//* not located on any subclasses of {@link Extension} or any class that implements
+//* <p>
+//* Invoking this method typically takes in the order of 1-2 microseconds.
+//* <p>
+//* If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
+//* {@link ConfigSite#UNKNOWN}.
+//* 
+//* @param operation
+//*            the operation
+//* @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
+//* @see StackWalker
+//*/
+//// TODO add stuff about we also ignore non-concrete container sources...
+//ConfigSite captureStackFrame(String operation) {
+//  // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
+//  // to the extension class in order to simplify the filtering mechanism.
+//
+//  // Vi kan spoerge "if context.captureStackFrame() ...."
+//
+//  if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
+//      return ConfigSite.UNKNOWN;
+//  }
+//  Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
+//  return ConfigSite.UNKNOWN;
+//  //return sf.isPresent() ? Config configSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
+//}

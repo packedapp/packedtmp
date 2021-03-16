@@ -58,7 +58,7 @@ public enum ComponentModifier {
      * <li>Are never sourced???.</li>
      * </ul>
      */
-    BUNDLE_ROOT,
+    CONTAINER,
 
     /**
      * Indicates that the component holds an image.
@@ -130,7 +130,7 @@ public enum ComponentModifier {
      * the type of the extension the component represents.</li>
      * </ul>
      */
-    CONTAINER,
+    CONTAINEROLD,
 
     /**
      * Indicates that the components wraps a single abstract method (SAM).

@@ -82,7 +82,7 @@ public interface ComponentConfigurationContext {
      * @param extensionClass
      * @return the extension
      * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#BUNDLE_ROOT} modifier
+     *             if the component does not have the {@link ComponentModifier#CONTAINER} modifier
      * @see ContainerConfiguration#use(Class)
      */
     <T extends Extension> T containerUse(Class<T> extensionClass);

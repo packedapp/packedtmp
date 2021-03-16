@@ -35,12 +35,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     boolean contains(ComponentModifier modifier);
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE_ROOT} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */
-    default boolean isBundle() {
-        return contains(ComponentModifier.BUNDLE_ROOT);
+    default boolean isContainer() {
+        return contains(ComponentModifier.CONTAINER);
     }
 
     /**
@@ -61,12 +61,12 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     // boolean containsAll(Collection<ComponentModifier> c);
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINEROLD} modifier.
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */
-    default boolean isContainer() {
-        return contains(ComponentModifier.CONTAINER);
+    default boolean isContainerOld() {
+        return contains(ComponentModifier.CONTAINEROLD);
     }
 
     /**
@@ -79,7 +79,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINEROLD} modifier.
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */
@@ -97,7 +97,7 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#BUNDLE_ROOT} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
      */

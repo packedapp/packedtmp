@@ -131,7 +131,7 @@ public final class WireletPack {
 
     @Nullable
     public static WireletPack ofChild(@Nullable WireletPack parent, PackedComponentDriver<?> driver, Wirelet... wirelets) {
-        if (driver.modifiers().isBundle()) {
+        if (driver.modifiers().isContainer()) {
             return create(parent, wirelets);
         }
         return null;
@@ -143,7 +143,7 @@ public final class WireletPack {
         if (pac.wirelet != null) {
             w = pac.wirelet.andThen(w);
         }
-        if (pcd.modifiers().isBundle()) {
+        if (pcd.modifiers().isContainer()) {
             return create(null, wirelets);
         }
         

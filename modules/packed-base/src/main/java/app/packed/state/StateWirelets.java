@@ -29,7 +29,7 @@ import app.packed.state.Host.StopOption;
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link App#start(Assembly, Wirelet...)}.
  * <p>
- * All wirelets on this class requires the {@link ComponentModifier#CONTAINER} modifier on the component being wired.
+ * All wirelets on this class requires the {@link ComponentModifier#CONTAINEROLD} modifier on the component being wired.
  */
 
 //Runables -> InVirtualThread

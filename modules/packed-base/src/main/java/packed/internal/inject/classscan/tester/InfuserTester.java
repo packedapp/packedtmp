@@ -29,7 +29,7 @@ public class InfuserTester {
 
         MethodHandle mh = i.findConstructorFor(InfuserTester.class);
         InfuserTester it = (InfuserTester) mh.invokeExact("sdf", new Secret());
-        System.out.println("Bte ");
+        System.out.println("Bte " + it);
     }
 
     public static class Secret {

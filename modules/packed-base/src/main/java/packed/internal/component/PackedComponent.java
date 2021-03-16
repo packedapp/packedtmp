@@ -104,7 +104,7 @@ public final class PackedComponent implements Component {
         // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
 
         // Vi create a new region is its the root, or if the component is a guest
-        if (parent == null || compBuild.modifiers().isContainer()) {
+        if (parent == null || compBuild.modifiers().isContainerOld()) {
             this.region = compBuild.region.newRegion(pic, this);
         } else {
             this.region = parent.region;

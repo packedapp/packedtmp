@@ -71,7 +71,7 @@ public final class PackedInitializationContext {
     }
 
     public Host container() {
-        if (component.hasModifier(ComponentModifier.CONTAINER)) {
+        if (component.hasModifier(ComponentModifier.CONTAINEROLD)) {
             return component.region.container();
         }
         throw new UnsupportedOperationException("This component does not have a container");
@@ -125,7 +125,7 @@ public final class PackedInitializationContext {
 
         // TODO initialize
 
-        if (root.modifiers().isContainer()) {
+        if (root.modifiers().isContainerOld()) {
             pic.component.region.container().onInitialized(root, pic);
         }
         return pic; // don't know do we want to gc PIC at fast as possible

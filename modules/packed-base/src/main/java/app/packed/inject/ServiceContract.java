@@ -250,7 +250,7 @@ public final class ServiceContract extends Contract {
 
     public static ServiceContract of(ArtifactDriver<?> driver, Assembly<?> assembly) {
         Component c = driver.analyze(assembly);
-        if (!c.modifiers().isBundle()) {
+        if (!c.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
         }
         ComponentSetup compConf = ComponentSetup.unadapt(null, c);
