@@ -81,11 +81,11 @@ public class ServiceExtension extends Extension {
     /**
      * Create a new service extension.
      * 
-     * @param configuration
-     *            an extension configuration object
+     * @param setup
+     *            an extension setup object
      */
-    /* package-private */ ServiceExtension(ExtensionConfiguration configuration) {
-        this.services = ((ExtensionSetup) configuration).container().newServiceManagerFromServiceExtension();
+    /* package-private */ ServiceExtension(ExtensionSetup setup) {
+        this.services = setup.container().newServiceManagerFromServiceExtension();
     }
 
     /**

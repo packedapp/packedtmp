@@ -42,6 +42,10 @@ public class Infuser {
         return parameterTypes.size();
     }
 
+    public MethodHandle findAdaptedConstructor(Class<?> type, Class<?> adaptTo) {
+        MethodHandle mh = findConstructorFor(type);
+        return mh.asType(mh.type().changeReturnType(adaptTo));
+    }
     public MethodHandle findConstructorFor(Class<?> type) {
         TypeUtil.checkClassIsInstantiable(type);
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);

@@ -58,10 +58,7 @@ final class SubtensionModel {
             }, Extension.class, Class.class);
 
             // Find a valid constructor for the subtension
-            MethodHandle constructor = infuser.findConstructorFor(subtensionClass);// (Extension,Class)SomeSubtension
-
-            // We want to have the signature (Extension,Class)Subtension, so we can use invokeExact from #newInstance()
-            constructor = constructor.asType(constructor.type().changeReturnType(Subtension.class));
+            MethodHandle constructor = infuser.findAdaptedConstructor(subtensionClass, Subtension.class);// (Extension,Class)Subtension
 
             return new SubtensionModel(extensionClass, constructor);
         }

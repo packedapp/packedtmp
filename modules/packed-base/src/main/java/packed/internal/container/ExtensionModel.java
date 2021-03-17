@@ -20,9 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,15 +31,14 @@ import java.util.stream.Collectors;
 
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
-import app.packed.component.UseWirelet;
 import app.packed.container.ConnectExtensions;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.PackedAttributeModel;
-import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.inject.classscan.Infuser;
 import packed.internal.inject.classscan.MethodHandleBuilder;
 import packed.internal.util.StringFormatter;
 
@@ -337,11 +334,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.loader = requireNonNull(loader);
         }
 
-        private void addExtensionContextElements(MethodHandleBuilder builder, int index) {
-            builder.addKey(ExtensionConfiguration.class, index);
-            builder.addAnnoClassMapper(UseWirelet.class, ExtensionSetup.MH_FIND_WIRELET, index);
-        }
-
         /**
          * Builds and returns an extension model.
          * 
@@ -364,7 +356,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, ExtensionSetup.class, Extension.class);
 
                 // From the child's extension context
-                addExtensionContextElements(iss, 1);
+                iss.addKey(ExtensionConfiguration.class, 1);
 
                 // The child's extension instance
                 iss.addKey(extensionClass, 2); // should perform an implicit cast
@@ -375,19 +367,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         private ClassMemberAccessor scanClass() {
-            MethodHandleBuilder spec = MethodHandleBuilder.of(Extension.class, ExtensionSetup.class);
-            addExtensionContextElements(spec, 0);
             ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
 
-            // Find constructor and create method handle
-            Constructor<?> constructor = FindInjectableConstructor.findConstructor(extensionClass, s -> new InternalExtensionException(s));
-            if (Modifier.isPublic(constructor.getModifiers()) && Modifier.isPublic(extensionClass.getModifiers())) {
-                throw new InternalExtensionException(
-                        "Extensions that are public classes, must have a non-public constructor. As end-users should not be able to instantiate them explicitly, extension = "
-                                + extensionClass);
-            }
-            this.mhConstructor = cp.resolve(spec, constructor);
+            Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
+                c.provide(ExtensionConfiguration.class).adapt();
+                c.provideHidden(ExtensionSetup.class).adapt();
+            }, ExtensionSetup.class);
 
+            this.mhConstructor = infuser.findAdaptedConstructor(extensionClass, Extension.class);
+            
+            
             cp.findMethods(m -> {
                 ConnectExtensions ce = m.getAnnotation(ConnectExtensions.class);
                 if (ce != null) {
