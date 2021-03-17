@@ -113,8 +113,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
-            @Nullable WireletPack wirelets) {
+    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, @Nullable WireletPack wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
 
@@ -318,7 +317,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
-        ComponentSetup parent = extension == null ? this : /* (Container) */ treeParent;
+        ComponentSetup parent = extension == null ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create the new component and a new realm
         ComponentSetup compConf = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, parent, wp);
@@ -354,14 +353,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
         return PackedTreePath.of(this); // show we weak intern them????
-    }
-
-    public <W extends Wirelet> Optional<W> receiveWirelet(Class<W> type) {
-        if (wirelets == null) {
-            return Optional.empty();
-        }
-        W w = wirelets.receiveLast(type);
-        return Optional.ofNullable(w);
     }
 
     /** {@inheritDoc} */
@@ -560,10 +551,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) memberOfContainer.getServiceManagerOrCreate().exports().export(source.service
-        /*
-         * , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE)
-         */);
+        return (ExportedServiceConfiguration<T>) memberOfContainer.getServiceManagerOrCreate().exports().export(source.service);
     }
 
     @Override

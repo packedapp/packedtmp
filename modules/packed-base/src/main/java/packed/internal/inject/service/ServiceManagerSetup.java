@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
@@ -86,7 +85,6 @@ public final class ServiceManagerSetup {
     @Nullable
     public Predicate<? super Service> anchorFilter;
 
-    
     /**
      * @param container
      *            the container this service manager is a part of
@@ -196,7 +194,7 @@ public final class ServiceManagerSetup {
         }
     }
 
-    public void provideAll(PackedInjector injector /*, ConfigSite configSite */) {
+    public void provideAll(PackedInjector injector /* , ConfigSite configSite */) {
         // We add this immediately to resolved services, as their keys are immutable.
 
         ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, injector);
@@ -242,12 +240,9 @@ public final class ServiceManagerSetup {
             for (ContainerSetup c : container.children) {
                 ServiceManagerSetup child = c.getServiceManager();
 
-                WireletPack wp = c.component.wirelets;
-                List<Service1stPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service1stPassWirelet.class);
+                WireletPack wirelets = c.component.wirelets;
                 if (wirelets != null) {
-                    for (Service1stPassWirelet f : wirelets) {
-                        f.process(child);
-                    }
+                    wirelets.handleOf(Service1stPassWirelet.class).forEach(w -> w.process(child));
                 }
 
                 if (child.exports != null) {
@@ -255,7 +250,6 @@ public final class ServiceManagerSetup {
                         resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }
                 }
-
             }
         }
 
@@ -297,18 +291,13 @@ public final class ServiceManagerSetup {
         }
 
         System.out.println("HMMM " + map);
-        WireletPack wp = container.component.wirelets;
-        List<Service2ndPassWirelet> wirelets = wp == null ? null : wp.receiveAll(Service2ndPassWirelet.class);
-        System.out.println("WWW" + wp);
-
-        // Process wirelets
+        WireletPack wirelets = container.component.wirelets;
+        
         if (wirelets != null) {
-
-            for (Service2ndPassWirelet f : wirelets) {
-                f.process(parent, this, map);
-            }
+            // For now we just ignore the wirelets
+            wirelets.handleOf(Service2ndPassWirelet.class).forEach(w -> w.process(parent, this, map));
         }
-
+        
         // If Processere wirelets...
 
         ServiceManagerRequirementsSetup srm = dependencies;

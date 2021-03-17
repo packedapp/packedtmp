@@ -5,7 +5,10 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
 import java.util.function.Consumer;
+
+import packed.internal.component.wirelet.WireletPack;
 
 // Det gode ved den her er at den jo samtidig fungere som
 // en optional faetter
@@ -17,39 +20,45 @@ import java.util.function.Consumer;
 // ComponentSetup
 // Component
 // WireletReceiver
+/**
+ * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
+ * can do what you want
+ * 
+ * @implNote the current implementation will iterate through every single wirelet of a component for every operation. As
+ *           we expect the number of wirelets for a single component to be small in practice. This is unlikely to effect
+ *           performance.
+ */
 public /* sealed */ interface WireletHandle<T extends Wirelet> {
 
     void forEach(Consumer<? super T> action);
 
     /**
-     * Returns whether or not this handle contains any wirelets
+     * Returns whether or not this handle contains any unconsumed matching wirelets. Consuming each and every matching
+     * wirelet.
+     * <p>
      * 
-     * @return
+     * @return true if at least one matching wirelet, false otherwise
+     * @throws IllegalStateException
+     *             if this handler has been handled
      */
-    default boolean isEmpty() {
-        return size() == 0;
-    }
-
-    WireletHandle<T> peek();
-
-    /**
-     * Returns the number of wirelets that this handle contain.
-     * 
-     * @return
-     */
-    int size();
+    boolean isEmpty(); // hasMatch
 
     // forEach
     // will consume any matching wirelet and return the last one...
-    T last(); // one() maybe. Emphasize at man consumer en...
+    Optional<T> last(); // one() maybe. Emphasize at man consumer en...
 
-    static <T extends Wirelet> WireletHandle<T> of() {
-        throw new UnsupportedOperationException();
+    @SafeVarargs
+    static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
+        return WireletPack.handleOf(wireletClass, wirelets);
     }
+}
 
-    static <T extends Wirelet> WireletHandle<T> of(T wirelet) {
-        throw new UnsupportedOperationException();
-    }
+interface Zandbox<T extends Wirelet> {
+
+    // peekForEach
+    // peekIsEmpty
+    WireletHandle<T> peek();
+
 }
 
 class ZMyWirelet extends Wirelet {

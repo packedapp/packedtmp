@@ -18,10 +18,12 @@ package packed.internal.component.wirelet;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletHandle;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponentDriver;
@@ -53,39 +55,17 @@ public final class WireletPack {
         }
     }
 
+    public <T extends Wirelet> WireletHandle<T> handleOf(Class<? extends T> wireletClass) {
+        return new HandleImpl<>(wireletClass);
+    }
+
     // That name wirelet.. should only be used by the top-container....
     @Nullable
     public String nameWirelet() {
         return name;
     }
 
-    @SuppressWarnings("unchecked")
-    public <W extends Wirelet> List<W> receiveAll(Class<W> type) {
-        ArrayList<W> result = null;
-        for (Ent e : list) {
-            if (type.isAssignableFrom(e.wirelet.getClass())) {
-                e.isReceived = true;
-                if (result == null) {
-                    result = new ArrayList<>(1);
-                }
-                result.add((W) e.wirelet);
-            }
-        }
-        return result == null ? List.of() : List.copyOf(result);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Nullable
-    public <W extends Wirelet> W receiveLast(Class<W> type) {
-        for (int i = list.size() - 1; i >= 0; i--) {
-            Ent e = list.get(i);
-            if (type.isAssignableFrom(e.wirelet.getClass())) {
-                e.isReceived = true;
-                return (W) e.wirelet;
-            }
-        }
-        return null;
-    }
+    // //Is Initializaing in one -> NotAnImage and Not analyzing...
 
     /**
      * Creates a new wirelet pack or returns existing if the array of wirelets is empty.
@@ -109,7 +89,12 @@ public final class WireletPack {
         return wc;
     }
 
-    // //Is Initializaing in one -> NotAnImage and Not analyzing...
+    public static <T extends Wirelet> WireletHandle<T> handleOf(Class<? extends T> wireletClass, Wirelet... wirelets) {
+        if (wirelets.length < 1) {
+            throw new IllegalArgumentException("Must specify at least 1 wirelet.");
+        }
+        return create(null, wirelets).handleOf(wireletClass);
+    }
 
     @Nullable
     public static WireletPack ofChild(@Nullable WireletPack parent, PackedComponentDriver<?> driver, Wirelet... wirelets) {
@@ -140,6 +125,54 @@ public final class WireletPack {
 
         Ent(Wirelet wirelet) {
             this.wirelet = requireNonNull(wirelet);
+        }
+    }
+
+    class HandleImpl<T extends Wirelet> implements WireletHandle<T> {
+
+        private final Class<? extends T> wireletClass;
+
+        HandleImpl(Class<? extends T> wireletClass) {
+            this.wireletClass = requireNonNull(wireletClass, "wireletClass is null");
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void forEach(Consumer<? super T> action) {
+            requireNonNull(action, "action is null");
+            for (Ent e : list) {
+                if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
+                    action.accept((T) e.wirelet);
+                    e.isReceived = true;
+                }
+            }
+        }
+
+        @Override
+        public boolean isEmpty() {
+            boolean result = false;
+            for (Ent e : list) {
+                if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
+                    result = true;
+                    e.isReceived = true;
+                }
+            }
+            return result;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public Optional<T> last() {
+            T result = null;
+            for (Ent e : list) {
+                if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
+                    if (result == null) {
+                        result = (T) e.wirelet;
+                    }
+                    e.isReceived = true;
+                }
+            }
+            return Optional.ofNullable(result);
         }
     }
 }

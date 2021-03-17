@@ -17,13 +17,11 @@ package packed.internal.hooks;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
-
 
 // Jeg tror de her er fordi, 
 
 public final class SomeBuilder {
-    final InstantiatorBuilder ib;
+    //final InstantiatorBuilder ib;
 
     final Class<?> implementation;
 
@@ -32,7 +30,7 @@ public final class SomeBuilder {
     SomeBuilder(Class<?> implementation, extensionClass type, int modifiers) {
         this.implementation = requireNonNull(implementation);
         this.type = requireNonNull(type);
-        this.ib = InstantiatorBuilder.of(MethodHandles.lookup(), implementation);
+        //this.ib = Infuser.of(MethodHandles.lookup()).findConstructorFor(implementation);
     }
 
     SomeBootstrapModel bootstrap() {

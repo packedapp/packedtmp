@@ -53,9 +53,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
-    /** A handle for invoking {@link #findWirelet(Class)}, used by {@link ExtensionModel}. */
-    static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
-
     /** A handle for accessing the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
@@ -114,16 +111,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
     }
 
-    /** The extension is completed once the realm the container is part of is closed. */
-    void complete() {
-        try {
-            MH_EXTENSION_ON_COMPLETE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        isConfigured = true;
-    }
-
     /**
      * Returns the bundle this extension is a part of.
      * 
@@ -152,18 +139,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw new InternalExtensionException("Cannot call this method from the constructor of " + model.fullName());
         }
         return e;
-    }
-
-    /**
-     * Used by {@link ExtensionModel}.
-     * 
-     * @param wireletType
-     *            the type of wirelet
-     * @return the wirelet or null
-     */
-    @Nullable
-    Object findWirelet(Class<? extends Wirelet> wireletType) {
-        return component.receiveWirelet(wireletType).orElse(null);
     }
 
     /** {@inheritDoc} */
@@ -216,6 +191,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      */
     public ExtensionModel model() {
         return model;
+    }
+
+    /**
+     * The extension is completed once the realm the container is part of is closed. Will invoke
+     * {@link Extension#onComplete()}.
+     */
+    void onComplete() {
+        try {
+            MH_EXTENSION_ON_COMPLETE.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+        isConfigured = true;
     }
 
     /** {@inheritDoc} */

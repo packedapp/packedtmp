@@ -73,7 +73,6 @@ public abstract class AbstractHookBootstrapModel<T> {
          */
         Builder(Class<?> bootstrapImplementation) {
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), bootstrapImplementation);
-            // validate extension
         }
 
         /**
