@@ -19,6 +19,10 @@ package app.packed.component;
  * Thrown by the runtime when a specified wirelet was not consumed.
  */
 // extends IllegalArgumentException? Eller smider vi den andre steder fra??? 
+
+// Tror bare vi smider IllegalArgumentException
+// UnconsumedWireletException
+// InvalidWireletException
 public class WireletException extends RuntimeException {
 
     /** */

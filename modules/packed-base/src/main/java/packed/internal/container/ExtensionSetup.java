@@ -30,12 +30,14 @@ import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletHandle;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -264,6 +266,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return component.wire(driver, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletClass) {
+        return WireletPack.extensionHandle(container.component.wirelets, model.extensionClass(), wireletClass);
     }
 
     /**

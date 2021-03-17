@@ -24,12 +24,16 @@ import java.util.function.Consumer;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
+import app.packed.container.Extension;
+import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletPack {
+
+    private static final Empty<?> EMPTY = new Empty<>();
 
     private final ArrayList<Ent> list = new ArrayList<>();
 
@@ -55,7 +59,10 @@ public final class WireletPack {
         }
     }
 
-    public <T extends Wirelet> WireletHandle<T> handleOf(Class<? extends T> wireletClass) {
+    public <T extends Wirelet> WireletHandle<T> handleOf(Module module, Class<? extends T> wireletClass) {
+        if (module != wireletClass.getModule()) {
+            throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
+        }
         return new HandleImpl<>(wireletClass);
     }
 
@@ -64,8 +71,6 @@ public final class WireletPack {
     public String nameWirelet() {
         return name;
     }
-
-    // //Is Initializaing in one -> NotAnImage and Not analyzing...
 
     /**
      * Creates a new wirelet pack or returns existing if the array of wirelets is empty.
@@ -89,11 +94,29 @@ public final class WireletPack {
         return wc;
     }
 
+    @SuppressWarnings("unchecked")
+    public static <T extends Wirelet> WireletHandle<T> empty() {
+        return (WireletHandle<T>) EMPTY;
+    }
+
+    public static <T extends Wirelet> WireletHandle<T> extensionHandle(WireletPack containerWirelets, Class<? extends Extension> extensionClass,
+            Class<? extends T> wireletClass) {
+        requireNonNull(wireletClass, "wireletClass is null");
+        if (extensionClass.getModule() != wireletClass.getModule()) {
+            throw new InternalExtensionException("oops");
+        }
+        if (containerWirelets == null) {
+            return empty();
+        } else {
+            return containerWirelets.handleOf(extensionClass.getModule(), wireletClass);
+        }
+    }
+
     public static <T extends Wirelet> WireletHandle<T> handleOf(Class<? extends T> wireletClass, Wirelet... wirelets) {
         if (wirelets.length < 1) {
             throw new IllegalArgumentException("Must specify at least 1 wirelet.");
         }
-        return create(null, wirelets).handleOf(wireletClass);
+        return create(null, wirelets).handleOf(wireletClass.getModule(), wireletClass);
     }
 
     @Nullable
@@ -118,6 +141,28 @@ public final class WireletPack {
         return create(null, w);
     }
 
+    static class Empty<T extends Wirelet> implements WireletHandle<T> {
+
+        @Override
+        public void forEach(Consumer<? super T> action) {}
+
+        @Override
+        public boolean isAbsent() {
+            return true;
+        }
+
+        @Override
+        public boolean isPresent() {
+            return false;
+        }
+
+        @Override
+        public Optional<T> last() {
+            return Optional.empty();
+        }
+
+    }
+
     public static class Ent {
         public boolean isReceived;
 
@@ -133,9 +178,15 @@ public final class WireletPack {
         private final Class<? extends T> wireletClass;
 
         HandleImpl(Class<? extends T> wireletClass) {
+            // We should check all public wirelet types here
+            if (Wirelet.class == wireletClass) {
+                throw new IllegalArgumentException("Cannot specify " + Wirelet.class.getSimpleName() + ".class");
+            }
+
             this.wireletClass = requireNonNull(wireletClass, "wireletClass is null");
         }
 
+        /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
         public void forEach(Consumer<? super T> action) {
@@ -148,18 +199,26 @@ public final class WireletPack {
             }
         }
 
+        /** {@inheritDoc} */
         @Override
-        public boolean isEmpty() {
-            boolean result = false;
+        public boolean isAbsent() {
+            boolean result = true;
             for (Ent e : list) {
                 if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                    result = true;
+                    result = false;
                     e.isReceived = true;
                 }
             }
             return result;
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public boolean isPresent() {
+            return !isAbsent();
+        }
+
+        /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
         public Optional<T> last() {

@@ -32,6 +32,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Image;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletHandle;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
@@ -224,6 +225,8 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
+    <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet);
+    
     @Nullable
     private static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
         requireNonNull(lookup, "containerComponent is null");

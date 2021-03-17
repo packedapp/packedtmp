@@ -36,6 +36,8 @@ import packed.internal.util.StackWalkerUtil;
  * As a rule of thumb wirelets are evaluated in order. For example, Wirelet.name("ffff"), Wirelet.name("sdsdsd"). Will
  * first the change the name to ffff, and then change it to sdsds. Maybe an example with.noStart + start_await it
  * better.
+ * <p>
+ * You should never expose wirelet classes to the outside. As this
  * 
  * <p>
  * A typical usage for wiring operations is for rebinding services under another key when wiring an injector into
@@ -132,8 +134,8 @@ public abstract class Wirelet {
      * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
      * 
      * <p>
-     * If this method is called from an {@link InheritableWirelet}. All subclasses of the wirelet will retain build-time
-     * only status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
+     * If this method is called from an inheritable wirelet. All subclasses of the wirelet will retain build-time only
+     * status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
      * exception(or error).
      * <p>
      * I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
@@ -144,8 +146,14 @@ public abstract class Wirelet {
     }
 
     // Ideen er man ikke kan angives paa rod niveau
-    // 
+    //
     protected static final void $needsRealm() {
+        // Wirelet.wireletRealm(Lookup); // <-- all subsequent wirelets
+        // Wirelet.wireletRealm(Lookup, Wirelet... wirelets);
+        
+        // Tror det er vigtigt at der er forskel på REALM og BUILDTIME
+        // Tror faktisk
+        
         // f.x provide(Doo.class);
         // Hvad hvis vi koere composer.lookup()...
         // Saa laver vi jo saadan set en realm...
@@ -201,8 +209,8 @@ public abstract class Wirelet {
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
-     * Using this wirelet overrides any default naming scheme, or name that might already have been set, for example,
-     * via {@link BaseComponentConfiguration#setName(String)}.
+     * Using this wirelet overrides any default naming scheme, or name that might already have been set, for example, via
+     * {@link BaseComponentConfiguration#setName(String)}.
      * 
      * @param name
      *            the name of the component

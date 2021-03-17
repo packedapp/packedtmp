@@ -242,7 +242,7 @@ public final class ServiceManagerSetup {
 
                 WireletPack wirelets = c.component.wirelets;
                 if (wirelets != null) {
-                    wirelets.handleOf(Service1stPassWirelet.class).forEach(w -> w.process(child));
+                    wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service1stPassWirelet.class).forEach(w -> w.process(child));
                 }
 
                 if (child.exports != null) {
@@ -292,12 +292,12 @@ public final class ServiceManagerSetup {
 
         System.out.println("HMMM " + map);
         WireletPack wirelets = container.component.wirelets;
-        
+
         if (wirelets != null) {
             // For now we just ignore the wirelets
-            wirelets.handleOf(Service2ndPassWirelet.class).forEach(w -> w.process(parent, this, map));
+            wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service2ndPassWirelet.class).forEach(w -> w.process(parent, this, map));
         }
-        
+
         // If Processere wirelets...
 
         ServiceManagerRequirementsSetup srm = dependencies;

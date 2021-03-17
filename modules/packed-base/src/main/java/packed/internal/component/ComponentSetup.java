@@ -121,6 +121,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.wirelets = wirelets;
 
         int mod = driver.modifiers;
+        
         if (parent == null) {
             this.region = new BuildtimeRegion(); // Root always needs a nodestore
 

@@ -24,11 +24,9 @@ import app.packed.container.Extension;
 // TimeExtensionen installeret...
 // Men nej.. Syntes det andet er klarere...
 // Problemet med inheritable er ogsaa at det ikke umiddelbart er klart
-// hvordan vi haandtere consumation
-
+// hvordan vi haandtere consumation... De skal ikke consumes jo
+// Men saa alligevel...
 // Hvis vi faar en 
-
-
 // IDK de er ret brugbare med
 
 /**
@@ -44,7 +42,7 @@ import app.packed.container.Extension;
 // Saa inheritable maa 100% styres af Packed
 
 // Skal lige finde ud af omkring build-time/run-time
-public abstract class InheritableWirelet extends Wirelet {
+abstract class InheritableWirelet extends Wirelet {
 
     public final InheritableWirelet assembledBy(Class<? extends Assembly<?>> assemblyType) {
         throw new UnsupportedOperationException();

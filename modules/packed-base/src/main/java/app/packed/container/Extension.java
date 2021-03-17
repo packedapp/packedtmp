@@ -32,6 +32,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Image;
 import app.packed.component.Realm;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletHandle;
 import app.packed.inject.Factory;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
@@ -299,6 +300,10 @@ public abstract class Extension extends Realm {
     // cannot be called
     protected final <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().userWire(driver, wirelets);
+    }
+
+    protected final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletClass) {
+        return configuration().wirelets(wireletClass);
     }
 
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???

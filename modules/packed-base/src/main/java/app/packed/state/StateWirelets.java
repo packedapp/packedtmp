@@ -147,8 +147,10 @@ public interface StateWirelets {
      * @see Runtime#addShutdownHook(Thread)
      */
     static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Host.StopOption... options) {
-        return new Wirelet() {};
+        return new ShutdownHookWirelet();
     }
+
+    static class ShutdownHookWirelet extends Wirelet {}
 
     /**
      * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.

@@ -46,13 +46,13 @@ public final class BuildWirelets {
     // Throw XX exception instead of
 
     // Additional to people overridding artifacts, bundles, ect.
-    public static InheritableWirelet checkRuleset(Object... ruleset) {
+    public static Wirelet checkRuleset(Object... ruleset) {
         throw new UnsupportedOperationException();
     }
 
     // Taenker vi printer dem...
     // Og er det kun roden der kan disable dem???
-    public static InheritableWirelet disableWarnings() {
+    public static Wirelet disableWarnings() {
         throw new UnsupportedOperationException();
     }
 
@@ -63,7 +63,7 @@ public final class BuildWirelets {
      * @return the wirelet
      */
     // Maaske til DevWirelets
-    public static InheritableWirelet printDebug() {
+    public static Wirelet printDebug() {
         throw new UnsupportedOperationException();
     }
 
@@ -73,7 +73,7 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
-    static InheritableWirelet sidecarCacheSpecific() {
+    static Wirelet sidecarCacheSpecific() {
         // The wirelet itself contains the cache...
         // And can be reused (also concurrently)
         // Maaske kan man styre noget reload praecist...
