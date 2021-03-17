@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -67,13 +66,22 @@ import packed.internal.util.ThrowableUtil;
  * @see ExtensionDescriptor
  */
 // Maaske har vi findDescendent(Class<? extends Extension>)
+
+
+// Extension State
+//// Instantiate
+//// Link
+//// onNew
+
+// Configurable -> Parent -> 
 public abstract class Extension extends Realm {
 
     /**
-     * The configuration of this extension. Should never be read directly, but accessed via {@link #configuration()}.
+     * The configuration of this extension. This field should never be read directly, but only accessed via
+     * {@link #configuration()}.
      * 
      * @apiNote This field is not nulled out after the extensions has been configured to allow for calling methods such as
-     *          {@link #checkConfigurable()} after configuration is done.
+     *          {@link #checkConfigurable()} after configuration is completed.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -90,7 +98,7 @@ public abstract class Extension extends Realm {
      */
     // Det jeg ikke kan lide ved den er fx information om image... som jo kan vaereforskellige
     // for extension'en selv...
-    protected final BuildInfo assembly() {
+    protected final BuildInfo build() {
         return configuration().build();
     }
 
@@ -106,8 +114,9 @@ public abstract class Extension extends Realm {
         configuration().checkConfigurable();
     }
 
-    protected final void checkIsLeafBundle() {
-        configuration().checkIsLeafBundle();
+    // checkExtendable...
+    protected final void checkExtendable() {
+        configuration().checkExtendable();
     }
 
     /**
@@ -130,47 +139,10 @@ public abstract class Extension extends Realm {
         ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
-                    + "initialization before returning the extension to the user, override " + Extension.class.getSimpleName() + "#extensionAdded()");
+                    + "initialization before the extension is returned to the user, override " + Extension.class.getSimpleName() + "#onNew()");
         }
         return c;
     }
-
-    /**
-     * A method that is invoked (by the runtime) immediately after the extension's constructor has been successfully
-     * invoked. Since most methods on this class cannot be invoked from within the extension's constructor. This method can
-     * be used to perform post instantiation, before the extension instance is returned to the user.
-     * <p>
-     * The reason for prohibiting configuration from the constructor. Is to avoid situations.. that users might then link
-     * other components that in turn requires access to the actual extension instance. Which is not possible since it is
-     * still being instantiated. While this is rare in practice. Too be on the safe side we prohibit it.
-     * <p>
-     * Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
-     * anywhere where we can get a hold of the actual extension instance...
-     * 
-     * But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
-     * installed a component that uses other extensions....????? IDK
-     * 
-     * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
-     * from this method. Is typically used to add new runtime components.
-     */
-    // hvorfor er det vi ikke kalder dem onAdd
-    protected void extensionAdded() {}
-
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
-    protected void extensionBeforeDescendents() {}
-
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
-
-    /**
-     * Invoked by the runtime when the configuration of the bundle is completed.
-     * <p>
-     */
-    protected void extensionConfigured() {}
 
     protected final BaseComponentConfiguration install(Class<?> implementation) {
         return configuration().install(implementation);
@@ -179,6 +151,11 @@ public abstract class Extension extends Realm {
     protected final BaseComponentConfiguration install(Factory<?> factory) {
         return configuration().install(factory);
     }
+
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    // extensionPreambleDone
 
     /**
      * @param instance
@@ -209,31 +186,77 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Used to lookup other extensions.
+     * Invoked by the runtime when the configuration of the bundle is completed.
      * <p>
-     * Only extension types that have been explicitly registered using {@link #$dependsOn(Class)}may be specified as
-     * arguments to this method.
-     * <p>
-     * Invoking this method is similar to calling {@link ContainerConfiguration#use(Class)}. However, this method also keeps
-     * track of which extensions uses other extensions. And forming any kind of circle in the dependency graph will fail
-     * with a runtime exception.
-     * 
-     * @param <E>
-     *            the type of extension to return
-     * @param extensionClass
-     *            the type of extension to return
-     * @return an extension of the specified type
-     * @throws IllegalStateException
-     *             If invoked from the constructor of the extension. Or if the underlying container is no longer
-     *             configurable and an extension of the specified type has not already been installed
-     * @throws UnsupportedOperationException
-     *             if the specified extension type has not been specified when bootstrapping the extension
-     * @see #$dependsOn(Class)
+     * T method must not add new extensions. Be careful with the components accepted from users
      */
-    protected final <E extends Subtension> E use(Class<E> extensionClass) {
-        return configuration().use(extensionClass);
+    protected void onComplete() {}
+
+    // Hvad hvis den selv tilfoejer komponenter med en child container???
+    // Problemet er hvis den bruger extensions som den ikke har defineret
+    // Det tror jeg maaske bare ikke den kan
+    protected void onPreContainerWiring() {
+        // Must add missing extensions
+        // Must not add additional containers
+        
+        // So
+        
+        // Container wiring must only be done from onComplete
+        
+        // lazy operations should be idempotent
     }
 
+    /**
+     * Method invoked (by the runtime) immediately after the extension's constructor has successfully returned. But before
+     * the extension instance is returned to the end-user.
+     * <p>
+     * This method forms the first in a series of callback methods as outlined in
+     * <p>
+     * Since most methods on this class cannot be invoked from the extension's constructor. This method can be used to
+     * perform any needed post instantiation.
+     * <p>
+     * The reason for prohibiting configuration from the constructor. Is to avoid situations.. that users might then link
+     * other components that in turn requires access to the actual extension instance. Which is not possible since it is
+     * still being instantiated. While this is rare in practice. Too be on the safe side we prohibit it.
+     * <p>
+     * Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
+     * anywhere where we can get a hold of the actual extension instance...
+     * 
+     * But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
+     * installed a component that uses other extensions....????? IDK
+     * 
+     * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
+     * from this method. Is typically used to add new runtime components.
+     */
+    protected void onNew() {}
+
+    /**
+     * Used to lookup other extensions.
+     * <p>
+     * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
+     * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
+     * <p>
+     * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
+     * can instead declare a dependency on {@link ExtensionConfiguration} and call
+     * {@link ExtensionConfiguration#use(Class)}.
+     * 
+     * @param <E>
+     *            the type of subtension to return
+     * @param subtensionClass
+     *            the type of subtension to return
+     * @return the subtension
+     * @throws InternalExtensionException
+     *             If invoked from the constructor of the extension. Or if the underlying container is no longer
+     *             configurable and an extension of the specified type has not already been installed. Or if the extension
+     *             of the specified subtension class has not been registered as a dependency of this extension
+     * @see ExtensionConfiguration#use(Class)
+     * @see #$dependsOn(Class...)
+     */
+    protected final <E extends Subtension> E use(Class<E> subtensionClass) {
+        return configuration().use(subtensionClass);
+    }
+
+    // cannot be called
     protected final <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().userWire(driver, wirelets);
     }
@@ -242,6 +265,10 @@ public abstract class Extension extends Realm {
     // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
     // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
     /// Maa maaske kigge lidt paa graal og have nogle loekker who keeps retrying
+
+    // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
+    // onFinish cannot add new extensions...
+
     protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret
@@ -250,33 +277,46 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Adds the specified dependencies to this extension. Must only be invoked Installing components that make use of fx
-     * Provide you need ServiceExtension
-     * <p>
-     * This method can only be invoked from the class initializer of an extension.
+     * Registers any number of dependencies of this extension. Every extension that another extension directly uses must be
+     * registered. Even if the extension is only used occasionally.
      * 
      * @param extensions
      *            dependencies of this extension
      * @throws InternalExtensionException
-     *             if the dependency could not be added for some reason, for example, if it would lead to a cyclic
-     *             dependency between extensions. Or if not called directly from a class initializer
-     * 
-     * @see #$addDependencyLazyInit(Class, Class, Consumer)
+     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
+     *             the extension graph. Or if this method was not called directly from an extension class initializer
+     * @see #$dependsOnOptionally(String)
+     * @see #$dependsOnOptionally(String, String, Supplier)
      */
     @SafeVarargs
     protected static void $dependsOn(Class<? extends Extension>... extensions) {
-        requireNonNull(extensions, "dependencies is null");
-        ExtensionModel.bootstrapAddDependency(StackWalkerUtil.SW.getCallerClass(), List.of(extensions));
+        ExtensionModel.Bootstrap.get(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
     }
 
-    protected static Optional<Class<? extends Extension>> $dependsOnOptionally(String dependency) {
+    /**
+     * Registers an optional dependency of this extension. The extension
+     * <p>
+     * The class loader of the caller (extension) class will be used when attempting to locate the dependency.
+     * 
+     * @param extensionName
+     *            fully qualified name of the extension class
+     * @return the extension class if the extension could be loaded, otherwise empty
+     * @throws InternalExtensionException
+     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
+     *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
+     *             this method was not called directly from an extension class initializer.
+     * @see #$dependsOn(Class...)
+     * @see Class#forName(String, boolean, ClassLoader)
+     */
+    protected static Optional<Class<? extends Extension>> $dependsOnOptionally(String extensionName) {
+        requireNonNull(extensionName, "extensionName is null");
         Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
-        return loadDependency(callerClass, dependency);
+        return loadDependency(callerClass, extensionName);
     }
 
-    protected static <T> T $dependsOnOptionally(String extension, String bootstrap, Supplier<T> alternative) {
+    protected static <T> T $dependsOnOptionally(String extensionName, String bootstrap, Supplier<T> alternative) {
         Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
-        Optional<Class<? extends Extension>> dep = loadDependency(callerClass, extension);
+        Optional<Class<? extends Extension>> dep = loadDependency(callerClass, extensionName);
         if (dep.isEmpty()) {
             return alternative.get();
         }
@@ -288,7 +328,7 @@ public abstract class Extension extends Realm {
         } catch (ClassNotFoundException ignore) {
             throw new IllegalArgumentException("Could not load class " + s, ignore);
         }
-        
+
         MethodHandle mh = Infuser.of(MethodHandles.lookup()).findConstructorFor(c);
         try {
             return (T) mh.invoke();
@@ -298,14 +338,27 @@ public abstract class Extension extends Realm {
     }
 
     static void $libraryFor(Module module) {
+        // Will fail if the module, class does not have version
+        // protected static void $libraryVersion(Module|Class m);
+        // protected static void $libraryWrapper(Module m);
+        
         // libraryFor(
         // Er det mere et foreignLibray???
         // ConverterExtension er jo sin egen version
         // will extract verions
     }
 
+    @SuppressWarnings("unchecked")
+    static Class<? extends Extension> checkCaller(Class<?> callerClass) {
+        if (!Extension.class.isAssignableFrom(callerClass) || callerClass == Extension.class) {
+            throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
+        }
+        return (Class<? extends Extension>) callerClass;
+    }
+
+    @SuppressWarnings("unchecked")
     private static Optional<Class<? extends Extension>> loadDependency(Class<?> callerClass, String extension) {
-        ClassLoader cl=callerClass.getClassLoader();
+        ClassLoader cl = callerClass.getClassLoader();
         Class<?> c = null;
         try {
             c = Class.forName(extension, true, cl);
@@ -314,17 +367,16 @@ public abstract class Extension extends Realm {
         }
         // We check this in models also...
         if (Extension.class == c) {
-            throw new InternalExtensionException("The specified string \"" + extension + "\" cannot specify Extension.class as an optional dependency, for "
-                    + StringFormatter.format(c));
+            throw new InternalExtensionException(
+                    "The specified string \"" + extension + "\" cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
         } else if (!Extension.class.isAssignableFrom(c)) {
             throw new InternalExtensionException(
                     "The specified string \"" + extension + "\" " + " specified an invalid extension " + StringFormatter.format(c));
         }
-        @SuppressWarnings("unchecked")
         Class<? extends Extension> extensionClass = (Class<? extends Extension>) c;
 
         ExtensionModel.of(extensionClass);
-        ExtensionModel.bootstrapAddDependency(callerClass, List.of(extensionClass));
+        ExtensionModel.Bootstrap.get(callerClass).dependsOn(extensionClass);
         return Optional.of(extensionClass);
     }
 
@@ -345,10 +397,6 @@ public abstract class Extension extends Realm {
         // }
         // Her vil man nok ikke vaelge at
     }
-
-    // Will fail if the module, class does not have version
-    // protected static void $libraryVersion(Module|Class m);
-    // protected static void $libraryWrapper(Module m);
 
     /**
      * Subtensions are the main that extensions communicate with other extensions. If you are end-user you will most likely
@@ -393,81 +441,3 @@ public abstract class Extension extends Realm {
 //        // Det er jo bare andre extensions der kalde den.
     }
 }
-
-///**
-//* Captures the configuration site by finding the first stack frame where the declaring class of the frame's method is
-//* not located on any subclasses of {@link Extension} or any class that implements
-//* <p>
-//* Invoking this method typically takes in the order of 1-2 microseconds.
-//* <p>
-//* If capturing of stack-frame-based config sites has been disable via, for example, fooo. This method returns
-//* {@link ConfigSite#UNKNOWN}.
-//* 
-//* @param operation
-//*            the operation
-//* @return a stack frame capturing config site, or {@link ConfigSite#UNKNOWN} if stack frame capturing has been disabled
-//* @see StackWalker
-//*/
-//// TODO add stuff about we also ignore non-concrete container sources...
-//protected final ConfigSite captureStackFrame(String operation) {
-//  // API-NOTE This method is not available on ExtensionContext to encourage capturing of stack frames to be limited
-//  // to the extension class in order to simplify the filtering mechanism.
-//
-//  // TODO!!!! I virkeligheden skal man vel bare fange den sidste brug i et bundle....
-//  // Kan ogsaa sammenligne med configure navnet...
-//
-//  if (ConfigSiteSupport.STACK_FRAME_CAPTURING_DIABLED) {
-//      return ConfigSite.UNKNOWN;
-//  }
-//  Optional<StackFrame> sf = STACK_WALKER.walk(e -> e.filter(f -> !captureStackFrameIgnoreFilter(f)).findFirst());
-//  return sf.isPresent() ? configuration().containerConfigSite().thenStackFrame(operation, sf.get()) : ConfigSite.UNKNOWN;
-//}
-
-///**
-//* @param frame
-//*            the frame to filter
-//* @return whether or not to filter the frame
-//*/
-//private final boolean captureStackFrameIgnoreFilter(StackFrame frame) {
-//  Class<?> c = frame.getDeclaringClass();
-//  // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
-//  // Syntes bare vi filtrer app.packed.base modulet fra...
-//  // Kan vi ikke checke om imod vores container source.
-//
-//  // ((PackedExtensionContext) context()).container().source
-//  // Nah hvis man koere fra config er det jo fint....
-//  // Fra config() paa en bundle er det fint...
-//  // Fra alt andet ikke...
-//
-//  // Dvs ourContainerSource
-//  return Extension.class.isAssignableFrom(c)
-//          || ((Modifier.isAbstract(c.getModifiers()) || Modifier.isInterface(c.getModifiers())) && Assembly.class.isAssignableFrom(c));
-//}
-
-// final void runWithLookup(Lookup lookup, Runnable runnable) {
-// // Extensions bliver bare noedt til at vaere aabne for
-//
-// // Ideen er at vi kan installere component. o.s.v. med det specificeret lookup....
-// // D.v.s. vi laver en push, pop af et evt. eksisterende lookup object
-// // En install fra en extension skal jo naesten bruge denne..
-// // Faktisk, er der lidt sikkerhedshullumhej her.... Hvordan sikre vi os at extensions.
-// // Ikke goer noget sjovt her. Hmm, altsaa indvitere man en extension indenfor...
-//
-// // Men vi vel helst have at de giver adgang via module-info...
-// // Eller via Factory.withLookup();
-// }
-//ErrorHandle, Logging
-
-//ErrorHandling / Notifications ???
-/// Taenker det ligger paa Extension'en fordi vi har jo ogsaa en InstantiationContext
-//hvor errors jo ogsaa kan ske..
-//hasErrors()...
-////Maybe we want to log the actual extension as well.
-//so extension.log("fooo") instead
-/// Yes, why not use it to log errors...
-
-//Den eneste ting jeg kunne forstille mig at kunne vaere public.
-//Var en maade at se paa hvordan en extension blev aktiveret..
-//Men er det ikke bare noget logning istedet for metoder...
-//"InjectorExtension:" Activate
-////Her er der noget vi gerne vil have viral.

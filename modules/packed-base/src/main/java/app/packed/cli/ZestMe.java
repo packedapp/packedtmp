@@ -52,13 +52,13 @@ public class ZestMe extends BaseAssembly {
 
         /** {@inheritDoc} */
         @Override
-        protected void extensionAdded() {
+        protected void onNew() {
             System.out.println("ADDED");
         }
 
         /** {@inheritDoc} */
         @Override
-        protected void extensionConfigured() {
+        protected void onComplete() {
             System.out.println("Configured");
         }
 

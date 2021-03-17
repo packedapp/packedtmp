@@ -91,17 +91,17 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void extensionAdded() {
+        protected void onNew() {
             // System.out.println(ai + "E-ADDED");
         }
 
         @Override
-        protected void extensionConfigured() {
+        protected void onComplete() {
             // System.out.println(ai + "E-Complete");
         }
 
         @Override
-        protected void extensionBeforeDescendents() {
+        protected void onPreContainerWiring() {
             // System.out.println(ai + "E-PreChildContainers");
         }
         
@@ -116,17 +116,17 @@ public class Z4 extends BaseAssembly {
             $dependsOn(E.class);
         }
         @Override
-        protected void extensionAdded() {
+        protected void onNew() {
             System.out.println("F-ADDED");
         }
 
         @Override
-        protected void extensionConfigured() {
+        protected void onComplete() {
             System.out.println("F-Complete");
         }
 
         @Override
-        protected void extensionBeforeDescendents() {
+        protected void onPreContainerWiring() {
             System.out.println("F-PreChildContainers");
             use(E.Sub.class);
         }

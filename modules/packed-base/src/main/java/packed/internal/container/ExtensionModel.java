@@ -26,7 +26,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -231,21 +230,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Adds the specified dependency to the caller class if valid.
-     * 
-     * @param callerClass
-     *            the caller class (checked in forAccess)
-     * @param dependency
-     *            the extension to depend on
-     * @throws InternalExtensionException
-     *             if the dependency could not be added for some reason
-     * @see Extension#$dependsOn(Class)
-     */
-    public static void bootstrapAddDependency(Class<?> callerClass, List<Class<? extends Extension>> dependencies) {
-        Loader.forBootstrapAccess(callerClass).addStaticDependency(dependencies);
-    }
-
-    /**
      * Returns an model for the specified extension class.
      * 
      * @param extensionClass
@@ -274,7 +258,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     // Maaske kan vi dropper den her bootstrap, og bare smide direkte ind i builder...
     // Det er maaske fedt nok at instantiere sine dependencies fra class initializer...
-    private static final class Bootstrap {
+    public static final class Bootstrap {
 
         /** A set of extension this extension depends on. */
 
@@ -290,8 +274,20 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.extensionClass = requireNonNull(extensionClass);
         }
 
-        private void addStaticDependency(List<Class<? extends Extension>> dependencies) {
-            for (Class<? extends Extension> dependencyType : dependencies) {
+        public static Bootstrap get(Class<?> callerClass) {
+            return Loader.forBootstrapAccess(callerClass);
+        }
+        /**
+         * Adds the specified dependency to the caller class if valid.
+         * 
+         * @param dependencies
+         *            the dependencies
+         * @see Extension#$dependsOn(Class...)
+         */
+        public void dependsOn(@SuppressWarnings("unchecked") Class<? extends Extension>... extensions) {
+            requireNonNull(extensions, "extensions is null");
+            for (Class<? extends Extension> dependencyType : extensions) {
+                requireNonNull(dependencyType);
                 if (extensionClass == dependencyType) {
                     throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
                 } else if (this.dependencies.contains(dependencyType)) {
@@ -483,7 +479,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         private static Bootstrap forBootstrapAccess(Class<?> callerClass) {
-
             if (!Extension.class.isAssignableFrom(callerClass) || callerClass == Extension.class) {
                 throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
             }

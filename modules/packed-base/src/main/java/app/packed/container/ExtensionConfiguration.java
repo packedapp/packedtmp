@@ -70,7 +70,7 @@ public /* sealed */ interface ExtensionConfiguration {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * An extension is no longer configurable after {@link Extension#extensionConfigured()} has been invoked by the runtime.
+     * An extension is no longer configurable after {@link Extension#onComplete()} has been invoked by the runtime.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
@@ -80,7 +80,8 @@ public /* sealed */ interface ExtensionConfiguration {
     /**
      * Checks that child cubes has been aded
      */
-    void checkIsLeafBundle();
+    // checkContainerFree, checkNoChildContainers
+    void checkExtendable();
 
     /**
      * Returns the extension class.
@@ -93,7 +94,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * Returns the extension instance.
      * 
      * @return the extension instance
-     * @throws IllegalStateException
+     * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
      */
     Extension extensionInstance();
@@ -141,18 +142,23 @@ public /* sealed */ interface ExtensionConfiguration {
     }
 
     /**
+     * Links the specified assembly. This method must be called from {@link Extension#onComplete()}. Other
+     * 
+     * <p>
      * Creates a new container with this extensions container as its parent by linking the specified bundle. The new
      * container will have this extension as owner. Thus will be hidden from normal view
      * <p>
      * The parent component of the linked bundle will have the cube of this extension as its parent.
      * 
-     * @param bundle
-     *            the bundle to link
+     * @param assembly
+     *            the assembly to link
      * @param wirelets
      *            optional wirelets
+     * @throws InternalExtensionException
+     *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
+     * @see Extension#onComplete()
      */
-    // I think the assembly needs to be annotated with @ExtensionMember IDK
-    void link(Assembly<?> bundle, Wirelet... wirelets);
+    void link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Returns the path of the extension. The path of the extension's container, can be obtained by calling
@@ -165,6 +171,10 @@ public /* sealed */ interface ExtensionConfiguration {
     /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
      * dependencies as specified via.... Otherwise an {@link InternalExtensionException} is thrown.
+     * <p>
+     * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
+     * can instead declare a dependency on {@link ExtensionConfiguration} and call
+     * {@link ExtensionConfiguration#use(Class)}.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)}.
      * 

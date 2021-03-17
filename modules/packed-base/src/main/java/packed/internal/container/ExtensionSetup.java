@@ -33,6 +33,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
+import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
 import packed.internal.util.LookupUtil;
@@ -41,17 +42,17 @@ import packed.internal.util.ThrowableUtil;
 /** A setup class for an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup implements ExtensionConfiguration {
 
-    /** A handle for invoking {@link Extension#extensionAdded()}, used by {@link #of(ContainerSetup, Class)}. */
-    private static final MethodHandle MH_EXTENSION_ADDED = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionAdded",
+    /** A handle for invoking {@link Extension#onComplete()}. */
+    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
             void.class);
 
-    /** A handle for invoking {@link Extension#extensionConfigured()}. */
-    private static final MethodHandle MH_EXTENSION_CONFIGURED = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "extensionConfigured",
+    /** A handle for invoking {@link Extension#onNew()}, used by {@link #of(ContainerSetup, Class)}. */
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew",
             void.class);
 
-    /** A handle for invoking {@link Extension#extensionBeforeDescendents()}. */
-    private static final MethodHandle MH_EXTENSION_PRE_CHILD_CONTAINERS = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "extensionBeforeDescendents", void.class);
+    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
+    private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onPreContainerWiring", void.class);
 
     /** A handle for invoking {@link #findWirelet(Class)}, used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -108,7 +109,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void checkIsLeafBundle() {
+    public void checkExtendable() {
         if (container.children != null) {
             throw new IllegalStateException();
         }
@@ -117,7 +118,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The extension is completed once the realm the container is part of is closed. */
     void complete() {
         try {
-            MH_EXTENSION_CONFIGURED.invoke(instance);
+            MH_EXTENSION_ON_COMPLETE.invoke(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -133,6 +134,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Class<? extends Extension> extensionClass() {
+        return model.extensionClass();
+    }
+
     /**
      * Returns the extension instance.
      * 
@@ -143,15 +150,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public Extension extensionInstance() {
         Extension e = instance;
         if (e == null) {
-            throw new IllegalStateException("Cannot call this method from the constructor of " + model.name());
+            throw new InternalExtensionException("Cannot call this method from the constructor of " + model.fullName());
         }
         return e;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension> extensionClass() {
-        return model.extensionClass();
     }
 
     /**
@@ -220,7 +221,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     void preContainerChildren() {
         try {
-            MH_EXTENSION_PRE_CHILD_CONTAINERS.invoke(instance);
+            MH_EXTENSION_ON_CONTAINER_LINKAGE.invoke(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -317,12 +318,16 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             }
         }
 
-        // Invoke Extension#add() (should we run this before we link???)
+        // Invoke Extension#onNew() (should we run this before we link???)
         try {
-            MH_EXTENSION_ADDED.invoke(ext);
+            MH_EXTENSION_ON_NEW.invoke(ext);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
         return extension;
+    }
+    
+    public enum State {
+        
     }
 }

@@ -44,7 +44,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
 
         @Override
-        protected void extensionAdded() {
+        protected void onNew() {
             use(Ex2.Sub.class);
         }
 
@@ -57,7 +57,7 @@ public class ExtensionDependenciesTest extends AbstractArtifactTest {
         }
 
         @Override
-        protected void extensionAdded() {
+        protected void onNew() {
             use(Ex3.Sub.class);
         }
 

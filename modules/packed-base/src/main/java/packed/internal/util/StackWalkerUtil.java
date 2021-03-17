@@ -19,4 +19,5 @@ public class StackWalkerUtil {
         return SW.walk(s -> s.anyMatch(f -> clazz.isAssignableFrom(f.getDeclaringClass()) && f.getMethodName().equals("<init>")));
     }
 
+  
 }
