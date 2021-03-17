@@ -103,7 +103,7 @@ public final class WireletPack {
             Class<? extends T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
         if (extensionClass.getModule() != wireletClass.getModule()) {
-            throw new InternalExtensionException("oops");
+            throw new InternalExtensionException("oops mismatching module");
         }
         if (containerWirelets == null) {
             return empty();

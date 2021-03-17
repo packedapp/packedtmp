@@ -44,6 +44,10 @@ public /* sealed */ interface WireletHandle<T extends Wirelet> {
     // will consume any matching wirelet and return the last one...
     Optional<T> last(); // one() maybe. Emphasize at man consumer en...
 
+    public static <T extends Wirelet> WireletHandle<T> of() {
+        return WireletPack.empty();
+    }
+    
     @SafeVarargs
     static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         return WireletPack.handleOf(wireletClass, wirelets);
