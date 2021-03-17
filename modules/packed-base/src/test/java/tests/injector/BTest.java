@@ -28,15 +28,15 @@ import packed.internal.inject.service.sandbox.Injector;
 public class BTest {
 
     public static void main(String[] args) {
-        Injector i = Injector.create(new MyBundle());
+        Injector i = Injector.create(new MyAssembly());
 
         i.find(PrivateImplementation.class).get().attribute(ConfigSite.ATTRIBUTE).print();
 
         System.out.println(String.class.getModule().getDescriptor());
 
         i = Injector.configure(c -> {
-            c.link(new MyBundle());
-            c.link(new MyBundle4());
+            c.link(new MyAssembly());
+            c.link(new MyAssembly4());
             c.provideInstance("123");
         });
         System.out.println("");
@@ -46,7 +46,7 @@ public class BTest {
 
     }
 
-    public static class MyBundle extends BaseAssembly {
+    public static class MyAssembly extends BaseAssembly {
 
         @Override
         protected void build() {
@@ -56,7 +56,7 @@ public class BTest {
         }
     }
 
-    public static class MyBundle4 extends BaseAssembly {
+    public static class MyAssembly4 extends BaseAssembly {
 
         @Override
         protected void build() {

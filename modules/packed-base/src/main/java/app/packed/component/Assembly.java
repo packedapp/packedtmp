@@ -102,6 +102,11 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         return (C) c;
     }
 
+    protected final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
+        // Jeg ved ikke hvor tid vi har brug for den her...
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private

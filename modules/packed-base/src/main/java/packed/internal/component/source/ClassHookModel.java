@@ -37,40 +37,45 @@ import packed.internal.util.ThrowableUtil;
 /** A model of class hook */
 public final class ClassHookModel {
 
-    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
-    private static final MethodHandle MH_EXTENSION_METHOD_BOOTSTRAP_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(),
-            ClassHook.Bootstrap.class, "bootstrap", void.class);
+    /** A handle for invoking {@link MethodHook.Bootstrap#bootstrap()}. */
+    private static final MethodHandle MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
+            "bootstrap", void.class);
 
-    /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
-    private static final VarHandle VH_EXTENSION_METHOD_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
+    /** A handle for accessing {@link MethodHook.Bootstrap#builder}. */
+    private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
             "builder", ClassHookModel.Builder.class);
 
     /** A builder object for a class hook */
     public static final class Builder extends AbstractBootstrapBuilder {
 
-        public final ClassHookBootstrapModel bootstrapModel;
-
+        /** The instance of bootstrap. */
         final ClassHook.Bootstrap instance;
 
         final LinkedHashSet<MemberHookModel.Builder> managedMembers = new LinkedHashSet<>();
 
+        /** The model of the bootstrap class. */
+        public final ClassHookBootstrapModel model;
+
         Builder(ClassSourceModel.Builder source, ClassHookBootstrapModel model) {
             super(source);
-            this.bootstrapModel = model;
-            this.instance = (Bootstrap) bootstrapModel.newInstance();
+            this.model = model;
+            this.instance = (Bootstrap) model.newInstance();
         }
 
         void complete() {
-            VH_EXTENSION_METHOD_BOOTSTRAP_BUILDER.set(instance, this);
+            VH_CLASS_HOOK_BOOTSTRAP_BUILDER.set(instance, this);
+            
+            // Invoke ClassHook.Bootstrap#bootstrap()
             try {
-                MH_EXTENSION_METHOD_BOOTSTRAP_BOOTSTRAP.invoke(instance);
+                MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP.invokeExact(instance);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
+            
             for (MemberHookModel.Builder b : managedMembers) {
                 b.complete();
             }
-            VH_EXTENSION_METHOD_BOOTSTRAP_BUILDER.set(instance, null);
+            VH_CLASS_HOOK_BOOTSTRAP_BUILDER.set(instance, null);
         }
 
         public List<app.packed.hooks.ConstructorHook.Bootstrap> constructors() {

@@ -128,7 +128,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
         }
 
         // Create a new build context that we passe around
-        BuildSetup build = new BuildSetup(this, modifiers, wp);
+        BuildSetup build = new BuildSetup(this, modifiers);
 
         // Create the root component
         ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(assembly.getClass()), componentDriver, null, wp);
@@ -168,7 +168,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
         WireletPack wp = WireletPack.ofRoot(this, componentDriver, wirelets);
 
-        BuildSetup build = new BuildSetup(this, 0, wp);
+        BuildSetup build = new BuildSetup(this, 0);
 
         ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(consumer.getClass()), componentDriver, null, wp);
 

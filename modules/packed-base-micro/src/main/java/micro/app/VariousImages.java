@@ -22,7 +22,7 @@ import app.packed.container.BaseAssembly;
 /**
  *
  */
-public class VariousBundles {
+public class VariousImages {
 
     public static final Image<App> EMPTY_IMAGE = App.buildImage(empty());
     public static final Image<App> ONE_COMPONENT_IMAGE = App.buildImage(oneComponent());

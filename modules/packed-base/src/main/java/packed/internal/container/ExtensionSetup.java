@@ -50,14 +50,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreContainerWiring", void.class);
 
-    /** A handle for invoking {@link Extension#onNew()}, used by {@link #of(ContainerSetup, Class)}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew",
-            void.class);
+    /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** A handle for invoking {@link #findWirelet(Class)}, used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
 
-    /** A handle for accessing the field Extension#configuration, used by {@link #of(ContainerSetup, Class)}. */
+    /** A handle for accessing the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -67,7 +66,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The setup of the container this extension belongs to. */
     private final ContainerSetup container;
 
-    /** The extension instance, instantiated in {@link #of(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -118,7 +117,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The extension is completed once the realm the container is part of is closed. */
     void complete() {
         try {
-            MH_EXTENSION_ON_COMPLETE.invoke(instance);
+            MH_EXTENSION_ON_COMPLETE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -227,7 +226,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     void preContainerChildren() {
         try {
-            MH_EXTENSION_ON_CONTAINER_LINKAGE.invoke(instance);
+            MH_EXTENSION_ON_CONTAINER_LINKAGE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -278,25 +277,25 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return component.wire(driver, wirelets);
     }
-    
+
     /**
      * Create and initialize a new extension.
      * 
      * @param container
-     *            the setup of the container.
+     *            the container setup
      * @param extensionClass
      *            the extension to initialize
      * @return a setup for the extension
      */
-    static ExtensionSetup of(ContainerSetup container, Class<? extends Extension> extensionClass) {
+    static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Create setups and instantiate extension.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ComponentSetup component = new ComponentSetup(container.component, model); // creates ExtensionSetup in ComponentSetup constructor
         ExtensionSetup extension = component.extension;
 
         // Creates a new extension instance
-        Extension ext = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(ext, extension); // sets Extension.configuration = extension setup
+        Extension instance = extension.instance = model.newInstance(extension);
+        VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension setup
 
         // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
         // of the extensions existence. This is done first in order to let the remaining steps use any
@@ -317,16 +316,16 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             // If not just parent link keep checking up until root/
             if (parentExtension != null) {
                 try {
-                    model.mhExtensionLinked.invokeExact(parentExtension.instance, extension, ext);
+                    model.mhExtensionLinked.invokeExact(parentExtension.instance, extension, instance);
                 } catch (Throwable t) {
                     throw ThrowableUtil.orUndeclared(t);
                 }
             }
         }
 
-        // Invoke Extension#onNew() (should we run this before we link???)
+        // Invoke Extension#onNew()
         try {
-            MH_EXTENSION_ON_NEW.invoke(ext);
+            MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

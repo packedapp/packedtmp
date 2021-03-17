@@ -260,7 +260,7 @@ public final class ContainerSetup {
                 caller.checkConfigurable();
             }
             // Create the new extension
-            extension = ExtensionSetup.of(this, extensionClass);
+            extension = ExtensionSetup.initialize(this, extensionClass);
 
             // Add the extension to the extension map
             extensions.put(extensionClass, extension);

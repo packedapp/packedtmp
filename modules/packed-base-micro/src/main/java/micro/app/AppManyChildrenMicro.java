@@ -51,17 +51,17 @@ public class AppManyChildrenMicro {
             @Override
             protected void build() {
                 for (int i = 0; i < size; i++) {
-                    link(new TBundle(Integer.toString(i)));
+                    link(new TAssembly(Integer.toString(i)));
                 }
             }
         });
     }
 
-    static class TBundle extends BaseAssembly {
+    static class TAssembly extends BaseAssembly {
 
         final String name;
 
-        TBundle(String name) {
+        TAssembly(String name) {
             this.name = name;
         }
 

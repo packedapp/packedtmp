@@ -128,7 +128,7 @@ public @interface ClassHook {
         }
 
         public final boolean hasFullAccess() {
-            return builder().bootstrapModel.allowAllAccess;
+            return builder().model.allowAllAccess;
         }
 
         /**

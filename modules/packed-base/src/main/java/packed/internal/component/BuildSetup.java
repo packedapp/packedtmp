@@ -19,7 +19,6 @@ import app.packed.base.Nullable;
 import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifierSet;
-import packed.internal.component.wirelet.WireletPack;
 
 /** A setup class for a build. */
 public final class BuildSetup implements BuildInfo {
@@ -46,7 +45,7 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedArtifactDriver<?> artifactDriver, int modifiers, WireletPack wirelets) {
+    BuildSetup(PackedArtifactDriver<?> artifactDriver, int modifiers) {
         this.artifactDriver = artifactDriver;
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
     }

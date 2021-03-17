@@ -31,11 +31,11 @@ public class NameGeneratedTest extends AbstractArtifactTest {
     /** Tests the */
     @Test
     public void bundles() {
-        check(f -> new AbstractConsumableBundle(f) {}, "Bundle"); // Anonymous class
+        check(f -> new AbstractConsumableAssembly(f) {}, "Assembly"); // Anonymous class
         check(f -> new S(f), "S");
-        check(f -> new NameGeneratedTest.Bundle(f), "Bundle");
+        check(f -> new NameGeneratedTest.Assembly(f), "Assembly");
         check(f -> new HelloWorld(f), "HelloWorld");
-        check(f -> new HelloWorldBundle(f), "HelloWorld");
+        check(f -> new HelloWorldAssembly(f), "HelloWorld");
     }
 
     private static void check(Function<Consumer<? super ContainerConfigurationTester>, ? extends BaseAssembly> cs, String defaultName) {
@@ -54,33 +54,33 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         imageOf(cs.apply(c -> c.getNameIs("Boo")), Wirelet.named("Boo")).newApp().nameIs("Boo");
 
         // As a child
-        appOf(new AbstractConsumableBundle(c -> {
+        appOf(new AbstractConsumableAssembly(c -> {
             c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
-        }) {}).nameIs("Bundle");
+        }) {}).nameIs("Assembly");
 
         // As multiple children
-        appOf(new AbstractConsumableBundle(c -> {
+        appOf(new AbstractConsumableAssembly(c -> {
             c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName);
             }));
             c.link(cs.apply(cc -> {
                 cc.pathIs("/" + defaultName + "1");
             }));
-        }) {}).nameIs("Bundle");
+        }) {}).nameIs("Assembly");
 
         // As two level nested
-        appOf(new AbstractConsumableBundle(c -> {
+        appOf(new AbstractConsumableAssembly(c -> {
             c.link(cs.apply(cc -> {
                 cc.link(cs.apply(ccc -> {
                     ccc.pathIs("/" + defaultName + "/" + defaultName);
                 }));
             }));
-        }) {}).nameIs("Bundle");
+        }) {}).nameIs("Assembly");
 
         // As 3 level nested
-        appOf(new AbstractConsumableBundle(c -> {
+        appOf(new AbstractConsumableAssembly(c -> {
             c.link(cs.apply(cc -> {
                 cc.link(cs.apply(ccc -> {
                     ccc.link(cs.apply(cccc -> {
@@ -88,29 +88,29 @@ public class NameGeneratedTest extends AbstractArtifactTest {
                     }));
                 }));
             }));
-        }) {}).nameIs("Bundle");
+        }) {}).nameIs("Assembly");
     }
 
     /** We normally remove the suffix 'Bundle', so make sure Bundle works */
-    private class Bundle extends AbstractConsumableBundle {
-        Bundle(Consumer<? super ContainerConfigurationTester> ca) {
+    private class Assembly extends AbstractConsumableAssembly {
+        Assembly(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class HelloWorld extends AbstractConsumableBundle {
+    private class HelloWorld extends AbstractConsumableAssembly {
         HelloWorld(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class HelloWorldBundle extends AbstractConsumableBundle {
-        HelloWorldBundle(Consumer<? super ContainerConfigurationTester> ca) {
+    private class HelloWorldAssembly extends AbstractConsumableAssembly {
+        HelloWorldAssembly(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }
     }
 
-    private class S extends AbstractConsumableBundle {
+    private class S extends AbstractConsumableAssembly {
         S(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);
         }

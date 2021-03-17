@@ -39,17 +39,17 @@ public abstract class AbstractArtifactTest {
     }
 
     public static AppTester appOf(Consumer<? super ContainerConfigurationTester> source, Wirelet... wirelets) {
-        return new AppTester(new AbstractConsumableBundle(source) {}, wirelets);
+        return new AppTester(new AbstractConsumableAssembly(source) {}, wirelets);
     }
 
     public static ImageTester imageOf(BaseAssembly source, Wirelet... wirelets) {
         return new ImageTester(source, wirelets);
     }
 
-    protected static abstract class AbstractConsumableBundle extends BaseAssembly {
+    protected static abstract class AbstractConsumableAssembly extends BaseAssembly {
         final Consumer<? super ContainerConfigurationTester> ca;
 
-        protected AbstractConsumableBundle(Consumer<? super ContainerConfigurationTester> ca) {
+        protected AbstractConsumableAssembly(Consumer<? super ContainerConfigurationTester> ca) {
             this.ca = requireNonNull(ca);
         }
 

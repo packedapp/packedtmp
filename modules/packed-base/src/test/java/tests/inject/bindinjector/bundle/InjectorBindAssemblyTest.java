@@ -31,7 +31,7 @@ import packed.internal.inject.service.sandbox.Injector;
 /**
  *
  */
-public class InjectorBindBundleTest {
+public class InjectorBindAssemblyTest {
 
     /** Tests various null arguments. */
     @Test

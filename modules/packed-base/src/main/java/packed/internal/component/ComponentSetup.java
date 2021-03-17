@@ -424,9 +424,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
                 Class<?> source = realm.realmType();
                 if (Assembly.class.isAssignableFrom(source)) {
                     String nnn = source.getSimpleName();
-                    if (nnn.length() > 6 && nnn.endsWith("Bundle")) {
-                        nnn = nnn.substring(0, nnn.length() - 6);
-                    }
                     if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
                         nnn = nnn.substring(0, nnn.length() - 8);
                     }
@@ -436,7 +433,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
                         n = nnn;
                     }
                     if (nnn.length() == 0) {
-                        n = "Bundle";
+                        n = "Assembly";
                     }
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...

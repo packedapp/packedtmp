@@ -23,7 +23,7 @@ import app.packed.component.App;
 import testutil.util.AbstractArtifactTest;
 
 /** Various Bundle tests. */
-public class BaseBundleTest extends AbstractArtifactTest {
+public class BaseAssemblyTest extends AbstractArtifactTest {
 
     /** Tests that a bundle cannot be reused. */
     @Test

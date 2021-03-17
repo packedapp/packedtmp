@@ -171,6 +171,11 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+    
+    
+    default <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
+        throw new UnsupportedOperationException();
+    }
 }
 //
 ///**

@@ -25,7 +25,7 @@ public /* sealed */ interface WireletHandle<T extends Wirelet> {
         return size() == 0;
     }
 
-    WireletHandle<T> noConsume();
+    WireletHandle<T> peek();
 
     /**
      * Returns the number of wirelets that this handle contain.
@@ -35,8 +35,8 @@ public /* sealed */ interface WireletHandle<T extends Wirelet> {
     int size();
 
     // forEach
-    // consume
-    T take(); // one() maybe. Emphasize at man consumer en...
+    // will consume any matching wirelet and return the last one...
+    T last(); // one() maybe. Emphasize at man consumer en...
 
     static <T extends Wirelet> WireletHandle<T> of() {
         throw new UnsupportedOperationException();
@@ -55,6 +55,6 @@ class ZUsage {
 
     public void foo(WireletHandle<ZMyWirelet> w) {
         w.forEach(c -> System.out.println(c.val));
-        w.take();
+        w.last();
     }
 }
