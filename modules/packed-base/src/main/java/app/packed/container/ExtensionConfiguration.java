@@ -129,6 +129,21 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     boolean isPartOfImage(); // BoundaryTypes
 
+    /**
+     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
+     * <p>
+     * If the extension is still extendable the result may change. If it is not extendable the result will never change
+     * <p>
+     * If this method is called from {@link Extension#onComplete()} the result of the invocation is guaranteed to not
+     * change.
+     * 
+     * @param extensionClass
+     *            the extension to test
+     * @return true if the extension is currently in use, otherwise false
+     */
+    // Can vi angive non-dependencies, why not
+    boolean isUsed(Class<? extends Extension> extensionClass);
+
     default <E extends Subtension> void lazyUse(Class<E> extensionClass, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
         // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
@@ -188,6 +203,7 @@ public /* sealed */ interface ExtensionConfiguration {
      *             and the subtensions underlying extension have not already been created
      * 
      * @see ContainerConfiguration#use(Class)
+     * @see #isUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
 
@@ -250,14 +266,20 @@ public /* sealed */ interface ExtensionConfiguration {
      *            a lookup object for an extension class with {@link Lookup#hasFullPrivilegeAccess() full privilege access}
      * @param containerComponent
      *            the component to extract the configuration from.
-     * @return an optional containing the extension if it has been configured, otherwise empty
+     * @return the configuration of the extension if it has been configured, otherwise empty
      * @throws IllegalStateException
      *             if calling this method at runtime
      * @throws IllegalArgumentException
      *             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
      *             specified lookup object does not have full privileges
      */
-    static Optional<ExtensionConfiguration> privateLookup(MethodHandles.Lookup caller, Component containerComponent) {
+    // Maybe take an extension class anyway. Then users to not need to teleport if called from outside of the extension
+    // We should probably check that is has module access?
+    
+    // I don't know the exact extend we need these now. Previously, for example, ServiceContract made use of it
+    // But now I think we will extract the information from component attributes
+    @SuppressWarnings("unused")
+    private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass, Component containerComponent) {
         requireNonNull(caller, "caller is null");
         return Optional.ofNullable(getExtensionSetup(caller, containerComponent));
     }
@@ -265,7 +287,7 @@ public /* sealed */ interface ExtensionConfiguration {
     /**
      * @param <T>
      *            the type of extension to return
-     * @param lookup
+     * @param caller
      *            a lookup object for the specified extension class with {@link Lookup#hasFullPrivilegeAccess() full
      *            privilege access}
      * @param extensionClass
@@ -274,16 +296,17 @@ public /* sealed */ interface ExtensionConfiguration {
      *            the container component
      * @return the extension, or empty if no extension of the specified type is registered in the container
      */
-    @SuppressWarnings("unchecked")
-    static <T extends Extension> Optional<T> privateLookupExtension(MethodHandles.Lookup lookup, Class<T> extensionClass, Component containerComponent) {
-        requireNonNull(lookup, "lookup is null");
+    // We current dont use then
+    @SuppressWarnings({ "unchecked", "unused" })
+    private  static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, Component containerComponent) {
+        requireNonNull(caller, "caller is null");
         requireNonNull(extensionClass, "extensionClass is null");
-        if (lookup.lookupClass() != extensionClass) {
+        if (caller.lookupClass() != extensionClass) {
             throw new IllegalArgumentException(
-                    "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + lookup.lookupClass());
+                    "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + caller.lookupClass());
         }
 
-        ExtensionSetup eb = getExtensionSetup(lookup, containerComponent);
+        ExtensionSetup eb = getExtensionSetup(caller, containerComponent);
         return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
     }
 }

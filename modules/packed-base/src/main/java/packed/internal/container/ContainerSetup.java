@@ -82,6 +82,11 @@ public final class ContainerSetup {
         }
     }
 
+    public boolean isInUse(Class<? extends Extension> extensionClass) {
+        requireNonNull(extensionClass, "extensionClass is null");
+        return extensions.containsKey(extensionClass);
+    }
+
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
      * 

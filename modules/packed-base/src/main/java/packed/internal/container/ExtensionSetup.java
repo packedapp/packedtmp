@@ -46,13 +46,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
             void.class);
 
-    /** A handle for invoking {@link Extension#onNew()}, used by {@link #of(ContainerSetup, Class)}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew",
-            void.class);
-
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreContainerWiring", void.class);
+
+    /** A handle for invoking {@link Extension#onNew()}, used by {@link #of(ContainerSetup, Class)}. */
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew",
+            void.class);
 
     /** A handle for invoking {@link #findWirelet(Class)}, used by {@link ExtensionModel}. */
     static final MethodHandle MH_FIND_WIRELET = LookupUtil.lookupVirtual(MethodHandles.lookup(), "findWirelet", Object.class, Class.class);
@@ -193,6 +193,12 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
+    public boolean isUsed(Class<? extends Extension> extensionClass) {
+        return container.isInUse(extensionClass);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public void link(Assembly<?> bundle, Wirelet... wirelets) {
         component.link(bundle, wirelets);
     }
@@ -272,7 +278,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return component.wire(driver, wirelets);
     }
-
+    
     /**
      * Create and initialize a new extension.
      * 
@@ -326,8 +332,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
         return extension;
     }
-    
+
     public enum State {
-        
+        // lige nu har vi kun isConfigured...
+        // Vi har brug for nogle flere states
     }
 }

@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
@@ -67,12 +68,11 @@ import packed.internal.util.ThrowableUtil;
  */
 // Maaske har vi findDescendent(Class<? extends Extension>)
 
-
 // Extension State
 //// Instantiate
 //// Link
 //// onNew
-
+////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
 public abstract class Extension extends Realm {
 
@@ -152,11 +152,6 @@ public abstract class Extension extends Realm {
         return configuration().install(factory);
     }
 
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
-
     /**
      * @param instance
      *            the instance to install
@@ -166,6 +161,15 @@ public abstract class Extension extends Realm {
     protected final BaseComponentConfiguration installInstance(Object instance) {
         return configuration().installInstance(instance);
     }
+
+    protected final boolean isInUse(Class<? extends Extension> extensionClass) {
+        return configuration().isUsed(extensionClass);
+    }
+
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    // extensionPreambleDone
 
     protected final void isLeafBundle() {
         throw new UnsupportedOperationException();
@@ -181,6 +185,21 @@ public abstract class Extension extends Realm {
         return configuration().isPartOfImage();
     }
 
+    /**
+     * <p>
+     * If this assembly links a container this method must be called from {@link #onComplete()}.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @throws InternalExtensionException
+     *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
+     */
+    protected final void link(Assembly<?> assembly, Wirelet... wirelets) {
+        configuration().link(assembly, wirelets);
+    }
+
     protected final void lookup(MethodHandles.Lookup lookup) {
         ((ExtensionSetup) configuration()).lookup(lookup);
     }
@@ -188,22 +207,22 @@ public abstract class Extension extends Realm {
     /**
      * Invoked by the runtime when the configuration of the bundle is completed.
      * <p>
+     * This place is the only place where an extension is allowed to wire new containers, for example, by calling
+     * {@link #link(Assembly, Wirelet...)}.
+     * <p>
      * T method must not add new extensions. Be careful with the components accepted from users
      */
-    protected void onComplete() {}
+    protected void onComplete() {
+        // Time
+        // ──────────────────────────►
+        // ┌────────────┐
+        // │ Extendable │
+        // └────────────┘
+        // ┌──────────────────────┐
+        // │Configuration │
+        // └──────────────────────┘
 
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
-    protected void onPreContainerWiring() {
-        // Must add missing extensions
-        // Must not add additional containers
-        
-        // So
-        
-        // Container wiring must only be done from onComplete
-        
-        // lazy operations should be idempotent
+        // An extension cannot link a container as long as it (the container?) is extendable.
     }
 
     /**
@@ -229,6 +248,27 @@ public abstract class Extension extends Realm {
      * from this method. Is typically used to add new runtime components.
      */
     protected void onNew() {}
+
+    // Hvad hvis den selv tilfoejer komponenter med en child container???
+    // Problemet er hvis den bruger extensions som den ikke har defineret
+    // Det tror jeg maaske bare ikke den kan
+
+    // onPreUserContainerWiring???
+    protected void onPreContainerWiring() {
+        // if you need information from users to determind what steps to do here.
+        // You should guard setting this information with checkExtendable()
+
+        // A lot of shit goes on before linking the first container
+
+        // Must add missing extensions
+        // Must not add additional containers
+
+        // So
+
+        // Container wiring must only be done from onComplete
+
+        // lazy operations should be idempotent
+    }
 
     /**
      * Used to lookup other extensions.
@@ -277,8 +317,10 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Registers any number of dependencies of this extension. Every extension that another extension directly uses must be
-     * registered. Even if the extension is only used occasionally.
+     * Registers one or more dependencies of this extension.
+     * <p>
+     * Every extension that another extension uses directly must be explicitly registered. Even if the extension is only
+     * used occasionally.
      * 
      * @param extensions
      *            dependencies of this extension
@@ -341,7 +383,7 @@ public abstract class Extension extends Realm {
         // Will fail if the module, class does not have version
         // protected static void $libraryVersion(Module|Class m);
         // protected static void $libraryWrapper(Module m);
-        
+
         // libraryFor(
         // Er det mere et foreignLibray???
         // ConverterExtension er jo sin egen version
