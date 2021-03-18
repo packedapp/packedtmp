@@ -18,6 +18,4 @@ public class StackWalkerUtil {
         //Object o = SW.walk(s -> s.anyMatch(f -> System.out.println(f.getMethodName());return null;));
         return SW.walk(s -> s.anyMatch(f -> clazz.isAssignableFrom(f.getDeclaringClass()) && f.getMethodName().equals("<init>")));
     }
-
-  
 }

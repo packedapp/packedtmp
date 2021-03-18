@@ -106,25 +106,16 @@ public class GMoreTypes {
      * Object.equals()}. The returned type is {@link Serializable}.
      */
     public static Type canonicalize(Type type) {
-        if (type instanceof Class) {
-            Class<?> c = (Class<?>) type;
+        if (type instanceof Class<?> c) {
             return c.isArray() ? new GenericArrayTypeImpl(canonicalize(c.getComponentType())) : c;
-
         } else if (type instanceof CompositeType) {
             return type;
-
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType p = (ParameterizedType) type;
+        } else if (type instanceof ParameterizedType p) {
             return new ParameterizedTypeImpl(p.getOwnerType(), p.getRawType(), p.getActualTypeArguments());
-
-        } else if (type instanceof GenericArrayType) {
-            GenericArrayType g = (GenericArrayType) type;
+        } else if (type instanceof GenericArrayType g) {
             return new GenericArrayTypeImpl(g.getGenericComponentType());
-
-        } else if (type instanceof WildcardType) {
-            WildcardType w = (WildcardType) type;
+        } else if (type instanceof WildcardType w) {
             return new WildcardTypeImpl(w.getUpperBounds(), w.getLowerBounds());
-
         } else {
             // type is either serializable as-is or unsupported
             return type;
@@ -132,12 +123,9 @@ public class GMoreTypes {
     }
 
     public static Class<?> getRawType(Type type) {
-        if (type instanceof Class<?>) {
-            // type is a normal class.
-            return (Class<?>) type;
-
-        } else if (type instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) type;
+        if (type instanceof Class<?> c) {
+            return c;
+        } else if (type instanceof ParameterizedType parameterizedType) {
 
             // I'm not exactly sure why getRawType() returns Type instead of Class.
             // Neal isn't either but suspects some pathological case related
@@ -150,10 +138,8 @@ public class GMoreTypes {
             // type.getClass().getName());
             return (Class<?>) rawType;
 
-        } else if (type instanceof GenericArrayType) {
-            Type componentType = ((GenericArrayType) type).getGenericComponentType();
-            return Array.newInstance(getRawType(componentType), 0).getClass();
-
+        } else if (type instanceof GenericArrayType g) {
+            return Array.newInstance(getRawType(g.getGenericComponentType()), 0).getClass();
         } else if (type instanceof TypeVariable || type instanceof WildcardType) {
             // we could use the variable's bounds, but that'll won't work if there are multiple.
             // having a raw type that's more general than necessary is okay

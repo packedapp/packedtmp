@@ -16,6 +16,7 @@
 package packed.internal.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -54,8 +55,8 @@ public final class BasePackageAccess {
     private static <T> T singleton(Class<T> accessType, Class<?> initalizeClass) {
         // Start by making sure the class is initialized
         try {
-            Class.forName(initalizeClass.getName(), true, initalizeClass.getClassLoader());
-        } catch (ClassNotFoundException e) {
+            MethodHandles.lookup().ensureInitialized(initalizeClass);
+        } catch (IllegalAccessException e) {
             throw new ExceptionInInitializerError(e); // Should never happen
         }
 

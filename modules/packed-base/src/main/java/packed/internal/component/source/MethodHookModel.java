@@ -34,7 +34,6 @@ import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.ReflectionUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -178,7 +177,11 @@ public final class MethodHookModel extends MemberHookModel {
                 // freely with exactly one sidecar. However, is the method requested by more
                 // than 1 sidecar we need to create a new method instance.
                 if (shared.isMethodUsed) {
-                    m = exposedMethod = ReflectionUtil.copy(unsafeMethod);
+                    try {
+                        m = exposedMethod = unsafeMethod.getDeclaringClass().getDeclaredMethod(unsafeMethod.getName(), unsafeMethod.getParameterTypes());
+                    } catch (NoSuchMethodException e) {
+                        throw new IllegalStateException(e);
+                    }
                 } else {
                     m = exposedMethod = unsafeMethod;
                     shared.isMethodUsed = true;

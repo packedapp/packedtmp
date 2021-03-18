@@ -36,7 +36,11 @@ public final class FindInjectableConstructor {
     public static Constructor<?> findConstructorIAE(Class<?> type) {
         return findConstructor(type, s -> new IllegalArgumentException(s));
     }
-
+    
+    public static Constructor<?> singleConstructor(Class<?> type, Function<String, RuntimeException> errorMaker) {
+        throw new UnsupportedOperationException();
+    }
+    
     public static Constructor<?> findConstructor(Class<?> type, Function<String, RuntimeException> errorMaker) {
         if (type.isAnnotation()) {
             String errorMsg = format(type) + " is an annotation and cannot be instantiated";

@@ -33,6 +33,7 @@ import java.util.OptionalLong;
 import java.util.Set;
 
 /** Various utility methods for working {@link Type types}. */
+// Split up in ClassUtil and TypeUtil I think
 public final class TypeUtil {
 
     /** Cannot instantiate. */
@@ -45,6 +46,8 @@ public final class TypeUtil {
      * @param clazz
      *            the class to check
      */
+    // TODO tror godt vi kan fjerne denne, eftersom den er flyttet til FindInjectableConstructod...
+    // Tror ikke vi finder constructere som vi ikke bruger
     public static <T> Class<T> checkClassIsInstantiable(Class<T> clazz) {
         if (clazz.isAnnotation()) {
             throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an annotation and cannot be instantiated");
@@ -203,7 +206,7 @@ public final class TypeUtil {
         } else if (type instanceof TypeVariable || type instanceof WildcardType) {
             return Object.class;
         } else {
-            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of type: " + type.getClass().getName());
+            throw new IllegalArgumentException("Cannot extract raw type from '" + type + "' of unknown type: " + type.getClass().getName());
         }
     }
 

@@ -47,6 +47,8 @@ public class Infuser {
         return mh.asType(mh.type().changeReturnType(adaptTo));
     }
     public MethodHandle findConstructorFor(Class<?> type) {
+        // Den bliver ogsaa checket i FindInjectableConstructor...
+        // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
         TypeUtil.checkClassIsInstantiable(type);
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);

@@ -26,16 +26,6 @@ public final class LookupUtil {
 
     private static final int DEFAULT_LOOKUP_MODES = MethodHandles.lookup().lookupModes();
 
-    private static final MethodHandle PREVIOUS_LOOKUP_CLASS;
-
-    static {
-        if (Runtime.version().feature() >= 14) {
-            PREVIOUS_LOOKUP_CLASS = lookupVirtualPublic(Lookup.class, "previousLookupClass", Class.class);
-        } else {
-            PREVIOUS_LOOKUP_CLASS = null;
-        }
-    }
-
     /** Never instantiate. */
     private LookupUtil() {}
 
@@ -47,7 +37,7 @@ public final class LookupUtil {
      * @return whether it is default
      */
     public static boolean isLookupDefault(Lookup lookup) {
-        return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && (PREVIOUS_LOOKUP_CLASS == null || lookup.previousLookupClass() == null);
+        return lookup.lookupModes() == DEFAULT_LOOKUP_MODES && lookup.previousLookupClass() == null;
     }
 
     public static MethodHandle lookupConstructor(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
@@ -137,5 +127,4 @@ public final class LookupUtil {
             throw new ExceptionInInitializerError(e);
         }
     }
-
 }

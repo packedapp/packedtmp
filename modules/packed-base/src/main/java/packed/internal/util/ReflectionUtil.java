@@ -39,15 +39,6 @@ public final class ReflectionUtil {
         }
     }
 
-
-    public static Method copy(Method method) {
-        try {
-            return method.getDeclaringClass().getDeclaredMethod(method.getName(), method.getParameterTypes());
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
     public static Field copy(Field field) {
         try {
             return field.getDeclaringClass().getDeclaredField(field.getName());
