@@ -33,7 +33,6 @@ import app.packed.component.ComponentDriverDescriptor;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.inject.classscan.Infuser;
@@ -259,10 +258,6 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         CLASS, FACTORY, INSTANCE, OTHER;
     }
 
-    /**
-     * @apiNote In the future, if the Java language permits, {@link ArtifactDriver} may become a {@code sealed} interface,
-     *          which would prohibit subclassing except by explicitly permitted types.
-     */
     public interface Option {
 
         /**

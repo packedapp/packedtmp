@@ -24,3 +24,4 @@ interface NamespaceInfo {
     // no (managed) threads
     boolean isStateless();
 }
+

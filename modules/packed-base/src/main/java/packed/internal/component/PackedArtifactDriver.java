@@ -338,7 +338,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
     }
 
     /** An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}. */
-    private final class PackedImage implements Image<A> {
+    public final class PackedImage implements Image<A> {
 
         private final ComponentSetup root;
 

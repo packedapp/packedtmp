@@ -141,7 +141,7 @@ public final class WireletPack {
         return create(null, w);
     }
 
-    static class Empty<T extends Wirelet> implements WireletHandle<T> {
+    public static final class Empty<T extends Wirelet> implements WireletHandle<T> {
 
         @Override
         public void forEach(Consumer<? super T> action) {}
@@ -160,7 +160,6 @@ public final class WireletPack {
         public Optional<T> last() {
             return Optional.empty();
         }
-
     }
 
     public static class Ent {
@@ -173,7 +172,7 @@ public final class WireletPack {
         }
     }
 
-    class HandleImpl<T extends Wirelet> implements WireletHandle<T> {
+    public final class HandleImpl<T extends Wirelet> implements WireletHandle<T> {
 
         private final Class<? extends T> wireletClass;
 

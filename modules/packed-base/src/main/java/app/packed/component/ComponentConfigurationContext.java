@@ -29,9 +29,6 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
  * Component configuration context objects used component configuration classes.
  * <p>
  * This class mainly exists to allow people to create their own configuration classes.
- * 
- * @apiNote In the future, if the Java language permits, {@link ComponentConfigurationContext} may become a
- *          {@code sealed} interface, which would prohibit subclassing except by explicitly permitted types.
  */
 
 // ComponentComposer
@@ -51,7 +48,7 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceExportAs();
 // sourceProvide();
 // sourceProvideAs();
-public interface ComponentConfigurationContext {
+public /* sealed */ interface ComponentConfigurationContext {
     // Hmmmmmm, build() is normally something else
     BuildInfo build();
 
@@ -171,8 +168,7 @@ public interface ComponentConfigurationContext {
      * @return a configuration for the component
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
-    
-    
+
     default <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
         throw new UnsupportedOperationException();
     }

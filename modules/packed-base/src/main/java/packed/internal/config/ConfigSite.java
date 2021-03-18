@@ -61,7 +61,7 @@ import app.packed.component.Wirelet;
 // Og saa automatisk intern naar man laver noget...
 // Det
 
-// Maybe a sealed interface???
+// Maybe a/* sealed */interface???
 public interface ConfigSite {
 
     Attribute<ConfigSite> ATTRIBUTE = Attribute.of(MethodHandles.lookup(), "configSite", ConfigSite.class);

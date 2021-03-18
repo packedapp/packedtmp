@@ -28,7 +28,7 @@ import app.packed.component.ComponentDriver;
 //SourceableComponentDriver
 //BindableComponentDriver
 // Altsaa i foerste
-public /* sealed */ interface OldBindableComponentDriver<C extends ComponentConfiguration> {
+public /*/* sealed */ interface OldBindableComponentDriver<C extends ComponentConfiguration> {
     
     // Vi flytter de her metoder til ComponentDriver
     ComponentDriver<C> bind(Object source);

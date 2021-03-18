@@ -23,6 +23,7 @@ package app.packed.component;
 // Tror bare vi smider IllegalArgumentException
 // UnconsumedWireletException
 // InvalidWireletException
+// The wirelet XXX can not be specified as there are no receiver for it
 public class WireletException extends RuntimeException {
 
     /** */

@@ -62,7 +62,7 @@ import packed.internal.inject.classscan.Infuser;
  *          which would prohibit subclassing except by explicitly permitted types.
  */
 // Environment + Shell + Result
-public interface ArtifactDriver<A> {
+public /* sealed */ interface ArtifactDriver<A> {
 
     // analyze
     // validate

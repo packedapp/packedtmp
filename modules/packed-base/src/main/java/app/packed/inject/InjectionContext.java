@@ -30,11 +30,10 @@ import app.packed.base.Variable;
  * <p>
  * we both need to check the type and the qualifier which must be readable by #visibility
  * <p>
- * <strong>Note:</strong> This class should only be used doing development. As the runtime needs to retain detailed
- * information about the dependency graph that is normally only available at build time.
+ * <strong>Note:</strong> This interface should only be used doing development. As the runtime needs to retain detailed
+ * information about the dependency graph. Information which is normally only available at build time.
  */
-public /* sealed */  interface InjectionContext extends ServiceRegistry {
-
+public /*/* sealed */ interface InjectionContext extends ServiceRegistry {
 
     default void printDependencyTree() {
         // Det er jo bare en trae af ServiceDependency

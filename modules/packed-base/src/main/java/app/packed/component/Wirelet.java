@@ -59,7 +59,7 @@ import packed.internal.util.StackWalkerUtil;
 // Giver mere mening med at det skal vaere det intermediate element.
 
 // Hvis vi kraever at alle WireletHandle
-// kun kan tage final eller sealed wirelets som parameter
+// kun kan tage final eller/* sealed */wirelets som parameter
 // Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret 
 public abstract class Wirelet {
 

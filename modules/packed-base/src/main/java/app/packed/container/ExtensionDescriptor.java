@@ -26,7 +26,7 @@ import packed.internal.container.ExtensionModel;
  * An extension descriptor.
  * <p>
  * This class describes an extension and defines various methods to obtain information about the extension. An instance
- * of this class is normally acquired by calling {@link #of(Class)}.
+ * of this interface is normally acquired by calling {@link #of(Class)}.
  */
 public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
@@ -43,7 +43,7 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
      *         specified object.
      *
      * @throws IllegalArgumentException
-     *             if the depth and full name of this descriptor and the the specified descriptor are equal. But they are
+     *             if the depth and full name of this descriptor and the specified descriptor are equal. But they are
      *             loaded by different class loaders.
      */
     // Maaske kan vi kigge på classloader parent...
@@ -87,9 +87,11 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     String fullName();
 
     /**
-     * Returns the module of the extension.
+     * Returns the module the extension is part of.
+     * <p>
+     * This module of an extension is always the module that the {@link #extensionClass() extension class} is located in.
      * 
-     * @return the module of the extension
+     * @return the module the extension is part of
      * @see Class#getModule()
      */
     default Module module() {
@@ -151,7 +153,7 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     }
 }
 
-interface ExtensionDescriptor2 extends ExtensionDescriptor {
+interface ExtensionDescriptor2 {
 
     /**
      * An extension might have an attached library.
@@ -175,6 +177,7 @@ interface ExtensionDescriptor2 extends ExtensionDescriptor {
         return Optional.empty();
     }
 }
+// allDependencies
 // default Set<Class<? extends Extension>> dependenciesWithTransitiveDependencies() {
 //dependencies().stream().map(ExtensionDescriptor::of).flatMap(ExtensionDescriptor::dependenciesWithTransitiveDependencies);
 //return null;

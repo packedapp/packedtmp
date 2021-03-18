@@ -228,32 +228,28 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     public <E extends Subtension> E use(Class<E> subtensionClass) {
         requireNonNull(subtensionClass, "subtensionClass is null");
 
-        // Find a model and extension class for the subtension
+        // Finds the subtension's model and extension class
         SubtensionModel subModel = SubtensionModel.of(subtensionClass);
         Class<? extends Extension> subExtensionClass = subModel.extensionClass;
 
-        // We need to check whether or not the extension is allowed to another extension (or any of its subtension) every time.
-        // An alternative to explicit checks would be to cache the result of the check a map for each extension.
-        // However this would incur extra memory usage. And if we only request an extension once
-        // There would be significant overhead to instantiating a new map and caching the extension.
-        // A better solution is that each extension caches the extensions they use (if they want to).
-        // This saves a check + map lookup for each additional request.
+        // Check that requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(subExtensionClass)) {
-            // You cannot use your own subtensions
+            // Special message if you try and use your own subtension
             if (model.extensionClass() == subExtensionClass) {
-                throw new IllegalArgumentException("An extension cannot use its own subs " + model.extensionClass().getSimpleName() + ", subtension = "
-                        + subtensionClass + ", valid dependencies = " + model.dependencies());
-            } else {
-                throw new UnsupportedOperationException("The specified extension type is not among the direct dependencies of "
-                        + model.extensionClass().getSimpleName() + ", extensionClass = " + subtensionClass + ", valid dependencies = " + model.dependencies());
+                throw new InternalExtensionException(
+                        "An extension cannot use its own subtension, [extension = " + extensionClass() + ", subtension = " + subtensionClass + "]");
             }
+            throw new InternalExtensionException(
+                    "The extension of the specified subtension is not a direct depe extension type is not among the direct dependencies of "
+                            + model.extensionClass().getSimpleName() + ", extensionClass = " + subtensionClass + ", valid dependencies = "
+                            + model.dependencies());
         }
 
-        // Get the extension instance (create it if needed) we are creating a subtension for
-        Extension ext = container.useDependencyCheckedExtension(subExtensionClass, this).instance;
+        // Get the extension instance (create it if needed) thaw we need to create a subtension for
+        Extension instance = container.useDependencyCheckedExtension(subExtensionClass, this).instance;
 
-        // Create a new subtension instance using the extension and this.extensionClass as the requesting extension
-        return (E) subModel.newInstance(ext, extensionClass());
+        // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
+        return (E) subModel.newInstance(instance, extensionClass());
     }
 
     /** {@inheritDoc} */
