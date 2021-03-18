@@ -79,7 +79,7 @@ public /* sealed */ interface ExtensionConfiguration {
     void checkConfigurable();
 
     /**
-     * Checks that child cubes has been aded
+     * Checks that child containers has been aded
      */
     // checkContainerFree, checkNoChildContainers
     void checkExtendable();
@@ -156,10 +156,10 @@ public /* sealed */ interface ExtensionConfiguration {
      * Links the specified assembly. This method must be called from {@link Extension#onComplete()}. Other
      * 
      * <p>
-     * Creates a new container with this extensions container as its parent by linking the specified bundle. The new
+     * Creates a new container with this extensions container as its parent by linking the specified assembly. The new
      * container will have this extension as owner. Thus will be hidden from normal view
      * <p>
-     * The parent component of the linked bundle will have the cube of this extension as its parent.
+     * The parent component of the linked assembly will have the container of this extension as its parent.
      * 
      * @param assembly
      *            the assembly to link

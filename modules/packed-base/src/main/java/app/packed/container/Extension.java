@@ -178,7 +178,7 @@ public abstract class Extension extends Realm {
     // If you have configuration that
     // extensionPreambleDone
 
-    protected final void isLeafBundle() {
+    protected final void isLeafContainer() {
         throw new UnsupportedOperationException();
     }
 
@@ -212,7 +212,7 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Invoked by the runtime when the configuration of the bundle is completed.
+     * Invoked by the runtime when the configuration of the container is completed.
      * <p>
      * This place is the only place where an extension is allowed to wire new containers, for example, by calling
      * {@link #link(Assembly, Wirelet...)}.
@@ -384,18 +384,16 @@ public abstract class Extension extends Realm {
             return alternative.get();
         }
 
-        // The dependency exists, load...
-
-        // Kunne man lave noget a.ka. multi jar release for java versioner ogsaa??
+        // The dependency exists, load bootstrap class
         Class<?> c;
         String s = dep.get().getName() + "$" + bootstrap;
         try {
             c = Class.forName(s, true, dep.get().getClassLoader());
-        } catch (ClassNotFoundException ignore) {
-            throw new IllegalArgumentException("Could not load class " + s, ignore);
+        } catch (ClassNotFoundException e) {
+            throw new InternalExtensionException("Could not load class " + s, e);
         }
 
-        // Find and invoke a constructor
+        // Create and return a single instance of it
         MethodHandle mh = Infuser.of(MethodHandles.lookup()).findConstructorFor(c);
         try {
             return (T) mh.invoke();

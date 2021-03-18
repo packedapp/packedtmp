@@ -56,9 +56,9 @@ public @interface OnBuild {
 }
 
 // Had this attributes.. Men syntes vi skal finde en anden maade...
-//boolean runtimeBundle() default false;
+//boolean runtimeAssembly() default false;
 
-//boolean buildtimeBundle() default true;
+//boolean buildtimeAssembly() default true;
 
 // Maybe allow for static methods on component sources
 

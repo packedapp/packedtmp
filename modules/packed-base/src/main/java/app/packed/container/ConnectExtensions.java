@@ -41,7 +41,7 @@ import app.packed.inject.Provide;
 // 2 metoder med nullable.... IDK
 // Syntes det ville vaere ret rart at faa den injected i den nye extension
 
-// Er i virkeligheden en maade at linke paa across bundle boundaries
+// Er i virkeligheden en maade at linke paa across assembly boundaries
 
 @Retention(RetentionPolicy.RUNTIME)
 

@@ -34,8 +34,8 @@ public interface ComponentDriverDescriptor {
 //TODO vi kunne expose noget om hvad den laver den her driver...
 //Saa kan man lave checks via ContainerConfigurationContext
 //sourceModel.doo().hasAnnotation(Actor.class);
-//Error handling top->down and then as a static bundle method as last resort.
-//The bundle XX.... defines a non-static error handler method. But it was never installed
+//Error handling top->down and then as a static container method as last resort.
+//The container XX.... defines a non-static error handler method. But it was never installed
 
 //S spawn();
 //CompletableFuture<S> spawnAsync();
@@ -51,7 +51,7 @@ public interface ComponentDriverDescriptor {
 
 //install(Role, implementation, wirelets);
 
-//Bundle.setDefaultRole <- On Runtime.
+//assembly.setDefaultRole <- On Runtime.
 //F.eks. Actor .withRole(Actor)
 
 //Role -> Pool [5-25 instance, timeout 1 minute]

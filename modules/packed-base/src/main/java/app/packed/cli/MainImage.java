@@ -103,6 +103,7 @@ public /* primitive */ final class MainImage {
 }
 
 class MyAppMain extends BaseAssembly {
+    
     private static final MainImage MAIN = MainImage.of(new MyAppMain());
 
     protected void build() {

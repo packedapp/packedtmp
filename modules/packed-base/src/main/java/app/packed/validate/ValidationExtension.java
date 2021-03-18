@@ -23,7 +23,7 @@ import app.packed.container.Extension;
 public final class ValidationExtension extends Extension {
     /* package-private */ ValidationExtension() {}
 
-    //// Must be added in the top bundle...
+    //// Must be added in the top assembly...
     //// Eller ogsaa er det bare altid recursive
     // addSystemConstraints(Constrain<ComponentSystem);
 }

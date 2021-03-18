@@ -70,7 +70,7 @@ public /* sealed */ interface ComponentConfigurationContext {
      * @see ContainerAssembly#extensions()
      */
     // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
-    // for bundle components. Makes sense because we would need for interating
+    // for assembly components. Makes sense because we would need for interating
     // through the build
     Set<Class<? extends Extension>> containerExtensions();
 
@@ -98,16 +98,12 @@ public /* sealed */ interface ComponentConfigurationContext {
     String getName();
 
     /**
-     * @param bundle
-     *            the bundle
+     * @param assembly
+     *            the assembly
      * @param wirelets
-     *            wirelets
-     * 
-     * @apiNote Previously this method returned the specified bundle. However, to encourage people to configure the bundle
-     *          before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we now have
-     *          void return type.
+     *            optional wirelets
      */
-    void link(Assembly<?> bundle, Wirelet... wirelets);
+    void link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Returns an immutable set containing all the modifiers of this component.

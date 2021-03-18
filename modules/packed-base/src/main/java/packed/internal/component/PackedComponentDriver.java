@@ -106,7 +106,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         for (int i = 0; i < options.length; i++) {
             OptionImpl o = (OptionImpl) options[i];
             switch (o.id) {
-            case OptionImpl.OPT_BUNDLE:
+            case OptionImpl.OPT_CONTAINER:
                 modifiers |= PackedComponentModifierSet.I_BUNDLE;
                 break;
             case OptionImpl.OPT_CONSTANT:
@@ -189,11 +189,11 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
     // Nahhh
     public static class OptionImpl implements PackedComponentDriver.Option {
 
-        static final int OPT_BUNDLE = 1;
+        static final int OPT_CONTAINER = 1;
         static final int OPT_CONSTANT = 2;
         static final int OPT_STATEFUL = 3;
         public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
-        public static final OptionImpl BUNDLE = new OptionImpl(OPT_BUNDLE, null);
+        public static final OptionImpl BUNDLE = new OptionImpl(OPT_CONTAINER, null);
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
 
         @Nullable

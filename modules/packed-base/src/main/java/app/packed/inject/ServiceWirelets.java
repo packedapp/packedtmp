@@ -140,7 +140,7 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that will provide the specified instance to the target cube. Iff the target cube has a service of
+     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a service of
      * the specific type as a requirement.
      * <p>
      * Invoking this method is identical to invoking {@code to(t -> t.provideInstance(instance))}.

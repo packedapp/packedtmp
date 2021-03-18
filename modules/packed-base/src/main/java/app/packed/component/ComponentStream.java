@@ -206,20 +206,6 @@ public interface ComponentStream extends AttributedElementStream<Component> {
     @Override
     ComponentStream takeWhile(Predicate<? super Component> predicate);
 
-//    /**
-//     * 
-//     * <p>
-//     * This method consumes the specified bundle.
-//     * 
-//     * @param bundle
-//     *            the bundle to return a stream for
-//     * @return a component the stream
-//     * @see ArtifactImage#stream(Option...)
-//     */
-//    static ComponentStream of(ContainerBundle bundle, Option... options) {
-//        return ArtifactImage.of(bundle).stream(options);
-//    }
-
     /**
      * Skal kun indeholde ting vi ikke kan have i streamen.
      */

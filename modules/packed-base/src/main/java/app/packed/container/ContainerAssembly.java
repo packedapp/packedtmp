@@ -31,14 +31,14 @@ import app.packed.inject.ServiceComponentConfiguration;
  * A container assembly. Typically you
  * 
  * 
- * Bundles are the main source of system configuration. Basically a bundle is just a thin wrapper around
+ * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
  * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
  * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
- * A bundle instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
+ * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
  * {@link IllegalStateException}.
  * 
- * A generic bundle. Normally you would extend {@link BaseAssembly}
+ * A generic assembly. Normally you would extend {@link BaseAssembly}
  * 
  * @see BaseAssembly
  */

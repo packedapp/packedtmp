@@ -263,8 +263,8 @@ public interface Host {
 }
 
 //10 seconds is from start.. Otherwise people must use an exact deadline
-//start(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
-//sart(new SomeBundle(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
+//start(new SomeAssembly(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS));
+//sart(new SomeAssembly(), LifecycleWirelets.stopAfter(10, TimeUnit.SECONDS), ()-> New CancelledException()); (failure)
 
 //Rename fordi vi gerne vil have at ArtifactDriver hedder det samme og
 //AppHost.xxx() .. Dumt det hedder App.of og AppHost.instantiate
