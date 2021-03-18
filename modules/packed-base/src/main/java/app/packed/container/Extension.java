@@ -15,8 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
@@ -38,7 +36,6 @@ import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.StackWalkerUtil;
-import packed.internal.util.StringFormatter;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -163,6 +160,15 @@ public abstract class Extension extends Realm {
         return configuration().installInstance(instance);
     }
 
+    /**
+     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
+     * 
+     * @param extensionClass
+     *            the extension to test
+     * @return true if the extension is currently in use, otherwise false
+     * 
+     * @see ExtensionConfiguration#isUsed(Class)
+     */
     protected final boolean isInUse(Class<? extends Extension> extensionClass) {
         return configuration().isUsed(extensionClass);
     }
@@ -337,7 +343,7 @@ public abstract class Extension extends Realm {
      */
     @SafeVarargs
     protected static void $dependsOn(Class<? extends Extension>... extensions) {
-        ExtensionModel.Bootstrap.get(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
+        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
     }
 
     /**
@@ -356,26 +362,40 @@ public abstract class Extension extends Realm {
      * @see Class#forName(String, boolean, ClassLoader)
      */
     protected static Optional<Class<? extends Extension>> $dependsOnOptionally(String extensionName) {
-        requireNonNull(extensionName, "extensionName is null");
-        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
-        return loadDependency(callerClass, extensionName);
+        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
     }
 
+    /**
+     * 
+     * @param <T>
+     *            sd
+     * @param extensionName
+     *            sd
+     * @param bootstrap
+     *            sd
+     * @param alternative
+     *            sd
+     * @return stuff
+     */
     protected static <T> T $dependsOnOptionally(String extensionName, String bootstrap, Supplier<T> alternative) {
-        Class<?> callerClass = StackWalkerUtil.SW.getCallerClass();
-        Optional<Class<? extends Extension>> dep = loadDependency(callerClass, extensionName);
+        Optional<Class<? extends Extension>> dep = ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
+        // The dependency does not exist, return an alternative value
         if (dep.isEmpty()) {
             return alternative.get();
         }
 
+        // The dependency exists, load...
+
+        // Kunne man lave noget a.ka. multi jar release for java versioner ogsaa??
         Class<?> c;
-        String s = callerClass.getName() + "$" + bootstrap;
+        String s = dep.get().getName() + "$" + bootstrap;
         try {
-            c = Class.forName(s, true, callerClass.getClassLoader());
+            c = Class.forName(s, true, dep.get().getClassLoader());
         } catch (ClassNotFoundException ignore) {
             throw new IllegalArgumentException("Could not load class " + s, ignore);
         }
 
+        // Find and invoke a constructor
         MethodHandle mh = Infuser.of(MethodHandles.lookup()).findConstructorFor(c);
         try {
             return (T) mh.invoke();
@@ -393,38 +413,6 @@ public abstract class Extension extends Realm {
         // Er det mere et foreignLibray???
         // ConverterExtension er jo sin egen version
         // will extract verions
-    }
-
-    @SuppressWarnings("unchecked")
-    static Class<? extends Extension> checkCaller(Class<?> callerClass) {
-        if (!Extension.class.isAssignableFrom(callerClass) || callerClass == Extension.class) {
-            throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
-        }
-        return (Class<? extends Extension>) callerClass;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Optional<Class<? extends Extension>> loadDependency(Class<?> callerClass, String extension) {
-        ClassLoader cl = callerClass.getClassLoader();
-        Class<?> c = null;
-        try {
-            c = Class.forName(extension, true, cl);
-        } catch (ClassNotFoundException ignore) {
-            return Optional.empty();
-        }
-        // We check this in models also...
-        if (Extension.class == c) {
-            throw new InternalExtensionException(
-                    "The specified string \"" + extension + "\" cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
-        } else if (!Extension.class.isAssignableFrom(c)) {
-            throw new InternalExtensionException(
-                    "The specified string \"" + extension + "\" " + " specified an invalid extension " + StringFormatter.format(c));
-        }
-        Class<? extends Extension> extensionClass = (Class<? extends Extension>) c;
-
-        ExtensionModel.of(extensionClass);
-        ExtensionModel.Bootstrap.get(callerClass).dependsOn(extensionClass);
-        return Optional.of(extensionClass);
     }
 
     static final void preFinalMethod() {
@@ -474,17 +462,7 @@ public abstract class Extension extends Realm {
      * Subtensions are only available through Extension#use(Class)
      * 
      * @see Extension#use(Class)
+     * @see ExtensionConfiguration#use(Class)
      */
-    // Should we require that extensions that want to expose services
-    // to other extensions must implement them via @Provide
-    // Naah, a subtension is not a runtime concept...
-    // I really think people need to store there own Class
-    public static abstract class Subtension {
-
-        protected void initialize() {}
-//
-//        // realm() <--zx- public final????
-//        // Vi kan sagtens lave nogle ting final paa sub extensions...
-//        // Det er jo bare andre extensions der kalde den.
-    }
+    public static abstract class Subtension {}
 }

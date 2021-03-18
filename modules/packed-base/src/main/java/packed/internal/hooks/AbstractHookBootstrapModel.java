@@ -24,7 +24,7 @@ import packed.internal.util.ThrowableUtil;
 public abstract class AbstractHookBootstrapModel<T> {
 
     /** A method handle for the bootstrap's constructor. */
-    private final MethodHandle mhConstructor;
+    private final MethodHandle mhConstructor; // ()Object
 
     /**
      * Creates a new model.

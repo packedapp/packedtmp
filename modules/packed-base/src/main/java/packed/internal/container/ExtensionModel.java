@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -226,6 +227,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(nameFull);
+        version().ifPresent(v -> sb.append("[" + v + "]"));
+        return sb.toString();
+    }
+
     /**
      * Returns an model for the specified extension class.
      * 
@@ -239,11 +247,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return MODELS.get(extensionClass);
     }
 
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(nameFull);
-        version().ifPresent(v -> sb.append("[" + v + "]"));
-        return sb.toString();
+    public static Bootstrap bootstrap(Class<?> callerClass) {
+        return Loader.forBootstrapAccess(callerClass);
     }
 
     /**
@@ -271,9 +276,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.extensionClass = requireNonNull(extensionClass);
         }
 
-        public static Bootstrap get(Class<?> callerClass) {
-            return Loader.forBootstrapAccess(callerClass);
-        }
         /**
          * Adds the specified dependency to the caller class if valid.
          * 
@@ -292,6 +294,30 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 }
                 this.dependencies.add(dependencyType);
             }
+        }
+
+        @SuppressWarnings("unchecked")
+        public Optional<Class<? extends Extension>> dependsOnOptionally(String extension) {
+            ClassLoader cl = extensionClass.getClassLoader();
+            Class<?> c = null;
+            try {
+                c = Class.forName(extension, true, cl);
+            } catch (ClassNotFoundException ignore) {
+                return Optional.empty();
+            }
+            // We check this in models also...
+            if (Extension.class == c) {
+                throw new InternalExtensionException("The specified string \"" + extension + "\" cannot specify Extension.class as an optional dependency, for "
+                        + StringFormatter.format(c));
+            } else if (!Extension.class.isAssignableFrom(c)) {
+                throw new InternalExtensionException(
+                        "The specified string \"" + extension + "\" " + " specified an invalid extension " + StringFormatter.format(c));
+            }
+            Class<? extends Extension> dependency = (Class<? extends Extension>) c;
+
+            ExtensionModel.of(dependency);
+            dependsOn(dependency);
+            return Optional.of(dependency);
         }
     }
 
@@ -375,8 +401,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }, ExtensionSetup.class);
 
             this.mhConstructor = infuser.findAdaptedConstructor(extensionClass, Extension.class);
-            
-            
+
             cp.findMethods(m -> {
                 ConnectExtensions ce = m.getAnnotation(ConnectExtensions.class);
                 if (ce != null) {

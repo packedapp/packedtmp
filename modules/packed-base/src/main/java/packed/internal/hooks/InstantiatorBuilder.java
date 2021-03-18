@@ -71,11 +71,11 @@ final class InstantiatorBuilder {
     // ShellDriver <--- kan den provide attributer??? Why not...
     // ComponentDriver <--- Why not attributer.. (hmm vi vil ikke gemme component configuration...)
 
-    enum Xx {
-        INJECT_ONLY, // <-- only @Inject annotations can be used
-
-        // Extensions...
-
-        COMPONENT; // full monthy
-    }
+//    enum Xx {
+//        INJECT_ONLY, // <-- only @Inject annotations can be used
+//
+//        // Extensions...
+//
+//        COMPONENT; // full monthy
+//    }
 }

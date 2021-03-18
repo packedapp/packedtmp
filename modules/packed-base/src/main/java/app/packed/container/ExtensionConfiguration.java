@@ -132,17 +132,12 @@ public /* sealed */ interface ExtensionConfiguration {
 
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
-     * <p>
-     * If the extension is still extendable the result may change. If it is not extendable the result will never change
-     * <p>
-     * If this method is called from {@link Extension#onComplete()} the result of the invocation is guaranteed to not
-     * change.
      * 
      * @param extensionClass
      *            the extension to test
      * @return true if the extension is currently in use, otherwise false
+     * @see Extension#isInUse(Class)
      */
-    // Can vi angive non-dependencies, why not
     boolean isUsed(Class<? extends Extension> extensionClass);
 
     default <E extends Subtension> void lazyUse(Class<E> extensionClass, Consumer<E> action) {
@@ -225,8 +220,15 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet);
-    
+    /**
+     * @param <T>
+     *            the type of wirelet to return a handle for
+     * @param wireletType
+     *            the type of wirelet to return a handle for
+     * @return
+     */
+    <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletType);
+
     @Nullable
     private static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
         requireNonNull(lookup, "containerComponent is null");
@@ -278,11 +280,12 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     // Maybe take an extension class anyway. Then users to not need to teleport if called from outside of the extension
     // We should probably check that is has module access?
-    
+
     // I don't know the exact extend we need these now. Previously, for example, ServiceContract made use of it
     // But now I think we will extract the information from component attributes
     @SuppressWarnings("unused")
-    private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass, Component containerComponent) {
+    private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
+            Component containerComponent) {
         requireNonNull(caller, "caller is null");
         return Optional.ofNullable(getExtensionSetup(caller, containerComponent));
     }
@@ -301,7 +304,7 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     // We current dont use then
     @SuppressWarnings({ "unchecked", "unused" })
-    private  static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, Component containerComponent) {
+    private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, Component containerComponent) {
         requireNonNull(caller, "caller is null");
         requireNonNull(extensionClass, "extensionClass is null");
         if (caller.lookupClass() != extensionClass) {
