@@ -23,7 +23,7 @@ public class InfuserTester {
 
     public static void main(String[] args) throws Throwable {
         Infuser i = Infuser.build(MethodHandles.lookup(), c -> {
-            c.provide(IntStream.class).extractPublic("chars");
+            c.provide(IntStream.class).invokePublicMethod("chars");
             c.provideHidden(Secret.class).adapt(1);
         }, String.class, Secret.class);
 

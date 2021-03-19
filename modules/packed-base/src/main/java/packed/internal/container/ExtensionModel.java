@@ -398,6 +398,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
                 c.provide(ExtensionConfiguration.class).adapt();
                 c.provideHidden(ExtensionSetup.class).adapt();
+                // Problemet er at der bliver lavet en automatisk konverterting fra noeglen tror jeg
+//                ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(ExtensionS))
+//                c.optional(extensionClass).transform();
             }, ExtensionSetup.class);
 
             this.mhConstructor = infuser.findAdaptedConstructor(extensionClass, Extension.class);

@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.util.Optional;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -52,6 +53,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreContainerWiring", void.class);
 
+    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
+    static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class,
+            "injectParent", Optional.class);
+    
     /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
@@ -126,6 +131,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public Class<? extends Extension> extensionClass() {
         return model.extensionClass();
+    }
+
+    Optional<Extension> injectParent() {
+        ContainerSetup parent = container.parent;
+        if (parent != null) {
+            ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
+            if (extensionContext != null) {
+                return Optional.of(extensionContext.instance);
+            }
+        }
+        return null;
     }
 
     /**

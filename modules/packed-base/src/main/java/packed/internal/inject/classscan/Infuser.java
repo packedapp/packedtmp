@@ -24,22 +24,14 @@ public class Infuser {
     /** The entries of this infuser */
     final Map<Key<?>, Entry> entries;
 
-    private final List<Class<?>> parameterTypes;
-
     private final Lookup lookup;
+
+    private final List<Class<?>> parameterTypes;
 
     private Infuser(Builder builder) {
         this.entries = Map.copyOf(builder.entries);
         this.parameterTypes = requireNonNull(builder.parameterTypes);
         this.lookup = builder.lookup;
-    }
-
-    public Set<Key<?>> keys() {
-        return entries.keySet();
-    }
-
-    public int parameterCount() {
-        return parameterTypes.size();
     }
 
     public MethodHandle findAdaptedConstructor(Class<?> type, Class<?> adaptTo) {
@@ -58,6 +50,14 @@ public class Infuser {
         return mhb.build(oc, constructor);
     }
 
+    public Set<Key<?>> keys() {
+        return entries.keySet();
+    }
+
+    public int parameterCount() {
+        return parameterTypes.size();
+    }
+
     public List<Class<?>> parameterTypes() {
         return parameterTypes;
     }
@@ -73,12 +73,12 @@ public class Infuser {
         return b.build();
     }
 
-    public static Infuser of(MethodHandles.Lookup lookup) {
-        return build(lookup, c -> {});
-    }
-
     public static Builder builder(MethodHandles.Lookup lookup, Class<?>... parameterTypes) {
         return new Builder(lookup, parameterTypes);
+    }
+
+    public static Infuser of(MethodHandles.Lookup lookup) {
+        return build(lookup, c -> {});
     }
 
     public static class Builder {
@@ -91,8 +91,21 @@ public class Infuser {
             this.parameterTypes = List.of(parameterTypes);
         }
 
+        private void add(EntryBuilder builder, Entry entry) {
+            entries.put(builder.key, entry);
+        }
+
         public Infuser build() {
             return new Infuser(this);
+        }
+
+        // Ville vaere dejligt med en forklaring paa hvornaar den er tilgaengelig
+        public EntryBuilder optional(Class<?> key) {
+            return optional(Key.of(key));
+        }
+
+        public EntryBuilder optional(Key<?> key) {
+            return new EntryBuilder(this, key, false, true);
         }
 
         public EntryBuilder provide(Class<?> key) {
@@ -102,7 +115,7 @@ public class Infuser {
         public EntryBuilder provide(Key<?> key) {
             return new EntryBuilder(this, key, false, false);
         }
-
+        
         public EntryBuilder provideHidden(Class<?> key) {
             return provideHidden(Key.of(key));
         }
@@ -110,37 +123,19 @@ public class Infuser {
         public EntryBuilder provideHidden(Key<?> key) {
             return new EntryBuilder(this, key, true, false);
         }
-
-        private void add(EntryBuilder builder, Entry entry) {
-            entries.put(builder.key, entry);
-        }
-        
-        // Ville vaere dejligt med en forklaring paa hvornaar den er tilgaengelig
-        public EntryBuilder optional(Class<?> key) {
-            return optional(Key.of(key));
-        }
-
-        public EntryBuilder optional(Key<?> key) {
-            return new EntryBuilder(this, key, false, true);
-        }
     }
 
     public static class EntryBuilder {
         private final Builder builder;
         private final boolean hide;
-        private final boolean optional;
         private final Key<?> key;
+        private final boolean optional;
 
         EntryBuilder(Builder builder, Key<?> key, boolean hide, boolean isOptional) {
             this.builder = builder;
             this.key = requireNonNull(key, "key is null");
             this.hide = hide;
             this.optional = isOptional;
-        }
-
-        public EntryBuilder description(String description) {
-            // Ideen er vi propper lidt descriptions paa igen, IDK
-            return this;
         }
 
         /**
@@ -160,22 +155,27 @@ public class Infuser {
             builder.add(this, new Entry(this, null, index));
         }
 
-        public void extract(String methodName /* , Object... additional(Static)Arguments */ ) {
-            extract(methodName, 0);
+        public EntryBuilder description(String description) {
+            // Ideen er vi propper lidt descriptions paa igen, IDK
+            return this;
         }
 
-        public void extract(String methodName, int index) {
+        public void invokeMethod(String methodName /* , Object... additional(Static)Arguments */ ) {
+            invokeMethod(methodName, 0);
+        }
+
+        public void invokeMethod(String methodName, int index) {
             Class<?> cl = builder.parameterTypes.get(index);
             // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
             MethodHandle mh = LookupUtil.lookupVirtualPrivate(builder.lookup, cl, methodName, key.rawType());
             transform(mh, index);
         }
 
-        public void extractPublic(String methodName /* , Object... additional(Static)Arguments */ ) {
-            extractPublic(methodName, 0);
+        public void invokePublicMethod(String methodName /* , Object... additional(Static)Arguments */ ) {
+            invokePublicMethod(methodName, 0);
         }
 
-        public void extractPublic(String methodName, int index) {
+        public void invokePublicMethod(String methodName, int index) {
             Class<?> cl = builder.parameterTypes.get(index);
             // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
             MethodHandle mh = LookupUtil.lookupVirtualPublic(cl, methodName, key.rawType());

@@ -34,6 +34,5 @@ public class ChildInject extends BaseAssembly {
         protected void build() {
             use(MyExt.class);
         }
-
     }
 }
