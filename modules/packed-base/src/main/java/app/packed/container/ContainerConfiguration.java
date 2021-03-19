@@ -35,7 +35,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
     private static final ComponentDriver<ContainerConfiguration> DRIVER = PackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
-            PackedComponentDriver.Option.bundle());
+            PackedComponentDriver.Option.container());
 
     /**
      * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.

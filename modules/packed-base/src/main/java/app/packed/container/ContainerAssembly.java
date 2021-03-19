@@ -35,8 +35,8 @@ import app.packed.inject.ServiceComponentConfiguration;
  * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
  * {@link ContainerConfiguration} available via {@link #configuration()}.
  * <p>
- * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with an
- * {@link IllegalStateException}.
+ * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
+ * an {@link IllegalStateException}.
  * 
  * A generic assembly. Normally you would extend {@link BaseAssembly}
  * 
@@ -135,7 +135,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * Install the specified component instance.
      * <p>
      * If this install operation is the first install operation of the container. The component will be installed as the
-     * root component of the container. All subsequent install operations on this bundle will have have component as its
+     * root component of the container. All subsequent install operations on this container will have have component as its
      * parent. If you wish to have a specific component as a parent, the various install methods on
      * {@link ServiceComponentConfiguration} can be used to specify a specific parent.
      *
@@ -229,34 +229,3 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
         return configuration().wire(driver, wirelets);
     }
 }
-
-//// Must be a assembly type wirelet
-//// useWirelet()
-//protected final <W extends Wirelet> Optional<W> wirelet(Class<W> type) {
-//  return configuration().assemblyWirelet(type);
-//}
-
-//// De her conditional wirelet kom aldrig til at fungere godt. PGA ordering
-///**
-// * @param <W>
-// * @param wireletType
-// * @param predicate
-// * @return stuff
-// */
-//// Should we add wirelet(Type, consumer) or Optional<Wirelet>
-//final <W extends Wirelet> boolean ifWirelet(Class<W> wireletType, Predicate<? super W> predicate) {
-//    // Mainly used for inheritable wirelets...
-//    // Would be nice if pipeline = wirelet... Because then we could do
-//    // ifWirelet(somePipeline, containsX) ->
-//    // Which we can if the user implements Wirelet themself
-//
-//    // This should not really be the first tool you use...
-//    // Yeah I think bundle.setFoo() is so much better????
-//    // Not sure we want to encourage it....
-//
-//    // But its useful for extensions, no? Well only to override
-//    // settings such as WebExtension.defaultPort(); <- but that's runtime
-//    // I mean for
-//    // The runtime then...
-//    return false;
-//}

@@ -49,7 +49,7 @@ public enum ComponentModifier {
     BUILD_ROOT,
 
     /**
-     * Indicates that the component is a bundle.
+     * Indicates that the component is a container.
      * 
      * <p>
      * * Components with this modifier:
@@ -95,7 +95,7 @@ public enum ComponentModifier {
      * <p>
      * Components with this modifier:
      * <ul>
-     * <li>Always has a parent component with the {@link #BUNDLE_ROOT} modifier set.</li>
+     * <li>Always has a parent component with the {@link #CONTAINER} modifier set.</li>
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime if it is part of an embedded {@link Image}.</li>
      * <li>Never has any other modifiers set.</li>
@@ -179,7 +179,7 @@ public enum ComponentModifier {
      * This modifier is typically checked by accessing {@link BuildInfo#modifiers()}, for example, via
      * {@link Extension#assembly()}.
      * <p>
-     * The modifier is set by the various methods in analyzer when specifying a bundle. Systems that are already running
+     * The modifier is set by the various methods in analyzer when specifying a container. Systems that are already running
      * will not have this modifier set when they are analysed.
      * 
      * Components with this property:

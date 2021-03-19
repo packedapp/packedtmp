@@ -45,29 +45,31 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
  * 
  * <p>
  * 
- * Bundles provide a simply way to package components and build modular application. This is useful, for example, for:
+ * Assemblies provide a simply way to package components and build modular application. This is useful, for example,
+ * for:
  * <ul>
  * <li>Sharing functionality across multiple injectors and/or containers.</li>
  * <li>Hiding implementation details from users.</li>
  * <li>Organizing a complex project into distinct sections, such that each section addresses a separate concern.</li>
  * </ul>
  * <p>
- * There are currently two types of bundles available:
+ * There are currently two types of assemblies available:
  * <ul>
- * <li><b>{@link BaseAssembly}</b> which bundles information about services, and creates injector instances using .</li>
- * <li><b>{@link BaseAssembly}</b> which bundles information about both services and components, and creates container
- * instances using .</li>
+ * <li><b>{@link BaseAssembly}</b> which assemblies information about services, and creates injector instances using
+ * .</li>
+ * <li><b>{@link BaseAssembly}</b> which assemblies information about both services and components, and creates
+ * container instances using .</li>
  * </ul>
  * 
- * @apiNote We never return, for example, Bundle or BaseBundle. As this would make extending the class difficult unless
- *          we defined all methods as non-final.
+ * @apiNote We never return, for example, Assembly or BaseAssembly. As this would make extending the class difficult
+ *          unless we defined all methods as non-final.
  */
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
-// Maaske vi i virkeligheden skal hava ContainerBundle
+// Maaske vi i virkeligheden skal hava ContainerAssembly
 // Og saa sige at folk skal laere derfra
-// CommonBundle, StarterBundle
-// GoBundle
+// CommonAssemblyBundle, StarterAssembly
+// GoAssembly
 // Base is fine....
 
 // TODO tror vi sortere metoderne efter extension og saa efter navn
@@ -88,8 +90,8 @@ public abstract class BaseAssembly extends ContainerAssembly {
     }
 
     /**
-     * Exposes an internal service outside of this bundle, equivalent to calling {@code expose(Key.of(key))}. A typical use
-     * case if having a single
+     * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
+     * use case if having a single
      * 
      * When you expose an internal service, the descriptions and tags it may have are copied to the exposed services.
      * Overridden them will not effect the internal service from which the exposed service was created.
@@ -121,7 +123,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
     }
 
     /**
-     * Exposes an internal service outside of this bundle.
+     * Exposes an internal service outside of this container.
      * 
      * 
      * <pre> {@code  
@@ -298,18 +300,4 @@ public abstract class BaseAssembly extends ContainerAssembly {
 //
 //protected final void requireOptionally(Key<?>... keys) {
 //  service().requireOptionally(keys);
-//}
-
-///**
-//* Prints the contract of the specified bundle.
-//* 
-//* @param bundle
-//*            the bundle to print the contract for
-//*/
-//protected static void printContract(ContainerBundle bundle) {
-// // BaseBundleContract.of(bundle).print();
-//}
-//
-//protected static void printDescriptor(ContainerBundle bundle) {
-// ContainerDescriptor.of(bundle).print();
 //}

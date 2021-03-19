@@ -193,7 +193,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         static final int OPT_CONSTANT = 2;
         static final int OPT_STATEFUL = 3;
         public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
-        public static final OptionImpl BUNDLE = new OptionImpl(OPT_CONTAINER, null);
+        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
 
         @Nullable
@@ -268,8 +268,8 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
          * @return stuff
          * @see ComponentModifier#CONTAINER
          */
-        static Option bundle() {
-            return PackedComponentDriver.OptionImpl.BUNDLE;
+        static Option container() {
+            return PackedComponentDriver.OptionImpl.CONTAINER;
         }
 
         /**

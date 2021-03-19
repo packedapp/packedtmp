@@ -59,9 +59,6 @@ public enum ComponentSystemType {
      */
     IMAGE,
 
-    /** A system where every component is part of the same bundle */
-    BUNDLE,
-    
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
     REQUEST,
 
