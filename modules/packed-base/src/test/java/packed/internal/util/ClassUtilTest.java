@@ -1,11 +1,7 @@
 package packed.internal.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -19,33 +15,33 @@ import packed.internal.util.TypeUtilTest.NestedStaticClass;
 /** Tests {@link ClassUtil}. */
 public class ClassUtilTest {
 
-    /** Tests {@link ClassUtil#checkIsInstantiable(Class)} */
-    @Test
-    public void checkIsInstantiable() {
-        try {
-            ClassUtil.checkIsInstantiable(Test.class);
-            fail("oops");
-        } catch (IllegalArgumentException ok) {}
-        try {
-            ClassUtil.checkIsInstantiable(Map.class);
-            fail("oops");
-        } catch (IllegalArgumentException ok) {}
-        try {
-            ClassUtil.checkIsInstantiable(Object[].class);
-            fail("oops");
-        } catch (IllegalArgumentException ok) {}
-        try {
-            ClassUtil.checkIsInstantiable(AbstractMap.class);
-            fail("oops");
-        } catch (IllegalArgumentException ok) {}
-
-        try {
-            ClassUtil.checkIsInstantiable(Integer.TYPE);
-            fail("oops");
-        } catch (IllegalArgumentException ok) {}
-
-        assertThat(ClassUtil.checkIsInstantiable(HashMap.class)).isSameAs(HashMap.class);
-    }
+//    /** Tests {@link ClassUtil#checkIsInstantiable(Class)} */
+//    @Test
+//    public void checkIsInstantiable() {
+//        try {
+//            ClassUtil.checkIsInstantiable(Test.class);
+//            fail("oops");
+//        } catch (IllegalArgumentException ok) {}
+//        try {
+//            ClassUtil.checkIsInstantiable(Map.class);
+//            fail("oops");
+//        } catch (IllegalArgumentException ok) {}
+//        try {
+//            ClassUtil.checkIsInstantiable(Object[].class);
+//            fail("oops");
+//        } catch (IllegalArgumentException ok) {}
+//        try {
+//            ClassUtil.checkIsInstantiable(AbstractMap.class);
+//            fail("oops");
+//        } catch (IllegalArgumentException ok) {}
+//
+//        try {
+//            ClassUtil.checkIsInstantiable(Integer.TYPE);
+//            fail("oops");
+//        } catch (IllegalArgumentException ok) {}
+//
+//        assertThat(ClassUtil.checkIsInstantiable(HashMap.class)).isSameAs(HashMap.class);
+//    }
 
     /** Tests {@link ClassUtil#isInnerOrLocal(Class)}. */
     @Test

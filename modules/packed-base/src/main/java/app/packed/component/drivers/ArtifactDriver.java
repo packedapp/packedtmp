@@ -17,6 +17,7 @@ package app.packed.component.drivers;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -40,6 +41,7 @@ import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
 import packed.internal.component.PackedArtifactDriver;
 import packed.internal.component.PackedInitializationContext;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 
 /**
@@ -240,7 +242,11 @@ public /* sealed */ interface ArtifactDriver<A> {
             }
         }, PackedInitializationContext.class);
 
-        MethodHandle mh = infuser.findConstructorFor(implementation);
+        // Find the constructor for the subtension, only 1 constructor must be declared on the class
+        Constructor<?> con = FindInjectableConstructor.constructorOf(implementation, s -> new IllegalArgumentException(s));
+        
+        MethodHandle mh = infuser.findConstructorFor(con, implementation);
+        
         return new PackedArtifactDriver<>(isGuest, mh);
     }
 

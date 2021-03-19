@@ -25,7 +25,6 @@ import java.lang.reflect.Executable;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.inject.classscan.MethodHandleBuilder;
-import packed.internal.util.ClassUtil;
 
 /**
  *
@@ -58,10 +57,9 @@ final class InstantiatorBuilder {
     }
 
     public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {
-        ClassUtil.checkIsInstantiable(implementation);
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, implementation);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-        Constructor<?> constructor = FindInjectableConstructor.findConstructorIAE(implementation);
+        Constructor<?> constructor = FindInjectableConstructor.injectableConstructorOfIAE(implementation);
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
 

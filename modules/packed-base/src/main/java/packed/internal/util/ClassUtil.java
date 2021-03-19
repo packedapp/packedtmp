@@ -1,7 +1,5 @@
 package packed.internal.util;
 
-import static packed.internal.util.StringFormatter.format;
-
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -20,39 +18,6 @@ public class ClassUtil {
                     "The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
         }
         return (Class<T>) clazzToCheck;
-    }
-
-    /**
-     * Checks that the specified class can be instantiated. That is, a public non-abstract class with at least one public
-     * constructor.
-     *
-     * @param clazz
-     *            the class to check
-     */
-    // TODO tror godt vi kan fjerne denne, eftersom den er flyttet til FindInjectableConstructod...
-    // Tror ikke vi finder constructere som vi ikke bruger
-    public static <T> Class<T> checkIsInstantiable(Class<T> clazz) {
-        if (clazz.isAnnotation()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an annotation and cannot be instantiated");
-        } else if (clazz.isInterface()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an interface and cannot be instantiated");
-        } else if (clazz.isArray()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an array and cannot be instantiated");
-        } else if (clazz.isPrimitive()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
-        }
-        int modifiers = clazz.getModifiers();
-        if (Modifier.isAbstract(modifiers)) {
-            // Yes a primitive class is abstract
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an abstract class and cannot be instantiated");
-        }
-        /*
-         * else if (!Modifier.isPublic(modifiers)) { throw new IllegalArgumentException("The specified class (" + format(clazz)
-         * + ") is not a public class and cannot be instantiated"); } if (clazz.getConstructors().length == 0) { throw new
-         * IllegalArgumentException("The specified class (" + format(clazz) +
-         * ") does not have any public constructors and cannot be instantiated"); }
-         */
-        return clazz;
     }
 
     /**

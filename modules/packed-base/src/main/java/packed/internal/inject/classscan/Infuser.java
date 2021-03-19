@@ -16,7 +16,6 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.inject.FindInjectableConstructor;
-import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 
 public class Infuser {
@@ -34,19 +33,13 @@ public class Infuser {
         this.lookup = builder.lookup;
     }
 
-    public MethodHandle findAdaptedConstructor(Class<?> type, Class<?> adaptTo) {
-        MethodHandle mh = findConstructorFor(type);
-        return mh.asType(mh.type().changeReturnType(adaptTo));
-    }
-
     public MethodHandle findConstructorFor(Class<?> type) {
         // Den bliver ogsaa checket i FindInjectableConstructor...
         // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
-        ClassUtil.checkIsInstantiable(type);
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
-        Constructor<?> constructor = FindInjectableConstructor.findConstructorIAE(type);
+        Constructor<?> constructor = FindInjectableConstructor.injectableConstructorOfIAE(type);
         return mhb.build(oc, constructor);
     }
 
@@ -58,7 +51,6 @@ public class Infuser {
     public MethodHandle findConstructorFor(Constructor<?> con, Class<?> type) {
         // Den bliver ogsaa checket i FindInjectableConstructor...
         // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
-        ClassUtil.checkIsInstantiable(type);
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
@@ -206,6 +198,7 @@ public class Infuser {
             for (int i = 0; i < indexes.length; i++) {
                 Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
             }
+           // System.out.println("Adding transfoer " + transformer);
             builder.add(this, new Entry(this, transformer, indexes));
         }
     }

@@ -1,7 +1,5 @@
 package app.packed.container;
 
-import java.util.Optional;
-
 import app.packed.cli.Main;
 import app.packed.inject.ServiceExtension;
 
@@ -27,13 +25,17 @@ public class ChildInject extends BaseAssembly {
 
     public static class MyExt extends Extension {
 
-        MyExt(Optional<MyExt> ancestor) {
-            System.out.println("NICE " + ancestor);
+        final long l = System.nanoTime();
+
+        MyExt(MyExt me) {
+            if (me != null) {
+                System.out.println("NICE parent[" + me.l + "], me =" + l);
+            }
         }
 
         @ConnectExtensions
         public void ff(MyExt me) {
-            System.out.println("Linked " + me);
+            System.out.println("Linked me=" + l + " other = " + me.l);
         }
 
         public void foo() {
