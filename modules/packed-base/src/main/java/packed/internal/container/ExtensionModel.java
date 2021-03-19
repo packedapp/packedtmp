@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -38,6 +39,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.PackedAttributeModel;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.inject.classscan.MethodHandleBuilder;
@@ -370,6 +372,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
 
             ClassMemberAccessor cp = scanClass();
+            
             this.pam = PackedAttributeModel.analyse(cp);
 
             if (linked != null) {
@@ -388,8 +391,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         private ClassMemberAccessor scanClass() {
-            ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
-
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
                 c.provide(ExtensionConfiguration.class).adapt();
                 c.provideHidden(ExtensionSetup.class).adapt();
@@ -398,8 +399,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
 //                c.optional(extensionClass).transform();
             }, ExtensionSetup.class);
 
-            this.mhConstructor = infuser.findAdaptedConstructor(extensionClass, Extension.class);
+            // Find the constructor for the extension, only 1 constructor must be declared on the class
+            Constructor<?> con = FindInjectableConstructor.singleConstructor(extensionClass, m -> new InternalExtensionException(m));
 
+            this.mhConstructor = infuser.findAdaptedConstructor(con, Extension.class);
+
+            ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
             cp.findMethods(m -> {
                 ConnectExtensions ce = m.getAnnotation(ConnectExtensions.class);
                 if (ce != null) {
