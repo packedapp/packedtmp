@@ -26,8 +26,8 @@ import app.packed.container.BaseAssembly;
 /** An abstract test for testing artifacts. */
 public abstract class AbstractArtifactTest {
 
-    /** A bundle with no operations. */
-    public static BaseAssembly emptyBundle() {
+    /** An assembly with no operations. */
+    public static BaseAssembly emptyAssembly() {
         return new BaseAssembly() {
             @Override
             protected void build() {}

@@ -30,7 +30,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
 
     /** Tests the */
     @Test
-    public void bundles() {
+    public void assemblies() {
         check(f -> new AbstractConsumableAssembly(f) {}, "Assembly"); // Anonymous class
         check(f -> new S(f), "S");
         check(f -> new NameGeneratedTest.Assembly(f), "Assembly");
@@ -91,7 +91,7 @@ public class NameGeneratedTest extends AbstractArtifactTest {
         }) {}).nameIs("Assembly");
     }
 
-    /** We normally remove the suffix 'Bundle', so make sure Bundle works */
+    /** We normally remove the suffix 'Assembly', so make sure Assembly works */
     private class Assembly extends AbstractConsumableAssembly {
         Assembly(Consumer<? super ContainerConfigurationTester> ca) {
             super(ca);

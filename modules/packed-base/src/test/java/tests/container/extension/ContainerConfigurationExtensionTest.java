@@ -56,10 +56,11 @@ public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
     }
 
     /**
-     * Tests what happens if people try to use any of the extension methods outside of the configure of the defining bundle.
-     * We allow invoking {@link ContainerConfiguration#extensions()} and allow {@link ContainerConfiguration#use(Class)} for extension
-     * that have already been installed. Calling {@link ContainerConfiguration#use(Class)} with an extension that have not
-     * previously been installed will throw an {@link IllegalStateException}.
+     * Tests what happens if people try to use any of the extension methods outside of the configure of the defining
+     * assembly. We allow invoking {@link ContainerConfiguration#extensions()} and allow
+     * {@link ContainerConfiguration#use(Class)} for extension that have already been installed. Calling
+     * {@link ContainerConfiguration#use(Class)} with an extension that have not previously been installed will throw an
+     * {@link IllegalStateException}.
      */
     @Test
     public void unconfigurable() {

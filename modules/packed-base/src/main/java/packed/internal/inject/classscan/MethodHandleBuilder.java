@@ -30,7 +30,7 @@ import app.packed.base.Key;
 /**
  *
  */
-// Enten som en Builder, eller noget a.la. Bundle.
+// Enten som en Builder, eller noget a.la. Assembly.
 //disableComposites/ignoreComposite/failOnComposite/...
 
 // TODO Add @AnnotationHandler...

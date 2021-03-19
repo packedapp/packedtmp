@@ -66,7 +66,7 @@ abstract class ModuleAccessor {
 
     abstract ModuleAccessor withLookup(Lookup lookup);
 
-    /** A realm that makes use of a explicitly registered lookup object, for example, via ContainerBundle#lookup(Lookup). */
+    /** A realm that makes use of a explicitly registered lookup object, for example, via ContainerAssembly#lookup(Lookup). */
     private static final class WithLookup extends ModuleAccessor {
 
         /** The actual lookup object we are wrapping. */
@@ -106,7 +106,7 @@ abstract class ModuleAccessor {
 
         private MethodHandles.@Nullable Lookup cachedLookup;
 
-        /** The default lookup object, if using MethodHandles.lookup() from inside a bundle. */
+        /** The default lookup object, if using MethodHandles.lookup() from inside a assembly. */
         @Nullable
         private volatile WithLookup defaultLookup;
 
@@ -165,7 +165,7 @@ abstract class ModuleAccessor {
             if (lookup == null) {
                 return this;
             } else if (lookup.lookupClass() == type && LookupUtil.isLookupDefault(lookup)) {
-                // The default lookup is just BundleImpl { MethodHandles.lookup()}
+                // The default lookup is just AssemblyImpl { MethodHandles.lookup()}
                 WithLookup cl = defaultLookup;
                 if (cl != null) {
                     return cl;

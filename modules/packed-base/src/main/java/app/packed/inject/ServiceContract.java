@@ -63,7 +63,7 @@ import packed.internal.inject.service.ServiceManagerSetup;
 // Instead required should trump optional
 // * A service contract cannot both have the same service as a requirement and provide it.
 // * A key can only in one catagory at a time! Builder validates this....
-// InjectorContract.of(new Bundle());
+// InjectorContract.of(new Container());
 
 // ServiceContract
 
@@ -172,7 +172,7 @@ public final class ServiceContract extends Contract {
     }
 
     public void print() {
-        // ServiceContract.of(FooBundle()).print();
+        // ServiceContract.of(FooContainer()).print();
     }
 
     /**
@@ -251,7 +251,7 @@ public final class ServiceContract extends Contract {
     public static ServiceContract of(ArtifactDriver<?> driver, Assembly<?> assembly) {
         Component c = driver.analyze(assembly);
         if (!c.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only specify a system where the root component is a bundle, was " + c);
+            throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
         }
         ComponentSetup compConf = ComponentSetup.unadapt(null, c);
         ServiceManagerSetup sm = compConf.container.getServiceManager();

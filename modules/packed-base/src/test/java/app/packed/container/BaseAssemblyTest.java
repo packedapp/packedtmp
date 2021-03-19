@@ -22,10 +22,10 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.App;
 import testutil.util.AbstractArtifactTest;
 
-/** Various Bundle tests. */
+/** Various Assembly tests. */
 public class BaseAssemblyTest extends AbstractArtifactTest {
 
-    /** Tests that a bundle cannot be reused. */
+    /** Tests that a assembly cannot be reused. */
     @Test
     public void notReusable() {
         BaseAssembly empty = new BaseAssembly() {
@@ -37,7 +37,7 @@ public class BaseAssemblyTest extends AbstractArtifactTest {
         assertThatThrownBy(() -> App.start(empty)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
-    /** Tests that a bundle cannot be reused. */
+    /** Tests that a assembly cannot be reused. */
     @Test
     public void cannotLinkSelf() {
         BaseAssembly b = new BaseAssembly() {

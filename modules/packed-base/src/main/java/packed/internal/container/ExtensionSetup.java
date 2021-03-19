@@ -118,9 +118,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /**
-     * Returns the bundle this extension is a part of.
+     * Returns the container this extension is a part of.
      * 
-     * @return the bundle this extension is a part of
+     * @return the container this extension is a part of
      */
     public ContainerSetup container() {
         return container;
@@ -190,8 +190,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        component.link(bundle, wirelets);
+    public void link(Assembly<?> assembly, Wirelet... wirelets) {
+        component.link(assembly, wirelets);
     }
 
     /**

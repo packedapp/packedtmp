@@ -68,17 +68,17 @@ final class OldMain {
 
     }
 
-    public void execute(Assembly<?> bundle, String[] args, Wirelet... wirelets) {
-        // eller Main.defaults().main(args).execute(bundle)
+    public void execute(Assembly<?> container, String[] args, Wirelet... wirelets) {
+        // eller Main.defaults().main(args).execute(container)
 
         // Syntes maaske vi skal droppe Wirelet... wirelets)??
         // Og saa koere den lidt clean
 
-       // execute(bundle, Wirelet.combine(wirelets, MainArgs.of(args)));
+       // execute(container, Wirelet.combine(wirelets, MainArgs.of(args)));
     }
 
-    public void execute(Assembly<?> bundle, Wirelet... wirelets) {
-        Host.execute(bundle, wirelet.andThen(wirelets));
+    public void execute(Assembly<?> container, Wirelet... wirelets) {
+        Host.execute(container, wirelet.andThen(wirelets));
     }
 
     Image<Void> image() {
@@ -116,22 +116,22 @@ class Zandbox {
     // Laver et image, en host component og virker som main()
     // Paa en eller anden maade skal vi ogsaa kunne specificere en ErrorHandling strategy
     // ErrorHandling.asWirelet...
-    // Wirelets-> til bundlen og ikke hosten...
+    // Wirelets-> til containern og ikke hosten...
 
-    public static void restartable(Assembly<?> bundle, Object errorHandler, String[] args, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> container, Object errorHandler, String[] args, Wirelet... wirelets) {}
 
-    public static void restartable(Assembly<?> bundle, Object errorHandler, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> container, Object errorHandler, Wirelet... wirelets) {}
 
-    public static void restartable(Assembly<?> bundle, String[] args, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> container, String[] args, Wirelet... wirelets) {}
 
     // Er maaske lidt mere til noget builder agtigt.
-    public static void restartable(Assembly<?> bundle, Wirelet... wirelets) {}
+    public static void restartable(Assembly<?> container, Wirelet... wirelets) {}
 
-    public static Image<Void> restartableImageOf(Assembly<?> bundle, Object errorHandler, Wirelet... wirelets) {
+    public static Image<Void> restartableImageOf(Assembly<?> container, Object errorHandler, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public static Image<Void> restartableImageOf(Assembly<?> bundle, Wirelet... wirelets) {
+    public static Image<Void> restartableImageOf(Assembly<?> container, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

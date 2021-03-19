@@ -82,7 +82,7 @@ class MySidecar extends RealMethodSidecarBootstrap {
 // boolean spawnThread() default false;
 
 // remainRunning, nej det er sgu en anden annotering
-// We will gerne kunne foresporge om en Bundle har en Computer
+// We will gerne kunne foresporge om en Container har en Computer
 // Det har en semantics betydning. Det har et request
 // boolean stopOnSucces() default true;
 

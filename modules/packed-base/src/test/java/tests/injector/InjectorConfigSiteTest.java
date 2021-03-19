@@ -230,5 +230,4 @@ public class InjectorConfigSiteTest {
         // Register stuff with Provides....
         // Creating some more build nodes
     }
-    // And InjectorBundle
 }

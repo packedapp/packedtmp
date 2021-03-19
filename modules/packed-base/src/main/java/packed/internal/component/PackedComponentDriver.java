@@ -107,7 +107,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
             OptionImpl o = (OptionImpl) options[i];
             switch (o.id) {
             case OptionImpl.OPT_CONTAINER:
-                modifiers |= PackedComponentModifierSet.I_BUNDLE;
+                modifiers |= PackedComponentModifierSet.I_CONTAINERNEW;
                 break;
             case OptionImpl.OPT_CONSTANT:
                 modifiers |= PackedComponentModifierSet.I_SINGLETON;

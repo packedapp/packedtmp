@@ -107,7 +107,7 @@ public interface ConfigSiteSupport {
         // x.op because of @Completes on field fox.sss.dd#sd
         // install.component[/sd/qwzzz] at sdkdkdk.sdsd.Dsksks:2323 .....Ahhh, saa skal man beholde references til registrerings
         // pointet????
-        // Bundle.configure at xxxx:2323
+        // Assembly.configure at xxxx:2323
         // embed
         // dkdkd
         // sdsd

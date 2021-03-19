@@ -32,7 +32,7 @@ public enum InjectionScope {
     
     PROTOTYPE,
     
-    SINGLETON, //BUNDLE, LOCATOR
+    SINGLETON, //CONTAINER, LOCATOR
 
     REQUEST;
 }

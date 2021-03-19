@@ -134,8 +134,8 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    static Image<Injector> newImage(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().buildImage(bundle, wirelets);
+    static Image<Injector> newImage(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().buildImage(assembly, wirelets);
     }
 
     // Is this useful outside of hosts???????
@@ -161,10 +161,10 @@ public interface Injector extends ServiceLocator {
     }
 
     /**
-     * Creates a new injector from the specified bundle.
+     * Creates a new injector from the specified assembly.
      *
-     * @param bundle
-     *            the bundle to create the injector from
+     * @param assembly
+     *            the assembly to create the injector from
      * @param wirelets
      *            optional wirelets
      * @return the new injector
@@ -173,8 +173,8 @@ public interface Injector extends ServiceLocator {
      *             that requires a lifecycle
      */
     // Of er maaske fin. Saa understreger vi ligesom
-    static Injector create(Assembly<?> bundle, Wirelet... wirelets) {
-        return driver().use(bundle, wirelets);
+    static Injector create(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().use(assembly, wirelets);
     }
 }
 

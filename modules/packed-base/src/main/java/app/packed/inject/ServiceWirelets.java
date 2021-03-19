@@ -107,7 +107,7 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that will invoke the specified action with the service contract of the bundle that is being wired.
+     * Returns a wirelet that will invoke the specified action with the service contract of the container that is being wired.
      * The wirelet it typically use to check the contents of.
      * 
      * But it can also be used, for example, for debugging.

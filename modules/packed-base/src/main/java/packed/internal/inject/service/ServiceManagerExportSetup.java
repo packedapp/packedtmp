@@ -116,7 +116,7 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
 
     public <T> ExportedServiceConfiguration<T> export(BuildtimeService entryToExport) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
-        // Perviously you could specify any entry, even something from another bundle.
+        // Perviously you could specify any entry, even something from another assembly.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
@@ -136,7 +136,7 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
         // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
         // F.eks. hvis en extension publisher en service vi gerne vil exportere
         // Saa sker det maaske foerst naar den completer.
-        // dvs efter bundle.configure() returnere
+        // dvs efter assembly.configure() returnere
         ArrayList<ExportedBuildtimeService> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);

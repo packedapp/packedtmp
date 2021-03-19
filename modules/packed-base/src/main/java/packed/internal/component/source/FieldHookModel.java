@@ -143,7 +143,7 @@ public final class FieldHookModel extends MemberHookModel {
 
         private void configure() {
             // We perform a compare and exchange with configuration. Guarding against
-            // concurrent usage of this bundle.
+            // concurrent usage of this assembly.
             // Don't think it makes sense to register
             Object instance = model.newInstance();
 

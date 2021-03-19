@@ -96,15 +96,15 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     }
 
     /**
-     * Creates a new container with this container as its parent by linking the specified bundle.
+     * Creates a new container with this container as its parent by linking the specified container.
      * 
-     * @param bundle
-     *            the bundle to link
+     * @param assembly
+     *            the assembly to link
      * @param wirelets
      *            any wirelets
      */
-    public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        context.link(bundle, wirelets);
+    public void link(Assembly<?> assembly, Wirelet... wirelets) {
+        context.link(assembly, wirelets);
     }
 
     /** {@inheritDoc} */

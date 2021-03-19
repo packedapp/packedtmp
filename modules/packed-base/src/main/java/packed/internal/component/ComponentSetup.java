@@ -300,10 +300,10 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * {@inheritDoc}
      * 
      * @apiNote Previously this method returned the specified assembly. However, to encourage people to configure the
-     *          assembly before calling this method: link(MyBundle().setStuff(x)) instead of link(MyBundle()).setStuff(x) we
+     *          assembly before calling this method: link(MyAssembly().setStuff(x)) instead of link(MyAssembly()).setStuff(x) we
      *          now have void return type. Maybe in the future we will introduce some kind of LinkedAssembly
      * 
-     * @implNote We can do linking (calling bundle.configure) in two ways. Immediately, or later after the parent has been
+     * @implNote We can do linking (calling assembly.configure) in two ways. Immediately, or later after the parent has been
      *           fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite loop
      *           situations, for example, if a assembly recursively links itself which fails by throwing
      *           java.lang.StackOverflowError instead of an infinite loop.
@@ -487,7 +487,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         ComponentSetup parent = extension == null ? this : treeParent;
         ComponentSetup compConf = new ComponentSetup(build, realm, d, parent, wp);
 
-        // We only close the component if linking a bundle (new realm)
+        // We only close the component if linking a assembly (new realm)
         return d.toConfiguration(compConf);
     }
 
@@ -667,13 +667,13 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 //*/
 //private boolean captureStackFrameIgnoreFilter(StackFrame frame) {
 //  Class<?> c = frame.getDeclaringClass();
-//  // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract bundle der override configure()...
+//  // Det virker ikke skide godt, hvis man f.eks. er en metode on a abstract assembly der override configure()...
 //  // Syntes bare vi filtrer app.packed.base modulet fra...
 //  // Kan vi ikke checke om imod vores container source.
 //
 //  // ((PackedExtensionContext) context()).container().source
 //  // Nah hvis man koere fra config er det jo fint....
-//  // Fra config() paa en bundle er det fint...
+//  // Fra config() paa en assembly er det fint...
 //  // Fra alt andet ikke...
 //
 //  // Dvs ourContainerSource

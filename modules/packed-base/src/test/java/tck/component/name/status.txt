@@ -4,10 +4,10 @@ conf.link() with naming + wirelets
 
 ContainerImages with wirelets..
 
-ContainerConfiguration.setName() vs bundle.setName();
+ContainerConfiguration.setName() vs container.setName();
 
 
-BundleDescriptor...
+ContainerDescriptor...
 
 //Also  annotations if support this.
 
@@ -25,7 +25,7 @@ spectest.
 -----
 App as default name...
   If we have a host. I think I would 
-  //Maybe BundleName + App
+  //Maybe ContainerName + App
   
-// I mean we need a default name for bundles anyway
+// I mean we need a default name for containers anyway
 /// I think we should use this for the app as well

@@ -66,12 +66,6 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
  */
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
-// Maaske vi i virkeligheden skal hava ContainerAssembly
-// Og saa sige at folk skal laere derfra
-// CommonAssemblyBundle, StarterAssembly
-// GoAssembly
-// Base is fine....
-
 // TODO tror vi sortere metoderne efter extension og saa efter navn
 
 public abstract class BaseAssembly extends ContainerAssembly {

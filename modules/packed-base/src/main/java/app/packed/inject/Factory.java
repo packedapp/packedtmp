@@ -449,7 +449,7 @@ public abstract class Factory<T> {
      * This method is useful, for example, to make a factory publically available for an class that does not have a public
      * constructor.
      * <p>
-     * The specified lookup object will always be preferred, even when, for example, being registered with a bundle who has
+     * The specified lookup object will always be preferred, even when, for example, being registered with a container who has
      * its own lookup object.
      * <p>
      * If you have split-module class hierarchies with an abstract class in one module a concrete class in another module.

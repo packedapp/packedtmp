@@ -21,12 +21,12 @@ import app.packed.component.Assembly;
  *
  * <p>
  * In general if you specify a {@link Assembly} to a method that takes a {@link ComponentSystem} you can assume that
- * the method will consume the bundle.
+ * the method will consume the assembly.
  * 
  * @apiNote In the future, if the Java language permits, {@link ComponentSystem} may become a {@code sealed}
  *          interface, which would prohibit subclassing except by explicitly permitted types.
  */
-// Sealed, Bundle, Component, ComponentHolder
+// Sealed, Assembly, Component, ComponentHolder
 
 // Hmm, Vil vi paa et tidspunkt have component.system() ?????
 // Saa har vi jo ligesom snuppet et oplagt navn...

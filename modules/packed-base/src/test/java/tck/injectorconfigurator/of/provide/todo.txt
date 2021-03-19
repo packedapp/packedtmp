@@ -5,8 +5,8 @@
 
 
 Provides Import Injector (custom injector, packed injector)
-Provides Import Bundle
-Provides Export bundle
+Provides Import container
+Provides Export container
 
 Provides components
 

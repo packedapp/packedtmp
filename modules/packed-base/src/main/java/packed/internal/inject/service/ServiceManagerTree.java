@@ -32,7 +32,7 @@ import packed.internal.inject.DependencyProvider;
  * <p>
  * This class server two main purposes:
  * 
- * Finds dependency circles either within the same bundle or across bundles that are not in a parent-child relationship.
+ * Finds dependency circles either within the same assembly or across assemblies that are not in a parent-child relationship.
  * 
  * Responsible for invoking the {@link Dependant#onAllDependenciesResolved(BuildtimeRegion)} callback for every
  * {@link Dependant}. We do this here, because we guarantee that all dependants of a dependant are always invoked before
@@ -44,7 +44,7 @@ import packed.internal.inject.DependencyProvider;
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
 
-//TODO WE NEED TO CHECK INTRA BUNDLE REFERENCES
+//TODO WE NEED TO CHECK INTRA Assembly REFERENCES
 // BitMap???
 final class ServiceManagerTree {
 

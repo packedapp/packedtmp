@@ -70,7 +70,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
             BaseComponentConfiguration ci = c.installInstance(1);
-            c.link(emptyBundle());
+            c.link(emptyAssembly());
             ci.setName("foo");
         }, "Cannot call this method after #link() has been invoked");
     }
@@ -113,7 +113,7 @@ public class NameFreezeTest extends AbstractArtifactTest {
     @Test
     @Disabled
     // Problemet er at install bruger ComponentExtension.
-    // Og det er maaske lidt skjult naar man bruger f.eks. Bundle...
+    // Og det er maaske lidt skjult naar man bruger f.eks. Assembly...
     // Saa lad os lige gennemtaenke det igen...
     public void container_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> c.installInstance("Foo").setName("Bar"), "Cannot call this method after having installed components");
@@ -125,14 +125,14 @@ public class NameFreezeTest extends AbstractArtifactTest {
      * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having linked another container via
      * {@link ContainerConfiguration#link(app.packed.component.Assembly, Wirelet...)}.
      * <p>
-     * We could actually allow this as long as the bundle we link did not observe the path of its components in any way.
+     * We could actually allow this as long as the assembly we link did not observe the path of its components in any way.
      * However, it would be very fragile, if the child component suddenly decided to do it at some point. So better to
      * outlaw is always.
      */
     @Test
     @Disabled
     public void container_setName_cannotBeCalledAfter_link() {
-        checkThrowsISE(c -> c.link(emptyBundle()).setName("Bar"), "Cannot call this method after #link() has been invoked");
+        checkThrowsISE(c -> c.link(emptyAssembly()).setName("Bar"), "Cannot call this method after #link() has been invoked");
     }
 
     /**

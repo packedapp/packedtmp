@@ -130,6 +130,6 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         throw new NoSuchElementException(msg);
     }
 
-    // /child [ss.BaseMyBundle] does not export a service with the specified key
+    // /child [ss.BaseMyAssembly] does not export a service with the specified key
     protected abstract String useFailedMessage(Key<?> key);
 }

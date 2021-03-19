@@ -536,7 +536,7 @@ abstract class YIdeas extends ServiceComposer {
     // The container we transform to... IDK
     // Maaske har vi brug for noget andet end Component
     // Component2Be
-    // Vi er ihvertfald interesset i navn, Bundle osv.
+    // Vi er ihvertfald interesset i navn, Container osv.
     // ComponentDesc
     public abstract Component target();
     // the target (container) of the transformation

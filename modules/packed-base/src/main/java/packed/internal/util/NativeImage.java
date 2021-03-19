@@ -54,7 +54,7 @@ public final class NativeImage {
 
     // Problemet er lidt. Hvordan kan vi lave de statements
     // der kalder Buildint_NATIVE som noops naar man er native?
-    // public static void support(AnyBundle b) {
+    // public static void support(AnyAssembly b) {
     //
     // }
 

@@ -20,7 +20,7 @@ package app.packed.inject.sandbox;
  */
 // Ideen er lidt at vi tilfoejer
 
-// Bundle.provide(T extends ProvideableConfiguration)
+// Container.provide(T extends ProvideableConfiguration)
 
 // Saa vi ikke behover altid at koere 
 // wire(driver, class).provide();

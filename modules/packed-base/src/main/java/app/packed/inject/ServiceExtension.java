@@ -60,15 +60,15 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
 /// Transient requirements Management (automatic require unresolved services from children)
 /// Integration pits
 // MHT til Manuel Requirements Management
-// (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseBundle og vaelge det..
+// (Hmm, lugter vi noget profile?? Nahh, folk maa extende BaseAssembly og vaelge det..
 // Hmm saa auto instantiere vi jo injector extensionen
 //// Det man gerne vil kunne sige er at hvis InjectorExtensionen er aktiveret. Saa skal man
 // altid bruge Manual Requirements
 // contracts bliver installeret direkte paa ContainerConfiguration
 
 // Profile virker ikke her. Fordi det er ikke noget man dynamisk vil switche on an off..
-// Maybe have an Bundle.onExtensionActivation(Extension e) <- man kan overskrive....
-// Eller @BundleStuff(onActivation = FooActivator.class) -> ForActivator extends BundleController
+// Maybe have an Container.onExtensionActivation(Extension e) <- man kan overskrive....
+// Eller @ContainerStuff(onActivation = FooActivator.class) -> ForActivator extends ContainerController
 
 // Taenker den kun bliver aktiveret hvis vi har en factory med mindste 1 unresolved dependency....
 // D.v.s. install(Class c) -> aktivere denne extension, hvis der er unresolved dependencies...
@@ -140,7 +140,7 @@ public class ServiceExtension extends Extension {
     }
 
     /**
-     * Exports an internal service outside of this bundle.
+     * Exports an internal service outside of this container.
      * 
      * <pre>
      *  {@code  
@@ -501,7 +501,7 @@ class ZExtraFunc {
         // Den der tager en biconsumer supportere ikke at de kan vaere final fields af hinanden...
 
         // Det kan ogsaa vaere en klasse CycleBreaker.. som tager ContainerConfiguration
-        // Bundle, Service Extension, ExtensionContext ect...
+        // Container, Service Extension, ExtensionContext ect...
 
         // DE her virker kun indefor samme container...
 
@@ -591,7 +591,7 @@ class ZExtraFunc {
         // Problemet er vel at vi resolver her...
         throw new UnsupportedOperationException();
     }
-    // Skal vi ogsaa supportere noget paa tvaers af bundles???
+    // Skal vi ogsaa supportere noget paa tvaers af containers???
     // Det er vel en slags Wirelet
     // CycleBreaker(SE, ...);
     // CycleBreaker(SE, ...);

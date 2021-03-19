@@ -47,7 +47,7 @@ import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
- * A service composer is responsible for managing the services for a single bundle at build time. A
+ * A service composer is responsible for managing the services for a single assembly at build time. A
  * {@link ServiceManagerTree} is responsible for managing 1 or more service composers that are directly connected and
  * part of the same build.
  */
@@ -329,9 +329,9 @@ public final class ServiceManagerSetup {
 
         @Override
         protected String useFailedMessage(Key<?> key) {
-            // /child [ss.BaseMyBundle] does not export a service with the specified key
+            // /child [ss.BaseMyAssembly] does not export a service with the specified key
 
-            // FooBundle does not export a service with the key
+            // FooAssembly does not export a service with the key
             // It has an internal service. Maybe you forgot to export it()
             // Is that breaking encapsulation
             // container.realm().realmType();

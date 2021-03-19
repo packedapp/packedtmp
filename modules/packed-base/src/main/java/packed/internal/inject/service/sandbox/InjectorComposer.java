@@ -31,10 +31,10 @@ import app.packed.inject.ServiceLocator;
 /**
  * A lightweight configuration object that can be used to create {@link Injector injectors} via
  * {@link Injector#configure(Consumer, Wirelet...)}. This is thought of a alternative to using a {@link BaseAssembly}.
- * Unlike bundles all services are automatically exported once defined. For example useful in tests.
+ * Unlike assemblies all services are automatically exported once defined. For example useful in tests.
  * 
  * <p>
- * The main difference compared to bundles is that there is no concept of encapsulation. All services are exported by
+ * The main difference compared assemblies is that there is no concept of encapsulation. All services are exported by
  * default.
  */
 public final class InjectorComposer extends Composer<ContainerConfiguration> {
@@ -66,13 +66,13 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     }
 
     /**
-     * @param bundle
-     *            the bundle to bind
+     * @param assembly
+     *            the assembly to bind
      * @param wirelets
      *            optional import/export wirelets
      */
-    public void link(Assembly<?> bundle, Wirelet... wirelets) {
-        configuration.link(bundle, wirelets);
+    public void link(Assembly<?> assembly, Wirelet... wirelets) {
+        configuration.link(assembly, wirelets);
     }
 
 
