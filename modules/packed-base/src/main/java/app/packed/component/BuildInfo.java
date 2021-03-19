@@ -38,7 +38,6 @@ package app.packed.component;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 
-// Pod/Capsule/Bundle/ Kan godt lide det hedder noget med build
 
 // BuildTree / BuildSystem / 
 // @ActiveService(phase=Building)
@@ -50,7 +49,7 @@ public interface BuildInfo {
     }
 
     // Maaske vi hellere vil tilfoeje det lokalt???
-    // F.eks. via Extension, eller bundle...
+    // F.eks. via Extension, eller assembly...
 
     // ServiceExtension.failed()
 

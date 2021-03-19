@@ -45,7 +45,7 @@ public final class BuildWirelets {
 
     // Throw XX exception instead of
 
-    // Additional to people overridding artifacts, bundles, ect.
+    // Additional to people overridding artifacts, assemblies, ect.
     public static Wirelet checkRuleset(Object... ruleset) {
         throw new UnsupportedOperationException();
     }

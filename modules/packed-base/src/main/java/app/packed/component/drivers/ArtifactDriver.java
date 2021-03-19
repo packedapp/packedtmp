@@ -151,7 +151,7 @@ public /* sealed */ interface ArtifactDriver<A> {
      * {@link Main#run(Assembly, Wirelet...)} and {@link App#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
-     *            the system bundle
+     *            the system assembly
      * @param wirelets
      *            optional wirelets
      * @return the new artifact or null if void artifact

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.app.App;
 import app.packed.component.ComponentExtension;
-import app.packed.container.Bundle;
+import app.packed.container.BaseAssembly;
 
 public class BasicTest {
 
@@ -17,7 +17,7 @@ public class BasicTest {
   }
 }
 
-class TestModule extends Bundle {
+class TestModule extends BaseAssembly {
 
     public void configure() {
         install("foo");

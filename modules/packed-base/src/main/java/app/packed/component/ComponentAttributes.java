@@ -49,11 +49,11 @@ public class ComponentAttributes {
 
     ////////////////////// Think about these for a bit //////////////////////////
 
-    // HMM ER DET IKKE BARE SOURCE_TYPE???? Nej, fordi hvis man laver en singleton fra en bundle type har den begge.
+    // HMM ER DET IKKE BARE SOURCE_TYPE???? Nej, fordi hvis man laver en singleton fra en assembly type har den begge.
 
     // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
     /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
-    static final Attribute<Class<? extends Assembly<?>>> BUNDLE_TYPE = Attribute.of(MethodHandles.lookup(), "bundle",
+    static final Attribute<Class<? extends Assembly<?>>> CONTAINER_TYPE = Attribute.of(MethodHandles.lookup(), "container",
             new TypeToken<Class<? extends Assembly<?>>>() {});
 
     /** An attribute that is available on any component with the {@link ComponentModifier#BUILD_ROOT} modifier. */

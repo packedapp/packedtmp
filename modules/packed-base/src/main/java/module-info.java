@@ -39,4 +39,3 @@ module app.packed.base {
 // requires static org.graalvm.sdk;
 
 // uses app.packed.util.ModuleEnv;
-// provides app.packed.util.ModuleEnv with packed.internal.bundle.DefaultBS;

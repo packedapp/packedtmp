@@ -85,7 +85,7 @@ public @interface MethodHook {
      * 
      * @see Bootstrap#methodHandle()
      */
-    boolean allowInvoke() default false;
+    boolean allowInvoke() default false; // allowIntercept...
 
     /** The hook's {@link Bootstrap} class. */
     Class<? extends MethodHook.Bootstrap> bootstrap();

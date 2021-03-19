@@ -15,15 +15,14 @@
  */
 package onclasspath;
 
-import app.packed.container.Bundle;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-public class TestModule extends Bundle {
+public class TestModule extends BaseAssembly {
 
-    public void configure() {
+    public void build() {
         install("foo");
-        
     }
 }

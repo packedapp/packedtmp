@@ -60,11 +60,12 @@ import packed.internal.util.ThrowableUtil;
  * Any packages where extension implementations, custom hooks or extension wirelet pipelines are located must be open to
  * 'app.packed.base'
  * <p>
- * Every extension implementations must provide either an empty constructor, or a constructor taking a single parameter
- * of type {@link ExtensionConfiguration}. The constructor should have package private accessibility to make sure users
- * do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}. The extension
- * subclass should not be declared final as it is expected that future versions of Packed will supports some debug
- * configuration that relies on extending extensions. And capturing interactions with the extension.
+ * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
+ * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private
+ * accessibility to make sure users do not try an manually instantiate it, but instead use
+ * {@link ContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected that
+ * future versions of Packed will supports some debug configuration that relies on extending extensions. And capturing
+ * interactions with the extension.
  * 
  * @see ExtensionDescriptor
  */
@@ -237,13 +238,9 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Method invoked (by the runtime) immediately after the extension's constructor has successfully returned. But before
-     * the extension instance is returned to the end-user.
-     * <p>
-     * This method forms the first in a series of callback methods as outlined in
-     * <p>
-     * Since most methods on this class cannot be invoked from the extension's constructor. This method can be used to
-     * perform any needed post instantiation.
+     * Invoked (by the runtime) immediately after the extension has been instantiated. But before the newly created
+     * extension instance is returned to the end-user. Since most methods on this class cannot be invoked from the
+     * extension's constructor. This method can be used to perform any needed post instantiation.
      * <p>
      * The reason for prohibiting configuration from the constructor. Is to avoid situations.. that users might then link
      * other components that in turn requires access to the actual extension instance. Which is not possible since it is
@@ -361,6 +358,7 @@ public abstract class Extension extends Realm {
     protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
         throw new Error();
     }
+
     protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
         throw new Error();
     }
@@ -455,8 +453,10 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Subtensions are the main that extensions communicate with other extensions. If you are end-user you will most likely
-     * never have to deal with these type of classes.
+     * A Subtension is the main way one extension communicate with another extension. If you are an end-user you will most
+     * likely never have to deal with these type of classes.
+     * <p>
+     * 
      * 
      * An extension There are no annotations that make sense for this class
      * <p>
@@ -465,8 +465,14 @@ public abstract class Extension extends Realm {
      * On the basis that is the end-user that determines.
      * 
      * <p>
-     * Subtensions must have a non-public constructor. And should not be declared final... Ideen er lidt at vi saa kan
-     * dekorere den... og returnere en subclasse... Og paa den maade se hvem der kalder hvilke metoder paa den...
+     * A Subtension is typically defined as a non-final inner class. It must have an extension as a declaring class. It must
+     * have a single (preferable non-public) constructor and should not be declared final. This constructor may have the
+     * following two types of services injected:
+     * 
+     * 
+     * 
+     * And should not be declared final... Ideen er lidt at vi saa kan dekorere den... og returnere en subclasse... Og paa
+     * den maade se hvem der kalder hvilke metoder paa den...
      * 
      * Hvis mig hvad FooExtension laver. Installere Y Compoennt Kalder F metode paa Subtension...
      * 
@@ -479,8 +485,6 @@ public abstract class Extension extends Realm {
      * <p>
      * New instances of this class is automatically created by the runtime when needed. The instances are never cached,
      * instead a fresh one is created every time it is requested.
-     * <p>
-     * Subtensions are only available through Extension#use(Class)
      * 
      * @see Extension#use(Class)
      * @see ExtensionConfiguration#use(Class)

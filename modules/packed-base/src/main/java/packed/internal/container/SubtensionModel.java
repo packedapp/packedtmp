@@ -52,8 +52,7 @@ final class SubtensionModel {
             ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
             // Create an infuser exposing two services:
-            // 1. An instance of the extension that the subtension is a part of (typically used via declaring the subtension an
-            // inner class)
+            // 1. An instance of the extension that the subtension is a part of
             // 2. The class of the extension that wants to use the subtension
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
                 c.provide(extensionClass).adapt(); // Extension instance of the subtension
@@ -63,7 +62,7 @@ final class SubtensionModel {
             // Find the constructor for the subtension, only 1 constructor must be declared on the class
             Constructor<?> con = FindInjectableConstructor.constructorOf(subtensionClass, m -> new InternalExtensionException(m));
 
-            // Create the method handle
+            // Create a method handle for the constructor
             MethodHandle constructor = infuser.findAdaptedConstructor(con, Subtension.class);// (Extension,Class)Subtension
 
             return new SubtensionModel(extensionClass, constructor);

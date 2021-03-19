@@ -18,6 +18,7 @@ import app.packed.base.Nullable;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.LookupUtil;
 
+//InjectionModel???
 public class Infuser {
 
     /** The entries of this infuser */
@@ -198,7 +199,7 @@ public class Infuser {
             for (int i = 0; i < indexes.length; i++) {
                 Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
             }
-           // System.out.println("Adding transfoer " + transformer);
+            // System.out.println("Adding transfoer " + transformer);
             builder.add(this, new Entry(this, transformer, indexes));
         }
     }
