@@ -43,6 +43,8 @@ public @interface ExposeAttribute {
      * @return the name of the attribute that the member provides a value for
      */
     String name(); // named()???
+    
+    boolean optional() default false;
 }
 
 // Wow hvis vi nu tager metode/field navnet...

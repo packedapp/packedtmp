@@ -19,8 +19,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import app.packed.attribute.Attribute;
+import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
@@ -353,6 +357,17 @@ public abstract class Extension extends Realm {
     protected static void $dependsOn(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
     }
+
+    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
+        throw new Error();
+    }
+    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
+        throw new Error();
+    }
+
+    protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+
+    protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
     /**
      * Registers an optional dependency of this extension. The extension

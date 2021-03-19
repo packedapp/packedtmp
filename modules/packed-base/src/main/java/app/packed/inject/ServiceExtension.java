@@ -82,7 +82,7 @@ public class ServiceExtension extends Extension {
      * Create a new service extension.
      * 
      * @param setup
-     *            an extension setup object
+     *            an extension setup object (hidden).
      */
     /* package-private */ ServiceExtension(ExtensionSetup setup) {
         this.services = setup.container().newServiceManagerFromServiceExtension();
@@ -246,9 +246,27 @@ public class ServiceExtension extends Extension {
      * 
      * @return any exported services. Or null if there are no exports
      */
-    @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "exported-services")
+    @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "exported-services", optional = false)
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
+
+        
+        // Kan specificere det paa attributen???
+        // Giv mig en ServiceExtension... og saa skal jeg vise dig...
+        // Det kraever jo vi force loader den...
+        
+//        $addAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
+//        $addOptionalAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().hasExports());
+//
+//        $attribute(ServiceExtension.class, a -> {
+//            a.add(EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
+//            a.optional(EXPORTED_SERVICES, p -> p.services.exports().hasExports(), s -> s.services.exports().exportsAsServiceRegistry());
+//        });
+//
+//        AttributeMaker<ServiceExtension> a = $attribute(ServiceExtension.class);
+//        a.add(EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
+//        a.optional(EXPORTED_SERVICES, p -> p.services.exports().hasExports(), s -> s.services.exports().exportsAsServiceRegistry());
+
         return services.exports().exportsAsServiceRegistry();
     }
 
@@ -427,7 +445,7 @@ public class ServiceExtension extends Extension {
         /* package-private */ Sub(Class<? extends Extension> requestingExtension) {
             this.requestingExtension = requireNonNull(requestingExtension, "requestingExtension is null");
         }
-        
+
         public void check() {
             System.out.println("Requested by " + requestingExtension);
         }

@@ -82,11 +82,6 @@ public final class ContainerSetup {
         }
     }
 
-    public boolean isInUse(Class<? extends Extension> extensionClass) {
-        requireNonNull(extensionClass, "extensionClass is null");
-        return extensions.containsKey(extensionClass);
-    }
-
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
      * 
@@ -174,6 +169,17 @@ public final class ContainerSetup {
             s = sm;
         }
         return s;
+    }
+
+    /**
+     * Returns whether or not the specified extension is in use.
+     * 
+     * @param extensionClass the extension to test 
+     * @return true if the specified extension is in use, otherwise false
+     */
+    public boolean isInUse(Class<? extends Extension> extensionClass) {
+        requireNonNull(extensionClass, "extensionClass is null");
+        return extensions.containsKey(extensionClass);
     }
 
     public boolean isPartOfImage() {

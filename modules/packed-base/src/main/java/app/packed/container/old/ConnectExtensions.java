@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.old;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -21,6 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.component.ComponentRelation;
+import app.packed.container.Extension;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
@@ -64,7 +65,7 @@ import app.packed.inject.Provide;
 // Alternativ @Parent qualifier... @Parent(any = true) 
 // @Descendent(parentOnly=false)
 // Maaske have begge to...
-public @interface ConnectExtensions {
+@interface ConnectExtensions {
 
     // Only children not anything farther removed...
     // If not only direct children. Only the closest ancestor will have its

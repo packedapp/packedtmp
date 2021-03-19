@@ -293,7 +293,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @return a setup for the extension
      */
     static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
-        // Create setups and instantiate extension.
+        // Find extension model and create setups.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ComponentSetup component = new ComponentSetup(container.component, model); // creates ExtensionSetup in ComponentSetup constructor
         ExtensionSetup extension = component.extension;
@@ -301,32 +301,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         // Creates a new extension instance
         Extension instance = extension.instance = model.newInstance(extension);
         VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension setup
-
-        // 1. The first step we take is seeing if there are parent or ancestors that needs to be notified
-        // of the extensions existence. This is done first in order to let the remaining steps use any
-        // information set by the parent or ancestor.
-        if (model.mhExtensionLinked != null) {
-            ExtensionSetup parentExtension = null;
-            ContainerSetup parentContainer = container.parent;
-            if (!model.extensionLinkedDirectChildrenOnly) {
-                while (parentExtension == null && parentContainer != null) {
-                    parentExtension = parentContainer.getExtensionContext(extensionClass);
-                    parentContainer = parentContainer.parent;
-                }
-            } else if (parentContainer != null) {
-                parentExtension = parentContainer.getExtensionContext(extensionClass);
-            }
-
-            // set activate extension???
-            // If not just parent link keep checking up until root/
-            if (parentExtension != null) {
-                try {
-                    model.mhExtensionLinked.invokeExact(parentExtension.instance, extension, instance);
-                } catch (Throwable t) {
-                    throw ThrowableUtil.orUndeclared(t);
-                }
-            }
-        }
 
         // Invoke Extension#onNew()
         try {

@@ -163,6 +163,10 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
         return resolvedExports.isEmpty() ? null : AbstractServiceRegistry.copyOf(resolvedExports);
     }
 
+    public boolean hasExports() {
+        return !resolvedExports.isEmpty();
+    }
+    
     /** {@inheritDoc} */
     @Override
     public Iterator<BuildtimeService> iterator() {

@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import app.packed.component.App;
 import app.packed.component.Image;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ConnectExtensions;
 import app.packed.container.Extension;
 
 /**
@@ -85,7 +84,6 @@ public class Z4 extends BaseAssembly {
 
         final int ai = i.getAndIncrement();
 
-        @ConnectExtensions
         public void linked(E child) {
             // System.out.println("Linked child " + child);
         }

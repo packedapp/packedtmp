@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
-import app.packed.container.ConnectExtensions;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
@@ -42,7 +40,6 @@ import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.inject.classscan.Infuser;
-import packed.internal.inject.classscan.MethodHandleBuilder;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
 
@@ -74,12 +71,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** Whether or not is is only any immediately parent that will be linked. */
     final boolean extensionLinkedDirectChildrenOnly;
 
-    /** A method handle for creating extension instances. */
+    /** A method handle for creating instances of extensionClass. */
     private final MethodHandle mhConstructor; // (ExtensionSetup)Extension
-
-    /** A method handle to an optional method annotated with {@link ConnectExtensions} on the extension. */
-    @Nullable
-    final MethodHandle mhExtensionLinked; // will have an extensionLinkedToAncestorService in the future
 
     /** The default component name of the extension. */
     public final String nameComponent;
@@ -100,7 +93,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.extensionClass = builder.extensionClass;
         this.mhConstructor = builder.mhConstructor;
         this.depth = builder.depth;
-        // All direct dependencies of this extension
         this.directDependencies = ExtensionDependencySet.of(builder.dependencies);
 
         // Cache some frequently used strings.
@@ -108,8 +100,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.nameSimple = extensionClass.getSimpleName();
         this.nameComponent = "." + nameSimple;
 
-        this.mhExtensionLinked = builder.li;
-        this.extensionLinkedDirectChildrenOnly = builder.callbackOnlyDirectChildren;
+        this.extensionLinkedDirectChildrenOnly = builder.connectParentOnly;
         this.attributes = builder.pam;
     }
 
@@ -321,8 +312,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** A builder of {@link ExtensionModel}. */
     private static final class Builder {
 
-        // Whether or not it is only children... Or all ancestors
-        private boolean callbackOnlyDirectChildren;
+        /** Whether or not we only connect to parent or all ancestors. */
+        private boolean connectParentOnly;
 
         /** A set of extension this extension depends on (does not include transitive extensions). */
         private Set<Class<? extends Extension>> dependencies = new HashSet<>();
@@ -332,10 +323,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         /** The extension we are building a model for. */
         private final Class<? extends Extension> extensionClass;
-
-        private MethodHandle li;
-
-        private Method linked;
 
         /** The extension loader used to load the extension. */
         private final Loader loader;
@@ -371,37 +358,13 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 }
             }
 
-            ClassMemberAccessor cp = scanClass();
-            
-            this.pam = PackedAttributeModel.analyse(cp);
-
-            if (linked != null) {
-                // ancestor extension, descendant extension context, descendant extension
-                MethodHandleBuilder iss = MethodHandleBuilder.of(void.class, Extension.class, ExtensionSetup.class, Extension.class);
-
-                // From the child's extension context
-                iss.addKey(ExtensionConfiguration.class, 1);
-
-                // The child's extension instance
-                iss.addKey(extensionClass, 2); // should perform an implicit cast
-
-                li = iss.build(cp, linked);
-            }
-            return new ExtensionModel(this);
-        }
-
-        private ClassMemberAccessor scanClass() {
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
                 c.provide(ExtensionConfiguration.class).adapt();
                 c.provideHidden(ExtensionSetup.class).adapt();
                 
+                // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
                 MethodHandle mh = ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
                 c.provideHidden(extensionClass).transform(mh);
-                //c.provideHidden(extensionClass).transform(ExtensionSetup.MH_INJECT_PARENT);
-                
-                // Problemet er at der bliver lavet en automatisk konverterting fra noeglen tror jeg
-//                
-//                c.optional(extensionClass).transform();
             }, ExtensionSetup.class);
 
             // Find the constructor for the extension, only 1 constructor must be declared on the class
@@ -410,19 +373,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.mhConstructor = infuser.findAdaptedConstructor(con, Extension.class);
 
             ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
-            cp.findMethods(m -> {
-                ConnectExtensions ce = m.getAnnotation(ConnectExtensions.class);
-                if (ce != null) {
-                    if (linked != null) {
-                        throw new IllegalStateException(
-                                "Multiple methods annotated with " + ConnectExtensions.class + " on " + m.getDeclaringClass() + ", only 1 allowed.");
-                    }
-                    linked = m;
-                    callbackOnlyDirectChildren = ce.onlyDirectLink();
-                }
-            });
+            
+            // Okay may contracts...
+            // Maybe ->
+            this.pam = PackedAttributeModel.analyse(cp);
 
-            return cp;
+            return new ExtensionModel(this);
         }
     }
 
@@ -546,90 +502,3 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     }
 }
-
-// We probably want to add int id at some point
-
-///** A unique id of the extension. */
-//final int id; // We don't currently use it... Ideen er at kunne indexere en extension istedet for en hashtable
-
-// Code for optional extensions
-
-///** A class value that contains optional dependencies of an extension. */
-//private static ClassValue<?> OPTIONALS = new ClassValue<>() {
-//
-//  @Override
-//  protected Object computeValue(Class<?> type) {
-//      try {
-//          return computeValue0(type);
-//      } catch (Throwable t) {
-//          return t;
-//      }
-//  }
-//
-//  @SuppressWarnings("unchecked")
-//  private List<Class<? extends Extension>> computeValue0(Class<?> type) {
-//      String[] dependencies = type.getAnnotation(UsesExtensions.class).optionalDependencies();
-//
-//      ArrayList<Class<? extends Extension>> result = new ArrayList<>();
-//      ClassLoader cl = type.getClassLoader(); // PrividligeAction???
-//      for (String s : dependencies) {
-//          Class<?> c = null;
-//          try {
-//              c = Class.forName(s, false, cl);//
-//          } catch (ClassNotFoundException ignore) {}
-//
-//          if (c != null) {
-//              // We check this in models also...
-//              if (Extension.class == c) {
-//                  throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(type)
-//                          + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
-//              } else if (!Extension.class.isAssignableFrom(c)) {
-//                  throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(type)
-//                          + " specified an invalid extension " + StringFormatter.format(c));
-//              }
-//              result.add((Class<? extends Extension>) c);
-//          }
-//      }
-//      return result;
-//  }
-//};
-
-///** A class value that contains optional dependencies of an extension. */
-//private static ClassValue<?> OPTIONALS = new ClassValue<>() {
-//
-//  @Override
-//  protected Object computeValue(Class<?> type) {
-//      try {
-//          return computeValue0(type);
-//      } catch (Throwable t) {
-//          return t;
-//      }
-//  }
-//
-//  @SuppressWarnings("unchecked")
-//  private List<Class<? extends Extension>> computeValue0(Class<?> type) {
-//      String[] dependencies = type.getAnnotation(UsesExtensions.class).optionalDependencies();
-//
-//      ArrayList<Class<? extends Extension>> result = new ArrayList<>();
-//      ClassLoader cl = type.getClassLoader(); // PrividligeAction???
-//      for (String s : dependencies) {
-//          Class<?> c = null;
-//          try {
-//              c = Class.forName(s, false, cl);//
-//          } catch (ClassNotFoundException ignore) {}
-//
-//          if (c != null) {
-//              // We check this in models also...
-//              if (Extension.class == c) {
-//                  throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(type)
-//                          + " cannot specify Extension.class as an optional dependency, for " + StringFormatter.format(c));
-//              } else if (!Extension.class.isAssignableFrom(c)) {
-//                  throw new InternalExtensionException("@" + UsesExtensions.class.getSimpleName() + " " + StringFormatter.format(type)
-//                          + " specified an invalid extension " + StringFormatter.format(c));
-//              }
-//              result.add((Class<? extends Extension>) c);
-//          }
-//      }
-//      return result;
-//  }
-//};

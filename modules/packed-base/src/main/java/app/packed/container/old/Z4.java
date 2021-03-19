@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.container.old;
 
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.component.App;
 import app.packed.component.Image;
+import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 
 /**
  *
