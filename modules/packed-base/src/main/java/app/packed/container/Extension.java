@@ -328,6 +328,14 @@ public abstract class Extension extends Realm {
     }
 
     /**
+     * Only parent extensions will be linked
+     */
+    // Maaske skal vi have det for begge to
+    protected static void $connectParentOnly() {
+        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
+    }
+
+    /**
      * Registers one or more dependencies of this extension.
      * <p>
      * Every extension that another extension uses directly must be explicitly registered. Even if the extension is only
@@ -344,14 +352,6 @@ public abstract class Extension extends Realm {
     @SafeVarargs
     protected static void $dependsOn(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
-    }
-
-    /**
-     * Only parent extensions will be linked
-     */
-    protected static void $connectParentsOnly() {
-        // Only parent extensions will be linked, not descendents
-        
     }
 
     /**

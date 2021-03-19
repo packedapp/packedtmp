@@ -245,7 +245,7 @@ public final class ServiceManagerSetup {
                     wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service1stPassWirelet.class).forEach(w -> w.process(child));
                 }
 
-                if (child.exports != null) {
+                if (child != null && child.exports != null) {
                     for (BuildtimeService a : child.exports) {
                         resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }

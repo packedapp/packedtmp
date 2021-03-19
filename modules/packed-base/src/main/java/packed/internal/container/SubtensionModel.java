@@ -19,12 +19,15 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
 
 import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.InternalExtensionException;
+import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
+import packed.internal.util.ClassUtil;
 
 /** A model for a {@link Extension.Subtension}. Not used outside of this package. */
 final class SubtensionModel {
@@ -34,12 +37,9 @@ final class SubtensionModel {
 
         /** {@inheritDoc} */
         @Override
-        protected SubtensionModel computeValue(Class<?> subtensionClass) {
-            // Check that user have specified Extension.Subtension.class as the type
-            if (subtensionClass == Extension.Subtension.class) {
-                throw new InternalExtensionException("Cannot specify " + Extension.Subtension.class.getCanonicalName());
-            }
-
+        protected SubtensionModel computeValue(Class<?> type) {
+            Class<? extends Subtension> subtensionClass = ClassUtil.checkProperSubclass(Subtension.class, type);
+            
             // Check that the subtension have an extension as declaring class
             Class<?> declaringClass = subtensionClass.getDeclaringClass();
             if (declaringClass == null || !Extension.class.isAssignableFrom(declaringClass)) {
@@ -51,14 +51,19 @@ final class SubtensionModel {
             Class<? extends Extension> extensionClass = (Class<? extends Extension>) declaringClass;
             ExtensionModel.of(extensionClass); // Check that the extension of the subtension is valid
 
-            // Create an infuser (Class, Class) (Extension class, Extension that is requesting the extension)
+            // Create an infuser exposing two services:
+            // 1. An instance of the extension that the subtension is a part of (typically used via declaring the subtension an inner class)
+            // 2. The class of the extension that wants to use the subtension
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
-                c.provide(extensionClass).adapt(); // The extension the Subtension belongs
-                c.provide(new Key<Class<? extends Extension>>() {}).adapt(1); // The requesting extension
+                c.provide(extensionClass).adapt(); // Extension instance of the subtension
+                c.provide(new Key<Class<? extends Extension>>() {}).adapt(1); // Requesting extension
             }, Extension.class, Class.class);
 
-            // Find a valid constructor for the subtension
-            MethodHandle constructor = infuser.findAdaptedConstructor(subtensionClass, Subtension.class);// (Extension,Class)Subtension
+            // Find the constructor for the subtension, only 1 constructor must be declared on the class
+            Constructor<?> con = FindInjectableConstructor.singleConstructor(subtensionClass, m -> new InternalExtensionException(m));
+            
+            // Create the method handle
+            MethodHandle constructor = infuser.findAdaptedConstructor(con, Subtension.class);// (Extension,Class)Subtension
 
             return new SubtensionModel(extensionClass, constructor);
         }

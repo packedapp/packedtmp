@@ -50,6 +50,21 @@ public class Infuser {
         return mhb.build(oc, constructor);
     }
 
+    public MethodHandle findAdaptedConstructor(Constructor<?> con, Class<?> adaptTo) {
+        MethodHandle mh = findConstructorFor(con, con.getDeclaringClass());
+        return mh.asType(mh.type().changeReturnType(adaptTo));
+    }
+
+    public MethodHandle findConstructorFor(Constructor<?> con, Class<?> type) {
+        // Den bliver ogsaa checket i FindInjectableConstructor...
+        // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
+        ClassUtil.checkIsInstantiable(type);
+        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
+        MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
+        mhb.add(this);
+        return mhb.build(oc, con);
+    }
+
     public Set<Key<?>> keys() {
         return entries.keySet();
     }
@@ -115,7 +130,7 @@ public class Infuser {
         public EntryBuilder provide(Key<?> key) {
             return new EntryBuilder(this, key, false, false);
         }
-        
+
         public EntryBuilder provideHidden(Class<?> key) {
             return provideHidden(Key.of(key));
         }
@@ -199,6 +214,6 @@ public class Infuser {
         Entry(EntryBuilder b, @Nullable MethodHandle transformer, int... indexes) {
             this(transformer, b.hide, b.optional, indexes);
         }
-        
+
     }
 }

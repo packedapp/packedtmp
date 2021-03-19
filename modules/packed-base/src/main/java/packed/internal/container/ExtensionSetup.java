@@ -16,6 +16,7 @@
 package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
+import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -54,9 +55,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             "onPreContainerWiring", void.class);
 
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
-    static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class,
-            "injectParent", Optional.class);
-    
+    static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Optional.class);
+
     /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
@@ -250,15 +250,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Check that requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(subExtensionClass)) {
-            // Special message if you try and use your own subtension
+            // Special message if you try to use your own subtension
             if (model.extensionClass() == subExtensionClass) {
-                throw new InternalExtensionException(
-                        "An extension cannot use its own subtension, [extension = " + extensionClass() + ", subtension = " + subtensionClass + "]");
+                throw new InternalExtensionException(model.extensionClass().getSimpleName() + " cannot use its own subtension "
+                        + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
             }
-            throw new InternalExtensionException(
-                    "The extension of the specified subtension is not a direct depe extension type is not among the direct dependencies of "
-                            + model.extensionClass().getSimpleName() + ", extensionClass = " + subtensionClass + ", valid dependencies = "
-                            + model.dependencies());
+            throw new InternalExtensionException(model.extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass)
+                    + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
 
         // Get the extension instance (create it if needed) thaw we need to create a subtension for

@@ -41,6 +41,7 @@ import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.inject.classscan.MethodHandleBuilder;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
 
 /** A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}. */
@@ -50,21 +51,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
         @Override
         protected ExtensionModel computeValue(Class<?> extensionClass) {
-            // We have a number of checks here to check that the extension class is actually valid.
-            // We do them here, because it is faster then checking the extension type every time it is requested.
-            if (extensionClass == Extension.class) {
-                throw new IllegalArgumentException(Extension.class.getSimpleName() + ".class is not a valid argument to this method.");
-            } else if (!Extension.class.isAssignableFrom(extensionClass)) {
-                throw new IllegalArgumentException(
-                        "The specified type '" + StringFormatter.format(extensionClass) + "' must extend '" + StringFormatter.format(Extension.class) + "'");
-            }
-
-            // The creation of an Extension model is a bit complex because we need to
-            // create the models of dependencies recursively while also checking for cyclic dependencies
-            return Loader.load((Class<? extends Extension>) extensionClass, null);
+            return Loader.load(ClassUtil.checkProperSubclass(Extension.class, extensionClass), null);
         }
     };
 
@@ -234,6 +223,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return sb.toString();
     }
 
+    public static Bootstrap bootstrap(Class<?> callerClass) {
+        return Loader.forBootstrapAccess(callerClass);
+    }
+
     /**
      * Returns an model for the specified extension class.
      * 
@@ -245,10 +238,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     public static ExtensionModel of(Class<? extends Extension> extensionClass) {
         return MODELS.get(extensionClass);
-    }
-
-    public static Bootstrap bootstrap(Class<?> callerClass) {
-        return Loader.forBootstrapAccess(callerClass);
     }
 
     /**
@@ -264,6 +253,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         /** A set of extension this extension depends on. */
 
+        boolean connectParentOnly;
+
         /** All dependencies of the extension */
 
         // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
@@ -276,11 +267,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.extensionClass = requireNonNull(extensionClass);
         }
 
+        public void connectParentOnly() {
+            connectParentOnly = true;
+        }
+
         /**
          * Adds the specified dependency to the caller class if valid.
          * 
-         * @param dependencies
-         *            the dependencies
+         * @param extensions
+         *            the extensions
          * @see Extension#$dependsOn(Class...)
          */
         public void dependsOn(@SuppressWarnings("unchecked") Class<? extends Extension>... extensions) {
@@ -292,7 +287,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 } else if (this.dependencies.contains(dependencyType)) {
                     throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
                 }
-                this.dependencies.add(dependencyType);
+                dependencies.add(dependencyType);
             }
         }
 
@@ -520,6 +515,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         private static ExtensionModel load(Class<? extends Extension> extensionClass, @Nullable Loader loader) {
+            // The creation of an Extension model is a bit complex because we need to
+            // create the models of dependencies recursively while also checking for cyclic dependencies
+
             GLOBAL_LOCK.lock();
             try {
                 // Check if we have attempted to load (possible unsuccessful) the extension

@@ -34,15 +34,15 @@ public final class FindInjectableConstructor {
      *             if a valid injectable constructor could not be found
      */
     public static Constructor<?> findConstructorIAE(Class<?> type) {
-        return findConstructor(type, s -> new IllegalArgumentException(s));
+        return findConstructor(type, true, s -> new IllegalArgumentException(s));
     }
-    
+
     public static Constructor<?> singleConstructor(Class<?> type, Function<String, RuntimeException> errorMaker) {
-        throw new UnsupportedOperationException();
+        return findConstructor(type, false, errorMaker);
     }
-    
-    public static Constructor<?> findConstructor(Class<?> type, Function<String, RuntimeException> errorMaker) {
-        if (type.isAnnotation()) {
+
+    public static Constructor<?> findConstructor(Class<?> type, boolean scan, Function<String, RuntimeException> errorMaker) {
+        if (type.isAnnotation()) { // must be checked before isInterface
             String errorMsg = format(type) + " is an annotation and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
         } else if (type.isInterface()) {
@@ -65,6 +65,9 @@ public final class FindInjectableConstructor {
         // If we only have 1 constructor, return it.
         if (constructors.length == 1) {
             return constructors[0];
+        } else if (!scan) {
+            String errorMsg = format(type) + " must declare a single constructor only, however " + constructors.length + " constructors was found.";
+            throw errorMaker.apply(errorMsg);
         }
 
         // See if we have a single constructor annotated with @Inject

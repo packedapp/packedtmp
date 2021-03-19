@@ -11,6 +11,17 @@ import java.util.OptionalLong;
 /** Various utility methods for working {@link Class classes}. */
 public class ClassUtil {
 
+    @SuppressWarnings("unchecked")
+    public static <T> Class<T> checkProperSubclass(Class<T> clazz, Class<?> clazzToCheck) {
+        if (clazzToCheck == clazz) {
+            throw new IllegalArgumentException(clazz.getSimpleName() + ".class is not a valid argument to this method.");
+        } else if (!clazz.isAssignableFrom(clazzToCheck)) {
+            throw new IllegalArgumentException(
+                    "The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
+        }
+        return (Class<T>) clazzToCheck;
+    }
+
     /**
      * Checks that the specified class can be instantiated. That is, a public non-abstract class with at least one public
      * constructor.
