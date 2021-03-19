@@ -16,103 +16,21 @@
 package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
-import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
-import java.util.OptionalLong;
 import java.util.Set;
 
 /** Various utility methods for working {@link Type types}. */
-// Split up in ClassUtil and TypeUtil I think
 public final class TypeUtil {
 
     /** Cannot instantiate. */
     private TypeUtil() {}
-
-    /**
-     * Checks that the specified class can be instantiated. That is, a public non-abstract class with at least one public
-     * constructor.
-     *
-     * @param clazz
-     *            the class to check
-     */
-    // TODO tror godt vi kan fjerne denne, eftersom den er flyttet til FindInjectableConstructod...
-    // Tror ikke vi finder constructere som vi ikke bruger
-    public static <T> Class<T> checkClassIsInstantiable(Class<T> clazz) {
-        if (clazz.isAnnotation()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an annotation and cannot be instantiated");
-        } else if (clazz.isInterface()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an interface and cannot be instantiated");
-        } else if (clazz.isArray()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an array and cannot be instantiated");
-        } else if (clazz.isPrimitive()) {
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is a primitive class and cannot be instantiated");
-        }
-        int modifiers = clazz.getModifiers();
-        if (Modifier.isAbstract(modifiers)) {
-            // Yes a primitive class is abstract
-            throw new IllegalArgumentException("The specified class (" + format(clazz) + ") is an abstract class and cannot be instantiated");
-        }
-        /*
-         * else if (!Modifier.isPublic(modifiers)) { throw new IllegalArgumentException("The specified class (" + format(clazz)
-         * + ") is not a public class and cannot be instantiated"); } if (clazz.getConstructors().length == 0) { throw new
-         * IllegalArgumentException("The specified class (" + format(clazz) +
-         * ") does not have any public constructors and cannot be instantiated"); }
-         */
-        return clazz;
-    }
-
-    /**
-     * Returns a set of all type variable names that occurs in the specified type
-     * 
-     * @param type
-     *            the type to check
-     * @return a set of all type variable names that occurs in the specified type
-     * @see TypeVariable#getName()
-     */
-    public static Set<String> findTypeVariableNames(Type type) {
-        requireNonNull(type, "type is null");
-        LinkedHashSet<String> addTo = new LinkedHashSet<>();
-        findTypeVariableNames0(addTo, type);
-        return addTo;
-    }
-
-    /**
-     * Helper method for {@link #findTypeVariableNames(Type)}.
-     * 
-     * @param addTo
-     *            the set to add each variable to
-     * @param type
-     *            the type to analyse
-     */
-    private static void findTypeVariableNames0(LinkedHashSet<String> addTo, Type type) {
-        if (type instanceof ParameterizedType pt) {
-            findTypeVariableNames0(addTo, pt.getOwnerType());
-            for (Type t : pt.getActualTypeArguments()) {
-                findTypeVariableNames0(addTo, t);
-            }
-            findTypeVariableNames0(addTo, pt.getRawType());
-        } else if (type instanceof GenericArrayType gat) {
-            findTypeVariableNames0(addTo, gat.getGenericComponentType());
-        } else if (type instanceof TypeVariable<?> tv) {
-            addTo.add(tv.getName());
-        } else if (type instanceof WildcardType wt) {
-            if (wt.getLowerBounds().length > 0) {
-                findTypeVariableNames0(addTo, wt.getLowerBounds()[0]);
-            }
-            findTypeVariableNames0(addTo, wt.getUpperBounds()[0]);
-        }
-    }
 
     /**
      * Returns true if the specified {@code type} is free from type variables, otherwise false. For example,
@@ -161,32 +79,6 @@ public final class TypeUtil {
     }
 
     /**
-     * Tests if the specified class is an inner class.
-     * 
-     * @param clazz
-     *            the class to test
-     * @return whether or not the specified class is an inner class
-     */
-    public static boolean isInnerOrLocalClass(Class<?> clazz) {
-        return clazz.isLocalClass() || (clazz.isMemberClass() && !Modifier.isStatic(clazz.getModifiers()));
-    }
-
-    /**
-     * Tests if the class is an optional type.
-     * 
-     * @param type
-     *            the type to test
-     * @return whether or not the specified is an optional type
-     * @see Optional
-     * @see OptionalLong
-     * @see OptionalDouble
-     * @see OptionalInt
-     */
-    public static boolean isOptionalType(Class<?> type) {
-        return (type == Optional.class || type == OptionalLong.class || type == OptionalInt.class || type == OptionalDouble.class);
-    }
-
-    /**
      * Finds the raw class type for the specified type
      *
      * @param type
@@ -211,72 +103,45 @@ public final class TypeUtil {
     }
 
     /**
-     * Converts the specified primitive wrapper class to the corresponding primitive class. Or returns the specified class
-     * if it is not a primitive wrapper class.
+     * Returns a set of all type variable names that occurs in the specified type
      * 
-     * @param <T>
-     *            the type to unbox
      * @param type
-     *            the class to convert
-     * @return the converted class
+     *            the type to check
+     * @return a set of all type variable names that occurs in the specified type
+     * @see TypeVariable#getName()
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Class<T> unwrap(Class<T> type) {
-        if (type == Boolean.class) {
-            return (Class<T>) boolean.class;
-        } else if (type == Byte.class) {
-            return (Class<T>) byte.class;
-        } else if (type == Character.class) {
-            return (Class<T>) char.class;
-        } else if (type == Double.class) {
-            return (Class<T>) double.class;
-        } else if (type == Float.class) {
-            return (Class<T>) float.class;
-        } else if (type == Integer.class) {
-            return (Class<T>) int.class;
-        } else if (type == Long.class) {
-            return (Class<T>) long.class;
-        } else if (type == Short.class) {
-            return (Class<T>) short.class;
-        } else if (type == Void.class) {
-            return (Class<T>) void.class;
-        }
-        return type;
+    public static Set<String> typeVariableNamesOf(Type type) {
+        requireNonNull(type, "type is null");
+        LinkedHashSet<String> addTo = new LinkedHashSet<>();
+        typeVariableNamesOf0(addTo, type);
+        return addTo;
     }
 
+
     /**
-     * Converts the specified primitive class to the corresponding Object based class. Or returns the specified class if it
-     * is not a primitive class.
-     *
-     * @param <T>
-     *            the type to box
+     * Helper method for {@link #typeVariableNamesOf(Type)}.
+     * 
+     * @param addTo
+     *            the set to add each variable to
      * @param type
-     *            the class to convert
-     * @return the converted class
+     *            the type to analyse
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Class<T> wrap(Class<T> type) {
-        if (type.isPrimitive()) {
-            if (type == boolean.class) {
-                return (Class<T>) Boolean.class;
-            } else if (type == byte.class) {
-                return (Class<T>) Byte.class;
-            } else if (type == char.class) {
-                return (Class<T>) Character.class;
-            } else if (type == double.class) {
-                return (Class<T>) Double.class;
-            } else if (type == float.class) {
-                return (Class<T>) Float.class;
-            } else if (type == int.class) {
-                return (Class<T>) Integer.class;
-            } else if (type == long.class) {
-                return (Class<T>) Long.class;
-            } else if (type == short.class) {
-                return (Class<T>) Short.class;
-            } else { /* if (type == void.class) */
-                return (Class<T>) Void.class;
+    private static void typeVariableNamesOf0(LinkedHashSet<String> addTo, Type type) {
+        if (type instanceof ParameterizedType pt) {
+            typeVariableNamesOf0(addTo, pt.getOwnerType());
+            for (Type t : pt.getActualTypeArguments()) {
+                typeVariableNamesOf0(addTo, t);
             }
+            typeVariableNamesOf0(addTo, pt.getRawType());
+        } else if (type instanceof GenericArrayType gat) {
+            typeVariableNamesOf0(addTo, gat.getGenericComponentType());
+        } else if (type instanceof TypeVariable<?> tv) {
+            addTo.add(tv.getName());
+        } else if (type instanceof WildcardType wt) {
+            if (wt.getLowerBounds().length > 0) {
+                typeVariableNamesOf0(addTo, wt.getLowerBounds()[0]);
+            }
+            typeVariableNamesOf0(addTo, wt.getUpperBounds()[0]);
         }
-        return type;
     }
 }

@@ -347,6 +347,14 @@ public abstract class Extension extends Realm {
     }
 
     /**
+     * Only parent extensions will be linked
+     */
+    protected static void $connectParentsOnly() {
+        // Only parent extensions will be linked, not descendents
+        
+    }
+
+    /**
      * Registers an optional dependency of this extension. The extension
      * <p>
      * The class loader of the caller (extension) class will be used when attempting to locate the dependency.

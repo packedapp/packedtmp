@@ -56,7 +56,7 @@ public final class MethodHandleBuilder {
             Objects.checkFromIndexSize(indexes[i], 0, targetType.parameterCount());
         }
         // Check the various types matches...
-        if (keys.putIfAbsent(key, new Infuser.Entry(transformer, false, indexes)) != null) {
+        if (keys.putIfAbsent(key, new Infuser.Entry(transformer, false, false, indexes)) != null) {
             throw new IllegalArgumentException("The specified key " + key + " has already been added");
         }
     }

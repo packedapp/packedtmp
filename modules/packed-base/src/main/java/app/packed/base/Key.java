@@ -33,6 +33,7 @@ import java.util.Set;
 import app.packed.base.TypeToken.CanonicalizedTypeToken;
 import app.packed.conversion.ConversionException;
 import packed.internal.util.AnnotationUtil;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.QualifierUtil;
 import packed.internal.util.TypeUtil;
 
@@ -487,11 +488,11 @@ public abstract class Key<T> {
         // From field, fromTypeLiteral, from Variable, from class, arghhh....
 
         typeLiteral = typeLiteral.wrap();
-        if (TypeUtil.isOptionalType(typeLiteral.rawType())) {
+        if (ClassUtil.isOptional(typeLiteral.rawType())) {
             throw new ConversionException("Cannot convert an optional type (" + typeLiteral.toStringSimple() + ") to a Key, as keys cannot be optional");
         } else if (!TypeUtil.isFreeFromTypeVariables(typeLiteral.type())) {
             throw new ConversionException("Can only convert type literals that are free from type variables to a Key, however TypeVariable<"
-                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.findTypeVariableNames(typeLiteral.type()));
+                    + typeLiteral.toStringSimple() + "> defined: " + TypeUtil.typeVariableNamesOf(typeLiteral.type()));
         }
         return new CanonicalizedKey<T>(typeLiteral.canonicalize(), qualifier);
     }

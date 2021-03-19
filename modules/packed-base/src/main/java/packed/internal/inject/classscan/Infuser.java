@@ -16,8 +16,8 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.inject.FindInjectableConstructor;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.TypeUtil;
 
 public class Infuser {
 
@@ -46,10 +46,11 @@ public class Infuser {
         MethodHandle mh = findConstructorFor(type);
         return mh.asType(mh.type().changeReturnType(adaptTo));
     }
+
     public MethodHandle findConstructorFor(Class<?> type) {
         // Den bliver ogsaa checket i FindInjectableConstructor...
         // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
-        TypeUtil.checkClassIsInstantiable(type);
+        ClassUtil.checkIsInstantiable(type);
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
@@ -99,7 +100,7 @@ public class Infuser {
         }
 
         public EntryBuilder provide(Key<?> key) {
-            return new EntryBuilder(this, key, false);
+            return new EntryBuilder(this, key, false, false);
         }
 
         public EntryBuilder provideHidden(Class<?> key) {
@@ -107,23 +108,34 @@ public class Infuser {
         }
 
         public EntryBuilder provideHidden(Key<?> key) {
-            return new EntryBuilder(this, key, true);
+            return new EntryBuilder(this, key, true, false);
         }
 
         private void add(EntryBuilder builder, Entry entry) {
             entries.put(builder.key, entry);
+        }
+        
+        // Ville vaere dejligt med en forklaring paa hvornaar den er tilgaengelig
+        public EntryBuilder optional(Class<?> key) {
+            return optional(Key.of(key));
+        }
+
+        public EntryBuilder optional(Key<?> key) {
+            return new EntryBuilder(this, key, false, true);
         }
     }
 
     public static class EntryBuilder {
         private final Builder builder;
         private final boolean hide;
+        private final boolean optional;
         private final Key<?> key;
 
-        EntryBuilder(Builder builder, Key<?> key, boolean hide) {
+        EntryBuilder(Builder builder, Key<?> key, boolean hide, boolean isOptional) {
             this.builder = builder;
             this.key = requireNonNull(key, "key is null");
             this.hide = hide;
+            this.optional = isOptional;
         }
 
         public EntryBuilder description(String description) {
@@ -145,7 +157,7 @@ public class Infuser {
 
         public void adapt(int index) {
             Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
-            builder.add(this, new Entry(null, hide, index));
+            builder.add(this, new Entry(this, null, index));
         }
 
         public void extract(String methodName /* , Object... additional(Static)Arguments */ ) {
@@ -179,9 +191,14 @@ public class Infuser {
             for (int i = 0; i < indexes.length; i++) {
                 Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
             }
-            builder.add(this, new Entry(transformer, hide, indexes));
+            builder.add(this, new Entry(this, transformer, indexes));
         }
     }
 
-    record Entry(@Nullable MethodHandle transformer, boolean isHidden, int... indexes) {}
+    record Entry(@Nullable MethodHandle transformer, boolean isHidden, boolean isOptional, int... indexes) {
+        Entry(EntryBuilder b, @Nullable MethodHandle transformer, int... indexes) {
+            this(transformer, b.hide, b.optional, indexes);
+        }
+        
+    }
 }

@@ -44,9 +44,9 @@ import app.packed.exceptionhandling.BuildException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.QualifierUtil;
 import packed.internal.util.ReflectionUtil;
-import packed.internal.util.TypeUtil;
 
 /**
  * A descriptor of a dependency. An instance of this class is typically created from a parameter on a constructor or
@@ -340,6 +340,8 @@ public final class DependencyDescriptor implements OldVariable {
         return List.copyOf(result);
     }
 
+    // Taenker den her skal laves fra en Infuser...
+    // Som bestemmer om vi f.eks. forstaar Provider, Optional osv.
     public static <T> DependencyDescriptor fromVariable(Parameter parameter, int index) {
         requireNonNull(parameter, "variable is null");
 
@@ -367,7 +369,7 @@ public final class DependencyDescriptor implements OldVariable {
             optionallaity = Optionality.OPTIONAL;
             Type cl = ((ParameterizedType) getParameterizedType).getActualTypeArguments()[0];
             tl = BasePackageAccess.base().toTypeLiteral(cl);
-            if (TypeUtil.isOptionalType(tl.rawType())) {
+            if (ClassUtil.isOptional(tl.rawType())) {
                 throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl));
             }
         } else if (rawType == OptionalLong.class) {

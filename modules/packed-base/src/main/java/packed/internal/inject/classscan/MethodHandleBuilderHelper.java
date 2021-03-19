@@ -134,7 +134,7 @@ class MethodHandleBuilderHelper {
                     }
 
                     PackedInjectionContext pic = new PackedInjectionContext(declaringClass, Map.copyOf(services));
-                    aa.keys.putIfAbsent(kk, new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false));
+                    aa.keys.putIfAbsent(kk, new Infuser.Entry(MethodHandles.constant(InjectionContext.class, pic), false, false));
                 }
 
                 Infuser.Entry entry = aa.keys.get(kk);

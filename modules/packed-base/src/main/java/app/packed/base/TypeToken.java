@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.BasePackageAccess.AppPackedBaseAccess;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.TypeUtil;
 
 /**
@@ -125,7 +126,7 @@ public abstract class TypeToken<T> {
     public final TypeToken<T> wrap() {
         // TODO fix for Valhalla? reference type, inline type...
         if (rawType().isPrimitive()) {
-            return (TypeToken<T>) of(TypeUtil.wrap(rawType()));
+            return (TypeToken<T>) of(ClassUtil.wrap(rawType()));
         }
         return this;
     }
