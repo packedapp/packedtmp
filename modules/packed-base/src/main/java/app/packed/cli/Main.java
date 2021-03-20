@@ -16,7 +16,7 @@
 package app.packed.cli;
 
 import app.packed.base.Completion;
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
@@ -92,7 +92,7 @@ public final class Main {
     }
 
     /**
-     * This method will create and start an {@link PreviousKnownAsApp application} from the specified source. Blocking until the run state
+     * This method will create and start an {@link Program application} from the specified source. Blocking until the run state
      * of the application is {@link RunState#TERMINATED}.
      * <p>
      * Entry point or run to termination

@@ -325,7 +325,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         private int depth;
 
         /** The extension we are building a model for. */
-        private Class<? extends Extension> extensionClass;
+        private final Class<? extends Extension> extensionClass;
 
         /** A handle for creating new extension instances. */
         private MethodHandle mhConstructor; // (ExtensionSetup)Extension
@@ -333,13 +333,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A model of all methods that provide attributes. */
         private PackedAttributeModel pam;
 
+        private Builder(Class<? extends Extension> extensionClass) {
+            this.extensionClass = requireNonNull(extensionClass);
+        }
         /**
          * Builds and returns an extension model.
          * 
          * @return the extension model
          */
-        private ExtensionModel build(Class<? extends Extension> extensionClass, Loader loader, @Nullable Bootstrap bootstrap) {
-            this.extensionClass = extensionClass;
+        private ExtensionModel build(Loader loader, @Nullable Bootstrap bootstrap) {
             if (bootstrap != null) {
                 for (Class<? extends Extension> dependencyType : bootstrap.dependencies) {
                     ExtensionModel model = Loader.load(dependencyType, loader);
@@ -425,9 +427,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 @Nullable
                 Bootstrap b = (Bootstrap) DATA.get(extensionClass);
 
-                ExtensionModel.Builder builder = new ExtensionModel.Builder();
+                ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionClass);
 
-                model = builder.build(extensionClass, this, b);
+                model = builder.build(this, b);
             } catch (Throwable t) {
                 // We failed to either load this extension, or one of the extensions
                 // dependencies failed to load.

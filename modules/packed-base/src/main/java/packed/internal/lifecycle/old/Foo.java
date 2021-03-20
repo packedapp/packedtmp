@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.base.Tag;
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
@@ -46,7 +46,7 @@ public class Foo extends BaseAssembly {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        PreviousKnownAsApp.start(new Foo());
+        Program.start(new Foo());
     }
 
     @Target(ElementType.METHOD)

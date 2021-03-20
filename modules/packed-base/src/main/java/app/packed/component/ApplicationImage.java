@@ -38,10 +38,10 @@ package app.packed.component;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.component.PreviousKnownAsApp} or other artifact
+ * An image can be used to create new instances of {@link app.packed.component.Program} or other artifact
  * images. Artifact images can not be used as a part of other containers, for example, via
  * 
- * @see PreviousKnownAsApp#buildImage(Assembly, Wirelet...)
+ * @see Program#buildImage(Assembly, Wirelet...)
  */
 public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
 

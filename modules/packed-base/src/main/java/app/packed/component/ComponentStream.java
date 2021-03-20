@@ -29,7 +29,7 @@ import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by {@link PreviousKnownAsApp#stream(Option...)}.
+ * of this class is normally acquired by {@link Program#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -229,7 +229,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      * The order in which children should be processed
      * 
      * @see Component#stream(Option...)
-     * @see PreviousKnownAsApp#stream(Option...)
+     * @see Program#stream(Option...)
      */
     // I virkeligheden er det system view options.
     // Noget af det vil jeg mene..

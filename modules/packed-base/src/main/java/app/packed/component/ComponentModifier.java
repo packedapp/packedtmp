@@ -138,6 +138,8 @@ public enum ComponentModifier {
      * har lavet en FunctionComponentType...
      * 
      * I think it always have the source type set...
+     * <p>
+     * From the perspective of packed a function component never holds any state
      */
     FUNCTION,
 
@@ -157,7 +159,7 @@ public enum ComponentModifier {
     SOURCED,
 
     /**
-     * Indicates that a component has a shell attached. For example, an application created via
+     * Indicates that a component represent the root component of an application. For example, an application created via
      * {@link App#start(Assembly, Wirelet...)} to create a shell.
      * <p>
      * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
@@ -165,10 +167,9 @@ public enum ComponentModifier {
      * <p>
      * Systems that are created via the various methods on {@link Cli} never has a shell.
      * 
-     * @see App
-     * @see ArtifactDriver
+     * @see ApplicationDriver
      */
-    APPLICATION, // FOREIGN???
+    APPLICATION,
 
     /**
      * Indicates that a system has been created for the sole reason of being analyzed. A system with this modifier will
@@ -188,6 +189,8 @@ public enum ComponentModifier {
      * </ul>
      * 
      */
+    // Altsa kan man faa den information paa andre maader f.eks. via BuildInfo????
+    // Jeg er ikke sikker paa jeg syntes den skal vaere her...
     ANALYSIS,
 
     // A single java based instance that is strongly bound to lifecycle of the component.

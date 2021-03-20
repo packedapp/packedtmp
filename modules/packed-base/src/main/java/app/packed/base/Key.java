@@ -259,6 +259,11 @@ public abstract class Key<T> {
     public final Class<?> rawType() {
         return typeToken.rawType();
     }
+    
+    public boolean isAccessibleBy(Module module) {
+        // All type List<Foo> Foo must also be accessible by the target
+        throw new UnsupportedOperationException();
+    }
 
     /** {@inheritDoc} */
     @Override

@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import packed.internal.container.Packlet;
@@ -37,7 +37,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceMethod() {
-        PreviousKnownAsApp.start(new BaseAssembly() {
+        Program.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -51,7 +51,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void staticField() {
-        PreviousKnownAsApp.start(new BaseAssembly() {
+        Program.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -63,7 +63,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceField() {
-        PreviousKnownAsApp.start(new BaseAssembly() {
+        Program.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();
@@ -75,7 +75,7 @@ public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void staticMethod() {
-        PreviousKnownAsApp.start(new BaseAssembly() {
+        Program.start(new BaseAssembly() {
             @Override
             public void build() {
                 assertThat(extensions()).isEmpty();

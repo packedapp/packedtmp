@@ -18,8 +18,6 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
-import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceLocator;
 import packed.internal.component.wirelet.InternalWirelet;
 import packed.internal.component.wirelet.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
@@ -27,12 +25,12 @@ import packed.internal.component.wirelet.WireletPreModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**
- * Wirelets are an umbrella term for small pieces of glue code, that is used to wire together the components that make
- * up your program. connect, wire, instantiate, debug your applications.
+ * A wirelet is a small piece of "glue code" that can be specified when wiring a component. Wirelets are typically used
+ * to debug foobar, sdsd.
  * 
- * A wiring operation is a piece of glue code that wire assemblies and/or runtimes together, through operations such as
- * {@link ServiceExtension#provideAll(ServiceLocator)} or
- * <p>
+ * , that is used to wire together the components that make up your program. connect, wire, instantiate, debug your
+ * applications.
+ * 
  * As a rule of thumb wirelets are evaluated in order. For example, Wirelet.name("ffff"), Wirelet.name("sdsdsd"). Will
  * first the change the name to ffff, and then change it to sdsds. Maybe an example with.noStart + start_await it
  * better.
@@ -64,15 +62,17 @@ import packed.internal.util.StackWalkerUtil;
 public abstract class Wirelet {
 
     /**
-     * Returns a composed {@code Wirelet} that performs, in sequence, this operation followed by the {@code after}
-     * operation. If performing either operation throws an exception, it is relayed to the caller of the composed operation.
-     * If performing this operation throws an exception, the {@code after} operation will not be performed.
-     * 
-     * Returns a new wirelet that acts as first this wirelet is processed then the specified wirelet
+     * Returns a composed wirelet that performs, in sequence, this operation followed by the {@code after} operation. If
+     * performing either operation throws an exception, it is relayed to the caller of the composed operation. If performing
+     * this operation throws an exception, the {@code after} operation will not be performed.
      * 
      * @param wirelet
      *            the wirelet to process after this wirelet
-     * @return the combined wirelet
+     * @return the composed wirelet
+     * @see #andThen(Wirelet)
+     * @see #andThen(Wirelet...)
+     * @see #beforeThis(Wirelet...)
+     * @see #of(Wirelet...)
      */
     public final Wirelet andThen(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
@@ -93,15 +93,17 @@ public abstract class Wirelet {
         return WireletList.of(this, wirelets);
     }
 
-    // BeforeThis? PrecededBy
+    /**
+     * @param wirelets
+     *            wirelets
+     * @return stuff
+     * @see #andThen(Wirelet)
+     * @see #andThen(Wirelet...)
+     * @see #of(Wirelet...)
+     */
     public final Wirelet beforeThis(Wirelet... wirelets) {
         return WireletList.of(wirelets, this);
     }
-
-//    protected ComponentSystemType scope() {
-//        // Does not work with combine..
-//        return ComponentSystemType.NAMESPACE;
-//    }
 
     /**
      * This
@@ -150,14 +152,23 @@ public abstract class Wirelet {
     protected static final void $needsRealm() {
         // Wirelet.wireletRealm(Lookup); // <-- all subsequent wirelets
         // Wirelet.wireletRealm(Lookup, Wirelet... wirelets);
-        
+
         // Tror det er vigtigt at der er forskel på REALM og BUILDTIME
         // Tror faktisk
-        
+
         // f.x provide(Doo.class);
         // Hvad hvis vi koere composer.lookup()...
         // Saa laver vi jo saadan set en realm...
     }
+    
+    /** Attempting to wire a non-container component with this wirelet will fail. */
+    protected static final void $requireContainer() {}
+
+    /** Attempting to wire a non-container component or a container component that is not the root with this wirelet will fail. */
+    protected static final void $requireContainerNonRoot() {}
+
+    /** The wirelet can only be used on the root container in a namespace. */
+    protected static final void $requireContainerRoot() {}
 
     // ExtensionWirelet... tror jeg...
     protected static final void $requireExtension(Class<? extends Extension> extensionClass) {
@@ -209,7 +220,7 @@ public abstract class Wirelet {
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
-     * Using this wirelet overrides any default naming scheme, or name that might already have been set, for example, via
+     * This wirelet override any name that might previously have been set, for example, via
      * {@link BaseComponentConfiguration#setName(String)}.
      * 
      * @param name
@@ -222,16 +233,25 @@ public abstract class Wirelet {
     }
 
     /**
-     * Combines an array or wirelets
+     * Combines an array of wirelets into a single wirelet. Packed will automatically unpack any combined wirelets when
+     * specified
      * 
      * @param wirelets
      *            the wirelets to combine
      * @return a combined {@code Wirelet}
+     * @see #andThen(Wirelet)
+     * @see #andThen(Wirelet...)
+     * @see #beforeThis(Wirelet...)
      */
     public static Wirelet of(Wirelet... wirelets) {
         return WireletList.of(wirelets);
     }
 }
+
+//protected ComponentSystemType scope() {
+//  // Does not work with combine..
+//  return ComponentSystemType.NAMESPACE;
+//}
 
 // Nej man har ikke saa mange luksuser som end-user taenker jeg???
 // E

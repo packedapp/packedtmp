@@ -13,18 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package app.packed.request;
+
+import app.packed.cli.Main;
+import app.packed.container.BaseAssembly;
 
 /**
  *
  */
-public class WireletCallSite {
-
-    /// ArtifactDriver
+public class HelloWorldAssembly extends BaseAssembly {
     
-    // ComponentDriver
+    @Override
+    protected void build() {
+        install(SomeComponent.class);
+    }
 
-    // Artifact use or Image create+Image Use
+    public static void main(String[] args) {
+        // Job.compute()
+        Main.run(new HelloWorldAssembly());
+    }
 
-    // wire
+    public static class SomeComponent {
+
+        @Compute
+        public void runMe() {
+            System.out.println("HelloWorld");
+        }
+    }
 }

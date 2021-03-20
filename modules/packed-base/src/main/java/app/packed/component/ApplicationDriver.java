@@ -38,7 +38,7 @@ import packed.internal.inject.classscan.Infuser;
 
 /**
  * Applications drivers are responsible for building application instances, for example, instances of
- * {@link PreviousKnownAsApp}.
+ * {@link Program}.
  * <p>
  * Packed comes with a number of predefined application drivers
  * 
@@ -49,15 +49,15 @@ import packed.internal.inject.classscan.Infuser;
  * 
  * <p>
  * This class can be used to create custom artifact types if the built-in artifact types such as
- * {@link PreviousKnownAsApp} and {@link ServiceLocator} are not sufficient. In fact, the default implementations of
- * both {@link PreviousKnownAsApp} and {@link ServiceLocator} uses an artifact driver themselves.
+ * {@link Program} and {@link ServiceLocator} are not sufficient. In fact, the default implementations of
+ * both {@link Program} and {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
  * Normally, you would never create more than a single instance of an application driver.
  * 
  * @param <A>
  *            The type of application this driver creates.
  * 
- * @see PreviousKnownAsApp#driver()
+ * @see Program#driver()
  * @see Main#driver()
  * @see ServiceLocator#driver()
  */
@@ -93,7 +93,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * Builds a new application image using the specified assembly and optional wirelets.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link PreviousKnownAsApp#buildImage(Assembly, Wirelet...)} and
+     * {@link Program#buildImage(Assembly, Wirelet...)} and
      * {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
      * 
      * @param assembly
@@ -103,7 +103,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see PreviousKnownAsApp#buildImage(Assembly, Wirelet...)
+     * @see Program#buildImage(Assembly, Wirelet...)
      * @see ServiceLocator#buildImage(Assembly, Wirelet...)
      */
     // newImage()?
@@ -150,7 +150,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * Uses the driver to create a new application using the specified assembly.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link Main#run(Assembly, Wirelet...)} and {@link PreviousKnownAsApp#start(Assembly, Wirelet...)}.
+     * {@link Main#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the system assembly
@@ -163,7 +163,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      *             if the application failed to initializing
      * @throws PanicException
      *             if the application had an executing phase and it fails
-     * @see PreviousKnownAsApp#start(Assembly, Wirelet...)
+     * @see Program#start(Assembly, Wirelet...)
      * @see Main#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */

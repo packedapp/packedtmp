@@ -37,25 +37,25 @@ public enum ComponentSystemType {
 
     /** A system that contains all components in the same namespace.  */
     NAMESPACE,
-    
-    // Do we need this??? Maybe this is a subsy
-    // Components inside a container. May create new containers. But from the perspective of Packed these containers does
-    // does not
-    // Containers use a flat hirachy
-    CONTAINER,
 
+    /** A system that contains all components in the same application.  */
+    APPLICATION,
+    
+    /** A system that contains all components in the same container.  */
+    CONTAINER,
+    
+    /** A system that contains a single component.  */
+    COMPONENT,
+    
     /**
      * A system where all components are part of the same build. Being part of the same build means that...
-     * 
      */
     BUILD,
     
-    /** A single component. */
-    COMPONENT,
-    
-    
     /**
      * A system where all components are part of the same image. An image may itself contain other images.
+     * <p>
+     * Det her er maaske bare Application med en marker... Altsaa det hedder jo application image nu
      */
     IMAGE,
 

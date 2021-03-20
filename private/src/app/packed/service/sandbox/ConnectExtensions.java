@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container.old;
+package app.packed.service.sandbox;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -79,7 +79,7 @@ import app.packed.inject.Provide;
     // Maaske i foerste omgang... Vi har brug for context taenker jeg...
     boolean onlyDirectLink() default false;// onlyDirectLink
 
-    // boolean crossArtifacts default ???
+    // boolean crossApplicats default ???
 
     // onDirectConnect(C
 }

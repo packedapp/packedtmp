@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import app.packed.component.Assembly;
 import app.packed.component.ApplicationDriver;
 import app.packed.component.ApplicationImage;
@@ -178,7 +178,7 @@ public interface Injector extends ServiceLocator {
     }
 }
 
-/** An artifact driver for creating {@link PreviousKnownAsApp} instances. */
+/** An artifact driver for creating {@link Program} instances. */
 final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);

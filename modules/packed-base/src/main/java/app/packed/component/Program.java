@@ -31,7 +31,7 @@ import app.packed.state.StateWirelets;
  * An App (application) is a type of artifact provided by Packed.
  */
 // Skal have et 
-public interface PreviousKnownAsApp extends AutoCloseable {
+public interface Program extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
@@ -173,17 +173,17 @@ public interface PreviousKnownAsApp extends AutoCloseable {
      * @return a new app image
      * @see ImageWirelets
      */
-    static ApplicationImage<PreviousKnownAsApp> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Program> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().buildImage(assembly, wirelets);
     }
 
     /**
-     * Returns an {@link ApplicationDriver artifact driver} for {@link PreviousKnownAsApp}.
+     * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.
      * 
      * @return an artifact driver for App
      */
-    static ApplicationDriver<PreviousKnownAsApp> driver() {
-        return PreviousKnownAsDefault.DRIVER;
+    static ApplicationDriver<Program> driver() {
+        return ProgramDefault.DRIVER;
     }
 
     /**
@@ -204,7 +204,7 @@ public interface PreviousKnownAsApp extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static PreviousKnownAsApp start(Assembly<?> assembly, Wirelet... wirelets) {
+    static Program start(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().use(assembly, wirelets);
     }
 }
@@ -216,22 +216,22 @@ class Ddd extends BaseAssembly {
     protected void build() {}
 
     public static void main(String[] args) {
-        try (PreviousKnownAsApp app = PreviousKnownAsApp.start(new Ddd())) {
+        try (Program app = Program.start(new Ddd())) {
             app.use(Map.class).isEmpty();
         }
     }
 }
 
-interface Zapp extends PreviousKnownAsApp {
+interface Zapp extends Program {
 
-    static PreviousKnownAsApp lazyStart(Assembly<?> assembly, Wirelet... wirelets) {
+    static Program lazyStart(Assembly<?> assembly, Wirelet... wirelets) {
         // Altsaa der er vel disse interessant
 
         // initialized - lazy start
         // initialized - require explicit start
         // Starting
         // Started
-        return PreviousKnownAsApp.driver().use(assembly, StateWirelets.lazyStart().andThen(wirelets));
+        return Program.driver().use(assembly, StateWirelets.lazyStart().andThen(wirelets));
     }
 
     // An image that can be used exactly, will drop any memory references...
@@ -248,8 +248,8 @@ interface Zapp extends PreviousKnownAsApp {
      *            optional wirelets
      * @return the new image
      */
-    static ApplicationImage<PreviousKnownAsApp> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return PreviousKnownAsApp.driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
+    static ApplicationImage<Program> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return Program.driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
 ///**

@@ -18,7 +18,7 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import app.packed.component.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -42,7 +42,7 @@ public class Z4 extends BaseAssembly {
 
     public static void main(String[] args) throws InterruptedException {
         long s = System.currentTimeMillis();
-        ApplicationImage<PreviousKnownAsApp> img = PreviousKnownAsApp.buildImage(new Z4());
+        ApplicationImage<Program> img = Program.buildImage(new Z4());
         System.out.println(System.currentTimeMillis() - s);
         System.out.println(img.component().stream().count());
         Thread.sleep(10000);

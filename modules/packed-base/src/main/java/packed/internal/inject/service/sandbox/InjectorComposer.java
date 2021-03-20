@@ -18,6 +18,7 @@ package packed.internal.inject.service.sandbox;
 import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
+import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
@@ -74,7 +75,6 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     public void link(Assembly<?> assembly, Wirelet... wirelets) {
         configuration.link(assembly, wirelets);
     }
-
 
     /**
      * Provides the specified implementation as a new singleton service. An instance of the implementation will be created
@@ -198,7 +198,8 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
 
     // configure()
     static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return InjectorApplicationHelper.DRIVER.compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
+        ApplicationDriver<Injector> d = InjectorApplicationHelper.DRIVER;
+        return d.compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
     }
 
 }

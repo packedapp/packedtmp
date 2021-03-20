@@ -144,4 +144,9 @@ final class PackedComponentRelation implements ComponentRelation {
         }
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean inSameApplication() {
+        throw new UnsupportedOperationException();
+    }
 }

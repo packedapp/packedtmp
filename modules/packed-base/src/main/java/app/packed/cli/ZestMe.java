@@ -15,7 +15,7 @@
  */
 package app.packed.cli;
 
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.ServiceExtension;
@@ -35,7 +35,7 @@ public class ZestMe extends BaseAssembly {
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
 //        ExtensionDescriptor ed = ExtensionDescriptor.of(rMyExt.class);
-        PreviousKnownAsApp.start(new ZestMe() /* , BuildWirelets.printDebug().all() */);
+        Program.start(new ZestMe() /* , BuildWirelets.printDebug().all() */);
         // System.out.println(ed.dependencies());
         System.out.println(System.currentTimeMillis() - start);
 

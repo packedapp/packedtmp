@@ -13,30 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.request;
-
-import app.packed.cli.Main;
-import app.packed.container.BaseAssembly;
+package app.packed.lifecycleold;
 
 /**
  *
  */
-public class ExecuteTest extends BaseAssembly {
+// IDK use case??? Som jeg ser det er den rimlig ligegyldigt.
+enum WireletCallSite {
 
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {
-        install(Comp.class);
-    }
+    ARTIFACT,
+    
+    WIRE,
+    
+    IMAGE,
+    /// ArtifactDriver
+    
+    // ComponentDriver
 
-    public static void main(String[] args) {
-        Main.run(new ExecuteTest());
-        System.out.println("Bye");
-    }
+    // Artifact use or Image create+Image Use
 
-    public static class Comp {
-
-        @Compute
-        public void runMe() {}
-    }
+    // wire
 }

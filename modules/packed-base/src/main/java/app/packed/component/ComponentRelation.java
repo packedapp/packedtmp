@@ -18,8 +18,8 @@ package app.packed.component;
 import java.util.Optional;
 
 /**
- * A component relation is an immutable representation of a relationship between two components. It is typically created
- * via {@link Component#relationTo(Component)}.
+ * A component relation is an unchangeable representation of a directional relationship between two components. It is
+ * typically created via {@link Component#relationTo(Component)}.
  */
 public interface ComponentRelation extends Iterable<Component> {
 
@@ -37,6 +37,13 @@ public interface ComponentRelation extends Iterable<Component> {
      * @return lowest common ancestor for the two components. Or empty if not in the same system
      */
     Optional<Component> findLowestCommonAncestor();
+
+    /**
+     * Returns whether or not the two components are in the same application.
+     * 
+     * @return whether or not the two components are in the same application
+     */
+    boolean inSameApplication();
 
     /**
      * Returns whether or not the two components are in the same container.
@@ -68,7 +75,7 @@ public interface ComponentRelation extends Iterable<Component> {
     default boolean isInSame(ComponentSystemType systemType) {
         return source().root() == target().root();
     }
-    
+
     // Just here because it might be easier to remember...
     default boolean isStronglyConnected() {
         return inSameGuest();

@@ -194,6 +194,7 @@ public abstract class Factory<T> {
      * @throws NullPointerException
      *             if the specified argument is null and the variable does not represent a reference type
      */
+    // bindRaw???
     public final Factory<T> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
         List<DependencyDescriptor> dependencies = dependencies();
@@ -235,6 +236,7 @@ public abstract class Factory<T> {
      * @return the new factory
      */
     // bindConstant like sidecar???
+    // bindRaw
     public final Factory<T> bind(@Nullable Object argument) {
         return bind(0, argument);
     }
@@ -397,11 +399,7 @@ public abstract class Factory<T> {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns the number of variables of this factory.
-     * 
-     * @return the number of variables of this factory
-     */
+    /** {@return The number of variables for the factory} */
     public final int variableCount() {
         return dependencies().size();
     }
@@ -449,8 +447,8 @@ public abstract class Factory<T> {
      * This method is useful, for example, to make a factory publically available for an class that does not have a public
      * constructor.
      * <p>
-     * The specified lookup object will always be preferred, even when, for example, being registered with a container who has
-     * its own lookup object.
+     * The specified lookup object will always be preferred, even when, for example, being registered with a container who
+     * has its own lookup object.
      * <p>
      * If you have split-module class hierarchies with an abstract class in one module a concrete class in another module.
      * 

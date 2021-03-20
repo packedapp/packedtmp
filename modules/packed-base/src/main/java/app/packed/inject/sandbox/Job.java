@@ -15,6 +15,9 @@
  */
 package app.packed.inject.sandbox;
 
+import app.packed.component.ApplicationDriver;
+import app.packed.component.Assembly;
+
 /**
  *
  */
@@ -25,12 +28,22 @@ package app.packed.inject.sandbox;
 //What about shutdown... I don't think it is active...
 interface Job<R> {
 
+    static <R> ApplicationDriver<Job<R>> driver(Class<R> resultType) {
+        throw new UnsupportedOperationException();
+    }
+    
+    static void compute(Assembly<?> assembly) {
+        throw new UnsupportedOperationException();
+    }
     // Job<Void> of()
 }
 // A job consists of 1 or more tasks ordered in a tree...
 // But why not use the Component API...
-
 // Basically it is the job-class that is the root 
 interface Task {
+
+}
+// IDK er det det vi returnere...
+interface Result<R> {
     
 }

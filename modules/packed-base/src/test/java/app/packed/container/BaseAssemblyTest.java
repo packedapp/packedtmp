@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.Program;
 import testutil.util.AbstractApplicationTest;
 
 /** Various Assembly tests. */
@@ -33,8 +33,8 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
             protected void build() {}
         };
 
-        PreviousKnownAsApp.start(empty);
-        assertThatThrownBy(() -> PreviousKnownAsApp.start(empty)).isExactlyInstanceOf(IllegalStateException.class);
+        Program.start(empty);
+        assertThatThrownBy(() -> Program.start(empty)).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     /** Tests that a assembly cannot be reused. */
@@ -46,6 +46,6 @@ public class BaseAssemblyTest extends AbstractApplicationTest {
                 link(this);
             }
         };
-        assertThatThrownBy(() -> PreviousKnownAsApp.start(b)).isExactlyInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> Program.start(b)).isExactlyInstanceOf(IllegalStateException.class);
     }
 }

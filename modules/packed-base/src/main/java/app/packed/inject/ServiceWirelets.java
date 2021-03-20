@@ -48,11 +48,7 @@ public final class ServiceWirelets {
     /** No instantiation. */
     private ServiceWirelets() {}
 
-    public static Wirelet anchorAll() {
-        return anchorIf(t -> true);
-    }
-
-    public static Wirelet anchor(Class<?> key) {
+    public static Wirelet anchor(Class<?>/* ...?? why not */ key) {
         return anchor(Key.of(key));
     }
 
@@ -60,8 +56,45 @@ public final class ServiceWirelets {
         return anchorIf(s -> s.key().equals(key));
     }
 
+    // A service is accessible by a class or interface x. if the full key is Accessible
+    
+    /**
+     * Anchors every accessible service exported by the child container into the parent container.
+     * <p>
+     * The wirelet can only be used when wiring non-root containers.
+     * 
+     * @return a wirelet that will anchor all services
+     * @see ServiceExtension#anchorAll()
+     */
+    public static Wirelet anchorAll() {
+        return anchorIf(t -> true);
+    }
+
     public static Wirelet anchorIf(Predicate<? super Service> filter) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a wirelet that will invoke the specified action with the service contract of the container that is being
+     * wired. The wirelet it typically use to check the contents of.
+     * 
+     * But it can also be used, for example, for debugging.
+     * 
+     * <p>
+     * This wirelet is processed at the linkage site.
+     * <p>
+     * The contract being provided is never effected previous transformations, for example, via {@link #from(Consumer)}.
+     * 
+     * @param action
+     *            the action to perform
+     * @return a wirelet
+     */
+    // was peekContract, but arguments were identical
+    // verifyContract throws Verification exception
+    // maybe even just verify... or validate
+    public static Wirelet checkContract(Consumer<? super ServiceContract> action) {
+        requireNonNull(action, "action is null");
+        return from((t, c) -> action.accept(c));
     }
 
     /**
@@ -106,29 +139,6 @@ public final class ServiceWirelets {
         };
     }
 
-    /**
-     * Returns a wirelet that will invoke the specified action with the service contract of the container that is being wired.
-     * The wirelet it typically use to check the contents of.
-     * 
-     * But it can also be used, for example, for debugging.
-     * 
-     * <p>
-     * This wirelet is processed at the linkage site.
-     * <p>
-     * The contract being provided is never effected previous transformations, for example, via {@link #from(Consumer)}.
-     * 
-     * @param action
-     *            the action to perform
-     * @return a wirelet
-     */
-    // was peekContract, but arguments were identical
-    // verifyContract throws Verification exception
-    // maybe even just verify... or validate
-    public static Wirelet checkContract(Consumer<? super ServiceContract> action) {
-        requireNonNull(action, "action is null");
-        return from((t, c) -> action.accept(c));
-    }
-
     public static <T> Wirelet provide(Class<T> key, T instance) {
         return provide(Key.of(key), instance);
     }
@@ -140,8 +150,8 @@ public final class ServiceWirelets {
     }
 
     /**
-     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a service of
-     * the specific type as a requirement.
+     * Returns a wirelet that will provide the specified instance to the target container. Iff the target container has a
+     * service of the specific type as a requirement.
      * <p>
      * Invoking this method is identical to invoking {@code to(t -> t.provideInstance(instance))}.
      * 
@@ -201,28 +211,20 @@ class ServiceWSandbox {
         throw new UnsupportedOperationException();
     }
 
-    static Wirelet anchorAll() {
-        throw new UnsupportedOperationException();
-    }
-
-    static Wirelet anchorIf(Predicate<? extends Service> filter) {
-        throw new UnsupportedOperationException();
-    }
-
     //// Skal arbejde lidt paa det anchroring.
     //// og internerne services.
     // Altsaa de er jo lidt ligegyldige...
     // Kan bruge extensionen
-
-    static Wirelet transitiveExportRequireAll() {
-        throw new UnsupportedOperationException();
-    }
 
     static Wirelet exportTransitiveAll() {
         return exportTransitiveIf(s -> true);
     }
 
     static Wirelet exportTransitiveIf(Predicate<? extends Service> filter) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Wirelet transitiveExportRequireAll() {
         throw new UnsupportedOperationException();
     }
 
