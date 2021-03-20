@@ -18,8 +18,8 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.component.App;
-import app.packed.component.Image;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 
@@ -28,17 +28,17 @@ import app.packed.container.BaseAssembly;
  */
 public class ImageTester {
 
-    private final Image<App> image;
+    private final ApplicationImage<PreviousKnownAsApp> image;
 
     public ImageTester(BaseAssembly source, Wirelet... wirelets) {
-        this(App.buildImage(source, wirelets));
+        this(PreviousKnownAsApp.buildImage(source, wirelets));
     }
 
     public AppTester newApp(Wirelet... wirelets) {
         return new AppTester(image, wirelets);
     }
 
-    public ImageTester(Image<App> image) {
+    public ImageTester(ApplicationImage<PreviousKnownAsApp> image) {
         this.image = requireNonNull(image);
     }
 

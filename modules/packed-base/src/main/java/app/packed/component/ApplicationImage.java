@@ -16,9 +16,15 @@
 package app.packed.component;
 
 /**
- * Images are immutable ahead-of-time configured component systems. By configuring an system ahead of time, the actual
- * time to instantiation the system can be severely decreased often down to a couple of microseconds. In addition to
- * this, images can be reusable, so you can create multiple systems from a single image.
+ * Application images are immutable ahead-of-time configured component systems. By configuring an system ahead of time,
+ * the actual time to instantiation the system can be severely decreased often down to a couple of microseconds. In
+ * addition to this, images can be reusable, so you can create multiple systems from a single image.
+ * <p>
+ * Application images typically have to main use cases
+ * 
+ * GraalVM
+ * 
+ * Recurrent instantiation of the same application.
  * 
  * Creating artifacts in Packed is already really fast, and you can easily create one 10 or hundres of microseconds. But
  * by using artifact images you can into hundres or thousounds of nanoseconds.
@@ -32,14 +38,12 @@ package app.packed.component;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.component.App} or other artifact images. Artifact
- * images can not be used as a part of other containers, for example, via
+ * An image can be used to create new instances of {@link app.packed.component.PreviousKnownAsApp} or other artifact
+ * images. Artifact images can not be used as a part of other containers, for example, via
  * 
- * @see App#buildImage(Assembly, Wirelet...)
+ * @see PreviousKnownAsApp#buildImage(Assembly, Wirelet...)
  */
-// Maybe artifact image anyway?? ArtifactDriver er jo lidt mere flex nu...
-// Image<void>
-public /* sealed */ interface Image<A> {
+public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
 
     /**
      * Returns the root component of the image.
@@ -49,7 +53,7 @@ public /* sealed */ interface Image<A> {
     Component component();
 
     /**
-     * Uses the image.
+     * Uses the image. What happens here is dependent on application driver that created the image.
      * 
      * @param wirelets
      *            optional wirelets
@@ -61,5 +65,5 @@ public /* sealed */ interface Image<A> {
 interface ZImage<A> {
     // Hmmmmmmm IDK
     // Could do sneaky throws instead
-    A throwingUse(Wirelet... wirelets);
+    A throwingUse(Wirelet... wirelets) throws Throwable;
 }

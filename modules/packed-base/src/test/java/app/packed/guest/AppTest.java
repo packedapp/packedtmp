@@ -22,18 +22,18 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 
-/** Tests {@link App} (PackedApp). */
+/** Tests {@link PreviousKnownAsApp} (PackedApp). */
 public class AppTest {
 
     /** Tests an empty app. */
     @Test
     public void emptyApp() {
         AtomicReference<ContainerConfiguration> ar = new AtomicReference<>();
-        App app = App.start(new BaseAssembly() {
+        PreviousKnownAsApp app = PreviousKnownAsApp.start(new BaseAssembly() {
             @Override
             public void build() {
                 ar.set(configuration());

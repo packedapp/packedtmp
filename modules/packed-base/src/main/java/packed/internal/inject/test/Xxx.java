@@ -17,7 +17,7 @@ package packed.internal.inject.test;
 
 import app.packed.base.Key;
 import app.packed.base.Tag;
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -41,7 +41,7 @@ class Xxx extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App a = App.start(new Xxx());
+        PreviousKnownAsApp a = PreviousKnownAsApp.start(new Xxx());
         System.out.println(a.services().keys());
         ServiceLocator l = a.services().spawn(s -> {
             s.provideInstance(123);

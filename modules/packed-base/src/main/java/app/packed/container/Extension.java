@@ -31,7 +31,7 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Image;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Realm;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
@@ -188,7 +188,7 @@ public abstract class Extension extends Realm {
     }
 
     /**
-     * Returns whether or not the container that this extension belongs is being built into an {@link Image}.
+     * Returns whether or not the container that this extension belongs is being built into an {@link ApplicationImage}.
      * 
      * @return true if the extension
      */

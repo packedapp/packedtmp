@@ -17,7 +17,7 @@ package packed.internal.util;
 
 import java.util.ServiceLoader;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceWirelets;
 
@@ -40,7 +40,7 @@ public class PluginTester extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        try (App app = App.start(new PluginTester())) {
+        try (PreviousKnownAsApp app = PreviousKnownAsApp.start(new PluginTester())) {
             app.services().selectWithAnyQualifiers(Runnable.class).forEachInstance(Runnable::run);
         }
     }

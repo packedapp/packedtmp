@@ -23,10 +23,10 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
+import app.packed.component.ApplicationDriver;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
-import app.packed.component.Image;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.hooks.AutoService;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
@@ -212,24 +212,28 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * Creates a new (service locator) image from the specified assembly and optional wirelets.
+     * Creates a new service locator image from the specified assembly and optional wirelets.
      * 
      * @param assembly
      *            the assembly to use for creating the image
      * @param wirelets
      *            optional wirelets
-     * @return the image
+     * @return the new image
+     * @see #driver()
      */
-    static Image<ServiceLocator> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().buildImage(assembly, wirelets);
     }
 
     /**
-     * Returns an artifact driver that can be used to create new service locator instances.
+     * Returns an application driver that can be used to create standalone service locator instances.
      * 
-     * @return an artifact driver for this interface
+     * @return an application driver
+     * @see #buildImage(Assembly, Wirelet...)
+     * @see #of(Consumer)
+     * @see #of(Assembly, Wirelet...)
      */
-    static ArtifactDriver<ServiceLocator> driver() {
+    static ApplicationDriver<ServiceLocator> driver() {
         throw new UnsupportedOperationException();
     }
 
@@ -243,13 +247,14 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
-     * Creates a new service locator from the specified assembly and optional wirelets.
+     * Creates a new standalone service locator from the specified assembly and optional wirelets.
      * 
      * @param assembly
      *            the assembly that should be used to build the service locator
      * @param wirelets
      *            optional wirelets
      * @return a new service locator
+     * @see #driver()
      */
     static ServiceLocator of(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().use(assembly, wirelets);
@@ -261,6 +266,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @param action
      *            the composition action
      * @return a new service locator
+     * @see #driver()
      */
     static ServiceLocator of(Consumer<? super ServiceComposer> action) {
         return PackedServiceComposer.of(action);

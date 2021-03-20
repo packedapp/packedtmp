@@ -21,7 +21,7 @@ import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.Image;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 
 /**
@@ -148,7 +148,7 @@ public interface Host {
     }
 
     // TODO return Image<Host>?
-    static Image<Void> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Void> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         return HostHelper.DRIVER.buildImage(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);

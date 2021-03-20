@@ -17,11 +17,11 @@ package app.packed.state;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.drivers.ArtifactDriver;
+import app.packed.component.ApplicationDriver;
 
 /**
  *
  */
 final class HostHelper {
-    static final ArtifactDriver<Void> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Void.class);
+    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.of(MethodHandles.lookup(), Void.class);
 }

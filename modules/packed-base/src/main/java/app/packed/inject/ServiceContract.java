@@ -25,9 +25,9 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
+import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
@@ -248,7 +248,7 @@ public final class ServiceContract extends Contract {
         return new ServiceContract.Builder(null);
     }
 
-    public static ServiceContract of(ArtifactDriver<?> driver, Assembly<?> assembly) {
+    public static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
         Component c = driver.analyze(assembly);
         if (!c.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
@@ -276,7 +276,7 @@ public final class ServiceContract extends Contract {
     // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
     // Vil mene kontrakter primaert er en composition/build ting
     public static ServiceContract of(Assembly<?> assembly) {
-        return of(ArtifactDriver.defaultAnalyzer(), assembly);
+        return of(ApplicationDriver.defaultAnalyzer(), assembly);
     }
 
     /**

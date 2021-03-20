@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.test;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -45,7 +45,7 @@ class Ddd extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        System.out.println(App.start(new Ddd()).services());
+        System.out.println(PreviousKnownAsApp.start(new Ddd()).services());
     }
 
     public static class FooAssembly extends BaseAssembly {

@@ -18,11 +18,11 @@ package testutil.util;
 import static java.util.Objects.requireNonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentStream;
-import app.packed.component.Image;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 
 /**
@@ -30,17 +30,17 @@ import app.packed.component.Wirelet;
  */
 public class AppTester {
 
-    private final App app;
+    private final PreviousKnownAsApp app;
 
-    public AppTester(App app) {
+    public AppTester(PreviousKnownAsApp app) {
         this.app = requireNonNull(app);
     }
 
     public AppTester(Assembly<?> source, Wirelet... wirelets) {
-        this(App.start(source, wirelets));
+        this(PreviousKnownAsApp.start(source, wirelets));
     }
 
-    public AppTester(Image<App> img, Wirelet... wirelets) {
+    public AppTester(ApplicationImage<PreviousKnownAsApp> img, Wirelet... wirelets) {
         this(img.use(wirelets));
     }
 
@@ -62,6 +62,6 @@ public class AppTester {
     }
 
     public static AppTester of(Assembly<?> source, Wirelet... wirelets) {
-        return new AppTester(App.start(source, wirelets));
+        return new AppTester(PreviousKnownAsApp.start(source, wirelets));
     }
 }

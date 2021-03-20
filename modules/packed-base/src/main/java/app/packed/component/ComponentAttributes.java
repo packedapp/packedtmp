@@ -44,7 +44,7 @@ public class ComponentAttributes {
     // EXTENSION_INFO
     public static final Attribute<Class<? extends Extension>> EXTENSION_MEMBER = Attribute.of(MethodHandles.lookup(), "extension-member", _EXTENSION);
 
-    /** An attribute that accompanies any component that has the {@link ComponentModifier#ARTIFACT} modifier. */
+    /** An attribute that accompanies any component that has the {@link ComponentModifier#APPLICATION} modifier. */
     public static final Attribute<Class<?>> SHELL_TYPE = Attribute.of(MethodHandles.lookup(), "shell-type", _CLASS);
 
     ////////////////////// Think about these for a bit //////////////////////////

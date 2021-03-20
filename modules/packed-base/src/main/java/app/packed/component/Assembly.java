@@ -32,6 +32,9 @@ import packed.internal.component.PackedComponentDriver;
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
+ * Assemblies are composable via linking.
+ * 
+ * <p>
  * An assembly can only be used a single time. Trying to use it more than once will fail with
  * {@link IllegalStateException}.
  * <p>

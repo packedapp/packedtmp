@@ -16,7 +16,7 @@
 package app.packed.component;
 
 /**
- * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link Image} will result in
+ * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link ApplicationImage} will result in
  * an extension being thrown.
  */
 

@@ -27,7 +27,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 
 /**
  *
@@ -41,37 +41,37 @@ import app.packed.component.App;
 public class AppConstructionMicro {
 
     @Benchmark
-    public App emptyApp() {
-        return App.start(VariousImages.empty());
+    public PreviousKnownAsApp emptyApp() {
+        return PreviousKnownAsApp.start(VariousImages.empty());
     }
 
     @Benchmark
-    public App oneComponent() {
-        return App.start(VariousImages.oneComponent());
+    public PreviousKnownAsApp oneComponent() {
+        return PreviousKnownAsApp.start(VariousImages.oneComponent());
     }
 
     @Benchmark
-    public App fiveComponents() {
-        return App.start(VariousImages.fiveComponents());
+    public PreviousKnownAsApp fiveComponents() {
+        return PreviousKnownAsApp.start(VariousImages.fiveComponents());
     }
 
     @Benchmark
-    public App oneContainer() {
-        return App.start(VariousImages.oneContainer());
+    public PreviousKnownAsApp oneContainer() {
+        return PreviousKnownAsApp.start(VariousImages.oneContainer());
     }
 
     @Benchmark
-    public App emptyAppFromImage() {
+    public PreviousKnownAsApp emptyAppFromImage() {
         return VariousImages.EMPTY_IMAGE.use();
     }
 
     @Benchmark
-    public App oneComponentFromImage() {
+    public PreviousKnownAsApp oneComponentFromImage() {
         return VariousImages.ONE_COMPONENT_IMAGE.use();
     }
 
     @Benchmark
-    public App fiveComponentsFromImage() {
+    public PreviousKnownAsApp fiveComponentsFromImage() {
         return VariousImages.FIVE_CONTAINER_IMAGE.use();
     }
 }

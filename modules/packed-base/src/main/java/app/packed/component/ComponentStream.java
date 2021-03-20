@@ -24,13 +24,12 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.attribute.AttributedElementStream;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
  * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by {@link App#stream(Option...)}.
+ * of this class is normally acquired by {@link PreviousKnownAsApp#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -149,7 +148,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 
     /**
      * 
-     * using {@link ArtifactDriver#defaultAnalyzer()} as the artifact driver.
+     * using {@link ApplicationDriver#defaultAnalyzer()} as the artifact driver.
      * <p>
      * If the specified system is a subclass of {@link Assembly}. The {@link ComponentModifier#ANALYSIS} modifier will be
      * set for the root component.
@@ -161,7 +160,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      * @return the new stream
      */
     public static ComponentStream of(Assembly<?> assembly, Option... options) {
-        return ArtifactDriver.defaultAnalyzer().analyze(assembly).stream(options);
+        return ApplicationDriver.defaultAnalyzer().analyze(assembly).stream(options);
     }
 
     /********** Overridden to provide ComponentStream as a return value. **********/
@@ -230,7 +229,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      * The order in which children should be processed
      * 
      * @see Component#stream(Option...)
-     * @see App#stream(Option...)
+     * @see PreviousKnownAsApp#stream(Option...)
      */
     // I virkeligheden er det system view options.
     // Noget af det vil jeg mene..

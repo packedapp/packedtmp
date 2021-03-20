@@ -53,11 +53,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreContainerWiring", void.class);
 
-    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
-    static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
-
     /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
+
+    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
+    static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
 
     /** A handle for accessing the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
@@ -132,17 +132,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return model.extensionClass();
     }
 
-    Extension injectParent() {
-        ContainerSetup parent = container.parent;
-        if (parent != null) {
-            ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
-            if (extensionContext != null) {
-                return extensionContext.instance;
-            }
-        }
-        return null;
-    }
-
     /**
      * Returns the extension instance.
      * 
@@ -156,6 +145,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw new InternalExtensionException("Cannot call this method from the constructor of " + model.fullName());
         }
         return e;
+    }
+
+    Extension injectParent() {
+        ContainerSetup parent = container.parent;
+        if (parent != null) {
+            ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
+            if (extensionContext != null) {
+                return extensionContext.instance;
+            }
+        }
+        return null;
     }
 
     /** {@inheritDoc} */
@@ -313,6 +313,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     public enum State {
         // lige nu har vi kun isConfigured...
-        // Vi har brug for nogle flere states
+        // Vi har brug for nogle flere states som minimum 3
+        // Alt efter hvor vi lige lander med at lazy extension...
     }
 }

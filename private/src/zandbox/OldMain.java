@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.component.Assembly;
-import app.packed.component.Image;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.state.Host;
 import app.packed.state.Host.StopOption;
@@ -81,7 +81,7 @@ final class OldMain {
         Host.execute(container, wirelet.andThen(wirelets));
     }
 
-    Image<Void> image() {
+    ApplicationImage<Void> image() {
         throw new UnsupportedOperationException();
     }
 
@@ -127,11 +127,11 @@ class Zandbox {
     // Er maaske lidt mere til noget builder agtigt.
     public static void restartable(Assembly<?> container, Wirelet... wirelets) {}
 
-    public static Image<Void> restartableImageOf(Assembly<?> container, Object errorHandler, Wirelet... wirelets) {
+    public static ApplicationImage<Void> restartableImageOf(Assembly<?> container, Object errorHandler, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    public static Image<Void> restartableImageOf(Assembly<?> container, Wirelet... wirelets) {
+    public static ApplicationImage<Void> restartableImageOf(Assembly<?> container, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 

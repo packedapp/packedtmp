@@ -17,7 +17,6 @@ package app.packed.component;
 
 import java.lang.reflect.Modifier;
 
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
@@ -169,7 +168,7 @@ public enum ComponentModifier {
      * @see App
      * @see ArtifactDriver
      */
-    ARTIFACT, // FOREIGN???
+    APPLICATION, // FOREIGN???
 
     /**
      * Indicates that a system has been created for the sole reason of being analyzed. A system with this modifier will

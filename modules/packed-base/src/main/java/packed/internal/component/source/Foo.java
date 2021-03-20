@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.concurrent.atomic.AtomicLong;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.FieldHook;
@@ -43,7 +43,7 @@ public class Foo extends BaseAssembly {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        App.start(new Foo());
+        PreviousKnownAsApp.start(new Foo());
     }
 
     @Target({ ElementType.METHOD, ElementType.FIELD })

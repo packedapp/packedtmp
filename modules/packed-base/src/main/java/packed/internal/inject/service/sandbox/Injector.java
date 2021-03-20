@@ -19,11 +19,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.component.Assembly;
-import app.packed.component.Image;
+import app.packed.component.ApplicationDriver;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.LookupUtil;
@@ -134,12 +134,12 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    static Image<Injector> newImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<Injector> newImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().buildImage(assembly, wirelets);
     }
 
     // Is this useful outside of hosts???????
-    static ArtifactDriver<Injector> driver() {
+    static ApplicationDriver<Injector> driver() {
         return InjectorArtifactHelper.DRIVER;
     }
 
@@ -178,12 +178,12 @@ public interface Injector extends ServiceLocator {
     }
 }
 
-/** An artifact driver for creating {@link App} instances. */
+/** An artifact driver for creating {@link PreviousKnownAsApp} instances. */
 final class InjectorArtifactHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);
 
-    static final ArtifactDriver<Injector> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), Injector.class, CONV);
+    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.of(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(PackedInitializationContext container) {
         return (Injector) container.services();

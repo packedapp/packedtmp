@@ -16,7 +16,7 @@
 package packed.internal.inject.test;
 
 import app.packed.base.Tag;
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
@@ -44,6 +44,6 @@ class Stuff extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.start(new Stuff());
+        PreviousKnownAsApp.start(new Stuff());
     }
 }

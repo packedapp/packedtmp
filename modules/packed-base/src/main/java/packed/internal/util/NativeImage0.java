@@ -59,26 +59,26 @@ class NativeImage0 {
         // MH_REGISTER_FIELDS = null;
     }
 
-    static void register(Executable e) {
+    static void register(Executable... e) {
         if (MH_REGISTER_EXECUTABLES != null) {
             if (inImageRuntimeCode()) {
                 throw new IllegalStateException("OOPS, this method should have called when creating the image");
             }
             try {
-                MH_REGISTER_EXECUTABLES.invoke(e); // TODO change to invoke exact
+                MH_REGISTER_EXECUTABLES.invokeExact(e); // TODO change to invoke exact
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }
         }
     }
 
-    static void register(Field f) {
+    static void register(Field... f) {
         if (MH_REGISTER_FIELDS != null) {
             if (inImageRuntimeCode()) {
                 throw new IllegalStateException("OOPS, this method should have called when creating the image");
             }
             try {
-                MH_REGISTER_FIELDS.invoke(f);
+                MH_REGISTER_FIELDS.invokeExact(f);
             } catch (Throwable e) {
                 throw new RuntimeException(e);
             }

@@ -27,8 +27,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.App;
-import app.packed.component.Image;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -43,24 +43,24 @@ import app.packed.container.Extension;
 @State(Scope.Benchmark)
 public class ImageMicro {
 
-    static final Image<App> EMPTY = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> EMPTY = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         protected void build() {}
     });
 
-    static final Image<App> USE_EXTENSION = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> USE_EXTENSION = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             use(MyExtension.class);
         }
     });
-    static final Image<App> INSTALL = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> INSTALL = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance("foo");
         }
     });
-    static final Image<App> INSTALL_AUTO_ACTIVATE = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> INSTALL_AUTO_ACTIVATE = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             installInstance(new MyStuff());
@@ -68,22 +68,22 @@ public class ImageMicro {
     });
 
     @Benchmark
-    public App empty() {
+    public PreviousKnownAsApp empty() {
         return EMPTY.use();
     }
 
     @Benchmark
-    public App useExtension() {
+    public PreviousKnownAsApp useExtension() {
         return USE_EXTENSION.use();
     }
 
     @Benchmark
-    public App install() {
+    public PreviousKnownAsApp install() {
         return INSTALL.use();
     }
 
     @Benchmark
-    public App newExtensionAutoActivate() {
+    public PreviousKnownAsApp newExtensionAutoActivate() {
         return INSTALL_AUTO_ACTIVATE.use();
     }
 

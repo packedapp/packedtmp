@@ -2,15 +2,14 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 
-/** The default implementation of {@link App}. */
-record AppDefault(Component component, ServiceLocator services, Host host) implements App {
+/** The default implementation of {@link PreviousKnownAsApp}. */
+record PreviousKnownAsDefault(Component component, ServiceLocator services, Host host) implements PreviousKnownAsApp {
 
     /** An driver for creating App instances. */
-    static final ArtifactDriver<App> DRIVER = ArtifactDriver.of(MethodHandles.lookup(), AppDefault.class);
+    static final ApplicationDriver<PreviousKnownAsApp> DRIVER = ApplicationDriver.of(MethodHandles.lookup(), PreviousKnownAsDefault.class);
 
     /** {@inheritDoc} */
     @Override

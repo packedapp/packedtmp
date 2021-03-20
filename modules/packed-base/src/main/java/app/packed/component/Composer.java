@@ -24,6 +24,7 @@ import packed.internal.component.ComponentSetup;
 /**
  * Composers does not usually have any public constructors.
  */
+// Application Composer
 // Syntes bare den skal vaere ligesom Assembly
 // Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
 public abstract class Composer<C extends ComponentConfiguration> extends Realm {

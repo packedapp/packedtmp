@@ -15,8 +15,8 @@
  */
 package micro.app;
 
-import app.packed.component.App;
-import app.packed.component.Image;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationImage;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -24,10 +24,10 @@ import app.packed.container.BaseAssembly;
  */
 public class VariousImages {
 
-    public static final Image<App> EMPTY_IMAGE = App.buildImage(empty());
-    public static final Image<App> ONE_COMPONENT_IMAGE = App.buildImage(oneComponent());
-    public static final Image<App> FIVE_CONTAINER_IMAGE = App.buildImage(fiveComponents());
-    public static final Image<App> ONE_CONTAINER_IMAGE = App.buildImage(oneContainer());
+    public static final ApplicationImage<PreviousKnownAsApp> EMPTY_IMAGE = PreviousKnownAsApp.buildImage(empty());
+    public static final ApplicationImage<PreviousKnownAsApp> ONE_COMPONENT_IMAGE = PreviousKnownAsApp.buildImage(oneComponent());
+    public static final ApplicationImage<PreviousKnownAsApp> FIVE_CONTAINER_IMAGE = PreviousKnownAsApp.buildImage(fiveComponents());
+    public static final ApplicationImage<PreviousKnownAsApp> ONE_CONTAINER_IMAGE = PreviousKnownAsApp.buildImage(oneContainer());
 
     public static BaseAssembly empty() {
         return new BaseAssembly() {

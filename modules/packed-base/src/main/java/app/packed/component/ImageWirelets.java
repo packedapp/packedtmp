@@ -16,7 +16,7 @@
 package app.packed.component;
 
 /**
- * A collection of wirelets that can be specified when building an {@link Image image}.
+ * A collection of wirelets that can be specified when building an {@link ApplicationImage image}.
  */
 // Hmm Vi vil gerne kunne specificere en ArtifactDriver med ImageWirelets
 // Og hvor use() stadig kan bruges...

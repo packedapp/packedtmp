@@ -17,7 +17,7 @@ package packed.internal.inject.test;
 
 import app.packed.base.Key;
 import app.packed.base.Tag;
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceWirelets;
@@ -58,7 +58,7 @@ public class FooBar extends BaseAssembly {
 
     public static void main(String[] args) {
         System.out.println(ServiceContract.of(new Child()));
-        App a = App.start(new FooBar());
+        PreviousKnownAsApp a = PreviousKnownAsApp.start(new FooBar());
         a.use(Runnable.class).run();
     }
 

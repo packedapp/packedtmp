@@ -17,14 +17,14 @@ package app.packed.cli;
 
 import app.packed.base.Completion;
 import app.packed.component.Assembly;
-import app.packed.component.Image;
+import app.packed.component.ApplicationDriver;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.exceptionhandling.BuildException;
 
 /**
- * A specialization of {@link Image} that is targeted use from the main method of a Java program. This is typically used
+ * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is typically used
  * for running GraalVM native image.
  * 
  * @see Main
@@ -41,7 +41,7 @@ import app.packed.exceptionhandling.BuildException;
 public /* primitive */ final class MainImage {
 
     /** The image we are wrapping. */
-    private final Image<Completion> image;
+    private final ApplicationImage<Completion> image;
 
     /**
      * Creates a new main image.
@@ -95,7 +95,7 @@ public /* primitive */ final class MainImage {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see ArtifactDriver#buildImage(Assembly, Wirelet...)
+     * @see ApplicationDriver#buildImage(Assembly, Wirelet...)
      */
     public static MainImage of(Assembly<?> assembly, Wirelet... wirelets) {
         return new MainImage(assembly, wirelets);

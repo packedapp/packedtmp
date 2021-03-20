@@ -31,8 +31,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.App;
-import app.packed.component.Image;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -48,38 +48,38 @@ import app.packed.container.Extension;
 public class ExtensionActivation {
 
     @Benchmark
-    public Image<App> empty() {
+    public ApplicationImage<PreviousKnownAsApp> empty() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             protected void build() {}
         };
-        return App.buildImage(b);
+        return PreviousKnownAsApp.buildImage(b);
     }
 
     @Benchmark
-    public Image<App> useExtension() {
+    public ApplicationImage<PreviousKnownAsApp> useExtension() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 use(MyExtension.class);
             }
         };
-        return App.buildImage(b);
+        return PreviousKnownAsApp.buildImage(b);
     }
 
     @Benchmark
-    public Image<App> install() {
+    public ApplicationImage<PreviousKnownAsApp> install() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance("foo");
             }
         };
-        return App.buildImage(b);
+        return PreviousKnownAsApp.buildImage(b);
     }
 
     @Benchmark
-    public Image<App> newExtensionUseInstall() {
+    public ApplicationImage<PreviousKnownAsApp> newExtensionUseInstall() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
@@ -87,18 +87,18 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return App.buildImage(b);
+        return PreviousKnownAsApp.buildImage(b);
     }
 
     @Benchmark
-    public Image<App> newExtensionAutoActivate() {
+    public ApplicationImage<PreviousKnownAsApp> newExtensionAutoActivate() {
         BaseAssembly b = new BaseAssembly() {
             @Override
             public void build() {
                 installInstance(new MyStuff());
             }
         };
-        return App.buildImage(b);
+        return PreviousKnownAsApp.buildImage(b);
     }
 
     static class MyStuff {

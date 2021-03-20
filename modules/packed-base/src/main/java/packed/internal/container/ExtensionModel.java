@@ -209,6 +209,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(nameFull);
@@ -242,6 +243,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     // Maaske kan vi dropper den her bootstrap, og bare smide direkte ind i builder...
     // Det er maaske fedt nok at instantiere sine dependencies fra class initializer...
+    // Vil mene det er vejen frem... Altsaa hvis vi fejler er det vel ligegyldigt om
+    // vi har en builder eller bootstrap haengende...
     public static final class Bootstrap {
 
         /** A set of extension this extension depends on. */
@@ -322,10 +325,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         private int depth;
 
         /** The extension we are building a model for. */
-        private final Class<? extends Extension> extensionClass;
-
-        /** The extension loader used to load the extension. */
-        private final Loader loader;
+        private Class<? extends Extension> extensionClass;
 
         /** A handle for creating new extension instances. */
         private MethodHandle mhConstructor; // (ExtensionSetup)Extension
@@ -334,22 +334,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
         private PackedAttributeModel pam;
 
         /**
-         * Creates a new builder.
-         * 
-         * @param extensionClass
-         *            the type of extension we are building a model for
-         */
-        private Builder(Class<? extends Extension> extensionClass, Loader loader) {
-            this.extensionClass = requireNonNull(extensionClass);
-            this.loader = requireNonNull(loader);
-        }
-
-        /**
          * Builds and returns an extension model.
          * 
          * @return the extension model
          */
-        private ExtensionModel build(@Nullable Bootstrap bootstrap) {
+        private ExtensionModel build(Class<? extends Extension> extensionClass, Loader loader, @Nullable Bootstrap bootstrap) {
+            this.extensionClass = extensionClass;
             if (bootstrap != null) {
                 for (Class<? extends Extension> dependencyType : bootstrap.dependencies) {
                     ExtensionModel model = Loader.load(dependencyType, loader);
@@ -360,8 +350,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
                 c.provide(ExtensionConfiguration.class).adapt();
+                // If it is only ServiceExtension that ends up using it
+                // lets just dump it and have a single cast
                 c.provideHidden(ExtensionSetup.class).adapt();
-                
+
                 // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
                 MethodHandle mh = ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
                 c.provideHidden(extensionClass).transform(mh);
@@ -373,9 +365,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.mhConstructor = infuser.findAdaptedConstructor(con, Extension.class);
 
             ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
-            
-            // Okay may contracts...
-            // Maybe ->
+
+            // Okay maybe we need to scan for contracts...
             this.pam = PackedAttributeModel.analyse(cp);
 
             return new ExtensionModel(this);
@@ -418,14 +409,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
             try {
                 // Ensure that the class initializer of the extension has been run before we progress
                 try {
-                    if (!ExtensionModel.class.getModule().canRead(extensionClass.getModule())) {
-                        ExtensionModel.class.getModule().addReads(extensionClass.getModule());
-                    }
+                    ExtensionModel.class.getModule().addReads(extensionClass.getModule());
                     Lookup l = MethodHandles.privateLookupIn(extensionClass, MethodHandles.lookup());
                     l.ensureInitialized(extensionClass);
                 } catch (IllegalAccessException e) {
                     // TODO this is likely the first place we check the extension is readable to Packed
-                    // Better error message
+                    // Better error message..
+                    // Maybe we have other stuff that we need to check here...
+                    // We need to be open.. In order to create the extension...
+                    // So probably no point in just checking for Readable...
                     throw new InternalExtensionException("Extension is not readable for Packed", e);
                 }
 
@@ -433,9 +425,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 @Nullable
                 Bootstrap b = (Bootstrap) DATA.get(extensionClass);
 
-                ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionClass, this);
+                ExtensionModel.Builder builder = new ExtensionModel.Builder();
 
-                model = builder.build(b);
+                model = builder.build(extensionClass, this, b);
             } catch (Throwable t) {
                 // We failed to either load this extension, or one of the extensions
                 // dependencies failed to load.

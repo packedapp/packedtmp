@@ -27,8 +27,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.App;
-import app.packed.component.Image;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
@@ -41,7 +41,7 @@ import app.packed.micro.Letters.NeedsA;
 @State(Scope.Benchmark)
 public class ImageBigMicro {
 
-    static final Image<App> INSTALL31 = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> INSTALL31 = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             // install(A.class);
@@ -58,7 +58,7 @@ public class ImageBigMicro {
         }
     });
 
-    static final Image<App> INSTALL253 = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> INSTALL253 = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             for (int i = 0; i < 4; i++) {
@@ -90,7 +90,7 @@ public class ImageBigMicro {
             }
         }
     });
-    static final Image<App> INSTALL253_NOS = App.buildImage(new BaseAssembly() {
+    static final ApplicationImage<PreviousKnownAsApp> INSTALL253_NOS = PreviousKnownAsApp.buildImage(new BaseAssembly() {
         @Override
         public void build() {
             for (int i = 0; i < 4; i++) {
@@ -124,17 +124,17 @@ public class ImageBigMicro {
     });
 
     @Benchmark
-    public App install31() {
+    public PreviousKnownAsApp install31() {
         return INSTALL31.use();
     }
 
     @Benchmark
-    public App install253() {
+    public PreviousKnownAsApp install253() {
         return INSTALL253.use();
     }
 
     @Benchmark
-    public App install253NOS() {
+    public PreviousKnownAsApp install253NOS() {
         return INSTALL253_NOS.use();
     }
 }

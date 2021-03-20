@@ -33,7 +33,6 @@ import app.packed.component.ComponentModifier;
 // Skal man kunne smide RCM med over i.
 public final class RuntimeComponentModel {
 
-
     /** The depth of the component in a tree of components. */
     // Depth kan have 8 bit-> full depth, 8 bit, container depth, 8 bit artifact depth.
     final int depth;

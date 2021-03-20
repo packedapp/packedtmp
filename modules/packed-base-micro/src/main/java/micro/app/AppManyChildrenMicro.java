@@ -28,7 +28,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -46,8 +46,8 @@ public class AppManyChildrenMicro {
     static long size;
 
     @Benchmark
-    public App manyChildren() {
-        return App.start(new BaseAssembly() {
+    public PreviousKnownAsApp manyChildren() {
+        return PreviousKnownAsApp.start(new BaseAssembly() {
             @Override
             protected void build() {
                 for (int i = 0; i < size; i++) {

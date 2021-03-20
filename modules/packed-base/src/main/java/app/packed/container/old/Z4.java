@@ -18,8 +18,8 @@ package app.packed.container.old;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.component.App;
-import app.packed.component.Image;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationImage;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -42,9 +42,9 @@ public class Z4 extends BaseAssembly {
 
     public static void main(String[] args) throws InterruptedException {
         long s = System.currentTimeMillis();
-        Image<App> img = App.buildImage(new Z4());
+        ApplicationImage<PreviousKnownAsApp> img = PreviousKnownAsApp.buildImage(new Z4());
         System.out.println(System.currentTimeMillis() - s);
-        System.out.println(img.component().stream().count());
+        System.out.println("Number of components " + img.component().stream().count());
         Thread.sleep(10000);
     }
 

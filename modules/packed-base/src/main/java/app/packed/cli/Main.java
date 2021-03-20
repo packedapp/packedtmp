@@ -16,10 +16,10 @@
 package app.packed.cli;
 
 import app.packed.base.Completion;
-import app.packed.component.App;
+import app.packed.component.PreviousKnownAsApp;
+import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
@@ -43,7 +43,7 @@ public final class Main {
     // Install as System Namespace
     // Virker underlige at den returnere Complietion... Det betyder jo ogsaa at vi ikke skal smide
     // PanicException hvad jeg syntes vi skal
-    private static final ArtifactDriver<Completion> DRIVER = ArtifactDriver.daemon().with(StateWirelets.shutdownHook());
+    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.daemon().with(StateWirelets.shutdownHook());
 
     /** Not today Satan, not today. */
     private Main() {}
@@ -60,7 +60,7 @@ public final class Main {
      *            optional wirelets
      * @throws AssertionError
      * 
-     * @see ArtifactDriver#assertValid(Assembly, Wirelet...)
+     * @see ApplicationDriver#assertValid(Assembly, Wirelet...)
      */
     public static void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
         driver().assertValid(assembly, wirelets);
@@ -71,7 +71,7 @@ public final class Main {
      * 
      * @return the artifact driver used by this class
      */
-    public static ArtifactDriver<Completion> driver() {
+    public static ApplicationDriver<Completion> driver() {
         return DRIVER;
     }
 
@@ -92,7 +92,7 @@ public final class Main {
     }
 
     /**
-     * This method will create and start an {@link App application} from the specified source. Blocking until the run state
+     * This method will create and start an {@link PreviousKnownAsApp application} from the specified source. Blocking until the run state
      * of the application is {@link RunState#TERMINATED}.
      * <p>
      * Entry point or run to termination

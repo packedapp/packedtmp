@@ -30,7 +30,7 @@ import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Image;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
 import app.packed.container.Extension.Subtension;
@@ -122,7 +122,7 @@ public /* sealed */ interface ExtensionConfiguration {
     BaseComponentConfiguration installInstance(Object instance);
 
     /**
-     * Returns whether or not the extension is part of an {@link Image}.
+     * Returns whether or not the extension is part of an {@link ApplicationImage}.
      * <p>
      * This can be used to clean up data structures that was only remember that people might still inspect the image
      * 

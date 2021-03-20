@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component.drivers;
+package app.packed.component;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -24,14 +24,6 @@ import java.util.function.Function;
 import app.packed.base.Completion;
 import app.packed.base.TypeToken;
 import app.packed.cli.Main;
-import app.packed.component.App;
-import app.packed.component.Assembly;
-import app.packed.component.Component;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
-import app.packed.component.Composer;
-import app.packed.component.Image;
-import app.packed.component.Wirelet;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
@@ -45,23 +37,24 @@ import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 
 /**
- * Artifact drivers are responsible for creating artifacts, for example, instances of {@link App}.
+ * Applications drivers are responsible for building application instances, for example, instances of
+ * {@link PreviousKnownAsApp}.
  * <p>
- * This class can be used to create custom artifact types if the built-in artifact types such as {@link App} and
- * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link App} and
- * {@link ServiceLocator} uses an artifact driver themselves.
+ * This class can be used to create custom artifact types if the built-in artifact types such as
+ * {@link PreviousKnownAsApp} and {@link ServiceLocator} are not sufficient. In fact, the default implementations of
+ * both {@link PreviousKnownAsApp} and {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
- * Normally, you would never create more than a single instance of a artifact driver.
+ * Normally, you would never create more than a single instance of an application driver.
  * 
  * @param <A>
- *            The type of artifacts this driver creates.
+ *            The type of application this driver creates.
  * 
- * @see App#driver()
+ * @see PreviousKnownAsApp#driver()
  * @see Main#driver()
  * @see ServiceLocator#driver()
  */
 // Environment + Shell + Result
-public /* sealed */ interface ArtifactDriver<A> {
+public /* sealed */ interface ApplicationDriver<A> {
 
     // analyze
     // validate
@@ -72,6 +65,7 @@ public /* sealed */ interface ArtifactDriver<A> {
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
+     * Assert
      * 
      * @param assembly
      *            the assembly to validate
@@ -88,23 +82,24 @@ public /* sealed */ interface ArtifactDriver<A> {
     }
 
     /**
-     * Builds a new image using the specified assembly and optional wirelets.
+     * Builds a new application image using the specified assembly and optional wirelets.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link App#buildImage(Assembly, Wirelet...)} and {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
+     * {@link PreviousKnownAsApp#buildImage(Assembly, Wirelet...)} and
+     * {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the assembly that should be used to build the image
      * @param wirelets
      *            optional wirelets
-     * @return a new image
+     * @return the new image
      * @throws BuildException
-     *             if the image could not build
-     * @see App#buildImage(Assembly, Wirelet...)
+     *             if the image could not be build
+     * @see PreviousKnownAsApp#buildImage(Assembly, Wirelet...)
      * @see ServiceLocator#buildImage(Assembly, Wirelet...)
      */
     // newImage()?
-    Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
+    ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Used by composers such as {@link ServiceComposer}.
@@ -144,11 +139,10 @@ public /* sealed */ interface ArtifactDriver<A> {
     }
 
     /**
-     * Create a new artifact using the specified assembly.
-     * 
+     * Uses the driver to create a new application using the specified assembly.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link Main#run(Assembly, Wirelet...)} and {@link App#start(Assembly, Wirelet...)}.
+     * {@link Main#run(Assembly, Wirelet...)} and {@link PreviousKnownAsApp#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the system assembly
@@ -156,12 +150,12 @@ public /* sealed */ interface ArtifactDriver<A> {
      *            optional wirelets
      * @return the new artifact or null if void artifact
      * @throws BuildException
-     *             if the artifact could not be assembled properly
+     *             if the application could not be build
      * @throws InitializationException
-     *             if the artifact failed to initializing
+     *             if the application failed to initializing
      * @throws PanicException
-     *             if the artifact had an executing phase and it fails
-     * @see App#start(Assembly, Wirelet...)
+     *             if the application had an executing phase and it fails
+     * @see PreviousKnownAsApp#start(Assembly, Wirelet...)
      * @see Main#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */
@@ -177,9 +171,9 @@ public /* sealed */ interface ArtifactDriver<A> {
     // ComponentDriveren
     // Maaske det giver mening alligevel...
     // Det er ihvertfald lettere at forklare...
-    ArtifactDriver<A> with(Wirelet wirelet);
+    ApplicationDriver<A> with(Wirelet wirelet);
 
-    ArtifactDriver<A> with(Wirelet... wirelets);
+    ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
      * Returns a daemon artifact driver.
@@ -187,7 +181,7 @@ public /* sealed */ interface ArtifactDriver<A> {
      * @return a daemon artifact driver
      */
     // Hvad skal default lifestate vaere for
-    static ArtifactDriver<Completion> daemon() {
+    static ApplicationDriver<Completion> daemon() {
         return PackedArtifactDriver.DAEMON;
         // ArtifactDriver.Builder<Void> daemonBuilder()
         // ArtifactDriver.Builder<T> result(...)
@@ -201,7 +195,7 @@ public /* sealed */ interface ArtifactDriver<A> {
      */
     // maybe just analyzer
     // I think it should fail if used to create images/instantiate anything
-    static ArtifactDriver<?> defaultAnalyzer() {
+    static ApplicationDriver<?> defaultAnalyzer() {
         return daemon();
     }
 
@@ -222,7 +216,7 @@ public /* sealed */ interface ArtifactDriver<A> {
      *            the implementation of the artifact
      * @return a new driver
      */
-    static <S> ArtifactDriver<S> of(MethodHandles.Lookup caller, Class<? extends S> implementation) {
+    static <S> ApplicationDriver<S> of(MethodHandles.Lookup caller, Class<? extends S> implementation) {
         // We automatically assume that if the implementation implements AutoClosable. Then we need a guest.
         boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
 
@@ -244,17 +238,17 @@ public /* sealed */ interface ArtifactDriver<A> {
 
         // Find the constructor for the subtension, only 1 constructor must be declared on the class
         Constructor<?> con = FindInjectableConstructor.constructorOf(implementation, s -> new IllegalArgumentException(s));
-        
+
         MethodHandle mh = infuser.findConstructorFor(con, implementation);
-        
+
         return new PackedArtifactDriver<>(isGuest, mh);
     }
 
-    static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
+    static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         return PackedArtifactDriver.of(caller, artifactType, mh);
     }
 
-    static <S> ArtifactDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
+    static <S> ApplicationDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
         throw new UnsupportedOperationException();
     }
 }
@@ -347,7 +341,7 @@ interface ZArtifactDriverBuilders {
         // Maaske vil vi ikke have component med...
 
         // Hmm har vi brug for klassen foerend til allersidst???
-        default <A> ArtifactDriver<A> build(Class<A> artifactType) {
+        default <A> ApplicationDriver<A> build(Class<A> artifactType) {
             throw new UnsupportedOperationException();
         }
 

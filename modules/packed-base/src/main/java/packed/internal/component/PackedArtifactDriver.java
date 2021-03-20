@@ -30,17 +30,17 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
-import app.packed.component.Image;
+import app.packed.component.ApplicationDriver;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.Extension;
 import app.packed.validate.Validation;
 import packed.internal.component.source.RealmSetup;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
-/** Implementation of {@link ArtifactDriver}. */
-public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
+/** Implementation of {@link ApplicationDriver}. */
+public final class PackedArtifactDriver<A> implements ApplicationDriver<A> {
 
     /** A daemon driver. */
     public static final PackedArtifactDriver<Completion> COMPLETABLE = new PackedArtifactDriver<>(true,
@@ -141,7 +141,7 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Image<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    public ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         BuildSetup build = build(assembly, wirelets, false, true);
         return new PackedImage(build);
     }
@@ -226,21 +226,21 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactDriver<A> with(Wirelet... wirelets) {
+    public ApplicationDriver<A> with(Wirelet... wirelets) {
         Wirelet w = wirelet == null ? Wirelet.of(wirelets) : wirelet.andThen(wirelets);
         return new PackedArtifactDriver<>(isStateful, mhNewShell, w);
     }
 
     /** {@inheritDoc} */
     @Override
-    public ArtifactDriver<A> with(Wirelet wirelet) {
+    public ApplicationDriver<A> with(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
         Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
         return new PackedArtifactDriver<>(isStateful, mhNewShell, w);
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A
-    public static <A> ArtifactDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
+    public static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         // TODO validate type
         // shellType must match MH
         boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
@@ -337,8 +337,8 @@ public final class PackedArtifactDriver<A> implements ArtifactDriver<A> {
 
     }
 
-    /** An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}. */
-    public final class PackedImage implements Image<A> {
+    /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#buildImage(Assembly, Wirelet...)}. */
+    public final class PackedImage implements ApplicationImage<A> {
 
         private final ComponentSetup root;
 

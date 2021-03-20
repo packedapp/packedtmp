@@ -21,7 +21,6 @@ import java.util.NoSuchElementException;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
-import app.packed.component.drivers.ArtifactDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
@@ -31,7 +30,8 @@ import app.packed.state.StateWirelets;
 /**
  * An App (application) is a type of artifact provided by Packed.
  */
-public interface App extends AutoCloseable {
+// Skal have et 
+public interface PreviousKnownAsApp extends AutoCloseable {
 
     /**
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
@@ -163,7 +163,7 @@ public interface App extends AutoCloseable {
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link Image#use(Wirelet...)} will be {@link RunState#RUNNING}. unless
+     * The state of the applications returned by {@link ApplicationImage#use(Wirelet...)} will be {@link RunState#RUNNING}. unless
      * GuestWirelet.delayStart
      * 
      * @param assembly
@@ -173,17 +173,17 @@ public interface App extends AutoCloseable {
      * @return a new app image
      * @see ImageWirelets
      */
-    static Image<App> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<PreviousKnownAsApp> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().buildImage(assembly, wirelets);
     }
 
     /**
-     * Returns an {@link ArtifactDriver artifact driver} for {@link App}.
+     * Returns an {@link ApplicationDriver artifact driver} for {@link PreviousKnownAsApp}.
      * 
      * @return an artifact driver for App
      */
-    static ArtifactDriver<App> driver() {
-        return AppDefault.DRIVER;
+    static ApplicationDriver<PreviousKnownAsApp> driver() {
+        return PreviousKnownAsDefault.DRIVER;
     }
 
     /**
@@ -204,7 +204,7 @@ public interface App extends AutoCloseable {
      * @throws RuntimeException
      *             if the application could not be build, initialized or started
      */
-    static App start(Assembly<?> assembly, Wirelet... wirelets) {
+    static PreviousKnownAsApp start(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().use(assembly, wirelets);
     }
 }
@@ -216,22 +216,22 @@ class Ddd extends BaseAssembly {
     protected void build() {}
 
     public static void main(String[] args) {
-        try (App app = App.start(new Ddd())) {
+        try (PreviousKnownAsApp app = PreviousKnownAsApp.start(new Ddd())) {
             app.use(Map.class).isEmpty();
         }
     }
 }
 
-interface Zapp extends App {
+interface Zapp extends PreviousKnownAsApp {
 
-    static App lazyStart(Assembly<?> assembly, Wirelet... wirelets) {
+    static PreviousKnownAsApp lazyStart(Assembly<?> assembly, Wirelet... wirelets) {
         // Altsaa der er vel disse interessant
 
         // initialized - lazy start
         // initialized - require explicit start
         // Starting
         // Started
-        return App.driver().use(assembly, StateWirelets.lazyStart().andThen(wirelets));
+        return PreviousKnownAsApp.driver().use(assembly, StateWirelets.lazyStart().andThen(wirelets));
     }
 
     // An image that can be used exactly, will drop any memory references...
@@ -248,8 +248,8 @@ interface Zapp extends App {
      *            optional wirelets
      * @return the new image
      */
-    static Image<App> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return App.driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
+    static ApplicationImage<PreviousKnownAsApp> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return PreviousKnownAsApp.driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
 ///**
