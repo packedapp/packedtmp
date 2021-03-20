@@ -255,7 +255,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
         // Skal lige gennemtaenkes, det er lidt kompliceret classloader
-        private Set<Class<? extends Extension>> dependencies = Collections.newSetFromMap(new WeakHashMap<>());
+        private Set<Class<? extends Extension>> unloadedDependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
         final Class<? extends Extension> extensionClass;
 
@@ -280,10 +280,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 requireNonNull(dependencyType);
                 if (extensionClass == dependencyType) {
                     throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
-                } else if (this.dependencies.contains(dependencyType)) {
+                } else if (this.unloadedDependencies.contains(dependencyType)) {
                     throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
                 }
-                dependencies.add(dependencyType);
+                unloadedDependencies.add(dependencyType);
             }
         }
 
@@ -313,7 +313,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /** A builder of {@link ExtensionModel}. */
-    private static final class Builder {
+    public static final class Builder {
 
         /** Whether or not we only connect to parent or all ancestors. */
         private boolean connectParentOnly;
@@ -321,6 +321,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A set of extension this extension depends on (does not include transitive extensions). */
         private Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
+        // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
+        // Skal lige gennemtaenkes, det er lidt kompliceret classloader
+        private Set<Class<? extends Extension>> unloadedDependencies = Collections.newSetFromMap(new WeakHashMap<>());
+
+        
         /** The depth of the extension relative to other extensions. */
         private int depth;
 
@@ -333,6 +338,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A model of all methods that provide attributes. */
         private PackedAttributeModel pam;
 
+        
         private Builder(Class<? extends Extension> extensionClass) {
             this.extensionClass = requireNonNull(extensionClass);
         }
@@ -343,7 +349,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          */
         private ExtensionModel build(Loader loader, @Nullable Bootstrap bootstrap) {
             if (bootstrap != null) {
-                for (Class<? extends Extension> dependencyType : bootstrap.dependencies) {
+                for (Class<? extends Extension> dependencyType : bootstrap.unloadedDependencies) {
                     ExtensionModel model = Loader.load(dependencyType, loader);
                     depth = Math.max(depth, model.depth + 1);
                     dependencies.add(dependencyType);
@@ -372,6 +378,54 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.pam = PackedAttributeModel.analyse(cp);
 
             return new ExtensionModel(this);
+        }
+        
+        public void connectParentOnly() {
+            connectParentOnly = true;
+        }
+
+        /**
+         * Adds the specified dependency to the caller class if valid.
+         * 
+         * @param extensions
+         *            the extensions
+         * @see Extension#$dependsOn(Class...)
+         */
+        public void dependsOn(@SuppressWarnings("unchecked") Class<? extends Extension>... extensions) {
+            requireNonNull(extensions, "extensions is null");
+            for (Class<? extends Extension> dependencyType : extensions) {
+                requireNonNull(dependencyType);
+                if (extensionClass == dependencyType) {
+                    throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
+                } else if (this.unloadedDependencies.contains(dependencyType)) {
+                    throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
+                }
+                unloadedDependencies.add(dependencyType);
+            }
+        }
+
+        @SuppressWarnings("unchecked")
+        public Optional<Class<? extends Extension>> dependsOnOptionally(String extension) {
+            ClassLoader cl = extensionClass.getClassLoader();
+            Class<?> c = null;
+            try {
+                c = Class.forName(extension, true, cl);
+            } catch (ClassNotFoundException ignore) {
+                return Optional.empty();
+            }
+            // We check this in models also...
+            if (Extension.class == c) {
+                throw new InternalExtensionException("The specified string \"" + extension + "\" cannot specify Extension.class as an optional dependency, for "
+                        + StringFormatter.format(c));
+            } else if (!Extension.class.isAssignableFrom(c)) {
+                throw new InternalExtensionException(
+                        "The specified string \"" + extension + "\" " + " specified an invalid extension " + StringFormatter.format(c));
+            }
+            Class<? extends Extension> dependency = (Class<? extends Extension>) c;
+
+            ExtensionModel.of(dependency);
+            dependsOn(dependency);
+            return Optional.of(dependency);
         }
     }
 
