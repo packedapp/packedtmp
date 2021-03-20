@@ -22,11 +22,11 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 
 /** Tests that a proper name is generated if the name of a container is not explicitly set. */
-public class NameGeneratedTest extends AbstractArtifactTest {
+public class NameGeneratedTest extends AbstractApplicationTest {
 
     /** Tests the */
     @Test

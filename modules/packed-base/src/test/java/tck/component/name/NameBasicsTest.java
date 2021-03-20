@@ -18,13 +18,13 @@ package tck.component.name;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.Wirelet;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 
 /**
  * Various basic test for naming of components.
  */
 // These are basically container names, and not component names
-public class NameBasicsTest extends AbstractArtifactTest {
+public class NameBasicsTest extends AbstractApplicationTest {
 
     @Test
     public void basics() {

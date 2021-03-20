@@ -24,10 +24,10 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 
 /** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
-public class ContainerConfigurationExtensionTest extends AbstractArtifactTest {
+public class ContainerConfigurationExtensionTest extends AbstractApplicationTest {
 
     /** Tests basic use of {@link ContainerConfiguration#use(Class)}. */
     @Test

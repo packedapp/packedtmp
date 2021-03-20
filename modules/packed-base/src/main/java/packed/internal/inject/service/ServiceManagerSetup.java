@@ -31,7 +31,7 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedArtifactDriver;
+import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.RuntimeRegion;
 import packed.internal.component.wirelet.WireletPack;
@@ -186,7 +186,7 @@ public final class ServiceManagerSetup {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedArtifactDriver<?> psd = (PackedArtifactDriver<?>) container.component.build().artifactDriver();
+        PackedApplicationDriver<?> psd = (PackedApplicationDriver<?>) container.component.build().artifactDriver();
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {

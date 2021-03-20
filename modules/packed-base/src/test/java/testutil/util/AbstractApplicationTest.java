@@ -24,7 +24,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 
 /** An abstract test for testing artifacts. */
-public abstract class AbstractArtifactTest {
+public abstract class AbstractApplicationTest {
 
     /** An assembly with no operations. */
     public static BaseAssembly emptyAssembly() {

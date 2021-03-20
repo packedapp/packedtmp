@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 import testutil.util.AppTester;
 
 /**
  *
  */
-public class NameChildrenTest extends AbstractArtifactTest {
+public class NameChildrenTest extends AbstractApplicationTest {
 
     @Test
     public void childName() {

@@ -21,10 +21,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 
 /** Tests basic functionality of a {@link Extension}. */
-public class BasicExtensionTest extends AbstractArtifactTest {
+public class BasicExtensionTest extends AbstractApplicationTest {
 
     /**
      * Checks that {@link Extension#buildContext()} is identical to {@link ContainerConfiguration#buildContext()}.

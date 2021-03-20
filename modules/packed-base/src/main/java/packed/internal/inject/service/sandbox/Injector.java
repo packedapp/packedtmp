@@ -140,7 +140,7 @@ public interface Injector extends ServiceLocator {
 
     // Is this useful outside of hosts???????
     static ApplicationDriver<Injector> driver() {
-        return InjectorArtifactHelper.DRIVER;
+        return InjectorApplicationHelper.DRIVER;
     }
 
     /**
@@ -179,7 +179,7 @@ public interface Injector extends ServiceLocator {
 }
 
 /** An artifact driver for creating {@link PreviousKnownAsApp} instances. */
-final class InjectorArtifactHelper {
+final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);
 

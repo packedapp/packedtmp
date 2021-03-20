@@ -198,7 +198,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
 
     // configure()
     static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return InjectorArtifactHelper.DRIVER.compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
+        return InjectorApplicationHelper.DRIVER.compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
     }
 
 }

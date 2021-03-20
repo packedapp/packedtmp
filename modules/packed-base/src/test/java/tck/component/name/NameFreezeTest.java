@@ -26,7 +26,7 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.ServiceComponentConfiguration;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 
 /**
@@ -38,7 +38,7 @@ import testutil.util.ContainerConfigurationTester;
  * the path of the child changes. We want to avoid this.
  */
 @Disabled
-public class NameFreezeTest extends AbstractArtifactTest {
+public class NameFreezeTest extends AbstractApplicationTest {
 
     /**
      * Tests that we cannot call {@link ServiceComponentConfiguration#setName(String)}. After {@link ServiceComponentConfiguration#getName()}.

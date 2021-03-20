@@ -31,7 +31,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
-import packed.internal.component.PackedArtifactDriver;
+import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
@@ -39,6 +39,14 @@ import packed.internal.inject.classscan.Infuser;
 /**
  * Applications drivers are responsible for building application instances, for example, instances of
  * {@link PreviousKnownAsApp}.
+ * <p>
+ * Packed comes with a number of predefined application drivers
+ * 
+ * 
+ * 
+ * 
+ * If these are not sufficient, your best bet is to look at the source code of them to create your own.
+ * 
  * <p>
  * This class can be used to create custom artifact types if the built-in artifact types such as
  * {@link PreviousKnownAsApp} and {@link ServiceLocator} are not sufficient. In fact, the default implementations of
@@ -182,7 +190,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      */
     // Hvad skal default lifestate vaere for
     static ApplicationDriver<Completion> daemon() {
-        return PackedArtifactDriver.DAEMON;
+        return PackedApplicationDriver.DAEMON;
         // ArtifactDriver.Builder<Void> daemonBuilder()
         // ArtifactDriver.Builder<T> result(...)
         // ArtifactDriver.Builder<T> shell(...)
@@ -241,11 +249,11 @@ public /* sealed */ interface ApplicationDriver<A> {
 
         MethodHandle mh = infuser.findConstructorFor(con, implementation);
 
-        return new PackedArtifactDriver<>(isGuest, mh);
+        return new PackedApplicationDriver<>(isGuest, mh);
     }
 
     static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
-        return PackedArtifactDriver.of(caller, artifactType, mh);
+        return PackedApplicationDriver.of(caller, artifactType, mh);
     }
 
     static <S> ApplicationDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
@@ -253,7 +261,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     }
 }
 
-interface ZArtifactDriver<A> {
+interface ZApplicationDriver<A> {
 
     // Det ville vaere rigtig rart tror hvis BuildException have en liste af
     // validation violations...
@@ -310,7 +318,7 @@ interface ZArtifactDriver<A> {
 
 }
 
-interface ZArtifactDriverBuilders {
+interface ZApplicationDriverBuilders {
 
     // Enten returnere ComponentAnalysis eller Component...
     // CA kan have en masse hjaelpe metoder
@@ -347,7 +355,7 @@ interface ZArtifactDriverBuilders {
 
         // hostless er maaske bedre????
 
-        default ZArtifactDriverBuilders.Builder<T> stateless() {
+        default ZApplicationDriverBuilders.Builder<T> stateless() {
             return this;
         }
 

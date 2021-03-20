@@ -24,7 +24,7 @@ import app.packed.component.ComponentModifierSet;
 public final class BuildSetup implements BuildInfo {
 
     /** The artifact driver used for the build process. */
-    private final PackedArtifactDriver<?> artifactDriver;
+    private final PackedApplicationDriver<?> artifactDriver;
 
     /** The build output. */
     final int modifiers;
@@ -45,7 +45,7 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedArtifactDriver<?> artifactDriver, int modifiers) {
+    BuildSetup(PackedApplicationDriver<?> artifactDriver, int modifiers) {
         this.artifactDriver = artifactDriver;
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
     }
@@ -55,7 +55,7 @@ public final class BuildSetup implements BuildInfo {
      * 
      * @return the artifact driver that initiated the build process
      */
-    public PackedArtifactDriver<?> artifactDriver() {
+    public PackedApplicationDriver<?> artifactDriver() {
         return artifactDriver;
     }
 

@@ -27,7 +27,7 @@ import app.packed.component.WireletHandle;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedArtifactDriver;
+import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
@@ -133,7 +133,7 @@ public final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack ofRoot(PackedArtifactDriver<?> pac, PackedComponentDriver<?> pcd, Wirelet... wirelets) {
+    public static WireletPack ofRoot(PackedApplicationDriver<?> pac, PackedComponentDriver<?> pcd, Wirelet... wirelets) {
         Wirelet w = Wirelet.of(wirelets);
         if (pac.wirelet != null) {
             w = pac.wirelet.andThen(w);

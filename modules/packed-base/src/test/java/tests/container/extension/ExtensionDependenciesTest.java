@@ -21,13 +21,13 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.container.Extension;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 
 /**
  *
  */
 @Disabled
-public class ExtensionDependenciesTest extends AbstractArtifactTest {
+public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     /** Test that we can depend on an uninstalled extension via. */
     @Test

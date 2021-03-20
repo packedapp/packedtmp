@@ -29,11 +29,11 @@ import app.packed.component.PreviousKnownAsApp;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import packed.internal.container.Packlet;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 
 /** Tests that we can automatically activate an extension using a annotated field or method. */
 @Disabled // uses Packlets
-public class ExtensionActivationTest extends AbstractArtifactTest {
+public class ExtensionActivationTest extends AbstractApplicationTest {
 
     @Test
     public void instanceMethod() {

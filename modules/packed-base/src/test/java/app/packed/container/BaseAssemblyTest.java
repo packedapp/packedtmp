@@ -20,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.Test;
 
 import app.packed.component.PreviousKnownAsApp;
-import testutil.util.AbstractArtifactTest;
+import testutil.util.AbstractApplicationTest;
 
 /** Various Assembly tests. */
-public class BaseAssemblyTest extends AbstractArtifactTest {
+public class BaseAssemblyTest extends AbstractApplicationTest {
 
     /** Tests that a assembly cannot be reused. */
     @Test

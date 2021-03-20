@@ -233,7 +233,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedArtifactDriver<?> pac = build().artifactDriver();
+            PackedApplicationDriver<?> pac = build().artifactDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, pac.artifactRawType());
         }
         return dam;
