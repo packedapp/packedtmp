@@ -217,7 +217,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return sb.toString();
     }
 
-    public static Bootstrap bootstrap(Class<?> callerClass) {
+    public static Builder bootstrap(Class<?> callerClass) {
         return Loader.forBootstrapAccess(callerClass);
     }
 
@@ -234,84 +234,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return MODELS.get(extensionClass);
     }
 
-    /**
-     * A bootstrap class for the extension model. Is used in order to register various things from the class initializer of
-     * an Extension.
-     * <p>
-     * // Hmm if static initalizer fails this stays around // This is also a problem if we have more complex objects... // I
-     * don't know how much of a problem it is... // If the static initializer fails it does so with an error...
-     */
-    // Maaske kan vi dropper den her bootstrap, og bare smide direkte ind i builder...
-    // Det er maaske fedt nok at instantiere sine dependencies fra class initializer...
-    // Vil mene det er vejen frem... Altsaa hvis vi fejler er det vel ligegyldigt om
-    // vi har en builder eller bootstrap haengende...
-    public static final class Bootstrap {
-
-        /** A set of extension this extension depends on. */
-
-        boolean connectParentOnly;
-
-        /** All dependencies of the extension */
-
-        // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
-        // Skal lige gennemtaenkes, det er lidt kompliceret classloader
-        private Set<Class<? extends Extension>> unloadedDependencies = Collections.newSetFromMap(new WeakHashMap<>());
-
-        final Class<? extends Extension> extensionClass;
-
-        private Bootstrap(Class<? extends Extension> extensionClass) {
-            this.extensionClass = requireNonNull(extensionClass);
-        }
-
-        public void connectParentOnly() {
-            connectParentOnly = true;
-        }
-
-        /**
-         * Adds the specified dependency to the caller class if valid.
-         * 
-         * @param extensions
-         *            the extensions
-         * @see Extension#$dependsOn(Class...)
-         */
-        public void dependsOn(@SuppressWarnings("unchecked") Class<? extends Extension>... extensions) {
-            requireNonNull(extensions, "extensions is null");
-            for (Class<? extends Extension> dependencyType : extensions) {
-                requireNonNull(dependencyType);
-                if (extensionClass == dependencyType) {
-                    throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
-                } else if (this.unloadedDependencies.contains(dependencyType)) {
-                    throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
-                }
-                unloadedDependencies.add(dependencyType);
-            }
-        }
-
-        @SuppressWarnings("unchecked")
-        public Optional<Class<? extends Extension>> dependsOnOptionally(String extension) {
-            ClassLoader cl = extensionClass.getClassLoader();
-            Class<?> c = null;
-            try {
-                c = Class.forName(extension, true, cl);
-            } catch (ClassNotFoundException ignore) {
-                return Optional.empty();
-            }
-            // We check this in models also...
-            if (Extension.class == c) {
-                throw new InternalExtensionException("The specified string \"" + extension + "\" cannot specify Extension.class as an optional dependency, for "
-                        + StringFormatter.format(c));
-            } else if (!Extension.class.isAssignableFrom(c)) {
-                throw new InternalExtensionException(
-                        "The specified string \"" + extension + "\" " + " specified an invalid extension " + StringFormatter.format(c));
-            }
-            Class<? extends Extension> dependency = (Class<? extends Extension>) c;
-
-            ExtensionModel.of(dependency);
-            dependsOn(dependency);
-            return Optional.of(dependency);
-        }
-    }
-
     /** A builder of {@link ExtensionModel}. */
     public static final class Builder {
 
@@ -325,7 +247,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         // Skal lige gennemtaenkes, det er lidt kompliceret classloader
         private Set<Class<? extends Extension>> unloadedDependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
-        
         /** The depth of the extension relative to other extensions. */
         private int depth;
 
@@ -338,22 +259,20 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A model of all methods that provide attributes. */
         private PackedAttributeModel pam;
 
-        
         private Builder(Class<? extends Extension> extensionClass) {
             this.extensionClass = requireNonNull(extensionClass);
         }
+
         /**
          * Builds and returns an extension model.
          * 
          * @return the extension model
          */
-        private ExtensionModel build(Loader loader, @Nullable Bootstrap bootstrap) {
-            if (bootstrap != null) {
-                for (Class<? extends Extension> dependencyType : bootstrap.unloadedDependencies) {
-                    ExtensionModel model = Loader.load(dependencyType, loader);
-                    depth = Math.max(depth, model.depth + 1);
-                    dependencies.add(dependencyType);
-                }
+        private ExtensionModel build(Loader loader) {
+            for (Class<? extends Extension> dependencyType : unloadedDependencies) {
+                ExtensionModel model = Loader.load(dependencyType, loader);
+                depth = Math.max(depth, model.depth + 1);
+                dependencies.add(dependencyType);
             }
 
             Infuser infuser = Infuser.build(MethodHandles.lookup(), c -> {
@@ -379,7 +298,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
             return new ExtensionModel(this);
         }
-        
+
         public void connectParentOnly() {
             connectParentOnly = true;
         }
@@ -479,11 +398,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
                 // Get any bootstrap data that was create as part of the class initialization
                 @Nullable
-                Bootstrap b = (Bootstrap) DATA.get(extensionClass);
+                Builder b = (Builder) DATA.get(extensionClass);
+                if (b == null) {
+                    b = new ExtensionModel.Builder(extensionClass);
+                }
 
-                ExtensionModel.Builder builder = new ExtensionModel.Builder(extensionClass);
-
-                model = builder.build(this, b);
+                model = b.build(this);
             } catch (Throwable t) {
                 // We failed to either load this extension, or one of the extensions
                 // dependencies failed to load.
@@ -504,7 +424,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             return model;
         }
 
-        private static Bootstrap forBootstrapAccess(Class<?> callerClass) {
+        private static Builder forBootstrapAccess(Class<?> callerClass) {
             if (!Extension.class.isAssignableFrom(callerClass) || callerClass == Extension.class) {
                 throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
             }
@@ -514,10 +434,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
             try {
                 Object m = DATA.get(callerClass);
                 if (m == null) {
-                    Bootstrap b = new Bootstrap(extensionClass);
+                    Builder b = new Builder(extensionClass);
                     DATA.put(extensionClass, b);
                     return b;
-                } else if (m instanceof Bootstrap b) {
+                } else if (m instanceof Builder b) {
                     return b;
                 } else {
                     throw new InternalExtensionException(
