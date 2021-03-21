@@ -152,7 +152,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         // Okay same depth and name, is the same extension
-        if (m.extensionClass == extensionClass) {
+        if (m.extensionClass == extensionClass) { //class names are always interned
             return 0;
         }
 
@@ -234,7 +234,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return MODELS.get(extensionClass);
     }
 
-    /** A builder of {@link ExtensionModel}. */
+    /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}.  */
     public static final class Builder {
 
         /** Whether or not we only connect to parent or all ancestors. */
@@ -245,7 +245,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
         // Skal lige gennemtaenkes, det er lidt kompliceret classloader
-        private Set<Class<? extends Extension>> unloadedDependencies = Collections.newSetFromMap(new WeakHashMap<>());
+        private Set<Class<? extends Extension>> pendingLoadDependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
         /** The depth of the extension relative to other extensions. */
         private int depth;
@@ -269,7 +269,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * @return the extension model
          */
         private ExtensionModel build(Loader loader) {
-            for (Class<? extends Extension> dependencyType : unloadedDependencies) {
+            for (Class<? extends Extension> dependencyType : pendingLoadDependencies) {
                 ExtensionModel model = Loader.load(dependencyType, loader);
                 depth = Math.max(depth, model.depth + 1);
                 dependencies.add(dependencyType);
@@ -316,10 +316,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 requireNonNull(dependencyType);
                 if (extensionClass == dependencyType) {
                     throw new InternalExtensionException("Extension " + extensionClass + " cannot depend on itself");
-                } else if (this.unloadedDependencies.contains(dependencyType)) {
+                } else if (this.pendingLoadDependencies.contains(dependencyType)) {
                     throw new InternalExtensionException("A dependency on " + dependencyType + " has already been added");
                 }
-                unloadedDependencies.add(dependencyType);
+                pendingLoadDependencies.add(dependencyType);
             }
         }
 

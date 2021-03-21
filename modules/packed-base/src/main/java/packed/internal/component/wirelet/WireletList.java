@@ -27,13 +27,8 @@ import java.util.function.Consumer;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 
-/**
- * An immutable list of wirelets. Typically used for combining multiple wirelets into one.
- * 
- */
-// See hvor den bliver brugt fra ServiceExtension...
-// Maaske den skal vaere public alligevel...
-public final class WireletList extends Wirelet {
+/** An immutable list of wirelets. Typically used for combining multiple wirelets into one. */
+public /* primitive */ final class WireletList extends Wirelet {
 
     /** An empty wirelet list. */
     private static final WireletList EMPTY = new WireletList();
@@ -83,10 +78,6 @@ public final class WireletList extends Wirelet {
                 return;
             }
         }
-    }
-
-    public int size() {
-        return wirelets.length;
     }
 
     /**
@@ -153,6 +144,10 @@ public final class WireletList extends Wirelet {
         }
     }
 
+    public int size() {
+        return wirelets.length;
+    }
+
     //
     // /**
     // * Returns a list of all wirelets of the specified type
@@ -198,18 +193,6 @@ public final class WireletList extends Wirelet {
         return sb.toString();
     }
 
-    public static WireletList ofAll(Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            return EMPTY;
-        }
-        return new WireletList(wirelets);
-    }
-
-    public static Wirelet of(Wirelet[] w1, Wirelet... w2) {
-        throw new UnsupportedOperationException();
-    }
-
     public static Wirelet of(Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
@@ -230,11 +213,11 @@ public final class WireletList extends Wirelet {
      *            the single wirelet
      * @return a {@code WireletList} containing the specified wirelet
      */
-    public static WireletList of(Wirelet w1, Wirelet w2) {
+    public static Wirelet of(Wirelet w1, Wirelet w2) {
         return new WireletList(w1, w2);
     }
 
-    public static WireletList of(Wirelet w1, Wirelet[] wirelets) {
+    public static Wirelet of(Wirelet w1, Wirelet[] wirelets) {
         requireNonNull(w1, "w1 is null");
         requireNonNull(wirelets, "wirelets is null");
         ArrayList<Wirelet> l = new ArrayList<>();
@@ -245,6 +228,10 @@ public final class WireletList extends Wirelet {
             l.add(w1);
         }
         l.addAll(List.of(wirelets));
-        return WireletList.ofAll(l.toArray(i -> new Wirelet[i]));
+        return of(l.toArray(i -> new Wirelet[i]));
+    }
+
+    public static Wirelet of(Wirelet[] w1, Wirelet... w2) {
+        throw new UnsupportedOperationException();
     }
 }

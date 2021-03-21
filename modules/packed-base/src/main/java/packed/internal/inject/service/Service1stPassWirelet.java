@@ -24,3 +24,4 @@ public abstract class Service1stPassWirelet extends Wirelet {
 
     protected abstract void process(ServiceManagerSetup child);
 }
+ 

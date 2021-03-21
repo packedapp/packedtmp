@@ -92,8 +92,8 @@ public class ServiceExtension extends Extension {
      * 
      * This method is typically used if you work with plugin structures. Where you do not now ahead of time what kind of
      * services the plugins export.
-     * 
-     * {@link ServiceSelection}
+     * <p>
+     * If you only want to anchor ind.... {@link ServiceSelection}
      * 
      * @see ServiceWirelets#anchorAll()
      */
@@ -250,11 +250,10 @@ public class ServiceExtension extends Extension {
     @Nullable
     /* package-private */ ServiceRegistry exposeExportedServices() {
 
-        
         // Kan specificere det paa attributen???
         // Giv mig en ServiceExtension... og saa skal jeg vise dig...
         // Det kraever jo vi force loader den...
-        
+
 //        $addAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
 //        $addOptionalAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().hasExports());
 //
@@ -404,13 +403,14 @@ public class ServiceExtension extends Extension {
     }
 
     /**
-     * Performs a transformation of any exported services. This method can perform any final adjustments of services before
-     * they are made available to any parent container.
+     * Performs a final transformation of any exported service.
+     * 
+     * This method can perform any final adjustments of services before they are made available to any parent container.
      * <p>
      * The transformation takes place xxxx
      * 
      * @param transformer
-     *            transforms the exports
+     *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
         services.exports().addExportTransformer(transformer);
@@ -420,8 +420,8 @@ public class ServiceExtension extends Extension {
      * A subtension that can be used by other extensions via {@link Extension#use(Class)} or
      * {@link ExtensionConfiguration#use(Class)}.
      * <p>
-     * There are no support for exporting services. The end-user is always in full control of exactly what is being exported
-     * out from the container.
+     * This class does not provide any support for exporting services. The end-user is always in full control of exactly
+     * what is being exported out from the container.
      **/
     public class Sub extends Subtension {
 
@@ -596,9 +596,7 @@ class ZExtraFunc {
     // CycleBreaker(SE, ...);
     // CycleBreaker(SE, ...);
 
-    final class SidecarHelper {
 
-    }
 
     // autoExport
 

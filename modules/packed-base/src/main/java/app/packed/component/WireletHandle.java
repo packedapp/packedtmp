@@ -3,7 +3,7 @@ package app.packed.component;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import packed.internal.component.wirelet.WireletPack;
+import packed.internal.component.wirelet.PackedWireletHandle;
 
 // Det gode ved den her er at den jo samtidig fungere som
 // en optional faetter
@@ -23,9 +23,22 @@ import packed.internal.component.wirelet.WireletPack;
  *           we expect the number of wirelets for a single component to be small in practice. This is unlikely to effect
  *           performance.
  */
-public /* sealed */ interface WireletHandle<T extends Wirelet> {
+public /* sealed */ interface WireletHandle<W extends Wirelet> {
 
-    void forEach(Consumer<? super T> action);
+    /**
+     * Returns the number of uncosumed ... consuming the wirelets in the process.
+     * 
+     * If you do not wish to consume the wirelet call {@link #peekCount()}.
+     * 
+     * @return asdasd
+     * 
+     * @see #peekCount()
+     */
+    default int count() {
+        return 0;
+    }
+
+    void forEach(Consumer<? super W> action);
 
     /**
      * Returns whether or not this handle contains any unconsumed matching wirelets. Consuming each and every matching
@@ -39,18 +52,36 @@ public /* sealed */ interface WireletHandle<T extends Wirelet> {
     boolean isAbsent(); // hasMatch
 
     boolean isPresent();
-    
+
     // forEach
     // will consume any matching wirelet and return the last one...
-    Optional<T> last(); // one() maybe. Emphasize at man consumer en...
+    Optional<W> last(); // one() maybe. Emphasize at man consumer en...
 
-    public static <T extends Wirelet> WireletHandle<T> of() {
-        return WireletPack.empty();
+    /**
+     * Unlike {@link #count()} this method does not consume any wirelets.
+     * 
+     * @return the number of matching wirelets that have not yet been consumed
+     * @see #count()
+     */
+    default int peekCount() {
+        return 0;
     }
-    
+
+    /**
+     * Returns a wirelet handle with no wirelets to consume
+     * 
+     * @param <E> the {@code WireletHandle}'s element type
+     * @return an empty wirelet handle
+     */
+    public static <W extends Wirelet> WireletHandle<W> of() {
+        return PackedWireletHandle.of();
+    }
+
+    // Hvad skal vi bruge den her til??? Testing primaert ville jeg mene...
+    // Hvad med dem der ikke bliver consumet? skal vi have en WireletHandle.peekCount()???
     @SafeVarargs
-    static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
-        return WireletPack.handleOf(wireletClass, wirelets);
+    static <W extends Wirelet> WireletHandle<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
+        return PackedWireletHandle.of(wireletClass, wirelets);
     }
 }
 //Collect, Receive, Accept, Consume

@@ -161,6 +161,8 @@ public abstract class Wirelet {
         // Saa laver vi jo saadan set en realm...
     }
     
+    protected static final void $stackable() {}
+    
     /** Attempting to wire a non-container component with this wirelet will fail. */
     protected static final void $requireContainer() {}
 

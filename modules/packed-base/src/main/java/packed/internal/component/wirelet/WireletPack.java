@@ -18,8 +18,6 @@ package packed.internal.component.wirelet;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Optional;
-import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
@@ -31,11 +29,11 @@ import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
-public final class WireletPack {
+// Time to put this on component????
+public /* primitive */ final class WireletPack {
 
-    private static final Empty<?> EMPTY = new Empty<>();
-
-    private final ArrayList<Ent> list = new ArrayList<>();
+    static final WireletPack EMPTY = new WireletPack();
+    final ArrayList<ConsumableWirelet> list = new ArrayList<>();
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
@@ -55,7 +53,7 @@ public final class WireletPack {
                 create0(ww);
             }
         } else {
-            list.add(new Ent(w));
+            list.add(new ConsumableWirelet(w));
         }
     }
 
@@ -63,7 +61,7 @@ public final class WireletPack {
         if (module != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
         }
-        return new HandleImpl<>(wireletClass);
+        return new PackedWireletHandle<>(this, wireletClass);
     }
 
     // That name wirelet.. should only be used by the top-container....
@@ -80,7 +78,7 @@ public final class WireletPack {
      * @return stuff
      */
     @Nullable
-    private static WireletPack create(WireletPack parent, Wirelet... wirelets) {
+    static WireletPack create(WireletPack parent, Wirelet... wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             return null;
@@ -94,11 +92,6 @@ public final class WireletPack {
         return wc;
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Wirelet> WireletHandle<T> empty() {
-        return (WireletHandle<T>) EMPTY;
-    }
-
     public static <T extends Wirelet> WireletHandle<T> extensionHandle(WireletPack containerWirelets, Class<? extends Extension> extensionClass,
             Class<? extends T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
@@ -106,17 +99,10 @@ public final class WireletPack {
             throw new InternalExtensionException("oops mismatching module");
         }
         if (containerWirelets == null) {
-            return empty();
+            return PackedWireletHandle.of();
         } else {
             return containerWirelets.handleOf(extensionClass.getModule(), wireletClass);
         }
-    }
-
-    public static <T extends Wirelet> WireletHandle<T> handleOf(Class<? extends T> wireletClass, Wirelet... wirelets) {
-        if (wirelets.length < 1) {
-            throw new IllegalArgumentException("Must specify at least 1 wirelet.");
-        }
-        return create(null, wirelets).handleOf(wireletClass.getModule(), wireletClass);
     }
 
     @Nullable
@@ -141,96 +127,14 @@ public final class WireletPack {
         return create(null, w);
     }
 
-    public static final class Empty<T extends Wirelet> implements WireletHandle<T> {
-
-        @Override
-        public void forEach(Consumer<? super T> action) {}
-
-        @Override
-        public boolean isAbsent() {
-            return true;
-        }
-
-        @Override
-        public boolean isPresent() {
-            return false;
-        }
-
-        @Override
-        public Optional<T> last() {
-            return Optional.empty();
-        }
-    }
-
-    public static class Ent {
+    // An array on
+    public static class ConsumableWirelet {
         public boolean isReceived;
 
         public final Wirelet wirelet;
 
-        Ent(Wirelet wirelet) {
+        ConsumableWirelet(Wirelet wirelet) {
             this.wirelet = requireNonNull(wirelet);
-        }
-    }
-
-    public final class HandleImpl<T extends Wirelet> implements WireletHandle<T> {
-
-        private final Class<? extends T> wireletClass;
-
-        HandleImpl(Class<? extends T> wireletClass) {
-            // We should check all public wirelet types here
-            if (Wirelet.class == wireletClass) {
-                throw new IllegalArgumentException("Cannot specify " + Wirelet.class.getSimpleName() + ".class");
-            }
-
-            this.wireletClass = requireNonNull(wireletClass, "wireletClass is null");
-        }
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        public void forEach(Consumer<? super T> action) {
-            requireNonNull(action, "action is null");
-            for (Ent e : list) {
-                if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                    action.accept((T) e.wirelet);
-                    e.isReceived = true;
-                }
-            }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isAbsent() {
-            boolean result = true;
-            for (Ent e : list) {
-                if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                    result = false;
-                    e.isReceived = true;
-                }
-            }
-            return result;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean isPresent() {
-            return !isAbsent();
-        }
-
-        /** {@inheritDoc} */
-        @SuppressWarnings("unchecked")
-        @Override
-        public Optional<T> last() {
-            T result = null;
-            for (Ent e : list) {
-                if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                    if (result == null) {
-                        result = (T) e.wirelet;
-                    }
-                    e.isReceived = true;
-                }
-            }
-            return Optional.ofNullable(result);
         }
     }
 }

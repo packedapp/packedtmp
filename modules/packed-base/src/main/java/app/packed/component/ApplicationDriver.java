@@ -37,25 +37,20 @@ import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 
 /**
- * Applications drivers are responsible for building application instances, for example, instances of
- * {@link Program}.
+ * Applications drivers are responsible for building application instances, for example, instances of {@link Program}.
  * <p>
- * Packed comes with a number of predefined application drivers
- * 
- * 
- * 
- * 
- * If these are not sufficient, your best bet is to look at the source code of them to create your own.
+ * Packed comes with a number of predefined application drivers If these are not sufficient, your best bet is to look at
+ * the source code of them to create your own.
  * 
  * <p>
- * This class can be used to create custom artifact types if the built-in artifact types such as
- * {@link Program} and {@link ServiceLocator} are not sufficient. In fact, the default implementations of
- * both {@link Program} and {@link ServiceLocator} uses an artifact driver themselves.
+ * This class can be used to create custom artifact types if the built-in artifact types such as {@link Program} and
+ * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link Program} and
+ * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
  * Normally, you would never create more than a single instance of an application driver.
  * 
  * @param <A>
- *            The type of application this driver creates.
+ *            the type of application interface this driver creates.
  * 
  * @see Program#driver()
  * @see Main#driver()
@@ -89,12 +84,23 @@ public /* sealed */ interface ApplicationDriver<A> {
         validate(assembly, wirelets).assertValid();
     }
 
+    default <T> ApplicationDriver<T> bind(Class<T> cl) {
+        // Ideen er lidt at man f.eks. fra Job<R> kan binde R...
+        // og sig Job.of(String.class, ....);
+        // og sig Job.buildImage(String.class, ....);
+        // og sig Job.buildImage(TypeToken<r> tt, ....);
+        // I sidste ende kan man maaske selv lave castet??
+        // Og saa bare tilfoeje en wirelet? ala
+        // return (ApplicationDriver<R>) driver.with(Wirelet.bindTypeVariable(...));
+        // BindableApplicationDriver???
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Builds a new application image using the specified assembly and optional wirelets.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link Program#buildImage(Assembly, Wirelet...)} and
-     * {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
+     * {@link Program#buildImage(Assembly, Wirelet...)} and {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the assembly that should be used to build the image
@@ -183,6 +189,10 @@ public /* sealed */ interface ApplicationDriver<A> {
 
     ApplicationDriver<A> with(Wirelet... wirelets);
 
+    static Builder builder() {
+        return new Builder(); 
+    }
+
     /**
      * Returns a daemon artifact driver.
      * 
@@ -235,6 +245,13 @@ public /* sealed */ interface ApplicationDriver<A> {
         // We currently do not support @Provide ect... Don't know if we ever will
         // Create a new MethodHandle that can create artifact instances.
 
+        // Vi har maaske en ApplicationDriver builder...
+
+        // Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
+        // traekke det ud af service locatoren.
+        
+        // Uhh uhhh species... Job<R> kan vi lave det???
+
         // Create an infuser (SomeExtension, Class)
         Infuser infuser = Infuser.build(caller, c -> {
             c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
@@ -255,13 +272,84 @@ public /* sealed */ interface ApplicationDriver<A> {
     static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         return PackedApplicationDriver.of(caller, artifactType, mh);
     }
-
+    
     static <S> ApplicationDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
         throw new UnsupportedOperationException();
     }
+    
+    class Builder {
+        Builder addWirelet(Wirelet... wirelets) {
+            return this;
+        }
+        // see laenger nede i ZApplicationDriverBuilders
+        
+        <A> ApplicationDriver<A> build(Class<A> clazz) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
 
-interface ZApplicationDriver<A> {
+/**
+ * Kigge paa at tilfoeje builders  til den...
+ */
+interface ZApplicationDriverWithBuilder {
+
+    static Builder<Void> builder(MethodHandles.Lookup lookup) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> Builder<T> builder(MethodHandles.Lookup lookup, Class<T> type) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <T> Builder<T> builder(MethodHandles.Lookup lookup, TypeToken<T> type) {
+        // T kan have type variables
+        throw new UnsupportedOperationException();
+    }
+
+    interface Builder<T> {
+
+        // Pre, Post wirelets
+        // Whilelist/Blacklist extensions
+
+        // Generic Parameterized types... F.eks. Job<R> or BigMap<K, V>
+        // Maaske vil vi ikke have component med...
+
+        // Hmm har vi brug for klassen foerend til allersidst???
+        default <A> ApplicationDriver<A> build(Class<A> artifactType) {
+            throw new UnsupportedOperationException();
+        }
+
+        // hostless er maaske bedre????
+
+        default ZApplicationDriverWithBuilder.Builder<T> stateless() {
+            return this;
+        }
+
+        // CompletableFuture<A> asynchronous();/??
+//        /**
+//         * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of artifact
+//         * being created by this driver has an execution phase. This is determined by whether or not the artifact implements
+//         * {@link AutoCloseable}.
+//         * 
+//         * @return whether or not the artifact being produced by this driver has an execution phase
+//         */
+//        // Saa heller descriptor();?????
+        // Men hvorfor en descriptor. Kan det ikke vaere direkte paa driveren.
+        // Ikke hvis man skal kunne faa en descriptor fra attributes. Men hvor
+        // man ikke skal have rettigheder til direkte at
+//        ComponentModifierSet modifiers();
+
+        // Methods to analyze...
+        // Pair<Component, Artifact>?
+    }
+}
+//Main Functionality
+//Make artifacts
+//Make images
+//Analyze, validate, print, ect...
+
+interface ZZApplicationDriver<A> {
 
     // Det ville vaere rigtig rart tror hvis BuildException have en liste af
     // validation violations...
@@ -317,70 +405,6 @@ interface ZApplicationDriver<A> {
     }
 
 }
-
-interface ZApplicationDriverBuilders {
-
-    // Enten returnere ComponentAnalysis eller Component...
-    // CA kan have en masse hjaelpe metoder
-    @SuppressWarnings("unused")
-    private static Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    static Builder<Void> builder(MethodHandles.Lookup lookup) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T> Builder<T> builder(MethodHandles.Lookup lookup, Class<T> type) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T> Builder<T> builder(MethodHandles.Lookup lookup, TypeToken<T> type) {
-        // T kan have type variables
-        throw new UnsupportedOperationException();
-    }
-
-    interface Builder<T> {
-
-        // Pre, Post wirelets
-        // Whilelist/Blacklist extensions
-
-        // Generic Parameterized types... F.eks. Job<R> or BigMap<K, V>
-        // Maaske vil vi ikke have component med...
-
-        // Hmm har vi brug for klassen foerend til allersidst???
-        default <A> ApplicationDriver<A> build(Class<A> artifactType) {
-            throw new UnsupportedOperationException();
-        }
-
-        // hostless er maaske bedre????
-
-        default ZApplicationDriverBuilders.Builder<T> stateless() {
-            return this;
-        }
-
-        // CompletableFuture<A> asynchronous();/??
-//        /**
-//         * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of artifact
-//         * being created by this driver has an execution phase. This is determined by whether or not the artifact implements
-//         * {@link AutoCloseable}.
-//         * 
-//         * @return whether or not the artifact being produced by this driver has an execution phase
-//         */
-//        // Saa heller descriptor();?????
-        // Men hvorfor en descriptor. Kan det ikke vaere direkte paa driveren.
-        // Ikke hvis man skal kunne faa en descriptor fra attributes. Men hvor
-        // man ikke skal have rettigheder til direkte at
-//        ComponentModifierSet modifiers();
-
-        // Methods to analyze...
-        // Pair<Component, Artifact>?
-    }
-}
-//Main Functionality
-//Make artifacts
-//Make images
-//Analyze, validate, print, ect...
 
 //Vi kaldte den shell engang. Men gik tilbage til Artifact. Fordi det virker aandsvagt at se man skal have
 //en stateless artifact. Og det styre saa alt andet... En artifact er mere noget man laver til et eksisterende system
