@@ -24,7 +24,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.RuntimeRegion;
+import packed.internal.component.SlotTable;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -111,9 +111,9 @@ public final class SourceClassSetup implements DependencyProvider {
     @Override
     public MethodHandle dependencyAccessor() {
         if (instance != null) {
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(instance), RuntimeRegion.class); // MethodHandle()T -> MethodHandle(Region)T
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(instance), SlotTable.class); // MethodHandle()T -> MethodHandle(Region)T
         } else if (regionIndex > -1) {
-            return RuntimeRegion.readSingletonAs(regionIndex, model.type);
+            return SlotTable.readSingletonAs(regionIndex, model.type);
         } else {
             return dependant.buildMethodHandle();
         }

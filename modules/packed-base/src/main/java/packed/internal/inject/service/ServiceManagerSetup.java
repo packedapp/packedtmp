@@ -33,7 +33,7 @@ import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedComponent;
-import packed.internal.component.RuntimeRegion;
+import packed.internal.component.SlotTable;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.Requirement.FromInjectable;
@@ -175,7 +175,7 @@ public final class ServiceManagerSetup {
         return builder.build();
     }
 
-    public ServiceLocator newServiceLocator(PackedComponent comp, RuntimeRegion region) {
+    public ServiceLocator newServiceLocator(PackedComponent comp, SlotTable region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (BuildtimeService e : exports) {
@@ -242,7 +242,7 @@ public final class ServiceManagerSetup {
 
                 WireletPack wirelets = c.component.wirelets;
                 if (wirelets != null) {
-                    wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service1stPassWirelet.class).forEach(w -> w.process(child));
+                    wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service1stPassWirelet.class).consumeEach(w -> w.process(child));
                 }
 
                 if (child != null && child.exports != null) {
@@ -295,7 +295,7 @@ public final class ServiceManagerSetup {
 
         if (wirelets != null) {
             // For now we just ignore the wirelets
-            wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service2ndPassWirelet.class).forEach(w -> w.process(parent, this, map));
+            wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service2ndPassWirelet.class).consumeEach(w -> w.process(parent, this, map));
         }
 
         // If Processere wirelets...

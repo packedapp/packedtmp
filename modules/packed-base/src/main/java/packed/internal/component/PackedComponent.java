@@ -44,15 +44,15 @@ public final class PackedComponent implements Component {
     /** The runtime model of the component. */
     final RuntimeComponentModel model;
 
-    /** The name of the component. The name is guaranteed to be unique between siblings. */
+    /** The name of the component. */
     private final String name;
 
-    /** The parent component, or null is root. */
+    /** The parent component, or null if root. */
     @Nullable
     final PackedComponent parent;
 
     /** The region this component is part of. */
-    final RuntimeRegion region;
+    final SlotTable table;
 
     /**
      * Creates a new component.
@@ -105,9 +105,9 @@ public final class PackedComponent implements Component {
 
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || compBuild.modifiers().isContainerOld()) {
-            this.region = compBuild.region.newRegion(pic, this);
+            this.table = compBuild.region.newRegion(pic, this);
         } else {
-            this.region = parent.region;
+            this.table = parent.table;
         }
     }
 

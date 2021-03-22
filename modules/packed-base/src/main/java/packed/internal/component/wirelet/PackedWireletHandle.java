@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
-import packed.internal.component.wirelet.WireletPack.ConsumableWirelet;
 
 /** Implementation of {@link WireletHandle}. */
 public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implements WireletHandle<W> {
@@ -37,24 +36,47 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public void forEach(Consumer<? super W> action) {
+    public void consumeEach(Consumer<? super W> action) {
         requireNonNull(action, "action is null");
-        for (ConsumableWirelet e : wirelets.list) {
-            if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                action.accept((W) e.wirelet);
-                e.isReceived = true;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
+            for (int i = 0; i < ws.length; i++) {
+                Wirelet w = ws[i];
+                if (wireletClass.isInstance(w)) {
+                    action.accept((W) w);
+                    ws[i] = null;
+                    wirelets.unconsumed--;
+                }
             }
         }
     }
 
     /** {@inheritDoc} */
     @Override
+    public int count() {
+        int count = 0;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
+            for (int i = 0; i < ws.length; i++) {
+                if (wireletClass.isInstance(ws[i])) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isAbsent() {
         boolean result = true;
-        for (ConsumableWirelet e : wirelets.list) {
-            if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                result = false;
-                e.isReceived = true;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
+            for (int i = 0; i < ws.length; i++) {
+                Wirelet w = ws[i];
+                if (wireletClass.isInstance(w)) {
+                    result = false;
+                }
             }
         }
         return result;
@@ -62,7 +84,7 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     /** {@inheritDoc} */
     @Override
-    public boolean isPresent() {
+    public boolean isEmpty() {
         return !isAbsent();
     }
 
@@ -71,12 +93,17 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
     @Override
     public Optional<W> last() {
         W result = null;
-        for (ConsumableWirelet e : wirelets.list) {
-            if (!e.isReceived && wireletClass.isInstance(e.wirelet)) {
-                if (result == null) {
-                    result = (W) e.wirelet;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
+            for (int i = 0; i < ws.length; i++) {
+                Wirelet w = ws[i];
+                if (wireletClass.isInstance(w)) {
+                    if (result == null) {
+                        result = (W) w;
+                    }
+                    ws[i] = null;
+                    wirelets.unconsumed--;
                 }
-                e.isReceived = true;
             }
         }
         return Optional.ofNullable(result);
@@ -89,10 +116,7 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     public static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            return of();
-        }
-        return WireletPack.create(null, wirelets).handleOf(wireletClass.getModule(), wireletClass);
+        return new WireletPack(WireletList.flatten(wirelets)).handleOf(wireletClass.getModule(), wireletClass);
     }
+
 }

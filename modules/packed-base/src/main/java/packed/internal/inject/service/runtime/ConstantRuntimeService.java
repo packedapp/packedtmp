@@ -23,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.component.RuntimeRegion;
+import packed.internal.component.SlotTable;
 import packed.internal.inject.service.build.BuildtimeService;
 
 /** An runtime service holding a constant. */
@@ -38,7 +38,7 @@ public final class ConstantRuntimeService extends RuntimeService {
      * @param service
      *            the build entry to create this entry from
      */
-    public ConstantRuntimeService(BuildtimeService service, RuntimeRegion region, int index) {
+    public ConstantRuntimeService(BuildtimeService service, SlotTable region, int index) {
         super(service);
         this.constant = requireNonNull(region.getSingletonInstance(index));
     }

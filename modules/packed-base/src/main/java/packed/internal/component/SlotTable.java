@@ -29,52 +29,51 @@ import packed.internal.util.MethodHandleUtil;
 // Active System -> 1 NodeStore per guest
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
 
-// MemoryRegion????
-public final class RuntimeRegion {
+public final /* primitive*/ class SlotTable {
 
     /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.lookupVirtual(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
-    public final Object[] store;
+    public final Object[] table;
 
-    public RuntimeRegion(int i) {
-        store = new Object[i];
+    public SlotTable(int i) {
+        table = new Object[i];
     }
 
     public Object getSingletonInstance(int index) {
 //        Object value = store[index];
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
-        return store[index];
+        return table[index];
     }
 
     public void print() {
         System.out.println("--");
-        for (int i = 0; i < store.length; i++) {
-            System.out.println(i + " = " + store[i]);
+        for (int i = 0; i < table.length; i++) {
+            System.out.println(i + " = " + table[i]);
         }
 
         System.out.println("--");
     }
 
     public boolean isSet(int index) {
-        return store[index] != null;
+        return table[index] != null;
     }
 
     // Don't know
     PackedContainer container() {
-        return (PackedContainer) store[0];
+        return (PackedContainer) table[0];
     }
 
     ServiceLocator serviceRegistry(PackedComponent node) {
-        return (ServiceLocator) store[node.modifiers().isContainerOld() ? 1 : 0];
+        return (ServiceLocator) table[node.modifiers().isContainerOld() ? 1 : 0];
     }
 
     public void store(int index, Object instance) {
-        if (store[index] != null) {
+        if (table[index] != null) {
             throw new IllegalStateException();
         }
-        store[index] = instance;
+        table[index] = instance;
         // new Exception().printStackTrace();
     }
 

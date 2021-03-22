@@ -17,8 +17,6 @@ package packed.internal.component.wirelet;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
-
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
@@ -32,35 +30,36 @@ import packed.internal.component.PackedComponentDriver;
 // Time to put this on component????
 public /* primitive */ final class WireletPack {
 
-    static final WireletPack EMPTY = new WireletPack();
-    final ArrayList<ConsumableWirelet> list = new ArrayList<>();
+    static final WireletPack EMPTY = new WireletPack(WireletList.EMPTY);
+
+    // Tror faktisk vi laver det udpacked array i en wirelet list..
+    // Fordi saa kan vi bare kopiere arrayet ind direkte her...
+    final Wirelet[] wirelets;
 
     // We might at some point, allow the setting of a default name...
     // In which we need to different between not-set and set to null
     String name; // kan komme i map... og saa saetter vi et flag istedet for...
 
-    /** Creates a new pack. */
-    private WireletPack() {}
+    int unconsumed;
 
-    /**
-     * @param w
-     */
-    private void create0(Wirelet w) {
-        if (w instanceof InternalWirelet bw) {
-            bw.process(this);
-        } else if (w instanceof WireletList wl) {
-            for (Wirelet ww : wl.wirelets) {
-                create0(ww);
+    /** Creates a new pack. */
+    WireletPack(Wirelet[] wirelets) {
+        this.wirelets = wirelets;
+        for (Wirelet w : wirelets) {
+            if (w instanceof InternalWirelet bw) {
+                bw.process(this);
             }
-        } else {
-            list.add(new ConsumableWirelet(w));
         }
     }
 
     public <T extends Wirelet> WireletHandle<T> handleOf(Module module, Class<? extends T> wireletClass) {
+        // Maaske skal vi have en caller med ala "Must be in the same module as"
         if (module != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
         }
+        // We should probably check if we have any matches first and return empty?
+        // Nah with primitive it should matter, we expect 1 run through anyway via
+        // consume all
         return new PackedWireletHandle<>(this, wireletClass);
     }
 
@@ -68,28 +67,6 @@ public /* primitive */ final class WireletPack {
     @Nullable
     public String nameWirelet() {
         return name;
-    }
-
-    /**
-     * Creates a new wirelet pack or returns existing if the array of wirelets is empty.
-     * 
-     * @param wirelets
-     *            the wirelets
-     * @return stuff
-     */
-    @Nullable
-    static WireletPack create(WireletPack parent, Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            return null;
-        }
-
-        WireletPack wc = new WireletPack();
-        for (Wirelet w : wirelets) {
-            requireNonNull(w, "wirelets contained a null");
-            wc.create0(w);
-        }
-        return wc;
     }
 
     public static <T extends Wirelet> WireletHandle<T> extensionHandle(WireletPack containerWirelets, Class<? extends Extension> extensionClass,
@@ -107,34 +84,26 @@ public /* primitive */ final class WireletPack {
 
     @Nullable
     public static WireletPack ofChild(@Nullable WireletPack parent, PackedComponentDriver<?> driver, Wirelet... wirelets) {
-        if (driver.modifiers().isContainer()) {
-            return create(parent, wirelets);
-        }
-        return null;
+        Wirelet[] ws = WireletList.flatten(wirelets);
+        return new WireletPack(ws);
     }
 
     @Nullable
     public static WireletPack ofImage(ComponentSetup component, Wirelet... wirelets) {
-        return create(null, wirelets);
+        Wirelet[] ws = WireletList.flatten(wirelets);
+        return new WireletPack(ws);
     }
 
     @Nullable
     public static WireletPack ofRoot(PackedApplicationDriver<?> pac, PackedComponentDriver<?> pcd, Wirelet... wirelets) {
-        Wirelet w = Wirelet.of(wirelets);
+        Wirelet[] ws;
         if (pac.wirelet != null) {
-            w = pac.wirelet.andThen(w);
+            requireNonNull(wirelets, "wirelets is null");
+            ws = WireletList.flatten(pac.wirelet, Wirelet.combine(wirelets));
+        } else {
+            ws = WireletList.flatten(wirelets);
         }
-        return create(null, w);
-    }
 
-    // An array on
-    public static class ConsumableWirelet {
-        public boolean isReceived;
-
-        public final Wirelet wirelet;
-
-        ConsumableWirelet(Wirelet wirelet) {
-            this.wirelet = requireNonNull(wirelet);
-        }
+        return new WireletPack(ws);
     }
 }

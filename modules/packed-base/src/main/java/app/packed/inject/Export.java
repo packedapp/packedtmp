@@ -6,8 +6,12 @@ package app.packed.inject;
 
 // Vi kan lave en custom type som returnere noget andet
 // Vi kan exportere 
-public @interface Export {
+@interface Export {
     Class<?>[] as() default {};
+    
+    // If empty it takes the value of @Provide
+    // Used standalone either this single value or defaults to Prototype
+    Provide2.Mul[] sd() default {};
 }
 
 // Problemet er den constant... Vi bliver ogsaa noedt til at have den her...

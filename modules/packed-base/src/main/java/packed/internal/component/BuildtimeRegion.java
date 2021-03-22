@@ -44,8 +44,8 @@ public final class BuildtimeRegion {
 
     public final Lifecycle lifecycle = new Lifecycle();
 
-    RuntimeRegion newRegion(PackedInitializationContext pic, PackedComponent root) {
-        RuntimeRegion region = new RuntimeRegion(nextIndex);
+    SlotTable newRegion(PackedInitializationContext pic, PackedComponent root) {
+        SlotTable region = new SlotTable(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().isContainerOld()) {

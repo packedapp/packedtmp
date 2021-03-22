@@ -37,7 +37,7 @@ import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 
 /**
- * Applications drivers are responsible for building application instances, for example, instances of {@link Program}.
+ * An application driver is responsible for analyzing and controlling the various lifecycle phases an application goes through.
  * <p>
  * Packed comes with a number of predefined application drivers If these are not sufficient, your best bet is to look at
  * the source code of them to create your own.
@@ -68,7 +68,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
-     * Assert
+     * Builds and validates the application
      * 
      * @param assembly
      *            the assembly to validate
@@ -190,7 +190,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     static Builder builder() {
-        return new Builder(); 
+        return new Builder();
     }
 
     /**
@@ -249,7 +249,7 @@ public /* sealed */ interface ApplicationDriver<A> {
 
         // Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
         // traekke det ud af service locatoren.
-        
+
         // Uhh uhhh species... Job<R> kan vi lave det???
 
         // Create an infuser (SomeExtension, Class)
@@ -272,17 +272,17 @@ public /* sealed */ interface ApplicationDriver<A> {
     static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
         return PackedApplicationDriver.of(caller, artifactType, mh);
     }
-    
+
     static <S> ApplicationDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
         throw new UnsupportedOperationException();
     }
-    
+
     class Builder {
         Builder addWirelet(Wirelet... wirelets) {
             return this;
         }
         // see laenger nede i ZApplicationDriverBuilders
-        
+
         <A> ApplicationDriver<A> build(Class<A> clazz) {
             throw new UnsupportedOperationException();
         }
@@ -290,7 +290,7 @@ public /* sealed */ interface ApplicationDriver<A> {
 }
 
 /**
- * Kigge paa at tilfoeje builders  til den...
+ * Kigge paa at tilfoeje builders til den...
  */
 interface ZApplicationDriverWithBuilder {
 

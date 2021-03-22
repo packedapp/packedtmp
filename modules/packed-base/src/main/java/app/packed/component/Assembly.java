@@ -51,13 +51,15 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
     /**
      * The configuration of this assembly.
      * <p>
-     * This field is updated via a VarHandle from {@link AssemblyHelper}. The value of this field goes through 3 states:
+     * The value of this field goes through 3 states:
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
      * <li>Then, as a part of the build process, it is initialized with the actual configuration object of the component.
      * <li>Finally, {@link AssemblyHelper#ASSEMBLY_USED} is set to indicate that the assembly has been used
      * </ul>
+     * <p>
+     * This field is updated via a VarHandle from {@link AssemblyHelper}.
      */
     @Nullable
     private Object configuration;
@@ -70,7 +72,7 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      * Creates a new assembly using the specified component driver.
      * 
      * @param driver
-     *            the driver used for constructing the configuration of this assembly
+     *            the driver used for constructing the configuration this assembly wraps
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
@@ -105,11 +107,6 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         return (C) c;
     }
 
-    protected final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
-        // Jeg ved ikke hvor tid vi har brug for den her...
-        throw new UnsupportedOperationException();
-    }
-    
     /**
      * The lookup object passed to this method is never made available through the public api. It is only used internally.
      * Unless your private
@@ -121,6 +118,9 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
+
+    protected final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
+        // Jeg ved ikke hvor tid vi har brug for den her...
+        throw new UnsupportedOperationException();
+    }
 }
-//// Design notices
-// We do not support $ methods because they can be seen by all subclasses.

@@ -107,7 +107,7 @@ final class PackedComponentRelation implements ComponentRelation {
     static ComponentRelation relation(PackedComponent from, PackedComponent to) {
         int fd = from.depth();
         int td = to.depth();
-        if (from.region == to.region) {
+        if (from.table == to.table) {
             if (fd == td) {
                 return new PackedComponentRelation(from, to, 0, from);
             }

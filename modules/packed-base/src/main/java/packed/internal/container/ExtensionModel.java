@@ -152,7 +152,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         // Okay same depth and name, is the same extension
-        if (m.extensionClass == extensionClass) { //class names are always interned
+        if (m.extensionClass == extensionClass) { // class names are always interned
             return 0;
         }
 
@@ -217,6 +217,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return sb.toString();
     }
 
+    /**
+     * @param callerClass
+     *            the calling class (must a proper subclass of Extension)
+     * @return
+     */
     public static Builder bootstrap(Class<?> callerClass) {
         return Loader.forBootstrapAccess(callerClass);
     }
@@ -234,7 +239,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         return MODELS.get(extensionClass);
     }
 
-    /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}.  */
+    /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}. */
     public static final class Builder {
 
         /** Whether or not we only connect to parent or all ancestors. */
@@ -349,10 +354,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * An (extension) loader is responsible for loading an extension and any of its dependencies (including transitive
+     * An extension loader is responsible for loading an extension and any of its dependencies (including transitive
      * dependencies) that have not already been loaded.
      * <p>
-     * We do not currently attempt to load extension concurrently, but instead use a single global lock.
+     * We do not currently attempt to load multiple extensions concurrently, but instead use a global lock.
      */
     private static final class Loader {
 
@@ -425,6 +430,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
 
         private static Builder forBootstrapAccess(Class<?> callerClass) {
+            // Think
             if (!Extension.class.isAssignableFrom(callerClass) || callerClass == Extension.class) {
                 throw new InternalExtensionException("This method can only be called directly from a subclass of Extension, caller was " + callerClass);
             }

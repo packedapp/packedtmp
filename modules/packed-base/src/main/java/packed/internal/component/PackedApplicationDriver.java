@@ -25,13 +25,13 @@ import java.util.function.Function;
 
 import app.packed.base.Completion;
 import app.packed.base.Nullable;
+import app.packed.component.ApplicationDriver;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
-import app.packed.component.ApplicationDriver;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.validate.Validation;
@@ -53,8 +53,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The initial set of modifiers for any system that uses this driver. */
     private final boolean isStateful;
 
-    /** The method handle used for creating new artifacts. */
-    private final MethodHandle mhNewShell; // (PackedInitializationContext)Object
+    /** The method handle used for creating new application instances. */
+    private final MethodHandle mhConstructor; // (PackedInitializationContext)Object
 
     /** May contain a wirelet that will be processed _after_ any other wirelets. */
     @Nullable
@@ -70,13 +70,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     public PackedApplicationDriver(boolean isStateful, MethodHandle mhNewShell) {
         this.isStateful = isStateful;
-        this.mhNewShell = requireNonNull(mhNewShell);
+        this.mhConstructor = requireNonNull(mhNewShell);
         this.wirelet = null;
     }
 
     private PackedApplicationDriver(boolean isStateful, MethodHandle newArtifactMH, Wirelet prefix) {
         this.isStateful = isStateful;
-        this.mhNewShell = requireNonNull(newArtifactMH);
+        this.mhConstructor = requireNonNull(newArtifactMH);
         this.wirelet = prefix;
     }
 
@@ -93,7 +93,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return the raw type of the artifacts that this driver creates
      */
     public Class<?> artifactRawType() {
-        return mhNewShell.type().returnType();
+        return mhConstructor.type().returnType();
     }
 
     /**
@@ -197,7 +197,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private A newArtifact(PackedInitializationContext pic) {
         try {
-            return (A) mhNewShell.invoke(pic);
+            return (A) mhConstructor.invoke(pic);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -227,8 +227,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationDriver<A> with(Wirelet... wirelets) {
-        Wirelet w = wirelet == null ? Wirelet.of(wirelets) : wirelet.andThen(wirelets);
-        return new PackedApplicationDriver<>(isStateful, mhNewShell, w);
+        Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
+        return new PackedApplicationDriver<>(isStateful, mhConstructor, w);
     }
 
     /** {@inheritDoc} */
@@ -236,7 +236,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public ApplicationDriver<A> with(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
         Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
-        return new PackedApplicationDriver<>(isStateful, mhNewShell, w);
+        return new PackedApplicationDriver<>(isStateful, mhConstructor, w);
     }
 
     // A method handle that takes an ArtifactContext and produces something that is compatible with A

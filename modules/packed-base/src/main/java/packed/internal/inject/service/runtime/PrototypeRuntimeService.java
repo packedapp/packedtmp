@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.component.RuntimeRegion;
+import packed.internal.component.SlotTable;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.ThrowableUtil;
 
@@ -32,12 +32,12 @@ public final class PrototypeRuntimeService extends RuntimeService {
     private final MethodHandle mh;
 
     /** The region used when creating new instances. */
-    private final RuntimeRegion region;
+    private final SlotTable region;
 
     /**
      * @param service
      */
-    public PrototypeRuntimeService(BuildtimeService service, RuntimeRegion region, MethodHandle mh) {
+    public PrototypeRuntimeService(BuildtimeService service, SlotTable region, MethodHandle mh) {
         super(service);
         this.region = requireNonNull(region);
         this.mh = requireNonNull(mh);

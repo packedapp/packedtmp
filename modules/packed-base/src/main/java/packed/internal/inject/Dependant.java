@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.component.BuildtimeRegion;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.RuntimeRegion;
+import packed.internal.component.SlotTable;
 import packed.internal.component.source.SourceClassSetup;
 import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.MemberHookModel;
@@ -129,7 +129,7 @@ public class Dependant {
         }
 
         if (providers.length == 0) {
-            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, RuntimeRegion.class);
+            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, SlotTable.class);
         } else if (providers.length == 1) {
             requireNonNull(providers[0]);
             System.out.println(providers[0].getClass());
@@ -145,7 +145,7 @@ public class Dependant {
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), RuntimeRegion.class);
+            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), SlotTable.class);
             return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[providers.length]);
         }
     }

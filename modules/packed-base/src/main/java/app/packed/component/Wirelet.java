@@ -18,15 +18,15 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
-import packed.internal.component.wirelet.InternalWirelet;
 import packed.internal.component.wirelet.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletList;
-import packed.internal.component.wirelet.WireletPreModel;
+import packed.internal.component.wirelet.WireletModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**
- * A wirelet is a small piece of "glue code" that can be specified when wiring a component. Wirelets are typically used
- * to debug foobar, sdsd.
+ * A wirelet is a small piece of "glue code" that can be specified when wiring a component.
+ * <p>
+ * Wirelets are typically used to debug foobar, sdsd.
  * 
  * , that is used to wire together the components that make up your program. connect, wire, instantiate, debug your
  * applications.
@@ -62,62 +62,54 @@ import packed.internal.util.StackWalkerUtil;
 public abstract class Wirelet {
 
     /**
-     * Returns a composed wirelet that performs, in sequence, this operation followed by the {@code after} operation. If
-     * performing either operation throws an exception, it is relayed to the caller of the composed operation. If performing
-     * this operation throws an exception, the {@code after} operation will not be performed.
+     * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by the {@code after} wirelet.
      * 
-     * @param wirelet
+     * @param after
      *            the wirelet to process after this wirelet
-     * @return the composed wirelet
-     * @see #andThen(Wirelet)
+     * @return the combined wirelet
      * @see #andThen(Wirelet...)
      * @see #beforeThis(Wirelet...)
      * @see #of(Wirelet...)
      */
-    public final Wirelet andThen(Wirelet wirelet) {
-        requireNonNull(wirelet, "wirelet is null");
-        return WireletList.of(this, wirelet);
+    public final Wirelet andThen(Wirelet after) {
+        requireNonNull(after, "after is null");
+        return new WireletList(WireletList.flatten(this, after));
     }
 
     /**
+     * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by each of the specified wirelets.
+     * <p>
+     * If the specified array is empty, returns this wirelet.
      * 
-     * @param wirelets
+     * @param afters
      *            the wirelets to process after this wirelet
      * @return the combined wirelet
-     */
-    public final Wirelet andThen(Wirelet... wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            return this;
-        }
-        return WireletList.of(this, wirelets);
-    }
-
-    /**
-     * @param wirelets
-     *            wirelets
-     * @return stuff
      * @see #andThen(Wirelet)
-     * @see #andThen(Wirelet...)
+     * @see #beforeThis(Wirelet...)
      * @see #of(Wirelet...)
      */
-    public final Wirelet beforeThis(Wirelet... wirelets) {
-        return WireletList.of(wirelets, this);
+    public final Wirelet andThen(Wirelet... afters) {
+        requireNonNull(afters, "afters is null");
+        return new WireletList(WireletList.flatten(this, combine(afters)));
     }
 
     /**
-     * This
+     * Returns a combined wirelet that behaves, in sequence, as each of the specified wirelets followed by this wirelet.
+     * <p>
+     * If the specified array is empty, returns this wirelet.
      * 
-     * @param modifiers
+     * @param befores
+     *            the wirelets to process before this wirelet
+     * @return the combined wirelet
+     * @see #andThen(Wirelet)
+     * @see #beforeThis(Wirelet...)
+     * @see #of(Wirelet...)
      */
-    protected void unhandled(ComponentModifierSet modifiers) {
-        // if package does not start with app.packed
-        // Did you remember to annotated with @ExtensionMember
+    public final Wirelet beforeThis(Wirelet... befores) {
+        requireNonNull(befores, "befores is null");
+        return new WireletList(WireletList.flatten(combine(befores), this));
     }
 
-    // Skal vi tage en Component???
-    // Eller kan vi kun validere med modifiers...
-    protected final void validate() {}
 
     // cannot be consumed individually. Only as either
     // List or Set....
@@ -126,7 +118,7 @@ public abstract class Wirelet {
     // Can only be a part of one aggregate type...
     // And can only be injected as an aggregate type
     protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
-        WireletPreModel.stackBy(StackWalkerUtil.SW.getCallerClass(), wireletType);
+        WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).stackBy(wireletType);
     }
 
     /**
@@ -144,7 +136,7 @@ public abstract class Wirelet {
      * bruge @Provide naar vi linker assemblies...
      */
     protected static final void $buildtimeOnly() {
-        WireletPreModel.buildtimeOnly(StackWalkerUtil.SW.getCallerClass());
+        WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).buildtimeOnly();
     }
 
     // Ideen er man ikke kan angives paa rod niveau
@@ -160,13 +152,14 @@ public abstract class Wirelet {
         // Hvad hvis vi koere composer.lookup()...
         // Saa laver vi jo saadan set en realm...
     }
-    
-    protected static final void $stackable() {}
-    
+
     /** Attempting to wire a non-container component with this wirelet will fail. */
     protected static final void $requireContainer() {}
 
-    /** Attempting to wire a non-container component or a container component that is not the root with this wirelet will fail. */
+    /**
+     * Attempting to wire a non-container component or a container component that is not the root with this wirelet will
+     * fail.
+     */
     protected static final void $requireContainerNonRoot() {}
 
     /** The wirelet can only be used on the root container in a namespace. */
@@ -178,46 +171,27 @@ public abstract class Wirelet {
         throw new UnsupportedOperationException();
     }
 
+    protected static final void $stackable() {}
+
     // Altsaa den ville vaere god for MainArgsWirelet...
     // Folk maa gerne smide en MainArgsWirelet ind.
     // Vi kan nemlig ikke rigtig wrappe den.
     // Da det ikke er en statisk metode.
 
-    public static Wirelet extractable(Wirelet wirelet) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
-     * Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually consume it
-     * using {@link WireletHandle}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
-     * However, by wrapping the wire
+     * Returns a combined wirelet that behaves, in sequence, as each of the specified wirelets.
      * 
-     * @param wirelet
-     *            the wirelet to wrap
-     * @return a new wrapped wirelet
+     * @param wirelets
+     *            the wirelets to combine
+     * @return the combined wirelet
+     * @see #andThen(Wirelet)
+     * @see #andThen(Wirelet...)
+     * @see #beforeThis(Wirelet...)
      */
-    // Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
-    public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
-        return new InternalWirelet.IgnoreUnhandled(of(wirelet));
+    public static Wirelet combine(Wirelet... wirelets) {
+        return new WireletList(WireletList.flatten(wirelets));
     }
 
-    // will invoke the specified runnable if the wirelet cannot be processed
-    // could be Wirelet.orElseRun(Runnable)...
-    // orElseIgnore();
-    // andThen()
-    public static Wirelet ignoreUnhandled(Wirelet wirelet, Runnable orElseRun) {
-        return new InternalWirelet.IgnoreUnhandled(of(wirelet));
-    }
-
-    static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
-        // Ideen er lidt at vi kan bruge den til at teste ting vi wrapper...
-        // Eftersom folk kan smide dem i forskellige wrapper wirelets
-        // such as combine and ignoreUnceceived
-        if (wirelets.length == 0) {
-            return true;
-        }
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
@@ -233,22 +207,60 @@ public abstract class Wirelet {
     public static Wirelet named(String name) {
         return new SetComponentNameWirelet(name);
     }
-
-    /**
-     * Combines an array of wirelets into a single wirelet. Packed will automatically unpack any combined wirelets when
-     * specified
-     * 
-     * @param wirelets
-     *            the wirelets to combine
-     * @return a combined {@code Wirelet}
-     * @see #andThen(Wirelet)
-     * @see #andThen(Wirelet...)
-     * @see #beforeThis(Wirelet...)
-     */
-    public static Wirelet of(Wirelet... wirelets) {
-        return WireletList.of(wirelets);
-    }
 }
+///**
+//* This
+//* 
+//* @param modifiers
+//*/
+//// Tror ikke vi bruger den her
+//protected void unhandled(ComponentModifierSet modifiers) {
+// // if package does not start with app.packed
+// // Did you remember to annotated with @ExtensionMember
+//}
+//
+//// Skal vi tage en Component???
+//// Eller kan vi kun validere med modifiers...
+//protected final void validate() {}
+
+//
+//static boolean isAllAssignableTo(Class<? extends Wirelet> c, Wirelet... wirelets) {
+//  // Ideen er lidt at vi kan bruge den til at teste ting vi wrapper...
+//  // Eftersom folk kan smide dem i forskellige wrapper wirelets
+//  // such as combine and ignoreUnceceived
+//  if (wirelets.length == 0) {
+//      return true;
+//  }
+//  throw new UnsupportedOperationException();
+//}
+//public static Wirelet extractable(Wirelet wirelet) {
+//throw new UnsupportedOperationException();
+//}
+//
+///**
+//* Normally a wirelet must be handled. Meaning that the runtime, an extension or some user code must actually consume it
+//* using {@link WireletHandle}. If this is not possible a runtime exception will be thrown when specifying the wirelet.
+//* However, by wrapping the wire
+//* 
+//* @param wirelet
+//*            the wirelet to wrap
+//* @return a new wrapped wirelet
+//*/
+//// Handled??? Unhandled (hmmm does not work VarHandle, MethodHandle)
+//
+//// Vi gider ikke have dem her.. fordi vi ikke gider have wirelets pakket ind i alt muligt...
+//// Istedet skal alle informationer vaere statiske
+//public static Wirelet ignoreUnhandled(Wirelet... wirelet) {
+//  return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
+//}
+//
+//// will invoke the specified runnable if the wirelet cannot be processed
+//// could be Wirelet.orElseRun(Runnable)...
+//// orElseIgnore();
+//// andThen()
+//public static Wirelet ignoreUnhandled(Wirelet wirelet, Runnable orElseRun) {
+//  return new InternalWirelet.IgnoreUnhandled(combine(wirelet));
+//}
 
 //protected ComponentSystemType scope() {
 //  // Does not work with combine..

@@ -16,13 +16,13 @@
 package app.packed.component;
 
 /**
- * Application images are immutable ahead-of-time configured component systems. By configuring an system ahead of time,
- * the actual time to instantiation the system can be severely decreased often down to a couple of microseconds. In
- * addition to this, images can be reusable, so you can create multiple systems from a single image.
+ * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
+ * ahead of time, the actual time to instantiation the system can be severely decreased often down to a couple of
+ * microseconds. In addition to this, images can be reusable, so you can create multiple systems from a single image.
  * <p>
- * Application images typically have to main use cases
+ * Application images typically have two main use cases:
  * 
- * GraalVM
+ * GraalVM Native Image
  * 
  * Recurrent instantiation of the same application.
  * 
@@ -38,8 +38,8 @@ package app.packed.component;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.component.Program} or other artifact
- * images. Artifact images can not be used as a part of other containers, for example, via
+ * An image can be used to create new instances of {@link app.packed.component.Program} or other artifact images.
+ * Artifact images can not be used as a part of other containers, for example, via
  * 
  * @see Program#buildImage(Assembly, Wirelet...)
  */
@@ -50,14 +50,16 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
      * 
      * @return the root component of the image
      */
-    Component component();
+    Component component(); // IDK put it is an attribute???
 
     /**
-     * Uses the image. What happens here is dependent on application driver that created the image.
+     * Uses the image. What happens here is dependent on application driver that created the image. The behaviour of this
+     * method is identical to {@link ApplicationDriver#use(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets
      * @return the result of using the image
+     * @see {@link ApplicationDriver#use(Assembly, Wirelet...)}
      */
     A use(Wirelet... wirelets);
 }

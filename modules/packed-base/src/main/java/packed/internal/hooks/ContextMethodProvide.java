@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.RuntimeRegion;
+import packed.internal.component.SlotTable;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
 
@@ -45,7 +45,7 @@ public final class ContextMethodProvide implements DependencyProvider {
     private ContextMethodProvide(AbstractHookBootstrapModel<?> sidecarModel, Builder builder) {
         this.key = builder.key;
         this.sidecarModel = sidecarModel;
-        this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, RuntimeRegion.class);
+        this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, SlotTable.class);
     }
 
     /** {@inheritDoc} */

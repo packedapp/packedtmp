@@ -77,6 +77,7 @@ import app.packed.hooks.RealMethodSidecarBootstrap;
 @Documented
 @FieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 @MethodHook(matchesAnnotation = Provide.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+// @Provide(Constant) , @Provide(Lazy), @Provide(EVERYTIME) -> Constant early, Lazy (volatile storage) <-- kan jo godt skrive laese volatile i et object array 
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
@@ -98,6 +99,25 @@ public @interface Provide {
      * @return whether or not the provided value is a constant
      */
     boolean constant() default false;
+}
+
+@interface Provide2 {
+    
+    Mul value() default Mul.NO_CACHING;
+    
+    enum Mul {
+        CONSTANT,
+        LAZY,
+        NO_CACHING;
+    }
+}
+
+// visibility is an array to allow it to be used with @Provide
+// In which it will use the value
+// If it is used standalone without @Provide Mul 
+@interface Exported2 {
+    // as
+    // Mul[] visibility() defaull []);
 }
 
 /** A field sidecar for {@link Provide}. */

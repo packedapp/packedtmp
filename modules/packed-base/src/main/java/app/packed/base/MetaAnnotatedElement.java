@@ -110,7 +110,6 @@ public interface MetaAnnotatedElement {
     }
 
     // Vi cacher ikke
-    
     // Enhver annotation maa have 
     
     /**
@@ -122,6 +121,8 @@ public interface MetaAnnotatedElement {
      * @return a meta annotated element
      */
     static MetaAnnotatedElement of(MethodHandles.Lookup lookup, AnnotatedElement element) {
+        // What do we about meta annotations that are not readable???
+        // I think we should just silently filter them...
         throw new UnsupportedOperationException();
     }
     
