@@ -1,4 +1,4 @@
-package packed.internal.component.wirelet;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 

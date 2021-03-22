@@ -66,7 +66,7 @@ public final class AssemblyHelper {
      * @param configuration
      *            the configuration object to set before invoking the build method
      */
-    static void invokeAssemblyBuild(Assembly<?> assembly, Object configuration) {
+    static void invokeBuild(Assembly<?> assembly, Object configuration) {
         // We perform a compare and exchange. Guarding against concurrent usage of this assembly.
         // I actually don't think we need to use volatile...IDK
         // I'm pretty sure you will get an exception one way or the other... 

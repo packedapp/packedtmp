@@ -23,7 +23,6 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.util.LookupUtil;
 
@@ -49,14 +48,14 @@ public final class PackedInitializationContext {
     /** A MethodHandle for invoking {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
 
-    /** The component node we are building. */
+    /** The runtime component node we are building. */
     PackedComponent component;
 
     final ComponentSetup root;
 
-    private final WireletPack wirelets;
+    private final WireletWrapper wirelets;
 
-    private PackedInitializationContext(ComponentSetup root, WireletPack wirelets) {
+    private PackedInitializationContext(ComponentSetup root, WireletWrapper wirelets) {
         this.root = root;
         this.wirelets = wirelets;
     }
@@ -116,13 +115,13 @@ public final class PackedInitializationContext {
      * 
      * @return a list of wirelets that used to instantiate
      */
-    public WireletPack wirelets() {
+    public WireletWrapper wirelets() {
         return wirelets;
     }
 
     static PackedInitializationContext process(ComponentSetup root, Wirelet[] imageWirelets) {
         PackedInitializationContext pic = new PackedInitializationContext(root,
-                root.build.isImage() ? WireletPack.ofImage(root, imageWirelets) : root.wirelets);
+                root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : root.wirelets);
 
         // Instantiates the whole component tree (well @Initialize does not yet work)
         // pic.component is set from PackedComponent

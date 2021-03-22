@@ -51,7 +51,6 @@ import packed.internal.base.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.RealmSetup;
 import packed.internal.component.source.SourceClassSetup;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
@@ -62,7 +61,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
     /** Wirelets that was specified when creating the component. */
     @Nullable
-    public final WireletPack wirelets;
+    public final WireletWrapper wirelets;
 
     /** The modifiers of this component. */
     final int modifiers;
@@ -114,7 +113,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, @Nullable WireletPack wirelets) {
+    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, @Nullable WireletWrapper wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
 
@@ -308,34 +307,28 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @apiNote Previously this method returned the specified assembly. However, to encourage people to configure the
      *          assembly before calling this method: link(MyAssembly().setStuff(x)) instead of
      *          link(MyAssembly()).setStuff(x) we now have void return type. Maybe in the future we will introduce some kind
-     *          of LinkedAssembly
-     * 
-     * @implNote We can do linking (calling assembly.configure) in two ways. Immediately, or later after the parent has been
-     *           fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite loop
-     *           situations, for example, if a assembly recursively links itself which fails by throwing
-     *           java.lang.StackOverflowError instead of an infinite loop.
+     *          of LinkedAssembly.
      */
     @Override
     public void link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
 
-        // Create a wirelet pack from any inherited wirelets and any specified wirelets
-        WireletPack wp = WireletPack.ofChild(driver, wirelets);
+        // Create a wirelet wrapper from the specified wirelets
+        WireletWrapper ww = WireletWrapper.forComponent(driver, wirelets);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
         ComponentSetup parent = extension == null ? this : treeParent; // treeParent is always a container if extension!=null
 
-        // Create the new component and a new realm
-        ComponentSetup compConf = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, parent, wp);
+        // Create a new component and a new realm
+        ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, parent, ww);
 
         // Invoke Assembly::build
-        AssemblyHelper.invokeAssemblyBuild(assembly, driver.toConfiguration(compConf));
+        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component));
 
         // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
-        // Maybe we should have close on the realm instead???
-        compConf.close();
+        component.close();
     }
 
     /** {@inheritDoc} */
@@ -482,7 +475,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
-        WireletPack wp = WireletPack.ofChild(d, wirelets);
+        WireletWrapper wp = WireletWrapper.forComponent(d, wirelets);
         // ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         // When an extension adds new components they are added to the container (the extension's parent)

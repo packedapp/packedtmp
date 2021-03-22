@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import packed.internal.component.wirelet.PackedWireletHandle;
+import packed.internal.component.PackedWireletHandle;
 
 // @DynamicInject
 

@@ -36,7 +36,6 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.validate.Validation;
 import packed.internal.component.source.RealmSetup;
-import packed.internal.component.wirelet.WireletPack;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
@@ -109,10 +108,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> componentDriver = AssemblyHelper.getDriver(assembly);
+        PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
 
         // Process all wirelets
-        WireletPack wp = WireletPack.ofRoot(this, componentDriver, wirelets);
+        WireletWrapper wp = WireletWrapper.forApplication(this, driver, wirelets);
 
         int modifiers = 0;
 
@@ -131,11 +130,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         BuildSetup build = new BuildSetup(this, modifiers);
 
         // Create the root component
-        ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(assembly.getClass()), componentDriver, null, wp);
-        Object conf = componentDriver.toConfiguration(component);
-        AssemblyHelper.invokeAssemblyBuild(assembly, conf); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
-
+        ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, null, wp);
+        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component)); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
         component.close();
+
         return build;
     }
 
@@ -166,7 +164,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     public <CO extends Composer<?>, CC extends ComponentConfiguration> BuildSetup compose0(PackedComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        WireletPack wp = WireletPack.ofRoot(this, componentDriver, wirelets);
+        WireletWrapper wp = WireletWrapper.forApplication(this, componentDriver, wirelets);
 
         BuildSetup build = new BuildSetup(this, 0);
 

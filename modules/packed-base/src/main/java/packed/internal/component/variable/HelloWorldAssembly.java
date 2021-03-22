@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.component.variable;
 
 import app.packed.cli.Main;
 import app.packed.component.ComponentStream;
@@ -34,7 +34,6 @@ public class HelloWorldAssembly extends BaseAssembly {
     public static void main(String[] args) {
         Main.run(new HelloWorldAssembly());
         ComponentStream.of(new HelloWorldAssembly()).forEach(c -> System.out.println(c.path()));
-        //ComponentSystem.forEach(new HelloWorldAssembly(), c -> System.out.println(c.path()));
     }
 
     public static class HelloWorld {

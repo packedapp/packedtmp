@@ -29,12 +29,13 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.component.SlotTableSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedComponent;
+import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.SlotTable;
-import packed.internal.component.wirelet.WireletPack;
+import packed.internal.component.SlotTableSetup;
+import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.Requirement.FromInjectable;
 import packed.internal.inject.service.build.BuildtimeService;
@@ -240,9 +241,9 @@ public final class ServiceManagerSetup {
             for (ContainerSetup c : container.children) {
                 ServiceManagerSetup child = c.getServiceManager();
 
-                WireletPack wirelets = c.component.wirelets;
+                WireletWrapper wirelets = c.component.wirelets;
                 if (wirelets != null) {
-                    wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service1stPassWirelet.class).consumeEach(w -> w.process(child));
+                    PackedWireletHandle.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
                 }
 
                 if (child != null && child.exports != null) {
@@ -291,11 +292,11 @@ public final class ServiceManagerSetup {
         }
 
         System.out.println("HMMM " + map);
-        WireletPack wirelets = container.component.wirelets;
+        WireletWrapper wirelets = container.component.wirelets;
 
         if (wirelets != null) {
             // For now we just ignore the wirelets
-            wirelets.handleOf(Service1stPassWirelet.class.getModule(), Service2ndPassWirelet.class).consumeEach(w -> w.process(parent, this, map));
+            PackedWireletHandle.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
         }
 
         // If Processere wirelets...

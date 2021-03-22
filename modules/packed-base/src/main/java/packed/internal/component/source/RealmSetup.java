@@ -23,6 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Composer;
 import app.packed.container.Extension;
+import packed.internal.component.ComponentSetup;
 
 /**
  *
@@ -34,6 +35,8 @@ public final class RealmSetup {
 
     private final Class<?> realmType;
 
+    public ComponentSetup current;
+    
     public RealmSetup(Class<?> realmType) {
         this.realmType = requireNonNull(realmType);
     }

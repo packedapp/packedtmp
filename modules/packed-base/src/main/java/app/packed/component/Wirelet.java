@@ -18,9 +18,9 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
+import packed.internal.component.WireletList;
+import packed.internal.component.WireletModel;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
-import packed.internal.component.wirelet.WireletList;
-import packed.internal.component.wirelet.WireletModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**

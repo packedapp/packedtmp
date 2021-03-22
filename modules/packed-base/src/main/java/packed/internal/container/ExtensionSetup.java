@@ -38,7 +38,8 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.wirelet.WireletPack;
+import packed.internal.component.PackedWireletHandle;
+import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -280,7 +281,17 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletClass) {
-        return WireletPack.extensionHandle(container.component.wirelets, model.extensionClass(), wireletClass);
+        requireNonNull(wireletClass, "wireletClass is null");
+        Module m = model.extensionClass().getModule();
+        if (m != wireletClass.getModule()) {
+            throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + model.name()
+                    + ", module of wirelet was " + wireletClass.getModule());
+        }
+        WireletWrapper wirelets = container.component.wirelets;
+        if (wirelets == null) {
+            return WireletHandle.of();
+        }
+        return new PackedWireletHandle<>(wirelets, wireletClass);
     }
 
     /**

@@ -26,12 +26,12 @@ import java.util.function.Supplier;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Realm;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
@@ -71,6 +71,9 @@ import packed.internal.util.ThrowableUtil;
  */
 // Maaske har vi findDescendent(Class<? extends Extension>)
 
+// bootstrapConfig
+//// dependsOn(Codegen)
+
 // Extension State
 //// Instantiate
 //// Link
@@ -83,8 +86,8 @@ public abstract class Extension extends Realm {
      * The configuration of this extension. This field should never be read directly, but only accessed via
      * {@link #configuration()}.
      * 
-     * @apiNote This field is not nulled out after the extensions has been configured to allow for calling methods such as
-     *          {@link #checkConfigurable()} after configuration is completed.
+     * @apiNote This field is not nulled out after the extension has been configured. This allows for invoking methods such
+     *          as {@link #checkConfigurable()} after the configuration is complete.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -321,11 +324,23 @@ public abstract class Extension extends Realm {
     // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
     // onFinish cannot add new extensions...
 
+    protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+
     protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
         // Bliver kaldt hvis den specificeret
         // Registeres ogsaa som dependeenc
         // $ = Static Init (s + i = $)
+    }
+
+    protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
+
+    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
+        throw new Error();
+    }
+
+    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
+        throw new Error();
     }
 
     /**
@@ -354,18 +369,6 @@ public abstract class Extension extends Realm {
     protected static void $dependsOn(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
     }
-
-    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
-        throw new Error();
-    }
-
-    protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
-        throw new Error();
-    }
-
-    protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
-
-    protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
     /**
      * Registers an optional dependency of this extension. The extension
