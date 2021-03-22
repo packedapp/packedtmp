@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.wirelet;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,26 +25,13 @@ import app.packed.component.Wirelet;
 // Tror meningen er at smide ind i .component igen...
 public abstract class InternalWirelet extends Wirelet {
 
-    abstract void process(WireletPack c);
+    protected abstract void firstPass(ComponentSetup c);
 
-
-    /** Internal use only. */
-    protected static final void $targetImage() {
-        // Only on images
-        // Altsaa kan end-useren overhoved bruge den??
-        // Det tror jeg ikke..
-        // Maaske har vi en internalWirelet som vi kan overskrive...
-        // Og den kan saa if (wp.isImage!=) {
-        // Du er en klovn...
-        //
-    }
-
-    
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
     public static final class SetComponentNameWirelet extends InternalWirelet {
 
         /** The (checked) name to override with. */
-        final String name;
+        public final String name;
 
         /**
          * Creates a new option
@@ -54,12 +41,6 @@ public abstract class InternalWirelet extends Wirelet {
          */
         public SetComponentNameWirelet(String name) {
             this.name = checkName(name);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        void process(WireletPack c) {
-            c.name = name;// will override any name set previously
         }
 
         /**
@@ -76,25 +57,11 @@ public abstract class InternalWirelet extends Wirelet {
             }
             return name;
         }
-    }
 
-    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class IgnoreUnhandled extends InternalWirelet {
-
-        final Wirelet wirelet;
-
-        /**
-         * Creates a new option
-         * 
-         */
-        public IgnoreUnhandled(Wirelet wirelet) {
-            this.wirelet = requireNonNull(wirelet);
-        }
-
-        /** {@inheritDoc} */
         @Override
-        void process(WireletPack c) {
-
+        protected void firstPass(ComponentSetup c) {
+            c.nameState = ComponentSetup.NAME_INITIALIZED_WITH_WIRELET;
+            c.name = name;
         }
     }
 }

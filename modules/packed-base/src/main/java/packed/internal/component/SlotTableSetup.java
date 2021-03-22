@@ -28,7 +28,7 @@ import packed.internal.util.ThrowableUtil;
 // Vi gemmer alt det her i en region...
 // Fordi raekkefoelgen af initialisering gaar paa tvaers af containere
 // Idet de kan dependende paa hinanden
-public final class BuildtimeRegion {
+public final class SlotTableSetup {
 
     /** Components that contains constants that should be stored in a region. Is only written by {@link SourceClassSetup}. */
     public final ArrayList<SourceClassSetup> constants = new ArrayList<>();

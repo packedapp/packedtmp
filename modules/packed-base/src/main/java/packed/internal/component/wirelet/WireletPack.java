@@ -28,29 +28,22 @@ import packed.internal.component.PackedComponentDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
 // Time to put this on component????
-public /* primitive */ final class WireletPack {
+public final class WireletPack {
 
     static final WireletPack EMPTY = new WireletPack(WireletList.EMPTY);
 
     // Tror faktisk vi laver det udpacked array i en wirelet list..
     // Fordi saa kan vi bare kopiere arrayet ind direkte her...
-    final Wirelet[] wirelets;
-
-    // We might at some point, allow the setting of a default name...
-    // In which we need to different between not-set and set to null
-    String name; // kan komme i map... og saa saetter vi et flag istedet for...
+    public final Wirelet[] wirelets;
 
     int unconsumed;
 
     /** Creates a new pack. */
     WireletPack(Wirelet[] wirelets) {
         this.wirelets = wirelets;
-        for (Wirelet w : wirelets) {
-            if (w instanceof InternalWirelet bw) {
-                bw.process(this);
-            }
-        }
     }
+    
+    
 
     public <T extends Wirelet> WireletHandle<T> handleOf(Module module, Class<? extends T> wireletClass) {
         // Maaske skal vi have en caller med ala "Must be in the same module as"
@@ -63,11 +56,6 @@ public /* primitive */ final class WireletPack {
         return new PackedWireletHandle<>(this, wireletClass);
     }
 
-    // That name wirelet.. should only be used by the top-container....
-    @Nullable
-    public String nameWirelet() {
-        return name;
-    }
 
     public static <T extends Wirelet> WireletHandle<T> extensionHandle(WireletPack containerWirelets, Class<? extends Extension> extensionClass,
             Class<? extends T> wireletClass) {
@@ -83,7 +71,7 @@ public /* primitive */ final class WireletPack {
     }
 
     @Nullable
-    public static WireletPack ofChild(@Nullable WireletPack parent, PackedComponentDriver<?> driver, Wirelet... wirelets) {
+    public static WireletPack ofChild(PackedComponentDriver<?> driver, Wirelet... wirelets) {
         Wirelet[] ws = WireletList.flatten(wirelets);
         return new WireletPack(ws);
     }

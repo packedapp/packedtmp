@@ -25,7 +25,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.BuildtimeRegion;
+import packed.internal.component.SlotTableSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.SlotTable;
 import packed.internal.component.source.SourceClassSetup;
@@ -175,7 +175,7 @@ public class Dependant {
     }
 
     // All dependencies have been successfully resolved
-    public void onAllDependenciesResolved(BuildtimeRegion region) {
+    public void onAllDependenciesResolved(SlotTableSetup region) {
         // If analysis we should not need to create method handles...
 
         // If the injectable is a constant we need should to store an instance of it in the runtime region.

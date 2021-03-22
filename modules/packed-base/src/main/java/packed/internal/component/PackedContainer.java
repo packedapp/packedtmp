@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.state.Host;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
-import packed.internal.component.BuildtimeRegion.Lifecycle;
+import packed.internal.component.SlotTableSetup.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -139,7 +139,7 @@ public class PackedContainer implements Host {
             lock.unlock();
         }
 
-        Lifecycle l = component.region.lifecycle;
+        Lifecycle l = component.table.lifecycle;
         if (!l.hasExecutionBlock()) {
             return; // runnint as deamon
         }

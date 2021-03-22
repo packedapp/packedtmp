@@ -48,9 +48,9 @@ import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.base.attribute.PackedAttributeModel.Attt;
+import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.RealmSetup;
 import packed.internal.component.source.SourceClassSetup;
-import packed.internal.component.wirelet.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.wirelet.WireletPack;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
@@ -60,7 +60,7 @@ import packed.internal.util.ThrowableUtil;
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implements ComponentConfigurationContext {
 
-    /** Any wirelets that was specified by the user when creating this configuration. */
+    /** Wirelets that was specified when creating the component. */
     @Nullable
     public final WireletPack wirelets;
 
@@ -69,8 +69,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
     /* *************** Setup **************** */
 
-    /** The region this component is a part of. */
-    public final BuildtimeRegion region;
+    /** The slot table this component is a part of. */
+    public final SlotTableSetup table;
 
     /** The realm this component belongs to. */
     public final RealmSetup realm;
@@ -91,21 +91,22 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Nullable
     public final SourceClassSetup source;
 
+    /** The build this component is part of. */
+    public final BuildSetup build;
+
     /**************** See how much of this we can get rid of. *****************/
 
     boolean isClosed = false;
 
     int nameState;
 
-    private static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
-    private static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
-    private static final int NAME_GET = 1 << 16; // true if joiner waiting
-    private static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
-    private static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
+    static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
+    static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
+    static final int NAME_GET = 1 << 16; // true if joiner waiting
+    static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
+    static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
 
-    private static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
-
-    final BuildSetup build;
+    static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
 
     /**
      * Creates a new instance of this class
@@ -119,11 +120,16 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         this.build = requireNonNull(build);
         this.wirelets = wirelets;
+        for (Wirelet w : wirelets.wirelets) {
+            if (w instanceof InternalWirelet bw) {
+                bw.firstPass(this);
+            }
+        }
 
         int mod = driver.modifiers;
-        
+
         if (parent == null) {
-            this.region = new BuildtimeRegion(); // Root always needs a nodestore
+            this.table = new SlotTableSetup(); // Root always needs a nodestore
 
             mod = mod | build.modifiers;
             // mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
@@ -132,7 +138,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINEROLD);
             }
         } else {
-            this.region = driver.modifiers().isContainerOld() ? new BuildtimeRegion() : parent.region;
+            this.table = driver.modifiers().isContainerOld() ? new SlotTableSetup() : parent.table;
         }
         this.modifiers = mod;
 
@@ -149,7 +155,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup Guest
         if (modifiers().isContainerOld()) {
-            region.reserve(); // reserve a slot to an instance of PackedGuest
+            table.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
         // Setup any source
@@ -179,7 +185,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.extension = new ExtensionSetup(this, extensionModel);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel.extensionClass());
-        this.region = parent.region;
+        this.table = parent.table;
         this.source = null;
         this.wirelets = null;
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
@@ -273,7 +279,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         if (container != null) {
-            container.close(region);
+            container.close(table);
         }
         isClosed = true;
     }
@@ -300,8 +306,9 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * {@inheritDoc}
      * 
      * @apiNote Previously this method returned the specified assembly. However, to encourage people to configure the
-     *          assembly before calling this method: link(MyAssembly().setStuff(x)) instead of link(MyAssembly()).setStuff(x) we
-     *          now have void return type. Maybe in the future we will introduce some kind of LinkedAssembly
+     *          assembly before calling this method: link(MyAssembly().setStuff(x)) instead of
+     *          link(MyAssembly()).setStuff(x) we now have void return type. Maybe in the future we will introduce some kind
+     *          of LinkedAssembly
      * 
      * @implNote We can do linking (calling assembly.configure) in two ways. Immediately, or later after the parent has been
      *           fully configured. We choose immediately because of nicer stack traces. And we also avoid some infinite loop
@@ -314,7 +321,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
 
         // Create a wirelet pack from any inherited wirelets and any specified wirelets
-        WireletPack wp = WireletPack.ofChild(this.wirelets, driver, wirelets);
+        WireletPack wp = WireletPack.ofChild(driver, wirelets);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
@@ -396,12 +403,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     private void setName0(String newName) {
         String n = newName;
         if (newName == null) {
-            if (wirelets != null) {
-                String nameName = wirelets.nameWirelet();
-                if (nameName != null) {
-                    nameState = NAME_INITIALIZED_WITH_WIRELET;
-                    n = nameName;
-                }
+            if (nameState == NAME_INITIALIZED_WITH_WIRELET) {
+                n = name;
             }
         }
 
@@ -479,7 +482,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
-        WireletPack wp = WireletPack.ofChild(this.wirelets, d, wirelets);
+        WireletPack wp = WireletPack.ofChild(d, wirelets);
         // ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         // When an extension adds new components they are added to the container (the extension's parent)

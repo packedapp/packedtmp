@@ -29,7 +29,7 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.component.BuildtimeRegion;
+import packed.internal.component.SlotTableSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedApplicationDriver;
 import packed.internal.component.PackedComponent;
@@ -95,7 +95,7 @@ public final class ServiceManagerSetup {
         this.tree = parent == null ? new ServiceManagerTree() : parent.tree;
     }
 
-    public void close(BuildtimeRegion region) {
+    public void close(SlotTableSetup region) {
         if (parent == null) {
             tree.finish(region, container);
         }

@@ -84,7 +84,12 @@ public final class PackedInitializationContext {
     // Maybe this can be written in PodInstantiationContext
     String rootName(ComponentSetup configuration) {
         String n = configuration.name;
-        String ol = wirelets() == null ? null : wirelets().nameWirelet();
+        String ol = null;
+        for (Wirelet w : wirelets().wirelets) {
+            if (w instanceof InternalWirelet.SetComponentNameWirelet sn) {
+                ol = sn.name;
+            }
+        }
         if (ol != null) {
             n = ol;
             if (n.endsWith("?")) {
