@@ -207,7 +207,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.extension = new ExtensionSetup(this, extensionModel);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
-        this.realm.current = this; //IDK Den er jo ikke runtime...
+        this.realm.current = this; // IDK Den er jo ikke runtime...
         this.table = parent.table;
         this.source = null;
         this.wirelets = null;
@@ -270,7 +270,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedApplicationDriver<?> pac = build().artifactDriver();
+            PackedApplicationDriver<?> pac = build().applicationDriver();
             dam.addValue(ComponentAttributes.SHELL_TYPE, pac.artifactRawType());
         }
         return dam;
@@ -290,11 +290,21 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
     }
 
-    public void close() {
+    /**
+     * Closes the realm that this belongs component belongs to.
+     * <p>
+     * This method must only be called on a realms root component (we do not check explicitly this)
+     * 
+     * @see ComponentSetup#link(Assembly, Wirelet...)
+     * @see BuildSetup#buildFromAssembly(PackedApplicationDriver, Assembly, Wirelet[], boolean, boolean)
+     * @see BuildSetup#buildFromComposer(PackedApplicationDriver, PackedComponentDriver, java.util.function.Function,
+     *      Consumer, Wirelet...)
+     */
+    void realmClose() {
         if (realm.current != null) {
             realm.current.fixCurrent();
         }
-        onRealmClose(realm);
+        realmClose0(realm);
     }
 
     /**
@@ -303,15 +313,17 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param realm
      *            the realm that was closed.
      */
-    public void onRealmClose(RealmSetup realm) {
+    private void realmClose0(RealmSetup realm) {
         // Closes all components in the same realm depth first
-        for (ComponentSetup compConf = treeFirstChild; compConf != null; compConf = compConf.treeNextSibling) {
-            // child components with a different realm, has either already been closed, or will be closed elsewhere
-            if (compConf.realm == realm) {
-                compConf.onRealmClose(realm);
+        for (ComponentSetup component = treeFirstChild; component != null; component = component.treeNextSibling) {
+            // child components with a different realm, is either:
+            // in an another user realm that already been closed
+            // in an extension realm that is closed in container.close
+            if (component.realm == realm) {
+                component.realmClose0(realm);
             }
         }
-
+        // If this component represents container close the container
         if (container != null) {
             container.close(table);
         }
@@ -356,7 +368,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component));
 
         // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
-        component.close();
+        component.realmClose();
 
         return new ComponentAdaptor(this);
     }

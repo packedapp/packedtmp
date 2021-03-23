@@ -18,8 +18,8 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.component.Program;
 import app.packed.component.ApplicationImage;
+import app.packed.component.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 
@@ -99,7 +99,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void onPreContainerWiring() {
+        protected void onExtensionsFixed() {
             // System.out.println(ai + "E-PreChildContainers");
         }
         
@@ -124,7 +124,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void onPreContainerWiring() {
+        protected void onExtensionsFixed() {
             System.out.println("F-PreChildContainers");
             use(E.Sub.class);
         }

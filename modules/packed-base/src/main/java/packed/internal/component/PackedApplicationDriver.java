@@ -113,7 +113,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         BuildSetup build = BuildSetup.buildFromComposer(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
 
         // Initialize the application. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = build.process();
+        PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
 
         // Return a new application instance
         return newApplication(pic);
@@ -146,7 +146,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, false);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = build.process();
+        PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
 
         // Return the system in a new shell
         return newApplication(pic);

@@ -53,15 +53,15 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
     Component component(); // IDK put it is an attribute???
 
     /**
-     * Uses the image. What happens here is dependent on application driver that created the image. The behaviour of this
-     * method is identical to {@link ApplicationDriver#apply(Assembly, Wirelet...)}.
+     * Applies the image to . What happens here is dependent on application driver that created the image. The behaviour of
+     * this method is identical to {@link ApplicationDriver#apply(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets
      * @return the result of using the image
      * @see {@link ApplicationDriver#apply(Assembly, Wirelet...)}
      */
-    A apply(Wirelet... wirelets);
+    A apply(Wirelet... wirelets); // instantiate???
 }
 
 interface ZImage<A> {

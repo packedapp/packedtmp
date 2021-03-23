@@ -28,7 +28,10 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 
-/** A setup class for a build. */
+/**
+ * A setup class for a build.
+ * 
+ */
 public final class BuildSetup implements BuildInfo {
 
     /** The artifact driver used for the build process. */
@@ -39,6 +42,13 @@ public final class BuildSetup implements BuildInfo {
 
     /** The build output. */
     final int modifiers;
+
+    // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
+    // ruleBroken = FFF
+    // Man kan kun validere assemblies...
+    // Maaske er det exposed paa BuildInfo...
+    // Giver det mening at returnere en component hvis det er fejlet??? InjectionGraph er det eneste jeg kan taenke...
+    Object validationErrors;
 
     /**
      * Creates a new build setup.
@@ -53,12 +63,8 @@ public final class BuildSetup implements BuildInfo {
         this.component = new ComponentSetup(this, realm, driver, null, wirelets);
     }
 
-    /**
-     * Returns the artifact driver that initiated the build process.
-     * 
-     * @return the artifact driver that initiated the build process
-     */
-    public PackedApplicationDriver<?> artifactDriver() {
+    /** {@return the root application driver} */
+    public PackedApplicationDriver<?> applicationDriver() {
         return artifactDriver;
     }
 
@@ -66,6 +72,7 @@ public final class BuildSetup implements BuildInfo {
         return (modifiers & PackedComponentModifierSet.I_ANALYSIS) != 0;
     }
 
+    /** {@return whether or not we are creating the root application is part of an image}. */
     public boolean isImage() {
         return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
     }
@@ -78,7 +85,7 @@ public final class BuildSetup implements BuildInfo {
 
     // returnere null if void...
     @Nullable
-    public PackedInitializationContext process() {
+    PackedInitializationContext process() {
         return PackedInitializationContext.process(component, null);
     }
 
@@ -119,7 +126,7 @@ public final class BuildSetup implements BuildInfo {
         // Invoke Assembly.build()
         AssemblyHelper.invokeBuild(assembly, componentDriver.toConfiguration(build.component));
 
-        build.component.close();
+        build.component.realmClose();
 
         return build;
     }
@@ -138,7 +145,7 @@ public final class BuildSetup implements BuildInfo {
         // Invoked the consumer supplied by the end-user
         consumer.accept(composer);
 
-        build.component.close();
+        build.component.realmClose();
         return build;
     }
 }

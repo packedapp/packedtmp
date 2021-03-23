@@ -120,7 +120,21 @@ public abstract class Extension extends Realm {
         configuration().checkConfigurable();
     }
 
+    //checkInNoSubContainers
+    protected final void checkUnconnected() {
+        // This method cannot be invoked after ServiceExtension has been installed in any sub containers
+
+        // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
+        // anden setting op fra parent'en
+    }
+    
     // checkExtendable...
+    /**
+     * Checks that the new extensions can be added to the container in which this extension is registered.
+     * 
+     * @see #onExtensionsFixed()
+     */
+    // CheckNoLeafs()
     protected final void checkExtendable() {
         configuration().checkExtendable();
     }
@@ -265,7 +279,13 @@ public abstract class Extension extends Realm {
     // Det tror jeg maaske bare ikke den kan
 
     // onPreUserContainerWiring???
-    protected void onPreContainerWiring() {
+    /**
+     * Invoked (by the runtime) when. This is the last opportunity to wire any components that requires extensions that have
+     * not already been added. Attempting to wire extensions at a later time will fail with InternalExtensionException
+     * 
+     * @see #checkExtendable()
+     */
+    protected void onExtensionsFixed() {
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
 

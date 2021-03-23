@@ -53,7 +53,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onPreContainerWiring", void.class);
+            "onExtensionsFixed", void.class);
 
     /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);

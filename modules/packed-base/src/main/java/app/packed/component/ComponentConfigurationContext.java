@@ -64,6 +64,7 @@ public /* sealed */ interface ComponentConfigurationContext {
      * @throws IllegalStateException
      *             if the component is no longer configurable.
      */
+    // checkRealmActive
     void checkConfigurable();
 
     /**

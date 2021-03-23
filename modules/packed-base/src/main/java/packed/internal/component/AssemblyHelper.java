@@ -59,17 +59,21 @@ public final class AssemblyHelper {
     }
 
     /**
-     * Invokes {@link Assembly#build()}.
+     * Invokes {@link Assembly#build()} on the specified assembly. Setting the assembly's configuration to the specified
+     * configuration.
      * 
      * @param assembly
      *            the assembly for which to invoke the build method
      * @param configuration
      *            the configuration object to set before invoking the build method
+     * @see BuildSetup#buildFromAssembly(PackedApplicationDriver, Assembly, app.packed.component.Wirelet[], boolean,
+     *      boolean)
+     * @see ComponentSetup#link(Assembly, app.packed.component.Wirelet...)
      */
     static void invokeBuild(Assembly<?> assembly, Object configuration) {
         // We perform a compare and exchange. Guarding against concurrent usage of this assembly.
         // I actually don't think we need to use volatile...IDK
-        // I'm pretty sure you will get an exception one way or the other... 
+        // I'm pretty sure you will get an exception one way or the other...
         Object existing = VH_ASSEMBLY_CONFIGURATION.compareAndExchange(assembly, null, configuration);
         if (existing == null) {
             try {
