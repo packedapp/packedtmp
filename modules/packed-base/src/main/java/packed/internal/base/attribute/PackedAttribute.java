@@ -45,14 +45,14 @@ public class PackedAttribute<T> implements Attribute<T> {
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> declaredBy() {
-        return owner;
+    public String displayAs() {
+        return displayAs;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String displayAs() {
-        return displayAs;
+    public boolean isOpen() {
+        return false;
     }
 
     /** {@inheritDoc} */
@@ -63,19 +63,25 @@ public class PackedAttribute<T> implements Attribute<T> {
 
     /** {@inheritDoc} */
     @Override
+    public Class<?> owner() {
+        return owner;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Class<?> rawType() {
         return rawType;
+    }
+
+    @Override
+    public String toString() {
+        return owner.getSimpleName() + ":" + name;
     }
 
     /** {@inheritDoc} */
     @Override
     public TypeToken<T> typeLiteral() {
         return typeLiteral;
-    }
-
-    @Override
-    public String toString() {
-        return owner.getSimpleName() + ":" + name;
     }
 
     @SuppressWarnings("deprecation")

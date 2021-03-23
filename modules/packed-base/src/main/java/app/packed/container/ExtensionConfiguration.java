@@ -24,13 +24,13 @@ import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
 import app.packed.container.Extension.Subtension;
@@ -169,7 +169,7 @@ public /* sealed */ interface ExtensionConfiguration {
      *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
      * @see Extension#onComplete()
      */
-    void link(Assembly<?> assembly, Wirelet... wirelets);
+    Component link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Returns the path of the extension. The path of the extension's container, can be obtained by calling

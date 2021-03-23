@@ -29,7 +29,8 @@ public final class BuildSetup implements BuildInfo {
     /** The build output. */
     final int modifiers;
 
-    /** The root component, set in build. */
+    /** The root component, set in {@link PackedApplicationDriver}. */
+    @Nullable
     ComponentSetup rootComponent;
 
     /** The thread that is assembling the system. */
@@ -45,7 +46,7 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> artifactDriver, int modifiers) {
+    BuildSetup(PackedApplicationDriver<?> artifactDriver, int modifiers, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable WireletWrapper wirelets) {
         this.artifactDriver = artifactDriver;
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
     }
@@ -63,7 +64,7 @@ public final class BuildSetup implements BuildInfo {
      * @return comp
      */
     public Component asComponent() {
-        return rootComponent.adaptToComponent();
+        return rootComponent.adaptor();
     }
 
     public boolean isAnalysis() {

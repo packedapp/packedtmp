@@ -80,6 +80,7 @@ import packed.internal.util.LookupUtil;
  * @see Factory2
  */
 // Maybe define a CustomFactory we can override...
+// I think so... And maybe install a MethodHand use $toConcract... Nahh kan ikke bruge $ fordi vi overskriver...
 public abstract class Factory1<T, R> extends Factory<R> {
 
     /** A method handle for invoking {@link #create(Function, Class, Object)}. */

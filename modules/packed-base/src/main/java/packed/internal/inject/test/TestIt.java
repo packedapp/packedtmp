@@ -30,7 +30,7 @@ public class TestIt {
         System.out.println(sl.getClass());
         System.out.println(sl.keys());
         sl = sl.spawn(t -> t.provideInstance(123L));
-        sl.selectAll().use(Long.class);
+        System.out.println(sl.use(Long.class));
         System.out.println("Bye");
     }
 

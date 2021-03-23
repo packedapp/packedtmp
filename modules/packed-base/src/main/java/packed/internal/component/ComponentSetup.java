@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
@@ -49,7 +51,6 @@ import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.base.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
-import packed.internal.component.source.RealmSetup;
 import packed.internal.component.source.SourceClassSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
@@ -99,6 +100,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
     int nameState;
 
+    Consumer<? super Component> onWire;
+
     static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
     static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
     static final int NAME_GET = 1 << 16; // true if joiner waiting
@@ -119,6 +122,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         this.build = requireNonNull(build);
         this.wirelets = wirelets;
+        // May initialize the component's name
         for (Wirelet w : wirelets.wirelets) {
             if (w instanceof InternalWirelet bw) {
                 bw.firstPass(this);
@@ -137,12 +141,18 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINEROLD);
             }
         } else {
+            this.onWire = parent.onWire;
             this.table = driver.modifiers().isContainerOld() ? new SlotTableSetup() : parent.table;
         }
         this.modifiers = mod;
 
         // Setup Realm
         this.realm = requireNonNull(realm);
+        ComponentSetup previous = realm.current;
+        if (previous != null) {
+            previous.fixCurrent();
+        }
+        realm.current = this;
 
         // Setup any container
         if (modifiers().isContainer()) {
@@ -164,8 +174,21 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
             this.source = null;
         }
 
-        // Setup default name
-        setName0(null);
+        // Set a default name if up default name
+        if (name == null) {
+            setName0(null);
+        }
+    }
+
+    void fixCurrent() {
+        if (name == null) {
+            setName(null);
+        }
+        if (onWire != null) {
+            onWire.accept(adaptor());
+        }
+        // run onWiret
+        // finalize name
     }
 
     /**
@@ -183,7 +206,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.memberOfContainer = parent.container;
         this.extension = new ExtensionSetup(this, extensionModel);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = new RealmSetup(extensionModel.extensionClass());
+        this.realm = new RealmSetup(extensionModel);
+        this.realm.current = this; //IDK Den er jo ikke runtime...
         this.table = parent.table;
         this.source = null;
         this.wirelets = null;
@@ -195,8 +219,16 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * 
      * @return a component adaptor
      */
-    public Component adaptToComponent() {
+    public Component adaptor() {
         return new ComponentAdaptor(this);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
+        requireNonNull(attribute, "attribute is null");
+        requireNonNull(value, "value is null");
+        // check realm.open + attribute.write
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -259,6 +291,9 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     }
 
     public void close() {
+        if (realm.current != null) {
+            realm.current.fixCurrent();
+        }
         onRealmClose(realm);
     }
 
@@ -301,16 +336,9 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return name;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @apiNote Previously this method returned the specified assembly. However, to encourage people to configure the
-     *          assembly before calling this method: link(MyAssembly().setStuff(x)) instead of
-     *          link(MyAssembly()).setStuff(x) we now have void return type. Maybe in the future we will introduce some kind
-     *          of LinkedAssembly.
-     */
+    /** {@inheritDoc} */
     @Override
-    public void link(Assembly<?> assembly, Wirelet... wirelets) {
+    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
 
@@ -329,6 +357,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
         component.close();
+
+        return new ComponentAdaptor(this);
     }
 
     /** {@inheritDoc} */
@@ -356,6 +386,12 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return PackedTreePath.of(this); // show we weak intern them????
     }
 
+    public void checkCurrent() {
+        if (realm.current != this) {
+            throw new IllegalStateException("This operation must be called immediately after wiring of the component");
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void setName(String name) {
@@ -364,6 +400,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         int s = nameState;
 
         checkConfigurable();
+        checkCurrent();
 
         // maybe assume s==0
 
@@ -580,7 +617,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return compConf.toList(ComponentSetup::adaptToComponent);
+            return compConf.toList(ComponentSetup::adaptor);
         }
 
         /** {@inheritDoc} */
@@ -611,7 +648,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         @Override
         public Optional<Component> parent() {
             ComponentSetup cc = compConf.treeParent;
-            return cc == null ? Optional.empty() : Optional.of(cc.adaptToComponent());
+            return cc == null ? Optional.empty() : Optional.of(cc.adaptor());
         }
 
         /** {@inheritDoc} */
@@ -654,6 +691,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
             }
         }
     }
+
 }
 
 ///**

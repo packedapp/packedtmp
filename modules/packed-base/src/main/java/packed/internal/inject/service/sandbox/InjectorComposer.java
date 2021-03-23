@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import app.packed.base.Qualifier;
 import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
+import app.packed.component.Component;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
@@ -72,8 +73,8 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public void link(Assembly<?> assembly, Wirelet... wirelets) {
-        configuration.link(assembly, wirelets);
+    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
+        return configuration.link(assembly, wirelets);
     }
 
     /**

@@ -18,7 +18,7 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
-import packed.internal.component.WireletList;
+import packed.internal.component.WireletArray;
 import packed.internal.component.WireletModel;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.util.StackWalkerUtil;
@@ -73,7 +73,7 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet after) {
         requireNonNull(after, "after is null");
-        return new WireletList(WireletList.flatten(this, after));
+        return new WireletArray(WireletArray.flatten(this, after));
     }
 
     /**
@@ -90,7 +90,7 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet... afters) {
         requireNonNull(afters, "afters is null");
-        return new WireletList(WireletList.flatten(this, combine(afters)));
+        return new WireletArray(WireletArray.flatten(this, combine(afters)));
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class Wirelet {
      */
     public final Wirelet beforeThis(Wirelet... befores) {
         requireNonNull(befores, "befores is null");
-        return new WireletList(WireletList.flatten(combine(befores), this));
+        return new WireletArray(WireletArray.flatten(combine(befores), this));
     }
 
 
@@ -189,7 +189,7 @@ public abstract class Wirelet {
      * @see #beforeThis(Wirelet...)
      */
     public static Wirelet combine(Wirelet... wirelets) {
-        return new WireletList(WireletList.flatten(wirelets));
+        return new WireletArray(WireletArray.flatten(wirelets));
     }
 
 

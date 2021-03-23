@@ -21,6 +21,7 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -62,7 +63,6 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     /**
      * Checks that the assembly has not already been used. This method is typically used
      * 
-     * 
      * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions
      * does not try to configure the extension after it has been configured.
      * 
@@ -80,9 +80,9 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     }
 
     /**
-     * Returns an unmodifiable view of every used extension.
+     * Returns an unmodifiable view of every extension that is currently used.
      * 
-     * @return an unmodifiable view of every used extension
+     * @return an unmodifiable view of every extension that is currently used
      * @see ContainerConfiguration#extensions()
      * @see #use(Class)
      */
@@ -154,16 +154,16 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
+     * @return the linked component
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
-    protected final void link(Assembly<?> assembly, Wirelet... wirelets) {
-        configuration().link(assembly, wirelets);
+    protected final Component link(Assembly<?> assembly, Wirelet... wirelets) {
+        return configuration().link(assembly, wirelets);
     }
 
     /**
-     * Returns the full path of the container.
+     * {@return the path of the container}
      * 
-     * @return the full path of the container
      * @see ContainerConfiguration#path()
      */
     protected final NamespacePath path() {
@@ -198,7 +198,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     }
 
     /**
-     * Returns an extension of the specified type.
+     * Returns an instance of the specified extension class.
      * <p>
      * If this is first time this method has been called with the specified extension type. This method will instantiate an
      * extension of the specified type and retain it for future invocation.
@@ -206,8 +206,8 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @param <T>
      *            the type of extension to return
      * @param extensionClass
-     *            the type of extension to return
-     * @return an extension of the specified type
+     *            the extension class to return an instance of
+     * @return an instance of the specified extension class
      * @throws IllegalStateException
      *             if called from outside {@link #build()}
      * @see ContainerConfiguration#use(Class)

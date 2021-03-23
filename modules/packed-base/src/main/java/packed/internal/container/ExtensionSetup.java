@@ -28,6 +28,7 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BuildInfo;
+import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -191,8 +192,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public void link(Assembly<?> assembly, Wirelet... wirelets) {
-        component.link(assembly, wirelets);
+    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
+        return component.link(assembly, wirelets);
     }
 
     /**

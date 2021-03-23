@@ -33,6 +33,8 @@ import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
  * A collection of instance providing services each having a unique {@link Service#key() key}.
+ * <p>
+ * A service locator provides 
  * 
  * <p>
  * Unless otherwise specified service locators are always immutable.

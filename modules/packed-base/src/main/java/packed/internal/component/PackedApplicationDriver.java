@@ -35,7 +35,6 @@ import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.validate.Validation;
-import packed.internal.component.source.RealmSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
@@ -127,11 +126,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         // Create a new build context that we passe around
-        BuildSetup build = new BuildSetup(this, modifiers);
+        BuildSetup build = new BuildSetup(this, modifiers, null, null, null);
 
         // Create the root component
         ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, null, wp);
-        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component)); // in-try-finally. So we can call PAC.fail() and have them run callbacks for dynamic nodes
+        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component)); // in-try-finally. So we can call PAC.fail() and have them run callbacks for
+                                                                                 // dynamic nodes
         component.close();
 
         return build;
@@ -151,7 +151,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(componentDriver, "componentDriver is null");
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
-        
+
         // Build the system
         BuildSetup build = compose0((PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
 
@@ -159,14 +159,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         PackedInitializationContext pic = build.process();
 
         // Return the system in a new shell
-        return newArtifact(pic);
+        return newApplication(pic);
     }
 
     public <CO extends Composer<?>, CC extends ComponentConfiguration> BuildSetup compose0(PackedComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
         WireletWrapper wp = WireletWrapper.forApplication(this, componentDriver, wirelets);
 
-        BuildSetup build = new BuildSetup(this, 0);
+        BuildSetup build = new BuildSetup(this, 0, null, null, null);
 
         ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(consumer.getClass()), componentDriver, null, wp);
 
@@ -187,13 +187,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /**
-     * Create a new shell using the specified initialization context.
+     * Create a new application using the specified initialization context.
      * 
      * @param pic
      *            the initialization context to wrap
-     * @return the new shell
+     * @return the new application instance
      */
-    private A newArtifact(PackedInitializationContext pic) {
+    private A newApplication(PackedInitializationContext pic) {
         try {
             return (A) mhConstructor.invoke(pic);
         } catch (Throwable e) {
@@ -211,7 +211,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         PackedInitializationContext pic = build.process();
 
         // Return the system in a new shell
-        return newArtifact(pic);
+        return newApplication(pic);
     }
 
     /** {@inheritDoc} */
@@ -353,7 +353,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public Component component() {
-            return root.adaptToComponent();
+            return root.adaptor();
         }
 
         /** {@inheritDoc} */
@@ -363,7 +363,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             PackedInitializationContext pic = PackedInitializationContext.process(root, wirelets);
 
             // Wrap the system in a new shell and return it
-            return newArtifact(pic);
+            return newApplication(pic);
         }
     }
 }

@@ -34,7 +34,7 @@ import packed.internal.util.ThrowableUtil;
  * object, and one using whatever power a module descriptor has given us.
  */
 // Realm Accessor
-abstract class ModuleAccessor {
+public abstract class ModuleAccessor {
 
     /** Calls package-private method Factory.toMethodHandle(Lookup). */
     private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
@@ -64,9 +64,11 @@ abstract class ModuleAccessor {
         }
     }
 
-    abstract ModuleAccessor withLookup(Lookup lookup);
+    public abstract ModuleAccessor withLookup(Lookup lookup);
 
-    /** A realm that makes use of a explicitly registered lookup object, for example, via ContainerAssembly#lookup(Lookup). */
+    /**
+     * A realm that makes use of a explicitly registered lookup object, for example, via ContainerAssembly#lookup(Lookup).
+     */
     private static final class WithLookup extends ModuleAccessor {
 
         /** The actual lookup object we are wrapping. */
@@ -86,13 +88,13 @@ abstract class ModuleAccessor {
         }
 
         @Override
-        ModuleAccessor withLookup(Lookup lookup) {
+        public ModuleAccessor withLookup(Lookup lookup) {
             return parent.withLookup(lookup);
         }
     }
 
     /** A model of a realm, typically based on a subclass of {@link Assembly}. */
-    static final class WithModuleInfo extends ModuleAccessor {
+    public static final class WithModuleInfo extends ModuleAccessor {
 
         /** A cache of realm models. */
         private static final ClassValue<ModuleAccessor.WithModuleInfo> MODELS = new ClassValue<>() {
@@ -157,7 +159,7 @@ abstract class ModuleAccessor {
          *            the lookup object
          * @return the new realm
          */
-        ModuleAccessor withLookup(Lookup lookup) {
+        public ModuleAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.
@@ -183,7 +185,7 @@ abstract class ModuleAccessor {
          *            the container source type
          * @return a container source model for the specified type
          */
-        static ModuleAccessor.WithModuleInfo of(Class<?> sourceType) {
+        public static ModuleAccessor.WithModuleInfo of(Class<?> sourceType) {
             return MODELS.get(sourceType);
         }
     }

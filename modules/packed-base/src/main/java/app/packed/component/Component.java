@@ -119,6 +119,11 @@ public interface Component extends AttributedElement {
         }
         return c;
     }
+    
+    default void print() {
+        // Super useful...
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * 

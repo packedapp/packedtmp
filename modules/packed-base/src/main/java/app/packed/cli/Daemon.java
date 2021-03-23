@@ -16,6 +16,7 @@ import app.packed.state.Host;
 // Can be configured via RestartWirelets.restartAlways() (sgu ikke paa shutdown hook)
 
 // StateWirelets.restartUnlessStopped() -> Kan overskrives af brugere..
+// Hader ogsaa Daemon som en annotering engang... Var stadig en okay ide syntes jeg
 public interface Daemon extends AutoCloseable {
 
     /**

@@ -22,7 +22,8 @@ import app.packed.component.WireletHandle;
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletWrapper {
 
-    static final WireletWrapper EMPTY = new WireletWrapper(WireletList.EMPTY);
+    /** An empty wirelet wrapper. */
+    static final WireletWrapper EMPTY = new WireletWrapper(WireletArray.EMPTY);
 
     int unconsumed;
 
@@ -48,22 +49,22 @@ public final class WireletWrapper {
     public static WireletWrapper forApplication(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, Wirelet... wirelets) {
         Wirelet[] ws;
         if (applicationDriver.wirelet == null) {
-            ws = WireletList.flatten(wirelets);
+            ws = WireletArray.flatten(wirelets);
         } else {
-            ws = WireletList.flatten(applicationDriver.wirelet, Wirelet.combine(wirelets));
+            ws = WireletArray.flatten(applicationDriver.wirelet, Wirelet.combine(wirelets));
         }
         return new WireletWrapper(ws);
     }
 
     @Nullable
     public static WireletWrapper forComponent(PackedComponentDriver<?> driver, Wirelet... wirelets) {
-        Wirelet[] ws = WireletList.flatten(wirelets);
+        Wirelet[] ws = WireletArray.flatten(wirelets);
         return new WireletWrapper(ws);
     }
 
     @Nullable
     public static WireletWrapper forImageInstantiate(ComponentSetup component, Wirelet... wirelets) {
-        Wirelet[] ws = WireletList.flatten(wirelets);
+        Wirelet[] ws = WireletArray.flatten(wirelets);
         return new WireletWrapper(ws);
     }
 }

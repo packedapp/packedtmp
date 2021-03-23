@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,11 +23,10 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Composer;
 import app.packed.container.Extension;
-import packed.internal.component.ComponentSetup;
+import packed.internal.component.source.ModuleAccessor;
+import packed.internal.container.ExtensionModel;
 
-/**
- *
- */
+/** The setup of an realm */
 public final class RealmSetup {
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
@@ -35,13 +34,22 @@ public final class RealmSetup {
 
     private final Class<?> realmType;
 
-    public ComponentSetup current;
-    
+    ComponentSetup current;
+
+    /**
+     * Creates a new extension realm setup.
+     * 
+     * @param extension
+     */
+    public RealmSetup(ExtensionModel extension) {
+        this.realmType = extension.extensionClass();
+    }
+
     public RealmSetup(Class<?> realmType) {
         this.realmType = requireNonNull(realmType);
     }
 
-    ModuleAccessor accessor() {
+    public ModuleAccessor accessor() {
         ModuleAccessor r = accessor;
         if (r == null) {
             this.accessor = r = ModuleAccessor.WithModuleInfo.of(realmType);

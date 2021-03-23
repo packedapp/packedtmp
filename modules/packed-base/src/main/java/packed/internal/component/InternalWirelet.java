@@ -17,6 +17,9 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.Consumer;
+
+import app.packed.component.Component;
 import app.packed.component.Wirelet;
 
 /**
@@ -26,6 +29,37 @@ import app.packed.component.Wirelet;
 public abstract class InternalWirelet extends Wirelet {
 
     protected abstract void firstPass(ComponentSetup c);
+
+    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
+    public static final class FailOnFirstPass extends InternalWirelet {
+
+
+        @Override
+        protected void firstPass(ComponentSetup component) {
+            throw new Error();
+        }
+    }
+    
+    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
+    public static final class OnWireCallbackWirelet extends InternalWirelet {
+
+        private final Consumer<? super Component> action;
+
+        public OnWireCallbackWirelet(Consumer<? super Component> action) {
+            this.action = requireNonNull(action, "action is null");
+        }
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        protected void firstPass(ComponentSetup component) {
+            Consumer<? super Component> existing = component.onWire;
+            if (existing == null) {
+                component.onWire = action;
+            } else {
+                component.onWire = existing.andThen((Consumer) action);
+            }
+        }
+    }
 
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
     public static final class SetComponentNameWirelet extends InternalWirelet {

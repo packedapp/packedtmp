@@ -125,7 +125,7 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     public static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
-        WireletWrapper wp = new WireletWrapper(WireletList.flatten(wirelets));
+        WireletWrapper wp = new WireletWrapper(WireletArray.flatten(wirelets));
         return new PackedWireletHandle<>(wp, wireletClass);
     }
 }

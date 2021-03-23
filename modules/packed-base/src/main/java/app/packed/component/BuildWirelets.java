@@ -15,9 +15,13 @@
  */
 package app.packed.component;
 
+import java.util.function.Consumer;
+
+import packed.internal.component.InternalWirelet;
+
 /**
- * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link ApplicationImage} will result in
- * an extension being thrown.
+ * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link ApplicationImage} will
+ * result in an extension being thrown.
  */
 
 // Maaske hedder det BuildWireret... og saa definere den disse metoder...
@@ -39,6 +43,20 @@ public final class BuildWirelets {
     // printDebug().inherit();
     /** Not for you my friend. */
     private BuildWirelets() {}
+
+    /**
+     * Returns a wirelet that will perform the specified action every time a component is added.
+     * 
+     * @param action
+     *            the action to perform
+     * @return the wirelet
+     */
+    // Lifecycle
+    // wired - fixed - closed (always with realm) 
+    public static Wirelet onWire(Consumer<? super Component> action) {
+        return new InternalWirelet.OnWireCallbackWirelet(action);
+    }
+
     // NO FAIL <--- maaske brugbart for analyse
 
     // fail on warnings.

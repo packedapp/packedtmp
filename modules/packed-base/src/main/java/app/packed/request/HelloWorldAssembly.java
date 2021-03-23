@@ -16,21 +16,27 @@
 package app.packed.request;
 
 import app.packed.cli.Main;
+import app.packed.component.BuildWirelets;
 import app.packed.container.BaseAssembly;
 
 /**
  *
  */
 public class HelloWorldAssembly extends BaseAssembly {
-    
+
     @Override
     protected void build() {
+        install(SomeComponent.class);
+        install(SomeComponent.class);
         install(SomeComponent.class);
     }
 
     public static void main(String[] args) {
         // Job.compute()
-        Main.run(new HelloWorldAssembly());
+        Main.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {
+            System.out.println(c.path() + " wired");
+        }));
+        System.out.println("BYE");
     }
 
     public static class SomeComponent {

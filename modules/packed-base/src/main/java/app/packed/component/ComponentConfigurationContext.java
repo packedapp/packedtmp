@@ -18,6 +18,7 @@ package app.packed.component;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.container.ContainerAssembly;
@@ -49,6 +50,9 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceProvide();
 // sourceProvideAs();
 public /* sealed */ interface ComponentConfigurationContext {
+
+    <T> void setRuntimeAttribute(Attribute<T> attribute, T value);
+
     // Hmmmmmm, build() is normally something else
     BuildInfo build();
 
@@ -102,8 +106,9 @@ public /* sealed */ interface ComponentConfigurationContext {
      *            the assembly
      * @param wirelets
      *            optional wirelets
+     * @return the component that was linked
      */
-    void link(Assembly<?> assembly, Wirelet... wirelets);
+    Component link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Returns an immutable set containing all the modifiers of this component.

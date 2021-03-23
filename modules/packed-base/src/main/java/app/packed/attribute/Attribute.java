@@ -17,44 +17,30 @@ package app.packed.attribute;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.TypeToken;
-import app.packed.component.ComponentStream;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.PackedAttribute.PackedOption;
 
 /**
  * <p>
+ * Attributes can be compared with value semantics (==)
+ * 
+ * <p>
  * NOTE: Attributes does not support null values.
  * 
  * @param <T>
- *            the type of value this attribute maps to
+ *            the type of value the attribute map to
  */
-// Nej syntes ikke vi gider have meta annotationer....
-// Altsaa det eneste var hvis folk skal ville putte annoteringer paa...
-public interface Attribute<T> /* extends AttributeHolder */ {
+// What are build time attributes and what runtime attributes???
 
-    static final Attribute<ComponentStream> CS = Attribute.of(MethodHandles.lookup(), "cs", ComponentStream.class, Option.renderAs(cs -> "" + cs.count()));
+public /* sealed */ interface Attribute<T> {
 
-    static final Attribute<String> DESCRIPTION = Attribute.of(MethodHandles.lookup(), "description", String.class, Option.open());
-
-    /**
-     * Returns the class that declares the attribute.
-     * <p>
-     * This class is always identical to the class returned by {@link Lookup#lookupClass()} of the lookup object that is
-     * used for construction.
-     * 
-     * @return the class that declares the attribute
-     * 
-     * @see Lookup#lookupClass()
-     */
-    Class<?> declaredBy();
-
+    // Er ikke sikker paa jeg vil expose denne??
     default Optional<T> defaultValue() {
         throw new UnsupportedOperationException();
     }
@@ -64,6 +50,7 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      * 
      * @return display the name of this attribute as
      */
+    // Service#name
     String displayAs();
 
     /**
@@ -80,13 +67,24 @@ public interface Attribute<T> /* extends AttributeHolder */ {
     }
 
     /**
-     * Returns the module the attribute belongs to. The module is always the module in which the {@link #declaredBy()} is
-     * located.
+     * Returns {@code true} if this is an open attribute.
+     * <p>
+     *
+     * An open attribute can always be set by any one.
+     *
+     * @return {@code true} if this is an open attribute
+     */
+    boolean isOpen();
+
+    /**
+     * Returns the module the attribute belongs to.
+     * <p>
+     * The module is always the module in which {@link #owner()} is located.
      * 
      * @return the module the attribute belongs to
      */
     default Module module() {
-        return declaredBy().getModule();
+        return owner().getModule();
     }
 
     /**
@@ -95,6 +93,18 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      * @return the name of the attribute
      */
     String name();
+
+    /**
+     * Returns the class that declares the attribute.
+     * <p>
+     * This class is always identical to the class returned by {@link Lookup#lookupClass()} of the lookup object that is
+     * used for construction.
+     * 
+     * @return the class that declares the attribute
+     * 
+     * @see Lookup#lookupClass()
+     */
+    Class<?> owner();
 
     /**
      * Returns the raw type of this attribute.
@@ -125,6 +135,7 @@ public interface Attribute<T> /* extends AttributeHolder */ {
      *            any options used for constructing the attribute
      * @return the new attribute
      */
+    // Also, maybe we have special attribute makers... fx ClassHookBootstrap.newAttribute
     @SafeVarargs
     static <T> Attribute<T> of(Lookup lookup, String name, Class<T> type, Option<T>... options) {
         requireNonNull(type, "type is null");
@@ -137,6 +148,25 @@ public interface Attribute<T> /* extends AttributeHolder */ {
         return PackedAttribute.of(lookup, name, type.rawType(), type, options);
     }
 
+    @SafeVarargs
+    static <T> Attribute<T> of2(String name, Class<T> type, Option<T>... options) {
+        // I think we should use the calling class as owner...
+        // And have one where we specify the owner but the owner must be in the same module as the calling class
+        // use calling class
+        throw new UnsupportedOperationException();
+    }
+
+    @SafeVarargs
+    static <T> Attribute<T> of2(Class<?> owner, String name, Class<T> type, Option<T>... options) {
+        // owner must be in same module as calling class
+        // use calling class
+        
+        // Hooks should maybe take a MethodHandle that can extract the attribute value from
+        // the slot table
+        throw new UnsupportedOperationException();
+    }
+
+    
     // Use a builder...
     // And have methods with an without a builder
     /** Various options that can be specified when creating new attributes. */
@@ -153,13 +183,6 @@ public interface Attribute<T> /* extends AttributeHolder */ {
             throw new UnsupportedOperationException();
         }
 
-        
-        static <T> Option<T> toDoc(Consumer<Object> docBuilder) {
-            // Kan smide den med i doc...
-            throw new UnsupportedOperationException();
-        }
-
-        
         // Adds a description of the attribute...
         // What about I18N
         static <T> Option<T> description(String description) {
@@ -184,6 +207,11 @@ public interface Attribute<T> /* extends AttributeHolder */ {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         static <T> Option<T> renderAs(Function<T, String> toString) {
             return (Option) PackedOption.someSome();
+        }
+
+        static <T> Option<T> toDoc(Consumer<Object> docBuilder) {
+            // Kan smide den med i doc...
+            throw new UnsupportedOperationException();
         }
 
 //        static Option permanent() {

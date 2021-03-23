@@ -26,7 +26,7 @@ public class ChildInject extends BaseAssembly {
         protected void build() {
             use(MyExt.class);
             if (i-- > 0) {
-                link(new Fff());
+                System.out.println("Linking " + link(new Fff()).path());
             }
         }
     }

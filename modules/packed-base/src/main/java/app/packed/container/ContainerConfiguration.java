@@ -20,6 +20,7 @@ import java.util.Set;
 
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -96,15 +97,16 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     }
 
     /**
-     * Creates a new container with this container as its parent by linking the specified container.
+     * Links the specified assembly with this container as its parent.
      * 
      * @param assembly
      *            the assembly to link
      * @param wirelets
-     *            any wirelets
+     *            optional wirelets
+     * @return the component that was linked
      */
-    public void link(Assembly<?> assembly, Wirelet... wirelets) {
-        context.link(assembly, wirelets);
+    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
+        return context.link(assembly, wirelets);
     }
 
     /** {@inheritDoc} */

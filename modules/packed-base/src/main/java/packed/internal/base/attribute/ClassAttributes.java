@@ -52,7 +52,7 @@ public class ClassAttributes {
     }
 
     public static void register(PackedAttribute<?> pa) {
-        CV.get(pa.declaredBy()).add(pa);
+        CV.get(pa.owner()).add(pa);
     }
 
     public static void printFor(Class<?> clazz) {
@@ -73,7 +73,7 @@ public class ClassAttributes {
         // Tmp is never exposed
         synchronized void add(PackedAttribute<?> pa) {
             if (map == null) {
-                throw new IllegalStateException("Attribute must be registered in class initializer of " + pa.declaredBy());
+                throw new IllegalStateException("Attribute must be registered in class initializer of " + pa.owner());
             } else if (map.putIfAbsent(pa.name(), pa) != null) {
                 throw new IllegalStateException("An attribute with the name '" + pa.name() + "' has already been registered");
             }

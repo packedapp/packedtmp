@@ -27,13 +27,15 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 
 /**
- * Assemblies are the main way to configure a component based system in Packed.
+ * An assembly is  Assemblies are the main way to configure a component based system in Packed.
  * 
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * Assemblies are composable via linking.
  * 
+ * <p>
+ * Packed will never attempt to member scan the subclasses.
  * <p>
  * An assembly can only be used a single time. Trying to use it more than once will fail with
  * {@link IllegalStateException}.
