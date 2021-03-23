@@ -350,7 +350,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         ComponentSetup parent = extension == null ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create a new component and a new realm
-        ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, parent, ww);
+        ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly), driver, parent, ww);
 
         // Invoke Assembly::build
         AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component));

@@ -81,8 +81,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, true, false);
-        return build.asComponent();
+        BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, true, false);
+        return build.component.adaptor();
     }
 
     /**
@@ -94,53 +94,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return mhConstructor.type().returnType();
     }
 
-    /**
-     * @param assembly
-     *            the root assembly
-     * @param wirelets
-     *            optional wirelets
-     * @param isAnalysis
-     *            is it an analysis
-     * @param isImage
-     *            is it an image
-     * @return a build setup
-     */
-    private BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
-        // Extract the component driver from the assembly
-        PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
-
-        // Process all wirelets
-        WireletWrapper wp = WireletWrapper.forApplication(this, driver, wirelets);
-
-        int modifiers = 0;
-
-        if (this != null) {
-            modifiers += PackedComponentModifierSet.I_ANALYSIS;
-            if (isStateful()) {
-                modifiers += PackedComponentModifierSet.I_CONTAINER;
-            }
-        }
-
-        if (isImage) {
-            modifiers += PackedComponentModifierSet.I_IMAGE;
-        }
-
-        // Create a new build context that we passe around
-        BuildSetup build = new BuildSetup(this, modifiers, null, null, null);
-
-        // Create the root component
-        ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(assembly.getClass()), driver, null, wp);
-        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component)); // in-try-finally. So we can call PAC.fail() and have them run callbacks for
-                                                                                 // dynamic nodes
-        component.close();
-
-        return build;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, false, true);
+        BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, true);
         return new PackedImage(build);
     }
 
@@ -152,34 +109,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
 
-        // Build the system
-        BuildSetup build = compose0((PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
+        // Build the Application
+        BuildSetup build = BuildSetup.buildFromComposer(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
 
-        // Initialize the system. And start it if necessary (if it is a guest)
+        // Initialize the application. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = build.process();
 
-        // Return the system in a new shell
+        // Return a new application instance
         return newApplication(pic);
-    }
-
-    public <CO extends Composer<?>, CC extends ComponentConfiguration> BuildSetup compose0(PackedComponentDriver<CC> componentDriver,
-            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        WireletWrapper wp = WireletWrapper.forApplication(this, componentDriver, wirelets);
-
-        BuildSetup build = new BuildSetup(this, 0, null, null, null);
-
-        ComponentSetup component = build.rootComponent = new ComponentSetup(build, new RealmSetup(consumer.getClass()), componentDriver, null, wp);
-
-        CC componentConfiguration = componentDriver.toConfiguration(component);
-
-        // Used the supplied composer factory to create a composer from a component configuration instance
-        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
-
-        // Invoked the consumer supplied by the end-user
-        consumer.accept(composer);
-
-        component.close();
-        return build;
     }
 
     public boolean isStateful() {
@@ -193,6 +130,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the initialization context to wrap
      * @return the new application instance
      */
+    // application interface???
     private A newApplication(PackedInitializationContext pic) {
         try {
             return (A) mhConstructor.invoke(pic);
@@ -205,7 +143,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public A use(Assembly<?> assembly, Wirelet... wirelets) {
         // Build the system
-        BuildSetup build = build(assembly, wirelets, false, false);
+        BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, false);
 
         // Initialize the system. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = build.process();
@@ -347,7 +285,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
          *            the build setup
          */
         private PackedImage(BuildSetup build) {
-            this.root = build.rootComponent;
+            this.root = build.component;
         }
 
         /** {@inheritDoc} */

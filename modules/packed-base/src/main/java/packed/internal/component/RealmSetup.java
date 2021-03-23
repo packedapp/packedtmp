@@ -18,6 +18,7 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
@@ -32,21 +33,38 @@ public final class RealmSetup {
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private ModuleAccessor accessor;
 
-    private final Class<?> realmType;
-
     ComponentSetup current;
 
+    private final Class<?> realmType;
+
     /**
-     * Creates a new extension realm setup.
+     * Creates a new realm for an assembly.
+     * 
+     * @param assembly
+     *            the assembly to create a realm for
+     */
+    public RealmSetup(Assembly<?> assembly) {
+        this.realmType = assembly.getClass();
+    }
+
+    /**
+     * Creates a new realm for an composer consumer
+     * 
+     * @param composer
+     *            the composer consumer
+     */
+    public RealmSetup(Consumer<? /* extends Composer<?> */> composer) {
+        this.realmType = composer.getClass();
+    }
+
+    /**
+     * Creates a new realm for an extension.
      * 
      * @param extension
+     *            the extension to create a realm for
      */
     public RealmSetup(ExtensionModel extension) {
         this.realmType = extension.extensionClass();
-    }
-
-    public RealmSetup(Class<?> realmType) {
-        this.realmType = requireNonNull(realmType);
     }
 
     public ModuleAccessor accessor() {

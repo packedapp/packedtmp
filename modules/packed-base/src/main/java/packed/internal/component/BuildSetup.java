@@ -15,10 +15,18 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
 import app.packed.component.BuildInfo;
-import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.Composer;
+import app.packed.component.Wirelet;
 
 /** A setup class for a build. */
 public final class BuildSetup implements BuildInfo {
@@ -26,12 +34,11 @@ public final class BuildSetup implements BuildInfo {
     /** The artifact driver used for the build process. */
     private final PackedApplicationDriver<?> artifactDriver;
 
+    /** The root component. */
+    final ComponentSetup component;
+
     /** The build output. */
     final int modifiers;
-
-    /** The root component, set in {@link PackedApplicationDriver}. */
-    @Nullable
-    ComponentSetup rootComponent;
 
     /** The thread that is assembling the system. */
     // We need WeakReference, or some try-final
@@ -46,9 +53,11 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> artifactDriver, int modifiers, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable WireletWrapper wirelets) {
+    private BuildSetup(PackedApplicationDriver<?> artifactDriver, int modifiers, RealmSetup realm, PackedComponentDriver<?> driver,
+            @Nullable WireletWrapper wirelets) {
         this.artifactDriver = artifactDriver;
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+        this.component = new ComponentSetup(this, realm, driver, null, wirelets);
     }
 
     /**
@@ -58,13 +67,6 @@ public final class BuildSetup implements BuildInfo {
      */
     public PackedApplicationDriver<?> artifactDriver() {
         return artifactDriver;
-    }
-
-    /**
-     * @return comp
-     */
-    public Component asComponent() {
-        return rootComponent.adaptor();
     }
 
     public boolean isAnalysis() {
@@ -84,7 +86,7 @@ public final class BuildSetup implements BuildInfo {
     // returnere null if void...
     @Nullable
     public PackedInitializationContext process() {
-        return PackedInitializationContext.process(rootComponent, null);
+        return PackedInitializationContext.process(component, null);
     }
 
     /**
@@ -94,5 +96,65 @@ public final class BuildSetup implements BuildInfo {
      */
     public Thread thread() {
         return thread;
+    }
+
+    /**
+     * @param assembly
+     *            the root assembly
+     * @param wirelets
+     *            optional wirelets
+     * @param isAnalysis
+     *            is it an analysis
+     * @param isImage
+     *            is it an image
+     * @return a build setup
+     */
+    static BuildSetup buildFromAssembly(PackedApplicationDriver<?> driver, Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
+        // Extract the component driver from the assembly
+        PackedComponentDriver<?> componentDriver = AssemblyHelper.getDriver(assembly);
+
+        // Process all wirelets
+        WireletWrapper wp = WireletWrapper.forApplication(driver, componentDriver, wirelets);
+
+        int modifiers = 0;
+
+        if (driver != null) {
+            modifiers += PackedComponentModifierSet.I_ANALYSIS;
+            if (driver.isStateful()) {
+                modifiers += PackedComponentModifierSet.I_CONTAINER;
+            }
+        }
+
+        if (isImage) {
+            modifiers += PackedComponentModifierSet.I_IMAGE;
+        }
+
+        // Create a new build context that we passe around
+        BuildSetup build = new BuildSetup(driver, modifiers, new RealmSetup(assembly), componentDriver, wp);
+
+        // Invoke Assembly.build()
+        AssemblyHelper.invokeBuild(assembly, componentDriver.toConfiguration(build.component));
+
+        build.component.close();
+
+        return build;
+    }
+
+    static <CO extends Composer<?>, CC extends ComponentConfiguration> BuildSetup buildFromComposer(PackedApplicationDriver<?> driver,
+            PackedComponentDriver<CC> componentDriver, Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
+        WireletWrapper wp = WireletWrapper.forApplication(driver, componentDriver, wirelets);
+
+        BuildSetup build = new BuildSetup(driver, 0, new RealmSetup(consumer), componentDriver, wp);
+
+        CC componentConfiguration = componentDriver.toConfiguration(build.component);
+
+        // Used the supplied composer factory to create a composer from a component configuration instance
+        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
+
+        // Invoked the consumer supplied by the end-user
+        consumer.accept(composer);
+
+        build.component.close();
+        return build;
     }
 }
