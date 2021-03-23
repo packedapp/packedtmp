@@ -36,7 +36,7 @@ public abstract class InternalWirelet extends Wirelet {
 
         @Override
         protected void firstPass(ComponentSetup component) {
-            throw new Error();
+            //throw new Error();
         }
     }
     

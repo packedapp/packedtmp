@@ -174,7 +174,7 @@ public interface Injector extends ServiceLocator {
      */
     // Of er maaske fin. Saa understreger vi ligesom
     static Injector create(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().use(assembly, wirelets);
+        return driver().apply(assembly, wirelets);
     }
 }
 

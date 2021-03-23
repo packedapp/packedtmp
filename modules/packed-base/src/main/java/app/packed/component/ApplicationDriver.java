@@ -68,6 +68,29 @@ public /* sealed */ interface ApplicationDriver<A> {
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
+     * Uses the driver to create a new application using the specified assembly.
+     * <p>
+     * This method is typical not called directly by end-users. But indirectly through methods such as
+     * {@link Main#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * 
+     * @param assembly
+     *            the system assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return the new artifact or null if void artifact
+     * @throws BuildException
+     *             if the application could not be build
+     * @throws InitializationException
+     *             if the application failed to initializing
+     * @throws PanicException
+     *             if the application had an executing phase and it fails
+     * @see Program#start(Assembly, Wirelet...)
+     * @see Main#run(Assembly, Wirelet...)
+     * @see ServiceLocator#of(Assembly, Wirelet...)
+     */
+    A apply(Assembly<?> assembly, Wirelet... wirelets);
+
+    /**
      * Builds and validates the application
      * 
      * @param assembly
@@ -151,29 +174,6 @@ public /* sealed */ interface ApplicationDriver<A> {
         // return a
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Uses the driver to create a new application using the specified assembly.
-     * <p>
-     * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link Main#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
-     * 
-     * @param assembly
-     *            the system assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return the new artifact or null if void artifact
-     * @throws BuildException
-     *             if the application could not be build
-     * @throws InitializationException
-     *             if the application failed to initializing
-     * @throws PanicException
-     *             if the application had an executing phase and it fails
-     * @see Program#start(Assembly, Wirelet...)
-     * @see Main#run(Assembly, Wirelet...)
-     * @see ServiceLocator#of(Assembly, Wirelet...)
-     */
-    A use(Assembly<?> assembly, Wirelet... wirelets); // apply?
 
     // Smider vi build exception??? Eller
     // Bare invalid???

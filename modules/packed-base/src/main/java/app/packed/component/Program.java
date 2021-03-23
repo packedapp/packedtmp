@@ -163,7 +163,7 @@ public interface Program extends AutoCloseable {
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationImage#use(Wirelet...)} will be {@link RunState#RUNNING}. unless
+     * The state of the applications returned by {@link ApplicationImage#apply(Wirelet...)} will be {@link RunState#RUNNING}. unless
      * GuestWirelet.delayStart
      * 
      * @param assembly
@@ -205,7 +205,7 @@ public interface Program extends AutoCloseable {
      *             if the application could not be build, initialized or started
      */
     static Program start(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().use(assembly, wirelets);
+        return driver().apply(assembly, wirelets);
     }
 }
 
@@ -231,7 +231,7 @@ interface Zapp extends Program {
         // initialized - require explicit start
         // Starting
         // Started
-        return Program.driver().use(assembly, StateWirelets.lazyStart().andThen(wirelets));
+        return Program.driver().apply(assembly, StateWirelets.lazyStart().andThen(wirelets));
     }
 
     // An image that can be used exactly, will drop any memory references...

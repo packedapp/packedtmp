@@ -54,14 +54,14 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
 
     /**
      * Uses the image. What happens here is dependent on application driver that created the image. The behaviour of this
-     * method is identical to {@link ApplicationDriver#use(Assembly, Wirelet...)}.
+     * method is identical to {@link ApplicationDriver#apply(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets
      * @return the result of using the image
-     * @see {@link ApplicationDriver#use(Assembly, Wirelet...)}
+     * @see {@link ApplicationDriver#apply(Assembly, Wirelet...)}
      */
-    A use(Wirelet... wirelets);
+    A apply(Wirelet... wirelets);
 }
 
 interface ZImage<A> {

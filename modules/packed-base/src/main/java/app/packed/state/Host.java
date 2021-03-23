@@ -144,7 +144,7 @@ public interface Host {
     // Tror main er bl.a. propper det ind som et system image...
 
     static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        HostHelper.DRIVER.use(assembly, wirelets);
+        HostHelper.DRIVER.apply(assembly, wirelets);
     }
 
     // TODO return Image<Host>?

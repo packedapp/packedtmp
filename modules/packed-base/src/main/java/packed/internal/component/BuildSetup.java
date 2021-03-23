@@ -40,13 +40,6 @@ public final class BuildSetup implements BuildInfo {
     /** The build output. */
     final int modifiers;
 
-    /** The thread that is assembling the system. */
-    // We need WeakReference, or some try-final
-    // This should not be permanently..
-    // What if we create an image in one thread. Passes it to another thread.
-    @Nullable
-    private Thread thread = Thread.currentThread();
-
     /**
      * Creates a new build setup.
      * 
@@ -87,15 +80,6 @@ public final class BuildSetup implements BuildInfo {
     @Nullable
     public PackedInitializationContext process() {
         return PackedInitializationContext.process(component, null);
-    }
-
-    /**
-     * Returns the thread that is used for build process.
-     * 
-     * @return the thread that is used for build process
-     */
-    public Thread thread() {
-        return thread;
     }
 
     /**
@@ -158,3 +142,5 @@ public final class BuildSetup implements BuildInfo {
         return build;
     }
 }
+// Build setup does not maintain what thread is building the system.
+// If we want to have dynamically recomposable systems...

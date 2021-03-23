@@ -98,7 +98,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
         BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, true);
-        return new PackedImage(build);
+        return new PackedApplicationImage<>(this, build.component);
     }
 
     /** {@inheritDoc} */
@@ -141,7 +141,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public A use(Assembly<?> assembly, Wirelet... wirelets) {
+    public A apply(Assembly<?> assembly, Wirelet... wirelets) {
         // Build the system
         BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, false);
 
@@ -269,24 +269,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // }
     }
 
-    static class PackedBuilder /* Implements ArtifactDriver.Builder */ {
-
-    }
-
     /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#buildImage(Assembly, Wirelet...)}. */
-    public final class PackedImage implements ApplicationImage<A> {
-
-        private final ComponentSetup root;
-
-        /**
-         * Create a new image from the specified build setup.
-         * 
-         * @param build
-         *            the build setup
-         */
-        private PackedImage(BuildSetup build) {
-            this.root = build.component;
-        }
+    private final record PackedApplicationImage<A>(PackedApplicationDriver<A> driver, ComponentSetup root) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -296,12 +280,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A use(Wirelet... wirelets) {
-            // Initialize a new artifact
+        public A apply(Wirelet... wirelets) {
+            // Initialize a new application
             PackedInitializationContext pic = PackedInitializationContext.process(root, wirelets);
 
             // Wrap the system in a new shell and return it
-            return newApplication(pic);
+            return driver.newApplication(pic);
         }
+    }
+
+    static class PackedBuilder /* Implements ArtifactDriver.Builder */ {
+
     }
 }

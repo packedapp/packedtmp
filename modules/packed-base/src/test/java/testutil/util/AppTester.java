@@ -41,7 +41,7 @@ public class AppTester {
     }
 
     public AppTester(ApplicationImage<Program> img, Wirelet... wirelets) {
-        this(img.use(wirelets));
+        this(img.apply(wirelets));
     }
 
     public void assertPathExist(CharSequence s) {

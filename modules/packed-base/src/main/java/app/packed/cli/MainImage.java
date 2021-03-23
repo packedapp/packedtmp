@@ -78,11 +78,11 @@ public /* primitive */ final class MainImage {
      *             if the image has already been used
      */
     public void use(String[] args, Wirelet... wirelets) {
-        image.use(CliWirelets.args(args).andThen(wirelets));
+        image.apply(CliWirelets.args(args).andThen(wirelets));
     }
 
     public void use(Wirelet... wirelets) {
-        image.use(wirelets);
+        image.apply(wirelets);
     }
 
     /**

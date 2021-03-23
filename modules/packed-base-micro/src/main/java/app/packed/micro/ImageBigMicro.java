@@ -125,17 +125,17 @@ public class ImageBigMicro {
 
     @Benchmark
     public Program install31() {
-        return INSTALL31.use();
+        return INSTALL31.apply();
     }
 
     @Benchmark
     public Program install253() {
-        return INSTALL253.use();
+        return INSTALL253.apply();
     }
 
     @Benchmark
     public Program install253NOS() {
-        return INSTALL253_NOS.use();
+        return INSTALL253_NOS.apply();
     }
 }
 // 30 August 2020

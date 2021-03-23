@@ -88,7 +88,7 @@ public final class Main {
      *             if the application failed to run properly
      */
     public static void run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        driver().use(assembly, CliWirelets.args(args).andThen(wirelets));
+        driver().apply(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     /**
@@ -108,7 +108,7 @@ public final class Main {
      *             if the application failed to run properly
      */
     public static void run(Assembly<?> assembly, Wirelet... wirelets) {
-        driver().use(assembly, wirelets);
+        driver().apply(assembly, wirelets);
     }
 }
 

@@ -62,17 +62,17 @@ public class AppConstructionMicro {
 
     @Benchmark
     public Program emptyAppFromImage() {
-        return VariousImages.EMPTY_IMAGE.use();
+        return VariousImages.EMPTY_IMAGE.apply();
     }
 
     @Benchmark
     public Program oneComponentFromImage() {
-        return VariousImages.ONE_COMPONENT_IMAGE.use();
+        return VariousImages.ONE_COMPONENT_IMAGE.apply();
     }
 
     @Benchmark
     public Program fiveComponentsFromImage() {
-        return VariousImages.FIVE_CONTAINER_IMAGE.use();
+        return VariousImages.FIVE_CONTAINER_IMAGE.apply();
     }
 }
 // 18 may 2020
