@@ -26,7 +26,6 @@ import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireletWrapper;
 
 /**
  * A setup class for a build.
@@ -61,24 +60,14 @@ public final class BuildSetup implements BuildInfo {
     BuildSetup(PackedApplicationDriver<?> applicationDriver, Assembly<?> assembly, PackedComponentDriver<?> driver, boolean isImage, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(applicationDriver);
 
-        // Vi flytter wirelets'ene ind i ComponentSetup med mindre vi vil extracte info her i BuildSetup omkring dem
-        // Men det ser vi paa et senere tidspunkt
-
-        int tmpM = 0;
-
+        int tmpM = applicationDriver.modifiers;
         tmpM += PackedComponentModifierSet.I_ANALYSIS;
-        if (applicationDriver.needsRuntime()) {
-            tmpM += PackedComponentModifierSet.I_RUNTIME;
-        }
-
         if (isImage) {
             tmpM += PackedComponentModifierSet.I_IMAGE;
         }
 
-        this.modifiers = tmpM + PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_BUILD;
-
-        WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, driver, wirelets);
-        this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, ww);
+        this.modifiers = tmpM + PackedComponentModifierSet.I_BUILD;
+        this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, wirelets);
     }
 
     /**
@@ -89,10 +78,8 @@ public final class BuildSetup implements BuildInfo {
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, Consumer<?> consumer, PackedComponentDriver<?> componentDriver, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(applicationDriver);
-        this.modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
-
-        WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, componentDriver, wirelets);
-        this.component = new ComponentSetup(this, new RealmSetup(consumer), componentDriver, null, ww);
+        this.modifiers = applicationDriver.modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+        this.component = new ComponentSetup(this, new RealmSetup(consumer), componentDriver, null, wirelets);
     }
 
     /** {@return the root application driver} */

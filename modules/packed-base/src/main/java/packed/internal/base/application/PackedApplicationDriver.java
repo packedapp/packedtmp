@@ -41,6 +41,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
@@ -63,6 +64,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
+    public final int modifiers;
+
     /**
      * Create a new application driver using the specified builder.
      * 
@@ -73,12 +76,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.needsRuntime = builder.needsRuntime;
         this.mhConstructor = builder.mh;
         this.wirelet = builder.prefix;
+        this.modifiers = PackedComponentModifierSet.I_APPLICATION + (needsRuntime ? PackedComponentModifierSet.I_RUNTIME : 0);
     }
 
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet prefix) {
         this.needsRuntime = existing.needsRuntime;
         this.mhConstructor = existing.mhConstructor;
         this.wirelet = prefix;
+        this.modifiers = existing.modifiers;
     }
 
     /** {@inheritDoc} */

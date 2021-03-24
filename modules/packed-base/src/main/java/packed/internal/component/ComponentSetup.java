@@ -118,21 +118,15 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, @Nullable WireletWrapper wirelets) {
+    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
 
         this.build = requireNonNull(build);
-        this.wirelets = wirelets;
-        // May initialize the component's name
-        for (Wirelet w : wirelets.wirelets) {
-            if (w instanceof InternalWirelet bw) {
-                bw.firstPass(this);
-            }
-        }
 
         int mod = driver.modifiers;
 
+        WireletWrapper ww;
         if (parent == null) {
             this.slotTable = build.slotTable;
 
@@ -142,11 +136,22 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.RUNTIME);
             }
+
+            ww = WireletWrapper.forApplication(build.application().driver, driver, wirelets);
         } else {
+            ww = WireletWrapper.forComponent(driver, wirelets);
             this.onWire = parent.onWire;
             this.slotTable = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.slotTable;
         }
         this.modifiers = mod;
+
+        this.wirelets = ww;
+        // May initialize the component's name
+        for (Wirelet w : ww.wirelets) {
+            if (w instanceof InternalWirelet bw) {
+                bw.firstPass(this);
+            }
+        }
 
         // Setup Realm
         this.realm = requireNonNull(realm);
@@ -353,15 +358,12 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
-        // Create a wirelet wrapper from any wirelets
-        WireletWrapper ww = WireletWrapper.forComponent(driver, wirelets);
-
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
         ComponentSetup parent = extension == null ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create a new component and a new realm
-        ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly), driver, parent, ww);
+        ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(component);
@@ -530,13 +532,11 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
-        WireletWrapper wp = WireletWrapper.forComponent(d, wirelets);
-        // ConfigSite configSite = captureStackFrame(ConfigSiteInjectOperations.COMPONENT_INSTALL);
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentSetup parent = extension == null ? this : treeParent;
-        ComponentSetup compConf = new ComponentSetup(build, realm, d, parent, wp);
+        ComponentSetup compConf = new ComponentSetup(build, realm, d, parent, wirelets);
 
         // We only close the component if linking a assembly (new realm)
         return d.toConfiguration(compConf);

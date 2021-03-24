@@ -8,6 +8,7 @@ public class ZapAssembly extends BaseAssembly {
     @Override
     protected void build() {
         link(new LinkMe());
+        throw new Error();
     }
 
     public static void main(String[] args) {
