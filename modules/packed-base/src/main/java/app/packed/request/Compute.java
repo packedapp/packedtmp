@@ -66,7 +66,7 @@ class MySidecar extends RealMethodSidecarBootstrap {
     protected void bootstrap() {
         MethodHandle mh = methodHandle();
         MethodHookModel.Builder.registerProcessor(this, c -> {
-            c.table.lifecycle.methodHandle = mh;
+            c.slotTable.lifecycle.methodHandle = mh;
         });
     }
 

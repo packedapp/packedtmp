@@ -92,12 +92,12 @@ public final class SourceClassSetup implements DependencyProvider {
 
     public static SourceClassSetup create(ComponentSetup compConf, PackedComponentDriver<?> driver) {
         // Reserve a place in the regions runtime memory, if the component is a singleton
-        int regionIndex = compConf.modifiers().isSingleton() ? compConf.table.reserve() : -1;
+        int regionIndex = compConf.modifiers().isSingleton() ? compConf.slotTable.reserve() : -1;
         // Create the source
         SourceClassSetup s = new SourceClassSetup(compConf, regionIndex, driver.data);
 
         if (s.instance != null) {
-            compConf.table.constants.add(s);
+            compConf.slotTable.constants.add(s);
         } else if (s.dependant != null) {
             compConf.memberOfContainer.addDependant(s.dependant);
         }

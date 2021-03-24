@@ -66,7 +66,6 @@ public enum ComponentModifier {
      * 
      * Components with this modifier:
      * <ul>
-     * <li>Always has a parent component with the {@link #BUILD_ROOT} modifier set.</li>
      * <li>Are either the root component, or has a parent component with {@link #HOST} modifier set.</li>
      * <li>The subtree of an image is always immutable once constructed. A {@link #HOST} modifier on a sub component. Merely
      * indicates that a runtime spawn of the image can add guests.</li>
@@ -214,6 +213,7 @@ public enum ComponentModifier {
      * <p>
      * Since Java is GC'ed we do not have to worry about ordinary objects...
      */
+    // Maaske vende den om og sige Vi er stateful som default...
     STATEFUL, // Something that has to be managed by the runtime after it has been initialized.
 
     UNSCOPED; // Det er her hvor den kan vaere managed eller unmanaged..

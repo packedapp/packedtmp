@@ -288,7 +288,6 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         static final int OPT_STATEFUL = 3;
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
         public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
-
         public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
 
         @Nullable

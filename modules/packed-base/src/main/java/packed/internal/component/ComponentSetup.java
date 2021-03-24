@@ -72,7 +72,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /* *************** Setup **************** */
 
     /** The slot table this component is a part of. */
-    public final SlotTableSetup table;
+    public final SlotTableSetup slotTable;
 
     /** The realm this component belongs to. */
     public final RealmSetup realm;
@@ -134,17 +134,17 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         int mod = driver.modifiers;
 
         if (parent == null) {
-            this.table = new SlotTableSetup(); // Root always needs a nodestore
+            this.slotTable = build.slotTable;
 
             mod = mod | build.modifiers;
-            // mod = PackedComponentModifierSet.add(mod, ComponentModifier.SYSTEM);
+
             if (build.modifiers().isContainerOld()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
                 mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINEROLD);
             }
         } else {
             this.onWire = parent.onWire;
-            this.table = driver.modifiers().isContainerOld() ? new SlotTableSetup() : parent.table;
+            this.slotTable = driver.modifiers().isContainerOld() ? new SlotTableSetup() : parent.slotTable;
         }
         this.modifiers = mod;
 
@@ -166,7 +166,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup Guest
         if (modifiers().isContainerOld()) {
-            table.reserve(); // reserve a slot to an instance of PackedGuest
+            slotTable.reserve(); // reserve a slot to an instance of PackedGuest
         }
 
         // Setup any source
@@ -210,7 +210,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
-        this.table = parent.table;
+        this.slotTable = parent.slotTable;
         this.source = null;
         this.wirelets = null;
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
@@ -324,7 +324,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
         // If this component represents container close the container
         if (container != null) {
-            container.close(table);
+            container.close(slotTable);
         }
         isClosed = true;
     }

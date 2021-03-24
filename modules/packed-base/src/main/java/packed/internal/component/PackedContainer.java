@@ -139,7 +139,7 @@ public class PackedContainer implements Host {
             lock.unlock();
         }
 
-        Lifecycle l = component.table.lifecycle;
+        Lifecycle l = component.slotTable.lifecycle;
         if (!l.hasExecutionBlock()) {
             return; // runnint as deamon
         }

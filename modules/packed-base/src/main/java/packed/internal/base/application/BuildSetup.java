@@ -25,6 +25,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.SlotTableSetup;
 import packed.internal.component.WireletWrapper;
 
 /**
@@ -36,6 +37,7 @@ public final class BuildSetup implements BuildInfo {
     /** The artifact driver used for the build process. */
     private final PackedApplicationDriver<?> applicationDriver;
 
+    public final SlotTableSetup slotTable = new SlotTableSetup();
     /** The root component. */
     final ComponentSetup component;
 
@@ -64,18 +66,16 @@ public final class BuildSetup implements BuildInfo {
 
         int tmpM = 0;
 
-        if (driver != null) {
-            tmpM += PackedComponentModifierSet.I_ANALYSIS;
-            if (applicationDriver.isStateful()) {
-                tmpM += PackedComponentModifierSet.I_CONTAINER;
-            }
+        tmpM += PackedComponentModifierSet.I_ANALYSIS;
+        if (applicationDriver.isStateful()) {
+            tmpM += PackedComponentModifierSet.I_CONTAINER;
         }
 
         if (isImage) {
             tmpM += PackedComponentModifierSet.I_IMAGE;
         }
 
-        this.modifiers = tmpM + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+        this.modifiers = tmpM + PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_BUILD;
         this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, ww);
     }
 
@@ -87,7 +87,7 @@ public final class BuildSetup implements BuildInfo {
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, Consumer<?> consumer, PackedComponentDriver<?> componentDriver, Wirelet[] wirelets) {
         this.applicationDriver = applicationDriver;
-        this.modifiers = PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+        this.modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
         WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, componentDriver, wirelets);
         this.component = new ComponentSetup(this, new RealmSetup(consumer), componentDriver, null, ww);
     }
