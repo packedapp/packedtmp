@@ -33,6 +33,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public static final int I_BUILD = intOf(ComponentModifier.BUILD_ROOT);
     public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINEROLD);
     public static final int I_CONTAINERNEW = intOf(ComponentModifier.CONTAINER);
+    
     public static final int I_IMAGE = intOf(ComponentModifier.IMAGE_ROOT);
     public static final int I_SOURCE = intOf(ComponentModifier.SOURCED);
 
