@@ -301,7 +301,8 @@ public /* sealed */ interface ApplicationDriver<A> {
         // So always scan...
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
-        default Builder restrictExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionClasses) {
+        @SuppressWarnings("unchecked") 
+        default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
             throw new UnsupportedOperationException();
         }
         

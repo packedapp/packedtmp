@@ -315,7 +315,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
          *            the extensions
          * @see Extension#$dependsOn(Class...)
          */
-        public void dependsOn(@SuppressWarnings("unchecked") Class<? extends Extension>... extensions) {
+        @SuppressWarnings("unchecked")
+        public void dependsOn(Class<? extends Extension>... extensions) {
             requireNonNull(extensions, "extensions is null");
             for (Class<? extends Extension> dependencyType : extensions) {
                 requireNonNull(dependencyType);

@@ -82,6 +82,7 @@
           <source>16</source>
           <target>16</target>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
+          <compilerArgument>-Xlint:unchecked</compilerArgument>
         </configuration>
       </plugin>
       <plugin>
