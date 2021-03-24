@@ -73,7 +73,7 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet after) {
         requireNonNull(after, "after is null");
-        return new WireletArray(WireletArray.flatten(this, after));
+        return WireletArray.of(this, after);
     }
 
     /**
@@ -90,7 +90,7 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet... afters) {
         requireNonNull(afters, "afters is null");
-        return new WireletArray(WireletArray.flatten(this, combine(afters)));
+        return WireletArray.of(this, combine(afters));
     }
 
     /**
@@ -107,7 +107,7 @@ public abstract class Wirelet {
      */
     public final Wirelet beforeThis(Wirelet... befores) {
         requireNonNull(befores, "befores is null");
-        return new WireletArray(WireletArray.flatten(combine(befores), this));
+        return WireletArray.of(combine(befores), this);
     }
 
 
@@ -189,7 +189,7 @@ public abstract class Wirelet {
      * @see #beforeThis(Wirelet...)
      */
     public static Wirelet combine(Wirelet... wirelets) {
-        return new WireletArray(WireletArray.flatten(wirelets));
+        return WireletArray.of(wirelets);
     }
 
 

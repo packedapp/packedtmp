@@ -10,7 +10,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
     /** An empty wirelet array. */
     static final Wirelet[] EMPTY = new Wirelet[0];
 
-    /** The wirelets this wirelet wraps. */
+    /** The wirelets this wirelet wraps. Will never contain any WireletArray instances. */
     final Wirelet[] wirelets;
 
     /**
@@ -19,7 +19,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
      * @param wirelets
      *            the wirelets to wrap
      */
-    public WireletArray(Wirelet[] wirelets) {
+    private WireletArray(Wirelet[] wirelets) {
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
     }
 
@@ -55,7 +55,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
         return dest;
     }
 
-    public static Wirelet[] flatten(Wirelet w1, Wirelet w2) {
+    static Wirelet[] flatten(Wirelet w1, Wirelet w2) {
         Wirelet[] result;
         if (w1 instanceof WireletArray wl1) {
             Wirelet[] wirelets1 = wl1.wirelets;
@@ -92,7 +92,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
         return copyInto(w2, result, i);
     }
 
-    public static Wirelet[] flatten(Wirelet[] wirelets) {
+    static Wirelet[] flatten(Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         return switch (wirelets.length) {
         case 0 -> EMPTY;
@@ -124,6 +124,14 @@ public final /* primitive */ class WireletArray extends Wirelet {
             yield tmp;
         }
         };
+    }
+
+    public final static WireletArray of(Wirelet... wirelets) {
+        return new WireletArray(WireletArray.flatten(wirelets));
+    }
+
+    public final static WireletArray of(Wirelet wirelet, Wirelet other) {
+        return new WireletArray(WireletArray.flatten(wirelet, other));
     }
 
     static Wirelet[] toArray(Wirelet w, Wirelet[] wirelets) {
