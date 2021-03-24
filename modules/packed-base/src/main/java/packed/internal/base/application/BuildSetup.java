@@ -15,10 +15,7 @@
  */
 package packed.internal.base.application;
 
-import java.util.function.Consumer;
-
 import app.packed.application.BuildInfo;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
@@ -36,13 +33,13 @@ public final class BuildSetup implements BuildInfo {
     /** The artifact driver used for the build process. */
     private final ApplicationSetup application;
 
-    public final ConstantPoolSetup slotTable = new ConstantPoolSetup();
-
     /** The root component. */
     final ComponentSetup component;
 
     /** The build output. */
     public final int modifiers;
+
+    public final ConstantPoolSetup slotTable = new ConstantPoolSetup();
 
     // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
     // ruleBroken = FFF
@@ -52,34 +49,15 @@ public final class BuildSetup implements BuildInfo {
     Object validationErrors;
 
     /**
-     * Creates a new build setup from an assembly.
+     * Creates a new build setup.
      * 
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> applicationDriver, Assembly<?> assembly, PackedComponentDriver<?> driver, boolean isImage, Wirelet[] wirelets) {
+    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> driver, int modifiers, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(applicationDriver);
-
-        int tmpM = applicationDriver.modifiers;
-        tmpM += PackedComponentModifierSet.I_ANALYSIS;
-        if (isImage) {
-            tmpM += PackedComponentModifierSet.I_IMAGE;
-        }
-
-        this.modifiers = tmpM + PackedComponentModifierSet.I_BUILD;
-        this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, wirelets);
-    }
-
-    /**
-     * Creates a new build setup for a composer.
-     * 
-     * @param modifiers
-     *            the output of the build process
-     */
-    BuildSetup(PackedApplicationDriver<?> applicationDriver, Consumer<?> consumer, PackedComponentDriver<?> componentDriver, Wirelet[] wirelets) {
-        this.application = new ApplicationSetup(applicationDriver);
-        this.modifiers = applicationDriver.modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
-        this.component = new ComponentSetup(this, new RealmSetup(consumer), componentDriver, null, wirelets);
+        this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + modifiers;
+        this.component = new ComponentSetup(this, realm, driver, null, wirelets);
     }
 
     /** {@return the root application driver} */

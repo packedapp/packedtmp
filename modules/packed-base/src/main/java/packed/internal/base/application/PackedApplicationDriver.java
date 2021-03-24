@@ -43,6 +43,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
+import packed.internal.component.RealmSetup;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.ThrowableUtil;
@@ -89,7 +90,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = buildFromAssembly(assembly, wirelets, true, false);
+        BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
         return build.component.adaptor();
     }
 
@@ -97,7 +98,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public A apply(Assembly<?> assembly, Wirelet... wirelets) {
         // Build the system
-        BuildSetup build = buildFromAssembly(assembly, wirelets, false, false);
+        BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
 
         // Initialize the system. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
@@ -126,13 +127,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            is it an image
      * @return a build setup
      */
-    private BuildSetup buildFromAssembly(Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
+    private BuildSetup buildFromAssembly(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
 
         // Extract the component driver from the assembly
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Create a new build setup
-        BuildSetup build = new BuildSetup(this, assembly, componentDriver, isImage, wirelets);
+        BuildSetup build = new BuildSetup(this, new RealmSetup(assembly), componentDriver, modifiers, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
@@ -157,7 +158,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(consumer, "consumer is null");
 
         // Create a build setup
-        BuildSetup build = new BuildSetup(this, consumer, pcd, wirelets);
+        BuildSetup build = new BuildSetup(this, new RealmSetup(consumer), pcd, 0, wirelets);
 
         CC componentConfiguration = pcd.toConfiguration(build.component);
 
@@ -199,7 +200,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = buildFromAssembly(assembly, wirelets, false, true);
+        BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_IMAGE);
         return new PackedApplicationImage<>(this, build.component);
     }
 
