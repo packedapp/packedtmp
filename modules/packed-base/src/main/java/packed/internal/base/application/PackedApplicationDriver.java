@@ -36,7 +36,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
 import app.packed.inject.ServiceLocator;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
@@ -58,14 +57,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (PackedInitializationContext)Object
 
-    /** The initial set of modifiers for any system that uses this driver. */
-    private final boolean needsRuntime;
+    /** The modifiers of this application */
+    public final int modifiers;
 
     /** May contain a wirelet that will be processed _after_ any other wirelets. */
     @Nullable
     public final Wirelet wirelet;
-
-    public final int modifiers;
 
     /**
      * Create a new application driver using the specified builder.
@@ -74,17 +71,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the used for construction
      */
     private PackedApplicationDriver(Builder builder) {
-        this.needsRuntime = builder.needsRuntime;
         this.mhConstructor = builder.mh;
+        this.modifiers = builder.modifiers;
         this.wirelet = builder.prefix;
-        this.modifiers = PackedComponentModifierSet.I_APPLICATION + (needsRuntime ? PackedComponentModifierSet.I_RUNTIME : 0);
     }
 
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet prefix) {
-        this.needsRuntime = existing.needsRuntime;
         this.mhConstructor = existing.mhConstructor;
-        this.wirelet = prefix;
         this.modifiers = existing.modifiers;
+        this.wirelet = prefix;
     }
 
     /** {@inheritDoc} */
@@ -177,10 +172,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return newApplication(pic);
     }
 
-    public boolean needsRuntime() {
-        return needsRuntime;
-    }
-
     /**
      * Create a new application using the specified initialization context.
      * 
@@ -229,7 +220,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     public static class Builder implements ApplicationDriver.Builder {
         MethodHandle mh;
-        boolean needsRuntime = true;
+        int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
         Wirelet prefix;
         boolean useShellAsSource;
 
@@ -263,7 +254,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             Infuser infuser = Infuser.build(caller, c -> {
                 c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
                 c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
-                if (needsRuntime) {
+                if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) {
                     c.provide(ApplicationRuntime.class).transform(PackedInitializationContext.MH_RUNTIME);
                 }
             }, PackedInitializationContext.class);
@@ -286,7 +277,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         @Override
         public Builder noRuntime() {
-            needsRuntime = false;
+            modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
             return this;
         }
 
@@ -301,55 +292,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             useShellAsSource = true;
             return this;
         }
-    }
-
-    /** Options that can be applied when creating a shell driver. */
-    interface Option {
-
-        // String Reason??? This extension has been blacklisted
-        @SafeVarargs
-        static Option blacklistExtensions(Class<? extends Extension>... extensions) {
-            throw new UnsupportedOperationException();
-        }
-
-        static Option blacklistExtensions(String... extensions) {
-            throw new UnsupportedOperationException();
-        }
 
         // Mapning af Execeptions/Errors....
         //// Saa er det let at rette i f.eks. App
 
         // Debug Options...
-
         // whitelistExtension(...)
         // blacklistExtension
-
-        //// Can only use of them
+        // nameProvider() {
         // Altsaa det maa vaere meget taet paa ArchUnit a.la.. Hmmm
 
-        static Option nameProvider() {
-            // prefix???
-            // Ideen er ihvertfald at
-            throw new UnsupportedOperationException();
-        }
-
-        // Hmmm... Fungere jo ikke rigtigt med image....
-        static Option prefixWirelets(Wirelet... wirelets) {
-            throw new UnsupportedOperationException();
-        }
-
-        // custom ServiceProvider..
-        static Option serviceProvider() {
-            throw new UnsupportedOperationException();
-        }
-
-        // Hmmm... Fungere jo ikke rigtigt med image......
-        @SafeVarargs
-        static Option whitelistExtensions(Class<? extends Extension>... extensions) {
-            throw new UnsupportedOperationException();
-        }
-
-        // non execution -> Create...
     }
 
     /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
@@ -367,7 +319,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // Initialize a new application
             PackedInitializationContext pic = PackedInitializationContext.process(root, wirelets);
 
-            // Wrap the system in a new shell and return it
+            // return an application instance
             return driver.newApplication(pic);
         }
     }

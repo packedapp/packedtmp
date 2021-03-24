@@ -43,6 +43,7 @@ import packed.internal.util.ThrowableUtil;
 
 public class PackedApplicationRuntime implements ApplicationRuntime {
 
+    // Sagtens encode det i sync ogsaa
     RunState desiredState = RunState.INITIALIZING;
 
     /**
@@ -56,6 +57,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
 
     volatile RunState state = RunState.INITIALIZING;
 
+    // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
     public PackedApplicationRuntime(PackedInitializationContext pic) {

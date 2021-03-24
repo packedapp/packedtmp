@@ -35,6 +35,7 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 
 /** An runtime representation of a component. */
+// PackedComponentInstance
 public final class PackedComponent implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
