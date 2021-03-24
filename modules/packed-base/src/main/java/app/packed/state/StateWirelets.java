@@ -22,14 +22,12 @@ import java.util.function.Function;
 
 import app.packed.application.Program;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.state.Host.StopOption;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link Program#start(Assembly, Wirelet...)}.
  * <p>
- * All wirelets on this class requires the {@link ComponentModifier#CONTAINEROLD} modifier on the component being wired.
  */
 
 //Runables -> InVirtualThread

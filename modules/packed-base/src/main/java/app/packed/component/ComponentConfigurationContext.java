@@ -85,7 +85,7 @@ public /* sealed */ interface ComponentConfigurationContext {
      * @param extensionClass
      * @return the extension
      * @throws UnsupportedOperationException
-     *             if the component does not have the {@link ComponentModifier#CONTAINER} modifier
+     *             if the underlying component is not a container
      * @see ContainerConfiguration#use(Class)
      */
     <T extends Extension> T containerUse(Class<T> extensionClass);
