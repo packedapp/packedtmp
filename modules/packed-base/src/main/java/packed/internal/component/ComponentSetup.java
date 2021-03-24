@@ -132,11 +132,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
             mod = mod | build.modifiers;
 
-            if (build.modifiers().hasRuntime()) {
-                // Is it a guest if we are analyzing??? Well we want the information...
-                mod = PackedComponentModifierSet.add(mod, ComponentModifier.RUNTIME);
-            }
-
             ww = WireletWrapper.forApplication(build.application().driver, driver, wirelets);
         } else {
             ww = WireletWrapper.forComponent(driver, wirelets);
@@ -217,7 +212,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.realm.current = this; // IDK Den er jo ikke runtime...
         this.slotTable = parent.slotTable;
         this.source = null;
-        this.wirelets = null;
+        this.wirelets = null; // cannot specify wirelets to extension
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
