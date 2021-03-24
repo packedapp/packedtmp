@@ -15,7 +15,7 @@
  */
 package app.packed.inject.sandbox;
 
-import app.packed.component.ApplicationDriver;
+import app.packed.application.ApplicationDriver;
 import app.packed.component.Assembly;
 
 /**

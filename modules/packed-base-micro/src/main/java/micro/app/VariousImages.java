@@ -15,8 +15,8 @@
  */
 package micro.app;
 
-import app.packed.component.Program;
-import app.packed.component.ApplicationImage;
+import app.packed.application.ApplicationImage;
+import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 
 /**

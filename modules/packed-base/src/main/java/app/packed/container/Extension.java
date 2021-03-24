@@ -23,13 +23,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationImage;
+import app.packed.application.BuildInfo;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Realm;

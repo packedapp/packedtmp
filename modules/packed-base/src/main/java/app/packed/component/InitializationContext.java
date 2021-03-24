@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import app.packed.application.BuildInfo;
+
 /**
  *
  */
@@ -30,7 +32,7 @@ public interface InitializationContext {
      * @return the assembly context
      */
     // assembly.modifiers().isImage()... to see if we are created from an image...
-    BuildInfo assembly();
+    BuildInfo build();
 
     // path
 

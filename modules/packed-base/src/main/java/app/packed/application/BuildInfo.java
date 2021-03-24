@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.application;
+
+import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 
 /**
  * An assembly context is created every time an build context is create .

@@ -21,10 +21,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationImage;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.component.ApplicationDriver;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.hooks.AutoService;

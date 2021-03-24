@@ -19,9 +19,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationImage;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 
 /**

@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.application;
 
-/**
- *
- */
-// Alternativ DebugWirelets...
-class DevWirelets {
+/** Information about a namespace. */
+// Component namespace info????
+// ApplicationInfo???? 
+// Giver ikke mening at have namespace info.
+// Statefull/stateless er altid det samme som root applicationen
+interface NamespaceInfo {
 
+    boolean isStateful();
+
+    // no (managed) threads
+    boolean isStateless();
 }

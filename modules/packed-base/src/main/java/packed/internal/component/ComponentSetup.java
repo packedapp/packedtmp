@@ -46,6 +46,8 @@ import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.base.application.BuildSetup;
+import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.base.attribute.DefaultAttributeMap;
 import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.PackedAttributeModel;
@@ -116,7 +118,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, @Nullable WireletWrapper wirelets) {
+    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, @Nullable WireletWrapper wirelets) {
         super(parent);
         this.extension = null; // Extensions use another constructor
 
@@ -241,11 +243,11 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         DefaultAttributeMap dam = new DefaultAttributeMap();
 
         if (source != null) {
-            dam.addValue(ComponentAttributes.SOURCE_TYPE, source.model.type);
+            dam.addValue(ComponentAttributes.SOURCE_CLASS, source.model.type);
         }
 
         if (extension != null) {
-            dam.addValue(ComponentAttributes.EXTENSION_MEMBER, extension.extensionClass());
+            dam.addValue(ComponentAttributes.EXTENSION_CLASS, extension.extensionClass());
             PackedAttributeModel pam = extension.model().attributes();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
@@ -271,7 +273,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
             PackedApplicationDriver<?> pac = build().applicationDriver();
-            dam.addValue(ComponentAttributes.SHELL_TYPE, pac.artifactRawType());
+            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
         }
         return dam;
     }
@@ -300,7 +302,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @see BuildSetup#buildFromComposer(PackedApplicationDriver, PackedComponentDriver, java.util.function.Function,
      *      Consumer, Wirelet...)
      */
-    void realmClose() {
+    public void realmClose() {
         if (realm.current != null) {
             realm.current.fixCurrent();
         }
@@ -352,7 +354,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> driver = AssemblyHelper.getDriver(assembly);
+        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
         // Create a wirelet wrapper from the specified wirelets
         WireletWrapper ww = WireletWrapper.forComponent(driver, wirelets);
@@ -364,8 +366,15 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Create a new component and a new realm
         ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly), driver, parent, ww);
 
-        // Invoke Assembly::build
-        AssemblyHelper.invokeBuild(assembly, driver.toConfiguration(component));
+        // Create the component configuration that is needed by the assembly
+        ComponentConfiguration configuration = driver.toConfiguration(component);
+
+        // Invoke Assembly::doBuild
+        try {
+            PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
 
         // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
         component.realmClose();

@@ -24,8 +24,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.base.Key;
-import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.contract.Contract;

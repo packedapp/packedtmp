@@ -17,8 +17,8 @@ package packed.internal.inject.service.sandbox;
 
 import java.util.function.Consumer;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.base.Qualifier;
-import app.packed.component.ApplicationDriver;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.Composer;

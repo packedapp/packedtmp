@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.base.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,10 +23,10 @@ import java.lang.invoke.MethodType;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationImage;
 import app.packed.base.Completion;
 import app.packed.base.Nullable;
-import app.packed.component.ApplicationDriver;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
@@ -35,6 +35,9 @@ import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.validate.Validation;
+import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedInitializationContext;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -23,7 +23,12 @@ import java.util.function.Function;
 
 import app.packed.base.Completion;
 import app.packed.base.TypeToken;
-import app.packed.cli.Main;
+import app.packed.component.Assembly;
+import app.packed.component.Component;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDriver;
+import app.packed.component.Composer;
+import app.packed.component.Wirelet;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
@@ -31,7 +36,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
-import packed.internal.component.PackedApplicationDriver;
+import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
@@ -164,6 +169,9 @@ public /* sealed */ interface ApplicationDriver<A> {
      */
     // Hvad hvis vi laver composeren om til at tage en ComponentDriver... ligesom assembly.
     // Og saa tager vi en composer
+
+    // Maaske sender vi ikke en Component med over... Saa vi kan vi have ASSEMBLY_CLASS som en attribute
+    // Og maaske kan vi det alligevel...
     <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
 

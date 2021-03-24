@@ -25,6 +25,7 @@ import app.packed.hooks.AutoService;
  * Represents the arguments to a method main.
  */
 @AutoService
+// CliArgs???
 public final class MainArgs {
 
     private final String[] args;

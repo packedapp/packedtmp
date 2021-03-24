@@ -1,5 +1,6 @@
-package app.packed.cli;
+package app.packed.application;
 
+import app.packed.cli.CliWirelets;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.state.Host;

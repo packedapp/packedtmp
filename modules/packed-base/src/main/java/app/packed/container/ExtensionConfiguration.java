@@ -22,12 +22,12 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.application.ApplicationImage;
+import app.packed.application.BuildInfo;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;

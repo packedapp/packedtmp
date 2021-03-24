@@ -18,6 +18,7 @@ package packed.internal.component;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
+import packed.internal.base.application.PackedApplicationDriver;
 
 /** A holder of wirelets and wirelet pipelines. */
 public final class WireletWrapper {
@@ -25,6 +26,7 @@ public final class WireletWrapper {
     /** An empty wirelet wrapper. */
     static final WireletWrapper EMPTY = new WireletWrapper(WireletArray.EMPTY);
 
+    /** The number of unconsumed wirelets. */
     int unconsumed;
 
     /** The wirelets we are wrapping. This array is safe for internal use. But must be cloned if exposed to users. */

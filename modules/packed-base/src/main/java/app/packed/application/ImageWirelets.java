@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.application;
+
+import app.packed.component.Wirelet;
 
 /**
  * A collection of wirelets that can be specified when building an {@link ApplicationImage image}.

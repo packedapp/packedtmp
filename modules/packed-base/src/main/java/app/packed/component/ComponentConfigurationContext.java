@@ -18,6 +18,7 @@ package app.packed.component;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.application.BuildInfo;
 import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;

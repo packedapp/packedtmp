@@ -15,8 +15,8 @@
  */
 package app.packed.request;
 
-import app.packed.cli.Main;
-import app.packed.component.BuildWirelets;
+import app.packed.application.BuildWirelets;
+import app.packed.application.Main;
 import app.packed.container.BaseAssembly;
 
 /**

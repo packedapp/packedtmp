@@ -23,11 +23,11 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
+import app.packed.application.BuildInfo;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.BuildInfo;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;

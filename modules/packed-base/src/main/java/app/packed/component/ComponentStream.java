@@ -23,6 +23,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.Program;
 import app.packed.attribute.AttributedElementStream;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;

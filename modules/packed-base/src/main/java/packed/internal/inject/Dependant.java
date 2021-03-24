@@ -25,14 +25,14 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.SlotTableSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.SlotTable;
-import packed.internal.component.source.SourceClassSetup;
+import packed.internal.component.SlotTableSetup;
 import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
+import packed.internal.component.source.SourceClassSetup;
 import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.Wrapper;

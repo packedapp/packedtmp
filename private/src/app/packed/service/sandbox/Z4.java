@@ -18,8 +18,8 @@ package app.packed.service.sandbox;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.component.ApplicationImage;
-import app.packed.component.Program;
+import app.packed.application.ApplicationImage;
+import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 

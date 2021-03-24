@@ -1,7 +1,8 @@
-package app.packed.component;
+package app.packed.application;
 
 import java.lang.invoke.MethodHandles;
 
+import app.packed.component.Component;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;
 

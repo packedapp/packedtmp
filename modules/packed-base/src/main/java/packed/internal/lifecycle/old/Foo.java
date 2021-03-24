@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 import java.time.LocalDateTime;
 import java.util.concurrent.atomic.AtomicLong;
 
+import app.packed.application.Program;
 import app.packed.base.Tag;
-import app.packed.component.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;

@@ -1,4 +1,5 @@
 module app.packed.base {
+    exports app.packed.application;
     exports app.packed.attribute; // then have @Preview @DeprecatedWithReason
     exports app.packed.base;
     exports app.packed.cli;

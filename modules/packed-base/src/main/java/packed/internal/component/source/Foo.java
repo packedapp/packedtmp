@@ -22,7 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.util.concurrent.atomic.AtomicLong;
 
-import app.packed.component.Program;
+import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.FieldHook;

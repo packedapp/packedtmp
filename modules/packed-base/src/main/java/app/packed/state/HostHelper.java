@@ -17,7 +17,7 @@ package app.packed.state;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.component.ApplicationDriver;
+import app.packed.application.ApplicationDriver;
 
 /**
  *

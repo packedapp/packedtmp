@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.cli.Main;
+import app.packed.application.Main;
 import app.packed.container.BaseAssembly;
 import app.packed.hooks.MethodHook;
 

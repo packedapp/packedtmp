@@ -26,8 +26,8 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
-import packed.internal.component.SlotTableSetup;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.SlotTableSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 

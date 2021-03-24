@@ -19,10 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 
-import app.packed.component.Program;
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationImage;
+import app.packed.application.Program;
 import app.packed.component.Assembly;
-import app.packed.component.ApplicationDriver;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import packed.internal.component.PackedInitializationContext;

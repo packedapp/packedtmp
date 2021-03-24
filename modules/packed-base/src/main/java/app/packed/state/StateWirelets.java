@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import app.packed.component.Program;
+import app.packed.application.Program;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;

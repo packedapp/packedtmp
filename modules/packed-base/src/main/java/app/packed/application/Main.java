@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
+package app.packed.application;
 
 import app.packed.base.Completion;
-import app.packed.component.Program;
-import app.packed.component.ApplicationDriver;
+import app.packed.cli.CliWirelets;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;

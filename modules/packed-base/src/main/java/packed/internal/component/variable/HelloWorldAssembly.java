@@ -15,7 +15,7 @@
  */
 package packed.internal.component.variable;
 
-import app.packed.cli.Main;
+import app.packed.application.Main;
 import app.packed.component.ComponentStream;
 import app.packed.container.BaseAssembly;
 import app.packed.request.Compute;

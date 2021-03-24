@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.application;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
+import app.packed.component.Assembly;
+import app.packed.component.Component;
+import app.packed.component.ComponentStream;
 import app.packed.component.ComponentStream.Option;
+import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.Host;

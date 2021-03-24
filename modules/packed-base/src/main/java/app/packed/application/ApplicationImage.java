@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.application;
+
+import app.packed.component.Assembly;
+import app.packed.component.Component;
+import app.packed.component.Wirelet;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
@@ -38,7 +42,7 @@ package app.packed.component;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.component.Program} or other artifact images.
+ * An image can be used to create new instances of {@link app.packed.application.Program} or other artifact images.
  * Artifact images can not be used as a part of other containers, for example, via
  * 
  * @see Program#buildImage(Assembly, Wirelet...)

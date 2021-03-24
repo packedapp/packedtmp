@@ -27,8 +27,8 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.component.Program;
-import app.packed.component.ApplicationImage;
+import app.packed.application.ApplicationImage;
+import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;

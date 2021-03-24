@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.concurrent.TimeUnit;
 
+import app.packed.application.ApplicationImage;
 import app.packed.component.Assembly;
-import app.packed.component.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.state.Host;
 import app.packed.state.Host.StopOption;

@@ -19,10 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BindableComponentDriver;
 import app.packed.component.Component;
@@ -36,6 +38,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.inject.classscan.Infuser;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -43,6 +46,9 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
+    /** A handle that can invoke {@link Assembly#build()}. Is here because I have no better place to put it. */
+    public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class, ComponentConfiguration.class);
+    
     @SuppressWarnings("rawtypes")
     public static final BindableComponentDriver INSTALL_DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
             PackedComponentDriver.Option.constantSource());
@@ -51,6 +57,10 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
     @SuppressWarnings("rawtypes")
     public static final BindableComponentDriver STATELESS_DRIVER = PackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
             PackedComponentDriver.Option.statelessSource());
+
+    /** A handle that can access Assembly#driver. */
+    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
+            PackedComponentDriver.class);
 
     // Holds ExtensionModel for extensions, source for sourced components
     public final Object data;
@@ -69,6 +79,12 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         if (modifiers == 0) {
             throw new IllegalStateException();
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentDriverDescriptor descriptor() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -96,6 +112,18 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
     @Override
     public ComponentDriver<C> with(Wirelet... wirelet) {
         return null;
+    }
+
+    /**
+     * Extracts the component driver from the specified assembly.
+     * 
+     * @param assembly
+     *            the assembly to extract the component driver from
+     * @return the component driver of the specified assembly
+     */
+    public static <C extends ComponentConfiguration> PackedComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
+        requireNonNull(assembly, "assembly is null");
+        return (PackedComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 
     public static Meta newMeta(Type type, MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
@@ -183,18 +211,85 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
         }
     }
 
+    public interface Option {
+
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         * @see ComponentModifier#CONSTANT
+         */
+        // InstanceComponentDriver automatically sets the source...
+        static Option constantSource() {
+            return PackedComponentDriver.OptionImpl.CONSTANT;
+        }
+
+        /**
+         * The component the driver will be a container.
+         * <p>
+         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+         * 
+         * @return stuff
+         * @see ComponentModifier#CONTAINER
+         */
+        static Option container() {
+            return PackedComponentDriver.OptionImpl.CONTAINER;
+        }
+
+        static Option sourceAssignableTo(Class<?> rawType) {
+            throw new UnsupportedOperationException();
+        }
+
+        static Option statelessSource() {
+            return PackedComponentDriver.OptionImpl.STATELESS;
+        }
+
+        static Option validateParent(Predicate<? super Component> validator, String msg) {
+            return validateWiring((c, d) -> {
+                if (validator.test(c)) {
+                    throw new IllegalArgumentException(msg);
+                }
+            });
+        }
+
+        static Option validateParentIsContainer() {
+            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
+        }
+
+        // The parent + the driver
+        //
+
+        /**
+         * Returns an option that
+         * 
+         * @param validator
+         * @return the option
+         */
+        // Hmm integration with vaildation
+        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Option serviceable()
+        // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
+        // at expose funktionaliteten.
+    }
+
     // And the use one big switch
     // Kunne ogsaa encode det i ComponentDriver.option..
     // Og saa bruge MethodHandles til at extract id, data?
     // Nahhh
     public static class OptionImpl implements PackedComponentDriver.Option {
 
-        static final int OPT_CONTAINER = 1;
         static final int OPT_CONSTANT = 2;
+        static final int OPT_CONTAINER = 1;
         static final int OPT_STATEFUL = 3;
-        public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
-        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
         public static final OptionImpl CONSTANT = new OptionImpl(OPT_CONSTANT, null);
+        public static final OptionImpl CONTAINER = new OptionImpl(OPT_CONTAINER, null);
+
+        public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
 
         @Nullable
         final Object data;
@@ -205,6 +300,7 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
             this.data = data;
         }
     }
+    
 
     private static class PackedBindableComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
         final Meta meta;
@@ -253,80 +349,11 @@ public final class PackedComponentDriver<C extends ComponentConfiguration> imple
             throw new UnsupportedOperationException();
         }
     }
+    
 
     enum Type {
         CLASS, FACTORY, INSTANCE, OTHER;
     }
 
-    public interface Option {
-
-        /**
-         * The component the driver will be a container.
-         * <p>
-         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
-         * 
-         * @return stuff
-         * @see ComponentModifier#CONTAINER
-         */
-        static Option container() {
-            return PackedComponentDriver.OptionImpl.CONTAINER;
-        }
-
-        /**
-         * The component the driver will be a container.
-         * <p>
-         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
-         * 
-         * @return stuff
-         * @see ComponentModifier#CONSTANT
-         */
-        // InstanceComponentDriver automatically sets the source...
-        static Option constantSource() {
-            return PackedComponentDriver.OptionImpl.CONSTANT;
-        }
-
-        static Option sourceAssignableTo(Class<?> rawType) {
-            throw new UnsupportedOperationException();
-        }
-
-        static Option statelessSource() {
-            return PackedComponentDriver.OptionImpl.STATELESS;
-        }
-
-        static Option validateParent(Predicate<? super Component> validator, String msg) {
-            return validateWiring((c, d) -> {
-                if (validator.test(c)) {
-                    throw new IllegalArgumentException(msg);
-                }
-            });
-        }
-
-        static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
-        }
-
-        // The parent + the driver
-        //
-
-        /**
-         * Returns an option that
-         * 
-         * @param validator
-         * @return the option
-         */
-        // Hmm integration with vaildation
-        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
-            throw new UnsupportedOperationException();
-        }
-
-        // Option serviceable()
-        // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
-        // at expose funktionaliteten.
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDriverDescriptor descriptor() {
-        throw new UnsupportedOperationException();
-    }
+    
 }

@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.base.application;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import app.packed.application.BuildInfo;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BuildInfo;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
+import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentModifierSet;
+import packed.internal.component.RealmSetup;
+import packed.internal.component.WireletWrapper;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * A setup class for a build.
@@ -35,13 +41,13 @@ import app.packed.component.Wirelet;
 public final class BuildSetup implements BuildInfo {
 
     /** The artifact driver used for the build process. */
-    private final PackedApplicationDriver<?> artifactDriver;
+    private final PackedApplicationDriver<?> applicationDriver;
 
     /** The root component. */
     final ComponentSetup component;
 
     /** The build output. */
-    final int modifiers;
+    public final int modifiers;
 
     // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
     // ruleBroken = FFF
@@ -58,14 +64,14 @@ public final class BuildSetup implements BuildInfo {
      */
     private BuildSetup(PackedApplicationDriver<?> artifactDriver, int modifiers, RealmSetup realm, PackedComponentDriver<?> driver,
             @Nullable WireletWrapper wirelets) {
-        this.artifactDriver = artifactDriver;
+        this.applicationDriver = artifactDriver;
         this.modifiers = modifiers + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
         this.component = new ComponentSetup(this, realm, driver, null, wirelets);
     }
 
     /** {@return the root application driver} */
     public PackedApplicationDriver<?> applicationDriver() {
-        return artifactDriver;
+        return applicationDriver;
     }
 
     public boolean isAnalysis() {
@@ -83,12 +89,6 @@ public final class BuildSetup implements BuildInfo {
         return new PackedComponentModifierSet(modifiers);
     }
 
-    // returnere null if void...
-    @Nullable
-    PackedInitializationContext process() {
-        return PackedInitializationContext.process(component, null);
-    }
-
     /**
      * @param assembly
      *            the root assembly
@@ -102,7 +102,7 @@ public final class BuildSetup implements BuildInfo {
      */
     static BuildSetup buildFromAssembly(PackedApplicationDriver<?> driver, Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> componentDriver = AssemblyHelper.getDriver(assembly);
+        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Process all wirelets
         WireletWrapper wp = WireletWrapper.forApplication(driver, componentDriver, wirelets);
@@ -123,8 +123,14 @@ public final class BuildSetup implements BuildInfo {
         // Create a new build context that we passe around
         BuildSetup build = new BuildSetup(driver, modifiers, new RealmSetup(assembly), componentDriver, wp);
 
+        ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
         // Invoke Assembly.build()
-        AssemblyHelper.invokeBuild(assembly, componentDriver.toConfiguration(build.component));
+        try {
+            PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+        //AssemblyHelper.invokeBuild(assembly, componentDriver.toConfiguration(build.component));
 
         build.component.realmClose();
 

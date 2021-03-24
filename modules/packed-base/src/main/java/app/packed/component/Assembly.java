@@ -17,17 +17,19 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerAssembly;
-import packed.internal.component.AssemblyHelper;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.util.LookupUtil;
 
 /**
- * An assembly is  Assemblies are the main way to configure a component based system in Packed.
+ * An assembly is Assemblies are the main way to configure a component based system in Packed.
  * 
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
@@ -50,6 +52,13 @@ import packed.internal.component.PackedComponentDriver;
  */
 public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
 
+    /** A marker object to indicate that the assembly has been used. */
+    private static Object USED = Assembly.class;
+
+    /** A handle that can access Assembly#configuration. */
+    private static final VarHandle VH_ASSEMBLY_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "configuration",
+            Object.class);
+
     /**
      * The configuration of this assembly.
      * <p>
@@ -58,10 +67,10 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      * <ul>
      * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
      * <li>Then, as a part of the build process, it is initialized with the actual configuration object of the component.
-     * <li>Finally, {@link AssemblyHelper#ASSEMBLY_USED} is set to indicate that the assembly has been used
+     * <li>Finally, {@link #USED} is set to indicate that the assembly has been used
      * </ul>
      * <p>
-     * This field is updated via a VarHandle from {@link AssemblyHelper}.
+     * This field is updated via a VarHandle.
      */
     @Nullable
     private Object configuration;
@@ -103,10 +112,28 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         Object c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
-        } else if (c == AssemblyHelper.ASSEMBLY_USED) {
+        } else if (c == USED) {
             throw new IllegalStateException("This method must be called from within the #build() method of the assembly.");
         }
         return (C) c;
+    }
+
+    void doBuild(C configuration) {
+        Object existing = VH_ASSEMBLY_CONFIGURATION.compareAndExchange(this, null, configuration);
+        if (existing == null) {
+            try {
+                build();
+            } finally {
+                // sets Assembly.configuration to a marker that indicates the assembly has been consumed
+                VH_ASSEMBLY_CONFIGURATION.setVolatile(this, USED);
+            }
+        } else if (existing == USED) {
+            // Assembly has already been used (successfully or unsuccessfully)
+            throw new IllegalStateException("This assembly has already been used, type = " + getClass());
+        } else {
+            // Can be this thread or another thread that is already using the assembly.
+            throw new IllegalStateException("This assembly is currently being used elsewhere, type = " + getClass());
+        }
     }
 
     /**
