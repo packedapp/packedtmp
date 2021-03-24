@@ -18,11 +18,11 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import app.packed.application.ApplicationRuntime;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.Host;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.util.LookupUtil;
 
@@ -42,8 +42,8 @@ public final class PackedInitializationContext {
     /** A MethodHandle for invoking {@link #component()}. */
     public static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "component", Component.class);
 
-    /** A MethodHandle for invoking {@link #container()}. */
-    public static final MethodHandle MH_CONTAINER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "container", Host.class);
+    /** A MethodHandle for invoking {@link #runtime()}. */
+    public static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtual(MethodHandles.lookup(), "runtime", ApplicationRuntime.class);
 
     /** A MethodHandle for invoking {@link #services()}. */
     public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
@@ -65,15 +65,8 @@ public final class PackedInitializationContext {
      * 
      * @return the top component
      */
-    public Component component() {
+    Component component() {
         return component;
-    }
-
-    public Host container() {
-        if (component.hasModifier(ComponentModifier.CONTAINEROLD)) {
-            return component.table.container();
-        }
-        throw new UnsupportedOperationException("This component does not have a container");
     }
 
     // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
@@ -96,6 +89,13 @@ public final class PackedInitializationContext {
             }
         }
         return n;
+    }
+
+    ApplicationRuntime runtime() {
+        if (component.hasModifier(ComponentModifier.RUNTIME)) {
+            return component.table.container();
+        }
+        throw new UnsupportedOperationException("This component does not have a runtime");
     }
 
     /**
@@ -129,7 +129,7 @@ public final class PackedInitializationContext {
 
         // TODO initialize
 
-        if (root.modifiers().isContainerOld()) {
+        if (root.modifiers().hasRuntime()) {
             pic.component.table.container().onInitialized(root, pic);
         }
         return pic; // don't know do we want to gc PIC at fast as possible

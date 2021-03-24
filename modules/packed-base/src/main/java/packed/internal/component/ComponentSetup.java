@@ -72,7 +72,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /* *************** Setup **************** */
 
     /** The slot table this component is a part of. */
-    public final SlotTableSetup slotTable;
+    public final ConstantPoolSetup slotTable;
 
     /** The realm this component belongs to. */
     public final RealmSetup realm;
@@ -138,13 +138,13 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
             mod = mod | build.modifiers;
 
-            if (build.modifiers().isContainerOld()) {
+            if (build.modifiers().hasRuntime()) {
                 // Is it a guest if we are analyzing??? Well we want the information...
-                mod = PackedComponentModifierSet.add(mod, ComponentModifier.CONTAINEROLD);
+                mod = PackedComponentModifierSet.add(mod, ComponentModifier.RUNTIME);
             }
         } else {
             this.onWire = parent.onWire;
-            this.slotTable = driver.modifiers().isContainerOld() ? new SlotTableSetup() : parent.slotTable;
+            this.slotTable = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.slotTable;
         }
         this.modifiers = mod;
 
@@ -165,7 +165,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         // Setup Guest
-        if (modifiers().isContainerOld()) {
+        if (modifiers().hasRuntime()) {
             slotTable.reserve(); // reserve a slot to an instance of PackedGuest
         }
 

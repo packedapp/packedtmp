@@ -17,7 +17,6 @@ package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -25,24 +24,24 @@ import app.packed.base.Completion;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
+import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentModifier;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
+import app.packed.container.Extension;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.Host;
 import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
 import packed.internal.base.application.PackedApplicationDriver;
-import packed.internal.component.PackedInitializationContext;
-import packed.internal.inject.FindInjectableConstructor;
-import packed.internal.inject.classscan.Infuser;
 
 /**
- * An application driver is responsible for analyzing and controlling the various lifecycle phases an application goes through.
+ * An application driver is responsible for analyzing and controlling the various lifecycle phases an application goes
+ * through.
  * <p>
  * Packed comes with a number of predefined application drivers If these are not sufficient, your best bet is to look at
  * the source code of them to create your own.
@@ -140,7 +139,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @see Program#buildImage(Assembly, Wirelet...)
      * @see ServiceLocator#buildImage(Assembly, Wirelet...)
      */
-    // newImage()?
+    // newImage()? Ja tror maaske jeg mere til det
     ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
@@ -193,12 +192,35 @@ public /* sealed */ interface ApplicationDriver<A> {
     // ComponentDriveren
     // Maaske det giver mening alligevel...
     // Det er ihvertfald lettere at forklare...
+
     ApplicationDriver<A> with(Wirelet wirelet);
 
     ApplicationDriver<A> with(Wirelet... wirelets);
 
-    static Builder builder() {
-        return new Builder();
+    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
+
+    }
+
+    default void print(Assembly<?> assembly, Wirelet... wirelets) {
+        Component c = analyze(assembly, wirelets);
+        c.stream().forEach(cc -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append(cc.path()).append(" ").append(cc.modifiers());
+            if (cc.modifiers().contains(ComponentModifier.SOURCED)) {
+                Class<?> cl = cc.attribute(ComponentAttributes.SOURCE_CLASS);
+                sb.append(" [").append(cl.getName()).append("]");
+            }
+            System.out.println(sb.toString());
+        });
+    }
+
+    /**
+     * Returns a builder for an {@code ApplicationDriver}.
+     *
+     * @return a application driver builder
+     */
+    public static Builder builder() {
+        return new PackedApplicationDriver.Builder();
     }
 
     /**
@@ -225,75 +247,63 @@ public /* sealed */ interface ApplicationDriver<A> {
         return daemon();
     }
 
-    /**
-     * Creates a new artifact driver.
-     * <p>
-     * The specified implementation can have the following types injected.
-     * 
-     * If the specified implementation implements {@link AutoCloseable} a {@link Host} can also be injected.
-     * <p>
-     * Fields and methods are not processed.
-     * 
-     * @param <S>
-     *            the type of artifacts the driver creates
-     * @param caller
-     *            a lookup object that must have full access to the specified implementation
-     * @param implementation
-     *            the implementation of the artifact
-     * @return a new driver
-     */
-    static <S> ApplicationDriver<S> of(MethodHandles.Lookup caller, Class<? extends S> implementation) {
-        // We automatically assume that if the implementation implements AutoClosable. Then we need a guest.
-        boolean isGuest = AutoCloseable.class.isAssignableFrom(implementation);
+    interface Builder {
 
-        if (implementation == Void.class) {
-            throw new IllegalArgumentException("Cannot specify Void.class use daemon() instead");
-        }
-
-        // We currently do not support @Provide ect... Don't know if we ever will
-        // Create a new MethodHandle that can create artifact instances.
-
-        // Vi har maaske en ApplicationDriver builder...
-
-        // Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
-        // traekke det ud af service locatoren.
-
-        // Uhh uhhh species... Job<R> kan vi lave det???
-
-        // Create an infuser (SomeExtension, Class)
-        Infuser infuser = Infuser.build(caller, c -> {
-            c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
-            c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
-            if (isGuest) {
-                c.provide(Host.class).transform(PackedInitializationContext.MH_CONTAINER);
-            }
-        }, PackedInitializationContext.class);
-
-        // Find the constructor for the subtension, only 1 constructor must be declared on the class
-        Constructor<?> con = FindInjectableConstructor.constructorOf(implementation, s -> new IllegalArgumentException(s));
-
-        MethodHandle mh = infuser.findConstructorFor(con, implementation);
-
-        return new PackedApplicationDriver<>(isGuest, mh);
-    }
-
-    static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
-        return PackedApplicationDriver.of(caller, artifactType, mh);
-    }
-
-    static <S> ApplicationDriver<S> ofStateless(MethodHandles.Lookup caller, Class<? extends S> implementation) {
-        throw new UnsupportedOperationException();
-    }
-
-    class Builder {
-        Builder addWirelet(Wirelet... wirelets) {
-            return this;
-        }
-        // see laenger nede i ZApplicationDriverBuilders
-
-        <A> ApplicationDriver<A> build(Class<A> clazz) {
+        // Throws ISE paa runtime? Validation? ASsertionError, Custom...
+        default Builder restrictExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionClasses) {
             throw new UnsupportedOperationException();
         }
+
+        Builder noRuntime();
+
+        Builder useShellAsSource();
+
+        /**
+         * Creates a new artifact driver.
+         * <p>
+         * The specified implementation can have the following types injected.
+         * 
+         * If the specified implementation implements {@link AutoCloseable} a {@link ApplicationRuntime} can also be injected.
+         * <p>
+         * Fields and methods are not processed.
+         * 
+         * @param <S>
+         *            the type of artifacts the driver creates
+         * @param caller
+         *            a lookup object that must have full access to the specified implementation
+         * @param implementation
+         *            the implementation of the artifact
+         * @return a new driver
+         */
+        <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> implementation);
+
+        <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh);
+        
+        // Maybe just look for matching method/field hooks???
+        // So always scan...
+
+//        // Stuff on the container always belongs to the other side...
+//        // Cannot use Factory...
+//       
+//
+//        // ApplicationDriver.of(.., Wirelet... wirelets)
+//        // ApplicationDriver.ofRuntime(.., Wirelet... wirelets)
+//
+//
+//        // kunne jo altsaa bare tage det som parametere...
+//        Builder addWirelet(Wirelet... wirelets) {
+//            return this;
+//        }
+//        // see laenger nede i ZApplicationDriverBuilders
+//
+//        <A> ApplicationDriver<A> build(Class<A> clazz) {
+//            throw new UnsupportedOperationException();
+//        }
+//        
+//        <A> ApplicationDriver<A> build(Factory<A> factory) {
+//            // if use source fail...
+//            throw new UnsupportedOperationException();
+//        }
     }
 }
 
@@ -326,12 +336,6 @@ interface ZApplicationDriverWithBuilder {
         // Hmm har vi brug for klassen foerend til allersidst???
         default <A> ApplicationDriver<A> build(Class<A> artifactType) {
             throw new UnsupportedOperationException();
-        }
-
-        // hostless er maaske bedre????
-
-        default ZApplicationDriverWithBuilder.Builder<T> stateless() {
-            return this;
         }
 
         // CompletableFuture<A> asynchronous();/??

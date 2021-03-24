@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import app.packed.state.Host;
-
 /**
  *
  */

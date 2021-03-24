@@ -21,27 +21,27 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.hooks.MethodAccessor;
-import packed.internal.component.SlotTable;
+import packed.internal.component.ConstantPool;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**
- * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link SlotTable} to be
+ * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link ConstantPool} to be
  * invoked.
  */
 public final class RuntimeRegionInvoker<T> implements MethodAccessor<T> {
 
     /** A method handle for creating new Invoker instance. We explicitly cast return type from PackedInvoker->Invoker. */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
-            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, SlotTable.class), MethodAccessor.class);
+            .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, ConstantPool.class), MethodAccessor.class);
 
     /** The method handle to invoke */
     private final MethodHandle mh;
 
     /** The region that stores needed data. */
-    private final SlotTable region;
+    private final ConstantPool region;
 
-    private RuntimeRegionInvoker(MethodHandle mh, SlotTable region) {
+    private RuntimeRegionInvoker(MethodHandle mh, ConstantPool region) {
         this.mh = requireNonNull(mh);
         this.region = requireNonNull(region);
     }

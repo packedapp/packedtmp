@@ -234,7 +234,7 @@ public /* sealed */ interface ExtensionConfiguration {
         requireNonNull(lookup, "containerComponent is null");
 
         // We only allow to call in directly on the container itself
-        if (!containerComponent.modifiers().isContainerOld()) {
+        if (!containerComponent.modifiers().isContainer()) {
             throw new IllegalArgumentException("The specified component '" + containerComponent.path() + "' must have the Container modifier, modifiers = "
                     + containerComponent.modifiers());
         }

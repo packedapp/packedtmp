@@ -15,9 +15,25 @@
  */
 package app.packed.inject.sandbox;
 
+import app.packed.application.ResultBearing;
+import app.packed.component.Assembly;
+import app.packed.container.BaseAssembly;
+
 /**
  *
  */
 interface JobScheduler {
+    <S, T extends Assembly<?> & ResultBearing<S>> Job<S> schedule(T assembly);
+
+}
+
+class Test extends BaseAssembly implements ResultBearing<String> {
+
+    @Override
+    protected void build() {}
+
+    public static void foo(JobScheduler js) {
+        js.schedule(new Test());
+    }
 
 }

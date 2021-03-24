@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.SlotTableSetup;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.source.SourceClassSetup;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.service.build.BuildtimeService;
@@ -46,7 +46,7 @@ public interface DependencyProvider {
      * 
      * 
      * 
-     * The returned method handle takes a single argument of type {@link SlotTableSetup}. And returns an instance of the
+     * The returned method handle takes a single argument of type {@link ConstantPoolSetup}. And returns an instance of the
      * dependency.
      * <p>
      * If the instance is cached by the runtime. the returned method handle must uphold it

@@ -54,7 +54,7 @@ public class ComponentAttributes {
     static final Attribute<Class<? extends Assembly<?>>> CONTAINER_TYPE = Attribute.of(MethodHandles.lookup(), "container",
             new TypeToken<Class<? extends Assembly<?>>>() {});
 
-    /** An attribute that is available on any component with the {@link ComponentModifier#BUILD_ROOT} modifier. */
+    /** An attribute that is available on any component with the {@link ComponentModifier#BUILD} modifier. */
     // Ved ikke praecis
     public static final Attribute<BuildInfo> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", BuildInfo.class);
 

@@ -25,7 +25,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.SlotTableSetup;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.WireletWrapper;
 
 /**
@@ -37,7 +37,7 @@ public final class BuildSetup implements BuildInfo {
     /** The artifact driver used for the build process. */
     private final PackedApplicationDriver<?> applicationDriver;
 
-    public final SlotTableSetup slotTable = new SlotTableSetup();
+    public final ConstantPoolSetup slotTable = new ConstantPoolSetup();
     /** The root component. */
     final ComponentSetup component;
 
@@ -67,8 +67,8 @@ public final class BuildSetup implements BuildInfo {
         int tmpM = 0;
 
         tmpM += PackedComponentModifierSet.I_ANALYSIS;
-        if (applicationDriver.isStateful()) {
-            tmpM += PackedComponentModifierSet.I_CONTAINER;
+        if (applicationDriver.needsRuntime()) {
+            tmpM += PackedComponentModifierSet.I_RUNTIME;
         }
 
         if (isImage) {

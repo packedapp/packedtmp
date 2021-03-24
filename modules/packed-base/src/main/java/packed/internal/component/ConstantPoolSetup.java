@@ -28,7 +28,9 @@ import packed.internal.util.ThrowableUtil;
 // Vi gemmer alt det her i en region...
 // Fordi raekkefoelgen af initialisering gaar paa tvaers af containere
 // Idet de kan dependende paa hinanden
-public final class SlotTableSetup {
+
+// Is this a ConstantPool?????
+public final class ConstantPoolSetup {
 
     /** Components that contains constants that should be stored in a region. Is only written by {@link SourceClassSetup}. */
     public final ArrayList<SourceClassSetup> constants = new ArrayList<>();
@@ -44,12 +46,12 @@ public final class SlotTableSetup {
 
     public final Lifecycle lifecycle = new Lifecycle();
 
-    SlotTable newRegion(PackedInitializationContext pic, PackedComponent root) {
-        SlotTable region = new SlotTable(nextIndex);
+    ConstantPool newRegion(PackedInitializationContext pic, PackedComponent root) {
+        ConstantPool region = new ConstantPool(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though
-        if (root.modifiers().isContainerOld()) {
-            region.store(0, new PackedContainer(pic));
+        if (root.modifiers().hasRuntime()) {
+            region.store(0, new PackedApplicationRuntime(pic));
         }
 
         // We start by storing all constant instances in the region array

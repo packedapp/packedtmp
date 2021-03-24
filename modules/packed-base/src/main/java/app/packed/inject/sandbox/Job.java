@@ -16,6 +16,8 @@
 package app.packed.inject.sandbox;
 
 import app.packed.application.ApplicationDriver;
+import app.packed.application.ResultBearing;
+import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 
 /**
@@ -28,22 +30,43 @@ import app.packed.component.Assembly;
 //What about shutdown... I don't think it is active...
 interface Job<R> {
 
-    static <R> ApplicationDriver<Job<R>> driver(Class<R> resultType) {
+    static <R> ApplicationDriver<Job<?>> driver() {
         throw new UnsupportedOperationException();
     }
-    
+
+    static <R> ApplicationDriver<Job<R>> driver(TypeToken<R> resultType) {
+        throw new UnsupportedOperationException();
+    }
+
+    static <R> ApplicationDriver<Job<R>> driver(Class<R> resultType) {
+        // Returnere vi en nye
+        throw new UnsupportedOperationException();
+    }
+
     static void compute(Assembly<?> assembly) {
         throw new UnsupportedOperationException();
     }
+
+    static <S, T extends Assembly<?> & ResultBearing<S>> Job<S> start(T assembly) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Must have a compute function...
+    static <S, T extends Assembly<?> & ResultBearing<S>> Job<S> run(T assembly) {
+        throw new UnsupportedOperationException();
+    }
+
     // Job<Void> of()
 }
+
 // A job consists of 1 or more tasks ordered in a tree...
 // But why not use the Component API...
 // Basically it is the job-class that is the root 
 interface Task {
 
 }
+
 // IDK er det det vi returnere...
 interface Result<R> {
-    
+
 }

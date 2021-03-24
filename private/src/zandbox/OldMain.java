@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationRuntime;
+import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.state.Host;
-import app.packed.state.Host.StopOption;
 import app.packed.state.StateWirelets;
 
 /**
@@ -78,7 +78,7 @@ final class OldMain {
     }
 
     public void execute(Assembly<?> container, Wirelet... wirelets) {
-        Host.execute(container, wirelet.andThen(wirelets));
+        ApplicationRuntime.execute(container, wirelet.andThen(wirelets));
     }
 
     ApplicationImage<Void> image() {

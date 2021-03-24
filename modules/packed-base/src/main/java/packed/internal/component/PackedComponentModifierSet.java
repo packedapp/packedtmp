@@ -29,14 +29,15 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     /** An empty modifier set. */
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
 
+    // Er det snare en property på build info????
     public static final int I_ANALYSIS = intOf(ComponentModifier.ANALYSIS);
-    public static final int I_BUILD = intOf(ComponentModifier.BUILD_ROOT);
+    public static final int I_BUILD = intOf(ComponentModifier.BUILD);
     
     
-    public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINEROLD);
-    public static final int I_CONTAINERNEW = intOf(ComponentModifier.CONTAINER);
+    public static final int I_RUNTIME = intOf(ComponentModifier.RUNTIME);
+    public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINER);
     
-    public static final int I_IMAGE = intOf(ComponentModifier.IMAGE_ROOT);
+    public static final int I_IMAGE = intOf(ComponentModifier.IMAGE);
     public static final int I_SOURCE = intOf(ComponentModifier.SOURCED);
 
     public static final int I_EXTENSION = intOf(ComponentModifier.EXTENSION);

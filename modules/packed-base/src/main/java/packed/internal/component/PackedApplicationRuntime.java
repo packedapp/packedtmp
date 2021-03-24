@@ -22,10 +22,10 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import app.packed.state.Host;
+import app.packed.application.ApplicationRuntime;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
-import packed.internal.component.SlotTableSetup.Lifecycle;
+import packed.internal.component.ConstantPoolSetup.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -41,7 +41,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Extra data... Startup/Initialization exception
 
-public class PackedContainer implements Host {
+public class PackedApplicationRuntime implements ApplicationRuntime {
 
     RunState desiredState = RunState.INITIALIZING;
 
@@ -58,7 +58,7 @@ public class PackedContainer implements Host {
 
     final Sync sync = new Sync();
 
-    public PackedContainer(PackedInitializationContext pic) {
+    public PackedApplicationRuntime(PackedInitializationContext pic) {
 
     }
 

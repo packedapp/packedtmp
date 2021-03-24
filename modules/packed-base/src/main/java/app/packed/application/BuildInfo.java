@@ -73,7 +73,7 @@ public interface BuildInfo {
     /**
      * Returns the set of modifiers used for this assembling.
      * <p>
-     * The returned set will always contain the {@link ComponentModifier#BUILD_ROOT} modifier.
+     * The returned set will always contain the {@link ComponentModifier#BUILD} modifier.
      * 
      * @return a set of modifiers
      */

@@ -19,6 +19,7 @@ import java.lang.reflect.Modifier;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.BuildInfo;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
 
@@ -38,6 +39,7 @@ import app.packed.inject.Factory;
 // BUILD_ROOT, IMAGE_ROOT
 public enum ComponentModifier {
 
+    
     /**
      * Indicates that the component and all of its descendants are part of the same build. When such a system is
      * initialized. A new system is created retained the structure of the assembled system but without this modifier.
@@ -47,8 +49,21 @@ public enum ComponentModifier {
      * The modifier set returned by {@link BuildInfo#modifiers()} will always contain this modifier. A components with this
      * modifier will never have any descendants with this modifier.
      **/
-    BUILD_ROOT,
+    BUILD,
 
+    /**
+     * Indicates that a component represent the root component of an application. For example, an application created via
+     * {@link App#start(Assembly, Wirelet...)} to create a shell.
+     * <p>
+     * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
+     * users make
+     * <p>
+     * Systems that are created via the various methods on {@link Cli} never has a shell.
+     * 
+     * @see ApplicationDriver
+     */
+    APPLICATION,
+    
     /**
      * Indicates that the component is a container.
      * 
@@ -57,12 +72,15 @@ public enum ComponentModifier {
      * <ul>
      * <li>Are allowed to have children with the {@link #EXTENSION} modifier set.</li>
      * <li>Are never sourced???.</li>
+     * <li>Has always been created using the {@link ContainerConfiguration#driver() container component driver}.</li>
      * </ul>
      */
     CONTAINER,
 
     /**
-     * Indicates that the component holds an image.
+     * Indicates that the component forms the root of an image.
+     * <p>
+     * I think we may have images in images
      * 
      * Components with this modifier:
      * <ul>
@@ -71,12 +89,7 @@ public enum ComponentModifier {
      * indicates that a runtime spawn of the image can add guests.</li>
      * </ul>
      */
-    IMAGE_ROOT,
-
-    // System wide.. what is part of the system and what is part of the environment
-    // System boundary
-    // Bondary vs Environment...
-    // Maybe Environment is bad because of overloaded meaning
+    IMAGE,
 
     /**
      * Are components that should not be considered part of the system. But are nonetheless present in order to XXX.
@@ -91,7 +104,7 @@ public enum ComponentModifier {
     EXTERNAL, // Wirelets, Artifacts are also FOREIGN or EXTERNAL...ENVIRONMENT
 
     /**
-     * Indicates that the component is an {@link Extension} class.
+     * Indicates that the component represents an {@link Extension}.
      * <p>
      * Components with this modifier:
      * <ul>
@@ -99,7 +112,7 @@ public enum ComponentModifier {
      * <li>Are always leaf components (they have no children).</li>
      * <li>Are only present at runtime if it is part of an embedded {@link Image}.</li>
      * <li>Never has any other modifiers set.</li>
-     * <li>Has the {@link ComponentAttributes#EXTENSION_MEMBER} attribute set to the type of the extension the component
+     * <li>Has the {@link ComponentAttributes#EXTENSION_CLASS} attribute set to the type of the extension the component
      * represents.</li>
      * </ul>
      */
@@ -130,8 +143,31 @@ public enum ComponentModifier {
      * the type of the extension the component represents.</li>
      * </ul>
      */
-    CONTAINEROLD,
+    RUNTIME,
 
+    /**
+     * Indicates that a system has been created for the sole reason of being analyzed. A system with this modifier will
+     * never go through any initialization phase. Extensions may use this information to avoid work that is not needed if
+     * the system is never initialized.
+     * <p>
+     * This modifier is typically checked by accessing {@link BuildInfo#modifiers()}, for example, via
+     * {@link Extension#assembly()}.
+     * <p>
+     * The modifier is set by the various methods in analyzer when specifying a container. Systems that are already running
+     * will not have this modifier set when they are analysed.
+     * 
+     * Components with this property:
+     * <ul>
+     * <li>Always have the {@link #BUILD_ROOT} modifier set as well.</li>
+     * <li>Are never present at runtime.</li>
+     * </ul>
+     * 
+     */
+    // Altsa kan man faa den information paa andre maader f.eks. via BuildInfo????
+    // Jeg er ikke sikker paa jeg syntes den skal vaere her...
+    // Altsaa man kan faa den via BuildInfo. IDK, leave it in
+    ANALYSIS,
+    
     /**
      * Indicates that the components wraps a single abstract method (SAM).
      * 
@@ -159,40 +195,6 @@ public enum ComponentModifier {
      */
     SOURCED,
 
-    /**
-     * Indicates that a component represent the root component of an application. For example, an application created via
-     * {@link App#start(Assembly, Wirelet...)} to create a shell.
-     * <p>
-     * Shells that are attached to a guest are co-terminus with the guest. Restarting the guest will create a new shell. And
-     * users make
-     * <p>
-     * Systems that are created via the various methods on {@link Cli} never has a shell.
-     * 
-     * @see ApplicationDriver
-     */
-    APPLICATION,
-
-    /**
-     * Indicates that a system has been created for the sole reason of being analyzed. A system with this modifier will
-     * never go through any initialization phase. Extensions may use this information to avoid work that is not needed if
-     * the system is never initialized.
-     * <p>
-     * This modifier is typically checked by accessing {@link BuildInfo#modifiers()}, for example, via
-     * {@link Extension#assembly()}.
-     * <p>
-     * The modifier is set by the various methods in analyzer when specifying a container. Systems that are already running
-     * will not have this modifier set when they are analysed.
-     * 
-     * Components with this property:
-     * <ul>
-     * <li>Always have the {@link #BUILD_ROOT} modifier set as well.</li>
-     * <li>Are never present at runtime.</li>
-     * </ul>
-     * 
-     */
-    // Altsa kan man faa den information paa andre maader f.eks. via BuildInfo????
-    // Jeg er ikke sikker paa jeg syntes den skal vaere her...
-    ANALYSIS,
 
     // A single java based instance that is strongly bound to lifecycle of the component.
     // Cannot be replaced. As such this instance is co-terminus with the guest
@@ -227,6 +229,12 @@ public enum ComponentModifier {
 //  // Was This component is also always automatically a {@link #GUEST}.
 //  SYSTEM,
 
+    // System wide.. what is part of the system and what is part of the environment
+    // System boundary
+    // Bondary vs Environment...
+    // Maybe Environment is bad because of overloaded meaning
+
+    
     /**
      * Returns a component modifier set containing only this modifier.
      * 
@@ -283,6 +291,11 @@ enum Retired {
 //Components.isPartOfImage() <--- look recursively in parents and see if any has the Image 
 
 enum Sandbox {
+
+    /**
+     * Allows for dynamic loading of applications at runtime... 
+     **/
+    APPLICATION_DEPLOYER,
 
     // En root modifier, der indikere at et namespace aldrig kan udvides
     // Indicates that a namespace can neither scrink or expand

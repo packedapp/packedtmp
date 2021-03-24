@@ -27,7 +27,7 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.SlotTableSetup;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 
@@ -99,7 +99,7 @@ public final class ContainerSetup {
         }
     }
 
-    public void close(SlotTableSetup region) {
+    public void close(ConstantPoolSetup region) {
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }

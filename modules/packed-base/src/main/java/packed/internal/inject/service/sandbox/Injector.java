@@ -183,7 +183,7 @@ final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);
 
-    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.of(MethodHandles.lookup(), Injector.class, CONV);
+    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().noRuntime().build(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(PackedInitializationContext container) {
         return (Injector) container.services();

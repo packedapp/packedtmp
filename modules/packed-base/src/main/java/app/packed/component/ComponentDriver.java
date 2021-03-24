@@ -65,7 +65,7 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     private static <T> BindableComponentDriver<BaseComponentConfiguration, T> driver() {
         return PackedComponentDriver.STATELESS_DRIVER;
     }
-
+    
     // Not sure we want this public or ma
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {

@@ -21,7 +21,7 @@ import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.SlotTableSetup;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
@@ -34,7 +34,7 @@ import packed.internal.inject.DependencyProvider;
  * 
  * Finds dependency circles either within the same assembly or across assemblies that are not in a parent-child relationship.
  * 
- * Responsible for invoking the {@link Dependant#onAllDependenciesResolved(SlotTableSetup)} callback for every
+ * Responsible for invoking the {@link Dependant#onAllDependenciesResolved(ConstantPoolSetup)} callback for every
  * {@link Dependant}. We do this here, because we guarantee that all dependants of a dependant are always invoked before
  * the dependant itself.
  */
@@ -55,21 +55,21 @@ final class ServiceManagerTree {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    void finish(SlotTableSetup region, ContainerSetup container) {
+    void finish(ConstantPoolSetup region, ContainerSetup container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private DependencyCycle dependencyCyclesFind(SlotTableSetup region, ContainerSetup container) {
+    private DependencyCycle dependencyCyclesFind(ConstantPoolSetup region, ContainerSetup container) {
         ArrayDeque<Dependant> stack = new ArrayDeque<>();
         ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, SlotTableSetup region,
+    private DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, ConstantPoolSetup region,
             ContainerSetup container) {
         for (Dependant node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
@@ -103,7 +103,7 @@ final class ServiceManagerTree {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(SlotTableSetup region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
+    private DependencyCycle detectCycle(ConstantPoolSetup region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
         DependencyProvider[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);

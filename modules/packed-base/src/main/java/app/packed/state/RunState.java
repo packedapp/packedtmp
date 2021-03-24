@@ -15,8 +15,10 @@
  */
 package app.packed.state;
 
+import app.packed.application.ApplicationRuntime;
+
 /**
- * An enum containing all valid states of a {@link Host}.
+ * An enum containing all valid states of a {@link ApplicationRuntime}.
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *

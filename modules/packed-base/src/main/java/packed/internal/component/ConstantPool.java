@@ -29,14 +29,15 @@ import packed.internal.util.MethodHandleUtil;
 // Active System -> 1 NodeStore per guest
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
 
-public final /* primitive*/ class SlotTable {
+// Is this a constant pool???
+public final /* primitive*/ class ConstantPool {
 
     /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */
     static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.lookupVirtual(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
 
     public final Object[] table;
 
-    public SlotTable(int i) {
+    public ConstantPool(int i) {
         table = new Object[i];
     }
 
@@ -61,12 +62,12 @@ public final /* primitive*/ class SlotTable {
     }
 
     // Don't know
-    PackedContainer container() {
-        return (PackedContainer) table[0];
+    PackedApplicationRuntime container() {
+        return (PackedApplicationRuntime) table[0];
     }
 
     ServiceLocator serviceRegistry(PackedComponent node) {
-        return (ServiceLocator) table[node.modifiers().isContainerOld() ? 1 : 0];
+        return (ServiceLocator) table[node.modifiers().hasRuntime() ? 1 : 0];
     }
 
     public void store(int index, Object instance) {

@@ -52,7 +52,7 @@ public final class PackedComponent implements Component {
     final PackedComponent parent;
 
     /** The region this component is part of. */
-    final SlotTable table;
+    final ConstantPool table;
 
     /**
      * Creates a new component.
@@ -104,7 +104,7 @@ public final class PackedComponent implements Component {
         // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
 
         // Vi create a new region is its the root, or if the component is a guest
-        if (parent == null || compBuild.modifiers().isContainerOld()) {
+        if (parent == null || compBuild.modifiers().hasRuntime()) {
             this.table = compBuild.slotTable.newRegion(pic, this);
         } else {
             this.table = parent.table;

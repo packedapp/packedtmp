@@ -20,10 +20,11 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationRuntime;
 import app.packed.application.Program;
+import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.state.Host.StopOption;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link Program#start(Assembly, Wirelet...)}.
@@ -133,7 +134,7 @@ public interface StateWirelets {
      * @see Runtime#addShutdownHook(Thread)
      */
     // StopOption.panic(()->throw new DooException());
-    static Wirelet shutdownHook(Host.StopOption... options) {
+    static Wirelet shutdownHook(ApplicationRuntime.StopOption... options) {
         // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);
     }
@@ -144,7 +145,7 @@ public interface StateWirelets {
      * @return a shutdown hook wirelet
      * @see Runtime#addShutdownHook(Thread)
      */
-    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, Host.StopOption... options) {
+    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, ApplicationRuntime.StopOption... options) {
         return new ShutdownHookWirelet();
     }
 
@@ -172,12 +173,12 @@ public interface StateWirelets {
 
     // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
-    static Wirelet timeToRun(long timeout, TimeUnit unit, Host.StopOption... options) {
+    static Wirelet timeToRun(long timeout, TimeUnit unit, ApplicationRuntime.StopOption... options) {
         return timeToRun(Duration.of(timeout, unit.toChronoUnit()), options);
     }
 
     // excludes start?? IDK
-    static Wirelet timeToRun(Duration duration, Host.StopOption... options) {
+    static Wirelet timeToRun(Duration duration, ApplicationRuntime.StopOption... options) {
         // can make a timeToLive() <-- which includes start
         throw new UnsupportedOperationException();
     }

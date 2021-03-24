@@ -33,8 +33,8 @@ import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
-import packed.internal.component.SlotTable;
-import packed.internal.component.SlotTableSetup;
+import packed.internal.component.ConstantPool;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.Requirement.FromInjectable;
@@ -96,7 +96,7 @@ public final class ServiceManagerSetup {
         this.tree = parent == null ? new ServiceManagerTree() : parent.tree;
     }
 
-    public void close(SlotTableSetup region) {
+    public void close(ConstantPoolSetup region) {
         if (parent == null) {
             tree.finish(region, container);
         }
@@ -176,7 +176,7 @@ public final class ServiceManagerSetup {
         return builder.build();
     }
 
-    public ServiceLocator newServiceLocator(PackedComponent comp, SlotTable region) {
+    public ServiceLocator newServiceLocator(PackedComponent comp, ConstantPool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (BuildtimeService e : exports) {

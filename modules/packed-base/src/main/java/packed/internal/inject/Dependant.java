@@ -26,8 +26,8 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.SlotTable;
-import packed.internal.component.SlotTableSetup;
+import packed.internal.component.ConstantPool;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
@@ -129,7 +129,7 @@ public class Dependant {
         }
 
         if (providers.length == 0) {
-            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, SlotTable.class);
+            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, ConstantPool.class);
         } else if (providers.length == 1) {
             requireNonNull(providers[0]);
             System.out.println(providers[0].getClass());
@@ -145,7 +145,7 @@ public class Dependant {
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), SlotTable.class);
+            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), ConstantPool.class);
             return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[providers.length]);
         }
     }
@@ -175,7 +175,7 @@ public class Dependant {
     }
 
     // All dependencies have been successfully resolved
-    public void onAllDependenciesResolved(SlotTableSetup region) {
+    public void onAllDependenciesResolved(ConstantPoolSetup region) {
         // If analysis we should not need to create method handles...
 
         // If the injectable is a constant we need should to store an instance of it in the runtime region.

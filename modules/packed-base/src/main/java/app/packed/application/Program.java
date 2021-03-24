@@ -27,7 +27,6 @@ import app.packed.component.ComponentStream.Option;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.Host;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
 
@@ -41,11 +40,11 @@ public interface Program extends AutoCloseable {
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see Host#stop(Host.StopOption...)
+     * @see ApplicationRuntime#stop(ApplicationRuntime.StopOption...)
      **/
     @Override
     default void close() {
-        host().stop();
+        runtime().stop();
     }
 
     /**
@@ -60,7 +59,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    Host host();
+    ApplicationRuntime runtime();
 
     /**
      * Returns the name of this application.

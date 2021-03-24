@@ -61,25 +61,25 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     // boolean containsAll(Collection<ComponentModifier> c);
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINEROLD} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#RUNTIME} modifier.
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */
-    default boolean isContainerOld() {
-        return contains(ComponentModifier.CONTAINEROLD);
+    default boolean hasRuntime() {
+        return contains(ComponentModifier.RUNTIME);
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#IMAGE_ROOT} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
      * 
      * @return true if this set contains the image modifier, otherwise false
      */
     default boolean isImage() {
-        return contains(ComponentModifier.IMAGE_ROOT);
+        return contains(ComponentModifier.IMAGE);
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINEROLD} modifier.
+     * Returns whether or not this set contains the {@link ComponentModifier#RUNTIME} modifier.
      * 
      * @return true if this set contains the guest modifier, otherwise false
      */

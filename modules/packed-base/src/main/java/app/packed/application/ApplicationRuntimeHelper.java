@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.application;
 
 import java.lang.invoke.MethodHandles;
-
-import app.packed.application.ApplicationDriver;
 
 /**
  *
  */
-final class HostHelper {
-    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.of(MethodHandles.lookup(), Void.class);
+final class ApplicationRuntimeHelper {
+    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), Void.class);
 }

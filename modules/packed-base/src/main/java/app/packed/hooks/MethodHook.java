@@ -313,6 +313,23 @@ public @interface MethodHook {
         // Maybe input it default, and you need to call output
         protected static final void $outputMethod() {}
 
+        //
+        protected static final void $supportApplicationShell() {
+            //hook.isApplicationShell
+            
+            // Det er her den er grim...
+            // Vi er i samme container...
+            // Men saa alligevel ikke
+            // Maa vaere en special case...
+            
+            // Hvis comp is parent and wirelet
+        }
+
+        // Do we need a new bootstrap??? I'm mostly worried about injection...
+        // Can always handle a few if/elses/...
+        // @Path("${component.id}/")
+        // Altsaa vi kan jo altid bare kalde WebSubextension.add...
+        protected static final void $supportMetaHook(Class<?> alternativeBootstrap) {}
     }
 
     /**

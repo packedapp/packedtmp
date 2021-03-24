@@ -13,16 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.application;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.application.ApplicationImage;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.state.RunState;
+import app.packed.state.RunStateInfo;
+
+// This is basically something thats wraps a state that is 100 Linear
+// It is not 100 % clean because of restarting... IDK about that
 
 /**
  * A component instance.
@@ -36,8 +40,11 @@ import app.packed.component.Wirelet;
 // Kan jo faktisk godt sige det er en Host...
 // Host... everything with state are called Guests...
 // AutoClosable???
-public interface Host {
+// Maybe just Runtime? Saa kan vi bruge den andre steder end fra application...
+public interface ApplicationRuntime {
 
+    // Optional<Throwable> getFailure();
+    
     /**
      * Blocks until the underlying component has reached the specified state, or the current thread is interrupted,
      * whichever happens first.
@@ -120,7 +127,7 @@ public interface Host {
      */
     void stop(StopOption... options);
 
-    default CompletableFuture<Void> stopAsync(StopOption... options) {
+    default CompletableFuture<?> stopAsync(StopOption... options) {
         return stopAsync(null, new StopOption[] {});
     }
 
@@ -138,18 +145,19 @@ public interface Host {
      *         in the process of being shut down
      * @see #stop(StopOption...)
      */
-    <T> CompletableFuture<T> stopAsync(@Nullable T result, StopOption... options);
+    // Does not take null. use StopAsync
+    <T> CompletableFuture<T> stopAsync(T result, StopOption... options);
 
     // Vs main?????
     // Tror main er bl.a. propper det ind som et system image...
 
     static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        HostHelper.DRIVER.apply(assembly, wirelets);
+        ApplicationRuntimeHelper.DRIVER.apply(assembly, wirelets);
     }
 
     // TODO return Image<Host>?
-    static ApplicationImage<Void> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return HostHelper.DRIVER.buildImage(assembly, wirelets);
+    static ApplicationImage<?> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+        return ApplicationRuntimeHelper.DRIVER.buildImage(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
 //        return new ExecutingImage(build);
@@ -234,6 +242,7 @@ public interface Host {
             throw new UnsupportedOperationException();
         }
 
+        // add Runtime.IsRestartable??
         static StopOption restart(Wirelet... wirelets) {
             // restart(Wirelet.rename("Restart at ....");
             //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
@@ -244,6 +253,8 @@ public interface Host {
         // linger would be nice
         // Or maybe somewhere to replace the guest with a tombstone of some kind.
         // Summarizing everything in the guest...
+        
+        // Hmmmmmm IDK
         static StopOption undeploy() {
             throw new UnsupportedOperationException();
         }

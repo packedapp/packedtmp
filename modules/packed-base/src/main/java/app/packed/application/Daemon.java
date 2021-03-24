@@ -3,7 +3,6 @@ package app.packed.application;
 import app.packed.cli.CliWirelets;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.state.Host;
 
 // Ideen er lige at vi laver en deamon..
 
@@ -24,7 +23,7 @@ public interface Daemon extends AutoCloseable {
      * Closes the app (synchronously). Calling this method is equivalent to calling {@code host().stop()}, but this method
      * is called close in order to support try-with resources via {@link AutoCloseable}.
      * 
-     * @see Host#stop(Host.StopOption...)
+     * @see ApplicationRuntime#stop(ApplicationRuntime.StopOption...)
      **/
     @Override
     default void close() {
@@ -36,7 +35,7 @@ public interface Daemon extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    Host host(); // giver ikke mening 
+    ApplicationRuntime host(); // giver ikke mening 
 
     void stop();
 
