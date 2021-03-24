@@ -4,7 +4,12 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.component.Wirelet;
 
-/** A wirelet that allows for combining multiple wirelets into a single wirelet. */
+/**
+ * A wirelet that allows for combining multiple wirelets into a single wirelet.
+ * <p>
+ * 
+ * @see Wirelet
+ */
 public final /* primitive */ class WireletArray extends Wirelet {
 
     /** An empty wirelet array. */
@@ -47,10 +52,9 @@ public final /* primitive */ class WireletArray extends Wirelet {
      *            the destination position
      * @return the destination
      */
-    private static Wirelet[] copyInto(WireletArray source, Wirelet[] dest, int destPosition) {
-        Wirelet[] ws = source.wirelets;
-        for (int i = 0; i < ws.length; i++) {
-            dest[i + destPosition] = ws[i];
+    private static Wirelet[] copyInto(Wirelet[] source, Wirelet[] dest, int destPosition) {
+        for (int i = 0; i < source.length; i++) {
+            dest[i + destPosition] = source[i];
         }
         return dest;
     }
@@ -62,34 +66,20 @@ public final /* primitive */ class WireletArray extends Wirelet {
             if (w2 instanceof WireletArray wl2) {
                 Wirelet[] wirelets2 = wl2.wirelets;
                 result = new Wirelet[wirelets1.length + wirelets2.length];
-                toArray0(wirelets2, result, wirelets1.length);
+                copyInto(wirelets2, result, wirelets1.length);
             } else {
                 result = new Wirelet[1 + wl1.wirelets.length];
                 result[wl1.wirelets.length] = w2;
             }
-            return toArray0(wirelets1, result, 0);
+            return copyInto(wirelets1, result, 0);
         } else if (w2 instanceof WireletArray wl2) {
             Wirelet[] wirelets = wl2.wirelets;
             result = new Wirelet[1 + wirelets.length];
             result[0] = w1;
-            return toArray0(wirelets, result, 1);
+            return copyInto(wirelets, result, 1);
         } else {
             return new Wirelet[] { w1, w2 };
         }
-    }
-
-    static Wirelet[] flatten(Wirelet w1, WireletArray w2) {
-        Wirelet[] result;
-        int i = 1;
-        if (w1 instanceof WireletArray wa) {
-            i = wa.wirelets.length;
-            result = new Wirelet[wa.wirelets.length + w2.wirelets.length];
-            copyInto(wa, result, 0);
-        } else {
-            result = new Wirelet[1 + w2.wirelets.length];
-            result[0] = w1;
-        }
-        return copyInto(w2, result, i);
     }
 
     static Wirelet[] flatten(Wirelet[] wirelets) {
@@ -116,7 +106,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
             int i = 0;
             for (Wirelet w : wirelets) {
                 if (w instanceof WireletArray list) {
-                    copyInto(list, tmp, i);
+                    copyInto(list.wirelets, tmp, i);
                 } else {
                     tmp[i++] = w;
                 }
@@ -132,25 +122,6 @@ public final /* primitive */ class WireletArray extends Wirelet {
 
     public final static WireletArray of(Wirelet wirelet, Wirelet other) {
         return new WireletArray(WireletArray.flatten(wirelet, other));
-    }
-
-    static Wirelet[] toArray(Wirelet w, Wirelet[] wirelets) {
-        Wirelet[] result = new Wirelet[1 + wirelets.length];
-        result[0] = w;
-        return toArray0(wirelets, result, 1);
-    }
-
-    static Wirelet[] toArray(Wirelet[] w1, Wirelet[] w2) {
-        Wirelet[] result = new Wirelet[w1.length + w2.length];
-        toArray0(w1, result, 0);
-        return toArray0(w1, result, w1.length);
-    }
-
-    private static Wirelet[] toArray0(Wirelet[] source, Wirelet[] dest, int destPosition) {
-        for (int i = 0; i < source.length; i++) {
-            dest[i + destPosition] = source[i];
-        }
-        return dest;
     }
 
     private static Wirelet w(Wirelet[] wirelets, int index) {

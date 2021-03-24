@@ -13,6 +13,10 @@ public interface Application {
     
     /** {@return the name of the application} */
     String name();
+    
+    // Wired er parent component<->child component
+    // connections er component til any component.
+    boolean isStronglyWired();
 }
 
 interface Container {
