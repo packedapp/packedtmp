@@ -15,24 +15,17 @@
  */
 package packed.internal.base.application;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.application.BuildInfo;
-import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * A setup class for a build.
@@ -56,48 +49,18 @@ public final class BuildSetup implements BuildInfo {
     // Giver det mening at returnere en component hvis det er fejlet??? InjectionGraph er det eneste jeg kan taenke...
     Object validationErrors;
 
-    /** {@return the root application driver} */
-    public PackedApplicationDriver<?> applicationDriver() {
-        return applicationDriver;
-    }
-
-    public boolean isAnalysis() {
-        return (modifiers & PackedComponentModifierSet.I_ANALYSIS) != 0;
-    }
-
-    /** {@return whether or not we are creating the root application is part of an image}. */
-    public boolean isImage() {
-        return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(modifiers);
-    }
-
     /**
-     * Creates a new build setup.
+     * Creates a new build setup from an assembly.
      * 
      * @param modifiers
      *            the output of the build process
      */
-    private BuildSetup(PackedApplicationDriver<?> applicationDriver, Consumer<?> consumer, PackedComponentDriver<?> driver, Wirelet[] wirelets) {
+    BuildSetup(PackedApplicationDriver<?> applicationDriver, Assembly<?> assembly, PackedComponentDriver<?> driver, boolean isImage, Wirelet[] wirelets) {
         this.applicationDriver = applicationDriver;
-        this.modifiers = PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+
+        // Vi flytter wirelets'ene ind i ComponentSetup med mindre vi vil extracte info her i BuildSetup omkring dem
+        // Men det ser vi paa et senere tidspunkt
         WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, driver, wirelets);
-        this.component = new ComponentSetup(this, new RealmSetup(consumer), driver, null, ww);
-    }
-
-    /**
-     * Creates a new build setup.
-     * 
-     * @param modifiers
-     *            the output of the build process
-     */
-    private BuildSetup(PackedApplicationDriver<?> applicationDriver, Assembly<?> assembly, PackedComponentDriver<?> driver, @Nullable WireletWrapper wirelets,
-            boolean isImage) {
-        this.applicationDriver = applicationDriver;
 
         int tmpM = 0;
 
@@ -113,58 +76,44 @@ public final class BuildSetup implements BuildInfo {
         }
 
         this.modifiers = tmpM + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
-        this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, wirelets);
+        this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, ww);
     }
 
     /**
-     * @param assembly
-     *            the root assembly
-     * @param wirelets
-     *            optional wirelets
-     * @param isAnalysis
-     *            is it an analysis
-     * @param isImage
-     *            is it an image
-     * @return a build setup
+     * Creates a new build setup for a composer.
+     * 
+     * @param modifiers
+     *            the output of the build process
      */
-    static BuildSetup buildFromAssembly(PackedApplicationDriver<?> driver, Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
-        // Extract the component driver from the assembly
-        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
-
-        // Process all wirelets
-        WireletWrapper wp = WireletWrapper.forApplication(driver, componentDriver, wirelets);
-
-        // Create a new build setup
-        BuildSetup build = new BuildSetup(driver, assembly, componentDriver, wp, isImage);
-
-        // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
-
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        try {
-            PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
-        build.component.realmClose();
-        return build;
+    BuildSetup(PackedApplicationDriver<?> applicationDriver, Consumer<?> consumer, PackedComponentDriver<?> componentDriver, Wirelet[] wirelets) {
+        this.applicationDriver = applicationDriver;
+        this.modifiers = PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+        WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, componentDriver, wirelets);
+        this.component = new ComponentSetup(this, new RealmSetup(consumer), componentDriver, null, ww);
     }
 
-    static <CO extends Composer<?>, CC extends ComponentConfiguration> BuildSetup buildFromComposer(PackedApplicationDriver<?> driver,
-            PackedComponentDriver<CC> componentDriver, Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        BuildSetup build = new BuildSetup(driver, consumer, componentDriver, wirelets);
+    /** {@return the root application driver} */
+    public PackedApplicationDriver<?> applicationDriver() {
+        return applicationDriver;
+    }
 
-        CC componentConfiguration = componentDriver.toConfiguration(build.component);
+    void close() {
+        component.realmClose();
+    }
 
-        // Used the supplied composer factory to create a composer from a component configuration instance
-        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
+    public boolean isAnalysis() {
+        return (modifiers & PackedComponentModifierSet.I_ANALYSIS) != 0;
+    }
 
-        // Invoked the consumer supplied by the end-user
-        consumer.accept(composer);
+    /** {@return whether or not we are creating the root application is part of an image}. */
+    public boolean isImage() {
+        return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
+    }
 
-        build.component.realmClose();
-        return build;
+    /** {@inheritDoc} */
+    @Override
+    public ComponentModifierSet modifiers() {
+        return new PackedComponentModifierSet(modifiers);
     }
 }
 // Build setup does not maintain what thread is building the system.

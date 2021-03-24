@@ -84,8 +84,21 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, true, false);
+        BuildSetup build = buildFromAssembly(assembly, wirelets, true, false);
         return build.component.adaptor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A apply(Assembly<?> assembly, Wirelet... wirelets) {
+        // Build the system
+        BuildSetup build = buildFromAssembly(assembly, wirelets, false, false);
+
+        // Initialize the system. And start it if necessary (if it is a guest)
+        PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
+
+        // Return the system in a new shell
+        return newApplication(pic);
     }
 
     /**
@@ -97,10 +110,43 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return mhConstructor.type().returnType();
     }
 
+    /**
+     * @param assembly
+     *            the root assembly
+     * @param wirelets
+     *            optional wirelets
+     * @param isAnalysis
+     *            is it an analysis
+     * @param isImage
+     *            is it an image
+     * @return a build setup
+     */
+    private BuildSetup buildFromAssembly(Assembly<?> assembly, Wirelet[] wirelets, boolean isAnalysis, boolean isImage) {
+
+        // Extract the component driver from the assembly
+        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
+
+        // Create a new build setup
+        BuildSetup build = new BuildSetup(this, assembly, componentDriver, isImage, wirelets);
+
+        // Create the component configuration that is needed by the assembly
+        ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
+
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        try {
+            PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        build.close();
+        return build;
+    }
+
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, true);
+        BuildSetup build = buildFromAssembly(assembly, wirelets, false, true);
         return new PackedApplicationImage<>(this, build.component);
     }
 
@@ -108,12 +154,22 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        requireNonNull(componentDriver, "componentDriver is null");
+        PackedComponentDriver<CC> pcd = (PackedComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
 
-        // Build the Application
-        BuildSetup build = BuildSetup.buildFromComposer(this, (PackedComponentDriver<CC>) componentDriver, composerFactory, consumer, wirelets);
+        // Create a build setup
+        BuildSetup build = new BuildSetup(this, consumer, pcd, wirelets);
+
+        CC componentConfiguration = pcd.toConfiguration(build.component);
+
+        // Used the supplied composer factory to create a composer from a component configuration instance
+        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
+
+        // Invoked the consumer supplied by the end-user
+        consumer.accept(composer);
+
+        build.close();
 
         // Initialize the application. And start it if necessary (if it is a guest)
         PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
@@ -140,19 +196,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A apply(Assembly<?> assembly, Wirelet... wirelets) {
-        // Build the system
-        BuildSetup build = BuildSetup.buildFromAssembly(this, assembly, wirelets, false, false);
-
-        // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
-
-        // Return the system in a new shell
-        return newApplication(pic);
     }
 
     /** {@inheritDoc} */
@@ -273,7 +316,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#buildImage(Assembly, Wirelet...)}. */
-    private final record PackedApplicationImage<A>(PackedApplicationDriver<A> driver, ComponentSetup root) implements ApplicationImage<A> {
+    private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ComponentSetup root) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
