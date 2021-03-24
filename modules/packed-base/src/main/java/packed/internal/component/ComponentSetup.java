@@ -120,43 +120,38 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      */
     public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(parent);
-        this.extension = null; // Extensions use another constructor
-
         this.build = requireNonNull(build);
 
-        int mod = driver.modifiers;
-
-        WireletWrapper ww;
-        if (parent == null) {
-            this.slotTable = build.slotTable;
-
-            mod = mod | build.modifiers;
-
-            ww = WireletWrapper.forApplication(build.application().driver, driver, wirelets);
-        } else {
-            ww = WireletWrapper.forComponent(driver, wirelets);
-            this.onWire = parent.onWire;
-            this.slotTable = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.slotTable;
-        }
-        this.modifiers = mod;
-
-        this.wirelets = ww;
-        // May initialize the component's name
-        for (Wirelet w : ww.wirelets) {
-            if (w instanceof InternalWirelet bw) {
-                bw.firstPass(this);
-            }
-        }
-
         // Setup Realm
-        this.realm = requireNonNull(realm);
+        this.realm = realm;
         ComponentSetup previous = realm.current;
         if (previous != null) {
             previous.fixCurrent();
         }
         realm.current = this;
+        
+        // Various
+        if (parent == null) {
+            this.modifiers = build.modifiers | driver.modifiers;
+            this.slotTable = build.slotTable;
+            this.wirelets = WireletWrapper.forApplication(build.application().driver, driver, wirelets);
+        } else {
+            this.modifiers = driver.modifiers;
+            this.slotTable = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.slotTable;
+            this.wirelets = WireletWrapper.forComponent(driver, wirelets);
+            this.onWire = parent.onWire;
+        }
 
-        // Setup any container
+        // May initialize the component's name, onWire, ect
+        if (this.wirelets != null) {
+            for (Wirelet w : this.wirelets.wirelets) {
+                if (w instanceof InternalWirelet bw) {
+                    bw.firstPass(this);
+                }
+            }
+        }
+
+        // Setup container
         if (modifiers().isContainer()) {
             this.memberOfContainer = this.container = new ContainerSetup(this);
         } else {
@@ -164,7 +159,10 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
             this.memberOfContainer = parent == null ? null : parent.memberOfContainer;
         }
 
-        // Setup Guest
+        // Extensions use another constructor
+        this.extension = null;
+
+        // Setup Runtime
         if (modifiers().hasRuntime()) {
             slotTable.reserve(); // reserve a slot to an instance of PackedGuest
         }
