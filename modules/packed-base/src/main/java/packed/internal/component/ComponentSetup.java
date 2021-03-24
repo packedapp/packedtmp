@@ -298,9 +298,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * This method must only be called on a realms root component (we do not check explicitly this)
      * 
      * @see ComponentSetup#link(Assembly, Wirelet...)
-     * @see BuildSetup#buildFromAssembly(PackedApplicationDriver, Assembly, Wirelet[], boolean, boolean)
-     * @see BuildSetup#buildFromComposer(PackedApplicationDriver, PackedComponentDriver, java.util.function.Function,
-     *      Consumer, Wirelet...)
      */
     public void realmClose() {
         if (realm.current != null) {
@@ -356,7 +353,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
-        // Create a wirelet wrapper from the specified wirelets
+        // Create a wirelet wrapper from the any wirelets
         WireletWrapper ww = WireletWrapper.forComponent(driver, wirelets);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
@@ -369,7 +366,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(component);
 
-        // Invoke Assembly::doBuild
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
             PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {

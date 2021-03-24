@@ -55,9 +55,8 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
     /** A marker object to indicate that the assembly has been used. */
     private static Object USED = Assembly.class;
 
-    /** A handle that can access Assembly#configuration. */
-    private static final VarHandle VH_ASSEMBLY_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "configuration",
-            Object.class);
+    /** A handle that can access #configuration. */
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", Object.class);
 
     /**
      * The configuration of this assembly.
@@ -75,7 +74,10 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
     @Nullable
     private Object configuration;
 
-    /** The driver of this assembly. This field is read via a VarHandle from {@link AssemblyHelper}. */
+    /**
+     * The driver of this assembly. This field is read via a VarHandle from
+     * {@link PackedComponentDriver#getDriver(Assembly)}.
+     */
     @SuppressWarnings("unused")
     private final PackedComponentDriver<? extends C> driver;
 
@@ -118,14 +120,22 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         return (C) c;
     }
 
-    void doBuild(C configuration) {
-        Object existing = VH_ASSEMBLY_CONFIGURATION.compareAndExchange(this, null, configuration);
+    /**
+     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
+     * used more than once.
+     * 
+     * @param configuration
+     *            the configuration to use for the assembling process
+     */
+    @SuppressWarnings("unused")
+    private void doBuild(C configuration) {
+        Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
                 build();
             } finally {
                 // sets Assembly.configuration to a marker that indicates the assembly has been consumed
-                VH_ASSEMBLY_CONFIGURATION.setVolatile(this, USED);
+                VH_CONFIGURATION.setVolatile(this, USED);
             }
         } else if (existing == USED) {
             // Assembly has already been used (successfully or unsuccessfully)
@@ -148,7 +158,7 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
         ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
 
-    protected final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
+    final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
         // Jeg ved ikke hvor tid vi har brug for den her...
         throw new UnsupportedOperationException();
     }

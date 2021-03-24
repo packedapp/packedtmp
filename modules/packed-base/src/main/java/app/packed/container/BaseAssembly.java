@@ -62,7 +62,8 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
  * </ul>
  * 
  * @apiNote We never return, for example, Assembly or BaseAssembly. As this would make extending the class difficult
- *          unless we defined all methods as non-final.
+ *          unless we defined all methods as non-final. Method Chaining is used on the component level... Not on the
+ *          assembly level?
  */
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
