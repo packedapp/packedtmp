@@ -65,7 +65,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    /** The component setup of this extension. */
+    /** The component representation of this extension. */
     private final ComponentSetup component;
 
     /** The setup of the container this extension belongs to. */

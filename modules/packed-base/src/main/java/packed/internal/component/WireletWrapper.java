@@ -20,7 +20,9 @@ import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
 import packed.internal.base.application.PackedApplicationDriver;
 
-/** A holder of wirelets and wirelet pipelines. */
+/** A holder of wirelets. */
+// Vi har faktisk ogsaa for den her paa runtime...
+// Saa vi kan ikke kode den ind i ComponentSetup
 public final class WireletWrapper {
 
     /** An empty wirelet wrapper. */

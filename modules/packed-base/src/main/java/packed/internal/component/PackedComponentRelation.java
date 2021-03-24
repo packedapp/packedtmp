@@ -24,7 +24,7 @@ import app.packed.component.ComponentRelation;
 
 /** Implementation of {@link ComponentRelation}. */
 // source + target vs from + to
-final class PackedComponentRelation implements ComponentRelation {
+/* primitive */ final class PackedComponentRelation implements ComponentRelation {
 
     private final int distance;
 

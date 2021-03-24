@@ -31,10 +31,10 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponent;
-import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.ConstantPool;
 import packed.internal.component.ConstantPoolSetup;
+import packed.internal.component.PackedComponent;
+import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.Requirement.FromInjectable;
@@ -187,7 +187,7 @@ public final class ServiceManagerSetup {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedApplicationDriver<?> psd = (PackedApplicationDriver<?>) container.component.build().applicationDriver();
+        PackedApplicationDriver<?> psd = (PackedApplicationDriver<?>) container.component.build().application().driver;
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {

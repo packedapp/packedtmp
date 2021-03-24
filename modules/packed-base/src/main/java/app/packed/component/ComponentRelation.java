@@ -21,7 +21,7 @@ import java.util.Optional;
  * A component relation is an unchangeable representation of a directional relationship between two components. It is
  * typically created via {@link Component#relationTo(Component)}.
  */
-public interface ComponentRelation extends Iterable<Component> {
+public /* sealed */ interface ComponentRelation extends Iterable<Component> {
 
     /**
      * -1 if {@link #source()} and {@link #target()} are not in the same system. 0 if source and target are identical.
@@ -43,7 +43,9 @@ public interface ComponentRelation extends Iterable<Component> {
      * 
      * @return whether or not the two components are in the same application
      */
-    boolean inSameApplication();
+    default boolean inSameApplication() {
+        return source().application().equals(target().application());
+    }
 
     /**
      * Returns whether or not the two components are in the same container.
@@ -61,6 +63,10 @@ public interface ComponentRelation extends Iterable<Component> {
     // Maaske har vi kun de to andre...
     boolean inSameGuest();
 
+    default boolean isInSame(ComponentSystemType systemType) {
+        return source().root() == target().root();
+    }
+
     /**
      * Returns whether or not the two components are in the same system. Two components are in the same system, iff they
      * have the same {@link Component#root() system component}.
@@ -72,16 +78,13 @@ public interface ComponentRelation extends Iterable<Component> {
         return isInSame(ComponentSystemType.NAMESPACE);
     }
 
-    default boolean isInSame(ComponentSystemType systemType) {
-        return source().root() == target().root();
-    }
-
     // Just here because it might be easier to remember...
-    default boolean isStronglyConnected() {
+    // isStronglyWired...
+    default boolean isStronglyWired() {
         return inSameGuest();
     }
 
-    default boolean isWeaklyConnected() {
+    default boolean isWeaklyWired() {
         return !inSameGuest();
     }
 

@@ -22,10 +22,10 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.WireletWrapper;
 
 /**
@@ -35,9 +35,10 @@ import packed.internal.component.WireletWrapper;
 public final class BuildSetup implements BuildInfo {
 
     /** The artifact driver used for the build process. */
-    private final PackedApplicationDriver<?> applicationDriver;
+    private final ApplicationSetup application;
 
     public final ConstantPoolSetup slotTable = new ConstantPoolSetup();
+
     /** The root component. */
     final ComponentSetup component;
 
@@ -58,11 +59,10 @@ public final class BuildSetup implements BuildInfo {
      *            the output of the build process
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, Assembly<?> assembly, PackedComponentDriver<?> driver, boolean isImage, Wirelet[] wirelets) {
-        this.applicationDriver = applicationDriver;
+        this.application = new ApplicationSetup(applicationDriver);
 
         // Vi flytter wirelets'ene ind i ComponentSetup med mindre vi vil extracte info her i BuildSetup omkring dem
         // Men det ser vi paa et senere tidspunkt
-        WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, driver, wirelets);
 
         int tmpM = 0;
 
@@ -76,6 +76,8 @@ public final class BuildSetup implements BuildInfo {
         }
 
         this.modifiers = tmpM + PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_BUILD;
+
+        WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, driver, wirelets);
         this.component = new ComponentSetup(this, new RealmSetup(assembly), driver, null, ww);
     }
 
@@ -86,15 +88,16 @@ public final class BuildSetup implements BuildInfo {
      *            the output of the build process
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, Consumer<?> consumer, PackedComponentDriver<?> componentDriver, Wirelet[] wirelets) {
-        this.applicationDriver = applicationDriver;
+        this.application = new ApplicationSetup(applicationDriver);
         this.modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_BUILD; // we use + to make sure others don't provide ASSEMBLY
+
         WireletWrapper ww = WireletWrapper.forApplication(applicationDriver, componentDriver, wirelets);
         this.component = new ComponentSetup(this, new RealmSetup(consumer), componentDriver, null, ww);
     }
 
     /** {@return the root application driver} */
-    public PackedApplicationDriver<?> applicationDriver() {
-        return applicationDriver;
+    public ApplicationSetup application() {
+        return application;
     }
 
     void close() {

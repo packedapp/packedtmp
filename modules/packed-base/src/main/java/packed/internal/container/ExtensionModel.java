@@ -304,6 +304,12 @@ public final class ExtensionModel implements ExtensionDescriptor {
             return new ExtensionModel(this);
         }
 
+        /**
+         * The extension will only connect is two containers are in a parent-child relationship.
+         * The default behavior is to connect with any ancestor. 
+         * 
+         * @see Extension#$connectParentOnly
+         */
         public void connectParentOnly() {
             connectParentOnly = true;
         }

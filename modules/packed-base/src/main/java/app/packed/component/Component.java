@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import app.packed.application.Application;
 import app.packed.attribute.AttributedElement;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
@@ -27,8 +28,12 @@ import app.packed.component.ComponentStream.Option;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public interface Component extends AttributedElement {
+public /* sealed */ interface Component extends AttributedElement {
 
+    default Application application() {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Returns an unmodifiable view of all of this component's children.
      *
@@ -41,7 +46,6 @@ public interface Component extends AttributedElement {
      * 
      * @return the distance to the root component
      */
-    // Maybe just a method on path().depth();
     int depth();
 
     default boolean hasModifier(ComponentModifier modifier) {
@@ -81,6 +85,11 @@ public interface Component extends AttributedElement {
      */
     NamespacePath path();
 
+    default void print() {
+        // Super useful...
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Computes the relation from this component to the specified component.
      * 
@@ -94,16 +103,6 @@ public interface Component extends AttributedElement {
     // add Optional<Component> tryResolve(CharSequence path);
     // Syntes ikke vi skal have baade tryResolve or resolve...
     Component resolve(CharSequence path);
-
-    /**
-     * Returns a stream consisting of this component and all of its descendants in any order.
-     *
-     * @param options
-     *            specifying the order and contents of the stream
-     * 
-     * @return a component stream consisting of this component and all of its descendants in any order
-     */
-    ComponentStream stream(ComponentStream.Option... options);
 
     /**
      * Returns the root component of the namespace this component is located in.
@@ -120,10 +119,15 @@ public interface Component extends AttributedElement {
         return c;
     }
     
-    default void print() {
-        // Super useful...
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Returns a stream consisting of this component and all of its descendants in any order.
+     *
+     * @param options
+     *            specifying the order and contents of the stream
+     * 
+     * @return a component stream consisting of this component and all of its descendants in any order
+     */
+    ComponentStream stream(ComponentStream.Option... options);
 
     /**
      * 

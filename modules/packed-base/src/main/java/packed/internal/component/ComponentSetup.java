@@ -272,7 +272,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedApplicationDriver<?> pac = build().applicationDriver();
+            PackedApplicationDriver<?> pac = build().application().driver;
             dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
         }
         return dam;
@@ -353,7 +353,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
-        // Create a wirelet wrapper from the any wirelets
+        // Create a wirelet wrapper from any wirelets
         WireletWrapper ww = WireletWrapper.forComponent(driver, wirelets);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
