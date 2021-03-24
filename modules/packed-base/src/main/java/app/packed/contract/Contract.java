@@ -20,7 +20,6 @@ import java.lang.invoke.MethodType;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Completion;
-import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.component.PackedInitializationContext;
 
 /**
@@ -30,10 +29,9 @@ import packed.internal.component.PackedInitializationContext;
 public abstract class Contract {
 
     /** A daemon driver. */
-    public static final ApplicationDriver<Completion> DAEMON = new PackedApplicationDriver<>(true,
-            MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
+    public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
+            .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
 
-    
     /** {@inheritDoc} */
     @Override
     public abstract boolean equals(Object obj);
@@ -41,7 +39,6 @@ public abstract class Contract {
     /** {@inheritDoc} */
     @Override
     public abstract int hashCode();
-    
 
     /**
      * Returns an artifact driver that can be used for analysis. Statefull

@@ -70,7 +70,11 @@ public /* sealed */ interface ApplicationDriver<A> {
     // ComponentAnalysis extends Validatable
     
     // Structure record(Application,  Component, Strea
-    
+    // Det ville vaere rigtig rart tror hvis BuildException have en liste af
+    // validation violations...
+    // Tit vil man gerne have alle fejlene eller en Component...
+    // Either<Component, Validation>
+    // Validataion
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
     
     
@@ -117,7 +121,32 @@ public /* sealed */ interface ApplicationDriver<A> {
     // Validation vs Build exceptions
     // Smider vi
     // Altsaa maaske skal det starte i devtools
+    // I don't think it tests missing contract clauses
+    // assertValid(..., hasContract);
+    // I navnet valid ligger ikke fullfilled. Laver jeg en hjaelpe assembly.
+    // er den jo stadig valid... selvom vi ikke propper fake parametere ind..
+    //
     default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
+        // Checks that the container can be sucessfully build...
+        // What about fullfilled??? Er den ok hvis vi f.eks.
+        // mangler nogle service argumenter???
+
+        // Usefull for test
+        // ServiceAsserts.exposes(fff)
+
+        // ServiceWirelet.assertContract(
+
+        // Maaske hedder wirelets ikke noget med assert...
+        // men validate (eller check)....
+        // Og assert goer saa bare at vi smider den med en AssertException...
+        // Men vi kan ogsaa vaelge at faa det i en liste....
+        // App.assertValid(new FooAssembly()), ServiceWirelets.assertExactContract(adasdasd.));
+        // App.assertValid(new FooAssembly()), ServiceWirelets.checkExactContract(adasdasd.));
+        // App.assertValid(new FooAssembly()), ServiceWirelets.validateExactContract(adasdasd.));
+
+        // App.assertValid(new FooAssembly(), ContractWirelets.checkFullfilled());
+        // App.assertValid(new FooAssembly(), ContractWirelets.validateFullfilled());
+        // A specific type of analyze that throws ValidationError...
         validate(assembly, wirelets).assertValid();
     }
 
@@ -173,6 +202,17 @@ public /* sealed */ interface ApplicationDriver<A> {
         throw new UnsupportedOperationException();
     }
 
+    // Ideen er at man kan smide checked exceptions...
+    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
+    default A invoke(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
+        // Tror den bliver brugt via noget ErrorHandler...
+        // Hvor man specificere hvordan exceptions bliver handled
+
+        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
+
+        // Her er ihvertfald noget der skal kunne konfigureres
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -324,99 +364,8 @@ interface ZApplicationDriverWithBuilder {
             throw new UnsupportedOperationException();
         }
 
-        // CompletableFuture<A> asynchronous();/??
-//        /**
-//         * Returns a set of the various modifiers that will by set on the underlying component. whether or not the type of artifact
-//         * being created by this driver has an execution phase. This is determined by whether or not the artifact implements
-//         * {@link AutoCloseable}.
-//         * 
-//         * @return whether or not the artifact being produced by this driver has an execution phase
-//         */
-//        // Saa heller descriptor();?????
-        // Men hvorfor en descriptor. Kan det ikke vaere direkte paa driveren.
-        // Ikke hvis man skal kunne faa en descriptor fra attributes. Men hvor
-        // man ikke skal have rettigheder til direkte at
-//        ComponentModifierSet modifiers();
-
         // Methods to analyze...
         // Pair<Component, Artifact>?
     }
 }
-//Main Functionality
-//Make artifacts
-//Make images
-//Analyze, validate, print, ect...
 
-interface ZZApplicationDriver<A> {
-
-    // Det ville vaere rigtig rart tror hvis BuildException have en liste af
-    // validation violations...
-    // Tit vil man gerne have alle fejlene eller en Component...
-    // Either<Component, Validation>
-    // Validataion
-    default Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    // I don't think it tests missing contract clauses
-    // assertValid(..., hasContract);
-    // I navnet valid ligger ikke fullfilled. Laver jeg en hjaelpe assembly.
-    // er den jo stadig valid... selvom vi ikke propper fake parametere ind..
-    //
-    default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
-        // Checks that the container can be sucessfully build...
-        // What about fullfilled??? Er den ok hvis vi f.eks.
-        // mangler nogle service argumenter???
-
-        // Usefull for test
-        // ServiceAsserts.exposes(fff)
-
-        // ServiceWirelet.assertContract(
-
-        // Maaske hedder wirelets ikke noget med assert...
-        // men validate (eller check)....
-        // Og assert goer saa bare at vi smider den med en AssertException...
-        // Men vi kan ogsaa vaelge at faa det i en liste....
-        // App.assertValid(new FooAssembly()), ServiceWirelets.assertExactContract(adasdasd.));
-        // App.assertValid(new FooAssembly()), ServiceWirelets.checkExactContract(adasdasd.));
-        // App.assertValid(new FooAssembly()), ServiceWirelets.validateExactContract(adasdasd.));
-
-        // App.assertValid(new FooAssembly(), ContractWirelets.checkFullfilled());
-        // App.assertValid(new FooAssembly(), ContractWirelets.validateFullfilled());
-        // A specific type of analyze that throws ValidationError...
-        throw new UnsupportedOperationException();
-    }
-
-    // Ideen er at man kan smide checked exceptions...
-    default A invoke(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
-        // Tror den bliver brugt via noget ErrorHandler...
-        // Hvor man specificere hvordan exceptions bliver handled
-
-        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
-
-        // Her er ihvertfald noget der skal kunne konfigureres
-        throw new UnsupportedOperationException();
-    }
-
-    default Validation validate(Assembly<?> assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-}
-
-//Vi kaldte den shell engang. Men gik tilbage til Artifact. Fordi det virker aandsvagt at se man skal have
-//en stateless artifact. Og det styre saa alt andet... En artifact er mere noget man laver til et eksisterende system
-//Ikke selv systeme.
-//Altsaa hvad hvis jeg vil have et ActorSystem.. til en del component...
-
-//Tror ikke artifacts kan bruge annoteringer??? Altsaa maaske paa surragates???
-//Ville maaske vaere fedt nok bare at kunne sige
-//@OnShutdown()
-//sysout "FooBar was removed"
-
-// Det ville jo vaere oplagt at kunne bruge f.eks. @Provide...
-// Men artifakt'en bliver foerst lavet meget senere...
-
-//Support of injection of the artifact into the Container...
-//We do not generally support this, as people are free to use any artifact they may like.
-//Which would break encapsulation

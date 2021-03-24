@@ -53,31 +53,23 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
             .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
 
-    /** The initial set of modifiers for any system that uses this driver. */
-    private final boolean needsRuntime;
-
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (PackedInitializationContext)Object
+
+    /** The initial set of modifiers for any system that uses this driver. */
+    private final boolean needsRuntime;
 
     /** May contain a wirelet that will be processed _after_ any other wirelets. */
     @Nullable
     public final Wirelet wirelet;
 
     /**
-     * Creates a new driver.
+     * Create a new application driver using the specified builder.
      * 
-     * @param isStateful
-     *            whether or not the the artifact is stateful
-     * @param mhNewShell
-     *            a method handle that can create new artifacts
+     * @param builder
+     *            the used for construction
      */
-    public PackedApplicationDriver(boolean isStateful, MethodHandle mhNewShell) {
-        this.needsRuntime = isStateful;
-        this.mhConstructor = requireNonNull(mhNewShell);
-        this.wirelet = null;
-    }
-
-    PackedApplicationDriver(Builder builder) {
+    private PackedApplicationDriver(Builder builder) {
         this.needsRuntime = builder.needsRuntime;
         this.mhConstructor = builder.mh;
         this.wirelet = builder.prefix;
@@ -153,13 +145,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = buildFromAssembly(assembly, wirelets, false, true);
-        return new PackedApplicationImage<>(this, build.component);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
         PackedComponentDriver<CC> pcd = (PackedComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
@@ -208,6 +193,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
+    public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
+        BuildSetup build = buildFromAssembly(assembly, wirelets, false, true);
+        return new PackedApplicationImage<>(this, build.component);
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Validation validate(Assembly<?> assembly, Wirelet... wirelets) {
         // Denne metoder siger ikke noget om at alle kontrakter er fullfilled.
         // Det er fuldt ud "Lovligt" ikke at specificere alt muligt...
@@ -227,6 +219,82 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(wirelet, "wirelet is null");
         Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
         return new PackedApplicationDriver<>(this, w);
+    }
+
+    public static class Builder implements ApplicationDriver.Builder {
+        MethodHandle mh;
+        boolean needsRuntime = true;
+        Wirelet prefix;
+        boolean useShellAsSource;
+
+        @Override
+        public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation) {
+            if (implementation == Void.class) {
+                throw new IllegalArgumentException("Cannot specify Void.class use daemon() instead");
+            }
+
+            // We currently do not support @Provide ect... Nope...
+            // Must add it as a component
+            // Would just be so nice if you could do @OnStart()->application started...
+            // And then they would show as "properties" on the container...
+
+            // Altsaa hvis vi nu siger, at vi tillader injection af de services der skal bruges...
+            // Og saa gemmer vi ServiceLocator til hvis det er brugere der skal bruge den...
+
+            // Altsaa om vi bruger ServiceWirelets.provide()... eller @Provide paa application...
+            // Eller om vi bruger LifecycleWirelets.onStop()... eller @OnStop
+
+            // Create a new MethodHandle that can create artifact instances.
+
+            // Vi har maaske en ApplicationDriver builder...
+
+            // Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
+            // traekke det ud af service locatoren.
+
+            // Uhh uhhh species... Job<R> kan vi lave det???
+
+            // Create an infuser (SomeExtension, Class)
+            Infuser infuser = Infuser.build(caller, c -> {
+                c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
+                c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
+                if (needsRuntime) {
+                    c.provide(ApplicationRuntime.class).transform(PackedInitializationContext.MH_RUNTIME);
+                }
+            }, PackedInitializationContext.class);
+
+            // Find the constructor for the subtension, only 1 constructor must be declared on the class
+            Constructor<?> con = FindInjectableConstructor.constructorOf(implementation, s -> new IllegalArgumentException(s));
+
+            mh = infuser.findConstructorFor(con, implementation);
+
+            return new PackedApplicationDriver<>(this);
+        }
+
+        @Override
+        public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh) {
+            // TODO fix....
+            this.mh = mh;
+
+            return new PackedApplicationDriver<>(this);
+        }
+
+        @Override
+        public Builder noRuntime() {
+            needsRuntime = false;
+            return this;
+        }
+
+        @Override
+        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell) {
+            mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
+            return new PackedApplicationDriver<>(this);
+        }
+
+        @Override
+        public Builder useShellAsSource() {
+            useShellAsSource = true;
+            return this;
+        }
     }
 
     /** Options that can be applied when creating a shell driver. */
@@ -276,24 +344,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         // non execution -> Create...
-
-        // Ideen var man skulle kunne angive nogle prefix wirelets naar man lavede en shell...
-        // Men det er nu lavet om til options pre and post wirelets
-        // executing -> Create (and initialize), start, startAsync, Execute, executeAsync
-        // StartExecutor ?
-        // final T create(Assembly source, Wirelet... shellWirelets) {
-        //
-//         // Ideen er lidt at Artifact Implementering, kan kalde med dens egen wirelets...
-//         // ala
-//         // Maaske er det en option.. .. ellers andThen... eller have en Wirelet customWirelets(Assemble)..
-        //
-//         // start(Assembly, Wirelet... wirelets) {
-//         // create(Assembly, wirelets, ArtifactWirelets.startSynchronous());
-//         // create(Assembly, wirelets, ArtifactWirelets.startAsynchronous());
-//         // }
-//         // What about execute....
-//         throw new UnsupportedOperationException();
-        // }
     }
 
     /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
@@ -313,84 +363,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
             // Wrap the system in a new shell and return it
             return driver.newApplication(pic);
-        }
-    }
-
-    public static class Builder implements ApplicationDriver.Builder {
-        boolean needsRuntime = true;
-        boolean useShellAsSource;
-        Wirelet prefix;
-        MethodHandle mh;
-
-        @Override
-        public Builder noRuntime() {
-            needsRuntime = false;
-            return this;
-        }
-
-        @Override
-        public Builder useShellAsSource() {
-            useShellAsSource = true;
-            return this;
-        }
-
-        @Override
-        public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation) {
-            boolean hasRuntime = needsRuntime;
-
-            if (implementation == Void.class) {
-                throw new IllegalArgumentException("Cannot specify Void.class use daemon() instead");
-            }
-
-            // We currently do not support @Provide ect... Nope...
-            // Must add it as a component
-            // Would just be so nice if you could do @OnStart()->application started...
-            // And then they would show as "properties" on the container...
-
-            // Altsaa hvis vi nu siger, at vi tillader injection af de services der skal bruges...
-            // Og saa gemmer vi ServiceLocator til hvis det er brugere der skal bruge den...
-
-            // Altsaa om vi bruger ServiceWirelets.provide()... eller @Provide paa application...
-            // Eller om vi bruger LifecycleWirelets.onStop()... eller @OnStop
-
-            // Create a new MethodHandle that can create artifact instances.
-
-            // Vi har maaske en ApplicationDriver builder...
-
-            // Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
-            // traekke det ud af service locatoren.
-
-            // Uhh uhhh species... Job<R> kan vi lave det???
-
-            // Create an infuser (SomeExtension, Class)
-            Infuser infuser = Infuser.build(caller, c -> {
-                c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
-                c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
-                if (hasRuntime) {
-                    c.provide(ApplicationRuntime.class).transform(PackedInitializationContext.MH_RUNTIME);
-                }
-            }, PackedInitializationContext.class);
-
-            // Find the constructor for the subtension, only 1 constructor must be declared on the class
-            Constructor<?> con = FindInjectableConstructor.constructorOf(implementation, s -> new IllegalArgumentException(s));
-
-            MethodHandle mh = infuser.findConstructorFor(con, implementation);
-
-            return new PackedApplicationDriver<>(hasRuntime, mh);
-        }
-
-        @Override
-        public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh) {
-            boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
-            // TODO fix....
-
-            return new PackedApplicationDriver<>(isGuest, mh);
-        }
-
-        @Override
-        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell) {
-            mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
-            return new PackedApplicationDriver<>(this);
         }
     }
 }
