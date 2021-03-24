@@ -53,7 +53,7 @@ public class ExtensionActivation {
             @Override
             protected void build() {}
         };
-        return Program.buildImage(b);
+        return Program.newImage(b);
     }
 
     @Benchmark
@@ -64,7 +64,7 @@ public class ExtensionActivation {
                 use(MyExtension.class);
             }
         };
-        return Program.buildImage(b);
+        return Program.newImage(b);
     }
 
     @Benchmark
@@ -75,7 +75,7 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return Program.buildImage(b);
+        return Program.newImage(b);
     }
 
     @Benchmark
@@ -87,7 +87,7 @@ public class ExtensionActivation {
                 installInstance("foo");
             }
         };
-        return Program.buildImage(b);
+        return Program.newImage(b);
     }
 
     @Benchmark
@@ -98,7 +98,7 @@ public class ExtensionActivation {
                 installInstance(new MyStuff());
             }
         };
-        return Program.buildImage(b);
+        return Program.newImage(b);
     }
 
     static class MyStuff {

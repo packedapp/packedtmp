@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationDriver;
 import app.packed.application.Program;
 import app.packed.attribute.AttributedElementStream;
 import app.packed.container.Extension;
@@ -148,22 +147,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //        throw new UnsupportedOperationException();
 //    }
 
-    /**
-     * 
-     * using {@link ApplicationDriver#defaultAnalyzer()} as the artifact driver.
-     * <p>
-     * If the specified system is a subclass of {@link Assembly}. The {@link ComponentModifier#ANALYSIS} modifier will be
-     * set for the root component.
-     * 
-     * @param assembly
-     *            the assembly to create a stream for
-     * @param options
-     *            streaming options
-     * @return the new stream
-     */
-    public static ComponentStream of(Assembly<?> assembly, Option... options) {
-        return ApplicationDriver.defaultAnalyzer().analyze(assembly).stream(options);
-    }
+
 
     /********** Overridden to provide ComponentStream as a return value. **********/
 

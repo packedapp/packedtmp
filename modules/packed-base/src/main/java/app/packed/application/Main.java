@@ -22,6 +22,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
+import packed.internal.base.application.PackedApplicationDriver;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -42,7 +43,7 @@ public final class Main {
     // Install as System Namespace
     // Virker underlige at den returnere Complietion... Det betyder jo ogsaa at vi ikke skal smide
     // PanicException hvad jeg syntes vi skal
-    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.daemon().with(StateWirelets.shutdownHook());
+    private static final ApplicationDriver<Completion> DRIVER = PackedApplicationDriver.DAEMON.with(StateWirelets.shutdownHook());
 
     /** Not today Satan, not today. */
     private Main() {}

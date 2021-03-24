@@ -55,13 +55,6 @@ public interface Program extends AutoCloseable {
     Component component();
 
     /**
-     * Returns the applications's host.
-     * 
-     * @return this application's host.
-     */
-    ApplicationRuntime runtime();
-
-    /**
      * Returns the name of this application.
      * <p>
      * The name of an application is identical to the name of the application's component.
@@ -92,6 +85,13 @@ public interface Program extends AutoCloseable {
     default Component resolve(CharSequence path) {
         return component().resolve(path);
     }
+
+    /**
+     * Returns the applications's host.
+     * 
+     * @return this application's host.
+     */
+    ApplicationRuntime runtime();
 
     /**
      * Returns this app's service locator.
@@ -164,10 +164,19 @@ public interface Program extends AutoCloseable {
     }
 
     /**
+     * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.
+     * 
+     * @return an artifact driver for App
+     */
+    static ApplicationDriver<Program> driver() {
+        return ProgramDefault.DRIVER;
+    }
+
+    /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationImage#apply(Wirelet...)} will be {@link RunState#RUNNING}. unless
-     * GuestWirelet.delayStart
+     * The state of the applications returned by {@link ApplicationImage#apply(Wirelet...)} will be
+     * {@link RunState#RUNNING}. unless GuestWirelet.delayStart
      * 
      * @param assembly
      *            the assembly to use for creating the image
@@ -175,18 +184,10 @@ public interface Program extends AutoCloseable {
      *            optional wirelets
      * @return a new app image
      * @see ImageWirelets
+     * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
-    static ApplicationImage<Program> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().buildImage(assembly, wirelets);
-    }
-
-    /**
-     * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.
-     * 
-     * @return an artifact driver for App
-     */
-    static ApplicationDriver<Program> driver() {
-        return ProgramDefault.DRIVER;
+    static ApplicationImage<Program> newImage(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().newImage(assembly, wirelets);
     }
 
     /**
@@ -209,19 +210,6 @@ public interface Program extends AutoCloseable {
      */
     static Program start(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().apply(assembly, wirelets);
-    }
-}
-
-class Ddd extends BaseAssembly {
-
-    /** {@inheritDoc} */
-    @Override
-    protected void build() {}
-
-    public static void main(String[] args) {
-        try (Program app = Program.start(new Ddd())) {
-            app.use(Map.class).isEmpty();
-        }
     }
 }
 
@@ -252,7 +240,7 @@ interface Zapp extends Program {
      * @return the new image
      */
     static ApplicationImage<Program> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return Program.driver().buildImage(assembly, wirelets/* , ImageWirelet.single() */);
+        return Program.driver().newImage(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
 ///**
@@ -267,3 +255,16 @@ interface Zapp extends Program {
 //default NamespacePath path() {
 // return component().path();
 //}
+
+class ZDdd extends BaseAssembly {
+
+    /** {@inheritDoc} */
+    @Override
+    protected void build() {}
+
+    public static void main(String[] args) {
+        try (Program app = Program.start(new ZDdd())) {
+            app.use(Map.class).isEmpty();
+        }
+    }
+}

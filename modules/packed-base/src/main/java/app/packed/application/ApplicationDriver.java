@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import app.packed.base.Completion;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
@@ -69,7 +68,18 @@ public /* sealed */ interface ApplicationDriver<A> {
     ///// Kunne vaere interessant fx
     // ComponentAnalysis = Either<Component, Validatable>
     // ComponentAnalysis extends Validatable
+    
+    // Structure record(Application,  Component, Strea
+    
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
+    
+    
+    // Maybe return Application??? Instead of Component
+    // Maybe return something else? Alle componenter i appen'en eller component i namespaces
+    // Det er jo snare et Build man returnere...
+    default Application analyze2(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Uses the driver to create a new application using the specified assembly.
@@ -124,25 +134,6 @@ public /* sealed */ interface ApplicationDriver<A> {
     }
 
     /**
-     * Builds a new application image using the specified assembly and optional wirelets.
-     * <p>
-     * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link Program#buildImage(Assembly, Wirelet...)} and {@link ServiceLocator#buildImage(Assembly, Wirelet...)}.
-     * 
-     * @param assembly
-     *            the assembly that should be used to build the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     * @throws BuildException
-     *             if the image could not be build
-     * @see Program#buildImage(Assembly, Wirelet...)
-     * @see ServiceLocator#buildImage(Assembly, Wirelet...)
-     */
-    // newImage()? Ja tror maaske jeg mere til det
-    ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets);
-
-    /**
      * Used by composers such as {@link ServiceComposer}.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
@@ -182,24 +173,28 @@ public /* sealed */ interface ApplicationDriver<A> {
         throw new UnsupportedOperationException();
     }
 
-    // Smider vi build exception??? Eller
-    // Bare invalid???
-    // Vil mene invalid...
-    Validation validate(Assembly<?> assembly, Wirelet... wirelets);
+
+    /**
+     * Create a new application image by using the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly that should be used to build the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     * @throws BuildException
+     *             if the image could not be build
+     * @see Program#newImage(Assembly, Wirelet...)
+     * @see ServiceLocator#buildImage(Assembly, Wirelet...)
+     */
+    // Was buildImage
+    ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
 
     // driver.use(A, W1, W2) == driver.with(W1).use(A, W2)
     // Hmmm, saa er den jo lige pludselig foerend..
     // ComponentDriveren
     // Maaske det giver mening alligevel...
     // Det er ihvertfald lettere at forklare...
-
-    ApplicationDriver<A> with(Wirelet wirelet);
-
-    ApplicationDriver<A> with(Wirelet... wirelets);
-
-    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
-
-    }
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
         Component c = analyze(assembly, wirelets);
@@ -214,6 +209,19 @@ public /* sealed */ interface ApplicationDriver<A> {
         });
     }
 
+    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
+
+    }
+
+    // Smider vi build exception??? Eller
+    // Bare invalid???
+    // Vil mene invalid...
+    Validation validate(Assembly<?> assembly, Wirelet... wirelets);
+
+    ApplicationDriver<A> with(Wirelet wirelet);
+    
+    ApplicationDriver<A> with(Wirelet... wirelets);
+
     /**
      * Returns a builder for an {@code ApplicationDriver}.
      *
@@ -223,40 +231,7 @@ public /* sealed */ interface ApplicationDriver<A> {
         return new PackedApplicationDriver.Builder();
     }
 
-    /**
-     * Returns a daemon artifact driver.
-     * 
-     * @return a daemon artifact driver
-     */
-    // Hvad skal default lifestate vaere for
-    static ApplicationDriver<Completion> daemon() {
-        return PackedApplicationDriver.DAEMON;
-        // ArtifactDriver.Builder<Void> daemonBuilder()
-        // ArtifactDriver.Builder<T> result(...)
-        // ArtifactDriver.Builder<T> shell(...)
-    }
-
-    /**
-     * Returns an artifact driver that can be used for analysis. Statefull
-     * 
-     * @return the default artifact driver for analysis
-     */
-    // maybe just analyzer
-    // I think it should fail if used to create images/instantiate anything
-    static ApplicationDriver<?> defaultAnalyzer() {
-        return daemon();
-    }
-
     interface Builder {
-
-        // Throws ISE paa runtime? Validation? ASsertionError, Custom...
-        default Builder restrictExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionClasses) {
-            throw new UnsupportedOperationException();
-        }
-
-        Builder noRuntime();
-
-        Builder useShellAsSource();
 
         /**
          * Creates a new artifact driver.
@@ -278,9 +253,19 @@ public /* sealed */ interface ApplicationDriver<A> {
         <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> implementation);
 
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh);
-        
+
+        Builder noRuntime();
+
+        <A> ApplicationDriver<A> old(MethodHandle mhNewShell);
         // Maybe just look for matching method/field hooks???
         // So always scan...
+
+        // Throws ISE paa runtime? Validation? ASsertionError, Custom...
+        default Builder restrictExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionClasses) {
+            throw new UnsupportedOperationException();
+        }
+        
+        Builder useShellAsSource();
 
 //        // Stuff on the container always belongs to the other side...
 //        // Cannot use Factory...
@@ -305,6 +290,7 @@ public /* sealed */ interface ApplicationDriver<A> {
 //            throw new UnsupportedOperationException();
 //        }
     }
+
 }
 
 /**

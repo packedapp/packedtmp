@@ -45,7 +45,7 @@ import app.packed.component.Wirelet;
  * An image can be used to create new instances of {@link app.packed.application.Program} or other artifact images.
  * Artifact images can not be used as a part of other containers, for example, via
  * 
- * @see Program#buildImage(Assembly, Wirelet...)
+ * @see Program#newImage(Assembly, Wirelet...)
  */
 public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
 

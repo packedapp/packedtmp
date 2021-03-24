@@ -50,12 +50,8 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** A daemon driver. */
-    public static final ApplicationDriver<Completion> COMPLETABLE = new PackedApplicationDriver<>(true,
-            MethodHandles.dropArguments(MethodHandles.constant(Completion.class, Completion.success()), 0, PackedInitializationContext.class));
-
-    /** A daemon driver. */
-    public static final ApplicationDriver<Completion> DAEMON = new PackedApplicationDriver<>(true,
-            MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
+    public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
+            .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
 
     /** The initial set of modifiers for any system that uses this driver. */
     private final boolean needsRuntime;
@@ -83,13 +79,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     PackedApplicationDriver(Builder builder) {
         this.needsRuntime = builder.needsRuntime;
-        this.mhConstructor = null;
-        this.wirelet = null;
+        this.mhConstructor = builder.mh;
+        this.wirelet = builder.prefix;
     }
 
-    private PackedApplicationDriver(boolean isStateful, MethodHandle newArtifactMH, Wirelet prefix) {
-        this.needsRuntime = isStateful;
-        this.mhConstructor = requireNonNull(newArtifactMH);
+    private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet prefix) {
+        this.needsRuntime = existing.needsRuntime;
+        this.mhConstructor = existing.mhConstructor;
         this.wirelet = prefix;
     }
 
@@ -157,7 +153,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
         BuildSetup build = buildFromAssembly(assembly, wirelets, false, true);
         return new PackedApplicationImage<>(this, build.component);
     }
@@ -222,7 +218,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationDriver<A> with(Wirelet... wirelets) {
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-        return new PackedApplicationDriver<>(needsRuntime, mhConstructor, w);
+        return new PackedApplicationDriver<>(this, w);
     }
 
     /** {@inheritDoc} */
@@ -230,17 +226,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public ApplicationDriver<A> with(Wirelet wirelet) {
         requireNonNull(wirelet, "wirelet is null");
         Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
-        return new PackedApplicationDriver<>(needsRuntime, mhConstructor, w);
-    }
-
-    // A method handle that takes an ArtifactContext and produces something that is compatible with A
-    public static <A> ApplicationDriver<A> of(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh) {
-        // TODO validate type
-        // shellType must match MH
-        boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
-        // TODO fix....
-
-        return new PackedApplicationDriver<>(isGuest, mh);
+        return new PackedApplicationDriver<>(this, w);
     }
 
     /** Options that can be applied when creating a shell driver. */
@@ -253,19 +239,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         static Option blacklistExtensions(String... extensions) {
-            throw new UnsupportedOperationException();
-        }
-
-        // Normally we just check if App.iface extends AutoClosable...
-        // But might want to override this.
-        // forceManaged, forceUnmanaged
-
-        // If not autoclosable
-        static Option forceGuest() {
-            throw new UnsupportedOperationException();
-        }
-
-        static Option forceNonGuest() {
             throw new UnsupportedOperationException();
         }
 
@@ -283,10 +256,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         static Option nameProvider() {
             // prefix???
             // Ideen er ihvertfald at
-            throw new UnsupportedOperationException();
-        }
-
-        static Option postfixWirelets(Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }
 
@@ -327,7 +296,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // }
     }
 
-    /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#buildImage(Assembly, Wirelet...)}. */
+    /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
     private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ComponentSetup root) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
@@ -350,6 +319,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public static class Builder implements ApplicationDriver.Builder {
         boolean needsRuntime = true;
         boolean useShellAsSource;
+        Wirelet prefix;
+        MethodHandle mh;
 
         @Override
         public Builder noRuntime() {
@@ -410,7 +381,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         @Override
         public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh) {
-            return PackedApplicationDriver.of(caller, artifactType, mh);
+            boolean isGuest = AutoCloseable.class.isAssignableFrom(artifactType);
+            // TODO fix....
+
+            return new PackedApplicationDriver<>(isGuest, mh);
+        }
+
+        @Override
+        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell) {
+            mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
+            return new PackedApplicationDriver<>(this);
         }
     }
 }

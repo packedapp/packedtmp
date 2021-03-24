@@ -15,12 +15,25 @@
  */
 package app.packed.contract;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
+import app.packed.application.ApplicationDriver;
+import app.packed.base.Completion;
+import packed.internal.base.application.PackedApplicationDriver;
+import packed.internal.component.PackedInitializationContext;
+
 /**
  * This class is the base class for contracts in Packed.
  */
 // Det er end slags beskrivelse. Og 
 public abstract class Contract {
 
+    /** A daemon driver. */
+    public static final ApplicationDriver<Completion> DAEMON = new PackedApplicationDriver<>(true,
+            MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
+
+    
     /** {@inheritDoc} */
     @Override
     public abstract boolean equals(Object obj);
@@ -28,4 +41,17 @@ public abstract class Contract {
     /** {@inheritDoc} */
     @Override
     public abstract int hashCode();
+    
+
+    /**
+     * Returns an artifact driver that can be used for analysis. Statefull
+     * 
+     * @return the default artifact driver for analysis
+     */
+    // maybe just analyzer
+    // I think it should fail if used to create images/instantiate anything
+    // contractAnalyzer paa Con
+    protected static ApplicationDriver<?> defaultAnalyzer() {
+        return DAEMON;
+    }
 }

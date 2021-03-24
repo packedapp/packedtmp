@@ -276,7 +276,7 @@ public final class ServiceContract extends Contract {
     // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
     // Vil mene kontrakter primaert er en composition/build ting
     public static ServiceContract of(Assembly<?> assembly) {
-        return of(ApplicationDriver.defaultAnalyzer(), assembly);
+        return of(defaultAnalyzer(), assembly);
     }
 
     /**

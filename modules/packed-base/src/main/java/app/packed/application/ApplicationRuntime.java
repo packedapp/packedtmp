@@ -157,7 +157,7 @@ public interface ApplicationRuntime {
 
     // TODO return Image<Host>?
     static ApplicationImage<?> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationRuntimeHelper.DRIVER.buildImage(assembly, wirelets);
+        return ApplicationRuntimeHelper.DRIVER.newImage(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
 //        return new ExecutingImage(build);

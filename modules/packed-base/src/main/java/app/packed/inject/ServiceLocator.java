@@ -224,7 +224,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     static ApplicationImage<ServiceLocator> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().buildImage(assembly, wirelets);
+        return driver().newImage(assembly, wirelets);
     }
 
     /**

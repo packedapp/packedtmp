@@ -51,7 +51,7 @@ public /* primitive */ final class MainImage {
      *            optional wirelets
      */
     private MainImage(Assembly<?> assembly, Wirelet... wirelets) {
-        this.image = Main.driver().buildImage(assembly, wirelets);
+        this.image = Main.driver().newImage(assembly, wirelets);
     }
 
     /**
@@ -94,7 +94,7 @@ public /* primitive */ final class MainImage {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see ApplicationDriver#buildImage(Assembly, Wirelet...)
+     * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
     public static MainImage of(Assembly<?> assembly, Wirelet... wirelets) {
         return new MainImage(assembly, wirelets);

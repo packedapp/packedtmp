@@ -33,6 +33,7 @@ package app.packed.component;
 
 // This class only considers components that are in the same namespace
 
+// Scope???
 public enum ComponentSystemType {
 
     /** A system that contains all components in the same namespace.  */
