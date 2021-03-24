@@ -15,6 +15,9 @@
  */
 package app.packed.application;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import app.packed.base.Completion;
 import app.packed.cli.CliWirelets;
 import app.packed.component.Assembly;
@@ -22,7 +25,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
-import packed.internal.base.application.PackedApplicationDriver;
+import packed.internal.component.PackedInitializationContext;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -43,7 +46,10 @@ public final class Main {
     // Install as System Namespace
     // Virker underlige at den returnere Complietion... Det betyder jo ogsaa at vi ikke skal smide
     // PanicException hvad jeg syntes vi skal
-    private static final ApplicationDriver<Completion> DRIVER = PackedApplicationDriver.DAEMON.with(StateWirelets.shutdownHook());
+
+    /** A daemon driver. */
+    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder()
+            .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
 
     /** Not today Satan, not today. */
     private Main() {}
@@ -92,8 +98,8 @@ public final class Main {
     }
 
     /**
-     * This method will create and start an {@link Program application} from the specified source. Blocking until the run state
-     * of the application is {@link RunState#TERMINATED}.
+     * This method will create and start an {@link Program application} from the specified source. Blocking until the run
+     * state of the application is {@link RunState#TERMINATED}.
      * <p>
      * Entry point or run to termination
      * <p>

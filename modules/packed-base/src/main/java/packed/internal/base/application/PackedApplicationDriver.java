@@ -28,7 +28,6 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
-import app.packed.base.Completion;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
@@ -43,6 +42,7 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.WireletArray;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.ThrowableUtil;
@@ -50,17 +50,13 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
-    /** A daemon driver. */
-    public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
-            .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
-
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (PackedInitializationContext)Object
 
     /** The modifiers of this application */
     public final int modifiers;
 
-    /** May contain a wirelet that will be processed _after_ any other wirelets. */
+    /** Wirelets that may be processed before any other wirelets. */
     @Nullable
     public final Wirelet wirelet;
 
@@ -96,10 +92,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
-
-        // Return the system in a new shell
-        return newApplication(pic);
+        return PackedInitializationContext.newInstance(this, build.component, WireletArray.EMPTY);
     }
 
     /**
@@ -127,7 +120,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
-        // Create a new build setup
+        // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, new RealmSetup(assembly), componentDriver, modifiers, wirelets);
 
         // Create the component configuration that is needed by the assembly
@@ -140,7 +133,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        build.close();
+        build.close(); // we don't close on failure
         return build;
     }
 
@@ -152,7 +145,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
 
-        // Create a build setup
+        // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, new RealmSetup(consumer), pcd, 0, wirelets);
 
         CC componentConfiguration = pcd.toConfiguration(build.component);
@@ -163,13 +156,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Invoked the consumer supplied by the end-user
         consumer.accept(composer);
 
-        build.close();
+        build.close(); // we don't close on failure
 
         // Initialize the application. And start it if necessary (if it is a guest)
-        PackedInitializationContext pic = PackedInitializationContext.process(build.component, null);
-
-        // Return a new application instance
-        return newApplication(pic);
+        return PackedInitializationContext.newInstance(this, build.component, WireletArray.EMPTY);
     }
 
     /**
@@ -180,7 +170,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return the new application instance
      */
     // application interface???
-    private A newApplication(PackedInitializationContext pic) {
+    public A newApplication(PackedInitializationContext pic) {
         try {
             return (A) mhConstructor.invoke(pic);
         } catch (Throwable e) {
@@ -316,11 +306,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public A apply(Wirelet... wirelets) {
-            // Initialize a new application
-            PackedInitializationContext pic = PackedInitializationContext.process(root, wirelets);
-
-            // return an application instance
-            return driver.newApplication(pic);
+            return PackedInitializationContext.newInstance(driver, root, wirelets);
         }
     }
 }

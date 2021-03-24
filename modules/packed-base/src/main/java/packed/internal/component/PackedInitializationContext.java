@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
@@ -23,6 +25,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
+import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.util.LookupUtil;
 
@@ -119,7 +122,13 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
+    public static <A> A newInstance(PackedApplicationDriver<A> driver, ComponentSetup root, Wirelet[] wirelets) {
+        requireNonNull(wirelets, "wirelets is null");
+        PackedInitializationContext pic = process(root, wirelets);
+        return driver.newApplication(pic);
+    }
     public static PackedInitializationContext process(ComponentSetup root, Wirelet[] imageWirelets) {
+        // Der kommer kun wirelets med fra image, ellers er arrayet bare tomt...
         PackedInitializationContext pic = new PackedInitializationContext(root,
                 root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : root.wirelets);
 

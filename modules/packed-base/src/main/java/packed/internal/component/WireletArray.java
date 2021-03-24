@@ -13,7 +13,7 @@ import app.packed.component.Wirelet;
 public final /* primitive */ class WireletArray extends Wirelet {
 
     /** An empty wirelet array. */
-    static final Wirelet[] EMPTY = new Wirelet[0];
+    public static final Wirelet[] EMPTY = new Wirelet[0];
 
     /** The wirelets this wirelet wraps. Will never contain any WireletArray instances. */
     final Wirelet[] wirelets;
