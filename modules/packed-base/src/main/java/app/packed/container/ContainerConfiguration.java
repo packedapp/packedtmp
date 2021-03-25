@@ -28,7 +28,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.component.OldPackedComponentDriver;
+import packed.internal.component.SourcedComponentDriver;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 
@@ -39,8 +39,8 @@ import packed.internal.component.PackedComponentModifierSet;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = OldPackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
-            OldPackedComponentDriver.Option.container());
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = SourcedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
+            SourcedComponentDriver.Option.container());
 
     private static final ComponentDriver<ContainerConfiguration> DRIVER_NEW = new ContainerComponentDriver(null);
 

@@ -21,7 +21,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ConstantPoolSetup;
-import packed.internal.component.OldPackedComponentDriver;
+import packed.internal.component.SourcedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 
@@ -54,7 +54,7 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, OldPackedComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
+    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, SourcedComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(applicationDriver, componentDriver);
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
         this.component = new ComponentSetup(this, realm, componentDriver, null, wirelets);

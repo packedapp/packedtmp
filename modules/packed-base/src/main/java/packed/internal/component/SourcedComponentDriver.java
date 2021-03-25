@@ -43,20 +43,20 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class OldPackedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> implements ComponentDriver<C> {
+public class SourcedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> implements ComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver INSTALL_DRIVER = OldPackedComponentDriver.ofInstance(MethodHandles.lookup(),
-            ServiceComponentConfiguration.class, OldPackedComponentDriver.Option.constantSource());
+    public static final BindableComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(),
+            ServiceComponentConfiguration.class, SourcedComponentDriver.Option.constantSource());
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver STATELESS_DRIVER = OldPackedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
-            OldPackedComponentDriver.Option.statelessSource());
+    public static final BindableComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
+            SourcedComponentDriver.Option.statelessSource());
 
     /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            OldPackedComponentDriver.class);
+            SourcedComponentDriver.class);
 
     // Holds ExtensionModel for extensions, source for sourced components
 
@@ -65,10 +65,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
 
     final Meta meta;
 
-    @Nullable
-    public final Wirelet wirelet = null;
-
-    OldPackedComponentDriver(Meta meta, Object data) {
+    SourcedComponentDriver(Meta meta, Object data) {
         super(null, PackedComponentModifierSet.intOf(meta.modifiers.toArray()));
         this.meta = requireNonNull(meta);
         this.binding = data;
@@ -114,9 +111,9 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static <C extends ComponentConfiguration> OldPackedComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
+    public static <C extends ComponentConfiguration> SourcedComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
         requireNonNull(assembly, "assembly is null");
-        return (OldPackedComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
+        return (SourcedComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 
     public static Meta newMeta(Type type, MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
@@ -159,7 +156,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
         requireNonNull(options, "options is null");
 
         Meta meta = newMeta(Type.OTHER, caller, false, driverType, options);
-        return new OldPackedComponentDriver<>(meta, null);
+        return new SourcedComponentDriver<>(meta, null);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
@@ -203,7 +200,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
             }
         }
 
-        void checkBound(OldPackedComponentDriver<?> driver) {
+        void checkBound(SourcedComponentDriver<?> driver) {
 
         }
     }
@@ -220,7 +217,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
          */
         // InstanceComponentDriver automatically sets the source...
         static Option constantSource() {
-            return OldPackedComponentDriver.OptionImpl.ZONSTANT;
+            return SourcedComponentDriver.OptionImpl.ZONSTANT;
         }
 
         /**
@@ -232,7 +229,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
          * @see ComponentModifier#CONTAINER
          */
         static Option container() {
-            return OldPackedComponentDriver.OptionImpl.ZONTAINER;
+            return SourcedComponentDriver.OptionImpl.ZONTAINER;
         }
 
         static Option sourceAssignableTo(Class<?> rawType) {
@@ -240,7 +237,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
         }
 
         static Option statelessSource() {
-            return OldPackedComponentDriver.OptionImpl.STATELESS;
+            return SourcedComponentDriver.OptionImpl.STATELESS;
         }
 
         static Option validateParent(Predicate<? super Component> validator, String msg) {
@@ -278,7 +275,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
     // Kunne ogsaa encode det i ComponentDriver.option..
     // Og saa bruge MethodHandles til at extract id, data?
     // Nahhh
-    public static class OptionImpl implements OldPackedComponentDriver.Option {
+    public static class OptionImpl implements SourcedComponentDriver.Option {
         static final int OPT_CONSTANT = 2;
         static final int OPT_CONTAINER = 1;
         static final int OPT_STATEFUL = 3;
@@ -319,14 +316,14 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
             } else if (meta.type == Type.FACTORY) {
                 throw new UnsupportedOperationException("Can only specify a class or factory");
             }
-            return new OldPackedComponentDriver<>(meta, instance);
+            return new SourcedComponentDriver<>(meta, instance);
         }
 
         /** {@inheritDoc} */
         @Override
         public ComponentDriver<C> bind(Class<? extends I> implementation) {
             requireNonNull(implementation, "implementation is null");
-            return new OldPackedComponentDriver<>(meta, implementation);
+            return new SourcedComponentDriver<>(meta, implementation);
         }
 
         /** {@inheritDoc} */
@@ -336,7 +333,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> extends 
             if (meta.type == Type.CLASS) {
                 throw new UnsupportedOperationException("Can only specify a class");
             }
-            return new OldPackedComponentDriver<>(meta, factory);
+            return new SourcedComponentDriver<>(meta, factory);
         }
 
         /** {@inheritDoc} */
