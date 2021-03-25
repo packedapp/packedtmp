@@ -44,7 +44,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
+    public static final ComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
 
     @Nullable
     public final Object binding;
@@ -68,7 +68,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         }
         if (inner.type == Type.FACTORY) {
             if (Class.class.isInstance(object)) {
-                throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
+                //throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
             }
         } else if (inner.type == Type.INSTANCE) {
             if (Class.class.isInstance(object)) {
@@ -127,16 +127,16 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return new Inner(type, constructor, modifiers);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller,
+    public static <C extends ComponentConfiguration> ComponentDriver<C> ofClass(MethodHandles.Lookup caller,
             Class<? extends C> driverType) {
-        return new PackedBindableComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false));
+        return new SourcedComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false), null);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
+    public static <C extends ComponentConfiguration> ComponentDriver<C> ofFactory(MethodHandles.Lookup caller,
             Class<? extends C> driverType, boolean isConstant) {
 
         Inner meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
-        return new PackedBindableComponentDriver<>(meta);
+        return new SourcedComponentDriver<>(meta, null);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,

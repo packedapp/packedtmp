@@ -47,6 +47,7 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
 
     ComponentDriver<C> with(Wirelet... wirelet);
 
+    // bindSource?
     ComponentDriver<C> bind(Object object);
     
     /**
@@ -57,7 +58,7 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
      * @return a driver
      */
     @SuppressWarnings("unchecked")
-    private static <T> BindableComponentDriver<BaseComponentConfiguration, T> driver() {
+    private static ComponentDriver<BaseComponentConfiguration> driver() {
         return SourcedComponentDriver.STATELESS_DRIVER;
     }
     

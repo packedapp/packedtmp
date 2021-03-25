@@ -41,7 +41,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
             true);
 
     @SuppressWarnings("rawtypes")
-    private static final BindableComponentDriver PROTOTYPE_DRIVER = SourcedComponentDriver.ofFactory(MethodHandles.lookup(),
+    private static final ComponentDriver PROTOTYPE_DRIVER = SourcedComponentDriver.ofFactory(MethodHandles.lookup(),
             ServiceComponentConfiguration.class, false);
 
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {
