@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hooks;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,13 +23,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
 import packed.internal.inject.FindInjectableConstructor;
-import packed.internal.inject.classscan.ClassMemberAccessor;
-import packed.internal.inject.classscan.MethodHandleBuilder;
 
 /**
  *
  */
-final class InstantiatorBuilder {
+public final class InstantiatorBuilder {
 
     final Executable executable;
 

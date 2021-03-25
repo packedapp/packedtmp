@@ -1,4 +1,4 @@
-package packed.internal.base.application;
+package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 

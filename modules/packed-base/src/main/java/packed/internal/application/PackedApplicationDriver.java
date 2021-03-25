@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.application;
+package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -42,7 +42,7 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletArray;
-import packed.internal.inject.classscan.Infuser;
+import packed.internal.invoke.Infuser;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

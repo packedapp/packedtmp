@@ -22,7 +22,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
-import packed.internal.base.application.PackedApplicationDriver;
+import packed.internal.application.PackedApplicationDriver;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /**

@@ -38,7 +38,7 @@ import app.packed.component.WireletHandle;
 import app.packed.inject.Factory;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
-import packed.internal.inject.classscan.Infuser;
+import packed.internal.invoke.Infuser;
 import packed.internal.util.StackWalkerUtil;
 import packed.internal.util.ThrowableUtil;
 

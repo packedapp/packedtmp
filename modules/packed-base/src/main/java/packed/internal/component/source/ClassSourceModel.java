@@ -33,7 +33,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.ClassHookBootstrapModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.invoke.ClassMemberAccessor;
 
 /** A model of a class source. */
 public final class ClassSourceModel {

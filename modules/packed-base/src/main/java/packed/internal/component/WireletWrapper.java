@@ -18,7 +18,7 @@ package packed.internal.component;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
-import packed.internal.base.application.PackedApplicationDriver;
+import packed.internal.application.PackedApplicationDriver;
 
 /** A holder of wirelets. */
 // Vi har faktisk ogsaa for den her paa runtime...

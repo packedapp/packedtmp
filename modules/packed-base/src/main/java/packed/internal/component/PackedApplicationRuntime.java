@@ -25,8 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.application.ApplicationRuntime;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
-import packed.internal.base.application.ApplicationSetup;
-import packed.internal.base.application.ApplicationSetup.Lifecycle;
+import packed.internal.application.ApplicationSetup;
+import packed.internal.application.ApplicationSetup.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
 /**

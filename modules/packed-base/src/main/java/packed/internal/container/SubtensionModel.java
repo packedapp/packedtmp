@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.inject.classscan.Infuser;
+import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
 /** A model for a {@link Extension.Subtension}. Not used outside of this package. */

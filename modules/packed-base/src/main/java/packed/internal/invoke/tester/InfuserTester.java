@@ -1,4 +1,4 @@
-package packed.internal.inject.classscan.tester;
+package packed.internal.invoke.tester;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -8,7 +8,7 @@ import app.packed.container.Extension;
 import app.packed.hooks.AutoService;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.Provide;
-import packed.internal.inject.classscan.Infuser;
+import packed.internal.invoke.Infuser;
 import packed.internal.util.LookupUtil;
 
 public class InfuserTester {

@@ -35,9 +35,9 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
-import packed.internal.base.attribute.PackedAttributeModel;
-import packed.internal.inject.classscan.ClassMemberAccessor;
-import packed.internal.inject.classscan.Infuser;
+import packed.internal.attribute.PackedAttributeModel;
+import packed.internal.invoke.ClassMemberAccessor;
+import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
 

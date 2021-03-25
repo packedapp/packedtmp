@@ -1,4 +1,4 @@
-package packed.internal.inject.classscan;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 

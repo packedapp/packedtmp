@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.application;
+package packed.internal.application;
 
 import app.packed.application.BuildInfo;
 import app.packed.component.ComponentModifier;

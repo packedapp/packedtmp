@@ -1,4 +1,4 @@
-package packed.internal.base.application;
+package packed.internal.application;
 
 import app.packed.application.App;
 import app.packed.component.Assembly;

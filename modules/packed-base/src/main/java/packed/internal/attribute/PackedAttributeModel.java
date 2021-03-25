@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.base.attribute;
+package packed.internal.attribute;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.invoke.ClassMemberAccessor;
 
 /**
  *

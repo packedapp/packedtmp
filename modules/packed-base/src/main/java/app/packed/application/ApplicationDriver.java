@@ -36,7 +36,7 @@ import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.InitializationException;
 import app.packed.validate.Validation;
-import packed.internal.base.application.PackedApplicationDriver;
+import packed.internal.application.PackedApplicationDriver;
 
 /**
  * An application driver is responsible for analyzing and controlling the various lifecycle phases an application goes

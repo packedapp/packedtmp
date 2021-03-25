@@ -29,7 +29,7 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.base.application.PackedApplicationDriver;
+import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ConstantPool;
 import packed.internal.component.ConstantPoolSetup;

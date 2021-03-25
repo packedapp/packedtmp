@@ -28,7 +28,7 @@ import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.ServiceExtension;
-import packed.internal.base.application.ApplicationSetup;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.component.source.MethodHookModel;
 
 /**

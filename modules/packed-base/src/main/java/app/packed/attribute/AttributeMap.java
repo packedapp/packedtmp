@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.base.Nullable;
-import packed.internal.base.attribute.EmptyAttributeMap;
+import packed.internal.attribute.EmptyAttributeMap;
 
 /**
  *

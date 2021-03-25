@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.TypeToken;
-import packed.internal.base.attribute.PackedAttribute;
-import packed.internal.base.attribute.PackedAttribute.PackedOption;
+import packed.internal.attribute.PackedAttribute;
+import packed.internal.attribute.PackedAttribute.PackedOption;
 
 /**
  * <p>

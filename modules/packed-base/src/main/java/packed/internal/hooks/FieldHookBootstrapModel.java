@@ -28,7 +28,7 @@ import app.packed.hooks.FieldHook.Bootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.invoke.ClassMemberAccessor;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
 public final class FieldHookBootstrapModel extends AbstractHookBootstrapModel<FieldHook.Bootstrap> {

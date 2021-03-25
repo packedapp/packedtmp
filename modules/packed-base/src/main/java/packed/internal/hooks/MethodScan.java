@@ -25,7 +25,7 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.inject.classscan.ClassMemberAccessor;
+import packed.internal.invoke.ClassMemberAccessor;
 
 /**
  *

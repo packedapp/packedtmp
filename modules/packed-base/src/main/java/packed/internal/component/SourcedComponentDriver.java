@@ -29,7 +29,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
-import packed.internal.inject.classscan.Infuser;
+import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 /**
