@@ -66,13 +66,13 @@ public final class ClassSourceModel {
         this.sourceServices = Map.copyOf(builder.sourceContexts);
     }
 
-    public <T> void register(ComponentSetup compConf, SourceClassSetup source) {
+    public <T> void register(ComponentSetup component, SourceClassSetup source) {
         for (FieldHookModel f : fields) {
-            registerMember(compConf, source, f);
+            registerMember(component, source, f);
         }
 
         for (MethodHookModel m : methods) {
-            registerMember(compConf, source, m);
+            registerMember(component, source, m);
         }
     }
 

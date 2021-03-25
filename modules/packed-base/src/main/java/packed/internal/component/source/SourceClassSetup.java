@@ -56,10 +56,20 @@ public final class SourceClassSetup implements DependencyProvider {
     @Nullable
     public BuildtimeService service;
 
-    private SourceClassSetup(ComponentSetup component, Object source) {
+    /**
+     * Creates a new setup.
+     * 
+     * @param component
+     *            the component
+     * @param driver
+     *            the component driver
+     */
+    public SourceClassSetup(ComponentSetup component, PackedComponentDriver<?> driver) {
+        // Reserve a place in the constant pool if the source is a singleton
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserve() : -1;
 
         // The specified source is either a Class, a Factory, or an instance
+        Object source = driver.data;
         Class<?> sourceType;
         if (source instanceof Class<?> cl) {
             sourceType = cl;
@@ -75,6 +85,7 @@ public final class SourceClassSetup implements DependencyProvider {
             this.instance = source;
             this.factory = null;
             sourceType = source.getClass();
+            component.pool.constants.add(this);
         }
 
         this.model = component.realm.accessor().modelOf(sourceType);
@@ -87,7 +98,10 @@ public final class SourceClassSetup implements DependencyProvider {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
             this.dependant = new Dependant(this, dependencies, mh);
+            component.memberOfContainer.addDependant(dependant);
         }
+
+        model.register(component, this);
     }
 
     /** {@inheritDoc} */
@@ -122,31 +136,5 @@ public final class SourceClassSetup implements DependencyProvider {
             s = service = compConf.memberOfContainer.getServiceManagerOrCreate().provideSource(compConf, key);
         }
         return s;
-    }
-
-    /**
-     * Creates a component class source setup.
-     * 
-     * @param component
-     *            the component
-     * @param driver
-     *            the component driver
-     * @return a component source setup
-     */
-    public static SourceClassSetup of(ComponentSetup component, PackedComponentDriver<?> driver) {
-
-        // Create the source
-        SourceClassSetup source = new SourceClassSetup(component, driver.data);
-
-        if (source.instance != null) {
-            component.pool.constants.add(source);
-        } else if (source.dependant != null) {
-            component.memberOfContainer.addDependant(source.dependant);
-        }
-
-        // Hooks hooks hooks
-        source.model.register(component, source);
-
-        return source;
     }
 }

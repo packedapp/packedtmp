@@ -169,7 +169,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup component sources
         if (modifiers().isSource()) {
-            this.source = SourceClassSetup.of(this, driver);
+            this.source = new SourceClassSetup(this, driver);
         } else {
             this.source = null;
         }
