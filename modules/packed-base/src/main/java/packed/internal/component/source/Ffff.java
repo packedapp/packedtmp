@@ -3,7 +3,6 @@ package packed.internal.component.source;
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.inject.InjectionContext;
 
 public class Ffff extends BaseAssembly {
 
@@ -17,7 +16,6 @@ public class Ffff extends BaseAssembly {
     }
 
     public static class MyExt extends Extension {
-        MyExt() {}
-        MyExt(InjectionContext ic) {}
+        MyExt(String s) {}
     }
 }

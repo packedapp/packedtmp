@@ -119,8 +119,10 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         // AttributeProvide could make sense... And then some way to say retain this info at runtime...
         // But maybe this is sidecars instead???
 
-        Infuser infuser = Infuser.build(caller, c -> c.provide(ComponentConfigurationContext.class).adapt(), ComponentSetup.class);
-        MethodHandle constructor = infuser.singleConstructor(driverType, ComponentConfiguration.class, e -> new IllegalArgumentException(e));
+        // Create an infuser for making a method handle for the component configurations's constructor
+        Infuser.Builder builder = Infuser.builder(caller, ComponentSetup.class);
+        builder.provide(ComponentConfigurationContext.class).adaptArgument(0);
+        MethodHandle constructor = builder.findConstructor(driverType, ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
         return new Inner(type, constructor, modifiers);
     }

@@ -46,7 +46,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @param context
      *            the component configuration context
      */
-    public ContainerConfiguration(ComponentConfigurationContext context) {
+    private ContainerConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
     

@@ -6,7 +6,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,15 +46,16 @@ public final class Infuser {
         return parameterTypes;
     }
 
+    @Deprecated
     public MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
         // First lets find a constructor
         Constructor<?> constructor = FindInjectableConstructor.get(type, false, errorMaker);
-        
+
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
         MethodHandle mh = mhb.build(oc, constructor);
-        
+
         // We need to adapt the method handle
         return mh.asType(mh.type().changeReturnType(returnType));
     }
@@ -79,12 +80,12 @@ public final class Infuser {
     }
 
     public static class Builder {
-        private final HashMap<Key<?>, Entry> entries = new HashMap<>();
+        private final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
         private final Lookup lookup;
         private final List<Class<?>> parameterTypes;
 
         Builder(Lookup caller, Class<?>... parameterTypes) {
-            this.lookup = requireNonNull(caller, "lookup is null");
+            this.lookup = requireNonNull(caller, "caller is null");
             this.parameterTypes = List.of(parameterTypes);
         }
 
@@ -94,6 +95,11 @@ public final class Infuser {
 
         public Infuser build() {
             return new Infuser(this);
+        }
+
+        public MethodHandle findConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
+            Infuser infuser = build();
+            return infuser.singleConstructor(type, returnType, errorMaker);
         }
 
         // Ville vaere dejligt med en forklaring paa hvornaar den er tilgaengelig
@@ -122,6 +128,7 @@ public final class Infuser {
         }
     }
 
+    /** A builder for key based entry in the infuser. */
     public static class EntryBuilder {
         private final Builder builder;
         private final boolean hide;
@@ -136,20 +143,32 @@ public final class Infuser {
         }
 
         /**
-         * The service will be provided by adapting the infuser's first (index 0) parameter to the raw type of the key.
+         * The service will be provided by adapting the infuser's indexed parameter to the raw type of the key.
          * <p>
          * It does so by automatically inserting casts when needed
          * 
+         * @param index
+         *            the index of the argument to adapt
          * @throws IndexOutOfBoundsException
          *             if the the infuser has no parameters
          */
-        public void adapt() {
-            adapt(0);
-        }
-
-        public void adapt(int index) {
+        public void adaptArgument(int index) {
             Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
             builder.add(this, new Entry(this, null, index));
+        }
+
+        public void byInvoking(MethodHandle methodHandle) {
+            // Vil lave indexes om saa de skal match istedet for at tage den foerste..
+            byInvoking(methodHandle, 0);
+        }
+
+        public void byInvoking(MethodHandle methodHandle, int... indexes) {
+            requireNonNull(methodHandle, "methodHandle is null");
+            for (int i = 0; i < indexes.length; i++) {
+                Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
+            }
+            // System.out.println("Adding transfoer " + transformer);
+            builder.add(this, new Entry(this, methodHandle, indexes));
         }
 
         public EntryBuilder description(String description) {
@@ -177,20 +196,6 @@ public final class Infuser {
             // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
             MethodHandle mh = LookupUtil.lookupVirtualPublic(cl, methodName, key.rawType());
             byInvoking(mh, index);
-        }
-
-        public void byInvoking(MethodHandle methodHandle) {
-            // Vil lave indexes om saa de skal match istedet for at tage den foerste..
-            byInvoking(methodHandle, 0);
-        }
-
-        public void byInvoking(MethodHandle methodHandle, int... indexes) {
-            requireNonNull(methodHandle, "methodHandle is null");
-            for (int i = 0; i < indexes.length; i++) {
-                Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
-            }
-            // System.out.println("Adding transfoer " + transformer);
-            builder.add(this, new Entry(this, methodHandle, indexes));
         }
     }
 

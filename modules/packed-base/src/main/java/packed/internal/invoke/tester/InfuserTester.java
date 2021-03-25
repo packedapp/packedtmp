@@ -26,13 +26,11 @@ public class InfuserTester {
     }
 
     public static void main(String[] args) throws Throwable {
-        Infuser i = Infuser.build(MethodHandles.lookup(), c -> {
-            c.provide(IntStream.class).invokePublicMethod("chars");
-            c.provideHidden(Secret.class).adapt(1);
-            c.provideHidden(Long.class).byInvoking(MH_INJECT_PARENT, 1);
-        }, String.class, Secret.class);
-
-        MethodHandle mh = i.singleConstructor(InfuserTester.class, InfuserTester.class, e -> new IllegalArgumentException(e));
+        Infuser.Builder builder=Infuser.builder(MethodHandles.lookup(), String.class, Secret.class);
+        builder.provide(IntStream.class).invokePublicMethod("chars");
+        builder.provideHidden(Secret.class).adaptArgument(1);
+        builder.provideHidden(Long.class).byInvoking(MH_INJECT_PARENT, 1);
+        MethodHandle mh = builder.findConstructor(InfuserTester.class, InfuserTester.class, e -> new IllegalArgumentException(e));
 
         InfuserTester it = (InfuserTester) mh.invokeExact("sdf", new Secret());
         System.out.println("Bte " + it);

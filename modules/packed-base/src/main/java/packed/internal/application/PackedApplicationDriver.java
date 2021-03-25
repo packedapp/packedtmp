@@ -239,16 +239,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         @Override
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
             
+            // Find a method handle for the application shell's constructor
             Infuser.Builder builder = Infuser.builder(caller, PackedInitializationContext.class);
             builder.provide(Component.class).byInvoking(MH_COMPONENT);
             builder.provide(ServiceLocator.class).byInvoking(MH_SERVICES);
             if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
                 builder.provide(ApplicationRuntime.class).byInvoking(MH_RUNTIME);
             }
-            Infuser infuser = builder.build();
-
-            // Find a method handle for the application shell's constructor
-            mhConstructor = infuser.singleConstructor(implementation, Object.class, s -> new IllegalArgumentException(s));
+            mhConstructor = builder.findConstructor(implementation, Object.class, s -> new IllegalArgumentException(s));
 
             return new PackedApplicationDriver<>(this);
         }
