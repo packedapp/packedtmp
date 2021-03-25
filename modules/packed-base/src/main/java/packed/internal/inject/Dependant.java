@@ -33,7 +33,6 @@ import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -203,7 +202,7 @@ public class Dependant {
                     if (sourceMember instanceof MethodHookModel msm) {
                         if (msm.bootstrapModel.onInitialize != null) {
                             // System.out.println(msm.model.onInitialize);
-                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, RuntimeRegionInvoker.MH_INVOKER);
+                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, ConstantPoolInvoker.MH_INVOKER);
 
 //                        System.out.println(mh2);
                             mh2 = mh2.bindTo(mh1);

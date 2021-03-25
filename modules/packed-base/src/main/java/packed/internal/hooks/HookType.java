@@ -20,8 +20,12 @@ package packed.internal.hooks;
  */
 public enum HookType {
     CLASS,
+    
     CONSTRUCTOR,
+    
     METHOD,
+    
     METHOD_DECORATOR,
+    
     FIELD;
 }

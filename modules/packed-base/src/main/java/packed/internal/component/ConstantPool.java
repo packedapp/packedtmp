@@ -18,7 +18,6 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.inject.ServiceLocator;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
@@ -29,16 +28,15 @@ import packed.internal.util.MethodHandleUtil;
 // Active System -> 1 NodeStore per guest
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
 
-// Is this a constant pool???
 public final /* primitive*/ class ConstantPool {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
+    static final MethodHandle MH_CONSTANT_POOL_READ = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
-    public final Object[] table;
+    private final Object[] table;
 
-    public ConstantPool(int i) {
-        table = new Object[i];
+    ConstantPool(int size) {
+        table = new Object[size];
     }
 
     // Don't know
@@ -66,10 +64,6 @@ public final /* primitive*/ class ConstantPool {
         return table[index];
     }
 
-    ServiceLocator serviceRegistry(PackedComponent node) {
-        return (ServiceLocator) table[node.modifiers().hasRuntime() ? 1 : 0];
-    }
-
     public void store(int index, Object instance) {
         if (table[index] != null) {
             throw new IllegalStateException();
@@ -79,7 +73,7 @@ public final /* primitive*/ class ConstantPool {
     }
 
     public static MethodHandle readConstant(int index, Class<?> as) {
-        MethodHandle mh = MethodHandleUtil.bind(MH_GET_SINGLETON_INSTANCE, 1, index);
+        MethodHandle mh = MethodHandleUtil.bind(MH_CONSTANT_POOL_READ, 1, index);
         return MethodHandleUtil.castReturnType(mh, as);
     }
 }

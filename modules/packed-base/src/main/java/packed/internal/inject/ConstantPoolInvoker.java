@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hooks;
+package packed.internal.inject;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,32 +29,29 @@ import packed.internal.util.MethodHandleUtil;
  * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link ConstantPool} to be
  * invoked.
  */
-public final class RuntimeRegionInvoker<T> implements MethodAccessor<T> {
+record ConstantPoolInvoker<T>(/** The method handle to invoke */ MethodHandle mh, /** The constant pool that stores needed data. */ ConstantPool pool) implements MethodAccessor<T> {
 
-    /** A method handle for creating new Invoker instance. We explicitly cast return type from PackedInvoker->Invoker. */
+    /**
+     * A method handle for creating new RuntimeRegionInvoker instance. We explicitly cast return type from
+     * RuntimeRegionInvoker->MethodAccessor.
+     */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
             .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, ConstantPool.class), MethodAccessor.class);
 
-    /** The method handle to invoke */
-    private final MethodHandle mh;
-
-    /** The region that stores needed data. */
-    private final ConstantPool region;
-
-    private RuntimeRegionInvoker(MethodHandle mh, ConstantPool region) {
-        this.mh = requireNonNull(mh);
-        this.region = requireNonNull(region);
+    ConstantPoolInvoker {
+        requireNonNull(mh);
+        requireNonNull(pool);
     }
 
     /** {@inheritDoc} */
     @Override
     public void call() throws Throwable {
-        mh.invoke(region);
+        mh.invoke(pool);
     }
 
     /** {@inheritDoc} */
     @Override
     public T invoke() throws Throwable {
-        return (T) mh.invoke(region);
+        return (T) mh.invoke(pool);
     }
 }
