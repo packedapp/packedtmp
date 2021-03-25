@@ -38,8 +38,7 @@ import packed.internal.util.ThrowableUtil;
 public class SourcedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final ComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
-            true);
+    public static final ComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, true);
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
@@ -67,13 +66,13 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         }
         if (inner.type == Type.FACTORY) {
             if (Class.class.isInstance(object)) {
-                //throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
+                // throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
             }
         } else if (inner.type == Type.INSTANCE) {
             if (Class.class.isInstance(object)) {
-             //   throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
+                // throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
             } else if (Factory.class.isInstance(object)) {
-             //   throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);   
+                // throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);
             }
         }
         return new SourcedComponentDriver<>(inner, object);
@@ -121,25 +120,24 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         // But maybe this is sidecars instead???
 
         Infuser infuser = Infuser.build(caller, c -> c.provide(ComponentConfigurationContext.class).adapt(), ComponentSetup.class);
-        MethodHandle constructor = infuser.findConstructorFor(driverType);
+        MethodHandle constructor = infuser.singleConstructor(driverType, ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
         return new Inner(type, constructor, modifiers);
     }
 
-    public static <C extends ComponentConfiguration> ComponentDriver<C> ofClass(MethodHandles.Lookup caller,
-            Class<? extends C> driverType) {
+    public static <C extends ComponentConfiguration> ComponentDriver<C> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType) {
         return new SourcedComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false), null);
     }
 
-    public static <C extends ComponentConfiguration> ComponentDriver<C> ofFactory(MethodHandles.Lookup caller,
-            Class<? extends C> driverType, boolean isConstant) {
+    public static <C extends ComponentConfiguration> ComponentDriver<C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
+            boolean isConstant) {
 
         Inner meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
         return new SourcedComponentDriver<>(meta, null);
     }
 
-    public static <C extends ComponentConfiguration> ComponentDriver<C> ofInstance(MethodHandles.Lookup caller,
-            Class<? extends C> driverType, boolean isConstant) {
+    public static <C extends ComponentConfiguration> ComponentDriver<C> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType,
+            boolean isConstant) {
 
         Inner meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
         return new SourcedComponentDriver<>(meta, null);

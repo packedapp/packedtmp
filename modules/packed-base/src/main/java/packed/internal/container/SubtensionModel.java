@@ -19,13 +19,11 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Constructor;
 
 import app.packed.base.Key;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.InternalExtensionException;
-import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.ClassUtil;
 
@@ -59,12 +57,9 @@ final class SubtensionModel {
                 c.provide(new Key<Class<? extends Extension>>() {}).adapt(1); // Requesting extension
             }, Extension.class, Class.class);
 
-            // Find the constructor for the subtension, only 1 constructor must be declared on the class
-            Constructor<?> con = FindInjectableConstructor.get(subtensionClass, false, m -> new InternalExtensionException(m));
-
-            // Create a method handle for the constructor
-            MethodHandle constructor = infuser.findAdaptedConstructor(con, Subtension.class);// (Extension,Class)Subtension
-
+            // Find a method handle for the subtensions's constructor
+            MethodHandle constructor = infuser.singleConstructor(subtensionClass, Subtension.class, m -> new InternalExtensionException(m));
+            
             return new SubtensionModel(extensionClass, constructor);
         }
     };

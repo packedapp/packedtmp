@@ -73,7 +73,7 @@ class MethodHandleBuilderHelper {
         boolean isInstanceMethod = false;
 
         // Setup MethodHandle for constructor or method
-        if (e instanceof Constructor<?>con) {
+        if (e instanceof Constructor<?> con) {
             executable = oc.unreflectConstructor(con, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
         } else {
             Method m = (Method) e;
@@ -172,6 +172,10 @@ class MethodHandleBuilderHelper {
                         mh = MethodHandles.insertArguments(mh, is.size() + add, Optional.empty());
                     } else {
                         // Could be inner class
+                        if (kk.rawType() == declaringClass.getDeclaringClass() && !kk.hasQualifiers()) {
+                            // Better error message
+                            throw new IllegalArgumentException("Could not inject inner class " + kk + " Available keys = " + aa.keys.keySet());
+                        }
                         throw new IllegalArgumentException("Could not inject " + kk + " Available keys = " + aa.keys.keySet());
                     }
                 }

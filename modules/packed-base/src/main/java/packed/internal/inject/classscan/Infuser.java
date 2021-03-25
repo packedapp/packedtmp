@@ -45,11 +45,6 @@ public class Infuser {
         return mhb.build(oc, constructor);
     }
 
-    public MethodHandle findAdaptedConstructor(Constructor<?> con, Class<?> adaptTo) {
-        MethodHandle mh = findConstructorFor(con, con.getDeclaringClass());
-        return mh.asType(mh.type().changeReturnType(adaptTo));
-    }
-
     public MethodHandle findConstructorFor(Constructor<?> con, Class<?> type) {
         // Den bliver ogsaa checket i FindInjectableConstructor...
         // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr

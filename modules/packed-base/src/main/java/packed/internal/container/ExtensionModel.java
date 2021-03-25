@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Constructor;
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,7 +36,6 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import packed.internal.base.attribute.PackedAttributeModel;
-import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.ClassMemberAccessor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.ClassUtil;
@@ -291,11 +289,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 c.provideHidden(extensionClass).transform(mh);
             }, ExtensionSetup.class);
 
-            // Find the constructor for the extension, only 1 constructor must be declared on the class
-            Constructor<?> con = FindInjectableConstructor.get(extensionClass, false, m -> new InternalExtensionException(m));
-
-            this.mhConstructor = infuser.findAdaptedConstructor(con, Extension.class);
-
+            // Find a method handle for the extension's constructor
+            this.mhConstructor = infuser.singleConstructor(extensionClass, Extension.class, m -> new InternalExtensionException(m));
+            
+            // So far we scan for constructors
             ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
 
             // Okay maybe we need to scan for contracts...

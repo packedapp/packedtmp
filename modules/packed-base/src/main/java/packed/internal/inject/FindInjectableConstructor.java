@@ -64,7 +64,7 @@ public final class FindInjectableConstructor {
             return constructors[0];
         } else if (!allowInjectAnnotation) {
             StringBuilder sb = new StringBuilder();
-            sb.append(format(type)).append(" must declare exactly 1 constructor, [constructors = ");
+            sb.append(type).append(" must declare exactly 1 constructor, [constructors = ");
             StringJoiner sj = new StringJoiner(", ");
             List.of(constructors).forEach(c -> sj.add(StringFormatter.formatShortParameters(c)));
             sb.append(sj).append("]");
@@ -134,16 +134,5 @@ public final class FindInjectableConstructor {
         String errorMsg = "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple " + visibility + " constructors on class "
                 + format(type);
         return errorMaker.apply(errorMsg);
-    }
-
-    /**
-     * @param type
-     *            the type to find an injectable constructor on
-     * @return an injectable constructor
-     * @throws IllegalArgumentException
-     *             if a valid injectable constructor could not be found
-     */
-    public static Constructor<?> injectableConstructorOfIAE(Class<?> type) {
-        return get(type, true, s -> new IllegalArgumentException(s));
     }
 }

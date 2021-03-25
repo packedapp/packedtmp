@@ -86,7 +86,7 @@ public final class ClassMemberAccessor {
     }
 
     public MethodHandle findConstructor(MethodHandleBuilder dim) {
-        Constructor<?> constructor = FindInjectableConstructor.injectableConstructorOfIAE(type);
+        Constructor<?> constructor = FindInjectableConstructor.get(type, true, e -> new IllegalArgumentException(e));
         return new MethodHandleBuilderHelper(this, constructor, dim).find();
     }
 

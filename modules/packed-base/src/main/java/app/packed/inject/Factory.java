@@ -747,7 +747,7 @@ public abstract class Factory<T> {
 
         private ExecutableFactory(TypeToken<T> key, Class<?> findConstructorOn) {
             super(key);
-            this.executable = FindInjectableConstructor.injectableConstructorOfIAE(findConstructorOn);
+            this.executable = FindInjectableConstructor.get(findConstructorOn, true, e -> new IllegalArgumentException(e));
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 
