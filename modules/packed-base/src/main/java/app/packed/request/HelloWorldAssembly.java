@@ -16,7 +16,7 @@
 package app.packed.request;
 
 import app.packed.application.BuildWirelets;
-import app.packed.application.Main;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -33,7 +33,7 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     public static void main(String[] args) {
         // Job.compute()
-        Main.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {
+        App.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {
             System.out.println(c.path() + " wired");
         }));
         System.out.println("BYE");
@@ -41,7 +41,7 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     public static class SomeComponent {
 
-        @Compute
+        @Main
         public void runMe() {
             System.out.println("HelloWorld");
         }

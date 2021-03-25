@@ -51,8 +51,8 @@ import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 /**
  * A service manager is responsible for managing the services for a single container at build time.
  * <p>
- * A {@link ServiceManagerTree} is responsible for managing 1 or more service manager tree that are directly connected and
- * part of the same build.
+ * A {@link ServiceManagerTree} is responsible for managing 1 or more service manager tree that are directly connected
+ * and part of the same build.
  */
 public final class ServiceManagerSetup {
 
@@ -60,13 +60,13 @@ public final class ServiceManagerSetup {
     private final ContainerSetup container;
 
     /** Handles everything to do with dependencies, for example, explicit requirements. */
-    public ServiceManagerRequirementsSetup dependencies;
+    private ServiceManagerRequirementsSetup dependencies;
 
     /** An error manager that is lazily initialized. */
     @Nullable
     private ServiceManagerFailureSetup em;
 
-    /** A service exporter handles everything to do with exports of services. */
+    /** Deals with everything about exporting services to a parent container. */
     private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
 
     /** All explicit added build entries. */
@@ -82,7 +82,7 @@ public final class ServiceManagerSetup {
     @Nullable
     private final ServiceManagerSetup parent;
 
-    /** The composer tree this composer is a part of. */
+    /** The tree this service manager is a part of. */
     private final ServiceManagerTree tree;
 
     @Nullable

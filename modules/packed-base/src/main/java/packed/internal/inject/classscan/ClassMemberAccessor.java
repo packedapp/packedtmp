@@ -135,7 +135,8 @@ public final class ClassMemberAccessor {
 
         // Create and cache a private lookup.
         try {
-            return privateLookup = MethodHandles.privateLookupIn(type, lookup);
+            // Fjernede lookup... Skal vitterligt have samlet det i en klasse
+            return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /*lookup */);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }

@@ -21,10 +21,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
+import packed.internal.base.application.ApplicationSetup;
 import packed.internal.component.source.MethodHookModel;
 
 /**
@@ -52,7 +55,7 @@ import packed.internal.component.source.MethodHookModel;
 @Documented
 @MethodHook(bootstrap = MySidecar.class)
 // I think this creates a job...
-public @interface Compute {
+public @interface Main {
     // forceSpawnThread???
 
     // It can be the same thread, but I think it is a different request.
@@ -65,16 +68,22 @@ class MySidecar extends RealMethodSidecarBootstrap {
     @Override
     protected void bootstrap() {
         MethodHandle mh = methodHandle();
+        Method m = method();
         MethodHookModel.Builder.registerProcessor(this, c -> {
-            c.pool.lifecycle.methodHandle = mh;
+            c.build.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
+            c.build.application.lifecycle.cs = c;
+            c.build.application.lifecycle.methodHandle = mh;
         });
+    }
+
+    protected void onInit(ApplicationSetup application, Runnable r) {
+        // application.setup...
     }
 
 //    @OnInitialize
 //    protected void onInit(Runnable r) {
 //
 //    }
-
 }
 
 // Skal det styres paa shell niveau?? Eller wirelet niveau..

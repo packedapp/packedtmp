@@ -1,6 +1,6 @@
 package app.packed.container.old;
 
-import app.packed.application.Main;
+import app.packed.application.App;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -15,7 +15,7 @@ public class ChildInject extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Main.run(new ChildInject());
+        App.run(new ChildInject());
     }
 
     static class Fff extends BaseAssembly {

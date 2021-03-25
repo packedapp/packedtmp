@@ -25,7 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.application.ApplicationRuntime;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
-import packed.internal.component.ConstantPoolSetup.Lifecycle;
+import packed.internal.base.application.ApplicationSetup;
+import packed.internal.base.application.ApplicationSetup.Lifecycle;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -111,9 +112,11 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     }
 
     void onInitialized(ComponentSetup component, PackedInitializationContext pic) {
-        boolean isMain = component.build.application.driver == null;
+        ApplicationSetup application = component.build.application;
+        boolean isMain = application.hasMain();
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
+
         lock.lock();
         try {
             if (!start) {
@@ -141,13 +144,19 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
             lock.unlock();
         }
 
-        Lifecycle l = component.pool.lifecycle;
+        Lifecycle l = application.lifecycle;
         if (!l.hasExecutionBlock()) {
             return; // runnint as deamon
         }
 
         try {
-            l.methodHandle.invoke();
+            if (l.cs.source.poolIndex > -1 && !l.isStatic) {
+                Object o = pic.pool().read(l.cs.source.poolIndex);
+                l.methodHandle.invoke(o);
+            } else {
+                l.methodHandle.invoke();
+            }
+
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

@@ -89,6 +89,8 @@ public final class ClassSourceSetup implements DependencyProvider {
             component.pool.addSourceClass(this); // non-constants singlestons are added to the constant pool elsewhere
         }
 
+        //if (driver.modifiers().isSingleton())
+        
         if (factory == null) {
             this.dependant = null;
         } else {

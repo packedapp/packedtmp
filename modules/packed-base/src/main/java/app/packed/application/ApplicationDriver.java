@@ -56,7 +56,7 @@ import packed.internal.base.application.PackedApplicationDriver;
  *            the type of application interface this driver creates.
  * 
  * @see Program#driver()
- * @see Main#driver()
+ * @see App#driver()
  * @see ServiceLocator#driver()
  */
 // Environment + Shell + Result
@@ -88,7 +88,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * Uses the driver to create a new application using the specified assembly.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link Main#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the system assembly
@@ -102,7 +102,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @throws PanicException
      *             if the application had an executing phase and it fails
      * @see Program#start(Assembly, Wirelet...)
-     * @see Main#run(Assembly, Wirelet...)
+     * @see App#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */
     A apply(Assembly<?> assembly, Wirelet... wirelets);

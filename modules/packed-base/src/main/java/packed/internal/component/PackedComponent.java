@@ -53,7 +53,7 @@ public final class PackedComponent implements Component {
     final PackedComponent parent;
 
     /** The region this component is part of. */
-    final ConstantPool table;
+    final ConstantPool pool;
 
     /**
      * Creates a new component.
@@ -106,9 +106,9 @@ public final class PackedComponent implements Component {
 
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || compBuild.modifiers().hasRuntime()) {
-            this.table = compBuild.pool.newRegion(pic, this);
+            this.pool = compBuild.pool.newPool(pic, this);
         } else {
-            this.table = parent.table;
+            this.pool = parent.pool;
         }
     }
 

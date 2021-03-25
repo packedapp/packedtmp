@@ -107,7 +107,7 @@ import app.packed.component.ComponentRelation;
     static ComponentRelation relation(PackedComponent from, PackedComponent to) {
         int fd = from.depth();
         int td = to.depth();
-        if (from.table == to.table) {
+        if (from.pool == to.pool) {
             if (fd == td) {
                 return new PackedComponentRelation(from, to, 0, from);
             }

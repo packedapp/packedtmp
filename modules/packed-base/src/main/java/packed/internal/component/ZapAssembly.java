@@ -1,6 +1,6 @@
 package packed.internal.component;
 
-import app.packed.application.Main;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 
 public class ZapAssembly extends BaseAssembly {
@@ -12,7 +12,7 @@ public class ZapAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Main.driver().print(new ZapAssembly());
+        App.driver().print(new ZapAssembly());
     }
 
     static class LinkMe extends BaseAssembly {

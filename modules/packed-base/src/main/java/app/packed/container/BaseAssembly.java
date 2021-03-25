@@ -143,6 +143,15 @@ public abstract class BaseAssembly extends ContainerAssembly {
         return service().export(key);
     }
 
+    protected final void main(Runnable runnable) {
+        throw new UnsupportedOperationException();
+    }
+    
+    // Provides a result...
+    protected final void main(Factory<?> factory) {
+        throw new UnsupportedOperationException();
+    }
+
     protected final void exportAll() {
         service().exportAll();
     }

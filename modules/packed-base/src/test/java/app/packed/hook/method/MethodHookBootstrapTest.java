@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.application.Main;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.hooks.MethodHook;
 
@@ -32,7 +32,7 @@ public class MethodHookBootstrapTest {
             }
             
         });
-        Main.run(new BaseAssembly() {
+        App.run(new BaseAssembly() {
 
             @Override
             protected void build() {

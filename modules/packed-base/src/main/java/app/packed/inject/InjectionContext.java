@@ -35,6 +35,11 @@ import app.packed.base.Variable;
  */
 public /*/* sealed */ interface InjectionContext extends ServiceRegistry {
 
+    // 3 Variables types
+    // Annotation.class -> @SystemProperty
+    // Class.class -> WireletHandle<MyWireletHandle> ();
+    // Key.class -> "normal" services
+
     default void printDependencyTree() {
         // Det er jo bare en trae af ServiceDependency
 

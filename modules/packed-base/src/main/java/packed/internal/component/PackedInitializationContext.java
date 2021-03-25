@@ -63,6 +63,9 @@ public final class PackedInitializationContext {
         this.wirelets = wirelets;
     }
 
+    ConstantPool pool() {
+        return component.pool;
+    }
     /**
      * Returns the top component.
      * 
@@ -96,7 +99,7 @@ public final class PackedInitializationContext {
 
     ApplicationRuntime runtime() {
         if (component.hasModifier(ComponentModifier.RUNTIME)) {
-            return component.table.container();
+            return component.pool.container();
         }
         throw new UnsupportedOperationException("This component does not have a runtime");
     }
@@ -109,7 +112,7 @@ public final class PackedInitializationContext {
      */
     public ServiceLocator services() {
         ServiceManagerSetup sm = root.container.getServiceManager();
-        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.table);
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.pool);
     }
 
     /**
@@ -139,7 +142,7 @@ public final class PackedInitializationContext {
         // TODO initialize
 
         if (root.modifiers().hasRuntime()) {
-            pic.component.table.container().onInitialized(root, pic);
+            pic.component.pool.container().onInitialized(root, pic);
         }
         return pic; // don't know do we want to gc PIC at fast as possible
     }

@@ -44,7 +44,7 @@ public /* sealed */ interface WireletHandle<W extends Wirelet> {
      */
     boolean isAbsent(); // hasMatch
 
-    boolean isEmpty();
+    boolean isPresent();
 
     // forEach
     // will consume any matching wirelet and return the last one..

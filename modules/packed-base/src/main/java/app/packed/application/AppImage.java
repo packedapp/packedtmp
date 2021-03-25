@@ -26,7 +26,7 @@ import app.packed.exceptionhandling.BuildException;
  * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is typically used
  * for running GraalVM native image.
  * 
- * @see Main
+ * @see App
  */
 // Optimized for running once
 
@@ -37,7 +37,7 @@ import app.packed.exceptionhandling.BuildException;
 // IDK
 
 // Typically used for CLI applications
-public /* primitive */ final class MainImage {
+public /* primitive */ final class AppImage {
 
     /** The image we are wrapping. */
     private final ApplicationImage<Completion> image;
@@ -50,8 +50,8 @@ public /* primitive */ final class MainImage {
      * @param wirelets
      *            optional wirelets
      */
-    private MainImage(Assembly<?> assembly, Wirelet... wirelets) {
-        this.image = Main.driver().newImage(assembly, wirelets);
+    private AppImage(Assembly<?> assembly, Wirelet... wirelets) {
+        this.image = App.driver().newImage(assembly, wirelets);
     }
 
     /**
@@ -96,14 +96,14 @@ public /* primitive */ final class MainImage {
      *             if the image could not be build
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
-    public static MainImage of(Assembly<?> assembly, Wirelet... wirelets) {
-        return new MainImage(assembly, wirelets);
+    public static AppImage of(Assembly<?> assembly, Wirelet... wirelets) {
+        return new AppImage(assembly, wirelets);
     }
 }
 
 class MyAppMain extends BaseAssembly {
     
-    private static final MainImage MAIN = MainImage.of(new MyAppMain());
+    private static final AppImage MAIN = AppImage.of(new MyAppMain());
 
     protected void build() {
         installInstance("HelloWorld");

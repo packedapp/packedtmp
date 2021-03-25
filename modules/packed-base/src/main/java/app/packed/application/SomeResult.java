@@ -1,7 +1,7 @@
 package app.packed.application;
 
 //UnixResult
-public final class MainResult {
+final class SomeResult {
     int errorCode;
     Throwable throwable;
 }

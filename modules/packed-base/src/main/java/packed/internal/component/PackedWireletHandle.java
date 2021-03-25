@@ -77,7 +77,7 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     /** {@inheritDoc} */
     @Override
-    public boolean isEmpty() {
+    public boolean isPresent() {
         return !isAbsent();
     }
 

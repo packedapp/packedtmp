@@ -15,9 +15,9 @@
  */
 package packed.internal.component.variable;
 
-import app.packed.application.Main;
+import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.request.Compute;
+import app.packed.request.Main;
 
 /**
  *
@@ -31,15 +31,15 @@ public class HelloWorldAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        Main.run(new HelloWorldAssembly());
-        Main.driver().analyze(new HelloWorldAssembly()).stream().forEach(c -> System.out.println(c.path()));
+        App.run(new HelloWorldAssembly());
+        App.driver().analyze(new HelloWorldAssembly()).stream().forEach(c -> System.out.println(c.path()));
         System.out.println();
-        Main.driver().print(new HelloWorldAssembly());
+        App.driver().print(new HelloWorldAssembly());
     }
 
     public static class HelloWorld {
 
-        @Compute
+        @Main
         public static void execute() {
             System.out.println("HelloWorld");
         }

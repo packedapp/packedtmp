@@ -44,12 +44,12 @@ public final class ConstantPoolSetup {
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
-    public final Lifecycle lifecycle = new Lifecycle();
-
+  
     public void addSourceClass(ClassSourceSetup s) {
         constants.add(s);
     }
-    ConstantPool newRegion(PackedInitializationContext pic, PackedComponent root) {
+    
+    ConstantPool newPool(PackedInitializationContext pic, PackedComponent root) {
         ConstantPool pool = new ConstantPool(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though
@@ -98,12 +98,4 @@ public final class ConstantPoolSetup {
         return nextIndex++;
     }
 
-    public static class Lifecycle {
-
-        public boolean hasExecutionBlock() {
-            return methodHandle != null;
-        }
-
-        public MethodHandle methodHandle;
-    }
 }

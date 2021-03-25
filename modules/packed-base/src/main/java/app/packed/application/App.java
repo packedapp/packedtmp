@@ -31,11 +31,12 @@ import packed.internal.component.PackedInitializationContext;
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
  * written use Packed.
  * 
- * @see MainImage
+ * @see AppImage
  */
 // Tror maaske bare den doer med PanicException som standard hvis der gaar noget galt...
 // noHookCaching...
-public final class Main {
+// Maaske rename til App
+public final class App {
 
     /** The artifact driver used by this class. */
     // Maybe use single-use-image as well...
@@ -52,7 +53,7 @@ public final class Main {
             .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
 
     /** Not today Satan, not today. */
-    private Main() {}
+    private App() {}
 
     // Vi skal vel have et dev-tools projekt, ved ikke lige om den skal vaere her
     /**
@@ -134,7 +135,7 @@ class MainTester {
     // Altsaa tit vil man jo ogsaa gerne starte noget...
 
     public static void main(String[] args) {
-        Main.run(new BaseAssembly() {
+        App.run(new BaseAssembly() {
             @Override
             protected void build() {
                 link(null);

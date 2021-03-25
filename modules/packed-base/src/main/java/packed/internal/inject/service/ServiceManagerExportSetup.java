@@ -37,7 +37,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
- * This class manages everything to do with exporting of service entries.
+ * This class manages everything to do with exporting of services.
  *
  * @see ServiceExtension#export(Class)
  * @see ServiceExtension#export(Key)

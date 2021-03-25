@@ -1,6 +1,6 @@
 package packed.internal.base.application;
 
-import app.packed.application.Main;
+import app.packed.application.App;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentDriver;
@@ -18,7 +18,7 @@ public class DriverTest extends Assembly<BaseComponentConfiguration> {
     }
 
     public static void main(String[] args) {
-        Main.run(new DriverTest());
+        App.run(new DriverTest());
     }
 
 }
