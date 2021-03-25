@@ -22,13 +22,13 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.service.PackedService;
+import packed.internal.inject.service.InternalService;
 
 /** Represents a service at runtime. */
-public abstract class RuntimeService implements PackedService {
+public abstract class RuntimeService implements InternalService {
 
     @Override
-    public <T> PackedService decorate(Function<? super T, ? extends T> decoratingFunction) {
+    public <T> InternalService decorate(Function<? super T, ? extends T> decoratingFunction) {
         throw new UnsupportedOperationException();
     }
 
@@ -50,7 +50,7 @@ public abstract class RuntimeService implements PackedService {
     public abstract Object provideInstance(@Nullable ProvisionContext request);
 
     @Override
-    public final PackedService rekeyAs(Key<?> key) {
+    public final InternalService rekeyAs(Key<?> key) {
         return new DelegatingRuntimeService(key, this);
     }
 

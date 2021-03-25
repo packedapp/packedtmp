@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.PackedService;
+import packed.internal.inject.service.InternalService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -36,7 +36,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are only exposed as a {@link Service} to end users if {@link #isFrozen}. 
  */
-public abstract class ServiceSetup implements PackedService, DependencyProvider {
+public abstract class ServiceSetup implements InternalService, DependencyProvider {
 
     private boolean isFrozen;
 

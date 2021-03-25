@@ -29,6 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.base.Variable;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
+import packed.internal.config.ConfigSite;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
@@ -156,8 +157,30 @@ public final class ServiceManagerRequirementsSetup {
     public void require(Key<?> key, boolean isOptional /* , ConfigSite configSite */) {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
-    
-   static class Requirement {
+
+    static class ServiceDependencyRequirement {
+
+        final ConfigSite configSite;
+
+        final DependencyDescriptor dependency;
+
+        @Nullable
+        final Dependant entry;
+
+        ServiceDependencyRequirement(DependencyDescriptor dependency, ConfigSite configSite) {
+            this.dependency = requireNonNull(dependency, "dependency is null");
+            this.configSite = requireNonNull(configSite);
+            this.entry = null;
+        }
+
+        ServiceDependencyRequirement(DependencyDescriptor dependency, Dependant entry) {
+            this.dependency = requireNonNull(dependency, "dependency is null");
+            this.configSite = null;
+            this.entry = entry;
+        }
+    }
+
+    static class Requirement {
 
         // Always starts out as optional
         boolean isOptional = true;

@@ -242,4 +242,44 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     public void transform(Consumer<? super ServiceComposer> transformer) {
         PackedServiceComposer.transformInplace(resolvedExports, transformer);
     }
+    
+    /**
+     * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
+     * 
+     * @see ServiceExtension#export(Class)
+     * @see ServiceExtension#export(Key)
+     */
+    // Move to ExportManager when we key + check configurable has been finalized
+    static final class ExportedServiceConfigurationSetup<T> implements ExportedServiceConfiguration<T> {
+
+        /** The entry that is exported. */
+        private final ExportedServiceSetup entry;
+
+        /**
+         * Creates a new service configuration object.
+         * 
+         * @param entry
+         *            the entry to export
+         */
+        public ExportedServiceConfigurationSetup(ExportedServiceSetup entry) {
+            this.entry = requireNonNull(entry);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ExportedServiceConfiguration<T> as(@Nullable Key<? super T> key) {
+            // TODO, maybe it gets disabled the minute we start analyzing exports???
+            // Nah, lige saa snart, vi begynder
+//            entry.sm.checkExportConfigurable();
+            entry.as(key);
+            return this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        @Nullable
+        public Key<?> key() {
+            return entry.key();
+        }
+    }
 }

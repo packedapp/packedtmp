@@ -23,9 +23,9 @@ import app.packed.inject.Service;
 /**
  *
  */
-public interface PackedService extends Service {
+public interface InternalService extends Service {
 
-    public abstract PackedService rekeyAs(Key<?> key);
+    public abstract InternalService rekeyAs(Key<?> key);
 
-    public abstract <T> PackedService decorate(Function<? super T, ? extends T> decoratingFunction);
+    public abstract <T> InternalService decorate(Function<? super T, ? extends T> decoratingFunction);
 }
