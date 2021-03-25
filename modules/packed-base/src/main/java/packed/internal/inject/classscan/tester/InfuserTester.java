@@ -15,10 +15,6 @@ public class InfuserTester {
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Secret.class, "l", Long.class);
 
-    private InfuserTester() {
-        
-    }
-    
     InfuserTester(IntStream i, Secret s, InjectionContext ic, Long ll) {
         System.out.println(ic.keys());
         System.out.println(i);
@@ -28,16 +24,16 @@ public class InfuserTester {
             System.out.println(sss);
         });
     }
-    
+
     public static void main(String[] args) throws Throwable {
         Infuser i = Infuser.build(MethodHandles.lookup(), c -> {
             c.provide(IntStream.class).invokePublicMethod("chars");
             c.provideHidden(Secret.class).adapt(1);
-            c.provideHidden(Long.class).transform(MH_INJECT_PARENT, 1);
+            c.provideHidden(Long.class).byInvoking(MH_INJECT_PARENT, 1);
         }, String.class, Secret.class);
 
-        MethodHandle mh = i.findConstructorFor(InfuserTester.class);
-        
+        MethodHandle mh = i.singleConstructor(InfuserTester.class, InfuserTester.class, e -> new IllegalArgumentException(e));
+
         InfuserTester it = (InfuserTester) mh.invokeExact("sdf", new Secret());
         System.out.println("Bte " + it);
     }
@@ -48,11 +44,10 @@ public class InfuserTester {
             return 12L;
         }
     }
-    
-    
+
     @AutoService
     interface XX {
-        
+
         @Provide
         private static XX provide() {
             return new XX() {};

@@ -19,8 +19,7 @@ import app.packed.base.Nullable;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.LookupUtil;
 
-//InjectionModel???
-public class Infuser {
+public final class Infuser {
 
     /** The entries of this infuser */
     final Map<Key<?>, Entry> entries;
@@ -35,34 +34,6 @@ public class Infuser {
         this.lookup = builder.lookup;
     }
 
-    public MethodHandle findConstructorFor(Class<?> type) {
-        // Den bliver ogsaa checket i FindInjectableConstructor...
-        // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
-        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
-        MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
-        mhb.add(this);
-        Constructor<?> constructor = FindInjectableConstructor.get(type, false, msg -> new IllegalArgumentException(msg));
-        return mhb.build(oc, constructor);
-    }
-
-    public MethodHandle findConstructorFor(Constructor<?> con, Class<?> type) {
-        // Den bliver ogsaa checket i FindInjectableConstructor...
-        // Taenker vi dropper denne, og beholder den i FindInjectableConstructpr
-        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
-        MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
-        mhb.add(this);
-        return mhb.build(oc, con);
-    }
-
-    public MethodHandle singleConstructor(Class<?> type, Class<?> adaptTo, Function<String, RuntimeException> errorMaker) {
-        Constructor<?> constructor = FindInjectableConstructor.get(type, false, errorMaker);
-        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
-        MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
-        mhb.add(this);
-        MethodHandle mh = mhb.build(oc, constructor);
-        return mh.asType(mh.type().changeReturnType(adaptTo));
-    }
-
     public Set<Key<?>> keys() {
         return entries.keySet();
     }
@@ -73,6 +44,19 @@ public class Infuser {
 
     public List<Class<?>> parameterTypes() {
         return parameterTypes;
+    }
+
+    public MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
+        // First lets find a constructor
+        Constructor<?> constructor = FindInjectableConstructor.get(type, false, errorMaker);
+        
+        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
+        MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
+        mhb.add(this);
+        MethodHandle mh = mhb.build(oc, constructor);
+        
+        // We need to adapt the method handle
+        return mh.asType(mh.type().changeReturnType(returnType));
     }
 
     public Infuser withExposed(Class<?> key, Consumer<? extends EntryBuilder> action) {
@@ -86,8 +70,8 @@ public class Infuser {
         return b.build();
     }
 
-    public static Builder builder(MethodHandles.Lookup lookup, Class<?>... parameterTypes) {
-        return new Builder(lookup, parameterTypes);
+    public static Builder builder(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
+        return new Builder(caller, parameterTypes);
     }
 
     public static Infuser of(MethodHandles.Lookup lookup) {
@@ -99,8 +83,8 @@ public class Infuser {
         private final Lookup lookup;
         private final List<Class<?>> parameterTypes;
 
-        Builder(Lookup lookup, Class<?>... parameterTypes) {
-            this.lookup = requireNonNull(lookup, "lookup is null");
+        Builder(Lookup caller, Class<?>... parameterTypes) {
+            this.lookup = requireNonNull(caller, "lookup is null");
             this.parameterTypes = List.of(parameterTypes);
         }
 
@@ -181,7 +165,7 @@ public class Infuser {
             Class<?> cl = builder.parameterTypes.get(index);
             // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
             MethodHandle mh = LookupUtil.lookupVirtualPrivate(builder.lookup, cl, methodName, key.rawType());
-            transform(mh, index);
+            byInvoking(mh, index);
         }
 
         public void invokePublicMethod(String methodName /* , Object... additional(Static)Arguments */ ) {
@@ -192,20 +176,21 @@ public class Infuser {
             Class<?> cl = builder.parameterTypes.get(index);
             // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
             MethodHandle mh = LookupUtil.lookupVirtualPublic(cl, methodName, key.rawType());
-            transform(mh, index);
+            byInvoking(mh, index);
         }
 
-        public void transform(MethodHandle transformer) {
-            transform(transformer, 0);
+        public void byInvoking(MethodHandle methodHandle) {
+            // Vil lave indexes om saa de skal match istedet for at tage den foerste..
+            byInvoking(methodHandle, 0);
         }
 
-        public void transform(MethodHandle transformer, int... indexes) {
-            requireNonNull(transformer, "transformer is null");
+        public void byInvoking(MethodHandle methodHandle, int... indexes) {
+            requireNonNull(methodHandle, "methodHandle is null");
             for (int i = 0; i < indexes.length; i++) {
                 Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
             }
             // System.out.println("Adding transfoer " + transformer);
-            builder.add(this, new Entry(this, transformer, indexes));
+            builder.add(this, new Entry(this, methodHandle, indexes));
         }
     }
 

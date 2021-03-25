@@ -286,7 +286,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
                 // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
                 MethodHandle mh = ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
-                c.provideHidden(extensionClass).transform(mh);
+                c.provideHidden(extensionClass).byInvoking(mh);
             }, ExtensionSetup.class);
 
             // Find a method handle for the extension's constructor

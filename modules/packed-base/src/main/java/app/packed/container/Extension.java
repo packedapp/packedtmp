@@ -120,14 +120,14 @@ public abstract class Extension extends Realm {
         configuration().checkConfigurable();
     }
 
-    //checkInNoSubContainers
+    // checkInNoSubContainers
     protected final void checkUnconnected() {
         // This method cannot be invoked after ServiceExtension has been installed in any sub containers
 
         // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
         // anden setting op fra parent'en
     }
-    
+
     // checkExtendable...
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
@@ -438,7 +438,7 @@ public abstract class Extension extends Realm {
         }
 
         // Create and return a single instance of it
-        MethodHandle mh = Infuser.of(MethodHandles.lookup()).findConstructorFor(c);
+        MethodHandle mh = Infuser.of(MethodHandles.lookup()).singleConstructor(c, c, e -> new IllegalArgumentException(e));
         try {
             return (T) mh.invoke();
         } catch (Throwable t) {

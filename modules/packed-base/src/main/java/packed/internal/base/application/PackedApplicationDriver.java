@@ -43,6 +43,7 @@ import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletArray;
 import packed.internal.inject.classscan.Infuser;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
@@ -213,6 +214,18 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Implementation of {@link ApplicationDriver.Builder} */
     public static class Builder implements ApplicationDriver.Builder {
 
+        /** A MethodHandle for invoking {@link #component()}. */
+        private static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "component",
+                Component.class);
+
+        /** A MethodHandle for invoking {@link #runtime()}. */
+        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "runtime",
+                ApplicationRuntime.class);
+
+        /** A MethodHandle for invoking {@link #services()}. */
+        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "services",
+                ServiceLocator.class);
+
         MethodHandle mhConstructor;
 
         /** The modifiers of the application. We have a runtime modifier by default. */
@@ -225,19 +238,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
-            if (implementation == Void.class) {
-                throw new IllegalArgumentException("Cannot specify Void.class use daemon() instead");
+
+            Infuser.Builder builder = Infuser.builder(caller, PackedInitializationContext.class);
+            builder.provide(Component.class).byInvoking(MH_COMPONENT);
+            builder.provide(ServiceLocator.class).byInvoking(MH_SERVICES);
+            if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
+                builder.provide(ApplicationRuntime.class).byInvoking(MH_RUNTIME);
             }
+            Infuser infuser = builder.build();
 
-            Infuser infuser = Infuser.build(caller, c -> {
-                c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
-                c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
-                if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
-                    c.provide(ApplicationRuntime.class).transform(PackedInitializationContext.MH_RUNTIME);
-                }
-            }, PackedInitializationContext.class);
-
-            // Create a method handle with the signature (PackedInitializationContext)Object
+            // Find a method handle for the application shell's constructor
             mhConstructor = infuser.singleConstructor(implementation, Object.class, s -> new IllegalArgumentException(s));
 
             return new PackedApplicationDriver<>(this);
@@ -246,7 +256,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets) {
-            //mh = mh.asType(mh.type().changeReturnType(Object.class));
+            // mh = mh.asType(mh.type().changeReturnType(Object.class));
             // TODO fix....
             this.mhConstructor = mh;
 

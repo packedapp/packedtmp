@@ -17,9 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-
 import app.packed.application.ApplicationRuntime;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
@@ -27,7 +24,6 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import packed.internal.base.application.PackedApplicationDriver;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.util.LookupUtil;
 
 /**
  * An instantiation context is created every time an artifact is being instantiated.
@@ -41,15 +37,6 @@ import packed.internal.util.LookupUtil;
 
 // MethodHandle stableAccess(Object[] array) <-- returns 
 public final class PackedInitializationContext {
-
-    /** A MethodHandle for invoking {@link #component()}. */
-    public static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtual(MethodHandles.lookup(), "component", Component.class);
-
-    /** A MethodHandle for invoking {@link #runtime()}. */
-    public static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtual(MethodHandles.lookup(), "runtime", ApplicationRuntime.class);
-
-    /** A MethodHandle for invoking {@link #services()}. */
-    public static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtual(MethodHandles.lookup(), "services", ServiceLocator.class);
 
     /** The runtime component node we are building. */
     PackedComponent component;
