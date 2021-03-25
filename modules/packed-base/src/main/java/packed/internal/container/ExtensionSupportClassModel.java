@@ -3,8 +3,8 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
-import app.packed.container.old.ExtensionSupportClass;
-import app.packed.container.old.ExtensionSupportClass.Scope;
+import app.packed.hooks.sandbox.ExtensionSupportClass;
+import app.packed.hooks.sandbox.ExtensionSupportClass.Scope;
 
 @SuppressWarnings("unused")
 public final class ExtensionSupportClassModel {
