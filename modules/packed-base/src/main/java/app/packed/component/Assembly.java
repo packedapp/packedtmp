@@ -50,7 +50,7 @@ import packed.internal.util.LookupUtil;
  * @see ContainerAssembly
  * @see BaseAssembly
  */
-public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
+public abstract class Assembly<C extends ComponentConfiguration> {
 
     /** A marker object to indicate that the assembly has been used. */
     private static Object USED = Assembly.class;

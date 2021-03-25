@@ -32,7 +32,6 @@ import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Realm;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
 import app.packed.inject.Factory;
@@ -80,7 +79,7 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public abstract class Extension extends Realm {
+public abstract class Extension {
 
     /**
      * The configuration of this extension. This field should never be read directly, but only accessed via

@@ -27,7 +27,7 @@ import packed.internal.component.ComponentSetup;
 // Application Composer.. Nej vi bruger dem ogsaa andet steds fra
 // Syntes bare den skal vaere ligesom Assembly
 // Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
-public abstract class Composer<C extends ComponentConfiguration> extends Realm {
+public abstract class Composer<C extends ComponentConfiguration> {
 
     // I don't think we have access to component configuration context...
     /** The underlying component configuration. */

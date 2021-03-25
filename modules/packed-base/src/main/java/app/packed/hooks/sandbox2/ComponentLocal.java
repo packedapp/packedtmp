@@ -1,4 +1,6 @@
-package app.packed.component;
+package app.packed.hooks.sandbox2;
+
+import app.packed.component.instance.ComponentInstanceContext;
 
 // Ideen er vi laver noget a.la. ThreadLocal...
 //bare med com
@@ -25,7 +27,7 @@ public abstract class ComponentLocal<T> {
     // Altsaa det er vel component instance og ikke component??
     // F.eks. hvis vi har sessions containere der er defineret via et image...
     // og hvad goer vi med statiske componenter...
-    final T get(ComponentContext componentContext) {
+    final T get(ComponentInstanceContext componentContext) {
         throw new UnsupportedOperationException();
     }
 }
