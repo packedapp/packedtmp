@@ -24,6 +24,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.invoke.constantpool.ConstantPool;
 
 /**
  * An instantiation context is created every time an artifact is being instantiated.

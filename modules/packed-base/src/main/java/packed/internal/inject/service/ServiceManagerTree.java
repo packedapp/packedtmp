@@ -21,10 +21,10 @@ import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.ConstantPoolSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link ServiceManagerSetup service composers} that are

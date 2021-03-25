@@ -24,9 +24,9 @@ import java.lang.reflect.Method;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.ConstantPool;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyProvider;
+import packed.internal.invoke.constantpool.ConstantPool;
 
 /**
  * Represents a method on a sidecar annotated with {@link Provide}.

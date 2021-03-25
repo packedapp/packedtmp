@@ -23,8 +23,8 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.component.ConstantPool;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime service holding a constant. */
 public final class ConstantRuntimeService extends RuntimeService {

@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.component.ConstantPool;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */

@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.invoke.constantpool;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
+import packed.internal.component.PackedApplicationRuntime;
+import packed.internal.component.PackedComponent;
+import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.util.ThrowableUtil;
@@ -32,7 +35,9 @@ import packed.internal.util.ThrowableUtil;
 // Is this a ConstantPool?????
 public final class ConstantPoolSetup {
 
-    /** Components that contains constants that should be stored in a region. Is only written by {@link ClassSourceSetup}. */
+    /**
+     * Components that contains constants that should be stored in a region. Is only written by {@link ClassSourceSetup}.
+     */
     private final ArrayList<ClassSourceSetup> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
@@ -44,12 +49,11 @@ public final class ConstantPoolSetup {
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
-  
     public void addSourceClass(ClassSourceSetup s) {
         constants.add(s);
     }
-    
-    ConstantPool newPool(PackedInitializationContext pic, PackedComponent root) {
+
+    public ConstantPool newPool(PackedInitializationContext pic, PackedComponent root) {
         ConstantPool pool = new ConstantPool(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though

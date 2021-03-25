@@ -31,8 +31,6 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.ConstantPool;
-import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
@@ -47,6 +45,8 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
+import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.

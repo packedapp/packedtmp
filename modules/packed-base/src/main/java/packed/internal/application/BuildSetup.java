@@ -20,10 +20,10 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /** The configuration of a build. */
 public final class BuildSetup implements BuildInfo {

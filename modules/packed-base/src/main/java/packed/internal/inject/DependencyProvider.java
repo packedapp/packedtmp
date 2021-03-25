@@ -20,10 +20,10 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /**
  * Something that

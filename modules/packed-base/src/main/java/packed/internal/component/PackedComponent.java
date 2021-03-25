@@ -33,6 +33,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
+import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime representation of a component. */
 // PackedComponentInstance

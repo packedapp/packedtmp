@@ -57,6 +57,7 @@ import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */

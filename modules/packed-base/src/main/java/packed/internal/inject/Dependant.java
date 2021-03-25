@@ -26,8 +26,6 @@ import java.util.List;
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.ConstantPool;
-import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.component.source.MemberHookModel;
@@ -37,6 +35,9 @@ import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceMemberServiceSetup;
+import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.invoke.constantpool.ConstantPoolInvoker;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /**
  *

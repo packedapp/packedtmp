@@ -22,12 +22,12 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.ConstantPool;
 import packed.internal.component.SourcedComponentDriver;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */

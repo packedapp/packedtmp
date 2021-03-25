@@ -19,8 +19,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.IdentityHashMap;
 
-import packed.internal.component.ConstantPool;
 import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.invoke.constantpool.ConstantPool;
 
 /** A special instantiation context that is created */
 // Vi beholder den lidt endnu, det saa traels hver gang vi

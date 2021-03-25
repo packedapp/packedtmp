@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.invoke.constantpool;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.hooks.MethodAccessor;
-import packed.internal.component.ConstantPool;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
@@ -29,7 +28,7 @@ import packed.internal.util.MethodHandleUtil;
  * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link ConstantPool} to be
  * invoked.
  */
-record ConstantPoolInvoker<T>(/** The method handle to invoke */ MethodHandle mh, /** The constant pool that stores needed data. */ ConstantPool pool) implements MethodAccessor<T> {
+public record ConstantPoolInvoker<T>(/** The method handle to invoke */ MethodHandle mh, /** The constant pool that stores needed data. */ ConstantPool pool) implements MethodAccessor<T> {
 
     /**
      * A method handle for creating new RuntimeRegionInvoker instance. We explicitly cast return type from
@@ -38,7 +37,7 @@ record ConstantPoolInvoker<T>(/** The method handle to invoke */ MethodHandle mh
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
             .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, ConstantPool.class), MethodAccessor.class);
 
-    ConstantPoolInvoker {
+    public ConstantPoolInvoker {
         requireNonNull(mh);
         requireNonNull(pool);
     }

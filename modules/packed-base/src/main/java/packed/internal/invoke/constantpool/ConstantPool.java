@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.invoke.constantpool;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
@@ -40,7 +41,7 @@ public final /* primitive*/ class ConstantPool {
     }
 
     // Don't know
-    PackedApplicationRuntime container() {
+    public PackedApplicationRuntime container() {
         return (PackedApplicationRuntime) table[0];
     }
 
