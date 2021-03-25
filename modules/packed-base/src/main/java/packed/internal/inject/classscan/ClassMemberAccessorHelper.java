@@ -74,8 +74,7 @@ final class ClassMemberAccessorHelper {
         // getDeclaredMethods() later.
         if (methodConsumer != null) {
             for (Method m : actualType.getMethods()) {
-                // Filter methods whose declaring class is in java.base and bridge methods
-                // TODO: On Classpath all classes are in the same module as java.base
+                // Filter methods whose from java.base module and bridge methods
                 if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
                     // Should we also ignore methods on base assembly class????
                     methodConsumer.accept(m);// move this to step 2???

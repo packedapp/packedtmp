@@ -529,10 +529,12 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentSetup parent = extension == null ? this : treeParent;
-        ComponentSetup compConf = new ComponentSetup(build, realm, d, parent, wirelets);
+        
+        // Wire the component
+        ComponentSetup component = new ComponentSetup(build, realm, d, parent, wirelets);
 
-        // We only close the component if linking a assembly (new realm)
-        return d.toConfiguration(compConf);
+        // Create a component configuration object and return it to the user
+        return d.toConfiguration(component);
     }
 
     // This should only be called by special methods

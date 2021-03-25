@@ -46,7 +46,8 @@ public abstract class RealmAccessor {
         @Override
         protected ClassSourceModel computeValue(Class<?> type) {
             ClassMemberAccessor oc = ClassMemberAccessor.of(lookup(), type);
-            return ClassSourceModel.newModel(oc);
+            return new ClassSourceModel.Builder(oc).build();
+            //return ClassSourceModel.newModel(oc);
         }
     };
 
@@ -147,8 +148,8 @@ public abstract class RealmAccessor {
                 l.lookupClass().getModule().addReads(type.getModule());
                 try {
                     l = cachedLookup = MethodHandles.privateLookupIn(type, l);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException ignore) {
+                    //e.printStackTrace();
                 }
             }
             return l;

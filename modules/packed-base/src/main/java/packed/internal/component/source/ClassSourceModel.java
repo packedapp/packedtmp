@@ -135,7 +135,7 @@ public final class ClassSourceModel {
          *            a class processor usable by hooks
          * 
          */
-        private Builder(ClassMemberAccessor cp) {
+        Builder(ClassMemberAccessor cp) {
             this.oc = requireNonNull(cp);
         }
 
@@ -144,7 +144,7 @@ public final class ClassSourceModel {
          * 
          * @return a new model
          */
-        private ClassSourceModel build() {
+        ClassSourceModel build() {
             for (Annotation a : oc.type().getAnnotations()) {
                 System.out.println(a);
             }

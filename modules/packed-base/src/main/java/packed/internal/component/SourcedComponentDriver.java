@@ -35,7 +35,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class SourcedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> implements ComponentDriver<C> {
+public class SourcedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
     public static final ComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
