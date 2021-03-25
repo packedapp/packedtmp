@@ -38,7 +38,7 @@ import app.packed.inject.Service;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.PackedInjectionContext;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 
 /**
@@ -129,7 +129,7 @@ class MethodHandleBuilderHelper {
                     for (Entry<Key<?>, Infuser.Entry> e : aa.keys.entrySet()) {
                         if (!e.getValue().isHidden()) {
                             keys.add(e.getKey());
-                            services.put(e.getKey(), BuildtimeService.simple(e.getKey(), false));
+                            services.put(e.getKey(), ServiceSetup.simple(e.getKey(), false));
                         }
                     }
 

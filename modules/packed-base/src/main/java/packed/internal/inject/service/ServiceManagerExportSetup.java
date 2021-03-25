@@ -31,8 +31,8 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.inject.service.build.ExportedBuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.build.ExportedServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
@@ -42,7 +42,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
  * @see ServiceExtension#export(Key)
  * @see ServiceExtension#exportAll()
  */
-public final class ServiceManagerExportSetup implements Iterable<BuildtimeService> {
+public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
 
     /** The config site, if we export all entries. */
     private boolean exportAll;
@@ -52,11 +52,11 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
      * {@link ServiceExtension#export(Key)}.
      */
     @Nullable
-    private ArrayList<ExportedBuildtimeService> exportedEntries;
+    private ArrayList<ExportedServiceSetup> exportedEntries;
 
     /** All resolved exports. Is null until {@link #resolve()} has finished (successfully or just finished?). */
     @Nullable
-    private final LinkedHashMap<Key<?>, BuildtimeService> resolvedExports = new LinkedHashMap<>();
+    private final LinkedHashMap<Key<?>, ServiceSetup> resolvedExports = new LinkedHashMap<>();
 
     /** The extension node this exporter is a part of. */
     private final ServiceManagerSetup sm;
@@ -100,7 +100,7 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
-        return export0(new ExportedBuildtimeService(sm, key));
+        return export0(new ExportedServiceSetup(sm, key));
     }
 
     /**
@@ -114,13 +114,13 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
      */
     // I think exporting an entry locks its any providing key it might have...
 
-    public <T> ExportedServiceConfiguration<T> export(BuildtimeService entryToExport) {
+    public <T> ExportedServiceConfiguration<T> export(ServiceSetup entryToExport) {
         // I'm not sure we need the check after, we have put export() directly on a component configuration..
         // Perviously you could specify any entry, even something from another assembly.
         // if (entryToExport.node != node) {
         // throw new IllegalArgumentException("The specified configuration was created by another injector extension");
         // }
-        return export0(new ExportedBuildtimeService(entryToExport));
+        return export0(new ExportedServiceSetup(entryToExport));
     }
 
     /**
@@ -132,17 +132,17 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
      *            the build entry to export
      * @return a configuration object that can be exposed to the user
      */
-    private <T> ExportedServiceSetup<T> export0(ExportedBuildtimeService entry) {
+    private <T> ExportedServiceConfigurationSetup<T> export0(ExportedServiceSetup entry) {
         // Vi bliver noedt til at vente til vi har resolvet... med finde ud af praecis hvad der skal ske
         // F.eks. hvis en extension publisher en service vi gerne vil exportere
         // Saa sker det maaske foerst naar den completer.
         // dvs efter assembly.configure() returnere
-        ArrayList<ExportedBuildtimeService> e = exportedEntries;
+        ArrayList<ExportedServiceSetup> e = exportedEntries;
         if (e == null) {
             e = exportedEntries = new ArrayList<>(5);
         }
         e.add(entry);
-        return new ExportedServiceSetup<>(entry);
+        return new ExportedServiceConfigurationSetup<>(entry);
     }
 
     /**
@@ -169,7 +169,7 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
     
     /** {@inheritDoc} */
     @Override
-    public Iterator<BuildtimeService> iterator() {
+    public Iterator<ServiceSetup> iterator() {
         return resolvedExports.values().iterator();
     }
 
@@ -183,10 +183,10 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
         // to have identical structure to ServiceProvidingManager
         // Process every exported build entry
         if (exportedEntries != null) {
-            for (ExportedBuildtimeService entry : exportedEntries) {
+            for (ExportedServiceSetup entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                BuildtimeService entryToExport = entry.exportedEntry;
+                ServiceSetup entryToExport = entry.exportedEntry;
                 if (entryToExport == null) {
                     Wrapper wrapper = sm.resolvedServices.get(entry.exportAsKey);
                     entryToExport = wrapper == null ? null : wrapper.getSingle();
@@ -197,9 +197,9 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
                 }
 
                 if (entry.exportedEntry != null) {
-                    BuildtimeService existing = resolvedExports.putIfAbsent(entry.key(), entry);
+                    ServiceSetup existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
-                        LinkedHashSet<BuildtimeService> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
+                        LinkedHashSet<ServiceSetup> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
                         hs.add(existing); // might be added multiple times, hence we use a Set, but add existing first
                         hs.add(entry);
                     }
@@ -216,9 +216,9 @@ public final class ServiceManagerExportSetup implements Iterable<BuildtimeServic
 
         if (exportAll) {
             for (Wrapper w : sm.resolvedServices.values()) {
-                BuildtimeService e = w.getSingle();
+                ServiceSetup e = w.getSingle();
                 if (!resolvedExports.containsKey(e.key())) {
-                    resolvedExports.put(e.key(), new ExportedBuildtimeService(e));
+                    resolvedExports.put(e.key(), new ExportedServiceSetup(e));
                 }
             }
         }

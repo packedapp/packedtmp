@@ -32,7 +32,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * A build entry representing an exported service. Entries at runtime has never any reference to how (or if) they where
  * exported.
  */
-public final class ExportedBuildtimeService extends BuildtimeService {
+public final class ExportedServiceSetup extends ServiceSetup {
 
     /** The key under which to export the entry, is null for entry exports. */
     @Nullable
@@ -40,7 +40,7 @@ public final class ExportedBuildtimeService extends BuildtimeService {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    public BuildtimeService exportedEntry;
+    public ServiceSetup exportedEntry;
 
     /**
      * Exports an entry via its key.
@@ -50,7 +50,7 @@ public final class ExportedBuildtimeService extends BuildtimeService {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedBuildtimeService(ServiceManagerSetup builder, Key<?> exportAsKey) {
+    public ExportedServiceSetup(ServiceManagerSetup builder, Key<?> exportAsKey) {
         super(exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
@@ -62,7 +62,7 @@ public final class ExportedBuildtimeService extends BuildtimeService {
      *            the entry to export
      * @see ServiceExtension#exportAll()
      */
-    public ExportedBuildtimeService(BuildtimeService entryToExport) {
+    public ExportedServiceSetup(ServiceSetup entryToExport) {
         super(entryToExport.key());
         this.exportedEntry = entryToExport;
         this.exportAsKey = null;

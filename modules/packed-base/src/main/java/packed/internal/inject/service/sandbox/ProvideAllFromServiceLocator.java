@@ -23,8 +23,8 @@ import app.packed.base.Key;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.inject.service.build.RuntimeAdaptorBuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(ServiceLocator)}. */
@@ -35,7 +35,7 @@ public final class ProvideAllFromServiceLocator {
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
-    public final LinkedHashMap<Key<?>, BuildtimeService> entries = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceSetup> entries = new LinkedHashMap<>();
 
     /** The injector that provides the services. */
     final PackedInjector injector;
@@ -54,7 +54,7 @@ public final class ProvideAllFromServiceLocator {
 
         injector.forEachEntry(e -> {
             // ConfigSite cs = configSite.withParent(e.configSite());
-            entries.put(e.key(), new RuntimeAdaptorBuildtimeService(e));
+            entries.put(e.key(), new RuntimeAdaptorServiceSetup(e));
         });
     }
 }

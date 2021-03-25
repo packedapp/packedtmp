@@ -110,7 +110,7 @@ public final class PackedServiceComposer extends ServiceComposer {
         requireNonNull(key, "key is null");
         requireNonNull(instance, "instance is null");
         // instance must be assignable to key raw type, maybe the build entry should check that...
-        services.put(key, new ConstantBuildtimeService(key, instance));
+        services.put(key, new ConstantServiceSetup(key, instance));
     }
 
     /** {@inheritDoc} */
@@ -176,16 +176,16 @@ public final class PackedServiceComposer extends ServiceComposer {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext();
         for (AbstractService e : services.values()) {
-            runtimeEntries.put(e.key(), ((BuildtimeService) e).toRuntimeEntry(con));
+            runtimeEntries.put(e.key(), ((ServiceSetup) e).toRuntimeEntry(con));
         }
         return new PackedInjector(runtimeEntries);
     }
 
     public static ServiceLocator transform(Consumer<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
         requireNonNull(transformation, "transformation is null");
-        HashMap<Key<?>, BuildtimeService> m = new HashMap<>();
+        HashMap<Key<?>, ServiceSetup> m = new HashMap<>();
         for (RuntimeService s : services) {
-            m.put(s.key(), new RuntimeAdaptorBuildtimeService(s));
+            m.put(s.key(), new RuntimeAdaptorServiceSetup(s));
         }
         return toServiceLocator(m, transformation);
     }

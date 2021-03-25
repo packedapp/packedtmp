@@ -20,7 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.source.SourceClassSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
@@ -28,45 +30,47 @@ import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/**
- *
- */
-public class SourceMemberBuildtimeService extends BuildtimeService {
+/** A build entry wrapping a component source. */
+public final class SourceInstanceServiceSetup extends ServiceSetup {
 
-    private final Dependant dependant;
+    /** The singleton source we are wrapping */
+    private final SourceClassSetup source;
 
-    /** If constant, the region index to store it in */
-    public final int regionIndex;
-
-    public SourceMemberBuildtimeService(ServiceManagerSetup im, ComponentSetup compConf, Dependant dependant, Key<?> key, boolean isConst) {
+    /**
+     * Creates a new node from an instance.
+     * 
+     * @param compConf
+     *            the component we provide for
+     */
+    public SourceInstanceServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, Key<?> key) {
         super(key);
-        this.dependant = requireNonNull(dependant);
-        this.regionIndex = isConst ? compConf.pool.reserve() : -1;
+        this.source = requireNonNull(compConf.source);
     }
 
     /** {@inheritDoc} */
     @Override
+    @Nullable
     public Dependant dependant() {
-        return dependant;
+        return source.dependant();
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return dependant.buildMethodHandle();
+        return source.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return regionIndex > -1;
+        return source.poolIndex > -1;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantRuntimeService(this, context.region, regionIndex);
+            return new ConstantRuntimeService(this, context.region, source.poolIndex);
         } else {
             return new PrototypeRuntimeService(this, context.region, dependencyAccessor());
         }
@@ -75,6 +79,6 @@ public class SourceMemberBuildtimeService extends BuildtimeService {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "@Provide " + dependant.directMethodHandle;
+        return "Singleton " + source;
     }
 }

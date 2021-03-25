@@ -23,7 +23,7 @@ import app.packed.inject.Provide;
 import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.source.SourceClassSetup;
 import packed.internal.hooks.ContextMethodProvide;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * Something that
@@ -32,7 +32,7 @@ import packed.internal.inject.service.build.BuildtimeService;
  * 
  * {@link ContextMethodProvide} for methods annotated with {@link Provide}
  * 
- * {@link BuildtimeService} a service of some kind
+ * {@link ServiceSetup} a service of some kind
  */
 public interface DependencyProvider {
 

@@ -15,55 +15,49 @@
  */
 package packed.internal.inject.service.build;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
-import java.util.function.Function;
 
-import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceLocator;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.runtime.MappingRuntimeService;
+import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/**
- * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
- */
-final class MappingBuildtimeService extends BuildtimeService {
+/** An entry specifically used for {@link ServiceExtension#provideAll(ServiceLocator)}. */
+public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
 
-    /** The entry that should be mapped. */
-    final BuildtimeService entryToMap;
+    /** The runtime entry to delegate to. */
+    private final RuntimeService entry;
 
-    /** The function to apply on the */
-    private final Function<?, ?> function;
-
-    MappingBuildtimeService(BuildtimeService entryToMap, Key<?> toKey, Function<?, ?> function) {
-        super(toKey);
-        this.entryToMap = entryToMap;
-        this.function = requireNonNull(function, "function is null");
+    public RuntimeAdaptorServiceSetup(RuntimeService entry) {
+        super(entry.key());
+        this.entry = entry;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new MappingRuntimeService(this, entryToMap.toRuntimeEntry(context), function);
-    }
-
-    @Override
     @Nullable
     public Dependant dependant() {
-        return entryToMap.dependant();
+        return null; // runtime entries never has any unresolved dependencies
     }
 
+    /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        throw new UnsupportedOperationException();
+        return entry.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return entryToMap.isConstant();
+        return entry.isConstant();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
+        return new DelegatingRuntimeService(this, entry);
     }
 }

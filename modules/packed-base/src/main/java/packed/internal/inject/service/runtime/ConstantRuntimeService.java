@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.component.ConstantPool;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /** An runtime service holding a constant. */
 public final class ConstantRuntimeService extends RuntimeService {
@@ -38,7 +38,7 @@ public final class ConstantRuntimeService extends RuntimeService {
      * @param service
      *            the build entry to create this entry from
      */
-    public ConstantRuntimeService(BuildtimeService service, ConstantPool region, int index) {
+    public ConstantRuntimeService(ServiceSetup service, ConstantPool region, int index) {
         super(service);
         this.constant = requireNonNull(region.getSingletonInstance(index));
     }

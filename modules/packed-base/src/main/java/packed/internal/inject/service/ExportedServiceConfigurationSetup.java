@@ -21,7 +21,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.inject.service.build.ExportedBuildtimeService;
+import packed.internal.inject.service.build.ExportedServiceSetup;
 
 /**
  * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
@@ -30,10 +30,10 @@ import packed.internal.inject.service.build.ExportedBuildtimeService;
  * @see ServiceExtension#export(Key)
  */
 // Move to ExportManager when we key + check configurable has been finalized
-public final class ExportedServiceSetup<T> implements ExportedServiceConfiguration<T> {
+public final class ExportedServiceConfigurationSetup<T> implements ExportedServiceConfiguration<T> {
 
     /** The entry that is exported. */
-    private final ExportedBuildtimeService entry;
+    private final ExportedServiceSetup entry;
 
     /**
      * Creates a new service configuration object.
@@ -41,7 +41,7 @@ public final class ExportedServiceSetup<T> implements ExportedServiceConfigurati
      * @param entry
      *            the entry to export
      */
-    public ExportedServiceSetup(ExportedBuildtimeService entry) {
+    public ExportedServiceConfigurationSetup(ExportedServiceSetup entry) {
         this.entry = requireNonNull(entry);
     }
 

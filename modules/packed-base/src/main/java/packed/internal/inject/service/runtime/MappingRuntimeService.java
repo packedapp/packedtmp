@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /** A runtime service entry that uses a {@link Function} to map an existing service. */
 public final class MappingRuntimeService extends RuntimeService {
@@ -39,7 +39,7 @@ public final class MappingRuntimeService extends RuntimeService {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingRuntimeService(BuildtimeService buildNode, RuntimeService delegate, Function<?, ?> function) {
+    public MappingRuntimeService(ServiceSetup buildNode, RuntimeService delegate, Function<?, ?> function) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);

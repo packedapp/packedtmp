@@ -18,50 +18,52 @@ package packed.internal.inject.service.build;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
+import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.runtime.ConstantRuntimeService;
+import packed.internal.inject.service.runtime.MappingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/** A build-time service for a constant. */
-public final class ConstantBuildtimeService extends BuildtimeService {
+/**
+ * A build entry that that takes an existing entry and uses a {@link Function} to map the service provided by the entry.
+ */
+final class MappingServiceSetup extends ServiceSetup {
 
-    /** The constant we are wrapping. */
-    private final Object constant;
+    /** The entry that should be mapped. */
+    final ServiceSetup entryToMap;
 
-    /**
-     * @param key
-     */
-    public ConstantBuildtimeService(Key<?> key, Object constant) {
-        super(key);
-        this.constant = requireNonNull(constant, "constant is null");
-    }
+    /** The function to apply on the */
+    private final Function<?, ?> function;
 
-    /** {@inheritDoc} */
-    @Override
-    public @Nullable Dependant dependant() {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        return MethodHandles.constant(key().rawType(), constant);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConstant() {
-        return true;
+    MappingServiceSetup(ServiceSetup entryToMap, Key<?> toKey, Function<?, ?> function) {
+        super(toKey);
+        this.entryToMap = entryToMap;
+        this.function = requireNonNull(function, "function is null");
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new ConstantRuntimeService(key(), constant);
+        return new MappingRuntimeService(this, entryToMap.toRuntimeEntry(context), function);
+    }
+
+    @Override
+    @Nullable
+    public Dependant dependant() {
+        return entryToMap.dependant();
+    }
+
+    @Override
+    public MethodHandle dependencyAccessor() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConstant() {
+        return entryToMap.isConstant();
     }
 }

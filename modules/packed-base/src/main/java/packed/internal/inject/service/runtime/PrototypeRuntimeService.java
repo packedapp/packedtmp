@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.component.ConstantPool;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
@@ -37,7 +37,7 @@ public final class PrototypeRuntimeService extends RuntimeService {
     /**
      * @param service
      */
-    public PrototypeRuntimeService(BuildtimeService service, ConstantPool region, MethodHandle mh) {
+    public PrototypeRuntimeService(ServiceSetup service, ConstantPool region, MethodHandle mh) {
         super(service);
         this.region = requireNonNull(region);
         this.mh = requireNonNull(mh);

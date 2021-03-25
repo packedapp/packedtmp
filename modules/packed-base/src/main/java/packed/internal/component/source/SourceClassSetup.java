@@ -27,7 +27,7 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */
@@ -56,7 +56,7 @@ public final class SourceClassSetup implements DependencyProvider {
 
     /** A service object if the source is provided as a service. */
     @Nullable
-    public BuildtimeService service;
+    public ServiceSetup service;
 
     /**
      * Creates a new setup.
@@ -76,7 +76,7 @@ public final class SourceClassSetup implements DependencyProvider {
         Object source = driver.data;
         if (source instanceof Class<?> cl) {
             this.constant = null;
-            this.factory = component.modifiers().isStateful() ? null : Factory.of(cl);
+            this.factory = component.modifiers().isStaticClassSource() ? null : Factory.of(cl);
             this.model = realm.modelOf(cl);
         } else if (source instanceof Factory<?> fac) {
             this.constant = null;
@@ -86,7 +86,7 @@ public final class SourceClassSetup implements DependencyProvider {
             this.constant = source;
             this.factory = null;
             this.model = realm.modelOf(source.getClass());
-            component.pool.addSourceClass(this);
+            component.pool.addSourceClass(this); // non-constants singlestons are added to the constant pool elsewhere
         }
 
         if (factory == null) {
@@ -129,9 +129,9 @@ public final class SourceClassSetup implements DependencyProvider {
         }
     }
 
-    public BuildtimeService provide(ComponentSetup component) {
+    public ServiceSetup provide(ComponentSetup component) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        BuildtimeService s = service;
+        ServiceSetup s = service;
         if (s == null) {
             Key<?> key;
             if (constant != null) {

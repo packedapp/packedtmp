@@ -20,7 +20,7 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceRegistry;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.CollectionUtil;
 
 /** An abstract implementation of ServiceRegistry. */
@@ -46,7 +46,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
      *            the map to make an immutable copy
      * @return a new service registry
      */
-    public static ServiceRegistry copyOf(Map<Key<?>, ? extends BuildtimeService> map) {
+    public static ServiceRegistry copyOf(Map<Key<?>, ? extends ServiceSetup> map) {
         return new UnchangeableServiceRegistry(CollectionUtil.copyOf(map, b -> b.toService()));
     }
 

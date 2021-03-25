@@ -28,7 +28,7 @@ import app.packed.component.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**
@@ -169,7 +169,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, BuildtimeService> map) {
+            protected void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, ServiceSetup> map) {
                 PackedServiceComposer.transformInplaceAttachment(map, transformation, child.newServiceContract());
             }
         };
@@ -179,7 +179,7 @@ public final class ServiceWirelets {
         requireNonNull(transformation, "transformation is null");
         return new Service2ndPassWirelet() {
             @Override
-            protected void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, BuildtimeService> map) {
+            protected void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, ServiceSetup> map) {
                 PackedServiceComposer.transformInplace(map, transformation);
             }
         };

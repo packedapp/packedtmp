@@ -15,49 +15,53 @@
  */
 package packed.internal.inject.service.build;
 
-import java.lang.invoke.MethodHandle;
+import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+
+import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceLocator;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.runtime.DelegatingRuntimeService;
+import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/** An entry specifically used for {@link ServiceExtension#provideAll(ServiceLocator)}. */
-public final class RuntimeAdaptorBuildtimeService extends BuildtimeService {
+/** A build-time service for a constant. */
+public final class ConstantServiceSetup extends ServiceSetup {
 
-    /** The runtime entry to delegate to. */
-    private final RuntimeService entry;
+    /** The constant we are wrapping. */
+    private final Object constant;
 
-    public RuntimeAdaptorBuildtimeService(RuntimeService entry) {
-        super(entry.key());
-        this.entry = entry;
+    /**
+     * @param key
+     */
+    public ConstantServiceSetup(Key<?> key, Object constant) {
+        super(key);
+        this.constant = requireNonNull(constant, "constant is null");
     }
 
     /** {@inheritDoc} */
     @Override
-    @Nullable
-    public Dependant dependant() {
-        return null; // runtime entries never has any unresolved dependencies
+    public @Nullable Dependant dependant() {
+        return null;
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return entry.dependencyAccessor();
+        return MethodHandles.constant(key().rawType(), constant);
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return entry.isConstant();
+        return true;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(this, entry);
+        return new ConstantRuntimeService(key(), constant);
     }
 }

@@ -36,7 +36,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class BuildtimeService extends AbstractService implements DependencyProvider, Service {
+public abstract class ServiceSetup extends AbstractService implements DependencyProvider, Service {
 
     private boolean isFrozen;
 
@@ -47,7 +47,7 @@ public abstract class BuildtimeService extends AbstractService implements Depend
      */
     private Key<?> key;
 
-    public BuildtimeService(Key<?> key) {
+    public ServiceSetup(Key<?> key) {
         this.key = requireNonNull(key);
     }
 
@@ -62,8 +62,8 @@ public abstract class BuildtimeService extends AbstractService implements Depend
     }
 
     @Override
-    public final <T> BuildtimeService decorate(Function<? super T, ? extends T> decoratingFunction) {
-        return new MappingBuildtimeService(this, key, decoratingFunction);
+    public final <T> ServiceSetup decorate(Function<? super T, ? extends T> decoratingFunction) {
+        return new MappingServiceSetup(this, key, decoratingFunction);
     }
 
     public final void freeze() {
@@ -86,9 +86,9 @@ public abstract class BuildtimeService extends AbstractService implements Depend
     protected abstract RuntimeService newRuntimeNode(ServiceInstantiationContext context);
 
     @Override
-    public final BuildtimeService rekeyAs(Key<?> key) {
+    public final ServiceSetup rekeyAs(Key<?> key) {
         // NewKey must be compatible with type
-        RekeyBuildtimeService esb = new RekeyBuildtimeService(this, key);
+        RekeyServiceSetup esb = new RekeyServiceSetup(this, key);
         return esb;
     }
 
@@ -109,7 +109,7 @@ public abstract class BuildtimeService extends AbstractService implements Depend
     public static Service simple(Key<?> key, boolean isConstant) {
         return new PackedService(key, isConstant);
     }
-    /** An implementation of {@link Service} because {@link BuildtimeService} is mutable. */
+    /** An implementation of {@link Service} because {@link ServiceSetup} is mutable. */
     public static final record PackedService(Key<?> key, boolean isConstant) implements Service {
 
         /** {@inheritDoc} */

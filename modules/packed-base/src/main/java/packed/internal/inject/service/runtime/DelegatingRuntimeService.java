@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * A delegating runtime service node.
@@ -40,7 +40,7 @@ public final class DelegatingRuntimeService extends RuntimeService {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingRuntimeService(BuildtimeService buildNode, RuntimeService delegate) {
+    public DelegatingRuntimeService(ServiceSetup buildNode, RuntimeService delegate) {
         super(buildNode);
         this.delegate = requireNonNull(delegate);
     }

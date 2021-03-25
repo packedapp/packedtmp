@@ -32,10 +32,10 @@ import packed.internal.util.MethodHandleUtil;
  * @see ServiceComposer#rekey(Class, Class)
  * @see ServiceComposer#rekey(Key, Key)
  */
-public final class RekeyBuildtimeService extends BuildtimeService {
+public final class RekeyServiceSetup extends ServiceSetup {
 
     /** The service that has been given a new key. */
-    public final BuildtimeService serviceToRekey;
+    public final ServiceSetup serviceToRekey;
 
     /**
      * Create a new service.
@@ -45,7 +45,7 @@ public final class RekeyBuildtimeService extends BuildtimeService {
      * @param key
      *            the new key
      */
-    public RekeyBuildtimeService(BuildtimeService service, Key<?> key) {
+    public RekeyServiceSetup(ServiceSetup service, Key<?> key) {
         super(key);
         this.serviceToRekey = service;
     }

@@ -38,8 +38,8 @@ import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.Requirement.FromInjectable;
-import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.inject.service.build.SourceInstanceBuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.build.SourceInstanceServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
@@ -68,7 +68,7 @@ public final class ServiceManagerSetup {
     private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
 
     /** All explicit added build entries. */
-    private final ArrayList<BuildtimeService> localServices = new ArrayList<>();
+    private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
 
     /** All injectors added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
@@ -102,7 +102,7 @@ public final class ServiceManagerSetup {
         }
     }
 
-    public void addAssembly(BuildtimeService a) {
+    public void addAssembly(ServiceSetup a) {
         requireNonNull(a);
         localServices.add(a);
     }
@@ -157,7 +157,7 @@ public final class ServiceManagerSetup {
 
         // Any exports
         if (exports != null) {
-            for (BuildtimeService n : exports) {
+            for (ServiceSetup n : exports) {
                 builder.provides(n.key());
             }
         }
@@ -179,7 +179,7 @@ public final class ServiceManagerSetup {
     public ServiceLocator newServiceLocator(PackedComponent comp, ConstantPool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (BuildtimeService e : exports) {
+        for (ServiceSetup e : exports) {
             runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
         }
 
@@ -206,8 +206,8 @@ public final class ServiceManagerSetup {
         p.add(pi);
     }
 
-    public <T> BuildtimeService provideSource(ComponentSetup compConf, Key<T> key) {
-        BuildtimeService e = new SourceInstanceBuildtimeService(this, compConf, key);
+    public <T> ServiceSetup provideSource(ComponentSetup compConf, Key<T> key) {
+        ServiceSetup e = new SourceInstanceServiceSetup(this, compConf, key);
         localServices.add(e);
         return e;
     }
@@ -222,7 +222,7 @@ public final class ServiceManagerSetup {
 
     public void prepareDependants() {
         // First we take all locally defined services
-        for (BuildtimeService entry : localServices) {
+        for (ServiceSetup entry : localServices) {
             resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
         }
 
@@ -230,7 +230,7 @@ public final class ServiceManagerSetup {
         if (provideAll != null) {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromServiceLocator fromInjector : provideAll) {
-                for (BuildtimeService entry : fromInjector.entries.values()) {
+                for (ServiceSetup entry : fromInjector.entries.values()) {
                     resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
                 }
             }
@@ -247,7 +247,7 @@ public final class ServiceManagerSetup {
                 }
 
                 if (child != null && child.exports != null) {
-                    for (BuildtimeService a : child.exports) {
+                    for (ServiceSetup a : child.exports) {
                         resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
                     }
                 }
@@ -280,7 +280,7 @@ public final class ServiceManagerSetup {
 
     private void processIncomingPipelines(@Nullable ServiceManagerSetup parent) {
 
-        LinkedHashMap<Key<?>, BuildtimeService> map = new LinkedHashMap<>();
+        LinkedHashMap<Key<?>, ServiceSetup> map = new LinkedHashMap<>();
 
         if (parent != null) {
             for (Entry<Key<?>, Wrapper> e : parent.resolvedServices.entrySet()) {
@@ -304,7 +304,7 @@ public final class ServiceManagerSetup {
         ServiceManagerRequirementsSetup srm = dependencies;
         if (srm != null) {
             for (Requirement r : srm.requirements.values()) {
-                BuildtimeService sa = map.get(r.key);
+                ServiceSetup sa = map.get(r.key);
                 if (sa != null) {
                     for (FromInjectable i : r.list) {
                         i.i.setDependencyProvider(i.dependencyIndex, sa);

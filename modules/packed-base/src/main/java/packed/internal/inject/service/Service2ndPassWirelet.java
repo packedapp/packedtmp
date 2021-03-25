@@ -20,11 +20,11 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  *
  */
 public abstract class Service2ndPassWirelet extends Wirelet {
-    protected abstract void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, BuildtimeService> map);
+    protected abstract void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, ServiceSetup> map);
 }

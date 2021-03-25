@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.inject.service.build.ExportedBuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.build.ExportedServiceSetup;
 
 /**
  *
@@ -33,7 +33,7 @@ import packed.internal.inject.service.build.ExportedBuildtimeService;
 
 public final class InjectionErrorManagerMessages {
 
-    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<BuildtimeService>> dublicateNodes) {
+    public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<ServiceSetup>> dublicateNodes) {
 //        ConfigSiteJoiner csj = new ConfigSiteJoiner();
 //
 //        csj.prefix("    ", "  & ", "  & ");
@@ -47,7 +47,7 @@ public final class InjectionErrorManagerMessages {
         // create an instance sounds like something that should not be used in the build phase...
         sb.append("ServiceExtension failed");
         int nn = 1;
-        for (Map.Entry<Key<?>, LinkedHashSet<BuildtimeService>> e : dublicateNodes.entrySet()) {
+        for (Map.Entry<Key<?>, LinkedHashSet<ServiceSetup>> e : dublicateNodes.entrySet()) {
             sb.append("\n\n");
             Key<?> key = e.getKey();
             String n = "";
@@ -71,11 +71,11 @@ public final class InjectionErrorManagerMessages {
         throw new IllegalStateException(sb.toString());
     }
 
-    public static void addUnresolvedExports(ServiceManagerSetup node, HashMap<Key<?>, LinkedHashSet<ExportedBuildtimeService>> dublicateNodes) {
+    public static void addUnresolvedExports(ServiceManagerSetup node, HashMap<Key<?>, LinkedHashSet<ExportedServiceSetup>> dublicateNodes) {
         // ArtifactBuildContext abc = node.context().buildContext();
     }
 
-    static String format(BuildtimeService e) {
+    static String format(ServiceSetup e) {
         return "";
 //        // TODO FIX
 //        // Need to look in injectable and see if first dependency is SourceAssembly

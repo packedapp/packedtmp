@@ -36,8 +36,8 @@ import packed.internal.component.source.SourceClassSetup;
 import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.Wrapper;
-import packed.internal.inject.service.build.BuildtimeService;
-import packed.internal.inject.service.build.SourceMemberBuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.build.SourceMemberServiceSetup;
 
 /**
  *
@@ -62,7 +62,7 @@ import packed.internal.inject.service.build.SourceMemberBuildtimeService;
 public class Dependant {
 
     @Nullable
-    private final SourceMemberBuildtimeService service;
+    private final SourceMemberServiceSetup service;
 
     MethodHandle buildMethodHandle;
 
@@ -106,7 +106,7 @@ public class Dependant {
                 throw new BuildException("Not okay)");
             }
             ServiceManagerSetup sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
-            BuildtimeService sa = this.service = new SourceMemberBuildtimeService(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
+            ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;

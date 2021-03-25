@@ -28,7 +28,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceMode;
 import packed.internal.inject.PackedProvisionContext;
 import packed.internal.inject.service.AbstractService;
-import packed.internal.inject.service.build.BuildtimeService;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /** An entry that represents a service at runtime. */
 public abstract class RuntimeService extends AbstractService {
@@ -42,7 +42,7 @@ public abstract class RuntimeService extends AbstractService {
      * @param buildEntry
      *            the build node to create the runtime node from
      */
-    RuntimeService(BuildtimeService buildEntry) {
+    RuntimeService(ServiceSetup buildEntry) {
         this(buildEntry.key());
     }
 
