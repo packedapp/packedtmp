@@ -23,8 +23,8 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.ConstantPool;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -50,14 +50,14 @@ public final class SourceClassSetup implements DependencyProvider {
     public final ClassSourceModel model;
 
     /** The index at which to store the runtime instance, or -1 if it should not be stored. */
-    public final int regionIndex;
+    public final int poolIndex;
 
     /** A service object if the source is provided as a service. */
     @Nullable
     public BuildtimeService service;
 
-    private SourceClassSetup(ComponentSetup compConf, int regionIndex, Object source) {
-        this.regionIndex = regionIndex;
+    private SourceClassSetup(ComponentSetup component, Object source) {
+        this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserve() : -1;
 
         // The specified source is either a Class, a Factory, or an instance
         Class<?> sourceType;
@@ -66,7 +66,7 @@ public final class SourceClassSetup implements DependencyProvider {
             this.instance = null;
             // We need to start putting stateful on every component...
             // We need to stateful on all components...
-            this.factory = compConf.modifiers().isStateful() ? null : Factory.of(sourceType);
+            this.factory = component.modifiers().isStateful() ? null : Factory.of(sourceType);
         } else if (source instanceof Factory<?> fac) {
             this.instance = null;
             this.factory = fac;
@@ -77,12 +77,12 @@ public final class SourceClassSetup implements DependencyProvider {
             sourceType = source.getClass();
         }
 
-        this.model = compConf.realm.accessor().modelOf(sourceType);
+        this.model = component.realm.accessor().modelOf(sourceType);
 
         if (factory == null) {
             this.dependant = null;
         } else {
-            MethodHandle mh = compConf.realm.accessor().toMethodHandle(factory);
+            MethodHandle mh = component.realm.accessor().toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
@@ -102,8 +102,8 @@ public final class SourceClassSetup implements DependencyProvider {
     public MethodHandle dependencyAccessor() {
         if (instance != null) {
             return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(instance), ConstantPool.class); // MethodHandle()T -> MethodHandle(Region)T
-        } else if (regionIndex > -1) {
-            return ConstantPool.readSingletonAs(regionIndex, model.type);
+        } else if (poolIndex > -1) {
+            return ConstantPool.readSingletonAs(poolIndex, model.type);
         } else {
             return dependant.buildMethodHandle();
         }
@@ -124,20 +124,29 @@ public final class SourceClassSetup implements DependencyProvider {
         return s;
     }
 
+    /**
+     * Creates a component class source setup.
+     * 
+     * @param component
+     *            the component
+     * @param driver
+     *            the component driver
+     * @return a component source setup
+     */
     public static SourceClassSetup of(ComponentSetup component, PackedComponentDriver<?> driver) {
-        // Reserve a place in the regions runtime memory, if the component is a singleton
-        int regionIndex = component.modifiers().isSingleton() ? component.slotTable.reserve() : -1;
-        // Create the source
-        SourceClassSetup s = new SourceClassSetup(component, regionIndex, driver.data);
 
-        if (s.instance != null) {
-            component.slotTable.constants.add(s);
-        } else if (s.dependant != null) {
-            component.memberOfContainer.addDependant(s.dependant);
+        // Create the source
+        SourceClassSetup source = new SourceClassSetup(component, driver.data);
+
+        if (source.instance != null) {
+            component.pool.constants.add(source);
+        } else if (source.dependant != null) {
+            component.memberOfContainer.addDependant(source.dependant);
         }
 
-        // Apply any sidecars
-        s.model.register(component, s);
-        return s;
+        // Hooks hooks hooks
+        source.model.register(component, source);
+
+        return source;
     }
 }

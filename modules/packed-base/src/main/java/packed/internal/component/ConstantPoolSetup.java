@@ -56,7 +56,7 @@ public final class ConstantPoolSetup {
 
         // We start by storing all constant instances in the region array
         for (SourceClassSetup sa : constants) {
-            region.store(sa.regionIndex, sa.instance);
+            region.store(sa.poolIndex, sa.instance);
         }
 
         // All constants that must be instantiated and stored

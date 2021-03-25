@@ -41,7 +41,7 @@ public class SourceMemberBuildtimeService extends BuildtimeService {
     public SourceMemberBuildtimeService(ServiceManagerSetup im, ComponentSetup compConf, Dependant dependant, Key<?> key, boolean isConst) {
         super(key);
         this.dependant = requireNonNull(dependant);
-        this.regionIndex = isConst ? compConf.slotTable.reserve() : -1;
+        this.regionIndex = isConst ? compConf.pool.reserve() : -1;
     }
 
     /** {@inheritDoc} */

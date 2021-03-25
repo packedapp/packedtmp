@@ -141,7 +141,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
             lock.unlock();
         }
 
-        Lifecycle l = component.slotTable.lifecycle;
+        Lifecycle l = component.pool.lifecycle;
         if (!l.hasExecutionBlock()) {
             return; // runnint as deamon
         }

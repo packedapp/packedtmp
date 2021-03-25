@@ -71,8 +71,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
     /* *************** Setup **************** */
 
-    /** The slot table this component is a part of. */
-    public final ConstantPoolSetup slotTable;
+    /** The constant pool this component is a part of. */
+    public final ConstantPoolSetup pool;
 
     /** The realm this component belongs to. */
     public final RealmSetup realm;
@@ -133,11 +133,11 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Various
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
-            this.slotTable = build.constantPool;
+            this.pool = build.constantPool;
             this.wirelets = WireletWrapper.forApplication(build.application.driver, driver, wirelets);
         } else {
             this.modifiers = driver.modifiers;
-            this.slotTable = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.slotTable;
+            this.pool = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.pool;
             this.wirelets = WireletWrapper.forComponent(driver, wirelets);
             this.onWire = parent.onWire;
         }
@@ -164,7 +164,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup Runtime
         if (modifiers().hasRuntime()) {
-            slotTable.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
+            pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
 
         // Setup component sources
@@ -208,7 +208,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
-        this.slotTable = parent.slotTable;
+        this.pool = parent.pool;
         this.source = null;
         this.wirelets = null; // cannot specify wirelets to extension
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
@@ -322,7 +322,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
         // If this component represents container close the container
         if (container != null) {
-            container.close(slotTable);
+            container.close(pool);
         }
         isClosed = true;
     }

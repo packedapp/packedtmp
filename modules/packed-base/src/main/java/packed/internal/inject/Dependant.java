@@ -102,7 +102,7 @@ public class Dependant {
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && source.regionIndex == -1) {
+            if (!Modifier.isStatic(smm.getModifiers()) && source.poolIndex == -1) {
                 throw new BuildException("Not okay)");
             }
             ServiceManagerSetup sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
@@ -159,7 +159,7 @@ public class Dependant {
             // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
             return -1;
         }
-        return source.regionIndex;
+        return source.poolIndex;
     }
 
     public boolean hasUnresolved() {
@@ -189,7 +189,7 @@ public class Dependant {
         needsPostProcessing = false;
 
         if (sourceMember != null) {
-            if (source.regionIndex > -1) {
+            if (source.poolIndex > -1) {
                 // Maybe shared with SourceAssembly
                 if (sourceMember.runAt == RunAt.INITIALIZATION) {
 

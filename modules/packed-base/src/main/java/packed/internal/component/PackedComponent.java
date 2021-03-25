@@ -106,7 +106,7 @@ public final class PackedComponent implements Component {
 
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || compBuild.modifiers().hasRuntime()) {
-            this.table = compBuild.slotTable.newRegion(pic, this);
+            this.table = compBuild.pool.newRegion(pic, this);
         } else {
             this.table = parent.table;
         }
