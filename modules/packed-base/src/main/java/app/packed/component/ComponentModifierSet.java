@@ -44,13 +44,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains any modifiers.
-     * 
-     * @return true if this set contains any modifiers, otherwise false
-     */
-    boolean isEmpty();
-
-    /**
      * Returns whether or not this set contains the {@link ComponentModifier#EXTENSION} modifier.
      * 
      * @return true if this set contains the extension modifier, otherwise false
@@ -124,30 +117,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     ComponentModifier[] toArray();
 
     /**
-     * Returns a set that includes both the specified modifier and all modifiers in this set.
-     * 
-     * @param modifier
-     *            the modifier to include in the new set
-     * @return a modifier set with all modifiers in this set as well as the specified modifier
-     * @implNote implementations should return this set if the specified modifier is already included in this set.
-     */
-    ComponentModifierSet with(ComponentModifier modifier);
-
-    ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier);
-
-    /**
-     * Returns a set that include all modifiers in this set except for the specified modifier.
-     * 
-     * @param modifier
-     *            the modifier to exclude in the returned set
-     * @return a modifier set with all modifiers in this set except for the specified modifier
-     * @implNote implementations should return this set if the specified modifier is not in this set.
-     */
-    ComponentModifierSet without(ComponentModifier modifier);
-
-    ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier);
-
-    /**
      * Returns an empty component modifier set.
      * 
      * @return an empty component modifier set
@@ -157,16 +126,15 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns an set containing the single specified modifier.
+     * Returns an set containing the specified modifiers.
+     * 
+     * @param modifiers the modifiers to include in the set
      * 
      * @return an set containing the single specified modifier
-     * 
+     *
+     * @see ComponentModifier#toSet()
      * @see ComponentModifier#toSet()
      */
-    static ComponentModifierSet of(ComponentModifier m) {
-        return new PackedComponentModifierSet(m.bits());
-    }
-
     static ComponentModifierSet of(ComponentModifier... modifiers) {
         requireNonNull(modifiers, "modifiers is null");
         if (modifiers.length == 0) {
@@ -177,14 +145,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
             b |= modifiers[i].bits();
         }
         return new PackedComponentModifierSet(b);
-    }
-
-    static ComponentModifierSet of(ComponentModifier m1, ComponentModifier m2) {
-        return new PackedComponentModifierSet(m1.bits() | m2.bits());
-    }
-
-    static ComponentModifierSet of(ComponentModifier m1, ComponentModifier m2, ComponentModifier m3) {
-        return new PackedComponentModifierSet(m1.bits() | m2.bits() | m3.bits());
     }
 }
 

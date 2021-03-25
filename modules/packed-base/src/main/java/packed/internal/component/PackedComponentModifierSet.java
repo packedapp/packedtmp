@@ -64,12 +64,6 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isEmpty() {
-        return modifiers == 0;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Iterator<ComponentModifier> iterator() {
         int size = size();
         if (size == 0) {
@@ -111,11 +105,9 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return m;
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
-        if (isEmpty()) {
-            return "[]";
-        }
         ComponentModifier[] cms = toArray();
         StringBuilder sb = new StringBuilder().append("[").append(cms[0]);
         for (int i = 1; i < cms.length; i++) {
@@ -124,8 +116,14 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return sb.append(']').toString();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns a set that includes both the specified modifier and all modifiers in this set.
+     * 
+     * @param modifier
+     *            the modifier to include in the new set
+     * @return a modifier set with all modifiers in this set as well as the specified modifier
+     * @implNote implementations should return this set if the specified modifier is already included in this set.
+     */
     public ComponentModifierSet with(ComponentModifier modifier) {
         if (isSet(modifiers, modifier)) {
             return this;
@@ -133,8 +131,6 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return new PackedComponentModifierSet(add(modifiers, modifier));
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentModifierSet withIf(boolean conditional, ComponentModifier modifier) {
         if (!conditional || isSet(modifiers, modifier)) {
             return this;
@@ -143,8 +139,14 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns a set that include all modifiers in this set except for the specified modifier.
+     * 
+     * @param modifier
+     *            the modifier to exclude in the returned set
+     * @return a modifier set with all modifiers in this set except for the specified modifier
+     * @implNote implementations should return this set if the specified modifier is not in this set.
+     */
     public ComponentModifierSet without(ComponentModifier modifier) {
         if (!isSet(modifiers, modifier)) {
             return this;
@@ -152,8 +154,6 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return new PackedComponentModifierSet(remove(modifiers, modifier));
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ComponentModifierSet withoutIf(boolean conditional, ComponentModifier modifier) {
         if (!conditional || !isSet(modifiers, modifier)) {
             return this;
