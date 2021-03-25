@@ -27,15 +27,15 @@ import packed.internal.inject.service.build.ServiceSetup;
 // laver aendringer, hvis vi bare sender Region+IHM rundt
 public final class ServiceInstantiationContext {
 
-    public final ConstantPool region;
+    public final ConstantPool pool;
 
     public final IdentityHashMap<ServiceSetup, RuntimeService> transformers = new IdentityHashMap<>();
 
     public ServiceInstantiationContext() {
-        region = null;
+        pool = null;
     }
 
     public ServiceInstantiationContext(ConstantPool region) {
-        this.region = requireNonNull(region);
+        this.pool = requireNonNull(region);
     }
 }

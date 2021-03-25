@@ -47,14 +47,14 @@ public abstract class RuntimeService implements PackedService {
      */
     public abstract Object getInstance(@Nullable ProvisionContext request);
 
-    Object getInstanceForLocator(ServiceLocator locator) {
+    final Object getInstanceForLocator(ServiceLocator locator) {
         ProvisionContext pc = PackedProvisionContext.of(key());
         Object t = getInstance(pc);
         return t;
     }
 
-    Provider<?> getProviderForLocator(ServiceLocator locator) {
-        if (mode() == ServiceMode.CONSTANT) {
+    final Provider<?> getProviderForLocator(ServiceLocator locator) {
+        if (isConstant()) {
             Object t = getInstanceForLocator(locator);
             return Provider.ofConstant(t);
         } else {
@@ -70,7 +70,7 @@ public abstract class RuntimeService implements PackedService {
 
 
     @Override
-    public PackedService rekeyAs(Key<?> key) {
+    public final PackedService rekeyAs(Key<?> key) {
         return new DelegatingRuntimeService(this, key);
     }
 
