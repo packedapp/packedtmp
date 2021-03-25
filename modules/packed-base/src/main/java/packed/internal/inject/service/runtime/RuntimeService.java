@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceMode;
@@ -38,6 +37,12 @@ public abstract class RuntimeService implements PackedService {
     // We need this to adapt to build time transformations
     public abstract MethodHandle dependencyAccessor();
 
+
+    @Override
+    public final boolean isConstant() {
+        return mode() == ServiceMode.CONSTANT;
+    }
+
     /**
      * Returns an instance.
      * 
@@ -45,29 +50,13 @@ public abstract class RuntimeService implements PackedService {
      *            a request if needed by {@link #requiresProvisionContext()}
      * @return the instance
      */
-    public abstract Object getInstance(@Nullable ProvisionContext request);
+    public abstract Object provideInstance(@Nullable ProvisionContext request);
 
-    final Object getInstanceForLocator(ServiceLocator locator) {
+    final Object provideInstanceForLocator(ServiceLocator locator) {
         ProvisionContext pc = PackedProvisionContext.of(key());
-        Object t = getInstance(pc);
+        Object t = provideInstance(pc);
         return t;
     }
-
-    final Provider<?> getProviderForLocator(ServiceLocator locator) {
-        if (isConstant()) {
-            Object t = getInstanceForLocator(locator);
-            return Provider.ofConstant(t);
-        } else {
-            ProvisionContext pc = PackedProvisionContext.of(key());
-            return new ServiceWrapperProvider<Object>(this, pc);
-        }
-    }
-
-    @Override
-    public final boolean isConstant() {
-        return mode() == ServiceMode.CONSTANT;
-    }
-
 
     @Override
     public final PackedService rekeyAs(Key<?> key) {

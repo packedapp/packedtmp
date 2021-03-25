@@ -55,7 +55,7 @@ public final class PrototypeRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object getInstance(ProvisionContext ignore) {
+    public Object provideInstance(ProvisionContext ignore) {
         try {
             return mh.invoke(region);
         } catch (Throwable e) {

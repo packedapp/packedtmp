@@ -62,7 +62,7 @@ public final class ConstantRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object getInstance(ProvisionContext ignore) {
+    public Object provideInstance(ProvisionContext ignore) {
         return constant;
     }
 

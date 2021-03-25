@@ -28,10 +28,12 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.inject.Provider;
+import app.packed.inject.ProvisionContext;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceSelection;
+import packed.internal.inject.PackedProvisionContext;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.inject.service.build.PackedServiceComposer;
 
@@ -51,7 +53,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             return Optional.empty();
         }
         @SuppressWarnings("unchecked")
-        T t = (T) s.getInstanceForLocator(this);
+        T t = (T) s.provideInstanceForLocator(this);
         return Optional.of(t);
     }
 
@@ -64,8 +66,19 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             return Optional.empty();
         }
         @SuppressWarnings("unchecked")
-        Provider<T> provider = (Provider<T>) s.getProviderForLocator(this);
+        Provider<T> provider = (Provider<T>) getProviderForLocator(s);
         return Optional.of(provider);
+    }
+    
+
+    final Provider<?> getProviderForLocator(RuntimeService s) {
+        if (s.isConstant()) {
+            Object constant = s.provideInstanceForLocator(this);
+            return Provider.ofConstant(constant);
+        } else {
+            ProvisionContext pc = PackedProvisionContext.of(s.key());
+            return new ServiceWrapperProvider<>(s, pc);
+        }
     }
 
     /** {@inheritDoc} */
@@ -76,7 +89,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         RuntimeService s = (RuntimeService) asMap().get(key);
         if (s != null) {
             @SuppressWarnings("unchecked")
-            T t = (T) s.getInstanceForLocator(this);
+            T t = (T) s.provideInstanceForLocator(this);
             action.accept(t);
         }
     }
@@ -124,7 +137,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         requireNonNull(key, "key is null");
         RuntimeService s = (RuntimeService) asMap().get(key);
         if (s != null) {
-            return (T) s.getInstanceForLocator(this);
+            return (T) s.provideInstanceForLocator(this);
         }
         String msg = useFailedMessage(key);
         throw new NoSuchElementException(msg);

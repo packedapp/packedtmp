@@ -34,7 +34,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * needed at runtime.
  * 
  * <p>
- * Instances of this class are never exposed to end users. But instead wrapped.
+ * Instances of this class are only exposed as a {@link Service} to end users if {@link #isFrozen}. 
  */
 public abstract class ServiceSetup implements PackedService, DependencyProvider {
 
@@ -58,6 +58,7 @@ public abstract class ServiceSetup implements PackedService, DependencyProvider 
         // requireConfigurable();
         // validateKey(key);
         // Det er sgu ikke lige til at validere det med generics signature....
+        // Vi validere kun raw type
         this.key = requireNonNull(key, "key is null");
     }
 
@@ -99,7 +100,7 @@ public abstract class ServiceSetup implements PackedService, DependencyProvider 
         });
     }
 
-    public final Service toService() {
+    public final Service exposeAsService() {
         if (isFrozen) {
             return this;
         }

@@ -62,7 +62,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
-            S instance = (S) s.getInstanceForLocator(this);
+            S instance = (S) s.provideInstanceForLocator(this);
             action.accept(s, instance);
         }
     }
@@ -73,7 +73,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
-            S instance = (S) s.getInstanceForLocator(this);
+            S instance = (S) s.provideInstanceForLocator(this);
             action.accept(instance);
         }
     }
@@ -84,7 +84,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
-            Provider<S> provider = (Provider<S>) s.getProviderForLocator(this);
+            Provider<S> provider = (Provider<S>) getProviderForLocator(s);
             action.accept(s, provider);
         }
     }
@@ -95,7 +95,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
-            Provider<S> provider = (Provider<S>) s.getProviderForLocator(this);
+            Provider<S> provider = (Provider<S>) getProviderForLocator(s);
             action.accept(provider);
         }
     }
@@ -111,21 +111,21 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<Provider<S>> providers() {
-        return (Stream) services.values().stream().map(r -> r.getInstanceForLocator(this));
+        return (Stream) services.values().stream().map(r -> r.provideInstanceForLocator(this));
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<Entry<Service, S>> serviceInstances() {
-        return (Stream) services.values().stream().map(r -> Map.entry(r, r.getInstanceForLocator(this)));
+        return (Stream) services.values().stream().map(r -> Map.entry(r, r.provideInstanceForLocator(this)));
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<Entry<Service, S>> serviceProviders() {
-        return (Stream) services.values().stream().map(r -> Map.entry(r, r.getProviderForLocator(this)));
+        return (Stream) services.values().stream().map(r -> Map.entry(r, getProviderForLocator(r)));
     }
 
     /** {@inheritDoc} */

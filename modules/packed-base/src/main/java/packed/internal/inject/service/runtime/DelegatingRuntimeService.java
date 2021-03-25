@@ -61,8 +61,8 @@ public final class DelegatingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object getInstance(ProvisionContext site) {
-        return delegate.getInstance(site);
+    public Object provideInstance(ProvisionContext site) {
+        return delegate.provideInstance(site);
     }
 
     @Override

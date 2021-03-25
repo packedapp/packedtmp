@@ -38,6 +38,6 @@ public class ServiceWrapperProvider<T> implements Provider<T> {
     @SuppressWarnings("unchecked")
     @Override
     public T provide() {
-        return (T) service.getInstance(ppc);
+        return (T) service.provideInstance(ppc);
     }
 }

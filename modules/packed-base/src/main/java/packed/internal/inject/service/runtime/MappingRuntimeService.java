@@ -57,8 +57,8 @@ public final class MappingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object getInstance(ProvisionContext site) {
-        Object f = delegate.getInstance(site);
+    public Object provideInstance(ProvisionContext site) {
+        Object f = delegate.provideInstance(site);
         @SuppressWarnings({ "unchecked", "rawtypes" })
         Object t = ((Function) function).apply(f);
         // TODO Check Type, and not null
