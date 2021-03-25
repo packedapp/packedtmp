@@ -33,36 +33,27 @@ public final class PrototypeRuntimeService extends RuntimeService {
     private final Key<?> key;
 
     /** The method handle used to create new instances. */
-    private final MethodHandle mh;
+    private final MethodHandle mh; // (ConstantPool)Object
 
-    /** The region used when creating new instances. */
-    private final ConstantPool region;
+    /** The Constant pool used when creating new service instances. */
+    private final ConstantPool pool;
 
     /**
      * @param service
      */
     public PrototypeRuntimeService(ServiceSetup service, ConstantPool region, MethodHandle mh) {
         this.key = service.key();
-        this.region = requireNonNull(region);
+        this.pool = requireNonNull(region);
         this.mh = requireNonNull(mh);
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return mh.bindTo(region);
+        return mh.bindTo(pool);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Object provideInstance(ProvisionContext ignore) {
-        try {
-            return mh.invoke(region);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
     @Override
     public Key<?> key() {
         return key;
@@ -72,6 +63,16 @@ public final class PrototypeRuntimeService extends RuntimeService {
     @Override
     public ServiceMode mode() {
         return ServiceMode.TRANSIENT;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Object provideInstance(ProvisionContext ignore) {
+        try {
+            return mh.invoke(pool);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 
     /** {@inheritDoc} */

@@ -53,7 +53,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             return Optional.empty();
         }
         @SuppressWarnings("unchecked")
-        T t = (T) s.provideInstanceForLocator(this);
+        T t = (T) provideInstanceForLocator(s);
         return Optional.of(t);
     }
 
@@ -71,9 +71,14 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     }
     
 
+    final Object provideInstanceForLocator(RuntimeService s) {
+        ProvisionContext pc = PackedProvisionContext.of(s.key());
+        return s.provideInstance(pc);
+    }
+
     final Provider<?> getProviderForLocator(RuntimeService s) {
         if (s.isConstant()) {
-            Object constant = s.provideInstanceForLocator(this);
+            Object constant = provideInstanceForLocator(s);
             return Provider.ofConstant(constant);
         } else {
             ProvisionContext pc = PackedProvisionContext.of(s.key());
@@ -89,7 +94,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         RuntimeService s = (RuntimeService) asMap().get(key);
         if (s != null) {
             @SuppressWarnings("unchecked")
-            T t = (T) s.provideInstanceForLocator(this);
+            T t = (T) provideInstanceForLocator(s);
             action.accept(t);
         }
     }
@@ -137,7 +142,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
         requireNonNull(key, "key is null");
         RuntimeService s = (RuntimeService) asMap().get(key);
         if (s != null) {
-            return (T) s.provideInstanceForLocator(this);
+            return (T) provideInstanceForLocator(s);
         }
         String msg = useFailedMessage(key);
         throw new NoSuchElementException(msg);

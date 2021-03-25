@@ -51,7 +51,7 @@ public final class ConstantRuntimeService extends RuntimeService {
      */
     public ConstantRuntimeService(ServiceSetup service, ConstantPool pool, int poolIndex) {
         this.key = requireNonNull(service.key());
-        this.constant = requireNonNull(pool.getSingletonInstance(poolIndex));
+        this.constant = requireNonNull(pool.read(poolIndex));
     }
     
     /** {@inheritDoc} */

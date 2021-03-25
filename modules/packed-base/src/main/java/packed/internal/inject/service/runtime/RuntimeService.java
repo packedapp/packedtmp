@@ -21,12 +21,10 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ProvisionContext;
-import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.PackedProvisionContext;
 import packed.internal.inject.service.PackedService;
 
-/** An entry that represents a service at runtime. */
+/** Represents a service at runtime. */
 public abstract class RuntimeService implements PackedService {
 
     @Override
@@ -36,7 +34,6 @@ public abstract class RuntimeService implements PackedService {
 
     // We need this to adapt to build time transformations
     public abstract MethodHandle dependencyAccessor();
-
 
     @Override
     public final boolean isConstant() {
@@ -51,12 +48,6 @@ public abstract class RuntimeService implements PackedService {
      * @return the instance
      */
     public abstract Object provideInstance(@Nullable ProvisionContext request);
-
-    final Object provideInstanceForLocator(ServiceLocator locator) {
-        ProvisionContext pc = PackedProvisionContext.of(key());
-        Object t = provideInstance(pc);
-        return t;
-    }
 
     @Override
     public final PackedService rekeyAs(Key<?> key) {

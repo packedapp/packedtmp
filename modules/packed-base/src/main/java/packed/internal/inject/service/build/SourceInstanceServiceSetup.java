@@ -70,7 +70,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantRuntimeService(this, context.pool, source.poolIndex);
+            return new ConstantRuntimeService(key(), context.pool.read(source.poolIndex));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

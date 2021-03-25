@@ -66,7 +66,7 @@ public class SourceMemberServiceSetup extends ServiceSetup {
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantRuntimeService(this, context.pool, regionIndex);
+            return new ConstantRuntimeService(key(), context.pool.read(regionIndex));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

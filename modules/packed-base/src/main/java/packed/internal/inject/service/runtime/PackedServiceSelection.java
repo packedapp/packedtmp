@@ -62,7 +62,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
-            S instance = (S) s.provideInstanceForLocator(this);
+            S instance = (S) provideInstanceForLocator(s);
             action.accept(s, instance);
         }
     }
@@ -73,7 +73,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         requireNonNull(action, "action is null");
         for (RuntimeService s : services.values()) {
             @SuppressWarnings("unchecked")
-            S instance = (S) s.provideInstanceForLocator(this);
+            S instance = (S) provideInstanceForLocator(s);
             action.accept(instance);
         }
     }
@@ -111,14 +111,14 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<Provider<S>> providers() {
-        return (Stream) services.values().stream().map(r -> r.provideInstanceForLocator(this));
+        return (Stream) services.values().stream().map(r -> provideInstanceForLocator(r));
     }
 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Stream<Entry<Service, S>> serviceInstances() {
-        return (Stream) services.values().stream().map(r -> Map.entry(r, r.provideInstanceForLocator(this)));
+        return (Stream) services.values().stream().map(r -> Map.entry(r, provideInstanceForLocator(r)));
     }
 
     /** {@inheritDoc} */

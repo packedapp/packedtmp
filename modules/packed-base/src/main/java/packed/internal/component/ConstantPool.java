@@ -32,8 +32,8 @@ import packed.internal.util.MethodHandleUtil;
 // Is this a constant pool???
 public final /* primitive*/ class ConstantPool {
 
-    /** A method handle for calling {@link #getSingletonInstance(int)} at runtime. */
-    static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.lookupVirtual(MethodHandles.lookup(), "getSingletonInstance", Object.class, int.class);
+    /** A method handle for calling {@link #read(int)} at runtime. */
+    static final MethodHandle MH_GET_SINGLETON_INSTANCE = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
     public final Object[] table;
 
@@ -41,7 +41,7 @@ public final /* primitive*/ class ConstantPool {
         table = new Object[i];
     }
 
-    public Object getSingletonInstance(int index) {
+    public Object read(int index) {
 //        Object value = store[index];
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
