@@ -43,15 +43,11 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public class OldPackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
+public class OldPackedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> implements ComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver INSTALL_DRIVER = OldPackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
-            OldPackedComponentDriver.Option.constantSource());
-
-    /** A handle that can invoke {@link Assembly#build()}. Is here because I have no better place to put it. */
-    public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            ComponentConfiguration.class);
+    public static final BindableComponentDriver INSTALL_DRIVER = OldPackedComponentDriver.ofInstance(MethodHandles.lookup(),
+            ServiceComponentConfiguration.class, OldPackedComponentDriver.Option.constantSource());
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
@@ -69,18 +65,22 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> implemen
 
     final Meta meta;
 
-    public final int modifiers;
-
     @Nullable
     public final Wirelet wirelet = null;
 
     OldPackedComponentDriver(Meta meta, Object data) {
+        super(null, PackedComponentModifierSet.intOf(meta.modifiers.toArray()));
         this.meta = requireNonNull(meta);
         this.binding = data;
-        this.modifiers = PackedComponentModifierSet.intOf(meta.modifiers.toArray());
         if (modifiers == 0) {
             throw new IllegalStateException();
         }
+    }
+
+    @Override
+    public ComponentDriver<C> bind(Object object) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public void checkBound() {
@@ -102,16 +102,9 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> implemen
         }
     }
 
-    /** {@inheritDoc} */
     @Override
-    public ComponentDriver<C> with(Wirelet wirelet) {
-        return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDriver<C> with(Wirelet... wirelet) {
-        return null;
+    protected ComponentDriver<C> withWirelet(Wirelet w) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -192,7 +185,7 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> implemen
         Meta meta = newMeta(Type.INSTANCE, caller, true, driverType, options);
         return new PackedBindableComponentDriver<>(meta);
     }
-
+    
     static class Meta {
         // all options
         MethodHandle mh;
@@ -355,11 +348,5 @@ public class OldPackedComponentDriver<C extends ComponentConfiguration> implemen
 
     enum Type {
         CLASS, FACTORY, INSTANCE, OTHER;
-    }
-
-    @Override
-    public ComponentDriver<C> bind(Object object) {
-        // TODO Auto-generated method stub
-        return null;
     }
 }

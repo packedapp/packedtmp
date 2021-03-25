@@ -363,7 +363,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
-            OldPackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

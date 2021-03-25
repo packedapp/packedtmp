@@ -30,6 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -185,7 +186,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
         private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
 
         private ContainerComponentDriver(Wirelet wirelet) {
-            super(wirelet);
+            super(wirelet, PackedComponentModifierSet.I_CONTAINER);
         }
 
         @Override

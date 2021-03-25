@@ -17,19 +17,27 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.container.Extension;
 import packed.internal.component.source.RealmAccessor;
 import packed.internal.container.ExtensionModel;
+import packed.internal.util.LookupUtil;
 
 /** The setup of an realm */
 public final class RealmSetup {
 
+    /** A handle that can invoke {@link Assembly#build()}. Is here because I have no better place to put it. */
+    public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
+            ComponentConfiguration.class);
+    
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 

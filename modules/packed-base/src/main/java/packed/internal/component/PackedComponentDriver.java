@@ -21,13 +21,11 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     @Nullable
     final Wirelet wirelet;
+    public final int modifiers;
 
-    public PackedComponentDriver() {
-        this.wirelet = null;
-    }
-
-    public PackedComponentDriver(Wirelet wirelet) {
+    public PackedComponentDriver(Wirelet wirelet, int modifiers) {
         this.wirelet = wirelet;
+        this.modifiers = modifiers;
     }
 
     public void checkBound() {}
