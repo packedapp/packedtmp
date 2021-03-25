@@ -74,7 +74,7 @@ public final class ServiceManagerSetup {
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
-    public final LinkedHashMap<Key<?>, Wrapper> resolvedServices = new LinkedHashMap<>();
+    public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
 
     /** Any parent this composer might have. */
     @Nullable
@@ -223,7 +223,7 @@ public final class ServiceManagerSetup {
     public void prepareDependants() {
         // First we take all locally defined services
         for (ServiceSetup entry : localServices) {
-            resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
+            resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
         }
 
         // Then we take any provideAll() services
@@ -231,7 +231,7 @@ public final class ServiceManagerSetup {
             // All injectors have already had wirelets transform and filter
             for (ProvideAllFromServiceLocator fromInjector : provideAll) {
                 for (ServiceSetup entry : fromInjector.entries.values()) {
-                    resolvedServices.computeIfAbsent(entry.key(), k -> new Wrapper()).resolve(this, entry);
+                    resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
                 }
             }
         }
@@ -248,7 +248,7 @@ public final class ServiceManagerSetup {
 
                 if (child != null && child.exports != null) {
                     for (ServiceSetup a : child.exports) {
-                        resolvedServices.computeIfAbsent(a.key(), k -> new Wrapper()).resolve(this, a);
+                        resolvedServices.computeIfAbsent(a.key(), k -> new ServiceDelegate()).resolve(this, a);
                     }
                 }
             }
@@ -283,7 +283,7 @@ public final class ServiceManagerSetup {
         LinkedHashMap<Key<?>, ServiceSetup> map = new LinkedHashMap<>();
 
         if (parent != null) {
-            for (Entry<Key<?>, Wrapper> e : parent.resolvedServices.entrySet()) {
+            for (Entry<Key<?>, ServiceDelegate> e : parent.resolvedServices.entrySet()) {
                 // we need to remove all of our exports.
                 if (!exports().contains(e.getKey())) {
                     map.put(e.getKey(), e.getValue().getSingle());

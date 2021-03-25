@@ -47,7 +47,7 @@ public abstract class ServiceSetup implements PackedService, DependencyProvider 
      */
     private Key<?> key;
 
-    public ServiceSetup(Key<?> key) {
+    ServiceSetup(Key<?> key) {
         this.key = requireNonNull(key);
     }
 
@@ -104,15 +104,17 @@ public abstract class ServiceSetup implements PackedService, DependencyProvider 
         if (isFrozen) {
             return this;
         }
-        return new ServiceDescription(key, isConstant());
+        return simple(key, isConstant());
     }
 
+    // Maaske flyt den til service... Naar vi sealer ting.. Er det godt at give folk en 
+    // mulighed for at kunne instanser af dem
     public static Service simple(Key<?> key, boolean isConstant) {
         return new ServiceDescription(key, isConstant);
     }
     
     /** An implementation of {@link Service} because {@link ServiceSetup} is mutable. */
-    public static final record ServiceDescription(Key<?> key, boolean isConstant) implements Service {
+    private static final record ServiceDescription(Key<?> key, boolean isConstant) implements Service {
 
         /** {@inheritDoc} */
         @Override

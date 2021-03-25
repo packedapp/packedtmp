@@ -35,7 +35,7 @@ import packed.internal.component.source.MethodHookModel.RunAt;
 import packed.internal.component.source.SourceClassSetup;
 import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.Wrapper;
+import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceMemberServiceSetup;
 
@@ -239,7 +239,7 @@ public class Dependant {
                 }
                 if (sbm != null) {
                     if (e == null) {
-                        Wrapper wrapper = sbm.resolvedServices.get(sd.key());
+                        ServiceDelegate wrapper = sbm.resolvedServices.get(sd.key());
                         e = wrapper == null ? null : wrapper.getSingle();
                     }
 

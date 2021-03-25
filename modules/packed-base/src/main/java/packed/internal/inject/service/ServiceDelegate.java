@@ -25,22 +25,22 @@ import packed.internal.inject.service.build.ServiceSetup;
  *
  */
 // En wrapper der goer at vi kan delay lidt det at smide exceptiosn for dublicate keys.
-public class Wrapper {
+public class ServiceDelegate {
 
-    private ServiceSetup build;
-
-    void resolve(ServiceManagerSetup sbm, ServiceSetup b) {
-        if (build != null) {
-            LinkedHashSet<ServiceSetup> hs = sbm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
-            hs.add(b); // might be added multiple times, hence we use a Set, but add existing first
-            hs.add(build);
-        } else {
-            this.build = b;
-        }
-    }
+    private ServiceSetup service;
 
     public ServiceSetup getSingle() {
-        requireNonNull(build);
-        return build;
+        requireNonNull(service);
+        return service;
+    }
+
+    void resolve(ServiceManagerSetup sbm, ServiceSetup b) {
+        if (service != null) {
+            LinkedHashSet<ServiceSetup> hs = sbm.errorManager().failingDuplicateProviders.computeIfAbsent(b.key(), m -> new LinkedHashSet<>());
+            hs.add(b); // might be added multiple times, hence we use a Set, but add existing first
+            hs.add(service);
+        } else {
+            this.service = b;
+        }
     }
 }

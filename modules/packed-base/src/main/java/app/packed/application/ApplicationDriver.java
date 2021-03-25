@@ -190,6 +190,8 @@ public /* sealed */ interface ApplicationDriver<A> {
 
     // Maaske sender vi ikke en Component med over... Saa vi kan vi have ASSEMBLY_CLASS som en attribute
     // Og maaske kan vi det alligevel...
+    
+    // Se fx InjectorComposer... vi kan ikke lide denne signatur...
     <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
 

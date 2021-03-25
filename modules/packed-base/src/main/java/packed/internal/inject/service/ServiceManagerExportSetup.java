@@ -188,7 +188,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
                 ServiceSetup entryToExport = entry.exportedEntry;
                 if (entryToExport == null) {
-                    Wrapper wrapper = sm.resolvedServices.get(entry.exportAsKey);
+                    ServiceDelegate wrapper = sm.resolvedServices.get(entry.exportAsKey);
                     entryToExport = wrapper == null ? null : wrapper.getSingle();
                     entry.exportedEntry = entryToExport;
                     if (entryToExport == null) {
@@ -215,7 +215,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         }
 
         if (exportAll) {
-            for (Wrapper w : sm.resolvedServices.values()) {
+            for (ServiceDelegate w : sm.resolvedServices.values()) {
                 ServiceSetup e = w.getSingle();
                 if (!resolvedExports.containsKey(e.key())) {
                     resolvedExports.put(e.key(), new ExportedServiceSetup(e));
