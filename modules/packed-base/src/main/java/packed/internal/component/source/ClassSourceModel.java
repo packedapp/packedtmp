@@ -66,7 +66,7 @@ public final class ClassSourceModel {
         this.sourceServices = Map.copyOf(builder.sourceContexts);
     }
 
-    public <T> void register(ComponentSetup component, SourceClassSetup source) {
+    public <T> void registerHooks(ComponentSetup component, SourceClassSetup source) {
         for (FieldHookModel f : fields) {
             registerMember(component, source, f);
         }

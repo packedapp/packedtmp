@@ -70,29 +70,24 @@ public final class SourceClassSetup implements DependencyProvider {
         // Reserve a place in the constant pool if the source is a singleton
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserve() : -1;
 
-        // The specified source is either a Class, a Factory, or an instance
+        RealmAccessor realm = component.realm.accessor();
+
+        // The source is either a Class, a Factory, or a generic instance
         Object source = driver.data;
-        Class<?> sourceClass;
         if (source instanceof Class<?> cl) {
             this.constant = null;
             this.factory = component.modifiers().isStateful() ? null : Factory.of(cl);
-            sourceClass = cl;
+            this.model = realm.modelOf(cl);
         } else if (source instanceof Factory<?> fac) {
             this.constant = null;
             this.factory = fac;
-            sourceClass = factory.rawType();
+            this.model = realm.modelOf(factory.rawType());
         } else {
             this.constant = source;
             this.factory = null;
-            sourceClass = source.getClass();
+            this.model = realm.modelOf(source.getClass());
             component.pool.addSourceClass(this);
         }
-
-        RealmAccessor realm = component.realm.accessor();
-
-        // Find a model for a realm/source class combination. Realm is needed
-        // because we allow support annotations
-        this.model = realm.modelOf(sourceClass);
 
         if (factory == null) {
             this.dependant = null;
@@ -105,7 +100,8 @@ public final class SourceClassSetup implements DependencyProvider {
             component.memberOfContainer.addDependant(dependant);
         }
 
-        model.register(component, this);
+        // Register hooks, maybe move to component setup
+        model.registerHooks(component, this);
     }
 
     public void writeConstantPool(ConstantPool pool) {
