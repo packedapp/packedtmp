@@ -34,13 +34,13 @@ import packed.internal.util.MethodHandleUtil;
 /** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
 public final class SourceClassSetup implements DependencyProvider {
 
-    /** A factory that can used to create instances. */
-    @Nullable
-    private final Factory<?> factory;
-
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
     private final Dependant dependant;
+
+    /** A factory that can used to create instances. */
+    @Nullable
+    private final Factory<?> factory;
 
     /** If the source represents an instance. */
     @Nullable
@@ -90,21 +90,11 @@ public final class SourceClassSetup implements DependencyProvider {
         }
     }
 
-    public static SourceClassSetup create(ComponentSetup compConf, PackedComponentDriver<?> driver) {
-        // Reserve a place in the regions runtime memory, if the component is a singleton
-        int regionIndex = compConf.modifiers().isSingleton() ? compConf.slotTable.reserve() : -1;
-        // Create the source
-        SourceClassSetup s = new SourceClassSetup(compConf, regionIndex, driver.data);
-
-        if (s.instance != null) {
-            compConf.slotTable.constants.add(s);
-        } else if (s.dependant != null) {
-            compConf.memberOfContainer.addDependant(s.dependant);
-        }
-
-        // Apply any sidecars
-        s.model.register(compConf, s);
-        return s;
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public Dependant dependant() {
+        return dependant;
     }
 
     /** {@inheritDoc} */
@@ -119,13 +109,6 @@ public final class SourceClassSetup implements DependencyProvider {
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public Dependant dependant() {
-        return dependant;
-    }
-
     public BuildtimeService provide(ComponentSetup compConf) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         BuildtimeService s = service;
@@ -138,6 +121,23 @@ public final class SourceClassSetup implements DependencyProvider {
             }
             s = service = compConf.memberOfContainer.getServiceManagerOrCreate().provideSource(compConf, key);
         }
+        return s;
+    }
+
+    public static SourceClassSetup of(ComponentSetup component, PackedComponentDriver<?> driver) {
+        // Reserve a place in the regions runtime memory, if the component is a singleton
+        int regionIndex = component.modifiers().isSingleton() ? component.slotTable.reserve() : -1;
+        // Create the source
+        SourceClassSetup s = new SourceClassSetup(component, regionIndex, driver.data);
+
+        if (s.instance != null) {
+            component.slotTable.constants.add(s);
+        } else if (s.dependant != null) {
+            component.memberOfContainer.addDependant(s.dependant);
+        }
+
+        // Apply any sidecars
+        s.model.register(component, s);
         return s;
     }
 }

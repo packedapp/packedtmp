@@ -133,8 +133,8 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         // Various
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
-            this.slotTable = build.slotTable;
-            this.wirelets = WireletWrapper.forApplication(build.application().driver, driver, wirelets);
+            this.slotTable = build.constantPool;
+            this.wirelets = WireletWrapper.forApplication(build.application.driver, driver, wirelets);
         } else {
             this.modifiers = driver.modifiers;
             this.slotTable = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.slotTable;
@@ -164,12 +164,12 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup Runtime
         if (modifiers().hasRuntime()) {
-            slotTable.reserve(); // reserve a slot to an instance of PackedGuest
+            slotTable.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
 
-        // Setup any source
+        // Setup component sources
         if (modifiers().isSource()) {
-            this.source = SourceClassSetup.create(this, driver);
+            this.source = SourceClassSetup.of(this, driver);
         } else {
             this.source = null;
         }
@@ -270,7 +270,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedApplicationDriver<?> pac = build().application().driver;
+            PackedApplicationDriver<?> pac = build().application.driver;
             dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
         }
         return dam;

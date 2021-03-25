@@ -111,7 +111,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     }
 
     void onInitialized(ComponentSetup component, PackedInitializationContext pic) {
-        boolean isMain = component.build.application().driver == null;
+        boolean isMain = component.build.application.driver == null;
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
         lock.lock();

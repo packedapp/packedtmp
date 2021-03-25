@@ -208,43 +208,29 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return new PackedApplicationDriver<>(this, w);
     }
 
+    /** Implementation of {@link ApplicationDriver.Builder} */
     public static class Builder implements ApplicationDriver.Builder {
+
         MethodHandle mh;
-        int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
-        Wirelet prefix;
+
+        /** The modifiers of the application. We have a runtime modifier by default. */
+        private int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
+
+        private Wirelet prefix;
+        
         boolean useShellAsSource;
 
+        /** {@inheritDoc} */
         @Override
-        public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation) {
+        public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
             if (implementation == Void.class) {
                 throw new IllegalArgumentException("Cannot specify Void.class use daemon() instead");
             }
 
-            // We currently do not support @Provide ect... Nope...
-            // Must add it as a component
-            // Would just be so nice if you could do @OnStart()->application started...
-            // And then they would show as "properties" on the container...
-
-            // Altsaa hvis vi nu siger, at vi tillader injection af de services der skal bruges...
-            // Og saa gemmer vi ServiceLocator til hvis det er brugere der skal bruge den...
-
-            // Altsaa om vi bruger ServiceWirelets.provide()... eller @Provide paa application...
-            // Eller om vi bruger LifecycleWirelets.onStop()... eller @OnStop
-
-            // Create a new MethodHandle that can create artifact instances.
-
-            // Vi har maaske en ApplicationDriver builder...
-
-            // Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
-            // traekke det ud af service locatoren.
-
-            // Uhh uhhh species... Job<R> kan vi lave det???
-
-            // Create an infuser (SomeExtension, Class)
             Infuser infuser = Infuser.build(caller, c -> {
                 c.provide(Component.class).transform(PackedInitializationContext.MH_COMPONENT);
                 c.provide(ServiceLocator.class).transform(PackedInitializationContext.MH_SERVICES);
-                if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) {
+                if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
                     c.provide(ApplicationRuntime.class).transform(PackedInitializationContext.MH_RUNTIME);
                 }
             }, PackedInitializationContext.class);
@@ -257,41 +243,35 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
+        /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh) {
+        public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets) {
             // TODO fix....
             this.mh = mh;
 
             return new PackedApplicationDriver<>(this);
         }
 
+        /** {@inheritDoc} */
         @Override
-        public Builder noRuntime() {
+        public Builder stateless() {
             modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
             return this;
         }
 
+        /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell) {
+        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
             mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
             return new PackedApplicationDriver<>(this);
         }
 
+        /** {@inheritDoc} */
         @Override
         public Builder useShellAsSource() {
             useShellAsSource = true;
             return this;
         }
-
-        // Mapning af Execeptions/Errors....
-        //// Saa er det let at rette i f.eks. App
-
-        // Debug Options...
-        // whitelistExtension(...)
-        // blacklistExtension
-        // nameProvider() {
-        // Altsaa det maa vaere meget taet paa ArchUnit a.la.. Hmmm
-
     }
 
     /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
@@ -310,3 +290,25 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 }
+
+// We currently do not support @Provide ect... Nope...
+// Must add it as a component
+// Would just be so nice if you could do @OnStart()->application started...
+// And then they would show as "properties" on the container...
+
+// Altsaa hvis vi nu siger, at vi tillader injection af de services der skal bruges...
+// Og saa gemmer vi ServiceLocator til hvis det er brugere der skal bruge den...
+
+// Altsaa om vi bruger ServiceWirelets.provide()... eller @Provide paa application...
+// Eller om vi bruger LifecycleWirelets.onStop()... eller @OnStop
+
+// Create a new MethodHandle that can create artifact instances.
+
+// Vi har maaske en ApplicationDriver builder...
+
+// Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
+// traekke det ud af service locatoren.
+
+// Uhh uhhh species... Job<R> kan vi lave det???
+
+// Create an infuser (SomeExtension, Class)

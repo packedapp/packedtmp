@@ -16,6 +16,7 @@
 package packed.internal.base.application;
 
 import app.packed.application.BuildInfo;
+import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
@@ -24,29 +25,27 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 
-/**
- * A setup class for a build.
- * 
- */
+/** The configuration of a build. */
 public final class BuildSetup implements BuildInfo {
 
     /** The artifact driver used for the build process. */
-    private final ApplicationSetup application;
+    public final ApplicationSetup application;
 
     /** The root component. */
     final ComponentSetup component;
 
-    /** The build output. */
+    /** Modifiers of the build. */
     public final int modifiers;
 
-    public final ConstantPoolSetup slotTable = new ConstantPoolSetup();
+    /** The configuration of the main constant build. */
+    public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
 
     // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
     // ruleBroken = FFF
     // Man kan kun validere assemblies...
     // Maaske er det exposed paa BuildInfo...
     // Giver det mening at returnere en component hvis det er fejlet??? InjectionGraph er det eneste jeg kan taenke...
-    Object validationErrors;
+    //Object validationErrors;
 
     /**
      * Creates a new build setup.
@@ -60,22 +59,13 @@ public final class BuildSetup implements BuildInfo {
         this.component = new ComponentSetup(this, realm, driver, null, wirelets);
     }
 
-    /** {@return the root application driver} */
-    public ApplicationSetup application() {
-        return application;
-    }
-
     void close() {
         component.realmClose();
     }
 
-    public boolean isAnalysis() {
-        return (modifiers & PackedComponentModifierSet.I_ANALYSIS) != 0;
-    }
-
     /** {@return whether or not we are creating the root application is part of an image}. */
     public boolean isImage() {
-        return (modifiers & PackedComponentModifierSet.I_IMAGE) != 0;
+        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.IMAGE);
     }
 
     /** {@inheritDoc} */

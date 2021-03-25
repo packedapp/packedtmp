@@ -68,16 +68,15 @@ public /* sealed */ interface ApplicationDriver<A> {
     ///// Kunne vaere interessant fx
     // ComponentAnalysis = Either<Component, Validatable>
     // ComponentAnalysis extends Validatable
-    
-    // Structure record(Application,  Component, Strea
+
+    // Structure record(Application, Component, Strea
     // Det ville vaere rigtig rart tror hvis BuildException have en liste af
     // validation violations...
     // Tit vil man gerne have alle fejlene eller en Component...
     // Either<Component, Validation>
     // Validataion
     Component analyze(Assembly<?> assembly, Wirelet... wirelets);
-    
-    
+
     // Maybe return Application??? Instead of Component
     // Maybe return something else? Alle componenter i appen'en eller component i namespaces
     // Det er jo snare et Build man returnere...
@@ -259,7 +258,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     Validation validate(Assembly<?> assembly, Wirelet... wirelets);
 
     ApplicationDriver<A> with(Wirelet wirelet);
-    
+
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
@@ -271,6 +270,10 @@ public /* sealed */ interface ApplicationDriver<A> {
         return new PackedApplicationDriver.Builder();
     }
 
+    /**
+     * A builder for an application driver. An instance of this interface is normally acquired via
+     * {@link ApplicationDriver#builder()}.
+     */
     interface Builder {
 
         /**
@@ -290,22 +293,27 @@ public /* sealed */ interface ApplicationDriver<A> {
          *            the implementation of the artifact
          * @return a new driver
          */
-        <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> implementation);
+        <S> ApplicationDriver<S> build(MethodHandles.Lookup caller, Class<? extends S> implementation, Wirelet... wirelets);
 
-        <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh);
+        <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
 
-        Builder noRuntime();
+        /**
+         * Indicates that the applications the driver produces are stateless. Stateless applications will not have a runtime
+         * 
+         * @return this builder
+         */
+        Builder stateless();
 
-        <A> ApplicationDriver<A> old(MethodHandle mhNewShell);
+        <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets);
         // Maybe just look for matching method/field hooks???
         // So always scan...
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
-        @SuppressWarnings("unchecked") 
+        @SuppressWarnings("unchecked")
         default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
             throw new UnsupportedOperationException();
         }
-        
+
         Builder useShellAsSource();
 
 //        // Stuff on the container always belongs to the other side...
@@ -353,20 +361,9 @@ interface ZApplicationDriverWithBuilder {
     }
 
     interface Builder<T> {
-
-        // Pre, Post wirelets
-        // Whilelist/Blacklist extensions
-
-        // Generic Parameterized types... F.eks. Job<R> or BigMap<K, V>
-        // Maaske vil vi ikke have component med...
-
         // Hmm har vi brug for klassen foerend til allersidst???
         default <A> ApplicationDriver<A> build(Class<A> artifactType) {
             throw new UnsupportedOperationException();
         }
-
-        // Methods to analyze...
-        // Pair<Component, Artifact>?
     }
 }
-

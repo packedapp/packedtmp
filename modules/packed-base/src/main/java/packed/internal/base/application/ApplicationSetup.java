@@ -9,7 +9,7 @@ public final class ApplicationSetup {
     public final PackedApplicationDriver<?> driver;
 
     /**
-     * Create a new setup
+     * Create a new application setup
      * 
      * @param driver
      *            the application's driver
