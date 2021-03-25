@@ -437,8 +437,8 @@ public abstract class Extension {
         }
 
         // Create and return a single instance of it
-        Infuser.Builder builder = Infuser.builder(MethodHandles.lookup());
-        MethodHandle mh =  builder.findConstructor(c, c, e -> new InternalExtensionException(e));
+        Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), c);
+        MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
         try {
             return (T) mh.invoke();
         } catch (Throwable t) {

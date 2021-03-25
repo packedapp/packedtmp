@@ -52,12 +52,12 @@ final class SubtensionModel {
             // Create an infuser exposing two services:
             // 1. An instance of the extension that the subtension is a part of
             // 2. The class of the extension that wants to use the subtension
-            Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), Extension.class, Class.class);
+            Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), subtensionClass, Extension.class, Class.class);
             builder.provide(extensionClass).adaptArgument(0); // Extension instance of the subtension
             builder.provide(new Key<Class<? extends Extension>>() {}).adaptArgument(1); // Requesting extension
 
             // Find a method handle for the subtensions's constructor
-            MethodHandle constructor = builder.findConstructor(subtensionClass, Subtension.class, m -> new InternalExtensionException(m));
+            MethodHandle constructor = builder.findConstructor(Subtension.class, m -> new InternalExtensionException(m));
             
             return new SubtensionModel(extensionClass, constructor);
         }

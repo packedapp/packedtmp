@@ -278,16 +278,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 dependencies.add(dependencyType);
             }
 
-            Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), ExtensionSetup.class);
+            Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
             builder.provide(ExtensionConfiguration.class).adaptArgument(0);
             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
             builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
             // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
             MethodHandle mh = ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
-            builder.provideHidden(extensionClass).byInvoking(mh);
+            builder.provideHidden(extensionClass).invokeExact(mh, 0);
 
             // Find a method handle for the extension's constructor
-            this.mhConstructor = builder.findConstructor(extensionClass, Extension.class, m -> new InternalExtensionException(m));
+            this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
 
             // So far we scan for constructors
             ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);

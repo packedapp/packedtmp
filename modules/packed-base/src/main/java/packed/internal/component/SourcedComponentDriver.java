@@ -120,9 +120,9 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         // But maybe this is sidecars instead???
 
         // Create an infuser for making a method handle for the component configurations's constructor
-        Infuser.Builder builder = Infuser.builder(caller, ComponentSetup.class);
+        Infuser.Builder builder = Infuser.builder(caller, driverType, ComponentSetup.class);
         builder.provide(ComponentConfigurationContext.class).adaptArgument(0);
-        MethodHandle constructor = builder.findConstructor(driverType, ComponentConfiguration.class, e -> new IllegalArgumentException(e));
+        MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
         return new Inner(type, constructor, modifiers);
     }

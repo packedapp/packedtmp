@@ -1,4 +1,4 @@
-package packed.internal.invoke.tester;
+package packed.internal.invoke;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -8,12 +8,13 @@ import app.packed.container.Extension;
 import app.packed.hooks.AutoService;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.Provide;
-import packed.internal.invoke.Infuser;
 import packed.internal.util.LookupUtil;
 
 public class InfuserTester {
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Secret.class, "l", Long.class);
+
+    static final MethodHandle MH_INT_STREAM_CHARS = LookupUtil.lookupVirtualPublic(String.class, "chars", IntStream.class);
 
     InfuserTester(IntStream i, Secret s, InjectionContext ic, Long ll) {
         System.out.println(ic.keys());
@@ -26,11 +27,11 @@ public class InfuserTester {
     }
 
     public static void main(String[] args) throws Throwable {
-        Infuser.Builder builder=Infuser.builder(MethodHandles.lookup(), String.class, Secret.class);
-        builder.provide(IntStream.class).invokePublicMethod("chars");
+        Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), InfuserTester.class, String.class, Secret.class);
+        builder.provide(IntStream.class).invokeExact(MH_INT_STREAM_CHARS, 0);
         builder.provideHidden(Secret.class).adaptArgument(1);
-        builder.provideHidden(Long.class).byInvoking(MH_INJECT_PARENT, 1);
-        MethodHandle mh = builder.findConstructor(InfuserTester.class, InfuserTester.class, e -> new IllegalArgumentException(e));
+        builder.provideHidden(Long.class).invokeExact(MH_INJECT_PARENT, 1);
+        MethodHandle mh = builder.findConstructor(InfuserTester.class, e -> new IllegalArgumentException(e));
 
         InfuserTester it = (InfuserTester) mh.invokeExact("sdf", new Secret());
         System.out.println("Bte " + it);

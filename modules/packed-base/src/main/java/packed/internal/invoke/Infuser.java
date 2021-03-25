@@ -11,13 +11,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.inject.FindInjectableConstructor;
-import packed.internal.util.LookupUtil;
 
 public final class Infuser {
 
@@ -60,32 +58,19 @@ public final class Infuser {
         return mh.asType(mh.type().changeReturnType(returnType));
     }
 
-    public Infuser withExposed(Class<?> key, Consumer<? extends EntryBuilder> action) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static Infuser build(MethodHandles.Lookup lookup, Consumer<? super Infuser.Builder> action, Class<?>... parameterTypes) {
-        requireNonNull(action, "action is null");
-        Infuser.Builder b = new Infuser.Builder(lookup, parameterTypes);
-        action.accept(b);
-        return b.build();
-    }
-
-    public static Builder builder(MethodHandles.Lookup caller, Class<?>... parameterTypes) {
-        return new Builder(caller, parameterTypes);
-    }
-
-    public static Infuser of(MethodHandles.Lookup lookup) {
-        return build(lookup, c -> {});
+    public static Builder builder(MethodHandles.Lookup caller, Class<?> clazz, Class<?>... parameterTypes) {
+        return new Builder(caller, clazz, parameterTypes);
     }
 
     public static class Builder {
         private final LinkedHashMap<Key<?>, Entry> entries = new LinkedHashMap<>();
         private final Lookup lookup;
+        private final Class<?> clazz;
         private final List<Class<?>> parameterTypes;
 
-        Builder(Lookup caller, Class<?>... parameterTypes) {
+        Builder(Lookup caller, Class<?> clazz, Class<?>... parameterTypes) {
             this.lookup = requireNonNull(caller, "caller is null");
+            this.clazz = requireNonNull(clazz);
             this.parameterTypes = List.of(parameterTypes);
         }
 
@@ -97,9 +82,9 @@ public final class Infuser {
             return new Infuser(this);
         }
 
-        public MethodHandle findConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
+        public MethodHandle findConstructor(Class<?> returnType, Function<String, RuntimeException> errorMaker) {
             Infuser infuser = build();
-            return infuser.singleConstructor(type, returnType, errorMaker);
+            return infuser.singleConstructor(clazz, returnType, errorMaker);
         }
 
         // Ville vaere dejligt med en forklaring paa hvornaar den er tilgaengelig
@@ -153,22 +138,11 @@ public final class Infuser {
          *             if the the infuser has no parameters
          */
         public void adaptArgument(int index) {
-            Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
-            builder.add(this, new Entry(this, null, index));
+            builder.add(this, new Entry(this, null, checkIndex(index)));
         }
 
-        public void byInvoking(MethodHandle methodHandle) {
-            // Vil lave indexes om saa de skal match istedet for at tage den foerste..
-            byInvoking(methodHandle, 0);
-        }
-
-        public void byInvoking(MethodHandle methodHandle, int... indexes) {
-            requireNonNull(methodHandle, "methodHandle is null");
-            for (int i = 0; i < indexes.length; i++) {
-                Objects.checkFromIndexSize(indexes[i], 0, builder.parameterTypes.size());
-            }
-            // System.out.println("Adding transfoer " + transformer);
-            builder.add(this, new Entry(this, methodHandle, indexes));
+        private int checkIndex(int index) {
+            return Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
         }
 
         public EntryBuilder description(String description) {
@@ -176,26 +150,15 @@ public final class Infuser {
             return this;
         }
 
-        public void invokeMethod(String methodName /* , Object... additional(Static)Arguments */ ) {
-            invokeMethod(methodName, 0);
-        }
-
-        public void invokeMethod(String methodName, int index) {
-            Class<?> cl = builder.parameterTypes.get(index);
-            // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
-            MethodHandle mh = LookupUtil.lookupVirtualPrivate(builder.lookup, cl, methodName, key.rawType());
-            byInvoking(mh, index);
-        }
-
-        public void invokePublicMethod(String methodName /* , Object... additional(Static)Arguments */ ) {
-            invokePublicMethod(methodName, 0);
-        }
-
-        public void invokePublicMethod(String methodName, int index) {
-            Class<?> cl = builder.parameterTypes.get(index);
-            // We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
-            MethodHandle mh = LookupUtil.lookupVirtualPublic(cl, methodName, key.rawType());
-            byInvoking(mh, index);
+        public void invokeExact(MethodHandle methodHandle, int index) {
+            requireNonNull(methodHandle, "methodHandle is null");
+            Objects.checkFromIndexSize(index, 0, builder.parameterTypes.size());
+            // Don't currently use it, we can add it again if we need it
+//            for (int i = 0; i < additionalIndexes.length; i++) {
+//                Objects.checkFromIndexSize(additionalIndexes[i], 0, builder.parameterTypes.size());
+//            }
+            // System.out.println("Adding transfoer " + transformer);
+            builder.add(this, new Entry(this, methodHandle, index));
         }
     }
 
@@ -206,3 +169,16 @@ public final class Infuser {
 
     }
 }
+//public void invokeMethod(String methodName, int index) {
+//Class<?> cl = builder.parameterTypes.get(index);
+//// We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
+//MethodHandle mh = LookupUtil.lookupVirtualPrivate(builder.lookup, cl, methodName, key.rawType());
+//invokeExact(mh, index);
+//}
+//
+//public void invokePublicMethod(String methodName, int index) {
+//Class<?> cl = builder.parameterTypes.get(index);
+//// We probably want to make our own call... This one throws java.lang.ExceptionInInitializerError
+//MethodHandle mh = LookupUtil.lookupVirtualPublic(cl, methodName, key.rawType());
+//invokeExact(mh, index);
+//}
