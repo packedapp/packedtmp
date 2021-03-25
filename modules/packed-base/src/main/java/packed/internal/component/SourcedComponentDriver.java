@@ -44,17 +44,16 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
-            false);
+    public static final BindableComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
 
     @Nullable
     public final Object binding;
 
-    final Inner meta;
+    final Inner inner;
 
     SourcedComponentDriver(Inner meta, Object data) {
         super(null, PackedComponentModifierSet.intOf(meta.modifiersSet().toArray()));
-        this.meta = requireNonNull(meta);
+        this.inner = requireNonNull(meta);
         this.binding = data;
         if (modifiers == 0) {
             throw new IllegalStateException();
@@ -67,24 +66,34 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         if (binding != null) {
             throw new IllegalStateException("This driver has already been bound");
         }
-        // TODO Auto-generated method stub
-        return null;
+        if (inner.type == Type.FACTORY) {
+            if (Class.class.isInstance(object)) {
+                throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
+            }
+        } else if (inner.type == Type.INSTANCE) {
+            if (Class.class.isInstance(object)) {
+                throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
+            } else if (Factory.class.isInstance(object)) {
+                throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);   
+            }
+        }
+        return new SourcedComponentDriver<>(inner, object);
     }
 
     public void checkBound() {
-        meta.checkBound(this);
+        inner.checkBound(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentModifierSet modifiers() {
-        return meta.modifiersSet;
+        return inner.modifiersSet;
     }
 
     public C toConfiguration(ComponentConfigurationContext cnc) {
         // Vil godt lave den om til CNC
         try {
-            return (C) meta.mh.invoke(cnc);
+            return (C) inner.mh.invoke(cnc);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -95,7 +104,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         throw new UnsupportedOperationException();
     }
 
-    public static Inner newMeta(Type type, MethodHandles.Lookup caller, Class<?> driverType, boolean isConstant) {
+    private static Inner newMeta(Type type, MethodHandles.Lookup caller, Class<?> driverType, boolean isConstant) {
 
         // Parse all options
         int modifiers = 0;
@@ -104,7 +113,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         } else {
             modifiers |= PackedComponentModifierSet.I_STATEFUL;
         }
-        
+
         modifiers |= PackedComponentModifierSet.I_SOURCE;
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
@@ -118,11 +127,9 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return new Inner(type, constructor, modifiers);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
-            boolean isConstant) {
-
-        Inner meta = newMeta(Type.CLASS, caller, driverType, isConstant);
-        return new PackedBindableComponentDriver<>(meta);
+    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller,
+            Class<? extends C> driverType) {
+        return new PackedBindableComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false));
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
@@ -139,7 +146,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return new PackedBindableComponentDriver<>(meta);
     }
 
-   record Inner(Type type, MethodHandle mh, int modifiers, PackedComponentModifierSet modifiersSet){
+    record Inner(Type type, MethodHandle mh, int modifiers, PackedComponentModifierSet modifiersSet) {
 
         Inner(Type type, MethodHandle mh, int modifiers) {
             this(type, mh, modifiers, new PackedComponentModifierSet(modifiers));
@@ -149,7 +156,6 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
 
         }
     }
-
 
     private static class PackedBindableComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
         final Inner meta;
