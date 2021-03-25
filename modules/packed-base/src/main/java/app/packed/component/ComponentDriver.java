@@ -75,7 +75,7 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
 
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
-        return SourcedComponentDriver.INSTALL_DRIVER.applyInstance(instance);
+        return SourcedComponentDriver.INSTALL_DRIVER.bind(instance);
     }
 
     static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {

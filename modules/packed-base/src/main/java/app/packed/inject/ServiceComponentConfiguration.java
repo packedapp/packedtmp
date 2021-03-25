@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.BindableComponentDriver;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -37,7 +36,7 @@ import packed.internal.component.SourcedComponentDriver;
 public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration implements ServiceConfiguration<T> {
 
     @SuppressWarnings("rawtypes")
-    private static final BindableComponentDriver DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+    private static final ComponentDriver DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
             true);
 
     @SuppressWarnings("rawtypes")
@@ -132,7 +131,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
 
     @SuppressWarnings("unchecked")
     public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provideInstance(T instance) {
-        return DRIVER.applyInstance(instance);
+        return DRIVER.bind(instance);
     }
 
     @SuppressWarnings("unchecked")

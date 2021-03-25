@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.BindableComponentDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -39,7 +38,7 @@ import packed.internal.util.ThrowableUtil;
 public class SourcedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> implements ComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+    public static final ComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
             true);
 
     /** A driver for this configuration. */
@@ -72,9 +71,9 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
             }
         } else if (inner.type == Type.INSTANCE) {
             if (Class.class.isInstance(object)) {
-                throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
+             //   throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
             } else if (Factory.class.isInstance(object)) {
-                throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);   
+             //   throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);   
             }
         }
         return new SourcedComponentDriver<>(inner, object);
@@ -139,11 +138,11 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return new SourcedComponentDriver<>(meta, null);
     }
 
-    public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
+    public static <C extends ComponentConfiguration> ComponentDriver<C> ofInstance(MethodHandles.Lookup caller,
             Class<? extends C> driverType, boolean isConstant) {
 
         Inner meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
-        return new PackedBindableComponentDriver<>(meta);
+        return new SourcedComponentDriver<>(meta, null);
     }
 
     record Inner(Type type, MethodHandle mh, int modifiers, PackedComponentModifierSet modifiersSet) {
@@ -154,54 +153,6 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
 
         void checkBound(SourcedComponentDriver<?> driver) {
 
-        }
-    }
-
-    private static class PackedBindableComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
-        final Inner meta;
-
-        private PackedBindableComponentDriver(Inner meta) {
-            this.meta = meta;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDriver<C> applyInstance(I instance) {
-            requireNonNull(instance, "instance is null");
-            if (instance instanceof Class) {
-                throw new IllegalArgumentException("Cannot specify a Class instance, was " + instance);
-            } else if (instance instanceof Factory) {
-                throw new IllegalArgumentException("Cannot specify a Factory instance, was " + instance);
-            }
-            if (meta.type == Type.CLASS) {
-                throw new UnsupportedOperationException("Can only specify a class");
-            } else if (meta.type == Type.FACTORY) {
-                throw new UnsupportedOperationException("Can only specify a class or factory");
-            }
-            return new SourcedComponentDriver<>(meta, instance);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDriver<C> bind(Class<? extends I> implementation) {
-            requireNonNull(implementation, "implementation is null");
-            return new SourcedComponentDriver<>(meta, implementation);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDriver<C> bind(Factory<? extends I> factory) {
-            requireNonNull(factory, "factory is null");
-            if (meta.type == Type.CLASS) {
-                throw new UnsupportedOperationException("Can only specify a class");
-            }
-            return new SourcedComponentDriver<>(meta, factory);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentDriver<C> bindFunction(Object function) {
-            throw new UnsupportedOperationException();
         }
     }
 
