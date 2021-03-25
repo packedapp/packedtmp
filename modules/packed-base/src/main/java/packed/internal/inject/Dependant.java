@@ -29,13 +29,13 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.ConstantPool;
 import packed.internal.component.ConstantPoolSetup;
 import packed.internal.component.source.ClassSourceModel;
+import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.hooks.RuntimeRegionInvoker;
-import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.ServiceDelegate;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceMemberServiceSetup;
 
@@ -132,8 +132,8 @@ public class Dependant {
             return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, ConstantPool.class);
         } else if (providers.length == 1) {
             requireNonNull(providers[0]);
-            System.out.println(providers[0].getClass());
-            System.out.println(providers[0].dependencyAccessor());
+            //System.out.println(providers[0].getClass());
+            //System.out.println(providers[0].dependencyAccessor());
             return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, providers[0].dependencyAccessor());
         } else {
             mh = directMethodHandle;
@@ -182,7 +182,6 @@ public class Dependant {
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
-
         if (regionIndex() > -1) {
             region.regionStores.add(this);
         }

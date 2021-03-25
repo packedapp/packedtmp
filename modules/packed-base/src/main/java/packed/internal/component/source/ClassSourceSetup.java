@@ -89,8 +89,8 @@ public final class ClassSourceSetup implements DependencyProvider {
             component.pool.addSourceClass(this); // non-constants singlestons are added to the constant pool elsewhere
         }
 
-        //if (driver.modifiers().isSingleton())
-        
+        // if (driver.modifiers().isSingleton())
+
         if (factory == null) {
             this.dependant = null;
         } else {
@@ -123,7 +123,7 @@ public final class ClassSourceSetup implements DependencyProvider {
     @Override
     public MethodHandle dependencyAccessor() {
         if (constant != null) {
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T -> MethodHandle(Region)T
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T -> MethodHandle(ConstantPool)T
         } else if (poolIndex > -1) {
             return ConstantPool.readConstant(poolIndex, model.type);
         } else {

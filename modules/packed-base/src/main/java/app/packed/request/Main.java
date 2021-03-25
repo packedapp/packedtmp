@@ -27,6 +27,7 @@ import java.lang.reflect.Modifier;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
+import app.packed.inject.ServiceExtension;
 import packed.internal.base.application.ApplicationSetup;
 import packed.internal.component.source.MethodHookModel;
 
@@ -70,6 +71,8 @@ class MySidecar extends RealMethodSidecarBootstrap {
         MethodHandle mh = methodHandle();
         Method m = method();
         MethodHookModel.Builder.registerProcessor(this, c -> {
+            // Okay we do not automatically
+            c.memberOfContainer.useExtension(ServiceExtension.class);
             c.build.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
             c.build.application.lifecycle.cs = c;
             c.build.application.lifecycle.methodHandle = mh;
