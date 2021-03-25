@@ -19,25 +19,18 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
 
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.BindableComponentDriver;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.inject.classscan.Infuser;
-import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -46,19 +39,13 @@ import packed.internal.util.ThrowableUtil;
 public class SourcedComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> implements ComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final BindableComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(),
-            ServiceComponentConfiguration.class, SourcedComponentDriver.Option.constantSource());
+    public static final BindableComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+            true);
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
     public static final BindableComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class,
-            SourcedComponentDriver.Option.statelessSource());
-
-    /** A handle that can access Assembly#driver. */
-    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            SourcedComponentDriver.class);
-
-    // Holds ExtensionModel for extensions, source for sourced components
+            false);
 
     @Nullable
     public final Object binding;
@@ -104,42 +91,16 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Extracts the component driver from the specified assembly.
-     * 
-     * @param assembly
-     *            the assembly to extract the component driver from
-     * @return the component driver of the specified assembly
-     */
-    public static <C extends ComponentConfiguration> SourcedComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
-        requireNonNull(assembly, "assembly is null");
-        return (SourcedComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
-    }
-
-    public static Meta newMeta(Type type, MethodHandles.Lookup caller, boolean isSource, Class<?> driverType, Option... options) {
-        requireNonNull(options, "options is null");
+    public static Meta newMeta(Type type, MethodHandles.Lookup caller, Class<?> driverType, boolean isConstant) {
 
         // Parse all options
         int modifiers = 0;
-        for (int i = 0; i < options.length; i++) {
-            OptionImpl o = (OptionImpl) options[i];
-            switch (o.id) {
-            case OptionImpl.OPT_CONTAINER:
-                modifiers |= PackedComponentModifierSet.I_CONTAINER;
-                break;
-            case OptionImpl.OPT_CONSTANT:
-                modifiers |= PackedComponentModifierSet.I_SINGLETON;
-                break;
-            case OptionImpl.OPT_STATEFUL:
-                modifiers |= PackedComponentModifierSet.I_STATEFUL;
-                break;
-            default:
-                throw new IllegalStateException(o + " is not a valid option");
-            }
+        if (isConstant) {
+            modifiers |= PackedComponentModifierSet.I_SINGLETON;
+        } else {
+            modifiers |= PackedComponentModifierSet.I_STATEFUL;
         }
-        if (isSource) {
-            modifiers |= PackedComponentModifierSet.I_SOURCE;
-        }
+        modifiers |= PackedComponentModifierSet.I_SOURCE;
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
         // Or we fx support @AttributeProvide... This makes no sense..
@@ -152,37 +113,27 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return new Meta(type, constructor, modifiers);
     }
 
-    public static <C extends ComponentConfiguration> ComponentDriver<C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, Option... options) {
-        requireNonNull(options, "options is null");
-
-        Meta meta = newMeta(Type.OTHER, caller, false, driverType, options);
-        return new SourcedComponentDriver<>(meta, null);
-    }
-
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
-            Option... options) {
-        requireNonNull(options, "options is null");
+            boolean isConstant) {
 
-        Meta meta = newMeta(Type.CLASS, caller, true, driverType, options);
+        Meta meta = newMeta(Type.CLASS, caller, driverType, isConstant);
         return new PackedBindableComponentDriver<>(meta);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
-            Class<? extends C> driverType, Option... options) {
-        requireNonNull(options, "options is null");
+            Class<? extends C> driverType, boolean isConstant) {
 
-        Meta meta = newMeta(Type.FACTORY, caller, true, driverType, options);
+        Meta meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
         return new PackedBindableComponentDriver<>(meta);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
-            Class<? extends C> driverType, Option... options) {
-        requireNonNull(options, "options is null");
+            Class<? extends C> driverType, boolean isConstant) {
 
-        Meta meta = newMeta(Type.INSTANCE, caller, true, driverType, options);
+        Meta meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
         return new PackedBindableComponentDriver<>(meta);
     }
-    
+
     static class Meta {
         // all options
         MethodHandle mh;
@@ -216,55 +167,36 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
          * @see ComponentModifier#CONSTANT
          */
         // InstanceComponentDriver automatically sets the source...
-        static Option constantSource() {
-            return SourcedComponentDriver.OptionImpl.ZONSTANT;
-        }
+//        static Option sourceAssignableTo(Class<?> rawType) {
+//            throw new UnsupportedOperationException();
+//        }
 
-        /**
-         * The component the driver will be a container.
-         * <p>
-         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
-         * 
-         * @return stuff
-         * @see ComponentModifier#CONTAINER
-         */
-        static Option container() {
-            return SourcedComponentDriver.OptionImpl.ZONTAINER;
-        }
-
-        static Option sourceAssignableTo(Class<?> rawType) {
-            throw new UnsupportedOperationException();
-        }
-
-        static Option statelessSource() {
-            return SourcedComponentDriver.OptionImpl.STATELESS;
-        }
-
-        static Option validateParent(Predicate<? super Component> validator, String msg) {
-            return validateWiring((c, d) -> {
-                if (validator.test(c)) {
-                    throw new IllegalArgumentException(msg);
-                }
-            });
-        }
-
-        static Option validateParentIsContainer() {
-            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
-        }
+//
+//        static Option validateParent(Predicate<? super Component> validator, String msg) {
+//            return validateWiring((c, d) -> {
+//                if (validator.test(c)) {
+//                    throw new IllegalArgumentException(msg);
+//                }
+//            });
+//        }
+//
+//        static Option validateParentIsContainer() {
+//            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
+//        }
 
         // The parent + the driver
         //
-
-        /**
-         * Returns an option that
-         * 
-         * @param validator
-         * @return the option
-         */
-        // Hmm integration with vaildation
-        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
-            throw new UnsupportedOperationException();
-        }
+//
+//        /**
+//         * Returns an option that
+//         * 
+//         * @param validator
+//         * @return the option
+//         */
+//        // Hmm integration with vaildation
+//        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
+//            throw new UnsupportedOperationException();
+//        }
 
         // Option serviceable()
         // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
@@ -275,25 +207,6 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
     // Kunne ogsaa encode det i ComponentDriver.option..
     // Og saa bruge MethodHandles til at extract id, data?
     // Nahhh
-    public static class OptionImpl implements SourcedComponentDriver.Option {
-        static final int OPT_CONSTANT = 2;
-        static final int OPT_CONTAINER = 1;
-        static final int OPT_STATEFUL = 3;
-
-        // Zonstant so we can sort
-        public static final OptionImpl STATELESS = new OptionImpl(OPT_STATEFUL, null);
-        public static final OptionImpl ZONSTANT = new OptionImpl(OPT_CONSTANT, null);
-        public static final OptionImpl ZONTAINER = new OptionImpl(OPT_CONTAINER, null);
-
-        @Nullable
-        final Object data;
-        final int id;
-
-        OptionImpl(int id, @Nullable Object data) {
-            this.id = id;
-            this.data = data;
-        }
-    }
 
     private static class PackedBindableComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
         final Meta meta;
@@ -344,6 +257,6 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
     }
 
     enum Type {
-        CLASS, FACTORY, INSTANCE, OTHER;
+        CLASS, FACTORY, INSTANCE;
     }
 }

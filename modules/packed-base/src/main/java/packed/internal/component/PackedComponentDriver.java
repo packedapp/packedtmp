@@ -17,7 +17,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            SourcedComponentDriver.class);
+            PackedComponentDriver.class);
 
     @Nullable
     final Wirelet wirelet;
@@ -60,5 +60,4 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
         requireNonNull(assembly, "assembly is null");
         return (PackedComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
-
 }

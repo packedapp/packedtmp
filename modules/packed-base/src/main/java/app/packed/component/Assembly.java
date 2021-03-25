@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerAssembly;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.SourcedComponentDriver;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -76,9 +76,9 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
 
     /**
      * The driver of this assembly. This field is read via a VarHandle from
-     * {@link SourcedComponentDriver#getDriver(Assembly)}.
+     * {@link PackedComponentDriver#getDriver(Assembly)}.
      */
-    private final SourcedComponentDriver<? extends C> driver;
+    private final PackedComponentDriver<? extends C> driver;
 
     /**
      * Creates a new assembly using the specified component driver.
@@ -87,7 +87,7 @@ public abstract class Assembly<C extends ComponentConfiguration> extends Realm {
      *            the driver used for constructing the configuration this assembly wraps
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((SourcedComponentDriver<? extends C>) driver, "driver is null");
+        this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
         this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
 

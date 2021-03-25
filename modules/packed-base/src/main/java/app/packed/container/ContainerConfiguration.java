@@ -15,7 +15,6 @@
  */
 package app.packed.container;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Set;
 
 import app.packed.component.Assembly;
@@ -28,7 +27,6 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.component.SourcedComponentDriver;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 
@@ -39,10 +37,7 @@ import packed.internal.component.PackedComponentModifierSet;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = SourcedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
-            SourcedComponentDriver.Option.container());
-
-    private static final ComponentDriver<ContainerConfiguration> DRIVER_NEW = new ContainerComponentDriver(null);
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = new ContainerComponentDriver(null);
 
     
     /**

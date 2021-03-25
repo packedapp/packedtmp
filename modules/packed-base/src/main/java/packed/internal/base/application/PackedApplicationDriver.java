@@ -38,7 +38,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.SourcedComponentDriver;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
@@ -118,7 +118,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private BuildSetup buildFromAssembly(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
 
         // Extract the component driver from the assembly
-        SourcedComponentDriver<?> componentDriver = SourcedComponentDriver.getDriver(assembly);
+        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, new RealmSetup(assembly), componentDriver, modifiers, wirelets);
@@ -141,7 +141,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        SourcedComponentDriver<CC> pcd = (SourcedComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
+        PackedComponentDriver<CC> pcd = (PackedComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
 

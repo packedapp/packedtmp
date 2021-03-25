@@ -38,11 +38,11 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
 
     @SuppressWarnings("rawtypes")
     private static final BindableComponentDriver DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
-            SourcedComponentDriver.Option.constantSource());
+            true);
 
     @SuppressWarnings("rawtypes")
     private static final BindableComponentDriver PROTOTYPE_DRIVER = SourcedComponentDriver.ofFactory(MethodHandles.lookup(),
-            ServiceComponentConfiguration.class);
+            ServiceComponentConfiguration.class, false);
 
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {
         super(context);

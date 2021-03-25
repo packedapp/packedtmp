@@ -349,7 +349,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        SourcedComponentDriver<?> driver = SourcedComponentDriver.getDriver(assembly);
+        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
@@ -524,7 +524,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        SourcedComponentDriver<C> d = (SourcedComponentDriver<C>) requireNonNull(driver, "driver is null");
+        PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
