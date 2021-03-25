@@ -50,10 +50,10 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
     @Nullable
     public final Object binding;
 
-    final Meta meta;
+    final Inner meta;
 
-    SourcedComponentDriver(Meta meta, Object data) {
-        super(null, PackedComponentModifierSet.intOf(meta.modifiers.toArray()));
+    SourcedComponentDriver(Inner meta, Object data) {
+        super(null, PackedComponentModifierSet.intOf(meta.modifiersSet().toArray()));
         this.meta = requireNonNull(meta);
         this.binding = data;
         if (modifiers == 0) {
@@ -63,6 +63,10 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
 
     @Override
     public ComponentDriver<C> bind(Object object) {
+        requireNonNull(object, "object is null");
+        if (binding != null) {
+            throw new IllegalStateException("This driver has already been bound");
+        }
         // TODO Auto-generated method stub
         return null;
     }
@@ -74,7 +78,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
     /** {@inheritDoc} */
     @Override
     public ComponentModifierSet modifiers() {
-        return meta.modifiers;
+        return meta.modifiersSet;
     }
 
     public C toConfiguration(ComponentConfigurationContext cnc) {
@@ -91,7 +95,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         throw new UnsupportedOperationException();
     }
 
-    public static Meta newMeta(Type type, MethodHandles.Lookup caller, Class<?> driverType, boolean isConstant) {
+    public static Inner newMeta(Type type, MethodHandles.Lookup caller, Class<?> driverType, boolean isConstant) {
 
         // Parse all options
         int modifiers = 0;
@@ -100,6 +104,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         } else {
             modifiers |= PackedComponentModifierSet.I_STATEFUL;
         }
+        
         modifiers |= PackedComponentModifierSet.I_SOURCE;
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
@@ -110,45 +115,34 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         Infuser infuser = Infuser.build(caller, c -> c.provide(ComponentConfigurationContext.class).adapt(), ComponentSetup.class);
         MethodHandle constructor = infuser.findConstructorFor(driverType);
 
-        return new Meta(type, constructor, modifiers);
+        return new Inner(type, constructor, modifiers);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
-        Meta meta = newMeta(Type.CLASS, caller, driverType, isConstant);
+        Inner meta = newMeta(Type.CLASS, caller, driverType, isConstant);
         return new PackedBindableComponentDriver<>(meta);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofFactory(MethodHandles.Lookup caller,
             Class<? extends C> driverType, boolean isConstant) {
 
-        Meta meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
+        Inner meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
         return new PackedBindableComponentDriver<>(meta);
     }
 
     public static <C extends ComponentConfiguration, I> PackedBindableComponentDriver<C, I> ofInstance(MethodHandles.Lookup caller,
             Class<? extends C> driverType, boolean isConstant) {
 
-        Meta meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
+        Inner meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
         return new PackedBindableComponentDriver<>(meta);
     }
 
-    static class Meta {
-        // all options
-        MethodHandle mh;
+   record Inner(Type type, MethodHandle mh, int modifiers, PackedComponentModifierSet modifiersSet){
 
-        ComponentModifierSet modifiers;
-
-        final Type type;
-
-        Meta(Type type, MethodHandle mh, int modifiers) {
-            this.type = requireNonNull(type);
-            this.mh = mh;
-            this.modifiers = new PackedComponentModifierSet(modifiers);
-            if (this.modifiers.isEmpty()) {
-                throw new IllegalStateException();
-            }
+        Inner(Type type, MethodHandle mh, int modifiers) {
+            this(type, mh, modifiers, new PackedComponentModifierSet(modifiers));
         }
 
         void checkBound(SourcedComponentDriver<?> driver) {
@@ -156,62 +150,11 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         }
     }
 
-    public interface Option {
-
-        /**
-         * The component the driver will be a container.
-         * <p>
-         * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
-         * 
-         * @return stuff
-         * @see ComponentModifier#CONSTANT
-         */
-        // InstanceComponentDriver automatically sets the source...
-//        static Option sourceAssignableTo(Class<?> rawType) {
-//            throw new UnsupportedOperationException();
-//        }
-
-//
-//        static Option validateParent(Predicate<? super Component> validator, String msg) {
-//            return validateWiring((c, d) -> {
-//                if (validator.test(c)) {
-//                    throw new IllegalArgumentException(msg);
-//                }
-//            });
-//        }
-//
-//        static Option validateParentIsContainer() {
-//            return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
-//        }
-
-        // The parent + the driver
-        //
-//
-//        /**
-//         * Returns an option that
-//         * 
-//         * @param validator
-//         * @return the option
-//         */
-//        // Hmm integration with vaildation
-//        static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
-//            throw new UnsupportedOperationException();
-//        }
-
-        // Option serviceable()
-        // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
-        // at expose funktionaliteten.
-    }
-
-    // And the use one big switch
-    // Kunne ogsaa encode det i ComponentDriver.option..
-    // Og saa bruge MethodHandles til at extract id, data?
-    // Nahhh
 
     private static class PackedBindableComponentDriver<C extends ComponentConfiguration, I> implements BindableComponentDriver<C, I> {
-        final Meta meta;
+        final Inner meta;
 
-        private PackedBindableComponentDriver(Meta meta) {
+        private PackedBindableComponentDriver(Inner meta) {
             this.meta = meta;
         }
 
@@ -260,3 +203,55 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         CLASS, FACTORY, INSTANCE;
     }
 }
+
+//public interface Option {
+//
+//  /**
+//   * The component the driver will be a container.
+//   * <p>
+//   * A container that is a component cannot be sourced??? Yes It can... It can be the actor system
+//   * 
+//   * @return stuff
+//   * @see ComponentModifier#CONSTANT
+//   */
+//  // InstanceComponentDriver automatically sets the source...
+////  static Option sourceAssignableTo(Class<?> rawType) {
+////      throw new UnsupportedOperationException();
+////  }
+//
+////
+////  static Option validateParent(Predicate<? super Component> validator, String msg) {
+////      return validateWiring((c, d) -> {
+////          if (validator.test(c)) {
+////              throw new IllegalArgumentException(msg);
+////          }
+////      });
+////  }
+////
+////  static Option validateParentIsContainer() {
+////      return validateParent(c -> c.hasModifier(ComponentModifier.CONTAINER), "This component can only be wired to a container");
+////  }
+//
+//  // The parent + the driver
+//  //
+////
+////  /**
+////   * Returns an option that
+////   * 
+////   * @param validator
+////   * @return the option
+////   */
+////  // Hmm integration with vaildation
+////  static Option validateWiring(BiConsumer<Component, ComponentDriver<?>> validator) {
+////      throw new UnsupportedOperationException();
+////  }
+//
+//  // Option serviceable()
+//  // Hmm Maaske er alle serviceable.. Og man maa bare lade vaere
+//  // at expose funktionaliteten.
+//}
+
+// And the use one big switch
+// Kunne ogsaa encode det i ComponentDriver.option..
+// Og saa bruge MethodHandles til at extract id, data?
+// Nahhh
