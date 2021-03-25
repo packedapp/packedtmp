@@ -1,4 +1,4 @@
-package app.packed.inject.context;
+package app.packed.inject.sandbox;
 
 import static java.util.Objects.requireNonNull;
 
