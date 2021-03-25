@@ -32,7 +32,7 @@ import app.packed.inject.Factory;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.service.AbstractService;
+import packed.internal.inject.service.PackedService;
 import packed.internal.inject.service.runtime.PackedInjector;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -47,12 +47,12 @@ public final class PackedServiceComposer extends ServiceComposer {
 
     /** The services that we do in-place transformation of. */
     // Maaske er det altid build time services???
-    private final Map<Key<?>, AbstractService> services;
+    private final Map<Key<?>, PackedService> services;
 
     @SuppressWarnings("unchecked")
-    private PackedServiceComposer(Map<Key<?>, ? extends AbstractService> services) {
+    private PackedServiceComposer(Map<Key<?>, ? extends PackedService> services) {
         super(null);
-        this.services = (Map<Key<?>, AbstractService>) requireNonNull(services);
+        this.services = (Map<Key<?>, PackedService>) requireNonNull(services);
     }
 
     private void add(Factory<?> factory, boolean auto, boolean isConstant, boolean replace) {
@@ -70,8 +70,8 @@ public final class PackedServiceComposer extends ServiceComposer {
         return (es = asMap) == null ? (asMap = new ForwardingMap<>((Map) services, new ForwardingStrategy())) : es;
     }
 
-    private AbstractService checkKeyExists(Key<?> key) {
-        AbstractService s = services.remove(key);
+    private PackedService checkKeyExists(Key<?> key) {
+        PackedService s = services.remove(key);
         if (s == null) {
             throw new NoSuchElementException("No service with the specified key exists, key = " + key);
         }
@@ -133,8 +133,8 @@ public final class PackedServiceComposer extends ServiceComposer {
 
         // We don't replace in-map as we want to be able to swap keys.
         // Which would not be possible if we did it in place.
-        Map<Key<?>, AbstractService> newServices = new HashMap<>();
-        for (AbstractService s : services.values()) {
+        Map<Key<?>, PackedService> newServices = new HashMap<>();
+        for (PackedService s : services.values()) {
             Key<?> key = function.apply(s);
             // If the function returns null we exclude the key
             if (key != null) {
@@ -168,14 +168,14 @@ public final class PackedServiceComposer extends ServiceComposer {
      * 
      * @return the new service locator
      */
-    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceComposer> transformation) {
+    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends PackedService> services, Consumer<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         PackedServiceComposer psm = new PackedServiceComposer(services);
         transformation.accept(psm);
 
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext();
-        for (AbstractService e : services.values()) {
+        for (PackedService e : services.values()) {
             runtimeEntries.put(e.key(), ((ServiceSetup) e).toRuntimeEntry(con));
         }
         return new PackedInjector(runtimeEntries);
@@ -190,12 +190,12 @@ public final class PackedServiceComposer extends ServiceComposer {
         return toServiceLocator(m, transformation);
     }
 
-    public static void transformInplace(Map<Key<?>, ? extends AbstractService> services, Consumer<? super ServiceComposer> transformer) {
+    public static void transformInplace(Map<Key<?>, ? extends PackedService> services, Consumer<? super ServiceComposer> transformer) {
         PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst);
     }
 
-    public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends AbstractService> services,
+    public static <T> void transformInplaceAttachment(Map<Key<?>, ? extends PackedService> services,
             BiConsumer<? super ServiceComposer, ? super T> transformer, T attachment) {
         PackedServiceComposer dst = new PackedServiceComposer(services);
         transformer.accept(dst, attachment);

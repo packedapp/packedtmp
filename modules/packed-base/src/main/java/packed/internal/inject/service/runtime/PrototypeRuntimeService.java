@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.component.ConstantPool;
@@ -27,6 +28,9 @@ import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
 public final class PrototypeRuntimeService extends RuntimeService {
+
+    /** The key under which the service is available. */
+    private final Key<?> key;
 
     /** The method handle used to create new instances. */
     private final MethodHandle mh;
@@ -38,7 +42,7 @@ public final class PrototypeRuntimeService extends RuntimeService {
      * @param service
      */
     public PrototypeRuntimeService(ServiceSetup service, ConstantPool region, MethodHandle mh) {
-        super(service);
+        this.key = service.key();
         this.region = requireNonNull(region);
         this.mh = requireNonNull(mh);
     }
@@ -57,6 +61,11 @@ public final class PrototypeRuntimeService extends RuntimeService {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+
+    @Override
+    public Key<?> key() {
+        return key;
     }
 
     /** {@inheritDoc} */

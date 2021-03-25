@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
+import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -33,6 +34,9 @@ public final class MappingRuntimeService extends RuntimeService {
     /** The function that maps the service. */
     private final Function<?, ?> function;
 
+    /** The key under which the service is available. */
+    private final Key<?> key;
+
     /**
      * Creates a new runtime alias node.
      *
@@ -40,7 +44,7 @@ public final class MappingRuntimeService extends RuntimeService {
      *            the build time alias node to create a runtime node from
      */
     public MappingRuntimeService(ServiceSetup buildNode, RuntimeService delegate, Function<?, ?> function) {
-        super(buildNode);
+        this.key = requireNonNull(buildNode.key());
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);
     }
@@ -74,5 +78,10 @@ public final class MappingRuntimeService extends RuntimeService {
     @Override
     public boolean requiresProvisionContext() {
         return delegate.requiresProvisionContext();
+    }
+
+    @Override
+    public Key<?> key() {
+        return key;
     }
 }

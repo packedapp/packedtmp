@@ -29,6 +29,9 @@ import packed.internal.inject.service.build.ServiceSetup;
 /** An runtime service holding a constant. */
 public final class ConstantRuntimeService extends RuntimeService {
 
+    /** The key under which the service is available. */
+    private final Key<?> key;
+
     /** The constant the runtime service is holding. */
     private final Object constant;
 
@@ -39,15 +42,20 @@ public final class ConstantRuntimeService extends RuntimeService {
      *            the build entry to create this entry from
      */
     public ConstantRuntimeService(ServiceSetup service, ConstantPool region, int index) {
-        super(service);
+        this.key = requireNonNull(service.key());
         this.constant = requireNonNull(region.getSingletonInstance(index));
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public final Key<?> key() {
+        return key;
+    }
     /**
      * @param key
      */
     public ConstantRuntimeService(Key<?> key, Object constant) {
-        super(key);
+        this.key = requireNonNull(key);
         this.constant = requireNonNull(constant);
     }
 

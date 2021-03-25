@@ -30,7 +30,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 /** A build-time service for a constant. */
 public final class ConstantServiceSetup extends ServiceSetup {
 
-    /** The constant we are wrapping. */
+    /** The constant we are providing. */
     private final Object constant;
 
     /**

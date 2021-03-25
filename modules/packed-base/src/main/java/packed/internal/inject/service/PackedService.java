@@ -23,9 +23,9 @@ import app.packed.inject.Service;
 /**
  *
  */
-public abstract class AbstractService implements Service {
+public interface PackedService extends Service {
 
-    public abstract AbstractService rekeyAs(Key<?> key);
+    public abstract PackedService rekeyAs(Key<?> key);
 
-    public abstract <T> AbstractService decorate(Function<? super T, ? extends T> decoratingFunction);
+    public abstract <T> PackedService decorate(Function<? super T, ? extends T> decoratingFunction);
 }

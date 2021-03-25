@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.inject.Provide;
 import app.packed.inject.Service;
 import packed.internal.inject.DependencyProvider;
-import packed.internal.inject.service.AbstractService;
+import packed.internal.inject.service.PackedService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -36,7 +36,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * <p>
  * Instances of this class are never exposed to end users. But instead wrapped.
  */
-public abstract class ServiceSetup extends AbstractService implements DependencyProvider, Service {
+public abstract class ServiceSetup implements PackedService, DependencyProvider {
 
     private boolean isFrozen;
 
@@ -103,14 +103,15 @@ public abstract class ServiceSetup extends AbstractService implements Dependency
         if (isFrozen) {
             return this;
         }
-        return new PackedService(key, isConstant());
+        return new ServiceDescription(key, isConstant());
     }
 
     public static Service simple(Key<?> key, boolean isConstant) {
-        return new PackedService(key, isConstant);
+        return new ServiceDescription(key, isConstant);
     }
+    
     /** An implementation of {@link Service} because {@link ServiceSetup} is mutable. */
-    public static final record PackedService(Key<?> key, boolean isConstant) implements Service {
+    public static final record ServiceDescription(Key<?> key, boolean isConstant) implements Service {
 
         /** {@inheritDoc} */
         @Override

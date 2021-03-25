@@ -5,25 +5,34 @@ import app.packed.base.Key;
 
 /**
  * A description of a service.
- * 
- * @apiNote In the future, if the Java language permits, {@link Service} may become a {@code sealed} interface, which
- *          would prohibit subclassing except by explicitly permitted types.
  */
+// isLazy.. Kan vi sige noget om det.. Det vil jeg ikke mene
 public /* sealed */ interface Service extends AttributedElement {
 
     /**
-     * Returns whether or not the service being provided is a constant.
+     * Returns whether or not the instance that service provides is a constant.
      * <p>
-     * Constant services can always be cached.
+     * Services that are constant will always provide the same service instance.
+     * <p>
+     * Services that are not constant may provide the same instance every time. But usually provides different. For example,
+     * context dependent services
+     * <p>
+     * If a service is constant the instance can always be cached.Otherwise care must be taken.
      * 
-     * @return whether or not the service being provided is a constant
+     * @return whether or not the instance that service provides is a constant
      */
+    // Hmm Saa lad sige jeg vil lave Logger..
+    // Saa er den jo constant for mit scope...
+    // Den returnere den samme logger hver gang...
+    // Altsaa mere en description...
     boolean isConstant();
 
     /**
-     * Returns the key that the service is registered with.
+     * Returns the key of the service.
+     * <p>
+     * Every service in a single {@link ServiceRegistry} has a unique key.
      *
-     * @return the key that the service is registered with
+     * @return the key of the service
      */
     Key<?> key();
 
@@ -35,14 +44,21 @@ public /* sealed */ interface Service extends AttributedElement {
     default ServiceMode mode() {
         return isConstant() ? ServiceMode.CONSTANT : ServiceMode.TRANSIENT;
     }
-
-    /**
-     * Returns the raw type of the service. Actual service instances may be subclasses of the returned type.
-     * 
-     * @return the raw type of the service
-     * @see Key#rawType()
-     */
-    default Class<?> rawType() {
-        return key().rawType();
-    }
 }
+
+
+// Deleted
+// Vi kan ikke sige noget om den type service der bliver provided.
+// Kan jo returnere en hvilke som helst subtype
+///**
+// * Returns the raw type of the service.
+// * <p>
+// * Actual service instances may be subclasses of the returned type.
+// * 
+// * @return the raw type of the service
+// * @see Key#rawType()
+// */
+//// Hmmm, IDK about this... Den siger jo ikke noget om typen...
+//default Class<?> rawType() {
+//    return key().rawType();
+//}

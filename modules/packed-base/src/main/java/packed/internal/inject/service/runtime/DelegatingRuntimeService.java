@@ -34,6 +34,14 @@ public final class DelegatingRuntimeService extends RuntimeService {
     /** The runtime node to delegate to. */
     private final RuntimeService delegate;
 
+    /** The key under which the service is available. */
+    private final Key<?> key;
+
+    public DelegatingRuntimeService(RuntimeService rs, Key<?> key) {
+        this.key = requireNonNull(key);
+        this.delegate = requireNonNull(rs);
+    }
+
     /**
      * Creates a new runtime alias node.
      *
@@ -41,13 +49,8 @@ public final class DelegatingRuntimeService extends RuntimeService {
      *            the build time alias node to create a runtime node from
      */
     public DelegatingRuntimeService(ServiceSetup buildNode, RuntimeService delegate) {
-        super(buildNode);
+        this.key = requireNonNull(buildNode.key());
         this.delegate = requireNonNull(delegate);
-    }
-
-    public DelegatingRuntimeService(RuntimeService rs, Key<?> key) {
-        super(key);
-        this.delegate = requireNonNull(rs);
     }
 
     /** {@inheritDoc} */
@@ -55,11 +58,16 @@ public final class DelegatingRuntimeService extends RuntimeService {
     public MethodHandle dependencyAccessor() {
         return delegate.dependencyAccessor();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Object getInstance(ProvisionContext site) {
         return delegate.getInstance(site);
+    }
+
+    @Override
+    public Key<?> key() {
+        return key;
     }
 
     /** {@inheritDoc} */

@@ -15,8 +15,6 @@
  */
 package packed.internal.inject.service.runtime;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
@@ -27,31 +25,13 @@ import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceMode;
 import packed.internal.inject.PackedProvisionContext;
-import packed.internal.inject.service.AbstractService;
-import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.service.PackedService;
 
 /** An entry that represents a service at runtime. */
-public abstract class RuntimeService extends AbstractService {
-
-    /** The key under which the service is available. */
-    private final Key<?> key;
-
-    /**
-     * Creates a new runtime node from a build entry.
-     *
-     * @param buildEntry
-     *            the build node to create the runtime node from
-     */
-    RuntimeService(ServiceSetup buildEntry) {
-        this(buildEntry.key());
-    }
-
-    RuntimeService(Key<?> key) {
-        this.key = requireNonNull(key);
-    }
+public abstract class RuntimeService implements PackedService {
 
     @Override
-    public <T> AbstractService decorate(Function<? super T, ? extends T> decoratingFunction) {
+    public <T> PackedService decorate(Function<? super T, ? extends T> decoratingFunction) {
         throw new UnsupportedOperationException();
     }
 
@@ -88,14 +68,9 @@ public abstract class RuntimeService extends AbstractService {
         return mode() == ServiceMode.CONSTANT;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public final Key<?> key() {
-        return key;
-    }
 
     @Override
-    public AbstractService rekeyAs(Key<?> key) {
+    public PackedService rekeyAs(Key<?> key) {
         return new DelegatingRuntimeService(this, key);
     }
 

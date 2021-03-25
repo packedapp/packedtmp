@@ -19,6 +19,7 @@ package app.packed.inject;
  * 
  * Unless otherwise specified, constant is the default mode.
  */
+// Jeg er faktisk ikke vild med den...
 public enum ServiceMode {
     CONSTANT, TRANSIENT;
 }
