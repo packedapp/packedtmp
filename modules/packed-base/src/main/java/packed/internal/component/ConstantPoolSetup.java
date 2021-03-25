@@ -33,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 public final class ConstantPoolSetup {
 
     /** Components that contains constants that should be stored in a region. Is only written by {@link SourceClassSetup}. */
-    public final ArrayList<SourceClassSetup> constants = new ArrayList<>();
+    private final ArrayList<SourceClassSetup> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
@@ -46,6 +46,9 @@ public final class ConstantPoolSetup {
 
     public final Lifecycle lifecycle = new Lifecycle();
 
+    public void addSourceClass(SourceClassSetup s) {
+        constants.add(s);
+    }
     ConstantPool newRegion(PackedInitializationContext pic, PackedComponent root) {
         ConstantPool pool = new ConstantPool(nextIndex);
 

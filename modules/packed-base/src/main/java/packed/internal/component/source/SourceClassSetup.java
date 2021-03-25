@@ -85,7 +85,7 @@ public final class SourceClassSetup implements DependencyProvider {
             this.constant = source;
             this.factory = null;
             sourceClass = source.getClass();
-            component.pool.constants.add(this);
+            component.pool.addSourceClass(this);
         }
 
         RealmAccessor realm = component.realm.accessor();
@@ -110,6 +110,7 @@ public final class SourceClassSetup implements DependencyProvider {
 
     public void writeConstantPool(ConstantPool pool) {
         assert poolIndex >= 0;
+        assert constant != null;
         pool.store(poolIndex, constant);
     }
 
