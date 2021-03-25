@@ -78,8 +78,8 @@ public final /* primitive*/ class ConstantPool {
         // new Exception().printStackTrace();
     }
 
-    public static MethodHandle readSingletonAs(int index, Class<?> type) {
+    public static MethodHandle readConstant(int index, Class<?> as) {
         MethodHandle mh = MethodHandleUtil.bind(MH_GET_SINGLETON_INSTANCE, 1, index);
-        return MethodHandleUtil.castReturnType(mh, type);
+        return MethodHandleUtil.castReturnType(mh, as);
     }
 }

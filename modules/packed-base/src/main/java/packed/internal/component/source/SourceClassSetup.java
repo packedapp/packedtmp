@@ -20,7 +20,6 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ConstantPool;
@@ -31,20 +30,23 @@ import packed.internal.inject.DependencyProvider;
 import packed.internal.inject.service.build.BuildtimeService;
 import packed.internal.util.MethodHandleUtil;
 
-/** All components with a {@link ComponentModifier#SOURCED} modifier has an instance of this class. */
+/** A configuration object for a component class source. */
 public final class SourceClassSetup implements DependencyProvider {
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
     private final Dependant dependant;
 
-    /** A factory that can used to create instances. */
+    /**
+     * Factory that was specified. We only keep this around to find the key that it should be exposed as a service with. As
+     * we need to lazy calculate it from {@link #provide(ComponentSetup)}
+     */
     @Nullable
     private final Factory<?> factory;
 
-    /** If the source represents an instance. */
+    /** If the source represents a constant. */
     @Nullable
-    public final Object instance;
+    private final Object constant;
 
     /** The source model. */
     public final ClassSourceModel model;
@@ -70,30 +72,32 @@ public final class SourceClassSetup implements DependencyProvider {
 
         // The specified source is either a Class, a Factory, or an instance
         Object source = driver.data;
-        Class<?> sourceType;
+        Class<?> sourceClass;
         if (source instanceof Class<?> cl) {
-            sourceType = cl;
-            this.instance = null;
-            // We need to start putting stateful on every component...
-            // We need to stateful on all components...
-            this.factory = component.modifiers().isStateful() ? null : Factory.of(sourceType);
+            this.constant = null;
+            this.factory = component.modifiers().isStateful() ? null : Factory.of(cl);
+            sourceClass = cl;
         } else if (source instanceof Factory<?> fac) {
-            this.instance = null;
+            this.constant = null;
             this.factory = fac;
-            sourceType = factory.rawType();
+            sourceClass = factory.rawType();
         } else {
-            this.instance = source;
+            this.constant = source;
             this.factory = null;
-            sourceType = source.getClass();
+            sourceClass = source.getClass();
             component.pool.constants.add(this);
         }
 
-        this.model = component.realm.accessor().modelOf(sourceType);
+        RealmAccessor realm = component.realm.accessor();
+
+        // Find a model for a realm/source class combination. Realm is needed
+        // because we allow support annotations
+        this.model = realm.modelOf(sourceClass);
 
         if (factory == null) {
             this.dependant = null;
         } else {
-            MethodHandle mh = component.realm.accessor().toMethodHandle(factory);
+            MethodHandle mh = realm.toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
@@ -102,6 +106,11 @@ public final class SourceClassSetup implements DependencyProvider {
         }
 
         model.register(component, this);
+    }
+
+    public void writeConstantPool(ConstantPool pool) {
+        assert poolIndex >= 0;
+        pool.store(poolIndex, constant);
     }
 
     /** {@inheritDoc} */
@@ -114,26 +123,26 @@ public final class SourceClassSetup implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        if (instance != null) {
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(instance), ConstantPool.class); // MethodHandle()T -> MethodHandle(Region)T
+        if (constant != null) {
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T -> MethodHandle(Region)T
         } else if (poolIndex > -1) {
-            return ConstantPool.readSingletonAs(poolIndex, model.type);
+            return ConstantPool.readConstant(poolIndex, model.type);
         } else {
             return dependant.buildMethodHandle();
         }
     }
 
-    public BuildtimeService provide(ComponentSetup compConf) {
+    public BuildtimeService provide(ComponentSetup component) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         BuildtimeService s = service;
         if (s == null) {
             Key<?> key;
-            if (instance != null) {
+            if (constant != null) {
                 key = Key.of(model.type); // Move to model?? What if instance has Qualifier???
             } else {
                 key = factory.key();
             }
-            s = service = compConf.memberOfContainer.getServiceManagerOrCreate().provideSource(compConf, key);
+            s = service = component.memberOfContainer.getServiceManagerOrCreate().provideSource(component, key);
         }
         return s;
     }

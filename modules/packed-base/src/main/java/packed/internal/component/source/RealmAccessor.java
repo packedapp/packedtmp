@@ -34,7 +34,7 @@ import packed.internal.util.ThrowableUtil;
  * object, and one using whatever power a module descriptor has given us.
  */
 // Realm Accessor
-public abstract class ModuleAccessor {
+public abstract class RealmAccessor {
 
     /** Calls package-private method Factory.toMethodHandle(Lookup). */
     private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
@@ -64,12 +64,12 @@ public abstract class ModuleAccessor {
         }
     }
 
-    public abstract ModuleAccessor withLookup(Lookup lookup);
+    public abstract RealmAccessor withLookup(Lookup lookup);
 
     /**
      * A realm that makes use of a explicitly registered lookup object, for example, via ContainerAssembly#lookup(Lookup).
      */
-    private static final class WithLookup extends ModuleAccessor {
+    private static final class WithLookup extends RealmAccessor {
 
         /** The actual lookup object we are wrapping. */
         private final Lookup lookup;
@@ -88,20 +88,20 @@ public abstract class ModuleAccessor {
         }
 
         @Override
-        public ModuleAccessor withLookup(Lookup lookup) {
+        public RealmAccessor withLookup(Lookup lookup) {
             return parent.withLookup(lookup);
         }
     }
 
     /** A model of a realm, typically based on a subclass of {@link Assembly}. */
-    public static final class WithModuleInfo extends ModuleAccessor {
+    public static final class WithModuleInfo extends RealmAccessor {
 
         /** A cache of realm models. */
-        private static final ClassValue<ModuleAccessor.WithModuleInfo> MODELS = new ClassValue<>() {
+        private static final ClassValue<RealmAccessor.WithModuleInfo> MODELS = new ClassValue<>() {
 
             /** {@inheritDoc} */
             @Override
-            protected ModuleAccessor.WithModuleInfo computeValue(Class<?> type) {
+            protected RealmAccessor.WithModuleInfo computeValue(Class<?> type) {
                 return new WithModuleInfo(type);
             }
         };
@@ -159,7 +159,7 @@ public abstract class ModuleAccessor {
          *            the lookup object
          * @return the new realm
          */
-        public ModuleAccessor withLookup(Lookup lookup) {
+        public RealmAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.
@@ -185,7 +185,7 @@ public abstract class ModuleAccessor {
          *            the container source type
          * @return a container source model for the specified type
          */
-        public static ModuleAccessor.WithModuleInfo of(Class<?> sourceType) {
+        public static RealmAccessor.WithModuleInfo of(Class<?> sourceType) {
             return MODELS.get(sourceType);
         }
     }

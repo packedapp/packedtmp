@@ -127,6 +127,11 @@ public abstract class Factory<T> {
      * variables. This means that any method handle made visible to the application will always be fully formed. This is
      * true even if the method handle is published through a shared variable in a data race.
      */
+    // So we cache it.. But access checks must be performed every time...
+    // Only if it is a class..
+    // Maybe we need a flag... like... You can use this method handle without doing any kind of
+    // checks. Or you need to verify usage of this factory with the realm.
+    // Basically that the underlying class is open to whatever realm there is
     private MethodHandle methodHandle;
 
     /** The type of objects this factory creates. */

@@ -47,16 +47,16 @@ public final class ConstantPoolSetup {
     public final Lifecycle lifecycle = new Lifecycle();
 
     ConstantPool newRegion(PackedInitializationContext pic, PackedComponent root) {
-        ConstantPool region = new ConstantPool(nextIndex);
+        ConstantPool pool = new ConstantPool(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().hasRuntime()) {
-            region.store(0, new PackedApplicationRuntime(pic));
+            pool.store(0, new PackedApplicationRuntime(pic));
         }
 
         // We start by storing all constant instances in the region array
         for (SourceClassSetup sa : constants) {
-            region.store(sa.poolIndex, sa.instance);
+            sa.writeConstantPool(pool);
         }
 
         // All constants that must be instantiated and stored
@@ -67,7 +67,7 @@ public final class ConstantPoolSetup {
 
             Object instance;
             try {
-                instance = mh.invoke(region);
+                instance = mh.invoke(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
@@ -77,18 +77,18 @@ public final class ConstantPoolSetup {
             }
 
             int index = injectable.regionIndex();
-            region.store(index, instance);
+            pool.store(index, instance);
         }
 
         // Initialize
         for (MethodHandle mh : initializers) {
             try {
-                mh.invoke(region);
+                mh.invoke(pool);
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
         }
-        return region;
+        return pool;
     }
 
     public int reserve() {

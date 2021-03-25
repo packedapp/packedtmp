@@ -24,14 +24,14 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Composer;
 import app.packed.container.Extension;
-import packed.internal.component.source.ModuleAccessor;
+import packed.internal.component.source.RealmAccessor;
 import packed.internal.container.ExtensionModel;
 
 /** The setup of an realm */
 public final class RealmSetup {
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
-    private ModuleAccessor accessor;
+    private RealmAccessor accessor;
 
     ComponentSetup current;
 
@@ -67,10 +67,10 @@ public final class RealmSetup {
         this.realmType = extension.extensionClass();
     }
 
-    public ModuleAccessor accessor() {
-        ModuleAccessor r = accessor;
+    public RealmAccessor accessor() {
+        RealmAccessor r = accessor;
         if (r == null) {
-            this.accessor = r = ModuleAccessor.WithModuleInfo.of(realmType);
+            this.accessor = r = RealmAccessor.WithModuleInfo.of(realmType);
         }
         return r;
     }
