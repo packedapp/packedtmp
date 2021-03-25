@@ -58,6 +58,6 @@ public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(this, entry);
+        return new DelegatingRuntimeService(key(), entry);
     }
 }

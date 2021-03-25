@@ -71,6 +71,6 @@ public final class RekeyServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(this, serviceToRekey.toRuntimeEntry(context));
+        return new DelegatingRuntimeService(key(), serviceToRekey.toRuntimeEntry(context));
     }
 }

@@ -47,7 +47,7 @@ final class MappingServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new MappingRuntimeService(this, entryToMap.toRuntimeEntry(context), function);
+        return new MappingRuntimeService(key(), entryToMap.toRuntimeEntry(context), function);
     }
 
     @Override

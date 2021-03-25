@@ -51,7 +51,7 @@ public abstract class RuntimeService implements PackedService {
 
     @Override
     public final PackedService rekeyAs(Key<?> key) {
-        return new DelegatingRuntimeService(this, key);
+        return new DelegatingRuntimeService(key, this);
     }
 
     public abstract boolean requiresProvisionContext();

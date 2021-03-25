@@ -22,13 +22,13 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * A delegating runtime service node.
  * <p>
  * This type is used for exported nodes as well as nodes that are imported from other containers.
  */
+// Alias???
 public final class DelegatingRuntimeService extends RuntimeService {
 
     /** The runtime node to delegate to. */
@@ -37,19 +37,14 @@ public final class DelegatingRuntimeService extends RuntimeService {
     /** The key under which the service is available. */
     private final Key<?> key;
 
-    public DelegatingRuntimeService(RuntimeService rs, Key<?> key) {
-        this.key = requireNonNull(key);
-        this.delegate = requireNonNull(rs);
-    }
-
     /**
      * Creates a new runtime alias node.
      *
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingRuntimeService(ServiceSetup buildNode, RuntimeService delegate) {
-        this.key = requireNonNull(buildNode.key());
+    public DelegatingRuntimeService(Key<?> key, RuntimeService delegate) {
+        this.key = requireNonNull(key);
         this.delegate = requireNonNull(delegate);
     }
 
@@ -61,11 +56,6 @@ public final class DelegatingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object provideInstance(ProvisionContext site) {
-        return delegate.provideInstance(site);
-    }
-
-    @Override
     public Key<?> key() {
         return key;
     }
@@ -74,6 +64,12 @@ public final class DelegatingRuntimeService extends RuntimeService {
     @Override
     public ServiceMode mode() {
         return delegate.mode();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Object provideInstance(ProvisionContext site) {
+        return delegate.provideInstance(site);
     }
 
     /** {@inheritDoc} */

@@ -15,29 +15,18 @@
  */
 package packed.internal.inject.service.runtime;
 
-import static java.util.Objects.requireNonNull;
-
 import app.packed.inject.Provider;
 import app.packed.inject.ProvisionContext;
 
 /**
  *
  */
-public class ServiceWrapperProvider<T> implements Provider<T> {
-
-    final RuntimeService service;
-
-    final ProvisionContext ppc;
-
-    ServiceWrapperProvider(RuntimeService service, ProvisionContext ppc) {
-        this.service = requireNonNull(service);
-        this.ppc = requireNonNull(ppc);
-    }
+record ProvisionContextProvider<T> (RuntimeService service, ProvisionContext context) implements Provider<T> {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public T provide() {
-        return (T) service.provideInstance(ppc);
+        return (T) service.provideInstance(context);
     }
 }

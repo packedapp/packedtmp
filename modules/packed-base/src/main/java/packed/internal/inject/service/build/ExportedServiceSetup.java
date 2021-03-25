@@ -91,6 +91,6 @@ public final class ExportedServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(this, exportedEntry.toRuntimeEntry(context));
+        return new DelegatingRuntimeService(key(), exportedEntry.toRuntimeEntry(context));
     }
 }

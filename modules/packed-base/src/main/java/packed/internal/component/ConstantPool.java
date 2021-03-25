@@ -41,11 +41,13 @@ public final /* primitive*/ class ConstantPool {
         table = new Object[i];
     }
 
-    public Object read(int index) {
-//        Object value = store[index];
-        // System.out.println("Reading index " + index + " value= " + value);
-        // new Exception().printStackTrace();
-        return table[index];
+    // Don't know
+    PackedApplicationRuntime container() {
+        return (PackedApplicationRuntime) table[0];
+    }
+
+    public boolean isSet(int index) {
+        return table[index] != null;
     }
 
     public void print() {
@@ -57,13 +59,11 @@ public final /* primitive*/ class ConstantPool {
         System.out.println("--");
     }
 
-    public boolean isSet(int index) {
-        return table[index] != null;
-    }
-
-    // Don't know
-    PackedApplicationRuntime container() {
-        return (PackedApplicationRuntime) table[0];
+    public Object read(int index) {
+//        Object value = store[index];
+        // System.out.println("Reading index " + index + " value= " + value);
+        // new Exception().printStackTrace();
+        return table[index];
     }
 
     ServiceLocator serviceRegistry(PackedComponent node) {

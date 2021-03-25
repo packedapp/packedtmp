@@ -23,9 +23,8 @@ import java.util.function.Function;
 import app.packed.base.Key;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.service.build.ServiceSetup;
 
-/** A runtime service entry that uses a {@link Function} to map an existing service. */
+/** A runtime service that uses a {@link Function} to map a service instance from another service. */
 public final class MappingRuntimeService extends RuntimeService {
 
     /** The runtime entry whose service should mapped. */
@@ -43,8 +42,8 @@ public final class MappingRuntimeService extends RuntimeService {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public MappingRuntimeService(ServiceSetup buildNode, RuntimeService delegate, Function<?, ?> function) {
-        this.key = requireNonNull(buildNode.key());
+    public MappingRuntimeService(Key<?> key, RuntimeService delegate, Function<?, ?> function) {
+        this.key = requireNonNull(key);
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);
     }
@@ -57,15 +56,8 @@ public final class MappingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object provideInstance(ProvisionContext site) {
-        Object f = delegate.provideInstance(site);
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-        Object t = ((Function) function).apply(f);
-        // TODO Check Type, and not null
-        // Throw Provision Exception????
-        // Every node
-        // Vi bliver vel ogsaa noedt til at checke det for en build entry....
-        return t;
+    public Key<?> key() {
+        return key;
     }
 
     /** {@inheritDoc} */
@@ -76,12 +68,24 @@ public final class MappingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public boolean requiresProvisionContext() {
-        return delegate.requiresProvisionContext();
+    public Object provideInstance(ProvisionContext site) {
+        Object other = delegate.provideInstance(site);
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Object t = ((Function) function).apply(other);
+
+        if (!key.rawType().isInstance(t)) {
+            if (t == null) {
+                throw new NullPointerException();
+            }
+            throw new RuntimeException();
+        }
+        return t;
     }
 
+    /** {@inheritDoc} */
     @Override
-    public Key<?> key() {
-        return key;
+    public boolean requiresProvisionContext() {
+        return delegate.requiresProvisionContext();
     }
 }

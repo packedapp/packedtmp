@@ -82,7 +82,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             return Provider.ofConstant(constant);
         } else {
             ProvisionContext pc = PackedProvisionContext.of(s.key());
-            return new ServiceWrapperProvider<>(s, pc);
+            return new ProvisionContextProvider<>(s, pc);
         }
     }
 
