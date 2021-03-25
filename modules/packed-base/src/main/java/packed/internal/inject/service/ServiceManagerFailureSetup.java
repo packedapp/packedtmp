@@ -16,22 +16,33 @@
 package packed.internal.inject.service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.ExportedServiceSetup;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
- *
+ * An error manager is lazily created when an the configuration of an injection manager fails
  */
-// Build -> Exception
-// Compose -> ErrorMessage
-// Instantiation/Injection -> Exception
+public class ServiceManagerFailureSetup {
 
-public final class InjectionErrorManagerMessages {
+    /** A map of multiple exports of the same key. */
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceSetup>> failingDuplicateExports = new LinkedHashMap<>();
+
+    /** A map of all keyed exports where an entry matching the key could not be found. */
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ExportedServiceSetup>> failingUnresolvedKeyedExports = new LinkedHashMap<>();
+
+    /** A map of build entries that provide services with the same key. */
+    public final LinkedHashMap<Key<?>, LinkedHashSet<ServiceSetup>> failingDuplicateProviders = new LinkedHashMap<>();
+    
+ // Build -> Exception
+ // Compose -> ErrorMessage
+ // Instantiation/Injection -> Exception
+
 
     public static void addDuplicateNodes(HashMap<Key<?>, LinkedHashSet<ServiceSetup>> dublicateNodes) {
 //        ConfigSiteJoiner csj = new ConfigSiteJoiner();

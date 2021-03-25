@@ -209,7 +209,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         }
 
         if (sm.errorManager().failingUnresolvedKeyedExports != null) {
-            InjectionErrorManagerMessages.addUnresolvedExports(sm, sm.errorManager().failingUnresolvedKeyedExports);
+            ServiceManagerFailureSetup.addUnresolvedExports(sm, sm.errorManager().failingUnresolvedKeyedExports);
         }
         if (sm.errorManager().failingDuplicateExports != null) {
             // TODO add error messages

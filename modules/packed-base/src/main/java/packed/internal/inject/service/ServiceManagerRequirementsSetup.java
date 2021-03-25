@@ -156,6 +156,41 @@ public final class ServiceManagerRequirementsSetup {
     public void require(Key<?> key, boolean isOptional /* , ConfigSite configSite */) {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
+    
+   static class Requirement {
+
+        // Always starts out as optional
+        boolean isOptional = true;
+
+        final Key<?> key;
+
+        final ArrayList<FromInjectable> list = new ArrayList<>();
+
+        Requirement(Key<?> key) {
+            this.key = key;
+        }
+
+        void missingDependency(Dependant i, int dependencyIndex, DependencyDescriptor d) {
+            if (!d.isOptional()) {
+                isOptional = false;
+            }
+            list.add(new FromInjectable(i, dependencyIndex, d));
+        }
+
+        static class FromInjectable {
+            final Dependant i;
+            final int dependencyIndex;
+            final DependencyDescriptor d;
+
+            FromInjectable(Dependant i, int dependencyIndex, DependencyDescriptor d) {
+                this.i = requireNonNull(i);
+                this.dependencyIndex = dependencyIndex;
+                this.d = d;
+            }
+
+        }
+    }
+
 }
 // exactContract(Contract, forceValidate)
 // supportContract() <-- can require less dependencies, any optional dependencies, export more dependencies

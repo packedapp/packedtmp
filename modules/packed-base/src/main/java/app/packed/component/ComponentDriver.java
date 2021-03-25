@@ -81,4 +81,9 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
         return driver().bind(implementation);
     }
+    
+    // IDK
+    interface SourcedBuilder {
+        
+    }
 }

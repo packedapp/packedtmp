@@ -37,7 +37,8 @@ import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.service.Requirement.FromInjectable;
+import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
+import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceInstanceServiceSetup;
 import packed.internal.inject.service.runtime.AbstractServiceLocator;
@@ -48,8 +49,9 @@ import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
 
 /**
- * A service composer is responsible for managing the services for a single assembly at build time. A
- * {@link ServiceManagerTree} is responsible for managing 1 or more service composers that are directly connected and
+ * A service manager is responsible for managing the services for a single container at build time.
+ * <p>
+ * A {@link ServiceManagerTree} is responsible for managing 1 or more service manager tree that are directly connected and
  * part of the same build.
  */
 public final class ServiceManagerSetup {
@@ -62,7 +64,7 @@ public final class ServiceManagerSetup {
 
     /** An error manager that is lazily initialized. */
     @Nullable
-    private InjectionErrorManager em;
+    private ServiceManagerFailureSetup em;
 
     /** A service exporter handles everything to do with exports of services. */
     private final ServiceManagerExportSetup exports = new ServiceManagerExportSetup(this);
@@ -130,10 +132,10 @@ public final class ServiceManagerSetup {
      * 
      * @return an error manager
      */
-    public InjectionErrorManager errorManager() {
-        InjectionErrorManager e = em;
+    public ServiceManagerFailureSetup errorManager() {
+        ServiceManagerFailureSetup e = em;
         if (e == null) {
-            e = em = new InjectionErrorManager();
+            e = em = new ServiceManagerFailureSetup();
         }
         return e;
     }
@@ -258,7 +260,7 @@ public final class ServiceManagerSetup {
         // Either a local one or one exported by a child
 
         if (em != null) {
-            InjectionErrorManagerMessages.addDuplicateNodes(em.failingDuplicateProviders);
+            ServiceManagerFailureSetup.addDuplicateNodes(em.failingDuplicateProviders);
         }
 
         // Process own exports
