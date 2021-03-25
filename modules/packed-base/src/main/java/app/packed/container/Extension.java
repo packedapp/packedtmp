@@ -438,7 +438,7 @@ public abstract class Extension extends Realm {
         }
 
         // Create and return a single instance of it
-        MethodHandle mh = Infuser.of(MethodHandles.lookup()).singleConstructor(c, c, e -> new IllegalArgumentException(e));
+        MethodHandle mh = Infuser.of(MethodHandles.lookup()).singleConstructor(c, c, e -> new InternalExtensionException(e));
         try {
             return (T) mh.invoke();
         } catch (Throwable t) {

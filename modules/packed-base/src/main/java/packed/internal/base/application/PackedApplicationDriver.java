@@ -214,15 +214,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Implementation of {@link ApplicationDriver.Builder} */
     public static class Builder implements ApplicationDriver.Builder {
 
-        /** A MethodHandle for invoking {@link #component()}. */
+        /** A MethodHandle for invoking {@link PackedInitializationContext#component()}. */
         private static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "component",
                 Component.class);
 
-        /** A MethodHandle for invoking {@link #runtime()}. */
+        /** A MethodHandle for invoking {@link PackedInitializationContext#runtime()}. */
         private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "runtime",
                 ApplicationRuntime.class);
 
-        /** A MethodHandle for invoking {@link #services()}. */
+        /** A MethodHandle for invoking {@link PackedInitializationContext#services()}. */
         private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "services",
                 ServiceLocator.class);
 
@@ -238,7 +238,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
-
+            
             Infuser.Builder builder = Infuser.builder(caller, PackedInitializationContext.class);
             builder.provide(Component.class).byInvoking(MH_COMPONENT);
             builder.provide(ServiceLocator.class).byInvoking(MH_SERVICES);
@@ -285,7 +285,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 
-    /** An implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
+    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
     private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ComponentSetup root) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
