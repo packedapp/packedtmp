@@ -32,7 +32,7 @@ import packed.internal.inject.DependencyProvider;
  * <p>
  * This class server two main purposes:
  * 
- * Finds dependency circles either within the same assembly or across assemblies that are not in a parent-child relationship.
+ * Finds dependency circles either within the same container or across containers that are not in a parent-child relationship.
  * 
  * Responsible for invoking the {@link Dependant#onAllDependenciesResolved(ConstantPoolSetup)} callback for every
  * {@link Dependant}. We do this here, because we guarantee that all dependants of a dependant are always invoked before

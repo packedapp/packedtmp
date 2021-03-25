@@ -50,7 +50,7 @@ public final class WireletWrapper {
     }
 
     @Nullable
-    public static WireletWrapper forApplication(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, Wirelet... wirelets) {
+    public static WireletWrapper forApplication(PackedApplicationDriver<?> applicationDriver, OldPackedComponentDriver<?> componentDriver, Wirelet... wirelets) {
         Wirelet[] ws;
         if (applicationDriver.wirelet == null) {
             ws = WireletArray.flatten(wirelets);
@@ -61,7 +61,7 @@ public final class WireletWrapper {
     }
 
     @Nullable
-    public static WireletWrapper forComponent(PackedComponentDriver<?> driver, Wirelet... wirelets) {
+    public static WireletWrapper forComponent(OldPackedComponentDriver<?> driver, Wirelet... wirelets) {
         Wirelet[] ws = WireletArray.flatten(wirelets);
         return new WireletWrapper(ws);
     }

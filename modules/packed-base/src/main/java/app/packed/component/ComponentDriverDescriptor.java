@@ -26,7 +26,7 @@ package app.packed.component;
 // og ikke Component.driver();
 
 public interface ComponentDriverDescriptor {
-
+    
     static ComponentDriverDescriptor of(Assembly<?> assembly) {
         throw new UnsupportedOperationException();
     }

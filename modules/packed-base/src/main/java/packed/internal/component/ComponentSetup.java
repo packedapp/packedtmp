@@ -53,7 +53,7 @@ import packed.internal.base.attribute.PackedAttribute;
 import packed.internal.base.attribute.PackedAttributeModel;
 import packed.internal.base.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
-import packed.internal.component.source.SourceClassSetup;
+import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
@@ -91,7 +91,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
     /** The class source setup if this component has a class source, otherwise null. */
     @Nullable
-    public final SourceClassSetup source;
+    public final ClassSourceSetup source;
 
     /** The build this component is part of. */
     public final BuildSetup build;
@@ -118,7 +118,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public ComponentSetup(BuildSetup build, RealmSetup realm, OldPackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(parent);
         this.build = requireNonNull(build);
 
@@ -169,7 +169,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Setup component sources
         if (modifiers().isSource()) {
-            this.source = new SourceClassSetup(this, driver);
+            this.source = new ClassSourceSetup(this, driver);
         } else {
             this.source = null;
         }
@@ -349,7 +349,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     @Override
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
+        OldPackedComponentDriver<?> driver = OldPackedComponentDriver.getDriver(assembly);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
@@ -363,7 +363,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
-            PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+            OldPackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -524,7 +524,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
+        OldPackedComponentDriver<C> d = (OldPackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.

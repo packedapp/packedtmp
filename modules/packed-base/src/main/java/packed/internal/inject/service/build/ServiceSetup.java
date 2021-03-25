@@ -67,6 +67,13 @@ public abstract class ServiceSetup implements PackedService, DependencyProvider 
         return new MappingServiceSetup(this, key, decoratingFunction);
     }
 
+    public final Service exposeAsService() {
+        if (isFrozen) {
+            return this;
+        }
+        return simple(key, isConstant());
+    }
+
     public final void freeze() {
         isFrozen = true;
     }
@@ -98,13 +105,6 @@ public abstract class ServiceSetup implements PackedService, DependencyProvider 
         return context.transformers.computeIfAbsent(this, k -> {
             return k.newRuntimeNode(context);
         });
-    }
-
-    public final Service exposeAsService() {
-        if (isFrozen) {
-            return this;
-        }
-        return simple(key, isConstant());
     }
 
     // Maaske flyt den til service... Naar vi sealer ting.. Er det godt at give folk en 

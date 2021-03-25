@@ -206,8 +206,8 @@ public final class ServiceManagerSetup {
         p.add(pi);
     }
 
-    public <T> ServiceSetup provideSource(ComponentSetup compConf, Key<T> key) {
-        ServiceSetup e = new SourceInstanceServiceSetup(this, compConf, key);
+    public <T> ServiceSetup provideSource(ComponentSetup component, Key<T> key) {
+        ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
         localServices.add(e);
         return e;
     }

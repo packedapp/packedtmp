@@ -29,11 +29,11 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
 
     /** The runtime entry to delegate to. */
-    private final RuntimeService entry;
+    private final RuntimeService adapt;
 
-    public RuntimeAdaptorServiceSetup(RuntimeService entry) {
-        super(entry.key());
-        this.entry = entry;
+    public RuntimeAdaptorServiceSetup(RuntimeService adapt) {
+        super(adapt.key());
+        this.adapt = adapt;
     }
 
     /** {@inheritDoc} */
@@ -46,18 +46,18 @@ public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
-        return entry.dependencyAccessor();
+        return adapt.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return entry.isConstant();
+        return adapt.isConstant();
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(key(), entry);
+        return new DelegatingRuntimeService(key(), adapt);
     }
 }

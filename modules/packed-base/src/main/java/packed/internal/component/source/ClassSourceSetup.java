@@ -23,7 +23,7 @@ import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ConstantPool;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -31,7 +31,7 @@ import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */
-public final class SourceClassSetup implements DependencyProvider {
+public final class ClassSourceSetup implements DependencyProvider {
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
@@ -66,14 +66,14 @@ public final class SourceClassSetup implements DependencyProvider {
      * @param driver
      *            the component driver
      */
-    public SourceClassSetup(ComponentSetup component, PackedComponentDriver<?> driver) {
+    public ClassSourceSetup(ComponentSetup component, OldPackedComponentDriver<?> driver) {
         // Reserve a place in the constant pool if the source is a singleton
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserve() : -1;
 
         RealmAccessor realm = component.realm.accessor();
 
         // The source is either a Class, a Factory, or a generic instance
-        Object source = driver.data;
+        Object source = driver.binding;
         if (source instanceof Class<?> cl) {
             this.constant = null;
             this.factory = component.modifiers().isStaticClassSource() ? null : Factory.of(cl);

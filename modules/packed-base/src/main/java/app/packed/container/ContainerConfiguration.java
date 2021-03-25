@@ -24,8 +24,11 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedComponentDriver;
 
 /**
@@ -35,11 +38,14 @@ import packed.internal.component.PackedComponentDriver;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = PackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
-            PackedComponentDriver.Option.container());
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = OldPackedComponentDriver.of(MethodHandles.lookup(), ContainerConfiguration.class,
+            OldPackedComponentDriver.Option.container());
 
+    private static final ComponentDriver<ContainerConfiguration> DRIVER_NEW = new ContainerComponentDriver(null);
+
+    
     /**
-     * Creates a new PackedContainerConfiguration, only used by {@link #DRIVER}.
+     * Creates a new ContainerConfiguration, only used by {@link #DRIVER}.
      *
      * @param context
      *            the component configuration context
@@ -47,7 +53,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     public ContainerConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
-
+    
     /**
      * Returns an unmodifiable view of the extensions that are currently used.
      * 
@@ -171,5 +177,35 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public static ComponentDriver<ContainerConfiguration> driver() {
         return DRIVER;
+    }
+
+    /** A component driver that create containers. */
+    private static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
+
+        private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
+
+        private ContainerComponentDriver(Wirelet wirelet) {
+            super(wirelet);
+        }
+
+        @Override
+        public ComponentDriver<ContainerConfiguration> bind(Object object) {
+            throw new UnsupportedOperationException("Cannot bind to a container component driver");
+        }
+
+        @Override
+        public ComponentModifierSet modifiers() {
+            return CONTAINER_MODIFIERS;
+        }
+
+        @Override
+        public ContainerConfiguration toConfiguration(ComponentConfigurationContext context) {
+            return new ContainerConfiguration(context);
+        }
+
+        @Override
+        protected ComponentDriver<ContainerConfiguration> withWirelet(Wirelet w) {
+            return new ContainerComponentDriver(w);
+        }
     }
 }

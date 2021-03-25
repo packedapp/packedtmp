@@ -25,7 +25,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -34,15 +34,16 @@ import packed.internal.component.PackedComponentDriver;
  * It it also possible to install components at runtime via {@link Component}.
  */
 //ProvidableComponentConfiguration
-public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration implements ServiceConfiguration<T>{
+public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration implements ServiceConfiguration<T> {
 
     @SuppressWarnings("rawtypes")
-    private static final BindableComponentDriver DRIVER = PackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
-            PackedComponentDriver.Option.constantSource());
+    private static final BindableComponentDriver DRIVER = OldPackedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+            OldPackedComponentDriver.Option.constantSource());
 
     @SuppressWarnings("rawtypes")
-    private static final BindableComponentDriver PROTOTYPE_DRIVER = PackedComponentDriver.ofFactory(MethodHandles.lookup(), ServiceComponentConfiguration.class);
-    
+    private static final BindableComponentDriver PROTOTYPE_DRIVER = OldPackedComponentDriver.ofFactory(MethodHandles.lookup(),
+            ServiceComponentConfiguration.class);
+
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
@@ -101,7 +102,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     }
 
     // The key unless asNone()
-    
+
     // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
         return context.sourceProvideAsKey();
@@ -138,7 +139,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Class<T> implementation) {
         return PROTOTYPE_DRIVER.bind(implementation);
     }
-    
+
     @SuppressWarnings("unchecked")
     public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Factory<T> factory) {
         return PROTOTYPE_DRIVER.bind(factory);

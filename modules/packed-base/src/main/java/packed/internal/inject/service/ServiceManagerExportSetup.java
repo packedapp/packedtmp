@@ -31,9 +31,10 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.inject.service.build.ServiceSetup;
+import packed.internal.inject.AbstractServiceRegistry;
 import packed.internal.inject.service.build.ExportedServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * This class manages everything to do with exporting of service entries.
@@ -100,7 +101,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
-        return export0(new ExportedServiceSetup(sm, key));
+        return export0(new ExportedServiceSetup( key));
     }
 
     /**

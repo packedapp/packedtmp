@@ -18,7 +18,7 @@ package packed.internal.component;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
-import packed.internal.component.source.SourceClassSetup;
+import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.util.ThrowableUtil;
 
@@ -32,8 +32,8 @@ import packed.internal.util.ThrowableUtil;
 // Is this a ConstantPool?????
 public final class ConstantPoolSetup {
 
-    /** Components that contains constants that should be stored in a region. Is only written by {@link SourceClassSetup}. */
-    private final ArrayList<SourceClassSetup> constants = new ArrayList<>();
+    /** Components that contains constants that should be stored in a region. Is only written by {@link ClassSourceSetup}. */
+    private final ArrayList<ClassSourceSetup> constants = new ArrayList<>();
 
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
@@ -46,7 +46,7 @@ public final class ConstantPoolSetup {
 
     public final Lifecycle lifecycle = new Lifecycle();
 
-    public void addSourceClass(SourceClassSetup s) {
+    public void addSourceClass(ClassSourceSetup s) {
         constants.add(s);
     }
     ConstantPool newRegion(PackedInitializationContext pic, PackedComponent root) {
@@ -58,7 +58,7 @@ public final class ConstantPoolSetup {
         }
 
         // We start by storing all constant instances in the region array
-        for (SourceClassSetup sa : constants) {
+        for (ClassSourceSetup sa : constants) {
             sa.writeConstantPool(pool);
         }
 

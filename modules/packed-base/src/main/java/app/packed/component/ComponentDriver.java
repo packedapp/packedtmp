@@ -17,7 +17,7 @@ package app.packed.component;
 
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 
 /**
  * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
@@ -33,18 +33,11 @@ import packed.internal.component.PackedComponentDriver;
  *            the type of component configuration this driver create
  */
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
-
-    /**
-     * Returns a descriptor for this driver.
-     * 
-     * @return a descriptor for this driver
-     */
-    ComponentDriverDescriptor descriptor();
-
+    
     /**
      * Returns the set of modifiers that will be applied to the component.
      * <p>
-     * The runtime may add additional modifiers once the component is wired.
+     * Additional modifiers may be added once the component is wired.
      * 
      * @return the set of modifiers that will be applied to the component
      */
@@ -54,6 +47,8 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
 
     ComponentDriver<C> with(Wirelet... wirelet);
 
+    ComponentDriver<C> bind(Object object);
+    
     /**
      * Returns a driver that can be used to create stateless components.
      * 
@@ -63,23 +58,23 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
      */
     @SuppressWarnings("unchecked")
     private static <T> BindableComponentDriver<BaseComponentConfiguration, T> driver() {
-        return PackedComponentDriver.STATELESS_DRIVER;
+        return OldPackedComponentDriver.STATELESS_DRIVER;
     }
     
     // Not sure we want this public or ma
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
-        return PackedComponentDriver.INSTALL_DRIVER.bind(implementation);
+        return OldPackedComponentDriver.INSTALL_DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstall(Factory<?> factory) {
-        return PackedComponentDriver.INSTALL_DRIVER.bind(factory);
+        return OldPackedComponentDriver.INSTALL_DRIVER.bind(factory);
     }
 
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
-        return PackedComponentDriver.INSTALL_DRIVER.applyInstance(instance);
+        return OldPackedComponentDriver.INSTALL_DRIVER.applyInstance(instance);
     }
 
     static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {

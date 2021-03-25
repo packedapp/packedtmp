@@ -38,7 +38,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
@@ -118,7 +118,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private BuildSetup buildFromAssembly(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
 
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
+        OldPackedComponentDriver<?> componentDriver = OldPackedComponentDriver.getDriver(assembly);
 
         // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, new RealmSetup(assembly), componentDriver, modifiers, wirelets);
@@ -128,7 +128,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
-            PackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+            OldPackedComponentDriver.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -141,7 +141,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        PackedComponentDriver<CC> pcd = (PackedComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
+        OldPackedComponentDriver<CC> pcd = (OldPackedComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
 
@@ -254,16 +254,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder stateless() {
-            modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
-            return this;
+        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
+            mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
+            return new PackedApplicationDriver<>(this);
         }
 
         /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
-            return new PackedApplicationDriver<>(this);
+        public Builder stateless() {
+            modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
+            return this;
         }
 
         /** {@inheritDoc} */

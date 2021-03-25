@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.source.SourceClassSetup;
+import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
@@ -30,21 +30,21 @@ import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
-/** A build entry wrapping a component source. */
+/** A entry wrapping a component source. */
 public final class SourceInstanceServiceSetup extends ServiceSetup {
 
     /** The singleton source we are wrapping */
-    private final SourceClassSetup source;
+    private final ClassSourceSetup source;
 
     /**
      * Creates a new node from an instance.
      * 
-     * @param compConf
+     * @param component
      *            the component we provide for
      */
-    public SourceInstanceServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, Key<?> key) {
+    public SourceInstanceServiceSetup(ServiceManagerSetup im, ComponentSetup component, Key<?> key) {
         super(key);
-        this.source = requireNonNull(compConf.source);
+        this.source = requireNonNull(component.source);
     }
 
     /** {@inheritDoc} */

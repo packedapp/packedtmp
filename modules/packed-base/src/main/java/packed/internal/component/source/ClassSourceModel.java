@@ -66,7 +66,7 @@ public final class ClassSourceModel {
         this.sourceServices = Map.copyOf(builder.sourceContexts);
     }
 
-    public <T> void registerHooks(ComponentSetup component, SourceClassSetup source) {
+    public <T> void registerHooks(ComponentSetup component, ClassSourceSetup source) {
         for (FieldHookModel f : fields) {
             registerMember(component, source, f);
         }
@@ -76,7 +76,7 @@ public final class ClassSourceModel {
         }
     }
 
-    private void registerMember(ComponentSetup compConf, SourceClassSetup source, MemberHookModel m) {
+    private void registerMember(ComponentSetup compConf, ClassSourceSetup source, MemberHookModel m) {
         requireNonNull(source);
         Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {

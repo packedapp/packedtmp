@@ -21,14 +21,14 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.ConstantPoolSetup;
-import packed.internal.component.source.SourceClassSetup;
+import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * Something that
  * 
- * {@link SourceClassSetup} for methods or fields that needs an instance of the component source
+ * {@link ClassSourceSetup} for methods or fields that needs an instance of the component source
  * 
  * {@link ContextMethodProvide} for methods annotated with {@link Provide}
  * 

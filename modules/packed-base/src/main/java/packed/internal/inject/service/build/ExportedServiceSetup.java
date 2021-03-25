@@ -23,7 +23,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import packed.internal.inject.Dependant;
-import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -50,7 +49,7 @@ public final class ExportedServiceSetup extends ServiceSetup {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedServiceSetup(ServiceManagerSetup builder, Key<?> exportAsKey) {
+    public ExportedServiceSetup( Key<?> exportAsKey) {
         super(exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }

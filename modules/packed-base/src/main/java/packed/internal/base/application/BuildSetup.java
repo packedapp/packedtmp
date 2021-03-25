@@ -21,7 +21,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.ConstantPoolSetup;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.OldPackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 
@@ -34,18 +34,19 @@ public final class BuildSetup implements BuildInfo {
     /** The root component. */
     final ComponentSetup component;
 
-    /** Modifiers of the build. */
-    public final int modifiers;
-
     /** The configuration of the main constant build. */
     public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
+
+    /** Modifiers of the build. */
+    // Hmm hvad er disse i forhold til component modifiers???
+    public final int modifiers;
 
     // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
     // ruleBroken = FFF
     // Man kan kun validere assemblies...
     // Maaske er det exposed paa BuildInfo...
     // Giver det mening at returnere en component hvis det er fejlet??? InjectionGraph er det eneste jeg kan taenke...
-    //Object validationErrors;
+    // Object validationErrors;
 
     /**
      * Creates a new build setup.
@@ -53,10 +54,10 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> driver, int modifiers, Wirelet[] wirelets) {
-        this.application = new ApplicationSetup(applicationDriver);
-        this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + modifiers;
-        this.component = new ComponentSetup(this, realm, driver, null, wirelets);
+    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, OldPackedComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
+        this.application = new ApplicationSetup(applicationDriver, componentDriver);
+        this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
+        this.component = new ComponentSetup(this, realm, componentDriver, null, wirelets);
     }
 
     void close() {

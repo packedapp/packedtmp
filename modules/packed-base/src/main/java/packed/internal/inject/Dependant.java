@@ -32,7 +32,7 @@ import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.MemberHookModel;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.component.source.SourceClassSetup;
+import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.hooks.RuntimeRegionInvoker;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.ServiceDelegate;
@@ -78,14 +78,14 @@ public class Dependant {
     public final DependencyProvider[] providers;
 
     /** The source (component) this dependent is or is a part of. */
-    public final SourceClassSetup source;
+    public final ClassSourceSetup source;
 
     @Nullable
     private final MemberHookModel sourceMember;
 
     public final int providerDelta;
 
-    public Dependant(SourceClassSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public Dependant(ClassSourceSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -97,7 +97,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentSetup compConf, SourceClassSetup source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentSetup compConf, ClassSourceSetup source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
