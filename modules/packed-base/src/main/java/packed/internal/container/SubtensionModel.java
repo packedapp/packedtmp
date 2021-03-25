@@ -60,7 +60,7 @@ final class SubtensionModel {
             }, Extension.class, Class.class);
 
             // Find the constructor for the subtension, only 1 constructor must be declared on the class
-            Constructor<?> con = FindInjectableConstructor.constructorOf(subtensionClass, m -> new InternalExtensionException(m));
+            Constructor<?> con = FindInjectableConstructor.get(subtensionClass, false, m -> new InternalExtensionException(m));
 
             // Create a method handle for the constructor
             MethodHandle constructor = infuser.findAdaptedConstructor(con, Subtension.class);// (Extension,Class)Subtension

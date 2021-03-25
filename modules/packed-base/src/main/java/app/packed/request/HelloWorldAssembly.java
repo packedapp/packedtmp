@@ -15,9 +15,13 @@
  */
 package app.packed.request;
 
-import app.packed.application.BuildWirelets;
+import java.lang.invoke.MethodHandles;
+
 import app.packed.application.App;
+import app.packed.application.ApplicationDriver;
+import app.packed.application.BuildWirelets;
 import app.packed.container.BaseAssembly;
+import app.packed.inject.ServiceLocator;
 
 /**
  *
@@ -32,11 +36,22 @@ public class HelloWorldAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
+        ApplicationDriver<Aaaa> ad = ApplicationDriver.builder().build(MethodHandles.lookup(), Aaaa.class);
+        ad.apply(new HelloWorldAssembly());
+
         // Job.compute()
         App.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {
             System.out.println(c.path() + " wired");
         }));
         System.out.println("BYE");
+
+    }
+
+    static class Aaaa {
+
+        Aaaa(ServiceLocator ss) {
+            System.out.println("NICE APP YOU GOT THERE");
+        }
     }
 
     public static class SomeComponent {

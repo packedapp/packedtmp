@@ -37,7 +37,7 @@ import packed.internal.util.ThrowableUtil;
 public abstract class RealmAccessor {
 
     /** Calls package-private method Factory.toMethodHandle(Lookup). */
-    private static final MethodHandle FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
+    private static final MethodHandle MH_FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
             MethodHandle.class, Lookup.class);
 
     /** A cache of component class descriptors. */
@@ -59,7 +59,7 @@ public abstract class RealmAccessor {
 
     final MethodHandle toMethodHandle(Factory<?> factory) {
         try {
-            return (MethodHandle) FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
+            return (MethodHandle) MH_FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

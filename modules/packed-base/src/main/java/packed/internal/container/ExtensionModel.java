@@ -292,7 +292,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }, ExtensionSetup.class);
 
             // Find the constructor for the extension, only 1 constructor must be declared on the class
-            Constructor<?> con = FindInjectableConstructor.constructorOf(extensionClass, m -> new InternalExtensionException(m));
+            Constructor<?> con = FindInjectableConstructor.get(extensionClass, false, m -> new InternalExtensionException(m));
 
             this.mhConstructor = infuser.findAdaptedConstructor(con, Extension.class);
 

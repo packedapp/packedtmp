@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -158,6 +159,11 @@ public final class StringFormatter {
         return format(method.getDeclaringClass()) + "#" + method.getName() + "(" + format(method.getParameterTypes()) + ")";
     }
 
+    
+    public static String formatShortParameters(Executable e) {
+        return "(" + formatSimple(e.getParameterTypes()) + ")";
+    }
+    
     public static String formatShortWithParameters(Method m) {
         return m.getDeclaringClass().getSimpleName() + "#" + m.getName() + "(" + formatSimple(m.getParameterTypes()) + ")";
     }

@@ -59,7 +59,7 @@ final class InstantiatorBuilder {
     public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, implementation);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-        Constructor<?> constructor = FindInjectableConstructor.injectableConstructorOfIAE(implementation);
+        Constructor<?> constructor = FindInjectableConstructor.get(implementation, false, e -> new IllegalArgumentException(e));
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
 

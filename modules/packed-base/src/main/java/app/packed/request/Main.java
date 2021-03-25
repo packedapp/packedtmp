@@ -72,6 +72,8 @@ class MySidecar extends RealMethodSidecarBootstrap {
         Method m = method();
         MethodHookModel.Builder.registerProcessor(this, c -> {
             // Okay we do not automatically
+            // Der er noget constant pool thingeling der ikke bliver kaldt
+            // ordentligt hvis der ikke er registered en ServiceManagerSetup
             c.memberOfContainer.useExtension(ServiceExtension.class);
             c.build.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
             c.build.application.lifecycle.cs = c;

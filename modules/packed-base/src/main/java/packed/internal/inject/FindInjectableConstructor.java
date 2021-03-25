@@ -19,48 +19,26 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Function;
 
 import app.packed.inject.Inject;
+import packed.internal.util.StringFormatter;
 
 /** A utility class for finding an injectable constructor. */
 public final class FindInjectableConstructor {
 
-    public static Constructor<?> constructorOf(Class<?> type, Function<String, RuntimeException> errorMaker) {
-        return scan(type, false, errorMaker);
-    }
-
-    public static Constructor<?> constructorOfIAE(Class<?> type) {
-        return constructorOf(type, s -> new IllegalArgumentException(s));
-    }
-
-    /**
-     * @param type
-     *            the type to find an injectable constructor on
-     * @return an injectable constructor
-     * @throws IllegalArgumentException
-     *             if a valid injectable constructor could not be found
-     */
-    public static Constructor<?> injectableConstructorOfIAE(Class<?> type) {
-        return scan(type, true, s -> new IllegalArgumentException(s));
-    }
-
-    private static RuntimeException multipleConstructors(Class<?> type, String visibility, Function<String, RuntimeException> errorMaker) {
-        String errorMsg = "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple " + visibility + " constructors on class "
-                + format(type);
-        return errorMaker.apply(errorMsg);
-    }
-
     /**
      * @param <T>
      * @param type
-     * @param scan
+     * @param allowInjectAnnotation
+     *            whether or not we allow usage of {@link Inject}. If we do not, the specified class must have a single
+     *            constructor
      * @param errorMaker
      * @return
-     * @apiNote we could parameterize the constructor we return, however we never call something like
-     *          {@link Constructor#newInstance(Object...)} where it could be relevant
      */
-    private static Constructor<?> scan(Class<?> type, boolean scan, Function<String, RuntimeException> errorMaker) {
+    public static Constructor<?> get(Class<?> type, boolean allowInjectAnnotation, Function<String, RuntimeException> errorMaker) {
         if (type.isAnnotation()) { // must be checked before isInterface
             String errorMsg = format(type) + " is an annotation and cannot be instantiated";
             throw errorMaker.apply(errorMsg);
@@ -84,9 +62,13 @@ public final class FindInjectableConstructor {
         // If we only have 1 constructor, return it.
         if (constructors.length == 1) {
             return constructors[0];
-        } else if (!scan) {
-            String errorMsg = format(type) + " must declare a single constructor only, however " + constructors.length + " constructors was found.";
-            throw errorMaker.apply(errorMsg);
+        } else if (!allowInjectAnnotation) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(format(type)).append(" must declare exactly 1 constructor, [constructors = ");
+            StringJoiner sj = new StringJoiner(", ");
+            List.of(constructors).forEach(c -> sj.add(StringFormatter.formatShortParameters(c)));
+            sb.append(sj).append("]");
+            throw errorMaker.apply(sb.toString());
         }
 
         // See if we have a single constructor annotated with @Inject
@@ -108,7 +90,7 @@ public final class FindInjectableConstructor {
         for (Constructor<?> c : constructors) {
             if (Modifier.isPublic(c.getModifiers())) {
                 if (constructor != null) {
-                    throw multipleConstructors(type, "public", errorMaker);
+                    throw getErrMsg(type, "public", errorMaker);
                 }
                 constructor = c;
             }
@@ -121,7 +103,7 @@ public final class FindInjectableConstructor {
         for (Constructor<?> c : constructors) {
             if (Modifier.isProtected(c.getModifiers())) {
                 if (constructor != null) {
-                    throw multipleConstructors(type, "protected", errorMaker);
+                    throw getErrMsg(type, "protected", errorMaker);
                 }
                 constructor = c;
             }
@@ -134,7 +116,7 @@ public final class FindInjectableConstructor {
         for (Constructor<?> c : constructors) {
             if (!Modifier.isPrivate(c.getModifiers())) {
                 if (constructor != null) {
-                    throw multipleConstructors(type, "package-private", errorMaker);
+                    throw getErrMsg(type, "package-private", errorMaker);
                 }
                 constructor = c;
             }
@@ -145,6 +127,23 @@ public final class FindInjectableConstructor {
 
         // Only private constructors left, and we have already checked whether or not we only have a single method
         // So we must have more than 1 private methods
-        throw multipleConstructors(type, "private", errorMaker);
+        throw getErrMsg(type, "private", errorMaker);
+    }
+
+    private static RuntimeException getErrMsg(Class<?> type, String visibility, Function<String, RuntimeException> errorMaker) {
+        String errorMsg = "No constructor annotated with @" + Inject.class.getSimpleName() + ". And multiple " + visibility + " constructors on class "
+                + format(type);
+        return errorMaker.apply(errorMsg);
+    }
+
+    /**
+     * @param type
+     *            the type to find an injectable constructor on
+     * @return an injectable constructor
+     * @throws IllegalArgumentException
+     *             if a valid injectable constructor could not be found
+     */
+    public static Constructor<?> injectableConstructorOfIAE(Class<?> type) {
+        return get(type, true, s -> new IllegalArgumentException(s));
     }
 }

@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -43,7 +42,6 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletArray;
-import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.inject.classscan.Infuser;
 import packed.internal.util.ThrowableUtil;
 
@@ -67,7 +65,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the used for construction
      */
     private PackedApplicationDriver(Builder builder) {
-        this.mhConstructor = builder.mh;
+        this.mhConstructor = builder.mhConstructor;
         this.modifiers = builder.modifiers;
         this.wirelet = builder.prefix;
     }
@@ -170,12 +168,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return the new application instance
      */
     // application interface???
+    @SuppressWarnings("unchecked")
     public A newApplication(PackedInitializationContext pic) {
+        Object result;
         try {
-            return (A) mhConstructor.invoke(pic);
+            result = mhConstructor.invoke(pic);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+        return (A) result;
     }
 
     /** {@inheritDoc} */
@@ -211,13 +212,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Implementation of {@link ApplicationDriver.Builder} */
     public static class Builder implements ApplicationDriver.Builder {
 
-        MethodHandle mh;
+        MethodHandle mhConstructor;
 
         /** The modifiers of the application. We have a runtime modifier by default. */
         private int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
 
         private Wirelet prefix;
-        
+
         boolean useShellAsSource;
 
         /** {@inheritDoc} */
@@ -235,10 +236,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
                 }
             }, PackedInitializationContext.class);
 
-            // Find the constructor for the subtension, only 1 constructor must be declared on the class
-            Constructor<?> con = FindInjectableConstructor.constructorOf(implementation, s -> new IllegalArgumentException(s));
-
-            mh = infuser.findConstructorFor(con, implementation);
+            // Create a method handle with the signature (PackedInitializationContext)Object
+            mhConstructor = infuser.singleConstructor(implementation, Object.class, s -> new IllegalArgumentException(s));
 
             return new PackedApplicationDriver<>(this);
         }
@@ -246,8 +245,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <A> ApplicationDriver<A> build(Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets) {
+            //mh = mh.asType(mh.type().changeReturnType(Object.class));
             // TODO fix....
-            this.mh = mh;
+            this.mhConstructor = mh;
 
             return new PackedApplicationDriver<>(this);
         }
@@ -255,7 +255,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mh = MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class));
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, PackedInitializationContext.class));
             return new PackedApplicationDriver<>(this);
         }
 

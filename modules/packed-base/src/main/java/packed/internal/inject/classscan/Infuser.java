@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -40,7 +41,7 @@ public class Infuser {
         ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
-        Constructor<?> constructor = FindInjectableConstructor.injectableConstructorOfIAE(type);
+        Constructor<?> constructor = FindInjectableConstructor.get(type, false, msg -> new IllegalArgumentException(msg));
         return mhb.build(oc, constructor);
     }
 
@@ -56,6 +57,15 @@ public class Infuser {
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
         return mhb.build(oc, con);
+    }
+
+    public MethodHandle singleConstructor(Class<?> type, Class<?> adaptTo, Function<String, RuntimeException> errorMaker) {
+        Constructor<?> constructor = FindInjectableConstructor.get(type, false, errorMaker);
+        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
+        MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
+        mhb.add(this);
+        MethodHandle mh = mhb.build(oc, constructor);
+        return mh.asType(mh.type().changeReturnType(adaptTo));
     }
 
     public Set<Key<?>> keys() {

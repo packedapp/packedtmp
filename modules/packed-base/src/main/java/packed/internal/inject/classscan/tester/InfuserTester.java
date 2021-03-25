@@ -15,6 +15,10 @@ public class InfuserTester {
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Secret.class, "l", Long.class);
 
+    private InfuserTester() {
+        
+    }
+    
     InfuserTester(IntStream i, Secret s, InjectionContext ic, Long ll) {
         System.out.println(ic.keys());
         System.out.println(i);
@@ -33,6 +37,7 @@ public class InfuserTester {
         }, String.class, Secret.class);
 
         MethodHandle mh = i.findConstructorFor(InfuserTester.class);
+        
         InfuserTester it = (InfuserTester) mh.invokeExact("sdf", new Secret());
         System.out.println("Bte " + it);
     }
