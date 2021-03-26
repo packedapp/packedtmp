@@ -64,20 +64,28 @@ public abstract class ComponentSetup {
     /** The container this component is a part of. A container is a part of it self. */
     public final ContainerSetup container;
 
+    /** The depth of the component in the hierarchy. */
+    protected final int depth;
+
     /** The modifiers of this component. */
     protected final int modifiers;
 
-    public final ConstantPoolSetup pool;
-
-    /** The realm this component is a part of. */
-    public final RealmSetup realm;
-
-    /** The depth of the component in the hierarchy. */
-    protected final int depth;
+    /** The name of this node. */
+    protected String name;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
     protected final ComponentSetup parent;
+
+    public final ConstantPoolSetup pool;
+    
+    /** The realm this component is a part of. */
+    public final RealmSetup realm;
+
+    /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
+    @Nullable
+    LinkedHashMap<String, ComponentSetup> treeChildren;
+
     
     /**************** See how much of this we can get rid of. *****************/
 
@@ -95,55 +103,7 @@ public abstract class ComponentSetup {
     static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
 
     static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
-    /** The name of this node. */
-    protected String name;
-
-    /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
-    @Nullable
-    LinkedHashMap<String, ComponentSetup> treeChildren;
-
-    protected void addChildFinalName(ComponentSetup child, String name) {
-        Map<String, ComponentSetup> c = treeChildren;
-        if (c == null) {
-            child.name = name;
-            c = treeChildren = new LinkedHashMap<>();
-            c.put(name, child);
-            return;
-        }
-
-        String n = name;
-        int counter = 1;
-        while (c.putIfAbsent(n, child) != null) {
-            n = name + counter++;
-        }
-    }
-
-    int childrenCount() {
-        return treeChildren == null ? 0 : treeChildren.size();
-    }
-
-    @SuppressWarnings("unchecked")
-    <S> List<S> toList(Function<ComponentSetup, S> mapper) {
-        requireNonNull(mapper, "mapper is null");
-        LinkedHashMap<String, ComponentSetup> children = treeChildren;
-        if (children == null) {
-            return List.of();
-        } else {
-            List.copyOf(children.values());
-        }
-        int size = treeChildren == null ? 0 : treeChildren.size();
-        if (size == 0) {
-            return List.of();
-        } else {
-            Object[] o = new Object[size];
-            int index = 0;
-            for (ComponentSetup child : children.values()) {
-                o[index++] = mapper.apply(child);
-            }
-            return (List<S>) List.of(o);
-        }
-    }
-
+    
     /**
      * Creates a new instance of this class
      * 
@@ -215,6 +175,22 @@ public abstract class ComponentSetup {
     // runtime???
     protected void addAttributes(DefaultAttributeMap dam) {}
 
+    protected void addChildFinalName(ComponentSetup child, String name) {
+        Map<String, ComponentSetup> c = treeChildren;
+        if (c == null) {
+            child.name = name;
+            c = treeChildren = new LinkedHashMap<>();
+            c.put(name, child);
+            return;
+        }
+
+        String n = name;
+        int counter = 1;
+        while (c.putIfAbsent(n, child) != null) {
+            n = name + counter++;
+        }
+    }
+
     AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
         // Maaske er det simpelthen et view...
@@ -237,6 +213,32 @@ public abstract class ComponentSetup {
     public void checkCurrent() {
         if (realm.current() != this) {
             throw new IllegalStateException("This operation must be called immediately after wiring of the component");
+        }
+    }
+
+    int childrenCount() {
+        return treeChildren == null ? 0 : treeChildren.size();
+    }
+
+    @SuppressWarnings("unchecked")
+    <S> List<S> childrenToList(Function<ComponentSetup, S> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        LinkedHashMap<String, ComponentSetup> children = treeChildren;
+        if (children == null) {
+            return List.of();
+        } else {
+            List.copyOf(children.values());
+        }
+        int size = treeChildren == null ? 0 : treeChildren.size();
+        if (size == 0) {
+            return List.of();
+        } else {
+            Object[] o = new Object[size];
+            int index = 0;
+            for (ComponentSetup child : children.values()) {
+                o[index++] = mapper.apply(child);
+            }
+            return (List<S>) List.of(o);
         }
     }
 
@@ -349,21 +351,6 @@ public abstract class ComponentSetup {
         setName0(name, null);
     }
 
-    /**
-     * Checks the name of the component.
-     * 
-     * @param name
-     *            the name to check
-     * @return the name if valid
-     */
-    public static String checkComponentName(String name) {
-        requireNonNull(name, "name is null");
-        if (name != null) {
-
-        }
-        return name;
-    }
-
     protected void setName0(String newName, ExtensionModel extensionModel) {
         String n = newName;
         if (newName == null) {
@@ -462,6 +449,21 @@ public abstract class ComponentSetup {
         return pcd.toConfiguration(component);
     }
 
+    /**
+     * Checks the name of the component.
+     * 
+     * @param name
+     *            the name to check
+     * @return the name if valid
+     */
+    public static String checkComponentName(String name) {
+        requireNonNull(name, "name is null");
+        if (name != null) {
+
+        }
+        return name;
+    }
+
     // This should only be called by special methods
     // We just take the lookup to make sure caller think twice before calling this method.
     public static ComponentSetup unadapt(Lookup caller, Component component) {
@@ -483,7 +485,7 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return component.toList(ComponentSetup::adaptor);
+            return component.childrenToList(ComponentSetup::adaptor);
         }
 
         /** {@inheritDoc} */
