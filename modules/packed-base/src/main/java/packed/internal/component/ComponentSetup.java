@@ -31,7 +31,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
-import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -41,7 +40,6 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import packed.internal.application.BuildSetup;
-import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
@@ -59,7 +57,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public final WireletWrapper wirelets;
 
     /** The modifiers of this component. */
-    final int modifiers;
+    protected final int modifiers;
 
     /* *************** Setup **************** */
 
@@ -131,22 +129,11 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // Setup container
         this.container = this instanceof ContainerSetup container ? container : parent.container;
-                
+
         // Setup Runtime
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
-    }
-
-    void fixCurrent() {
-        if (name == null) {
-            setName(null);
-        }
-        if (onWire != null) {
-            onWire.accept(adaptor());
-        }
-        // run onWiret
-        // finalize name
     }
 
     /**
@@ -177,37 +164,17 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         return new ComponentAdaptor(this);
     }
 
-    public <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
-        requireNonNull(attribute, "attribute is null");
-        requireNonNull(value, "value is null");
-        // check realm.open + attribute.write
-    }
+    protected void addAttributes(DefaultAttributeMap dam) {}
 
     AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
         // Maaske er det simpelthen et view...
         // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
         DefaultAttributeMap dam = new DefaultAttributeMap();
-
-        if (this instanceof SourceComponentSetup bcs) {
-            if (bcs.source != null) {
-                dam.addValue(ComponentAttributes.SOURCE_CLASS, bcs.source.model.type);
-            }
-        }
-
         addAttributes(dam);
-
-        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedApplicationDriver<?> pac = build().application.driver;
-            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
-        }
         return dam;
     }
 
-    protected void addAttributes(DefaultAttributeMap dam) {
-        
-    }
-    
     public BuildSetup build() {
         return build;
     }
@@ -216,6 +183,87 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (isClosed) {
             throw new IllegalStateException("This component can no longer be configured");
         }
+    }
+
+    public void checkCurrent() {
+        if (realm.current != this) {
+            throw new IllegalStateException("This operation must be called immediately after wiring of the component");
+        }
+    }
+
+    void fixCurrent() {
+        if (name == null) {
+            setName(null);
+        }
+        if (onWire != null) {
+            onWire.accept(adaptor());
+        }
+        // run onWiret
+        // finalize name
+    }
+
+    /**
+     * Returns the container this component is a part of. Or null if this component is the top level container.
+     * 
+     * @return the container this component is a part of
+     */
+    @Nullable
+    public ContainerSetup getMemberOfContainer() {
+        return container;
+    }
+
+    public String getName() {
+        // Only update with NAME_GET if no prev set/get op
+        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
+        return name;
+    }
+
+    @Nullable
+    public ComponentSetup getParent() {
+        return treeParent;
+    }
+
+    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
+        // Extract the component driver from the assembly
+        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
+
+        // If this component is an extension, we add it to the extension's container instead of the extension
+        // itself, as the extension component is not retained at runtime
+        ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
+
+        // Create a new component and a new realm
+        ComponentSetup component = driver.newComponent(build, new RealmSetup(assembly), parent, wirelets);
+
+        // Create the component configuration that is needed by the assembly
+        ComponentConfiguration configuration = driver.toConfiguration((ComponentConfigurationContext) component);
+
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        try {
+            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
+        component.realmClose();
+
+        return new ComponentAdaptor(this);
+    }
+
+    public PackedComponentModifierSet modifiers() {
+        return new PackedComponentModifierSet(modifiers);
+    }
+
+    public NamespacePath path() {
+        int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
+        if ((nameState & anyPathMask) != 0) {
+            ComponentSetup p = treeParent;
+            while (p != null && ((p.nameState & anyPathMask) == 0)) {
+                p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+            }
+        }
+        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+        return PackedTreePath.of(this); // show we weak intern them????
     }
 
     /**
@@ -253,76 +301,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             container.close(pool);
         }
         isClosed = true;
-    }
-
-    /**
-     * Returns the container this component is a part of. Or null if this component is the top level container.
-     * 
-     * @return the container this component is a part of
-     */
-    @Nullable
-    public ContainerSetup getMemberOfContainer() {
-        return container;
-    }
-
-    public String getName() {
-        // Only update with NAME_GET if no prev set/get op
-        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
-        return name;
-    }
-
-    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
-        // Extract the component driver from the assembly
-        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
-
-        // If this component is an extension, we add it to the extension's container instead of the extension
-        // itself, as the extension component is not retained at runtime
-        ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
-
-        // Create a new component and a new realm
-        ComponentSetup component = driver.newComponent(build, new RealmSetup(assembly), parent, wirelets);
-
-        // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = driver.toConfiguration((ComponentConfigurationContext) component);
-
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        try {
-            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
-        // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
-        component.realmClose();
-
-        return new ComponentAdaptor(this);
-    }
-
-    public PackedComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(modifiers);
-    }
-
-    @Nullable
-    public ComponentSetup getParent() {
-        return treeParent;
-    }
-
-    public NamespacePath path() {
-        int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
-        if ((nameState & anyPathMask) != 0) {
-            ComponentSetup p = treeParent;
-            while (p != null && ((p.nameState & anyPathMask) == 0)) {
-                p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
-            }
-        }
-        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
-        return PackedTreePath.of(this); // show we weak intern them????
-    }
-
-    public void checkCurrent() {
-        if (realm.current != this) {
-            throw new IllegalStateException("This operation must be called immediately after wiring of the component");
-        }
     }
 
     public void setName(String name) {
@@ -438,6 +416,12 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             }
         }
         name = n;
+    }
+
+    public <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
+        requireNonNull(attribute, "attribute is null");
+        requireNonNull(value, "value is null");
+        // check realm.open + attribute.write
     }
 
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {

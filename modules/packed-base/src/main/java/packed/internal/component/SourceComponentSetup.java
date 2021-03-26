@@ -6,15 +6,17 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
+import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.source.ClassSourceSetup;
 
 public class SourceComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
-    
+
     /** The class source setup if this component has a class source, otherwise null. */
     @Nullable
     public final ClassSourceSetup source;
@@ -32,6 +34,13 @@ public class SourceComponentSetup extends ComponentSetup implements ComponentCon
         // Set a default name if up default name
         if (name == null) {
             setName0(null);
+        }
+    }
+
+    @Override
+    protected void addAttributes(DefaultAttributeMap dam) {
+        if (source != null) {
+            dam.addValue(ComponentAttributes.SOURCE_CLASS, source.model.type);
         }
     }
 

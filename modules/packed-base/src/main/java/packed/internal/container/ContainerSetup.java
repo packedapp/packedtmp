@@ -25,7 +25,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -34,8 +36,11 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
+import packed.internal.application.PackedApplicationDriver;
+import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -90,6 +95,15 @@ public final class ContainerSetup extends ComponentSetup implements ComponentCon
         if (name == null) {
             setName0(null);
         }
+    }
+
+    @Override
+    protected void addAttributes(DefaultAttributeMap dam) {
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
+            PackedApplicationDriver<?> pac = build().application.driver;
+            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
+        }
+
     }
 
     /**
