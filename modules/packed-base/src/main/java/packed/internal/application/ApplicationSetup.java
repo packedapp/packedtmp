@@ -6,6 +6,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentDriver;
 import packed.internal.component.source.SourceComponentSetup;
+import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /** Build-time configuration for an application. */
 public final class ApplicationSetup {
@@ -13,6 +14,9 @@ public final class ApplicationSetup {
     /** The applications's driver. */
     public final PackedApplicationDriver<?> driver;
 
+    /** The configuration of the main constant build. */
+    public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
+    
     /**
      * Create a new application setup
      * 

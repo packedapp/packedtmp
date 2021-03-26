@@ -23,16 +23,12 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.container.ContainerSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /** The configuration of a build. */
 public final class BuildSetup implements BuildInfo {
 
     /** The root component. */
     final ContainerSetup component;
-
-    /** The configuration of the main constant build. */
-    public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
 
     /** Modifiers of the build. */
     // Hmm hvad er disse i forhold til component modifiers???

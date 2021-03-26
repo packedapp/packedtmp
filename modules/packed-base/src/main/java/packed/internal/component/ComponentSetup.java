@@ -100,13 +100,11 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.build = requireNonNull(build);
 
         // Setup Realm
-        this.realm = realm;
-        realm.updateCurrent(this);
 
         // Various
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
-            this.pool = build.constantPool;
+            this.pool = application.constantPool;
         } else {
             this.modifiers = driver.modifiers;
             this.pool = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.pool;
@@ -120,6 +118,10 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
+        
+        // finally update the realm
+        this.realm = realm;
+        realm.updateCurrent(this);
     }
 
     /**
