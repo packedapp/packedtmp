@@ -54,7 +54,7 @@ import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
-import packed.internal.container.NewExtensionSetup;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
@@ -218,12 +218,12 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             }
         }
 
-        if (this instanceof NewExtensionSetup nes) {
-            dam.addValue(ComponentAttributes.EXTENSION_CLASS, nes.extension.extensionClass());
-            PackedAttributeModel pam = nes.extension.model().attributes();
+        if (this instanceof ExtensionSetup nes) {
+            dam.addValue(ComponentAttributes.EXTENSION_CLASS, nes.extensionClass());
+            PackedAttributeModel pam = nes.model().attributes();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
-                    Extension ex = nes.extension.extensionInstance();
+                    Extension ex = nes.extensionInstance();
                     Object val;
                     MethodHandle mh = e.getValue().mh;
                     try {
@@ -436,7 +436,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                     }
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...
-            } else if (this instanceof NewExtensionSetup nes) {
+            } else if (this instanceof ExtensionSetup nes) {
                 n = nes.model.nameComponent;
             }
             if (n == null) {

@@ -110,7 +110,7 @@ public final class ContainerSetup {
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
         Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
         for (ExtensionSetup pec : extensionsOrdered) {
-            pec.component.onComplete();
+            pec.onComplete();
         }
 
         // Resolve local services
@@ -220,14 +220,14 @@ public final class ContainerSetup {
         // And run ea.preContainerChildren on them...
         // And then repeat until some list/set has not been touched...
         for (ExtensionSetup ea : extensions.values()) {
-            ea.component.preContainerChildren();
+            ea.preContainerChildren();
         }
 
         while (tmpExtensions != null) {
             ArrayList<ExtensionSetup> te = tmpExtensions;
             tmpExtensions = null;
             for (ExtensionSetup ea : te) {
-                ea.component.preContainerChildren();
+                ea.preContainerChildren();
             }
         }
     }
@@ -266,7 +266,7 @@ public final class ContainerSetup {
                 caller.checkConfigurable();
             }
             // Create the new extension
-            extension = NewExtensionSetup.initialize(this, extensionClass);
+            extension = ExtensionSetup.initialize(this, extensionClass);
 
             // Add the extension to the extension map
             extensions.put(extensionClass, extension);
