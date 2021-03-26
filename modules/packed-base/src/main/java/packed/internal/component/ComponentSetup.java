@@ -44,7 +44,6 @@ import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
@@ -67,7 +66,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     /** The realm this component belongs to. */
     public final RealmSetup realm;
 
-    /** Any container this component is part of. A container is a member of it self. */
+    /** The container this component is a member of. A container is a member of it self. */
     public final ContainerSetup container;
 
     /** The build this component is part of. */
@@ -137,21 +136,21 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     }
 
     /**
-     * Create a new node representing an extension.
+     * Constructor used by {@link ExtensionSetup}.
      * 
-     * @param parent
-     *            the parent (container) of the extension
+     * @param container
+     *            the extension's container (parent)
      * @param extensionModel
-     *            the extension model
+     *            a model of the extension
      */
-    protected ComponentSetup(ContainerSetup parent, ExtensionModel extensionModel) {
-        super(parent);
-        this.build = parent.build;
-        this.container = parent;
+    protected ComponentSetup(ContainerSetup container, RealmSetup realm) {
+        super(container);
+        this.build = container.build;
+        this.container = container;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = new RealmSetup(extensionModel);
+        this.realm = realm;
         this.realm.current = this; // IDK Den er jo ikke runtime...
-        this.pool = parent.pool;
+        this.pool = container.pool;
         this.wirelets = null; // cannot specify wirelets to extension
     }
 
