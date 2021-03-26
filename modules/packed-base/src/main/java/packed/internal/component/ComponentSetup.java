@@ -52,14 +52,8 @@ import packed.internal.util.ThrowableUtil;
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
-    /** Wirelets that was specified when creating the component. */
-    @Nullable
-    public final WireletWrapper wirelets;
-
     /** The modifiers of this component. */
     protected final int modifiers;
-
-    /* *************** Setup **************** */
 
     /** The constant pool this component is a part of. */
     public final ConstantPoolSetup pool;
@@ -95,9 +89,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param parent
      *            the parent of the component
      */
-    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         super(parent);
         this.build = requireNonNull(build);
+        
         // Setup Realm
         this.realm = realm;
         ComponentSetup previous = realm.current;
@@ -110,21 +105,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
             this.pool = build.constantPool;
-            this.wirelets = WireletWrapper.forApplication(build.application.driver, driver, wirelets);
         } else {
             this.modifiers = driver.modifiers;
             this.pool = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.pool;
-            this.wirelets = WireletWrapper.forComponent(driver, wirelets);
             this.onWire = parent.onWire;
-        }
-
-        // May initialize the component's name, onWire, ect
-        if (this.wirelets != null) {
-            for (Wirelet w : this.wirelets.wirelets) {
-                if (w instanceof InternalWirelet bw) {
-                    bw.firstPass(this);
-                }
-            }
         }
 
         // Setup container
@@ -152,7 +136,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.realm = realm;
         this.realm.current = this; // IDK Den er jo ikke runtime...
         this.pool = container.pool;
-        this.wirelets = null; // cannot specify wirelets to extension
     }
 
     /**
@@ -202,15 +185,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         // finalize name
     }
 
-    /**
-     * Returns the container this component is a part of. Or null if this component is the top level container.
-     * 
-     * @return the container this component is a part of
-     */
-    public ContainerSetup getMemberOfContainer() {
-        return container;
-    }
-
     public String getName() {
         // Only update with NAME_GET if no prev set/get op
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
@@ -226,15 +200,14 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> pcd = PackedComponentDriver.getDriver(assembly);
 
-        // If this component is an extension, we add it to the extension's container instead of the extension
-        // itself, as the extension component is not retained at runtime
-        ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
+        // If this component is an extension, we link to the container the extension is part of 
+        ComponentSetup linkTo = this instanceof ExtensionSetup ? treeParent : this;
 
         // Create a new component and a new realm
-        ComponentSetup component = pcd.newComponent(build, new RealmSetup(assembly), parent, wirelets);
+        WireableComponentSetup component = pcd.newComponent(build, new RealmSetup(assembly), linkTo, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = pcd.toConfiguration((ComponentConfigurationContext) component);
+        ComponentConfiguration configuration = pcd.toConfiguration(component);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -426,15 +399,14 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> pcd = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
-        // When an extension adds new components they are added to the container (the extension's parent)
-        // Instead of the extension, because the extension itself is removed at runtime.
-        ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
+        // If this component is an extension, we wire to the container the extension is part of 
+        ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;
 
-        // Create the new component using the driver
-        ComponentSetup component = pcd.newComponent(build, realm, parent, wirelets);
+        // Create the new component
+        WireableComponentSetup component = pcd.newComponent(build, realm, wireTo, wirelets);
 
-        // Create a component configuration object and return it to the user
-        return pcd.toConfiguration((ComponentConfigurationContext) component);
+        // Return a component configuration to the user
+        return pcd.toConfiguration(component);
     }
 
     // This should only be called by special methods

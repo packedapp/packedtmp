@@ -7,23 +7,22 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentAttributes;
-import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.Wirelet;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
+import packed.internal.component.WireableComponentSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.SourcedComponentDriver;
 
-public class SourceComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
+public final class SourceComponentSetup extends WireableComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;
 
     public SourceComponentSetup(BuildSetup build, RealmSetup realm, SourcedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, realm, driver, parent, wirelets);
-
         this.source = new ClassSourceSetup(this, driver);
 
         // Set a default name if up default name

@@ -188,7 +188,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
             super(wirelet, PackedComponentModifierSet.I_CONTAINER);
         }
 
-        public ComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        public ContainerSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
             return new ContainerSetup(build, realm, this, parent, wirelets);
         }
         

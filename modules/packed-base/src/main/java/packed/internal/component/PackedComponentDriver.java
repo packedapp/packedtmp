@@ -33,7 +33,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     public abstract C toConfiguration(ComponentConfigurationContext context);
 
-    public abstract ComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
+    public abstract WireableComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
 
     /** {@inheritDoc} */
     @Override

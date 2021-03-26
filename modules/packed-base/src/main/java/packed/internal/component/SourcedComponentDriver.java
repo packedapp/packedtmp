@@ -60,11 +60,6 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         }
     }
 
-    public SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        requireNonNull(parent);
-        return new SourceComponentSetup(build, realm, this, parent, wirelets);
-    }
-
     @Override
     public ComponentDriver<C> bind(Object object) {
         requireNonNull(object, "object is null");
@@ -93,6 +88,11 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
     @Override
     public ComponentModifierSet modifiers() {
         return inner.modifiersSet;
+    }
+
+    public SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        requireNonNull(parent);
+        return new SourceComponentSetup(build, realm, this, parent, wirelets);
     }
 
     public C toConfiguration(ComponentConfigurationContext cnc) {

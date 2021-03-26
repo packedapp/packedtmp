@@ -55,7 +55,7 @@ public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
 
     /** The parent of this component, or null for a root component. */
     @Nullable
-    final T treeParent;
+    protected final T treeParent;
 
     OpenTreeNode(@Nullable T parent) {
         this.treeParent = parent;
