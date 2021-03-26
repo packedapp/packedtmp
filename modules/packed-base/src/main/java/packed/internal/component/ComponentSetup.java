@@ -88,10 +88,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     @Nullable
     public final ExtensionSetup extension;
 
-    /** The class source setup if this component has a class source, otherwise null. */
-    @Nullable
-    public final ClassSourceSetup source;
-
     /** The build this component is part of. */
     public final BuildSetup build;
 
@@ -128,7 +124,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             previous.fixCurrent();
         }
         realm.current = this;
-        
+
         // Various
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
@@ -166,17 +162,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
 
-        // Setup component sources
-        if (driver.modifiers().isSource()) {
-            this.source = new ClassSourceSetup(this, (SourcedComponentDriver<?>) driver);
-        } else {
-            this.source = null;
-        }
-
-        // Set a default name if up default name
-        if (name == null) {
-            setName0(null);
-        }
     }
 
     void fixCurrent() {
@@ -208,7 +193,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
         this.pool = parent.pool;
-        this.source = null;
         this.wirelets = null; // cannot specify wirelets to extension
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
@@ -237,8 +221,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         DefaultAttributeMap dam = new DefaultAttributeMap();
 
-        if (source != null) {
-            dam.addValue(ComponentAttributes.SOURCE_CLASS, source.model.type);
+        if (this instanceof BaseComponentSetup bcs) {
+            if (bcs.source != null) {
+                dam.addValue(ComponentAttributes.SOURCE_CLASS, bcs.source.model.type);
+            }
         }
 
         if (extension != null) {
@@ -426,7 +412,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         setName0(name);
     }
 
-    private void setName0(String newName) {
+    void setName0(String newName) {
         String n = newName;
         if (newName == null) {
             if (nameState == NAME_INITIALIZED_WITH_WIRELET) {
@@ -437,8 +423,9 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         boolean isFree = false;
 
         if (n == null) {
-            if (source != null) {
-                n = source.model.simpleName();
+            ClassSourceSetup src = this instanceof BaseComponentSetup bcs ? bcs.source : null;
+            if (src != null) {
+                n = src.model.simpleName();
             } else if (container != null) {
                 // I think try and move some of this to ComponentNameWirelet
                 @Nullable
@@ -510,7 +497,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentSetup parent = extension == null ? this : treeParent;
-        
+
         // Wire the component
         BaseComponentSetup component = new BaseComponentSetup(build, realm, d, parent, wirelets);
 
@@ -546,7 +533,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         checkIsContainer();
         return container.useExtension(extensionClass);
     }
-
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentSetup}. */
     private static final class ComponentAdaptor implements Component {
