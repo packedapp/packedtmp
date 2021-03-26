@@ -40,7 +40,7 @@ public final class RuntimeComponentModel {
     final int modifiers;
 
     RuntimeComponentModel(ComponentSetup compConf) {
-        this.depth = compConf.treeDepth;
+        this.depth = compConf.depth;
         // this.extension = context.extension();
         int p = compConf.modifiers;
         p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);

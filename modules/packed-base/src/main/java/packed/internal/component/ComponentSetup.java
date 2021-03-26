@@ -21,8 +21,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import app.packed.attribute.Attribute;
@@ -51,7 +53,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
-public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
+public abstract class ComponentSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -70,6 +72,13 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     /** The realm this component is a part of. */
     public final RealmSetup realm;
 
+    /** The depth of the component in the hierarchy. */
+    protected final int depth;
+
+    /** The parent of this component, or null for a root component. */
+    @Nullable
+    protected final ComponentSetup parent;
+    
     /**************** See how much of this we can get rid of. *****************/
 
     boolean isClosed = false;
@@ -86,6 +95,54 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
 
     static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
+    /** The name of this node. */
+    protected String name;
+
+    /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
+    @Nullable
+    LinkedHashMap<String, ComponentSetup> treeChildren;
+
+    protected void addChildFinalName(ComponentSetup child, String name) {
+        Map<String, ComponentSetup> c = treeChildren;
+        if (c == null) {
+            child.name = name;
+            c = treeChildren = new LinkedHashMap<>();
+            c.put(name, child);
+            return;
+        }
+
+        String n = name;
+        int counter = 1;
+        while (c.putIfAbsent(n, child) != null) {
+            n = name + counter++;
+        }
+    }
+
+    int childrenCount() {
+        return treeChildren == null ? 0 : treeChildren.size();
+    }
+
+    @SuppressWarnings("unchecked")
+    <S> List<S> toList(Function<ComponentSetup, S> mapper) {
+        requireNonNull(mapper, "mapper is null");
+        LinkedHashMap<String, ComponentSetup> children = treeChildren;
+        if (children == null) {
+            return List.of();
+        } else {
+            List.copyOf(children.values());
+        }
+        int size = treeChildren == null ? 0 : treeChildren.size();
+        if (size == 0) {
+            return List.of();
+        } else {
+            Object[] o = new Object[size];
+            int index = 0;
+            for (ComponentSetup child : children.values()) {
+                o[index++] = mapper.apply(child);
+            }
+            return (List<S>) List.of(o);
+        }
+    }
 
     /**
      * Creates a new instance of this class
@@ -95,7 +152,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      */
     public ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
             @Nullable ComponentSetup parent) {
-        super(parent);
+        this.parent = parent;
+        this.depth = parent == null ? 0 : parent.depth + 1;
         this.application = requireNonNull(application);
         this.build = requireNonNull(build);
 
@@ -133,7 +191,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      *            a model of the extension
      */
     protected ComponentSetup(ContainerSetup container, ExtensionModel model) {
-        super(container);
+        this.parent = container;
+        this.depth = container.depth + 1;
         this.application = container.application;
         this.build = container.build;
         this.pool = container.pool;
@@ -201,7 +260,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     @Nullable
     public ComponentSetup getParent() {
-        return treeParent;
+        return parent;
     }
 
     public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
@@ -213,7 +272,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // If this component is an extension, we link to extension's container. As the extension itself is not available at
         // runtime
-        ComponentSetup linkTo = this instanceof ExtensionSetup ? treeParent : this;
+        ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
 
         // Create a new realm for the assembly
         RealmSetup realm = new RealmSetup(assembly);
@@ -244,7 +303,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public NamespacePath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
-            ComponentSetup p = treeParent;
+            ComponentSetup p = parent;
             while (p != null && ((p.nameState & anyPathMask) == 0)) {
                 p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
             }
@@ -338,7 +397,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                     }
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...
-            } 
+            }
             if (n == null) {
                 n = "Unknown";
             }
@@ -349,8 +408,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
 
         // maybe just putIfAbsent, under the assumption that we will rarely need to override.
-        if (treeParent != null) {
-            if (treeParent.treeChildren != null && treeParent.treeChildren.containsKey(n)) {
+        if (parent != null) {
+            if (parent.treeChildren != null && parent.treeChildren.containsKey(n)) {
                 // If name exists. Lets keep a counter (maybe if bigger than 5). For people trying to
                 // insert a given component 1 million times...
                 // We can keep the counter in Build <ComponentSetup(parent), counter)
@@ -363,20 +422,19 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                 String prefix = n;
                 do {
                     n = prefix + counter++;
-                } while (treeParent.treeChildren.containsKey(n));
+                } while (parent.treeChildren.containsKey(n));
             }
 
             if (newName != null) {
                 // TODO check if changed name...
-                treeParent.treeChildren.remove(name);
-                treeParent.treeChildren.put(n, this);
+                parent.treeChildren.remove(name);
+                parent.treeChildren.put(n, this);
             } else {
                 name = n;
-                if (treeParent.treeChildren == null) {
-                    treeParent.treeChildren = new LinkedHashMap<>();
-                } else {
-                }
-                treeParent.treeChildren.put(n, this);
+                if (parent.treeChildren == null) {
+                    parent.treeChildren = new LinkedHashMap<>();
+                } else {}
+                parent.treeChildren.put(n, this);
             }
         }
         name = n;
@@ -395,7 +453,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         realm.checkOpen();
 
         // If this component is an extension, we wire to the container the extension is part of
-        ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;
+        ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
 
         // Create the new component
         WireableComponentSetup component = pcd.newComponent(build, application, realm, wireTo, wirelets);
@@ -431,7 +489,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         /** {@inheritDoc} */
         @Override
         public int depth() {
-            return component.treeDepth;
+            return component.depth;
         }
 
         /** {@inheritDoc} */
@@ -455,7 +513,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         /** {@inheritDoc} */
         @Override
         public Optional<Component> parent() {
-            ComponentSetup cc = component.treeParent;
+            ComponentSetup cc = component.parent;
             return cc == null ? Optional.empty() : Optional.of(cc.adaptor());
         }
 

@@ -161,8 +161,8 @@ public final class PackedTreePath implements NamespacePath {
         }
     }
 
-    static NamespacePath of(OpenTreeNode<?> cc) {
-        int depth = cc.treeDepth;
+    static NamespacePath of(ComponentSetup cc) {
+        int depth = cc.depth;
         switch (depth) {
         case 0:
             return ROOT;
@@ -170,10 +170,10 @@ public final class PackedTreePath implements NamespacePath {
             return new PackedTreePath(cc.name);
         default:
             String[] paths = new String[depth];
-            OpenTreeNode<?> acc = cc;
+            ComponentSetup acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
-                acc = acc.treeParent;
+                acc = acc.parent;
             }
             return new PackedTreePath(paths);
         }

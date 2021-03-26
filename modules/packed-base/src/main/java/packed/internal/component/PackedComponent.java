@@ -83,7 +83,7 @@ public final class PackedComponent implements Component {
         Map<String, PackedComponent> children = null;
         if (compBuild.treeChildren != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(compBuild.numberOfChildren());
+            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(compBuild.childrenCount());
 
             for (ComponentSetup cc : compBuild.treeChildren.values()) {
                 // We never carry over extensions into the runtime
