@@ -43,8 +43,8 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
      *         specified object.
      *
      * @throws IllegalArgumentException
-     *             if the depth and full name of this descriptor and the specified descriptor are equal. But they are
-     *             loaded by different class loaders.
+     *             if the depth and full name of this descriptor and the specified descriptor are equal. But they are loaded
+     *             by different class loaders.
      */
     // Maaske kan vi kigge på classloader parent...
     @Override
@@ -99,34 +99,31 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     }
 
     /**
-     * Returns the version of the extension if present.
+     * Returns the version of the extension's module if present.
      * <p>
-     * A version for an extension is only present if the following holds:
+     * A version is present if the following holds:
      * <ul>
-     * <li>The extension class must be in a named module on the module path
-     * <li>The "--module-version" option must have been specified when compiling the module. Many build systems will
+     * <li>The extension class is in a named module (on the module path)
+     * <li>The "--module-version" option must have been specified when compiling the module. Most modern build systems will
      * automatically do so.
      * </ul>
      * <p>
-     * While many build systems adds "--module-version" most IDE's does not. Which is why you will most likely only see a
-     * version string for jar based modules on the module path.
-     * <p>
-     * Packed has no support for defining version string outside of the module path, for example, if working with the
-     * classpath.
-     * <p>
-     * This method is only used for informational purposes. Packed does not have support for versioning.
+     * While many build systems adds "--module-version" most IDE's do not, as this information is typically stored in
+     * external build files. This is why you will most likely only see a version string for jar based modules on the module
+     * path.
      * <p>
      * For more information about module versioning see this blog post:
      * <a href="https://medium.com/nipafx-news/jpms-support-for-module-versions-a-research-log-291c5826eebd">JPMS Support
      * For Module Versions — A Research Log</a>
+     * <p>
+     * Packed itself has no support for versioning.
      * 
-     * 
-     * @return the version of the extension if present
+     * @return the version of the extension's module if present
      * @see Module#getDescriptor()
      * @see ModuleDescriptor#version()
      */
     default Optional<Version> moduleVersion() {
-        // Unnamed modules never have a descriptor
+        // Unnamed modules does not have a module descriptor
         ModuleDescriptor descriptor = module().getDescriptor();
         return descriptor == null ? Optional.empty() : descriptor.version();
     }
@@ -168,6 +165,9 @@ interface ExtensionDescriptor2 {
         return Optional.empty();
     }
 
+    // Hmm nu kalder vi den module version...
+    // Saa maaske libraryModuleVersion()...
+    // IDK could give people the wrong impression
     default Optional<Version> libraryVersion() {
         Optional<Module> m = library();
         if (m.isPresent()) {
