@@ -97,6 +97,14 @@ public final class RealmSetup {
         return r;
     }
 
+    public ComponentSetup current() {
+        return current;
+    }
+
+    public void updateCurrent(ComponentSetup component) {
+        
+    }
+
     public void addRootContainer(ContainerSetup container) {
         // Check if we are the root component in the realm. In which
         // case we do not need a list. Except for extensions
