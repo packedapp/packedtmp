@@ -14,7 +14,11 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 public final class NewExtensionSetup extends ComponentSetup {
-    
+
+    /** A handle for invoking {@link Extension#onComplete()}. */
+    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
+            void.class);
+
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onExtensionsFixed", void.class);
@@ -33,10 +37,29 @@ public final class NewExtensionSetup extends ComponentSetup {
     @Nullable
     public final ExtensionSetup extension;
 
+
+    /** Whether or not the extension has been configured. */
+    boolean isConfigured;
+
+    
     /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
     @Nullable
     Extension instance;
 
+
+    /**
+     * The extension is completed once the realm the container is part of is closed. Will invoke
+     * {@link Extension#onComplete()}.
+     */
+    void onComplete() {
+        try {
+            MH_EXTENSION_ON_COMPLETE.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+        isConfigured = true;
+    }
+    
     public NewExtensionSetup(ComponentSetup parent, ExtensionModel model) {
         super(parent, model);
         this.model = requireNonNull(model);

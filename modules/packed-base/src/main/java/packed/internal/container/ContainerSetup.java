@@ -110,7 +110,7 @@ public final class ContainerSetup {
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
         Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
         for (ExtensionSetup pec : extensionsOrdered) {
-            pec.onComplete();
+            pec.component.onComplete();
         }
 
         // Resolve local services

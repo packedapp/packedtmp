@@ -40,23 +40,15 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
 
 /** A setup class for an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup implements ExtensionConfiguration {
-
-    /** A handle for invoking {@link Extension#onComplete()}. */
-    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
-            void.class);
 
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
 
     /** The component representation of this extension. */
     public final NewExtensionSetup component;
-
-    /** Whether or not the extension has been configured. */
-    private boolean isConfigured;
 
     /**
      * Creates a new instance of this class as part of creating the extension component.
@@ -81,7 +73,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
-        if (isConfigured) {
+        if (component.isConfigured) {
             throw new IllegalStateException("This extension (" + component.model.name() + ") is no longer configurable");
         }
     }
@@ -187,18 +179,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return component.model;
     }
 
-    /**
-     * The extension is completed once the realm the container is part of is closed. Will invoke
-     * {@link Extension#onComplete()}.
-     */
-    void onComplete() {
-        try {
-            MH_EXTENSION_ON_COMPLETE.invokeExact(component.instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        isConfigured = true;
-    }
 
     /** {@inheritDoc} */
     @Override
