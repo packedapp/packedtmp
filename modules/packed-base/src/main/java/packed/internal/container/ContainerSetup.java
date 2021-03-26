@@ -42,7 +42,6 @@ import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /** The internal configuration of a container. */
 public final class ContainerSetup extends WireableComponentSetup {
@@ -126,18 +125,16 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
     }
 
-    public void close2(ConstantPoolSetup region) {
+    public void closeRealm() {
+        // We recursively close all children in the same realm first
         if (containerChildren != null) {
             for (ContainerSetup c : containerChildren) {
                 if (c.realm == realm) {
-                    c.close2(region);
+                    c.closeRealm();
                 }
             }
         }
-        close();
-    }
-
-    public void close() {
+        
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }

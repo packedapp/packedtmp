@@ -89,9 +89,9 @@ public final class RealmSetup {
         }
         isClosed = true;
         for (ContainerSetup c: rootContainers) {
-            //c.close2(region);
+           c.closeRealm();
         }
-        root.realmClose();
+        //root.realmClose();
     }
 
     /**

@@ -247,39 +247,6 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         return PackedTreePath.of(this); // show we weak intern them????
     }
 
-    /**
-     * Closes the realm that this belongs component belongs to.
-     * <p>
-     * This method must only be called on a realms root component (we do not check explicitly this)
-     * 
-     * @see ComponentSetup#link(Assembly, Wirelet...)
-     */
-    public void realmClose() {
-        realmClose0(realm);
-    }
-
-    /**
-     * Called whenever a realm is closed on the top component in the realm.
-     * 
-     * @param realm
-     *            the realm that was closed.
-     */
-    private void realmClose0(RealmSetup realm) {
-        // Closes all components in the same realm depth first
-        for (ComponentSetup component = treeFirstChild; component != null; component = component.treeNextSibling) {
-            // child components with a different realm, is either:
-            // in an another user realm that already been closed
-            // in an extension realm that is closed in container.close
-            if (component.realm == realm) {
-                component.realmClose0(realm);
-            }
-        }
-        // If this component represents container close the container
-        if (this instanceof ContainerSetup container) {
-            container.close();
-        }
-    }
-
     public void setName(String name) {
         // First lets check the name is valid
         SetComponentNameWirelet.checkName(name);
