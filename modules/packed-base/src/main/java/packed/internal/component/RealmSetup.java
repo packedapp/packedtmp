@@ -106,13 +106,11 @@ public final class RealmSetup {
             current.fixCurrent();
         }
         current = component;
-    }
-
-    public void addRootContainer(ContainerSetup container) {
-        // Check if we are the root component in the realm. In which
-        // case we do not need a list. Except for extensions
-        // This is highly likely
-        rootContainers.add(container);
+        if (component instanceof ContainerSetup container) {
+            if (container.containerParent == null || container.containerParent.realm != this) {
+               rootContainers.add(container);
+            }
+        }
     }
 
     public void checkOpen() {

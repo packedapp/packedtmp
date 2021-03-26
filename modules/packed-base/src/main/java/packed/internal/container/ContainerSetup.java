@@ -64,7 +64,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     /** This container's parent (if non-root). */
     @Nullable
-    final ContainerSetup containerParent;
+    public final ContainerSetup containerParent;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
@@ -85,17 +85,13 @@ public final class ContainerSetup extends WireableComponentSetup {
             containerParent.runPredContainerChildren();
             ArrayList<ContainerSetup> c = containerParent.containerChildren;
             if (c == null) {
-                c = containerParent.containerChildren = new ArrayList<>();
+                c = containerParent.containerChildren = new ArrayList<>(5);
             }
             c.add(this);
         }
         // Set a default name if up default name
         if (name == null) {
             setName0(null);
-        }
-
-        if (containerParent == null || containerParent.realm != realm) {
-            realm.addRootContainer(this);
         }
     }
 
