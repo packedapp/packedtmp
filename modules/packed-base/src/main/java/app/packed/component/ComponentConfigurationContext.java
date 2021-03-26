@@ -16,15 +16,11 @@
 package app.packed.component;
 
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.application.BuildInfo;
 import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
-import app.packed.container.ContainerAssembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
 /**
@@ -67,28 +63,6 @@ public /* sealed */ interface ComponentConfigurationContext {
      */
     // checkRealmActive
     void checkConfigurable();
-
-    /**
-     * Returns an unmodifiable view of the extensions that are currently in use.
-     * 
-     * @return an unmodifiable view of the extensions that are currently in use
-     * 
-     * @see ContainerAssembly#extensions()
-     */
-    // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
-    // for assembly components. Makes sense because we would need for interating
-    // through the build
-    Set<Class<? extends Extension>> containerExtensions();
-
-    /**
-     * @param <T>
-     * @param extensionClass
-     * @return the extension
-     * @throws UnsupportedOperationException
-     *             if the underlying component is not a container
-     * @see ContainerConfiguration#use(Class)
-     */
-    <T extends Extension> T containerUse(Class<T> extensionClass);
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is

@@ -30,7 +30,7 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.BaseComponentSetup;
+import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
@@ -208,7 +208,7 @@ public final class ServiceManagerSetup {
         p.add(pi);
     }
 
-    public <T> ServiceSetup provideSource(BaseComponentSetup component, Key<T> key) {
+    public <T> ServiceSetup provideSource(SourceComponentSetup component, Key<T> key) {
         ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
         localServices.add(e);
         return e;
@@ -239,8 +239,8 @@ public final class ServiceManagerSetup {
         }
 
         // Process exports from any children
-        if (container.children != null) {
-            for (ContainerSetup c : container.children) {
+        if (container.containerChildren != null) {
+            for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup child = c.getServiceManager();
 
                 WireletWrapper wirelets = c.component.wirelets;
@@ -270,8 +270,8 @@ public final class ServiceManagerSetup {
         // Add error messages if any nodes with the same key have been added multiple times
 
         // Process child requirements to children
-        if (container.children != null) {
-            for (ContainerSetup c : container.children) {
+        if (container.containerChildren != null) {
+            for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup m = c.getServiceManager();
                 if (m != null) {
                     m.processIncomingPipelines(this);

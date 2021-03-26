@@ -88,7 +88,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return inner.modifiersSet;
     }
 
-    public C toConfiguration(ComponentConfigurationContext cnc) {
+    public C toConfiguration(SourceComponentSetup cnc) {
         // Vil godt lave den om til CNC
         try {
             return (C) inner.mh.invoke(cnc);

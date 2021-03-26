@@ -29,7 +29,7 @@ import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.component.BaseComponentSetup;
+import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.source.MethodHookModel;
 
 /**
@@ -77,7 +77,7 @@ class MySidecar extends RealMethodSidecarBootstrap {
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
             c.memberOfContainer.useExtension(ServiceExtension.class);
             c.build.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
-            c.build.application.lifecycle.cs =  (BaseComponentSetup) c;
+            c.build.application.lifecycle.cs =  (SourceComponentSetup) c;
             c.build.application.lifecycle.methodHandle = mh;
         });
     }

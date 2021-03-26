@@ -27,6 +27,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 
@@ -39,7 +40,6 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     /** A driver for configuring containers. */
     private static final ComponentDriver<ContainerConfiguration> DRIVER = new ContainerComponentDriver(null);
 
-    
     /**
      * Creates a new ContainerConfiguration, only used by {@link #DRIVER}.
      *
@@ -60,7 +60,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public Set<Class<? extends Extension>> extensions() {
         // getAttribute(EXTENSIONS);
-        return context.containerExtensions();
+        return ((SourceComponentSetup) context).containerExtensions();
     }
 
     /**
@@ -148,7 +148,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see #extensions()
      */
     public <T extends Extension> T use(Class<T> extensionClass) {
-        return context.containerUse(extensionClass);
+        return ((SourceComponentSetup) context).containerUse(extensionClass);
     }
 
     /**
@@ -195,7 +195,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
         }
 
         @Override
-        public ContainerConfiguration toConfiguration(ComponentConfigurationContext context) {
+        public ContainerConfiguration toConfiguration(SourceComponentSetup context) {
             return new ContainerConfiguration(context);
         }
 

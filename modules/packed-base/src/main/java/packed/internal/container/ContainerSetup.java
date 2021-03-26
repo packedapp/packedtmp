@@ -36,7 +36,7 @@ public final class ContainerSetup {
 
     /** Child containers, lazy initialized */
     @Nullable
-    public ArrayList<ContainerSetup> children;
+    public ArrayList<ContainerSetup> containerChildren;
 
     /** The component this container is a part of. */
     public final ComponentSetup component;
@@ -54,7 +54,7 @@ public final class ContainerSetup {
 
     /** Any parent container of this container. */
     @Nullable
-    final ContainerSetup parent;
+    final ContainerSetup containerParent;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
@@ -71,12 +71,12 @@ public final class ContainerSetup {
     public ContainerSetup(ComponentSetup compConf) {
         this.component = requireNonNull(compConf);
 
-        this.parent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
-        if (parent != null) {
-            parent.runPredContainerChildren();
-            ArrayList<ContainerSetup> c = parent.children;
+        this.containerParent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
+        if (containerParent != null) {
+            containerParent.runPredContainerChildren();
+            ArrayList<ContainerSetup> c = containerParent.containerChildren;
             if (c == null) {
-                c = parent.children = new ArrayList<>();
+                c = containerParent.containerChildren = new ArrayList<>();
             }
             c.add(this);
         }
@@ -254,7 +254,7 @@ public final class ContainerSetup {
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
         // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
-            if (children != null) {
+            if (containerChildren != null) {
                 throw new IllegalStateException(
                         "Cannot install new extensions after child containers have been added to this container, extensionClass = " + extensionClass);
             }

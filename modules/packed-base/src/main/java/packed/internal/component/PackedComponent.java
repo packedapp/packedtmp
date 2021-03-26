@@ -86,7 +86,7 @@ public final class PackedComponent implements Component {
 
             for (ComponentSetup cc = compBuild.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
                 // We never carry over extensions into the runtime
-                if (cc instanceof BaseComponentSetup) {
+                if (cc instanceof SourceComponentSetup) {
                     PackedComponent ac = new PackedComponent(this, cc, pic);
                     result.put(ac.name(), ac);
                 }

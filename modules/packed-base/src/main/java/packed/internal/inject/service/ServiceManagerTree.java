@@ -80,8 +80,8 @@ final class ServiceManagerTree {
             }
         }
 
-        if (container.children != null) {
-            for (ContainerSetup c : container.children) {
+        if (container.containerChildren != null) {
+            for (ContainerSetup c : container.containerChildren) {
                 dependencyCyclesFind(stack, dependencies, region, c);
             }
         }

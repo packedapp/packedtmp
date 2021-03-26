@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -212,7 +211,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         DefaultAttributeMap dam = new DefaultAttributeMap();
 
-        if (this instanceof BaseComponentSetup bcs) {
+        if (this instanceof SourceComponentSetup bcs) {
             if (bcs.source != null) {
                 dam.addValue(ComponentAttributes.SOURCE_CLASS, bcs.source.model.type);
             }
@@ -319,10 +318,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
-        ComponentSetup parent = this instanceof BaseComponentSetup  ? this : treeParent; // treeParent is always a container if extension!=null
+        ComponentSetup parent = this instanceof SourceComponentSetup  ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create a new component and a new realm
-        BaseComponentSetup component = new BaseComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
+        SourceComponentSetup component = new SourceComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(component);
@@ -414,7 +413,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         boolean isFree = false;
 
         if (n == null) {
-            ClassSourceSetup src = this instanceof BaseComponentSetup bcs ? bcs.source : null;
+            ClassSourceSetup src = this instanceof SourceComponentSetup bcs ? bcs.source : null;
             if (src != null) {
                 n = src.model.simpleName();
             } else if (container != null) {
@@ -487,10 +486,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
-        ComponentSetup parent = this instanceof BaseComponentSetup ? this : treeParent;
+        ComponentSetup parent = this instanceof SourceComponentSetup ? this : treeParent;
 
         // Wire the component
-        BaseComponentSetup component = new BaseComponentSetup(build, realm, d, parent, wirelets);
+        SourceComponentSetup component = new SourceComponentSetup(build, realm, d, parent, wirelets);
 
         // Create a component configuration object and return it to the user
         return d.toConfiguration(component);
@@ -507,23 +506,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     /* public methods */
 
-    /** Checks that this component has a source. */
-    private void checkIsContainer() {
-        if (container == null) {
-            throw new UnsupportedOperationException(
-                    "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".CONTAINER modifier set");
-        }
-    }
-
-    public Set<Class<? extends Extension>> containerExtensions() {
-        checkIsContainer();
-        return container.extensionView();
-    }
-
-    public <T extends Extension> T containerUse(Class<T> extensionClass) {
-        checkIsContainer();
-        return container.useExtension(extensionClass);
-    }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentSetup}. */
     private static final class ComponentAdaptor implements Component {

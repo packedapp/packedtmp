@@ -21,7 +21,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import packed.internal.component.BaseComponentSetup;
+import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.SourcedComponentDriver;
 import packed.internal.inject.Dependant;
@@ -132,7 +132,7 @@ public final class ClassSourceSetup implements DependencyProvider {
         }
     }
 
-    public ServiceSetup provide(BaseComponentSetup component) {
+    public ServiceSetup provide(SourceComponentSetup component) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;
         if (s == null) {

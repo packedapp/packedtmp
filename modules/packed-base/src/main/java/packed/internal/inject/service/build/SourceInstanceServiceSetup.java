@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.BaseComponentSetup;
+import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -42,7 +42,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
      * @param component
      *            the component we provide for
      */
-    public SourceInstanceServiceSetup(ServiceManagerSetup im, BaseComponentSetup component, Key<?> key) {
+    public SourceInstanceServiceSetup(ServiceManagerSetup im, SourceComponentSetup component, Key<?> key) {
         super(key);
         this.source = requireNonNull(component.source);
     }
