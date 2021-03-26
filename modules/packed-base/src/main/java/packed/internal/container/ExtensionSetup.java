@@ -21,11 +21,9 @@ import static packed.internal.util.StringFormatter.format;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.VarHandle;
 
 import app.packed.application.BuildInfo;
 import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
@@ -52,33 +50,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             void.class);
 
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
-    private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onExtensionsFixed", void.class);
-
-    /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
-    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
 
-    /** A handle for accessing the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
-            ExtensionConfiguration.class);
-
     /** The component representation of this extension. */
-    private final ComponentSetup component;
-
-    /** The setup of the container this extension belongs to. */
-    private final ContainerSetup memberOfContainer;
-
-    /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
-    @Nullable
-    private Extension instance;
+    public final NewExtensionSetup component;
 
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
-
-    private final ExtensionModel model;
 
     /**
      * Creates a new instance of this class as part of creating the extension component.
@@ -90,10 +68,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @param model
      *            a model of the extension.
      */
-    public ExtensionSetup(ComponentSetup component, ExtensionModel model) {
+    public ExtensionSetup(NewExtensionSetup component, ExtensionModel model) {
         this.component = requireNonNull(component);
-        this.memberOfContainer = requireNonNull(component.getMemberOfContainer());
-        this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
@@ -106,14 +82,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public void checkConfigurable() {
         if (isConfigured) {
-            throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
+            throw new IllegalStateException("This extension (" + component.model.name() + ") is no longer configurable");
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public void checkExtendable() {
-        if (memberOfContainer.children != null) {
+        if (component.memberOfContainer.children != null) {
             throw new IllegalStateException();
         }
     }
@@ -124,13 +100,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @return the container this extension is a part of
      */
     public ContainerSetup getMemberOfContainer() {
-        return memberOfContainer;
+        return component.memberOfContainer;
     }
 
     /** {@inheritDoc} */
     @Override
     public Class<? extends Extension> extensionClass() {
-        return model.extensionClass();
+        return component.model.extensionClass();
     }
 
     /**
@@ -141,19 +117,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      *             if trying to call this method from the constructor of the extension
      */
     public Extension extensionInstance() {
-        Extension e = instance;
+        Extension e = component.instance;
         if (e == null) {
-            throw new InternalExtensionException("Cannot call this method from the constructor of " + model.fullName());
+            throw new InternalExtensionException("Cannot call this method from the constructor of " + component.model.fullName());
         }
         return e;
     }
 
     Extension injectParent() {
-        ContainerSetup parent = memberOfContainer.parent;
+        ContainerSetup parent = component.memberOfContainer.parent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
             if (extensionContext != null) {
-                return extensionContext.instance;
+                return extensionContext.component.instance;
             }
         }
         return null;
@@ -180,13 +156,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return memberOfContainer.isPartOfImage();
+        return component.memberOfContainer.isPartOfImage();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isUsed(Class<? extends Extension> extensionClass) {
-        return memberOfContainer.isInUse(extensionClass);
+        return component.memberOfContainer.isInUse(extensionClass);
     }
 
     /** {@inheritDoc} */
@@ -208,7 +184,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @return the extension's model
      */
     public ExtensionModel model() {
-        return model;
+        return component.model;
     }
 
     /**
@@ -217,7 +193,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      */
     void onComplete() {
         try {
-            MH_EXTENSION_ON_COMPLETE.invokeExact(instance);
+            MH_EXTENSION_ON_COMPLETE.invokeExact(component.instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
@@ -228,14 +204,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public NamespacePath path() {
         return component.path();
-    }
-
-    void preContainerChildren() {
-        try {
-            MH_EXTENSION_ON_CONTAINER_LINKAGE.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
     }
 
     /** {@inheritDoc} */
@@ -249,18 +217,18 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         Class<? extends Extension> subExtensionClass = subModel.extensionClass;
 
         // Check that requested subtension's extension is a direct dependency of this extension
-        if (!model.dependencies().contains(subExtensionClass)) {
+        if (!component.model.dependencies().contains(subExtensionClass)) {
             // Special message if you try to use your own subtension
-            if (model.extensionClass() == subExtensionClass) {
-                throw new InternalExtensionException(model.extensionClass().getSimpleName() + " cannot use its own subtension "
+            if (component.model.extensionClass() == subExtensionClass) {
+                throw new InternalExtensionException(component.model.extensionClass().getSimpleName() + " cannot use its own subtension "
                         + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
             }
-            throw new InternalExtensionException(model.extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass)
+            throw new InternalExtensionException(component.model.extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass)
                     + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
 
         // Get the extension instance (create it if needed) thaw we need to create a subtension for
-        Extension instance = memberOfContainer.useDependencyCheckedExtension(subExtensionClass, this).instance;
+        Extension instance = component.memberOfContainer.useDependencyCheckedExtension(subExtensionClass, this).component.instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) subModel.newInstance(instance, extensionClass());
@@ -269,7 +237,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return memberOfContainer.component.wire(driver, wirelets);
+        return component.memberOfContainer.component.wire(driver, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -282,43 +250,16 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
-        Module m = model.extensionClass().getModule();
+        Module m = component.model.extensionClass().getModule();
         if (m != wireletClass.getModule()) {
-            throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + model.name()
+            throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + component.model.name()
                     + ", module of wirelet was " + wireletClass.getModule());
         }
-        WireletWrapper wirelets = memberOfContainer.component.wirelets;
+        WireletWrapper wirelets = component.memberOfContainer.component.wirelets;
         if (wirelets == null) {
             return WireletHandle.of();
         }
         return new PackedWireletHandle<>(wirelets, wireletClass);
     }
 
-    /**
-     * Create and initialize a new extension.
-     * 
-     * @param container
-     *            the container setup
-     * @param extensionClass
-     *            the extension to initialize
-     * @return a setup for the extension
-     */
-    static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
-        // Find extension model and create setups.
-        ExtensionModel model = ExtensionModel.of(extensionClass);
-        NewExtensionSetup component = new NewExtensionSetup(container.component, model); // creates ExtensionSetup in ComponentSetup constructor
-        ExtensionSetup extension = component.extension;
-
-        // Creates a new extension instance
-        Extension instance = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension setup
-
-        // Invoke Extension#onNew()
-        try {
-            MH_EXTENSION_ON_NEW.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-        return extension;
-    }
 }

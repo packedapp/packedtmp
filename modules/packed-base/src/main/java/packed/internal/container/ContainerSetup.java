@@ -220,14 +220,14 @@ public final class ContainerSetup {
         // And run ea.preContainerChildren on them...
         // And then repeat until some list/set has not been touched...
         for (ExtensionSetup ea : extensions.values()) {
-            ea.preContainerChildren();
+            ea.component.preContainerChildren();
         }
 
         while (tmpExtensions != null) {
             ArrayList<ExtensionSetup> te = tmpExtensions;
             tmpExtensions = null;
             for (ExtensionSetup ea : te) {
-                ea.preContainerChildren();
+                ea.component.preContainerChildren();
             }
         }
     }
@@ -266,7 +266,7 @@ public final class ContainerSetup {
                 caller.checkConfigurable();
             }
             // Create the new extension
-            extension = ExtensionSetup.initialize(this, extensionClass);
+            extension = NewExtensionSetup.initialize(this, extensionClass);
 
             // Add the extension to the extension map
             extensions.put(extensionClass, extension);
