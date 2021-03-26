@@ -7,9 +7,11 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.util.Map.Entry;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -19,6 +21,10 @@ import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
+import packed.internal.attribute.DefaultAttributeMap;
+import packed.internal.attribute.PackedAttribute;
+import packed.internal.attribute.PackedAttributeModel;
+import packed.internal.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
@@ -27,7 +33,7 @@ import packed.internal.util.ThrowableUtil;
 
 /** A setup class for an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup extends ComponentSetup implements ExtensionConfiguration {
-    
+
     /** A handle for invoking {@link Extension#onComplete()}. */
     private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
             void.class);
@@ -53,10 +59,36 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    protected void addAttributes(DefaultAttributeMap dam) {
+        dam.addValue(ComponentAttributes.EXTENSION_CLASS, extensionClass());
+        PackedAttributeModel pam = model.attributes();
+        if (pam != null) {
+            for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
+                Object val;
+                MethodHandle mh = e.getValue().mh;
+                try {
+                    val = mh.invoke(instance);
+                } catch (Throwable e1) {
+                    throw ThrowableUtil.orUndeclared(e1);
+                }
+
+                if (val == null) {
+                    if (!e.getValue().isNullable) {
+                        throw new IllegalStateException("CANNOT ADD NULL " + e.getKey());
+                    }
+                } else {
+                    dam.addValue((PackedAttribute) e.getKey(), val);
+                }
+            }
+        }
+    }
+
     /** A model of the extension. */
     private final ExtensionModel model;
 
-    public ExtensionSetup(ComponentSetup parent, ExtensionModel model) {
+    public ExtensionSetup(ContainerSetup parent, ExtensionModel model) {
         super(parent, model);
         this.model = requireNonNull(model);
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
@@ -211,7 +243,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return memberOfContainer.wire(driver, wirelets);
     }
-
 
     /** {@inheritDoc} */
     @Override

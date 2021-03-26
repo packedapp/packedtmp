@@ -17,12 +17,10 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -42,13 +40,9 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.attribute.PackedAttribute;
-import packed.internal.attribute.PackedAttributeModel;
-import packed.internal.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.container.ContainerSetup;
@@ -137,12 +131,8 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
 
         // Setup container
-        if (this instanceof ContainerSetup container) {
-            this.memberOfContainer = (ContainerSetup) this;
-        } else {
-            this.memberOfContainer = parent.memberOfContainer;
-        }
-
+        this.memberOfContainer = this instanceof ContainerSetup container ? container : parent.memberOfContainer;
+                
         // Setup Runtime
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
@@ -168,10 +158,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param extensionModel
      *            the extension model
      */
-    protected ComponentSetup(ComponentSetup parent, ExtensionModel extensionModel) {
+    protected ComponentSetup(ContainerSetup parent, ExtensionModel extensionModel) {
         super(parent);
         this.build = parent.build;
-        this.memberOfContainer = parent instanceof ContainerSetup cs ? cs : parent.memberOfContainer;
+        this.memberOfContainer = parent;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
@@ -194,13 +184,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         // check realm.open + attribute.write
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
-
         // Maaske er det simpelthen et view...
         // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
-
         DefaultAttributeMap dam = new DefaultAttributeMap();
 
         if (this instanceof SourceComponentSetup bcs) {
@@ -209,30 +196,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             }
         }
 
-        if (this instanceof ExtensionSetup nes) {
-            dam.addValue(ComponentAttributes.EXTENSION_CLASS, nes.extensionClass());
-            PackedAttributeModel pam = nes.model().attributes();
-            if (pam != null) {
-                for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
-                    Extension ex = nes.extensionInstance();
-                    Object val;
-                    MethodHandle mh = e.getValue().mh;
-                    try {
-                        val = mh.invoke(ex);
-                    } catch (Throwable e1) {
-                        throw ThrowableUtil.orUndeclared(e1);
-                    }
-
-                    if (val == null) {
-                        if (!e.getValue().isNullable) {
-                            throw new IllegalStateException("CANNOT ADD NULL " + e.getKey());
-                        }
-                    } else {
-                        dam.addValue((PackedAttribute) e.getKey(), val);
-                    }
-                }
-            }
-        }
+        addAttributes(dam);
 
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
             PackedApplicationDriver<?> pac = build().application.driver;
@@ -241,6 +205,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         return dam;
     }
 
+    protected void addAttributes(DefaultAttributeMap dam) {
+        
+    }
+    
     public BuildSetup build() {
         return build;
     }
