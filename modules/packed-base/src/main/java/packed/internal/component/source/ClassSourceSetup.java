@@ -100,7 +100,7 @@ public final class ClassSourceSetup implements DependencyProvider {
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
             this.dependant = new Dependant(this, dependencies, mh);
-            component.memberOfContainer.addDependant(dependant);
+            component.container.addDependant(dependant);
         }
 
         // Register hooks, maybe move to component setup
@@ -142,7 +142,7 @@ public final class ClassSourceSetup implements DependencyProvider {
             } else {
                 key = factory.key();
             }
-            s = service = component.memberOfContainer.getServiceManagerOrCreate().provideSource(component, key);
+            s = service = component.container.getServiceManagerOrCreate().provideSource(component, key);
         }
         return s;
     }

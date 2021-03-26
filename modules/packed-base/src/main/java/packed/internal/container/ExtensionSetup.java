@@ -59,6 +59,23 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
+    /** A model of the extension. */
+    private final ExtensionModel model;
+
+    /**
+     * Creates a new extension setup.
+     * 
+     * @param container
+     *            the container this extension belongs to part
+     * @param model
+     *            a model of the extension
+     */
+    private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
+        super(container, model);
+        this.model = requireNonNull(model);
+        setName0(null /* model.nameComponent */); // setName0(String) does not work currently
+    }
+
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void addAttributes(DefaultAttributeMap dam) {
@@ -85,15 +102,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         }
     }
 
-    /** A model of the extension. */
-    private final ExtensionModel model;
-
-    public ExtensionSetup(ContainerSetup parent, ExtensionModel model) {
-        super(parent, model);
-        this.model = requireNonNull(model);
-        setName0(null /* model.nameComponent */); // setName0(String) does not work currently
-    }
-
     /** {@inheritDoc} */
     @Override
     public void checkConfigurable() {
@@ -105,7 +113,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public void checkExtendable() {
-        if (memberOfContainer.containerChildren != null) {
+        if (container.containerChildren != null) {
             throw new IllegalStateException();
         }
     }
@@ -132,7 +140,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     }
 
     Extension injectParent() {
-        ContainerSetup parent = memberOfContainer.containerParent;
+        ContainerSetup parent = container.containerParent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
             if (extensionContext != null) {
@@ -163,13 +171,13 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return memberOfContainer.isPartOfImage();
+        return container.isPartOfImage();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isUsed(Class<? extends Extension> extensionClass) {
-        return memberOfContainer.isInUse(extensionClass);
+        return container.isInUse(extensionClass);
     }
 
     /**
@@ -231,8 +239,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
                     + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
 
-        // Get the extension instance (create it if needed) thaw we need to create a subtension for
-        Extension instance = memberOfContainer.useDependencyCheckedExtension(subExtensionClass, this).instance;
+        // Get the extension instance (create it if needed) that the subtension needs
+        Extension instance = container.useDependencyCheckedExtension(subExtensionClass, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) subModel.newInstance(instance, extensionClass());
@@ -241,7 +249,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return memberOfContainer.wire(driver, wirelets);
+        return container.wire(driver, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -253,7 +261,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
             throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", module of wirelet was " + wireletClass.getModule());
         }
-        WireletWrapper wirelets = memberOfContainer.wirelets;
+        WireletWrapper wirelets = container.wirelets;
         if (wirelets == null) {
             return WireletHandle.of();
         }
@@ -261,13 +269,13 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     }
 
     /**
-     * Create and initialize a new extension.
+     * Create and initialize a new extension setup.
      * 
      * @param container
      *            the container setup
      * @param extensionClass
      *            the extension to initialize
-     * @return a setup for the extension
+     * @return the new extension setup
      */
     static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.

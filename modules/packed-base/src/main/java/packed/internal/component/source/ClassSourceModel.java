@@ -80,7 +80,7 @@ public final class ClassSourceModel {
         requireNonNull(source);
         Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {
-        compConf.memberOfContainer.addDependant(i);
+        compConf.container.addDependant(i);
         // }
         if (m.processor != null) {
             m.processor.accept(compConf);

@@ -46,7 +46,7 @@ public class SourceComponentSetup extends ComponentSetup implements ComponentCon
     @SuppressWarnings("unchecked")
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) memberOfContainer.getServiceManagerOrCreate().exports().export(source.service);
+        return (ExportedServiceConfiguration<T>) container.getServiceManagerOrCreate().exports().export(source.service);
     }
 
     public void sourceProvide() {

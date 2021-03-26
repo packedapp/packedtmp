@@ -70,8 +70,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public final RealmSetup realm;
 
     /** Any container this component is part of. A container is a member of it self. */
-    @Nullable
-    public final ContainerSetup memberOfContainer;
+    public final ContainerSetup container;
 
     /** The build this component is part of. */
     public final BuildSetup build;
@@ -131,7 +130,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
 
         // Setup container
-        this.memberOfContainer = this instanceof ContainerSetup container ? container : parent.memberOfContainer;
+        this.container = this instanceof ContainerSetup container ? container : parent.container;
                 
         // Setup Runtime
         if (modifiers().hasRuntime()) {
@@ -161,7 +160,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     protected ComponentSetup(ContainerSetup parent, ExtensionModel extensionModel) {
         super(parent);
         this.build = parent.build;
-        this.memberOfContainer = parent;
+        this.container = parent;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
@@ -263,7 +262,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      */
     @Nullable
     public ContainerSetup getMemberOfContainer() {
-        return memberOfContainer;
+        return container;
     }
 
     public String getName() {

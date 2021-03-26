@@ -105,7 +105,7 @@ public class Dependant {
             if (!Modifier.isStatic(smm.getModifiers()) && source.poolIndex == -1) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManagerSetup sbm = compConf.memberOfContainer.getServiceManagerOrCreate();
+            ServiceManagerSetup sbm = compConf.container.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
