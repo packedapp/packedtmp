@@ -216,11 +216,11 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     public <E extends Subtension> E use(Class<E> subtensionClass) {
         requireNonNull(subtensionClass, "subtensionClass is null");
 
-        // Finds the subtension's model and extension class
+        // Finds the subtension's model and its extension class
         SubtensionModel subModel = SubtensionModel.of(subtensionClass);
         Class<? extends Extension> subExtensionClass = subModel.extensionClass;
 
-        // Check that requested subtension's extension is a direct dependency of this extension
+        // Check that the requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(subExtensionClass)) {
             // Special message if you try to use your own subtension
             if (model.extensionClass() == subExtensionClass) {
