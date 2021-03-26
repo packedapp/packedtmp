@@ -32,7 +32,7 @@ import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** A setup class for an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
+/** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup extends ComponentSetup implements ExtensionConfiguration {
 
     /** A handle for invoking {@link Extension#onComplete()}. */
@@ -49,7 +49,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
 
-    /** A handle for accessing the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
+    /** A handle for setting the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -135,6 +135,11 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return e;
     }
 
+    /**
+     * Used by {@link #MH_INJECT_PARENT}.
+     * 
+     * @return the parent extension instance
+     */
     Extension injectParent() {
         ContainerSetup parent = container.containerParent;
         if (parent != null) {
@@ -248,11 +253,14 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     @Override
     public <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
+
+        // We only allow consummation of wirelets in the same module as the extension
         Module m = model.extensionClass().getModule();
         if (m != wireletClass.getModule()) {
-            throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + model.name()
-                    + ", module of wirelet was " + wireletClass.getModule());
+            throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
+                    + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
+
         WireletWrapper wirelets = container.wirelets;
         if (wirelets == null) {
             return WireletHandle.of();
@@ -284,6 +292,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+
         return extension;
     }
 }

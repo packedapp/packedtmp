@@ -35,6 +35,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
 import app.packed.inject.Factory;
+import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.Infuser;
@@ -82,11 +83,14 @@ import packed.internal.util.ThrowableUtil;
 public abstract class Extension {
 
     /**
-     * The configuration of this extension. This field should never be read directly, but only accessed via
-     * {@link #configuration()}.
-     * 
-     * @apiNote This field is not nulled out after the extension has been configured. This allows for invoking methods such
-     *          as {@link #checkConfigurable()} after the configuration is complete.
+     * The configuration of this extension.
+     * <p>
+     * This field should never be read directly, but only accessed via {@link #configuration()}.
+     * <p>
+     * This field is initialized in {@link ExtensionSetup#initialize(ContainerSetup, Class)} using a varhandle.
+     * <p>
+     * This field is not nulled out after the extension has been configured. This allows for invoking methods such as
+     * {@link #checkConfigurable()} after configuration is complete.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -139,9 +143,9 @@ public abstract class Extension {
     }
 
     /**
-     * Returns the underlying configuration object that this extension wraps. The configuration object returned by this
-     * method, can be used if the extension delegates some responsibility to classes that are not define in the same package
-     * as the extension itself.
+     * Returns an extension configuration object. This configuration object is typically used in situations where the
+     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
+     * visibility rules.
      * <p>
      * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
      * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
@@ -150,7 +154,7 @@ public abstract class Extension {
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
      * 
      * @throws IllegalStateException
-     *             if invoked from the constructor of the extension, as an alternative dependency inject the configuration
+     *             if invoked from the constructor of the extension. As an alternative dependency inject the configuration
      *             object into the constructor
      * @return a configuration object for this extension
      */
