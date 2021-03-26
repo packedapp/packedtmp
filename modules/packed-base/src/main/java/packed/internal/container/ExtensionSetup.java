@@ -7,7 +7,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.util.Map.Entry;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
@@ -22,9 +21,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.attribute.PackedAttribute;
 import packed.internal.attribute.PackedAttributeModel;
-import packed.internal.attribute.PackedAttributeModel.Attt;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.RealmSetup;
@@ -78,29 +75,12 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     }
 
     /** {@inheritDoc} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void addAttributes(DefaultAttributeMap dam) {
         dam.addValue(ComponentAttributes.EXTENSION_CLASS, extensionClass());
         PackedAttributeModel pam = model.attributes();
         if (pam != null) {
-            for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
-                Object val;
-                MethodHandle mh = e.getValue().mh;
-                try {
-                    val = mh.invoke(instance);
-                } catch (Throwable e1) {
-                    throw ThrowableUtil.orUndeclared(e1);
-                }
-
-                if (val == null) {
-                    if (!e.getValue().isNullable) {
-                        throw new IllegalStateException("CANNOT ADD NULL " + e.getKey());
-                    }
-                } else {
-                    dam.addValue((PackedAttribute) e.getKey(), val);
-                }
-            }
+            pam.set(dam, instance);
         }
     }
 
@@ -260,7 +240,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
             throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
-
+        // The extension does not store any wirelets itself, fetch them from the extension's container instead
         WireletWrapper wirelets = container.wirelets;
         if (wirelets == null) {
             return WireletHandle.of();
@@ -284,7 +264,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
         // Creates a new extension instance
         Extension instance = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension setup
+        VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension (setup)
 
         // Invoke Extension#onNew()
         try {

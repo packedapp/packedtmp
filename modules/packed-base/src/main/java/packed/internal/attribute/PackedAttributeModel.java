@@ -20,11 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.ClassMemberAccessor;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -53,6 +55,27 @@ public class PackedAttributeModel {
             return null;
         }
         return new PackedAttributeModel(types);
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void set(DefaultAttributeMap dam, Object instance) {
+        for (Entry<PackedAttribute<?>, Attt> e : attributeTypes.entrySet()) {
+            Object val;
+            MethodHandle mh = e.getValue().mh;
+            try {
+                val = mh.invoke(instance);
+            } catch (Throwable e1) {
+                throw ThrowableUtil.orUndeclared(e1);
+            }
+
+            if (val == null) {
+                if (!e.getValue().isNullable) {
+                    throw new IllegalStateException("CANNOT ADD NULL " + e.getKey());
+                }
+            } else {
+                dam.addValue((PackedAttribute) e.getKey(), val);
+            }
+        }
     }
 
     public static final class Attt {
