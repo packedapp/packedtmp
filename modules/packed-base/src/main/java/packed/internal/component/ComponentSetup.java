@@ -276,7 +276,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
         // If this component represents container close the container
         if (this instanceof ContainerSetup container) {
-            container.close(pool);
+            container.close();
         }
     }
 

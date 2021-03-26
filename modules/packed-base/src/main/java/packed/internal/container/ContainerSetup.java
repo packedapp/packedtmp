@@ -93,7 +93,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         if (name == null) {
             setName0(null);
         }
-        
+
         if (containerParent == null || containerParent.realm != realm) {
             realm.addRootContainer(this);
         }
@@ -126,7 +126,18 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
     }
 
-    public void close(ConstantPoolSetup region) {
+    public void close2(ConstantPoolSetup region) {
+        if (containerChildren != null) {
+            for (ContainerSetup c : containerChildren) {
+                if (c.realm == realm) {
+                    c.close2(region);
+                }
+            }
+        }
+        close();
+    }
+
+    public void close() {
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }
@@ -154,7 +165,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
         if (sm != null) {
             sm.dependencies().checkForMissingDependencies(this);
-            sm.close(region);
+            sm.close(pool);
         }
         // TODO Check any contracts we might as well catch it early
     }

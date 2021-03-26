@@ -51,7 +51,7 @@ public final class RealmSetup {
     public boolean isClosed;
 
     /** We keep track of all containers that either the root container or have a parent that is part of another realm. */
-    public final List<ContainerSetup> rootContainers = new ArrayList<>();
+    private final List<ContainerSetup> rootContainers = new ArrayList<>();
 
     /**
      * Creates a new realm for an assembly.
@@ -64,8 +64,9 @@ public final class RealmSetup {
     }
 
     public void addRootContainer(ContainerSetup container) {
-        
+        rootContainers.add(container);
     }
+    
     /**
      * Creates a new realm for an composer consumer
      * 
@@ -87,7 +88,9 @@ public final class RealmSetup {
             current.fixCurrent();
         }
         isClosed = true;
-
+        for (ContainerSetup c: rootContainers) {
+            //c.close2(region);
+        }
         root.realmClose();
     }
 
