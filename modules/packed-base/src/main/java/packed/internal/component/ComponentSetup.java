@@ -92,7 +92,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public ComponentSetup(BuildSetup build, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         super(parent);
         this.build = requireNonNull(build);
-        
+
         // Setup Realm
         this.realm = realm;
         ComponentSetup previous = realm.current;
@@ -147,6 +147,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         return new ComponentAdaptor(this);
     }
 
+    // runtime???
     protected void addAttributes(DefaultAttributeMap dam) {}
 
     AttributeMap attributes() {
@@ -196,18 +197,25 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         return treeParent;
     }
 
-    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
+    public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        WireableComponentDriver<?> pcd = WireableComponentDriver.getDriver(assembly);
+        WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
 
-        // If this component is an extension, we link to the container the extension is part of 
+        // Check that the realm this component is a part of is still open
+        realm.checkOpen();
+
+        // If this component is an extension, we link to extension's container. As the extension itself is not available at
+        // runtime
         ComponentSetup linkTo = this instanceof ExtensionSetup ? treeParent : this;
 
+        // Create a new realm for the assembly
+        RealmSetup realm = new RealmSetup(assembly);
+
         // Create a new component and a new realm
-        WireableComponentSetup component = pcd.newComponent(build, new RealmSetup(assembly), linkTo, wirelets);
+        WireableComponentSetup component = driver.newComponent(build, realm, linkTo, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = pcd.toConfiguration(component);
+        ComponentConfiguration configuration = driver.toConfiguration(component);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -216,10 +224,10 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        // Closes the the linked realm, no further configuration of it is possible after Assembly::build has been invoked
-        component.realmClose();
+        // Close the realm we created for the assembly
+        realm.close(component);
 
-        return new ComponentAdaptor(this);
+        return new ComponentAdaptor(component);
     }
 
     public PackedComponentModifierSet modifiers() {
@@ -399,7 +407,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         WireableComponentDriver<C> pcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
-        // If this component is an extension, we wire to the container the extension is part of 
+        // If this component is an extension, we wire to the container the extension is part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;
 
         // Create the new component

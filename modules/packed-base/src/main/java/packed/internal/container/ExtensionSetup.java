@@ -77,7 +77,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     @Override
     protected void addAttributes(DefaultAttributeMap dam) {
         dam.addValue(ComponentAttributes.EXTENSION_CLASS, extensionClass());
-        PackedAttributeModel pam = model.attributes();
+        PackedAttributeModel pam = model.attributes;
         if (pam != null) {
             pam.set(dam, instance);
         }

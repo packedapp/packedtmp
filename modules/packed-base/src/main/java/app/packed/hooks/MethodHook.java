@@ -41,7 +41,6 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.sandbox.InstanceHandle;
-import app.packed.inject.Factory;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 import packed.internal.component.source.MethodHookModel;
@@ -90,11 +89,10 @@ public @interface MethodHook {
     /** The hook's {@link Bootstrap} class. */
     Class<? extends MethodHook.Bootstrap> bootstrap();
 
-    /**
-     * Any annotations that activates the method hook.
-     * 
-     * @return annotations that activates the method hook
-     */
+    /** The extension this hook is part of. */
+    Class<? extends Extension> extension();
+
+    /** Any annotations that activates the method hook. */
     Class<? extends Annotation>[] matchesAnnotation() default {};
 
     /**
@@ -117,7 +115,7 @@ public @interface MethodHook {
      * <p>
      * Implementations must have a no-args constructor.
      */
-    abstract class Bootstrap extends HookStore implements BuildContext {
+    abstract class Bootstrap {
 
         /** The builder used for bootstrapping. Updated by {@link MethodHookModel}. */
         private MethodHookModel.@Nullable Builder builder;
@@ -133,7 +131,8 @@ public @interface MethodHook {
          * 
          * @return this hook's builder object
          * @throws IllegalStateException
-         *             if called from outside {@link #bootstrap()}.
+         *             if called after the methods declaring class has been bootstrapped or from the constructor of the
+         *             bootstrap class.
          */
         /* Todoprivate (RealTimeBootstrap) */ final MethodHookModel.Builder builder() {
             MethodHookModel.Builder b = builder;
@@ -146,6 +145,39 @@ public @interface MethodHook {
                 throw new IllegalStateException("This method cannot called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
             }
             return b;
+        }
+
+        //// Invoker.. <- first runtime
+        // replaces the sidecar with another class that can be used
+        // Vi kan jo faktisk generere kode her..
+        // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
+        // Method (No) because then people would assume it was also present at runtime
+        // Which would it must be present at build-time because we can exchange the runtime
+        // object at build time
+        /**
+         * Replaces this bootstrap with the specified instance at build-time (and run-time).
+         * 
+         * @param instance
+         *            the instance to replace this bootstrap with
+         * 
+         * @throws IllegalStateException
+         *             if called outside of the {@link #bootstrap()} method. Or if managed by another bootstrap class, outside
+         *             of its bootstrap method
+         * 
+         */
+        // This should probably fail if not annotated with @BuildHook
+        public final void buildWithInstance(Object instance) {
+            builder().buildWith(instance);
+        }
+
+        // Can take this bootstrap instance...
+        public final void buildWithPrototype(Class<?> implementation) {
+            // IDK
+            throw new UnsupportedOperationException();
+        }
+
+        public final void buildWithPrototype(Class<?> implementation, Object buildData) {
+            // alternativ en store metode.. Saa kan man bruge det hvor man vil
         }
 
         /** Disables any further processing of the hook. */
@@ -227,7 +259,7 @@ public @interface MethodHook {
         }
 
         /**
-         * Returns a direct method handle to {@link #method()} (without any intervening argument bindings or transformations
+         * Returns a direct method handle to the {@link #method()} (without any intervening argument bindings or transformations
          * that may have been configured elsewhere).
          * 
          * @return a direct method handle to the matching method
@@ -251,35 +283,17 @@ public @interface MethodHook {
         // Extension
         // ExtensionContext
 
-        public final void replaceWith(Class<?> implementation) {
-            replaceWith(Factory.of(implementation));
-        }
-
-        public final void replaceWith(Factory<?> factory) {
+        // Eneste skulle vaere hvis har en common klasse.
+        // som andre vil tage som argument
+        public final void runWithInstance(Object instance) {
             throw new UnsupportedOperationException();
         }
 
-        //// Invoker.. <- first runtime
-        // replaces the sidecar with another class that can be used
-        // Vi kan jo faktisk generere kode her..
-        // Vi kan ogsaa tillade Class instances som saa bliver instantieret..
-        // Method (No) because then people would assume it was also present at runtime
-        // Which would it must be present at build-time because we can exchange the runtime
-        // object at build time
-        /**
-         * Replaces this bootstrap with the specified instance at build-time (and run-time).
-         * 
-         * @param instance
-         *            the instance to replace this bootstrap with
-         * 
-         * @throws IllegalStateException
-         *             if called outside of the {@link #bootstrap()} method. Or if managed by another bootstrap class, outside
-         *             of its bootstrap method
-         * 
-         */
-        public final void replaceWithInstance(Object instance) {
-            builder().buildWith(instance);
+        public final void runWithPrototype(Class<?> implementation) {
+            throw new UnsupportedOperationException();
         }
+
+        protected static final void $addDataClass(Class<?> clazz) {}
 
         /**
          * Ignore default methods. A bootstrap instance will not be created for any methods that are default methods.
@@ -313,15 +327,15 @@ public @interface MethodHook {
         // Maybe input it default, and you need to call output
         protected static final void $outputMethod() {}
 
-        //
-        protected static final void $supportApplicationShell() {
-            //hook.isApplicationShell
-            
+        // Hmmm skal det vaere paa annoteringen istedet for...
+        protected static final void $supportApplicationShell(Class<? extends Bootstrap> bootstrap) {
+            // hook.isApplicationShell
+
             // Det er her den er grim...
             // Vi er i samme container...
             // Men saa alligevel ikke
             // Maa vaere en special case...
-            
+
             // Hvis comp is parent and wirelet
         }
 
@@ -329,7 +343,7 @@ public @interface MethodHook {
         // Can always handle a few if/elses/...
         // @Path("${component.id}/")
         // Altsaa vi kan jo altid bare kalde WebSubextension.add...
-        protected static final void $supportMetaHook(Class<?> alternativeBootstrap) {}
+        protected static final void $supportMetaHook(Class<? extends Bootstrap> bootstrap) {}
     }
 
     /**
@@ -346,13 +360,21 @@ public @interface MethodHook {
     // annotering
     public interface BuildContext {
 
-        void disable();
-
         // hvordan fungere den for pooled components???
         // Instance Sidecar...
         // Maybe specify a class
-        void replaceWithInstance(Object o); // skal vel ogsaa vaere paa bootstrap...
+//        void buildWithInstance(Object o); // skal vel ogsaa vaere paa bootstrap...
         // Men fjerner man saa @Build??? Eller saetter man bare en default....
+
+        void disable();
+
+        boolean isImage();
+
+        Optional<Class<?>> runClass();
+
+        void runWithInstance(Object instance);
+
+        void runWithPrototype(Class<?> implementation);
 
         // hvorfor kun initialize??? vi kan ogsaa have start/stop
         // Altsaa taenker den kun er brubar hvis vi skal gemme data paa tvaers
@@ -371,6 +393,11 @@ class RBadIdeas {
     public final Optional<Class<?>> buildType() {
         // Vil ikke mene vi behoever den her.. Tror den forvirre mere end den gavner
         return Optional.empty();
+    }
+
+    public final Optional<Class<?>> runClass() {
+        // problemet er at vi har baade run type og build type... det er sgu lidt forvirrende
+        throw new UnsupportedOperationException();
     }
 
 }
@@ -462,7 +489,7 @@ class SandboxBootstrap {
 }
 
 @ZuperSupport // same
-@MethodHook(matchesAnnotation = Provide.class, bootstrap = Zester.Scan.class)
+@MethodHook(matchesAnnotation = Provide.class, extension = Extension.class, bootstrap = Zester.Scan.class)
 class Zester extends BaseAssembly {
 
     /** {@inheritDoc} */
@@ -493,7 +520,7 @@ class Zester extends BaseAssembly {
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @ComposedAnnotation
-@MethodHook(matchesAnnotation = Provide.class, bootstrap = Zester.Scan.class)
+@MethodHook(matchesAnnotation = Provide.class, extension = Extension.class, bootstrap = Zester.Scan.class)
 @interface ZuperSupport {}
 
 // Man kan ogsaa have en BuildContext som man kan faa injected...

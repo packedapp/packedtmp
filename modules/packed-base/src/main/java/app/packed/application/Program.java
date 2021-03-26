@@ -34,6 +34,7 @@ import app.packed.state.StateWirelets;
  * An App (application) is a type of artifact provided by Packed.
  */
 // Skal have et 
+// Maaske bliver den sgu app igen
 public interface Program extends AutoCloseable {
 
     /**
@@ -52,6 +53,7 @@ public interface Program extends AutoCloseable {
      * 
      * @return the component
      */
+    // Not sure we want this...
     Component component();
 
     /**

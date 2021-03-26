@@ -29,7 +29,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
@@ -54,14 +53,15 @@ public final class ExtensionModel implements ExtensionDescriptor {
         }
     };
 
-    /** A model of any attributes defined on the extension type. */
-    private final PackedAttributeModel attributes;// Nullable??
+    /** A model of any attributes defined on the extension class. */
+    @Nullable
+    final PackedAttributeModel attributes;
 
     /** The {@link ExtensionDescriptor#depth() depth} of this extension. */
     private final int depth;
 
     /** The direct dependencies of the extension. */
-    private final ExtensionDependencySet directDependencies;
+    private final ExtensionDependencySet dependencies;
 
     /** The extension we model. */
     private final Class<? extends Extension> extensionClass;
@@ -74,7 +74,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** The default component name of the extension. */
     public final String nameComponent;
-
+    
     /** The canonical name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
 
@@ -91,7 +91,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
         this.extensionClass = builder.extensionClass;
         this.mhConstructor = builder.mhConstructor;
         this.depth = builder.depth;
-        this.directDependencies = ExtensionDependencySet.of(builder.dependencies);
+        this.dependencies = ExtensionDependencySet.of(builder.dependencies);
 
         // Cache some frequently used strings.
         this.nameFull = extensionClass.getCanonicalName();
@@ -100,16 +100,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
         this.extensionLinkedDirectChildrenOnly = builder.connectParentOnly;
         this.attributes = builder.pam;
-    }
-
-    /**
-     * Returns a model of any attributes the extension defines.
-     * 
-     * @return a model of any attributes the extension defines
-     * @see ExposeAttribute
-     */
-    public PackedAttributeModel attributes() {
-        return attributes;
     }
 
     /**
@@ -165,7 +155,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** {@inheritDoc} */
     @Override
     public ExtensionDependencySet dependencies() {
-        return directDependencies;
+        return dependencies;
     }
 
     /** {@inheritDoc} */
@@ -246,10 +236,6 @@ public final class ExtensionModel implements ExtensionDescriptor {
         /** A set of extension this extension depends on (does not include transitive extensions). */
         private Set<Class<? extends Extension>> dependencies = new HashSet<>();
 
-        // Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency
-        // Skal lige gennemtaenkes, det er lidt kompliceret classloader
-        private Set<Class<? extends Extension>> pendingLoadDependencies = Collections.newSetFromMap(new WeakHashMap<>());
-
         /** The depth of the extension relative to other extensions. */
         private int depth;
 
@@ -260,7 +246,14 @@ public final class ExtensionModel implements ExtensionDescriptor {
         private MethodHandle mhConstructor; // (ExtensionSetup)Extension
 
         /** A model of all methods that provide attributes. */
+        @Nullable
         private PackedAttributeModel pam;
+
+        /**
+         * Jeg godt vi vil lave det om saa vi faktisk loader extensionen naar man kalder addDependency. Skal lige gennemtaenkes,
+         * det er lidt kompliceret classloader
+         */
+        private Set<Class<? extends Extension>> pendingLoadDependencies = Collections.newSetFromMap(new WeakHashMap<>());
 
         private Builder(Class<? extends Extension> extensionClass) {
             this.extensionClass = requireNonNull(extensionClass);
@@ -362,8 +355,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private static final class Loader {
 
-        /** A map that contains */
-        // Bootstrap, Builder or Throwable
+        /** A map that contains Bootstrap, Builder or Throwable*/
         private static final WeakHashMap<Class<? extends Extension>, Object> DATA = new WeakHashMap<>();
 
         /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */

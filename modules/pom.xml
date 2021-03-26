@@ -121,7 +121,7 @@
           </excludes>
         </configuration>
       
-      
+      <!--
         <executions>
           <execution>
             <goals>
@@ -136,7 +136,7 @@
             </goals>
           </execution>
         </executions>
-   
+   -->
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -144,7 +144,7 @@
         <version>3.2.0</version>
         <configuration>
           <excludePackageNames>packed.*:*.internals.*:*.test.*:*.examples.*:</excludePackageNames>
-          <additionalOptions>--frames -tag "apiNote:a:API Note:" -tag "implSpec:a:Implementation Requirements:" -tag "implNote:a:Implementation Note:"</additionalOptions>
+          <additionalOptions>-tag "apiNote:a:API Note:" -tag "implSpec:a:Implementation Requirements:" -tag "implNote:a:Implementation Note:"</additionalOptions>
                 <detectJavaApiLink>false</detectJavaApiLink>
                 <offlineLinks>
                     <offlineLink>

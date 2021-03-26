@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
@@ -49,7 +50,7 @@ public class Foo extends BaseAssembly {
     @Target({ ElementType.METHOD, ElementType.FIELD })
     @Retention(RUNTIME)
     @FieldHook(bootstrap = FieldBootstrap.class)
-    @MethodHook(bootstrap = MethodBootstrap.class)
+    @MethodHook(bootstrap = MethodBootstrap.class, extension = Extension.class)
     public @interface Hej {}
 
     public static class MyComp {

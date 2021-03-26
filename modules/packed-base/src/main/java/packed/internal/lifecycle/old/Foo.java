@@ -26,6 +26,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import app.packed.application.Program;
 import app.packed.base.Tag;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
@@ -51,7 +52,7 @@ public class Foo extends BaseAssembly {
 
     @Target(ElementType.METHOD)
     @Retention(RUNTIME)
-    @MethodHook(allowInvoke = true, bootstrap = TestIt.class)
+    @MethodHook(allowInvoke = true, bootstrap = TestIt.class, extension = Extension.class)
     public @interface Hej {
 
     }

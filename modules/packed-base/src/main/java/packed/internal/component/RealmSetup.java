@@ -37,13 +37,15 @@ public final class RealmSetup {
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             ComponentConfiguration.class);
-    
+
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
     ComponentSetup current;
 
     private final Class<?> realmType;
+
+    public boolean isClosed;
 
     /**
      * Creates a new realm for an assembly.
@@ -63,6 +65,18 @@ public final class RealmSetup {
      */
     public RealmSetup(Consumer<? /* extends Composer<?> */> composer) {
         this.realmType = composer.getClass();
+    }
+
+    public void checkOpen() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void close(WireableComponentSetup root) {
+        isClosed = true;
+        // Closes the realm, no further configuration of it is possible after Assembly::build has been invoked
+        root.realmClose();
     }
 
     /**

@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import app.packed.container.Extension;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
@@ -55,7 +56,7 @@ import packed.internal.component.source.SourceComponentSetup;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@MethodHook(bootstrap = MySidecar.class)
+@MethodHook(bootstrap = MySidecar.class, extension = Extension.class)
 // I think this creates a job...
 public @interface Main {
     // forceSpawnThread???

@@ -39,6 +39,7 @@ public class PackedAttributeModel {
         this.attributeTypes = attributeTypes;
     }
 
+    @Nullable
     public static PackedAttributeModel analyse(ClassMemberAccessor oc) {
         // OpenClass oc = new OpenClass(MethodHandles.lookup(), c, true);
         HashMap<PackedAttribute<?>, Attt> types = new HashMap<>();

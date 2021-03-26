@@ -43,4 +43,5 @@ import java.lang.annotation.Target;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+//@MethodHook(matchesAnnotation = Inject.class, extension = ServiceExtension.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 public @interface Inject {}

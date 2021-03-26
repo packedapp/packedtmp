@@ -36,10 +36,10 @@ import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.validate.Validation;
-import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireletArray;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.Infuser;
@@ -145,8 +145,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(composerFactory, "composerFactory is null");
         requireNonNull(consumer, "consumer is null");
 
+        // Create a new realm
+        RealmSetup realm = new RealmSetup(consumer);
+        
         // Create a new build and root application/container/component
-        BuildSetup build = new BuildSetup(this, new RealmSetup(consumer), pcd, 0, wirelets);
+        BuildSetup build = new BuildSetup(this, realm, pcd, 0, wirelets);
 
         CC componentConfiguration = pcd.toConfiguration(build.component);
 

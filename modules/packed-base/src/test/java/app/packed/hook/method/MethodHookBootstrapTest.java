@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 import app.packed.hooks.MethodHook;
 
 public class MethodHookBootstrapTest {
@@ -42,7 +43,7 @@ public class MethodHookBootstrapTest {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    @MethodHook(matchesAnnotation = HookTest.class, bootstrap = HookTestBootstrap.class)
+    @MethodHook(matchesAnnotation = HookTest.class, bootstrap = HookTestBootstrap.class, extension = Extension.class)
     static @interface HookTest {
         String value();
     }

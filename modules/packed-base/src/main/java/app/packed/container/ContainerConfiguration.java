@@ -30,9 +30,9 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -63,7 +63,6 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see ContainerAssembly#extensions()
      */
     public Set<Class<? extends Extension>> extensions() {
-        // getAttribute(EXTENSIONS);
         return ((ContainerSetup) context).extensionView();
     }
 
