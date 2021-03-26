@@ -100,11 +100,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // Setup Realm
         this.realm = realm;
-        ComponentSetup previous = realm.current;
-        if (previous != null) {
-            previous.fixCurrent();
-        }
-        realm.current = this;
+        realm.updateCurrent(this);
 
         // Various
         if (parent == null) {
@@ -140,7 +136,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.container = container;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = realm;
-        this.realm.current = this;
+        this.realm.updateCurrent(this);
         this.pool = container.pool;
     }
 
@@ -176,7 +172,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     }
 
     public void checkCurrent() {
-        if (realm.current != this) {
+        if (realm.current() != this) {
             throw new IllegalStateException("This operation must be called immediately after wiring of the component");
         }
     }

@@ -44,7 +44,7 @@ public final class RealmSetup {
     private RealmAccessor accessor;
 
     /** The current active component in the realm. */
-    ComponentSetup current;
+    private ComponentSetup current;
 
     /** Whether or not this realm is closed. */
     private boolean isClosed;
@@ -102,7 +102,10 @@ public final class RealmSetup {
     }
 
     public void updateCurrent(ComponentSetup component) {
-        
+        if (current != null) {
+            current.fixCurrent();
+        }
+        current = component;
     }
 
     public void addRootContainer(ContainerSetup container) {
