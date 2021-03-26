@@ -17,6 +17,7 @@ package app.packed.container;
 
 import java.util.Set;
 
+import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
@@ -27,9 +28,12 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.component.SourceComponentSetup;
+import packed.internal.application.BuildSetup;
+import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
+import packed.internal.component.RealmSetup;
+import packed.internal.component.SourceComponentSetup;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -184,6 +188,10 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
             super(wirelet, PackedComponentModifierSet.I_CONTAINER);
         }
 
+        public SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+            return new SourceComponentSetup(build, realm, this, parent, wirelets);
+        }
+        
         @Override
         public ComponentDriver<ContainerConfiguration> bind(Object object) {
             throw new UnsupportedOperationException("Cannot bind to a container component driver");

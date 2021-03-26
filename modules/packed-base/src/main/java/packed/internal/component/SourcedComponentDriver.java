@@ -29,6 +29,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
+import packed.internal.application.BuildSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
@@ -57,7 +58,9 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
             throw new IllegalStateException();
         }
     }
-
+    public SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        return new SourceComponentSetup(build, realm, this, parent, wirelets);
+    }
     @Override
     public ComponentDriver<C> bind(Object object) {
         requireNonNull(object, "object is null");

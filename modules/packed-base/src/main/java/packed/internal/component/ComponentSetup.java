@@ -153,7 +153,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
-
     }
 
     void fixCurrent() {
@@ -175,7 +174,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param extensionModel
      *            the extension model
      */
-    public ComponentSetup(ComponentSetup parent, ExtensionModel extensionModel) {
+    protected ComponentSetup(ComponentSetup parent, ExtensionModel extensionModel) {
         super(parent);
         this.build = parent.build;
         this.container = null;
@@ -321,7 +320,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         ComponentSetup parent = this instanceof SourceComponentSetup  ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create a new component and a new realm
-        SourceComponentSetup component = new SourceComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
+        SourceComponentSetup component = driver.newComponent(build, new RealmSetup(assembly), parent, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(component);
@@ -489,7 +488,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         ComponentSetup parent = this instanceof SourceComponentSetup ? this : treeParent;
 
         // Wire the component
-        SourceComponentSetup component = new SourceComponentSetup(build, realm, d, parent, wirelets);
+        SourceComponentSetup component = d.newComponent(build, realm, parent, wirelets);
 
         // Create a component configuration object and return it to the user
         return d.toConfiguration(component);
@@ -503,9 +502,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
         throw new IllegalStateException("This method must be called before a component is instantiated");
     }
-
-    /* public methods */
-
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentSetup}. */
     private static final class ComponentAdaptor implements Component {

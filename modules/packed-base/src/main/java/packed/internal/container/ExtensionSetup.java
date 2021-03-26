@@ -143,6 +143,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /**
      * @param lookup
      */
+    // Do we actually want to support this??? IDK
     public void lookup(Lookup lookup) {
         throw new UnsupportedOperationException();
     }

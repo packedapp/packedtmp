@@ -10,6 +10,7 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import packed.internal.application.BuildSetup;
 import packed.internal.util.LookupUtil;
 
 public abstract class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
@@ -30,6 +31,8 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     public void checkBound() {}
 
     public abstract C toConfiguration(SourceComponentSetup context);
+
+    public abstract SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
 
     /** {@inheritDoc} */
     @Override
