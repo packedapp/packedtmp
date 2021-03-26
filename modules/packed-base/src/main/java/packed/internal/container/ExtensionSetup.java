@@ -77,6 +77,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
+    /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected void addAttributes(DefaultAttributeMap dam) {
@@ -125,13 +126,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return model.extensionClass();
     }
 
-    /**
-     * Returns the extension instance.
-     * 
-     * @return the extension instance
-     * @throws IllegalStateException
-     *             if trying to call this method from the constructor of the extension
-     */
+    /** {@inheritDoc} */
     public Extension extensionInstance() {
         Extension e = instance;
         if (e == null) {
@@ -189,11 +184,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns the extension's model.
-     * 
-     * @return the extension's model
-     */
+    /** {@return the extension's model} */
     public ExtensionModel model() {
         return model;
     }

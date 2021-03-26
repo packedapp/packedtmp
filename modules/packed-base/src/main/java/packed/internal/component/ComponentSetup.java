@@ -50,7 +50,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
-public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
+public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     /** The modifiers of this component. */
     protected final int modifiers;

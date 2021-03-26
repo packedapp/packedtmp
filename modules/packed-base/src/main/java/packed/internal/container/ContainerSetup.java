@@ -28,8 +28,6 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerAssembly;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
@@ -37,11 +35,11 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.component.WireableComponentSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
@@ -49,7 +47,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /** The internal configuration of a container. */
 public final class ContainerSetup extends WireableComponentSetup {
 
-    /** Child containers, lazy initialized */
+    /** Child containers, lazy initialized (we rely on this in ExtensionSetup) */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
@@ -64,7 +62,7 @@ public final class ContainerSetup extends WireableComponentSetup {
     @Nullable
     private Boolean isImage;
 
-    /** Any parent container of this container. */
+    /** This container's parent (if non-root). */
     @Nullable
     final ContainerSetup containerParent;
 
@@ -311,32 +309,6 @@ public final class ContainerSetup extends WireableComponentSetup {
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
         return (T) useDependencyCheckedExtension(extensionClass, null).extensionInstance();
-    }
-    
-    /**
-     * Returns an unmodifiable view of the extensions that are currently in use.
-     * 
-     * @return an unmodifiable view of the extensions that are currently in use
-     * 
-     * @see ContainerAssembly#extensions()
-     */
-    // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
-    // for assembly components. Makes sense because we would need for interating
-    // through the build
-    public Set<Class<? extends Extension>> containerExtensions() {
-        return extensionView();
-    }
-
-    /**
-     * @param <T>
-     * @param extensionClass
-     * @return the extension
-     * @throws UnsupportedOperationException
-     *             if the underlying component is not a container
-     * @see ContainerConfiguration#use(Class)
-     */
-    public <T extends Extension> T containerUse(Class<T> extensionClass) {
-        return useExtension(extensionClass);
     }
 
     @Override

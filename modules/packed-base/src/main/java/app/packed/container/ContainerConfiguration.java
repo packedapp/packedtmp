@@ -64,7 +64,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public Set<Class<? extends Extension>> extensions() {
         // getAttribute(EXTENSIONS);
-        return ((ContainerSetup) context).containerExtensions();
+        return ((ContainerSetup) context).extensionView();
     }
 
     /**
@@ -152,7 +152,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see #extensions()
      */
     public <T extends Extension> T use(Class<T> extensionClass) {
-        return ((ContainerSetup) context).containerUse(extensionClass);
+        return ((ContainerSetup) context).useExtension(extensionClass);
     }
 
     /**
