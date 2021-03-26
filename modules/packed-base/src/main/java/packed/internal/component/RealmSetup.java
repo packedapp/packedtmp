@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
@@ -44,14 +43,21 @@ public final class RealmSetup {
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
+    /** The current active component in the realm. */
     ComponentSetup current;
 
+    /** Whether or not this realm is closed. */
+    private boolean isClosed;
+
+    // Hmm. Realm er en ting. Men naar vi laeser extra hooks saa er det jo ikke paa denne type
+    // Vi har faktisk 2 som jeg ser det.
     private final Class<?> realmType;
 
-    public boolean isClosed;
-
-    /** We keep track of all containers that either the root container or have a parent that is part of another realm. */
-    private final List<ContainerSetup> rootContainers = new ArrayList<>();
+    /**
+     * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
+     * When we close the realm we then run through this list and recursively close each container.
+     */
+    private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
     /**
      * Creates a new realm for an assembly.
@@ -63,10 +69,6 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
     }
 
-    public void addRootContainer(ContainerSetup container) {
-        rootContainers.add(container);
-    }
-    
     /**
      * Creates a new realm for an composer consumer
      * 
@@ -75,23 +77,6 @@ public final class RealmSetup {
      */
     public RealmSetup(Consumer<? /* extends Composer<?> */> composer) {
         this.realmType = composer.getClass();
-    }
-
-    public void checkOpen() {
-        if (isClosed) {
-            throw new IllegalStateException();
-        }
-    }
-
-    public void close(WireableComponentSetup root) {
-        if (current != null) {
-            current.fixCurrent();
-        }
-        isClosed = true;
-        for (ContainerSetup c: rootContainers) {
-           c.closeRealm();
-        }
-        //root.realmClose();
     }
 
     /**
@@ -110,6 +95,29 @@ public final class RealmSetup {
             this.accessor = r = RealmAccessor.WithModuleInfo.of(realmType);
         }
         return r;
+    }
+
+    public void addRootContainer(ContainerSetup container) {
+        // Check if we are the root component in the realm. In which
+        // case we do not need a list. Except for extensions
+        // This is highly likely
+        rootContainers.add(container);
+    }
+
+    public void checkOpen() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
+    }
+
+    public void close(WireableComponentSetup root) {
+        if (current != null) {
+            current.fixCurrent();
+        }
+        isClosed = true;
+        for (ContainerSetup c : rootContainers) {
+            c.closeRealm();
+        }
     }
 
     /**

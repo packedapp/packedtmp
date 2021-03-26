@@ -134,7 +134,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.container = container;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = realm;
-        this.realm.current = this; // IDK Den er jo ikke runtime...
+        this.realm.current = this;
         this.pool = container.pool;
     }
 
@@ -333,6 +333,9 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             if (treeParent.treeChildren != null && treeParent.treeChildren.containsKey(n)) {
                 // If name exists. Lets keep a counter (maybe if bigger than 5). For people trying to
                 // insert a given component 1 million times...
+                // We can keep the counter in Build <ComponentSetup(parent), counter)
+                // In this way we do not need to main a map for every component.
+                
                 if (!isFree) {
                     throw new RuntimeException("Name already exist " + n);
                 }
