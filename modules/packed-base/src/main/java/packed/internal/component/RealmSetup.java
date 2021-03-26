@@ -82,12 +82,13 @@ public final class RealmSetup {
     /**
      * Creates a new realm for an extension.
      * 
-     * @param extension
-     *            the extension to create a realm for
+     * @param model
+     *            the extension model to create a realm for
+     * @parem extension the extension setup
      */
     public RealmSetup(ExtensionModel model, ComponentSetup extension) {
         this.realmType = model.extensionClass();
-        this.current = extension;
+        this.current = requireNonNull(extension);
     }
 
     public RealmAccessor accessor() {

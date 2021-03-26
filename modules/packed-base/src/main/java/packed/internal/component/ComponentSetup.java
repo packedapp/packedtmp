@@ -42,7 +42,6 @@ import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -54,21 +53,21 @@ import packed.internal.util.ThrowableUtil;
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
+    /** The application this component is a part of. */
     public final ApplicationSetup application;
 
     /** The build this component is part of. */
     public final BuildSetup build;
 
-    /** The container this component is a member of. A container is a member of it self. */
+    /** The container this component is a part of. A container is a part of it self. */
     public final ContainerSetup container;
 
     /** The modifiers of this component. */
     protected final int modifiers;
 
-    /** The constant pool this component is a part of. */
     public final ConstantPoolSetup pool;
 
-    /** The realm this component belongs to. */
+    /** The realm this component is a part of. */
     public final RealmSetup realm;
 
     /**************** See how much of this we can get rid of. *****************/
@@ -77,7 +76,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     int nameState;
 
-    Consumer<? super Component> onWire;
+    protected Consumer<? super Component> onWire;
 
     static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
     static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
@@ -118,7 +117,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
-        
+
         // finally update the realm
         this.realm = realm;
         realm.updateCurrent(this);
@@ -140,7 +139,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.container = container;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(model, this);
-        setName0(null, model);
+        this.onWire = container.onWire;
+        container.addChild(this, model.nameComponent);
     }
 
     /**
@@ -254,10 +254,12 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     public void setName(String name) {
         // First lets check the name is valid
-        SetComponentNameWirelet.checkName(name);
+        checkComponentName(name);
+        if (name.equals(this.name)) {
+            return;
+        }
         int s = nameState;
 
-        checkConfigurable();
         checkCurrent();
 
         // maybe assume s==0
@@ -286,6 +288,21 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
 
         setName0(name, null);
+    }
+
+    /**
+     * Checks the name of the component.
+     * 
+     * @param name
+     *            the name to check
+     * @return the name if valid
+     */
+    public static String checkComponentName(String name) {
+        requireNonNull(name, "name is null");
+        if (name != null) {
+
+        }
+        return name;
     }
 
     protected void setName0(String newName, ExtensionModel extensionModel) {

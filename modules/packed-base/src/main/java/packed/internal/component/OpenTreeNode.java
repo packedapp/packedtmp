@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -66,6 +67,25 @@ public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
         return treeChildren == null ? 0 : treeChildren.size();
     }
 
+    protected void addChild(T child, String name) {
+        Map<String, T> c = treeChildren;
+        if (c == null) {
+            child.name = name;
+            c = treeChildren = new HashMap<>();
+            treeFirstChild = treeLastChild = child;
+            c.put(name, child);
+            return;
+        }
+
+        String n = name;
+        int counter = 1;
+        while (c.putIfAbsent(n, child) != null) {
+            n = name + counter++;
+        }
+        treeLastChild.treeNextSibling = child;
+        treeLastChild = child;
+    }
+
     @SuppressWarnings("unchecked")
     <S> List<S> toList(Function<T, S> mapper) {
         requireNonNull(mapper, "mapper is null");
@@ -75,9 +95,8 @@ public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
         } else {
             Object[] o = new Object[size];
             int index = 0;
-            for (T acc = treeFirstChild; acc != null; acc = acc.treeNextSibling) {
-                S s = mapper.apply(acc);
-                o[index++] = s;
+            for (T child = treeFirstChild; child != null; child = child.treeNextSibling) {
+                o[index++] = mapper.apply(child);
             }
             return (List<S>) List.of(o);
         }
