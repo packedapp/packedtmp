@@ -117,7 +117,7 @@ public @interface MethodHook {
      * <p>
      * Implementations must have a no-args constructor.
      */
-    abstract class Bootstrap implements BuildContext {
+    abstract class Bootstrap extends HookStore implements BuildContext {
 
         /** The builder used for bootstrapping. Updated by {@link MethodHookModel}. */
         private MethodHookModel.@Nullable Builder builder;
@@ -142,15 +142,15 @@ public @interface MethodHook {
                     throw new IllegalStateException("This method cannot be called from the constructor of " + getClass()
                             + ". You will need to call this method from within #bootstrap()");
                 }
+                // Tror det er bootstrap af klassen for en realm
                 throw new IllegalStateException("This method cannot called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");
             }
             return b;
         }
 
         /** Disables any further processing of the hook. */
+        // or cancel
         public final void disable() {
-            // No I think disable... Clears out runtime and build time...
-            // nulls about
             builder().disable();
         }
 

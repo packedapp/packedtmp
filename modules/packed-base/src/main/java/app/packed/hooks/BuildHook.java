@@ -51,9 +51,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OnBuild {
-
-}
+public @interface BuildHook {}
 
 // Had this attributes.. Men syntes vi skal finde en anden maade...
 //boolean runtimeAssembly() default false;
@@ -68,7 +66,6 @@ public @interface OnBuild {
 // }
 
 // Extension???? Skal vel treates paa samme maade component... Paa naer at instance er fin.
-
 
 // Hook Target>
 // Buildtime-Components
