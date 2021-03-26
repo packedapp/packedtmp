@@ -52,6 +52,12 @@ import packed.internal.util.ThrowableUtil;
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
+    /** The build this component is part of. */
+    public final BuildSetup build;
+
+    /** The container this component is a member of. A container is a member of it self. */
+    public final ContainerSetup container;
+
     /** The modifiers of this component. */
     protected final int modifiers;
 
@@ -60,12 +66,6 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     /** The realm this component belongs to. */
     public final RealmSetup realm;
-
-    /** The container this component is a member of. A container is a member of it self. */
-    public final ContainerSetup container;
-
-    /** The build this component is part of. */
-    public final BuildSetup build;
 
     /**************** See how much of this we can get rid of. *****************/
 
@@ -89,7 +89,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param parent
      *            the parent of the component
      */
-    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent) {
+    public ComponentSetup(BuildSetup build, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         super(parent);
         this.build = requireNonNull(build);
         
@@ -198,7 +198,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> pcd = PackedComponentDriver.getDriver(assembly);
+        WireableComponentDriver<?> pcd = WireableComponentDriver.getDriver(assembly);
 
         // If this component is an extension, we link to the container the extension is part of 
         ComponentSetup linkTo = this instanceof ExtensionSetup ? treeParent : this;
@@ -397,7 +397,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     }
 
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        PackedComponentDriver<C> pcd = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
+        WireableComponentDriver<C> pcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // If this component is an extension, we wire to the container the extension is part of 
         ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;

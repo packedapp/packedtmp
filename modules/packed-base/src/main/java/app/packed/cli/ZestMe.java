@@ -29,7 +29,7 @@ public class ZestMe extends BaseAssembly {
     @Override
     protected void build() {
         install(Foo.class);
-        use(MyExt.class);
+      //  use(MyExt.class);
     }
 
     public static void main(String[] args) {

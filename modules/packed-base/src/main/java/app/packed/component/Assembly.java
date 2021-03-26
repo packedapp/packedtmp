@@ -25,7 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerAssembly;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -52,7 +52,7 @@ import packed.internal.util.LookupUtil;
  */
 public abstract class Assembly<C extends ComponentConfiguration> {
 
-    /** A marker object to indicate that the assembly has been used. */
+    /** A marker object to indicate that the assembly has already been used. */
     private static Object USED = Assembly.class;
 
     /** A handle that can access #configuration. */
@@ -75,19 +75,20 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     private Object configuration;
 
     /**
-     * The driver of this assembly. This field is read via a VarHandle from
-     * {@link PackedComponentDriver#getDriver(Assembly)}.
+     * The component driver of this assembly.
+     * <p>
+     * This field is read from {@link WireableComponentDriver#getDriver(Assembly)} via a varhandle.
      */
-    private final PackedComponentDriver<? extends C> driver;
+    private final WireableComponentDriver<? extends C> driver;
 
     /**
-     * Creates a new assembly using the specified component driver.
+     * Creates a new assembly using the specified driver.
      * 
      * @param driver
-     *            the driver used for constructing the configuration this assembly wraps
+     *            the component driver used to create the configuration objects this assembly wraps
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
+        this.driver = requireNonNull((WireableComponentDriver<? extends C>) driver, "driver is null");
         this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
 
@@ -98,14 +99,15 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      * <p>
      * This method should never be invoked directly by the user.
      */
-    protected abstract void build(); // Invoked from AssemblyHelper#invokeAssemblyBuild
+    // rename to assemble? Og saa behold build til Build info
+    protected abstract void build();
 
     /**
-     * Returns the configuration object that this assembly wraps.
+     * Returns this assembly's configuration object.
      * <p>
      * This method must only be called from within the {@link #build()} method.
      * 
-     * @return the configuration object that this assembly wraps
+     * @return this assembly's configuration object
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */

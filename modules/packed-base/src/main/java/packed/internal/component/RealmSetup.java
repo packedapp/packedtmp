@@ -34,7 +34,7 @@ import packed.internal.util.LookupUtil;
 /** The setup of an realm */
 public final class RealmSetup {
 
-    /** A handle that can invoke {@link Assembly#build()}. Is here because I have no better place to put it. */
+    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             ComponentConfiguration.class);
     

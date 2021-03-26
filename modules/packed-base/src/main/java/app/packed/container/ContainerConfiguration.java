@@ -30,7 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
@@ -180,7 +180,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     }
 
     /** A component driver that create containers. */
-    private static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
+    private static class ContainerComponentDriver extends WireableComponentDriver<ContainerConfiguration> {
 
         private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
 

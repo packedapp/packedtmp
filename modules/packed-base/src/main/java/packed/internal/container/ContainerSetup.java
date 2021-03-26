@@ -36,7 +36,7 @@ import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentSetup;
@@ -78,7 +78,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public ContainerSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public ContainerSetup(BuildSetup build, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, realm, driver, parent, wirelets);
         this.containerParent = parent == null ? null : parent.container;
         if (containerParent != null) {

@@ -14,17 +14,17 @@ import app.packed.component.Wirelet;
 import packed.internal.application.BuildSetup;
 import packed.internal.util.LookupUtil;
 
-public abstract class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
+public abstract class WireableComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
     /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            PackedComponentDriver.class);
+            WireableComponentDriver.class);
 
     @Nullable
     final Wirelet wirelet;
     public final int modifiers;
 
-    public PackedComponentDriver(Wirelet wirelet, int modifiers) {
+    public WireableComponentDriver(Wirelet wirelet, int modifiers) {
         this.wirelet = wirelet;
         this.modifiers = modifiers;
     }
@@ -59,8 +59,8 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static <C extends ComponentConfiguration> PackedComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
+    public static <C extends ComponentConfiguration> WireableComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
         requireNonNull(assembly, "assembly is null");
-        return (PackedComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
+        return (WireableComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 }

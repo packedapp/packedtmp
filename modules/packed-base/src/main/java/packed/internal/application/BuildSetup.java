@@ -19,7 +19,7 @@ import app.packed.application.BuildInfo;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
-import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
@@ -54,7 +54,7 @@ public final class BuildSetup implements BuildInfo {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
+    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(applicationDriver, componentDriver);
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
         this.component = (ContainerSetup) componentDriver.newComponent(this, realm, null, wirelets);

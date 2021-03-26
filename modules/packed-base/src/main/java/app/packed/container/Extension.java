@@ -107,6 +107,7 @@ public abstract class Extension {
      */
     // Det jeg ikke kan lide ved den er fx information om image... som jo kan vaereforskellige
     // for extension'en selv...
+    // Hmm Assembly() <- you need to override build
     protected final BuildInfo build() {
         return configuration().build();
     }
