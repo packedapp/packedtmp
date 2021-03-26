@@ -14,7 +14,6 @@ import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletHandle;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -231,7 +230,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletClass) {
+    public <T extends Wirelet> PackedWireletHandle<T> wirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
         // We only allow consummation of wirelets in the same module as the extension
@@ -242,8 +241,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         }
         // The extension does not store any wirelets itself, fetch them from the extension's container instead
         WireletWrapper wirelets = container.wirelets;
-        if (wirelets == null) {
-            return WireletHandle.of();
+        if (wirelets == null || wirelets.unconsumed() == 0) {
+            return PackedWireletHandle.of();
         }
         return new PackedWireletHandle<>(wirelets, wireletClass);
     }

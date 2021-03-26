@@ -40,6 +40,10 @@ public final class WireletWrapper {
         this.unconsumed = wirelets.length;
     }
 
+    public int unconsumed() {
+        return unconsumed;
+    }
+    
     // Hooks kan ogsaa faa i Wirelets...
     public <T extends Wirelet> WireletHandle<T> handleOf(Module module, Class<? extends T> wireletClass) {
         // Maaske skal vi have en caller med ala "Must be in the same module as"

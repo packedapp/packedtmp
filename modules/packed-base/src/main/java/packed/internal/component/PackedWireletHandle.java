@@ -119,8 +119,8 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Wirelet> WireletHandle<T> of() {
-        return (WireletHandle<T>) EMPTY;
+    public static <T extends Wirelet> PackedWireletHandle<T> of() {
+        return (PackedWireletHandle<T>) EMPTY;
     }
 
     public static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {

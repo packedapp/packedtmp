@@ -87,10 +87,10 @@ public abstract class Extension {
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#initialize(ContainerSetup, Class)} using a varhandle.
+     * This field is initialized in {@link ExtensionSetup#initialize(ContainerSetup, Class)} via a varhandle.
      * <p>
-     * This field is not nulled out after the extension has been configured. This allows for invoking methods such as
-     * {@link #checkConfigurable()} after configuration is complete.
+     * This field is not nulled out after the configuration of the extension has completed. This allows for invoking
+     * methods such as {@link #checkConfigurable()} at any time.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -124,14 +124,6 @@ public abstract class Extension {
         configuration().checkConfigurable();
     }
 
-    // checkInNoSubContainers
-    protected final void checkUnconnected() {
-        // This method cannot be invoked after ServiceExtension has been installed in any sub containers
-
-        // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
-        // anden setting op fra parent'en
-    }
-
     // checkExtendable...
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
@@ -141,6 +133,14 @@ public abstract class Extension {
     // CheckNoLeafs()
     protected final void checkExtendable() {
         configuration().checkExtendable();
+    }
+
+    // checkInNoSubContainers
+    protected final void checkUnconnected() {
+        // This method cannot be invoked after ServiceExtension has been installed in any sub containers
+
+        // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
+        // anden setting op fra parent'en
     }
 
     /**
@@ -205,15 +205,11 @@ public abstract class Extension {
     // extensionPreambleDone
 
     protected final void isLeafContainer() {
+        // Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns whether or not the container that this extension belongs is being built into an {@link ApplicationImage}.
-     * 
-     * @return true if the extension
-     */
-    // isInImage(), isImageParticipant
+    /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
     protected final boolean isPartOfImage() {
         return configuration().isPartOfImage();
     }
@@ -258,30 +254,6 @@ public abstract class Extension {
         // An extension cannot link a container as long as it (the container?) is extendable.
     }
 
-    /**
-     * Invoked (by the runtime) immediately after the extension has been instantiated. But before the newly created
-     * extension instance is returned to the end-user. Since most methods on this class cannot be invoked from the
-     * extension's constructor. This method can be used to perform any needed post instantiation.
-     * <p>
-     * The reason for prohibiting configuration from the constructor. Is to avoid situations.. that users might then link
-     * other components that in turn requires access to the actual extension instance. Which is not possible since it is
-     * still being instantiated. While this is rare in practice. Too be on the safe side we prohibit it.
-     * <p>
-     * Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
-     * anywhere where we can get a hold of the actual extension instance...
-     * 
-     * But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
-     * installed a component that uses other extensions....????? IDK
-     * 
-     * most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
-     * from this method. Is typically used to add new runtime components.
-     */
-    protected void onNew() {}
-
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
-
     // onPreUserContainerWiring???
     /**
      * Invoked (by the runtime) when. This is the last opportunity to wire any components that requires extensions that have
@@ -304,6 +276,17 @@ public abstract class Extension {
 
         // lazy operations should be idempotent
     }
+
+    // Hvad hvis den selv tilfoejer komponenter med en child container???
+    // Problemet er hvis den bruger extensions som den ikke har defineret
+    // Det tror jeg maaske bare ikke den kan
+
+    /**
+     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned). But before the
+     * new extension instance is returned to the end-user. Since most methods on this class cannot be invoked from the
+     * constructor of the extension instance. This method can be used to perform post instantiation if needed.
+     */
+    protected void onNew() {}
 
     /**
      * Used to lookup other extensions.
@@ -519,3 +502,16 @@ public abstract class Extension {
      */
     public static abstract class Subtension {}
 }
+//* <p>
+//* The main reason for prohibiting most configuration from the constructor is. Is to avoid situations.. that users might then link
+//* other components that in turn requires access to the actual extension instance. Which is not possible since it is
+//* still being instantiated. While this is rare in practice. Too be on the safe side we prohibit it.
+//* <p>
+//* Should we just use a ThreadLocal??? I mean we can initialize it when Assembling... And I don't think there is
+//* anywhere where we can get a hold of the actual extension instance...
+//* 
+//* But let's say we use another extension from within the constructor. We can only use direct dependencies... But say it
+//* installed a component that uses other extensions....????? IDK
+//* 
+//* most As most methods in this class is unavailable Unlike the constructor, {@link #configuration()} can be invoked
+//* from this method. Is typically used to add new runtime components.
