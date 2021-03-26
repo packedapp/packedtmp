@@ -58,7 +58,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** A model of the extension. */
     private final ExtensionModel model;
-
+    
     /**
      * Creates a new extension setup.
      * 

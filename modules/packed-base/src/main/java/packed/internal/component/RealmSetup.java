@@ -20,6 +20,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
@@ -28,6 +30,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.container.Extension;
 import packed.internal.component.source.RealmAccessor;
+import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;
 
@@ -47,6 +50,9 @@ public final class RealmSetup {
 
     public boolean isClosed;
 
+    /** We keep track of all containers that either the root container or have a parent that is part of another realm. */
+    public final List<ContainerSetup> rootContainers = new ArrayList<>();
+
     /**
      * Creates a new realm for an assembly.
      * 
@@ -57,6 +63,9 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
     }
 
+    public void addRootContainer(ContainerSetup container) {
+        
+    }
     /**
      * Creates a new realm for an composer consumer
      * 
@@ -78,7 +87,7 @@ public final class RealmSetup {
             current.fixCurrent();
         }
         isClosed = true;
-        
+
         root.realmClose();
     }
 

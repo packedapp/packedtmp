@@ -36,9 +36,9 @@ import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
@@ -92,6 +92,10 @@ public final class ContainerSetup extends WireableComponentSetup {
         // Set a default name if up default name
         if (name == null) {
             setName0(null);
+        }
+        
+        if (containerParent == null || containerParent.realm != realm) {
+            realm.addRootContainer(this);
         }
     }
 
