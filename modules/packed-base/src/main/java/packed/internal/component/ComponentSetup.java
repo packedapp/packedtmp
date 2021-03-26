@@ -46,6 +46,7 @@ import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
@@ -129,15 +130,15 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param extensionModel
      *            a model of the extension
      */
-    protected ComponentSetup(ContainerSetup container, RealmSetup realm) {
+    protected ComponentSetup(ContainerSetup container, ExtensionModel model) {
         super(container);
         this.application = container.application;
         this.build = container.build;
+        this.pool = container.pool;
         this.container = container;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.realm = realm;
-        this.realm.updateCurrent(this);
-        this.pool = container.pool;
+        this.realm = new RealmSetup(model, this);
+        setName0(null, model);
     }
 
     /**
@@ -282,10 +283,10 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             return;// We never set override a name set by a wirelet
         }
 
-        setName0(name);
+        setName0(name, null);
     }
 
-    protected void setName0(String newName) {
+    protected void setName0(String newName, ExtensionModel extensionModel) {
         String n = newName;
         if (newName == null) {
             if (nameState == NAME_INITIALIZED_WITH_WIRELET) {
@@ -319,7 +320,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...
             } else if (this instanceof ExtensionSetup nes) {
-                n = nes.model().nameComponent;
+                n = extensionModel.nameComponent;
             }
             if (n == null) {
                 n = "Unknown";

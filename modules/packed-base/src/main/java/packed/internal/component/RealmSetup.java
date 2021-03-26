@@ -85,8 +85,9 @@ public final class RealmSetup {
      * @param extension
      *            the extension to create a realm for
      */
-    public RealmSetup(ExtensionModel extension) {
-        this.realmType = extension.extensionClass();
+    public RealmSetup(ExtensionModel model, ComponentSetup extension) {
+        this.realmType = model.extensionClass();
+        this.current = extension;
     }
 
     public RealmAccessor accessor() {
@@ -95,22 +96,6 @@ public final class RealmSetup {
             this.accessor = r = RealmAccessor.WithModuleInfo.of(realmType);
         }
         return r;
-    }
-
-    public ComponentSetup current() {
-        return current;
-    }
-
-    public void updateCurrent(ComponentSetup component) {
-        if (current != null) {
-            current.fixCurrent();
-        }
-        current = component;
-        if (component instanceof ContainerSetup container) {
-            if (container.containerParent == null || container.containerParent.realm != this) {
-               rootContainers.add(container);
-            }
-        }
     }
 
     public void checkOpen() {
@@ -127,6 +112,10 @@ public final class RealmSetup {
         for (ContainerSetup c : rootContainers) {
             c.closeRealm();
         }
+    }
+
+    public ComponentSetup current() {
+        return current;
     }
 
     /**
@@ -148,5 +137,17 @@ public final class RealmSetup {
     public void setLookup(@Nullable Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         this.accessor = accessor().withLookup(lookup);
+    }
+
+    public void updateCurrent(ComponentSetup component) {
+        if (current != null) {
+            current.fixCurrent();
+        }
+        current = component;
+        if (component instanceof ContainerSetup container) {
+            if (container.containerParent == null || container.containerParent.realm != this) {
+                rootContainers.add(container);
+            }
+        }
     }
 }

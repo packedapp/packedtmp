@@ -23,7 +23,6 @@ import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedWireletHandle;
-import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -68,9 +67,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
      *            a model of the extension
      */
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
-        super(container, new RealmSetup(model));
+        super(container, model);
         this.model = requireNonNull(model);
-        setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
     /** {@inheritDoc} */

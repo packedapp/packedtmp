@@ -91,7 +91,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
         // Set a default name if up default name
         if (name == null) {
-            setName0(null);
+            setName0(null, null);
         }
     }
 
