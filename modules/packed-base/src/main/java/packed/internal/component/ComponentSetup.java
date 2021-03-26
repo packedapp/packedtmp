@@ -182,6 +182,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (onWire != null) {
             onWire.accept(adaptor());
         }
+        isClosed = true;
         // run onWiret
         // finalize name
     }
@@ -254,9 +255,6 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @see ComponentSetup#link(Assembly, Wirelet...)
      */
     public void realmClose() {
-        if (realm.current != null) {
-            realm.current.fixCurrent();
-        }
         realmClose0(realm);
     }
 
@@ -280,7 +278,6 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         if (this instanceof ContainerSetup container) {
             container.close(pool);
         }
-        isClosed = true;
     }
 
     public void setName(String name) {
@@ -409,7 +406,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // Check that the realm this component is a part of is still open
         realm.checkOpen();
-        
+
         // If this component is an extension, we wire to the container the extension is part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;
 

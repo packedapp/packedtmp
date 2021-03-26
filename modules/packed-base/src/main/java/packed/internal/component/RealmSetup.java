@@ -74,8 +74,11 @@ public final class RealmSetup {
     }
 
     public void close(WireableComponentSetup root) {
+        if (current != null) {
+            current.fixCurrent();
+        }
         isClosed = true;
-        // Closes the realm, no further configuration of it is possible after Assembly::build has been invoked
+        
         root.realmClose();
     }
 

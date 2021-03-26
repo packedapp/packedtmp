@@ -19,9 +19,9 @@ import app.packed.application.BuildInfo;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
-import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.WireableComponentDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
@@ -58,10 +58,6 @@ public final class BuildSetup implements BuildInfo {
         this.application = new ApplicationSetup(applicationDriver, componentDriver);
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
         this.component = (ContainerSetup) componentDriver.newComponent(this, realm, null, wirelets);
-    }
-
-    void close() {
-        component.realmClose();
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */

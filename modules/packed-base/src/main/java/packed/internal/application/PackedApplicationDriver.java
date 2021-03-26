@@ -121,9 +121,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(assembly);
 
         RealmSetup realm = new RealmSetup(assembly);
-        
+
         // Create a new build and root application/container/component
-        BuildSetup build = new BuildSetup(this, realm , componentDriver, modifiers, wirelets);
+        BuildSetup build = new BuildSetup(this, realm, componentDriver, modifiers, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
@@ -150,7 +150,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         // Create a new realm
         RealmSetup realm = new RealmSetup(consumer);
-        
+
         // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, realm, pcd, 0, wirelets);
 
