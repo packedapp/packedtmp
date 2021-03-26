@@ -51,6 +51,10 @@ public final class ContainerSetup extends WireableComponentSetup {
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
+    /** This container's parent (if non-root). */
+    @Nullable
+    public final ContainerSetup containerParent;
+
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
 
@@ -61,10 +65,6 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     @Nullable
     private Boolean isImage;
-
-    /** This container's parent (if non-root). */
-    @Nullable
-    public final ContainerSetup containerParent;
 
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
@@ -78,7 +78,8 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent,
+            Wirelet[] wirelets) {
         super(build, application, realm, driver, parent, wirelets);
         this.containerParent = parent == null ? null : parent.container;
         if (containerParent != null) {
@@ -131,7 +132,7 @@ public final class ContainerSetup extends WireableComponentSetup {
                 }
             }
         }
-        
+
         if (!hasRunPreContainerChildren) {
             runPredContainerChildren();
         }
@@ -139,6 +140,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
         // TreeSet<ExtensionSetup> extensionsOrdered = new TreeSet<>(extensions.values(), );
+
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
         Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
         for (ExtensionSetup pec : extensionsOrdered) {

@@ -205,6 +205,7 @@ public abstract class ComponentSetup {
     }
 
     public void checkConfigurable() {
+        realm.checkOpen();
         if (isClosed) {
             throw new IllegalStateException("This component can no longer be configured");
         }
@@ -249,7 +250,6 @@ public abstract class ComponentSetup {
         if (onWire != null) {
             onWire.accept(adaptor());
         }
-        isClosed = true;
         // run onWiret
         // finalize name
     }

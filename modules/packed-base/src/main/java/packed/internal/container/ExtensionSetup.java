@@ -92,6 +92,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public void checkExtendable() {
+        // Ja og saa alligevel ikke. Hvis vi lige saa stille taeller ned...
+        // Og disable hver extension loebende
         if (container.containerChildren != null) {
             throw new IllegalStateException();
         }
@@ -246,13 +248,13 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     }
 
     /**
-     * Create and initialize a new extension setup.
+     * Instantiation the extension and create a new extension setup.
      * 
      * @param container
      *            the container setup
      * @param extensionClass
-     *            the extension to initialize
-     * @return the new extension setup
+     *            the extension to instantiate
+     * @return the new setup
      */
     static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.
