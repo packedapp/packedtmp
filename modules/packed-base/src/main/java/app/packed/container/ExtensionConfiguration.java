@@ -36,6 +36,7 @@ import app.packed.component.WireletHandle;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -253,8 +254,8 @@ public /* sealed */ interface ExtensionConfiguration {
                     + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
         }
 
-        ComponentSetup compConf = ComponentSetup.unadapt(lookup, containerComponent);
-        return compConf.container.getExtensionContext(extensionClass);
+        ContainerSetup compConf = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
+        return compConf.getExtensionContext(extensionClass);
     }
 
     /**

@@ -36,12 +36,12 @@ import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.validate.Validation;
-import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletArray;
+import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -284,7 +284,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ComponentSetup root) implements ApplicationImage<A> {
+    private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ContainerSetup root) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override

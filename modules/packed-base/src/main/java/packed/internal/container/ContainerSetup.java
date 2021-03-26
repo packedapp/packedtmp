@@ -20,26 +20,33 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Optional;
 import java.util.Set;
 
+import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.Wirelet;
+import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.RealmSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /** The internal configuration of a container. */
-public final class ContainerSetup {
+public final class ContainerSetup extends ComponentSetup implements ComponentConfigurationContext {
 
     /** Child containers, lazy initialized */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
-
-    /** The component this container is a part of. */
-    public final ComponentSetup component;
 
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
@@ -68,10 +75,9 @@ public final class ContainerSetup {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public ContainerSetup(ComponentSetup compConf) {
-        this.component = requireNonNull(compConf);
-
-        this.containerParent = compConf.getParent() == null ? null : compConf.getParent().getMemberOfContainer();
+    public ContainerSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        super(build, realm, driver, parent, wirelets);
+        this.containerParent = getParent() == null ? null : getParent().getMemberOfContainer();
         if (containerParent != null) {
             containerParent.runPredContainerChildren();
             ArrayList<ContainerSetup> c = containerParent.containerChildren;
@@ -79,6 +85,10 @@ public final class ContainerSetup {
                 c = containerParent.containerChildren = new ArrayList<>();
             }
             c.add(this);
+        }
+        // Set a default name if up default name
+        if (name == null) {
+            setName0(null);
         }
     }
 
@@ -174,7 +184,8 @@ public final class ContainerSetup {
     /**
      * Returns whether or not the specified extension is in use.
      * 
-     * @param extensionClass the extension to test 
+     * @param extensionClass
+     *            the extension to test
      * @return true if the specified extension is in use, otherwise false
      */
     public boolean isInUse(Class<? extends Extension> extensionClass) {
@@ -187,7 +198,7 @@ public final class ContainerSetup {
         if (b != null) {
             return b;
         }
-        ComponentSetup cc = component.getParent();
+        ComponentSetup cc = getParent();
         while (cc != null) {
             if (cc.modifiers().isImage()) {
                 return isImage = Boolean.TRUE;
@@ -261,7 +272,7 @@ public final class ContainerSetup {
 
             // Checks that we are still configurable
             if (caller == null) {
-                component.checkConfigurable();
+                checkConfigurable();
             } else {
                 caller.checkConfigurable();
             }
@@ -285,5 +296,51 @@ public final class ContainerSetup {
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
         return (T) useDependencyCheckedExtension(extensionClass, null).extensionInstance();
+    }
+    
+    /**
+     * Returns an unmodifiable view of the extensions that are currently in use.
+     * 
+     * @return an unmodifiable view of the extensions that are currently in use
+     * 
+     * @see ContainerAssembly#extensions()
+     */
+    // Maybe it is just an Attribute.. component.with(Extension.USED_EXTENSIONS)
+    // for assembly components. Makes sense because we would need for interating
+    // through the build
+    public Set<Class<? extends Extension>> containerExtensions() {
+        return extensionView();
+    }
+
+    /**
+     * @param <T>
+     * @param extensionClass
+     * @return the extension
+     * @throws UnsupportedOperationException
+     *             if the underlying component is not a container
+     * @see ContainerConfiguration#use(Class)
+     */
+    public <T extends Extension> T containerUse(Class<T> extensionClass) {
+        return useExtension(extensionClass);
+    }
+
+    @Override
+    public <T> ExportedServiceConfiguration<T> sourceExport() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sourceProvide() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sourceProvideAs(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<Key<?>> sourceProvideAsKey() {
+        throw new UnsupportedOperationException();
     }
 }

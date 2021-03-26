@@ -8,6 +8,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import packed.internal.application.BuildSetup;
@@ -30,9 +31,9 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     public void checkBound() {}
 
-    public abstract C toConfiguration(SourceComponentSetup context);
+    public abstract C toConfiguration(ComponentConfigurationContext context);
 
-    public abstract SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
+    public abstract ComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
 
     /** {@inheritDoc} */
     @Override

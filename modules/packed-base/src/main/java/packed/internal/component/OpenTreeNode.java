@@ -29,7 +29,7 @@ import app.packed.base.Nullable;
 public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
 
     /** The name of this node. */
-    String name;
+    protected String name;
 
     /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
     @Nullable

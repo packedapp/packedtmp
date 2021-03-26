@@ -31,6 +31,7 @@ import app.packed.component.Component;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /**
@@ -253,8 +254,8 @@ public final class ServiceContract extends Contract {
         if (!c.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
         }
-        ComponentSetup compConf = ComponentSetup.unadapt(null, c);
-        ServiceManagerSetup sm = compConf.container.getServiceManager();
+        ContainerSetup compConf = (ContainerSetup) ComponentSetup.unadapt(null, c);
+        ServiceManagerSetup sm = compConf.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

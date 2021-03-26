@@ -23,6 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
@@ -42,11 +43,11 @@ public final class PackedInitializationContext {
     /** The runtime component node we are building. */
     PackedComponent component;
 
-    final ComponentSetup root;
+    final ContainerSetup root;
 
     private final WireletWrapper wirelets;
 
-    private PackedInitializationContext(ComponentSetup root, WireletWrapper wirelets) {
+    private PackedInitializationContext(ContainerSetup root, WireletWrapper wirelets) {
         this.root = root;
         this.wirelets = wirelets;
     }
@@ -99,7 +100,7 @@ public final class PackedInitializationContext {
      * @return a service locator for the system
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = root.container.getServiceManager();
+        ServiceManagerSetup sm = root.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.pool);
     }
 
@@ -113,12 +114,12 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static <A> A newInstance(PackedApplicationDriver<A> driver, ComponentSetup root, Wirelet[] wirelets) {
+    public static <A> A newInstance(PackedApplicationDriver<A> driver, ContainerSetup root, Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         PackedInitializationContext pic = process(root, wirelets);
         return driver.newApplication(pic);
     }
-    public static PackedInitializationContext process(ComponentSetup root, Wirelet[] imageWirelets) {
+    public static PackedInitializationContext process(ContainerSetup root, Wirelet[] imageWirelets) {
         // Der kommer kun wirelets med fra image, ellers er arrayet bare tomt...
         PackedInitializationContext pic = new PackedInitializationContext(root,
                 root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : root.wirelets);

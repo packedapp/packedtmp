@@ -48,13 +48,13 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
     @Nullable
-    Extension instance;
+    private Extension instance;
 
     /** Whether or not the extension has been configured. */
-    boolean isConfigured;
+    private boolean isConfigured;
 
     /** A model of the extension. */
-    public final ExtensionModel model;
+    private final ExtensionModel model;
 
     public ExtensionSetup(ComponentSetup parent, ExtensionModel model) {
         super(parent, model);
@@ -209,7 +209,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return memberOfContainer.component.wire(driver, wirelets);
+        return memberOfContainer.wire(driver, wirelets);
     }
 
 
@@ -222,7 +222,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
             throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", module of wirelet was " + wireletClass.getModule());
         }
-        WireletWrapper wirelets = memberOfContainer.component.wirelets;
+        WireletWrapper wirelets = memberOfContainer.wirelets;
         if (wirelets == null) {
             return WireletHandle.of();
         }
@@ -241,7 +241,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.
         ExtensionModel model = ExtensionModel.of(extensionClass);
-        ExtensionSetup extension = new ExtensionSetup(container.component, model);
+        ExtensionSetup extension = new ExtensionSetup(container, model);
 
         // Creates a new extension instance
         Extension instance = extension.instance = model.newInstance(extension);

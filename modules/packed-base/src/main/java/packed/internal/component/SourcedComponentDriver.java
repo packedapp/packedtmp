@@ -58,9 +58,12 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
             throw new IllegalStateException();
         }
     }
+
     public SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        requireNonNull(parent);
         return new SourceComponentSetup(build, realm, this, parent, wirelets);
     }
+
     @Override
     public ComponentDriver<C> bind(Object object) {
         requireNonNull(object, "object is null");
@@ -91,7 +94,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Pa
         return inner.modifiersSet;
     }
 
-    public C toConfiguration(SourceComponentSetup cnc) {
+    public C toConfiguration(ComponentConfigurationContext cnc) {
         // Vil godt lave den om til CNC
         try {
             return (C) inner.mh.invoke(cnc);

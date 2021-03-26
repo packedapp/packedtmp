@@ -30,9 +30,9 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
+import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
@@ -189,7 +189,7 @@ public final class ServiceManagerSetup {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedApplicationDriver<?> psd = (PackedApplicationDriver<?>) container.component.build().application.driver;
+        PackedApplicationDriver<?> psd = (PackedApplicationDriver<?>) container.build().application.driver;
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
@@ -243,7 +243,7 @@ public final class ServiceManagerSetup {
             for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup child = c.getServiceManager();
 
-                WireletWrapper wirelets = c.component.wirelets;
+                WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
                     PackedWireletHandle.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
                 }
@@ -294,7 +294,7 @@ public final class ServiceManagerSetup {
         }
 
         System.out.println("HMMM " + map);
-        WireletWrapper wirelets = container.component.wirelets;
+        WireletWrapper wirelets = container.wirelets;
 
         if (wirelets != null) {
             // For now we just ignore the wirelets

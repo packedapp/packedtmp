@@ -33,7 +33,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.SourceComponentSetup;
+import packed.internal.container.ContainerSetup;
 
 /**
  * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
@@ -64,7 +64,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public Set<Class<? extends Extension>> extensions() {
         // getAttribute(EXTENSIONS);
-        return ((SourceComponentSetup) context).containerExtensions();
+        return ((ContainerSetup) context).containerExtensions();
     }
 
     /**
@@ -152,7 +152,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see #extensions()
      */
     public <T extends Extension> T use(Class<T> extensionClass) {
-        return ((SourceComponentSetup) context).containerUse(extensionClass);
+        return ((ContainerSetup) context).containerUse(extensionClass);
     }
 
     /**
@@ -188,8 +188,8 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
             super(wirelet, PackedComponentModifierSet.I_CONTAINER);
         }
 
-        public SourceComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            return new SourceComponentSetup(build, realm, this, parent, wirelets);
+        public ComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+            return new ContainerSetup(build, realm, this, parent, wirelets);
         }
         
         @Override
@@ -203,7 +203,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
         }
 
         @Override
-        public ContainerConfiguration toConfiguration(SourceComponentSetup context) {
+        public ContainerConfiguration toConfiguration(ComponentConfigurationContext context) {
             return new ContainerConfiguration(context);
         }
 

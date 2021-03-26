@@ -75,10 +75,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     /** The realm this component belongs to. */
     public final RealmSetup realm;
 
-    /** The container setup if this component represents an container, otherwise null. */
-    @Nullable
-    public final ContainerSetup container;
-
     /** Any container this component is part of. A container is a member of it self. */
     @Nullable
     public final ContainerSetup memberOfContainer;
@@ -108,10 +104,9 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param parent
      *            the parent of the component
      */
-    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(parent);
         this.build = requireNonNull(build);
-
         // Setup Realm
         this.realm = realm;
         ComponentSetup previous = realm.current;
@@ -142,11 +137,10 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         }
 
         // Setup container
-        if (modifiers().isContainer()) {
-            this.memberOfContainer = this.container = new ContainerSetup(this);
+        if (this instanceof ContainerSetup container) {
+            this.memberOfContainer = (ContainerSetup) this;
         } else {
-            this.container = null;
-            this.memberOfContainer = parent == null ? null : parent.memberOfContainer;
+            this.memberOfContainer = parent.memberOfContainer;
         }
 
         // Setup Runtime
@@ -177,8 +171,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     protected ComponentSetup(ComponentSetup parent, ExtensionModel extensionModel) {
         super(parent);
         this.build = parent.build;
-        this.container = null;
-        this.memberOfContainer = parent.container;
+        this.memberOfContainer = parent instanceof ContainerSetup cs ? cs : parent.memberOfContainer;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
@@ -289,7 +282,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             }
         }
         // If this component represents container close the container
-        if (container != null) {
+        if (this instanceof ContainerSetup container) {
             container.close(pool);
         }
         isClosed = true;
@@ -317,13 +310,13 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
-        ComponentSetup parent = this instanceof SourceComponentSetup  ? this : treeParent; // treeParent is always a container if extension!=null
+        ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
 
         // Create a new component and a new realm
-        SourceComponentSetup component = driver.newComponent(build, new RealmSetup(assembly), parent, wirelets);
+        ComponentSetup component = driver.newComponent(build, new RealmSetup(assembly), parent, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = driver.toConfiguration(component);
+        ComponentConfiguration configuration = driver.toConfiguration((ComponentConfigurationContext) component);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -415,7 +408,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             ClassSourceSetup src = this instanceof SourceComponentSetup bcs ? bcs.source : null;
             if (src != null) {
                 n = src.model.simpleName();
-            } else if (container != null) {
+            } else if (this instanceof ContainerSetup container) {
                 // I think try and move some of this to ComponentNameWirelet
                 @Nullable
                 Class<?> source = realm.realmType();
@@ -435,7 +428,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...
             } else if (this instanceof ExtensionSetup nes) {
-                n = nes.model.nameComponent;
+                n = nes.model().nameComponent;
             }
             if (n == null) {
                 n = "Unknown";
@@ -485,13 +478,13 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
-        ComponentSetup parent = this instanceof SourceComponentSetup ? this : treeParent;
+        ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
 
         // Wire the component
-        SourceComponentSetup component = d.newComponent(build, realm, parent, wirelets);
+        ComponentSetup component = d.newComponent(build, realm, parent, wirelets);
 
         // Create a component configuration object and return it to the user
-        return d.toConfiguration(component);
+        return d.toConfiguration((ComponentConfigurationContext) component);
     }
 
     // This should only be called by special methods
