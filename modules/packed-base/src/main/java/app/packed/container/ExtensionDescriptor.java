@@ -43,10 +43,12 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
      *         specified object.
      *
      * @throws IllegalArgumentException
-     *             if the depth and full name of this descriptor and the specified descriptor are equal. But they are loaded
-     *             by different class loaders.
+     *             if full name of this descriptor and the specified descriptor are equal. But they are loaded by different
+     *             class loaders.
      */
-    // Maaske kan vi kigge på classloader parent...
+    // Maaske kan vi kigge på classloader parent... Nej
+    // Det er jo kun inter container...
+    // Saa man kan bare ikke loade 2 containere med samme navn...
     @Override
     int compareTo(ExtensionDescriptor descriptor);
 

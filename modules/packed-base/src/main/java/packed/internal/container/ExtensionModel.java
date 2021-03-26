@@ -40,7 +40,11 @@ import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
 
-/** A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}. */
+/**
+ * A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}.
+ * 
+ * @apiNote This could be a record, but there are so many fields that it would be difficult to get an overview.
+ */
 public final class ExtensionModel implements ExtensionDescriptor {
 
     /** A cache of extension models. */
@@ -57,11 +61,11 @@ public final class ExtensionModel implements ExtensionDescriptor {
     @Nullable
     final PackedAttributeModel attributes;
 
-    /** The {@link ExtensionDescriptor#depth() depth} of this extension. */
-    private final int depth;
-
     /** The direct dependencies of the extension. */
     private final ExtensionDependencySet dependencies;
+
+    /** The {@link ExtensionDescriptor#depth() depth} of this extension. */
+    private final int depth;
 
     /** The extension we model. */
     private final Class<? extends Extension> extensionClass;
@@ -74,7 +78,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** The default component name of the extension. */
     public final String nameComponent;
-    
+
     /** The canonical name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
 
@@ -126,6 +130,8 @@ public final class ExtensionModel implements ExtensionDescriptor {
     @Override
     public int compareTo(ExtensionDescriptor descriptor) {
         ExtensionModel m = (ExtensionModel) descriptor;
+        // if (m.getClassLoader()!=this.getClassLoader()) 
+        // Start comparing by name
 
         // First we compare the depth of each extension
         int d = depth - m.depth;
@@ -355,7 +361,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      */
     private static final class Loader {
 
-        /** A map that contains Bootstrap, Builder or Throwable*/
+        /** A map that contains Bootstrap, Builder or Throwable */
         private static final WeakHashMap<Class<? extends Extension>, Object> DATA = new WeakHashMap<>();
 
         /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */
