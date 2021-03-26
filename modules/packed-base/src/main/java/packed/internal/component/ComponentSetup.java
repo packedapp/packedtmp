@@ -54,7 +54,7 @@ import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
-import packed.internal.container.ExtensionSetup;
+import packed.internal.container.NewExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
@@ -83,10 +83,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     /** Any container this component is part of. A container is a member of it self. */
     @Nullable
     public final ContainerSetup memberOfContainer;
-
-    /** The extension setup if this component represents an extension, otherwise null. */
-    @Nullable
-    public final ExtensionSetup extension;
 
     /** The build this component is part of. */
     public final BuildSetup build;
@@ -154,9 +150,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             this.memberOfContainer = parent == null ? null : parent.memberOfContainer;
         }
 
-        // Extensions use another constructor
-        this.extension = null;
-
         // Setup Runtime
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
@@ -188,13 +181,11 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.build = parent.build;
         this.container = null;
         this.memberOfContainer = parent.container;
-        this.extension = new ExtensionSetup(this, extensionModel);
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(extensionModel);
         this.realm.current = this; // IDK Den er jo ikke runtime...
         this.pool = parent.pool;
         this.wirelets = null; // cannot specify wirelets to extension
-        setName0(null /* model.nameComponent */); // setName0(String) does not work currently
     }
 
     /**
@@ -227,12 +218,12 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             }
         }
 
-        if (extension != null) {
-            dam.addValue(ComponentAttributes.EXTENSION_CLASS, extension.extensionClass());
-            PackedAttributeModel pam = extension.model().attributes();
+        if (this instanceof NewExtensionSetup nes) {
+            dam.addValue(ComponentAttributes.EXTENSION_CLASS, nes.extension.extensionClass());
+            PackedAttributeModel pam = nes.extension.model().attributes();
             if (pam != null) {
                 for (Entry<PackedAttribute<?>, Attt> e : pam.attributeTypes.entrySet()) {
-                    Extension ex = extension.extensionInstance();
+                    Extension ex = nes.extension.extensionInstance();
                     Object val;
                     MethodHandle mh = e.getValue().mh;
                     try {
@@ -328,7 +319,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
-        ComponentSetup parent = extension == null ? this : treeParent; // treeParent is always a container if extension!=null
+        ComponentSetup parent = this instanceof BaseComponentSetup  ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create a new component and a new realm
         BaseComponentSetup component = new BaseComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
@@ -412,7 +403,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         setName0(name);
     }
 
-    void setName0(String newName) {
+    protected void setName0(String newName) {
         String n = newName;
         if (newName == null) {
             if (nameState == NAME_INITIALIZED_WITH_WIRELET) {
@@ -445,8 +436,8 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                     }
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...
-            } else if (extension != null) {
-                n = extension.model().nameComponent;
+            } else if (this instanceof NewExtensionSetup nes) {
+                n = nes.model.nameComponent;
             }
             if (n == null) {
                 n = "Unknown";
@@ -496,7 +487,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
-        ComponentSetup parent = extension == null ? this : treeParent;
+        ComponentSetup parent = this instanceof BaseComponentSetup ? this : treeParent;
 
         // Wire the component
         BaseComponentSetup component = new BaseComponentSetup(build, realm, d, parent, wirelets);

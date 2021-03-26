@@ -30,7 +30,7 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.ComponentSetup;
+import packed.internal.component.BaseComponentSetup;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.WireletWrapper;
@@ -208,7 +208,7 @@ public final class ServiceManagerSetup {
         p.add(pi);
     }
 
-    public <T> ServiceSetup provideSource(ComponentSetup component, Key<T> key) {
+    public <T> ServiceSetup provideSource(BaseComponentSetup component, Key<T> key) {
         ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
         localServices.add(e);
         return e;

@@ -78,7 +78,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** A model of the extension. */
     private final ExtensionModel model;
 
     /**

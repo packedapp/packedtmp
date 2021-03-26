@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentDriver;
-import packed.internal.component.ComponentSetup;
+import packed.internal.component.BaseComponentSetup;
 
 /** Build-time configuration for an application. */
 public final class ApplicationSetup {
@@ -38,7 +38,7 @@ public final class ApplicationSetup {
             return methodHandle != null;
         }
 
-        public ComponentSetup cs;
+        public BaseComponentSetup cs;
         
         public MethodHandle methodHandle;
     }

@@ -11,11 +11,28 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
+import packed.internal.component.source.ClassSourceSetup;
 
 public class BaseComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
-
+    /** The class source setup if this component has a class source, otherwise null. */
+    @Nullable
+    public final ClassSourceSetup source;
+    
     public BaseComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, realm, driver, parent, wirelets);
+        
+
+        // Setup component sources
+        if (driver.modifiers().isSource()) {
+            this.source = new ClassSourceSetup(this, (SourcedComponentDriver<?>) driver);
+        } else {
+            this.source = null;
+        }  
+
+        // Set a default name if up default name
+        if (name == null) {
+            setName0(null);
+        }
     }
 
     /** Checks that this component has a source. */
@@ -25,6 +42,7 @@ public class BaseComponentSetup extends ComponentSetup implements ComponentConfi
                     "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".SOURCE modifier set");
         }
     }
+
     public void sourceProvide() {
         checkConfigurable();
         checkHasSource();
