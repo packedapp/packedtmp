@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
-import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
@@ -45,7 +44,6 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -61,7 +59,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
-public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implements ComponentConfigurationContext {
+public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     /** Wirelets that was specified when creating the component. */
     @Nullable
@@ -119,7 +117,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
      * @param parent
      *            the parent of the component
      */
-    public ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    ComponentSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(parent);
         this.build = requireNonNull(build);
 
@@ -224,8 +222,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return new ComponentAdaptor(this);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
         requireNonNull(attribute, "attribute is null");
         requireNonNull(value, "value is null");
@@ -277,14 +273,10 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return dam;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public BuildSetup build() {
         return build;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void checkConfigurable() {
         if (isClosed) {
             throw new IllegalStateException("This component can no longer be configured");
@@ -338,16 +330,12 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return memberOfContainer;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public String getName() {
         // Only update with NAME_GET if no prev set/get op
         nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
         return name;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
@@ -357,7 +345,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         ComponentSetup parent = extension == null ? this : treeParent; // treeParent is always a container if extension!=null
 
         // Create a new component and a new realm
-        ComponentSetup component = new ComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
+        BaseComponentSetup component = new BaseComponentSetup(build, new RealmSetup(assembly), driver, parent, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(component);
@@ -375,8 +363,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return new ComponentAdaptor(this);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
@@ -386,8 +372,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         return treeParent;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public NamespacePath path() {
         int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
         if ((nameState & anyPathMask) != 0) {
@@ -406,8 +390,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
     public void setName(String name) {
         // First lets check the name is valid
         SetComponentNameWirelet.checkName(name);
@@ -522,8 +504,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         name = n;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
@@ -532,7 +512,7 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         ComponentSetup parent = extension == null ? this : treeParent;
         
         // Wire the component
-        ComponentSetup component = new ComponentSetup(build, realm, d, parent, wirelets);
+        BaseComponentSetup component = new BaseComponentSetup(build, realm, d, parent, wirelets);
 
         // Create a component configuration object and return it to the user
         return d.toConfiguration(component);
@@ -550,14 +530,6 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
     /* public methods */
 
     /** Checks that this component has a source. */
-    private void checkHasSource() {
-        if (source == null) {
-            throw new UnsupportedOperationException(
-                    "This method can only be called component that has the " + ComponentModifier.class.getSimpleName() + ".SOURCE modifier set");
-        }
-    }
-
-    /** Checks that this component has a source. */
     private void checkIsContainer() {
         if (container == null) {
             throw new UnsupportedOperationException(
@@ -565,52 +537,16 @@ public final class ComponentSetup extends OpenTreeNode<ComponentSetup> implement
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Set<Class<? extends Extension>> containerExtensions() {
         checkIsContainer();
         return container.extensionView();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <T extends Extension> T containerUse(Class<T> extensionClass) {
         checkIsContainer();
         return container.useExtension(extensionClass);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void sourceProvide() {
-        checkConfigurable();
-        checkHasSource();
-        source.provide(this);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Optional<Key<?>> sourceProvideAsKey() {
-        checkHasSource();
-        return source.service == null ? Optional.empty() : Optional.of(source.service.key());
-    }
-
-    /** {@inheritDoc} */
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> ExportedServiceConfiguration<T> sourceExport() {
-        sourceProvide();
-        return (ExportedServiceConfiguration<T>) memberOfContainer.getServiceManagerOrCreate().exports().export(source.service);
-    }
-
-    @Override
-    public void sourceProvideAs(Key<?> key) {
-        requireNonNull(key, "key is null");
-        checkConfigurable();
-        if (source == null) {
-            throw new UnsupportedOperationException();
-        }
-        source.provide(this).as(key);
-    }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentSetup}. */
     private static final class ComponentAdaptor implements Component {

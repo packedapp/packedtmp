@@ -19,7 +19,7 @@ import app.packed.application.BuildInfo;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
-import packed.internal.component.ComponentSetup;
+import packed.internal.component.BaseComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
@@ -32,7 +32,7 @@ public final class BuildSetup implements BuildInfo {
     public final ApplicationSetup application;
 
     /** The root component. */
-    final ComponentSetup component;
+    final BaseComponentSetup component;
 
     /** The configuration of the main constant build. */
     public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
@@ -57,7 +57,7 @@ public final class BuildSetup implements BuildInfo {
     BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         this.application = new ApplicationSetup(applicationDriver, componentDriver);
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.component = new ComponentSetup(this, realm, componentDriver, null, wirelets);
+        this.component = new BaseComponentSetup(this, realm, componentDriver, null, wirelets);
     }
 
     void close() {

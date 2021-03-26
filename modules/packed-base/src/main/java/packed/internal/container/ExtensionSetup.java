@@ -69,7 +69,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private final ComponentSetup component;
 
     /** The setup of the container this extension belongs to. */
-    private final ContainerSetup container;
+    private final ContainerSetup memberOfContainer;
 
     /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
     @Nullable
@@ -93,7 +93,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      */
     public ExtensionSetup(ComponentSetup component, ExtensionModel model) {
         this.component = requireNonNull(component);
-        this.container = requireNonNull(component.getMemberOfContainer());
+        this.memberOfContainer = requireNonNull(component.getMemberOfContainer());
         this.model = requireNonNull(model);
     }
 
@@ -114,7 +114,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public void checkExtendable() {
-        if (container.children != null) {
+        if (memberOfContainer.children != null) {
             throw new IllegalStateException();
         }
     }
@@ -124,8 +124,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * 
      * @return the container this extension is a part of
      */
-    public ContainerSetup container() {
-        return container;
+    public ContainerSetup getMemberOfContainer() {
+        return memberOfContainer;
     }
 
     /** {@inheritDoc} */
@@ -150,7 +150,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     Extension injectParent() {
-        ContainerSetup parent = container.parent;
+        ContainerSetup parent = memberOfContainer.parent;
         if (parent != null) {
             ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
             if (extensionContext != null) {
@@ -181,13 +181,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return container.isPartOfImage();
+        return memberOfContainer.isPartOfImage();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isUsed(Class<? extends Extension> extensionClass) {
-        return container.isInUse(extensionClass);
+        return memberOfContainer.isInUse(extensionClass);
     }
 
     /** {@inheritDoc} */
@@ -261,7 +261,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         // Get the extension instance (create it if needed) thaw we need to create a subtension for
-        Extension instance = container.useDependencyCheckedExtension(subExtensionClass, this).instance;
+        Extension instance = memberOfContainer.useDependencyCheckedExtension(subExtensionClass, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) subModel.newInstance(instance, extensionClass());
@@ -270,7 +270,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.component.wire(driver, wirelets);
+        return memberOfContainer.component.wire(driver, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -288,7 +288,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw new InternalExtensionException("Must specify a wirelet that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", module of wirelet was " + wireletClass.getModule());
         }
-        WireletWrapper wirelets = container.component.wirelets;
+        WireletWrapper wirelets = memberOfContainer.component.wirelets;
         if (wirelets == null) {
             return WireletHandle.of();
         }
@@ -307,7 +307,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create setups.
         ExtensionModel model = ExtensionModel.of(extensionClass);
-        ComponentSetup component = new ComponentSetup(container.component, model); // creates ExtensionSetup in ComponentSetup constructor
+        NewExtensionSetup component = new NewExtensionSetup(container.component, model); // creates ExtensionSetup in ComponentSetup constructor
         ExtensionSetup extension = component.extension;
 
         // Creates a new extension instance
@@ -321,11 +321,5 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             throw ThrowableUtil.orUndeclared(t);
         }
         return extension;
-    }
-
-    public enum State {
-        // lige nu har vi kun isConfigured...
-        // Vi har brug for nogle flere states som minimum 3
-        // Alt efter hvor vi lige lander med at lazy extension...
     }
 }
