@@ -69,6 +69,13 @@ import packed.internal.util.ThrowableUtil;
  * 
  * @see ExtensionDescriptor
  */
+
+// Static initializers
+//// Dependencies
+//// Attributes
+//// Connections 
+//// LibraryInfo
+
 // Maaske har vi findDescendent(Class<? extends Extension>)
 
 // bootstrapConfig

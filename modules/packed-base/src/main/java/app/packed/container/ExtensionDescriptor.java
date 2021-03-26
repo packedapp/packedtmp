@@ -99,16 +99,6 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     }
 
     /**
-     * Returns the name of the extension.
-     * <p>
-     * The name is defined as the simple name of the {@link #extensionClass()} as returned by {@link Class#getSimpleName()}.
-     * 
-     * @return the name of the extension.
-     * @see #fullName()
-     */
-    String name();
-
-    /**
      * Returns the version of the extension if present.
      * <p>
      * A version for an extension is only present if the following holds:
@@ -135,11 +125,21 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
      * @see Module#getDescriptor()
      * @see ModuleDescriptor#version()
      */
-    default Optional<Version> version() {
+    default Optional<Version> moduleVersion() {
         // Unnamed modules never have a descriptor
         ModuleDescriptor descriptor = module().getDescriptor();
         return descriptor == null ? Optional.empty() : descriptor.version();
     }
+
+    /**
+     * Returns the name of the extension.
+     * <p>
+     * The name is defined as the simple name of the {@link #extensionClass()} as returned by {@link Class#getSimpleName()}.
+     * 
+     * @return the name of the extension.
+     * @see #fullName()
+     */
+    String name();
 
     /**
      * Returns a descriptor for the specified extension class.

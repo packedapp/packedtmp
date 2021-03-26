@@ -211,7 +211,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(nameFull);
-        version().ifPresent(v -> sb.append("[" + v + "]"));
+        moduleVersion().ifPresent(v -> sb.append("[" + v + "]"));
         return sb.toString();
     }
 
