@@ -33,13 +33,12 @@ public abstract class InternalWirelet extends Wirelet {
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
     public static final class FailOnFirstPass extends InternalWirelet {
 
-
         @Override
         protected void firstPass(ComponentSetup component) {
-            //throw new Error();
+            // throw new Error();
         }
     }
-    
+
     /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
     public static final class OnWireCallbackWirelet extends InternalWirelet {
 
@@ -65,7 +64,7 @@ public abstract class InternalWirelet extends Wirelet {
     public static final class SetComponentNameWirelet extends InternalWirelet {
 
         /** The (checked) name to override with. */
-        public final String name;
+        final String name;
 
         /**
          * Creates a new option
@@ -74,27 +73,12 @@ public abstract class InternalWirelet extends Wirelet {
          *            the name to override any existing container name with
          */
         public SetComponentNameWirelet(String name) {
-            this.name = checkName(name);
-        }
-
-        /**
-         * Checks the name of the component.
-         * 
-         * @param name
-         *            the name to check
-         * @return the name if valid
-         */
-        public static String checkName(String name) {
-            requireNonNull(name, "name is null");
-            if (name != null) {
-
-            }
-            return name;
+            this.name = ComponentSetup.checkComponentName(name);
         }
 
         @Override
         protected void firstPass(ComponentSetup c) {
-            c.nameState = ComponentSetup.NAME_INITIALIZED_WITH_WIRELET;
+            c.nameInitializedWithWirelet = true;
             c.name = name;
         }
     }

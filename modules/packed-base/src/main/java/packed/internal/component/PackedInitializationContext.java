@@ -23,6 +23,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
@@ -55,6 +56,7 @@ public final class PackedInitializationContext {
     ConstantPool pool() {
         return component.pool;
     }
+
     /**
      * Returns the top component.
      * 
@@ -69,21 +71,19 @@ public final class PackedInitializationContext {
     // Check for any runtime wirelets that have been specified.
     // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
     // Maybe this can be written in PodInstantiationContext
-    String rootName(ComponentSetup configuration) {
-        String n = configuration.name;
-        String ol = null;
-        for (Wirelet w : wirelets().wirelets) {
-            if (w instanceof InternalWirelet.SetComponentNameWirelet sn) {
-                ol = sn.name;
+    String rootName(ComponentSetup component) {
+        Wirelet[] wirelets = wirelets().wirelets;
+        for (int i = wirelets.length - 1; i >= 0; i--) {
+            Wirelet w = wirelets[i];
+            if (w instanceof SetComponentNameWirelet sn) {
+                String newName = sn.name;
+                if (newName.endsWith("?")) {
+                    newName = newName.substring(0, newName.length() - 1);
+                }
+                return newName;
             }
         }
-        if (ol != null) {
-            n = ol;
-            if (n.endsWith("?")) {
-                n = n.substring(0, n.length() - 1);
-            }
-        }
-        return n;
+        return component.name;
     }
 
     ApplicationRuntime runtime() {
@@ -119,6 +119,7 @@ public final class PackedInitializationContext {
         PackedInitializationContext pic = process(root, wirelets);
         return driver.newApplication(pic);
     }
+
     public static PackedInitializationContext process(ContainerSetup root, Wirelet[] imageWirelets) {
         // Der kommer kun wirelets med fra image, ellers er arrayet bare tomt...
         PackedInitializationContext pic = new PackedInitializationContext(root,

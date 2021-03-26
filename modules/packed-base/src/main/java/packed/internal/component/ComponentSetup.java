@@ -74,11 +74,12 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     boolean isClosed = false;
 
+    boolean nameInitializedWithWirelet;
+
     int nameState;
 
     protected Consumer<? super Component> onWire;
 
-    static final int NAME_INITIALIZED_WITH_WIRELET = 1 << 18; // set atomically with DONE
     static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
     static final int NAME_GET = 1 << 16; // true if joiner waiting
     static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
@@ -283,8 +284,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         // Maaske kan vi godt saette to gange...
         nameState |= NAME_SET;
 
-        if ((s & NAME_INITIALIZED_WITH_WIRELET) != 0) {
-            return;// We never set override a name set by a wirelet
+        if (nameInitializedWithWirelet) {
+            return;
         }
 
         setName0(name, null);
@@ -308,7 +309,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     protected void setName0(String newName, ExtensionModel extensionModel) {
         String n = newName;
         if (newName == null) {
-            if (nameState == NAME_INITIALIZED_WITH_WIRELET) {
+            if (nameInitializedWithWirelet) {
                 n = name;
             }
         }
