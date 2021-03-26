@@ -224,7 +224,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        // Close the realm we created for the assembly
+        // Close the newly create realm
         realm.close(component);
 
         return new ComponentAdaptor(component);
@@ -407,6 +407,9 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         WireableComponentDriver<C> pcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
+        // Check that the realm this component is a part of is still open
+        realm.checkOpen();
+        
         // If this component is an extension, we wire to the container the extension is part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;
 

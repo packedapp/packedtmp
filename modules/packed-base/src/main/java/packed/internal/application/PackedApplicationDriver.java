@@ -120,8 +120,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(assembly);
 
+        RealmSetup realm = new RealmSetup(assembly);
+        
         // Create a new build and root application/container/component
-        BuildSetup build = new BuildSetup(this, new RealmSetup(assembly), componentDriver, modifiers, wirelets);
+        BuildSetup build = new BuildSetup(this, realm , componentDriver, modifiers, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
@@ -133,7 +135,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        build.close(); // we don't close on failure
+        realm.close(build.component);
+
         return build;
     }
 
@@ -159,7 +162,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Invoked the consumer supplied by the end-user
         consumer.accept(composer);
 
-        build.close(); // we don't close on failure
+        realm.close(build.component);
 
         // Initialize the application. And start it if necessary (if it is a guest)
         return PackedInitializationContext.newInstance(this, build.component, WireletArray.EMPTY);
