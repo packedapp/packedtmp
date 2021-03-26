@@ -82,7 +82,7 @@ public final class ContainerSetup extends ComponentSetup implements ComponentCon
      */
     public ContainerSetup(BuildSetup build, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, realm, driver, parent, wirelets);
-        this.containerParent = getParent() == null ? null : getParent().getMemberOfContainer();
+        this.containerParent = parent == null ? null : parent.container;
         if (containerParent != null) {
             containerParent.runPredContainerChildren();
             ArrayList<ContainerSetup> c = containerParent.containerChildren;

@@ -29,8 +29,8 @@ import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.component.SourceComponentSetup;
 import packed.internal.component.source.MethodHookModel;
+import packed.internal.component.source.SourceComponentSetup;
 
 /**
  * Trying to build a container with more than a single method annotated with this annotation will fail with

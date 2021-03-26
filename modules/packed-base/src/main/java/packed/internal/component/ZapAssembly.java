@@ -8,7 +8,7 @@ public class ZapAssembly extends BaseAssembly {
     @Override
     protected void build() {
         link(new LinkMe());
-        throw new Error();
+ 
     }
 
     public static void main(String[] args) {
@@ -21,6 +21,7 @@ public class ZapAssembly extends BaseAssembly {
         protected void build() {
             installInstance("SDADs");
             install(My.class);
+            throw new Error();
         }
     }
 

@@ -30,6 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.application.BuildSetup;
+import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 

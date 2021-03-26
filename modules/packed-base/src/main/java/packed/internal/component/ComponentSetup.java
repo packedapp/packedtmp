@@ -43,6 +43,7 @@ import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.component.source.ClassSourceSetup;
+import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
@@ -206,7 +207,6 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * 
      * @return the container this component is a part of
      */
-    @Nullable
     public ContainerSetup getMemberOfContainer() {
         return container;
     }
@@ -224,17 +224,17 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
+        PackedComponentDriver<?> pcd = PackedComponentDriver.getDriver(assembly);
 
         // If this component is an extension, we add it to the extension's container instead of the extension
         // itself, as the extension component is not retained at runtime
         ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
 
         // Create a new component and a new realm
-        ComponentSetup component = driver.newComponent(build, new RealmSetup(assembly), parent, wirelets);
+        ComponentSetup component = pcd.newComponent(build, new RealmSetup(assembly), parent, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = driver.toConfiguration((ComponentConfigurationContext) component);
+        ComponentConfiguration configuration = pcd.toConfiguration((ComponentConfigurationContext) component);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -424,85 +424,78 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     }
 
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        PackedComponentDriver<C> d = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
+        PackedComponentDriver<C> pcd = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // When an extension adds new components they are added to the container (the extension's parent)
         // Instead of the extension, because the extension itself is removed at runtime.
         ComponentSetup parent = this instanceof ExtensionSetup ? treeParent : this;
 
-        // Wire the component
-        ComponentSetup component = d.newComponent(build, realm, parent, wirelets);
+        // Create the new component using the driver
+        ComponentSetup component = pcd.newComponent(build, realm, parent, wirelets);
 
         // Create a component configuration object and return it to the user
-        return d.toConfiguration((ComponentConfigurationContext) component);
+        return pcd.toConfiguration((ComponentConfigurationContext) component);
     }
 
     // This should only be called by special methods
     // We just take the lookup to make sure caller think twice before calling this method.
     public static ComponentSetup unadapt(Lookup caller, Component component) {
         if (component instanceof ComponentAdaptor ca) {
-            return ca.compConf;
+            return ca.component;
         }
         throw new IllegalStateException("This method must be called before a component is instantiated");
     }
 
     /** An adaptor of the {@link Component} interface from a {@link ComponentSetup}. */
-    private static final class ComponentAdaptor implements Component {
-
-        /** The component configuration to wrap. */
-        private final ComponentSetup compConf;
-
-        private ComponentAdaptor(ComponentSetup compConf) {
-            this.compConf = requireNonNull(compConf);
-        }
+    private record ComponentAdaptor(ComponentSetup component) implements Component {
 
         /** {@inheritDoc} */
         @Override
         public AttributeMap attributes() {
-            return compConf.attributes();
+            return component.attributes();
         }
 
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return compConf.toList(ComponentSetup::adaptor);
+            return component.toList(ComponentSetup::adaptor);
         }
 
         /** {@inheritDoc} */
         @Override
         public int depth() {
-            return compConf.treeDepth;
+            return component.treeDepth;
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean hasModifier(ComponentModifier modifier) {
-            return PackedComponentModifierSet.isSet(compConf.modifiers, modifier);
+            return PackedComponentModifierSet.isSet(component.modifiers, modifier);
         }
 
         /** {@inheritDoc} */
         @Override
         public ComponentModifierSet modifiers() {
-            return compConf.modifiers();
+            return component.modifiers();
         }
 
         /** {@inheritDoc} */
         @Override
         public String name() {
-            return compConf.getName();
+            return component.getName();
         }
 
         /** {@inheritDoc} */
         @Override
         public Optional<Component> parent() {
-            ComponentSetup cc = compConf.treeParent;
+            ComponentSetup cc = component.treeParent;
             return cc == null ? Optional.empty() : Optional.of(cc.adaptor());
         }
 
         /** {@inheritDoc} */
         @Override
         public NamespacePath path() {
-            return compConf.path();
+            return component.path();
         }
 
         /** {@inheritDoc} */
@@ -520,7 +513,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         /** {@inheritDoc} */
         @Override
         public ComponentStream stream(ComponentStream.Option... options) {
-            return new PackedComponentStream(stream0(compConf, true, PackedComponentStreamOption.of(options)));
+            return new PackedComponentStream(stream0(component, true, PackedComponentStreamOption.of(options)));
         }
 
         private Stream<Component> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
@@ -529,7 +522,7 @@ public class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             List<ComponentAdaptor> c = (List) children();
             if (c != null && !c.isEmpty()) {
-                if (option.processThisDeeper(origin, this.compConf)) {
+                if (option.processThisDeeper(origin, this.component)) {
                     Stream<Component> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
                     return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
                 }

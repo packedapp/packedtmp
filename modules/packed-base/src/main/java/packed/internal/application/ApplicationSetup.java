@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentDriver;
-import packed.internal.component.SourceComponentSetup;
+import packed.internal.component.source.SourceComponentSetup;
 
 /** Build-time configuration for an application. */
 public final class ApplicationSetup {
