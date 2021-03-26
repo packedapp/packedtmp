@@ -33,7 +33,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
-import packed.internal.component.source.SourceComponentSetup;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime representation of a component. */
@@ -81,13 +81,13 @@ public final class PackedComponent implements Component {
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
         Map<String, PackedComponent> children = null;
-        if (compBuild.treeFirstChild != null) {
+        if (compBuild.treeChildren != null) {
             // Maybe ordered is the default...
             LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(compBuild.numberOfChildren());
 
-            for (ComponentSetup cc = compBuild.treeFirstChild; cc != null; cc = cc.treeNextSibling) {
+            for (ComponentSetup cc : compBuild.treeChildren.values()) {
                 // We never carry over extensions into the runtime
-                if (cc instanceof SourceComponentSetup) {
+                if (!(cc instanceof ExtensionSetup)) {
                     PackedComponent ac = new PackedComponent(this, cc, pic);
                     result.put(ac.name(), ac);
                 }

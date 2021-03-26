@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -141,7 +141,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(model, this);
         this.onWire = container.onWire;
-        container.addChild(this, model.nameComponent);
+        container.addChildFinalName(this, model.nameComponent);
     }
 
     /**
@@ -256,12 +256,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
     public void setName(String name) {
         // First lets check the name is valid
         checkComponentName(name);
-        if (name.equals(this.name)) {
-            return;
-        }
-        int s = nameState;
-
         checkCurrent();
+        int s = nameState;
 
         // maybe assume s==0
 
@@ -283,6 +279,9 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
 
         // Maaske kan vi godt saette to gange...
         nameState |= NAME_SET;
+        if (name.equals(this.name)) {
+            return;
+        }
 
         if (nameInitializedWithWirelet) {
             return;
@@ -339,9 +338,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                     }
                 }
                 // TODO think it should be named Artifact type, for example, app, injector, ...
-            } else if (this instanceof ExtensionSetup nes) {
-                n = extensionModel.nameComponent;
-            }
+            } 
             if (n == null) {
                 n = "Unknown";
             }
@@ -376,11 +373,8 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
             } else {
                 name = n;
                 if (treeParent.treeChildren == null) {
-                    treeParent.treeChildren = new HashMap<>();
-                    treeParent.treeFirstChild = treeParent.treeLastChild = this;
+                    treeParent.treeChildren = new LinkedHashMap<>();
                 } else {
-                    treeParent.treeLastChild.treeNextSibling = this;
-                    treeParent.treeLastChild = this;
                 }
                 treeParent.treeChildren.put(n, this);
             }

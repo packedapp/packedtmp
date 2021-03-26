@@ -17,7 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -34,25 +34,10 @@ public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
 
     /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
     @Nullable
-    Map<String, T> treeChildren;
+    LinkedHashMap<String, T> treeChildren;
 
     /** The depth of the component in the hierarchy (including any parent artifacts). */
     final int treeDepth;
-
-    /** The first child of this component. */
-    @Nullable
-    public T treeFirstChild;
-
-    /**
-     * The latest inserted child of this component. Or null if this component has no children. Is exclusively used to help
-     * maintain {@link #treeNextSibling}.
-     */
-    @Nullable
-    T treeLastChild;
-
-    /** The next sibling, in insertion order */
-    @Nullable
-    public T treeNextSibling;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
@@ -67,12 +52,11 @@ public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
         return treeChildren == null ? 0 : treeChildren.size();
     }
 
-    protected void addChild(T child, String name) {
+    protected void addChildFinalName(T child, String name) {
         Map<String, T> c = treeChildren;
         if (c == null) {
             child.name = name;
-            c = treeChildren = new HashMap<>();
-            treeFirstChild = treeLastChild = child;
+            c = treeChildren = new LinkedHashMap<>();
             c.put(name, child);
             return;
         }
@@ -82,20 +66,24 @@ public abstract class OpenTreeNode<T extends OpenTreeNode<T>> {
         while (c.putIfAbsent(n, child) != null) {
             n = name + counter++;
         }
-        treeLastChild.treeNextSibling = child;
-        treeLastChild = child;
     }
 
     @SuppressWarnings("unchecked")
     <S> List<S> toList(Function<T, S> mapper) {
         requireNonNull(mapper, "mapper is null");
+        LinkedHashMap<String, T> children = treeChildren;
+        if (children == null) {
+            return List.of();
+        } else {
+            List.copyOf(children.values());
+        }
         int size = treeChildren == null ? 0 : treeChildren.size();
         if (size == 0) {
             return List.of();
         } else {
             Object[] o = new Object[size];
             int index = 0;
-            for (T child = treeFirstChild; child != null; child = child.treeNextSibling) {
+            for (T child : children.values()) {
                 o[index++] = mapper.apply(child);
             }
             return (List<S>) List.of(o);

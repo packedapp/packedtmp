@@ -11,10 +11,11 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
     /** Wirelets that was specified when creating the component. */
     @Nullable
     public final WireletWrapper wirelets;
-    
-    public WireableComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+
+    public WireableComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
+            @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, application, realm, driver, parent);
-        
+
         // Various
         if (parent == null) {
             this.wirelets = WireletWrapper.forApplication(application.driver, driver, wirelets);
@@ -31,6 +32,9 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
                 }
             }
         }
+        if (nameInitializedWithWirelet && parent != null) {
 
+            //addChild(child, name);
+        }
     }
 }
