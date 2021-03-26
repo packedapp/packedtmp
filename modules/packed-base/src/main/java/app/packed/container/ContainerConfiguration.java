@@ -28,6 +28,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentModifierSet;
@@ -187,8 +188,8 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
             super(wirelet, PackedComponentModifierSet.I_CONTAINER);
         }
 
-        public ContainerSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            return new ContainerSetup(build, realm, this, parent, wirelets);
+        public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+            return new ContainerSetup(build, application, realm, this, parent, wirelets);
         }
         
         @Override

@@ -32,6 +32,7 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -77,8 +78,8 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param compConf
      *            the configuration of the component the container is a part of
      */
-    public ContainerSetup(BuildSetup build, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        super(build, realm, driver, parent, wirelets);
+    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        super(build, application, realm, driver, parent, wirelets);
         this.containerParent = parent == null ? null : parent.container;
         if (containerParent != null) {
             containerParent.runPredContainerChildren();
@@ -102,7 +103,7 @@ public final class ContainerSetup extends WireableComponentSetup {
     protected void addAttributes(DefaultAttributeMap dam) {
         // kan ogsaa test om container.application = application.container?
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedApplicationDriver<?> pac = build().application.driver;
+            PackedApplicationDriver<?> pac = application.driver;
             dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
         }
 

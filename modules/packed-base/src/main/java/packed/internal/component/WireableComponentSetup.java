@@ -3,6 +3,7 @@ package packed.internal.component;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.Wirelet;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 
 public abstract class WireableComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
@@ -11,12 +12,12 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
     @Nullable
     public final WireletWrapper wirelets;
     
-    public WireableComponentSetup(BuildSetup build, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        super(build, realm, driver, parent);
+    public WireableComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        super(build, application, realm, driver, parent);
         
         // Various
         if (parent == null) {
-            this.wirelets = WireletWrapper.forApplication(build.application.driver, driver, wirelets);
+            this.wirelets = WireletWrapper.forApplication(application.driver, driver, wirelets);
         } else {
             this.wirelets = WireletWrapper.forComponent(driver, wirelets);
             this.onWire = parent.onWire;

@@ -77,9 +77,9 @@ class MySidecar extends RealMethodSidecarBootstrap {
             // Der er noget constant pool thingeling der ikke bliver kaldt
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
             c.container.useExtension(ServiceExtension.class);
-            c.build.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
-            c.build.application.lifecycle.cs =  (SourceComponentSetup) c;
-            c.build.application.lifecycle.methodHandle = mh;
+            c.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
+            c.application.lifecycle.cs =  (SourceComponentSetup) c;
+            c.application.lifecycle.methodHandle = mh;
         });
     }
 

@@ -39,6 +39,7 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
@@ -51,6 +52,8 @@ import packed.internal.util.ThrowableUtil;
 
 /** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
+
+    public final ApplicationSetup application;
 
     /** The build this component is part of. */
     public final BuildSetup build;
@@ -89,8 +92,10 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      * @param parent
      *            the parent of the component
      */
-    public ComponentSetup(BuildSetup build, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
+    public ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
+            @Nullable ComponentSetup parent) {
         super(parent);
+        this.application = requireNonNull(application);
         this.build = requireNonNull(build);
 
         // Setup Realm
@@ -130,6 +135,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
      */
     protected ComponentSetup(ContainerSetup container, RealmSetup realm) {
         super(container);
+        this.application = container.application;
         this.build = container.build;
         this.container = container;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
@@ -213,7 +219,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         RealmSetup realm = new RealmSetup(assembly);
 
         // Create a new component and a new realm
-        WireableComponentSetup component = driver.newComponent(build, realm, linkTo, wirelets);
+        WireableComponentSetup component = driver.newComponent(build, application, realm, linkTo, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(component);
@@ -335,7 +341,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
                 // insert a given component 1 million times...
                 // We can keep the counter in Build <ComponentSetup(parent), counter)
                 // In this way we do not need to main a map for every component.
-                
+
                 if (!isFree) {
                     throw new RuntimeException("Name already exist " + n);
                 }
@@ -381,7 +387,7 @@ public abstract class ComponentSetup extends OpenTreeNode<ComponentSetup> {
         ComponentSetup wireTo = this instanceof ExtensionSetup ? treeParent : this;
 
         // Create the new component
-        WireableComponentSetup component = pcd.newComponent(build, realm, wireTo, wirelets);
+        WireableComponentSetup component = pcd.newComponent(build, application, realm, wireTo, wirelets);
 
         // Return a component configuration to the user
         return pcd.toConfiguration(component);

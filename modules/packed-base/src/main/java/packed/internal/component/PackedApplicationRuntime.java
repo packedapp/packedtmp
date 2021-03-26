@@ -112,7 +112,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     }
 
     void onInitialized(ComponentSetup component, PackedInitializationContext pic) {
-        ApplicationSetup application = component.build.application;
+        ApplicationSetup application = component.application;
         boolean isMain = application.hasMain();
         boolean start = isMain;
         final ReentrantLock lock = this.lock;

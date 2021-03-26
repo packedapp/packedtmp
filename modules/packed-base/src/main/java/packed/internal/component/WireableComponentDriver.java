@@ -11,6 +11,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.util.LookupUtil;
 
@@ -33,7 +34,7 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
 
     public abstract C toConfiguration(ComponentConfigurationContext context);
 
-    public abstract WireableComponentSetup newComponent(BuildSetup build, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
+    public abstract WireableComponentSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
 
     /** {@inheritDoc} */
     @Override

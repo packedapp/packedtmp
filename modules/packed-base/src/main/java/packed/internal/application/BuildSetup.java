@@ -28,9 +28,6 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /** The configuration of a build. */
 public final class BuildSetup implements BuildInfo {
 
-    /** The artifact driver used for the build process. */
-    public final ApplicationSetup application;
-
     /** The root component. */
     final ContainerSetup component;
 
@@ -55,9 +52,8 @@ public final class BuildSetup implements BuildInfo {
      *            the output of the build process
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
-        this.application = new ApplicationSetup(applicationDriver, componentDriver);
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.component = (ContainerSetup) componentDriver.newComponent(this, realm, null, wirelets);
+        this.component = (ContainerSetup) componentDriver.newComponent(this, new ApplicationSetup(applicationDriver, componentDriver), realm, null, wirelets);
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */
