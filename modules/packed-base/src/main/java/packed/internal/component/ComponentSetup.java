@@ -93,17 +93,7 @@ public abstract class ComponentSetup {
 
     boolean nameInitializedWithWirelet;
 
-    int nameState;
-
     protected Consumer<? super Component> onWire;
-
-    static final int NAME_SET = 1 << 17; // set atomically with ABNORMAL
-    static final int NAME_GET = 1 << 16; // true if joiner waiting
-    static final int NAME_GET_PATH = 1 << 15; // true if joiner waiting
-    static final int NAME_CHILD_GOT_PATH = 1 << 14; // true if joiner waiting
-
-    static final int NAME_GETSET_MASK = NAME_SET + NAME_GET + NAME_GET_PATH + NAME_CHILD_GOT_PATH;
-    
     /**
      * Creates a new instance of this class
      * 
@@ -211,13 +201,13 @@ public abstract class ComponentSetup {
         }
     }
 
-    public void checkCurrent() {
+    public final void checkIsWiring() {
         if (realm.current() != this) {
             throw new IllegalStateException("This operation must be called immediately after wiring of the component");
         }
     }
 
-    int childrenCount() {
+    final int childrenCount() {
         return treeChildren == null ? 0 : treeChildren.size();
     }
 
@@ -243,7 +233,7 @@ public abstract class ComponentSetup {
         }
     }
 
-    void fixCurrent() {
+    final void fixCurrent() {
         if (name == null) {
             setName(null);
         }
@@ -252,12 +242,6 @@ public abstract class ComponentSetup {
         }
         // run onWiret
         // finalize name
-    }
-
-    public String getName() {
-        // Only update with NAME_GET if no prev set/get op
-        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET;
-        return name;
     }
 
     @Nullable
@@ -302,51 +286,28 @@ public abstract class ComponentSetup {
         return new PackedComponentModifierSet(modifiers);
     }
 
-    public NamespacePath path() {
-        int anyPathMask = NAME_GET_PATH + NAME_CHILD_GOT_PATH;
-        if ((nameState & anyPathMask) != 0) {
-            ComponentSetup p = parent;
-            while (p != null && ((p.nameState & anyPathMask) == 0)) {
-                p.nameState = (p.nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
-            }
-        }
-        nameState = (nameState & ~NAME_GETSET_MASK) | NAME_GET_PATH;
+    public final NamespacePath path() {
         return PackedTreePath.of(this); // show we weak intern them????
     }
 
-    public void setName(String name) {
-        // First lets check the name is valid
-        checkComponentName(name);
-        checkCurrent();
-        int s = nameState;
-
-        // maybe assume s==0
-
-        if ((s & NAME_SET) != 0) {
-            throw new IllegalStateException("#setName(String) can only be called once");
+    public final void setName(String name) {
+        checkComponentName(name); // Check if the name is valid
+        checkIsWiring();
+        // If the name has already been set via a wirelet we ignore it
+        // Really vi override det ikke bagefter???
+        if (nameInitializedWithWirelet) {
+            return;
         }
 
-        if ((s & NAME_GET) != 0) {
-            throw new IllegalStateException("#setName(String) cannot be called after #getName() has been invoked");
-        }
-
-        if ((s & NAME_GET_PATH) != 0) {
-            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked");
-        }
-
-        if ((s & NAME_CHILD_GOT_PATH) != 0) {
-            throw new IllegalStateException("#setName(String) cannot be called after #path() has been invoked on a child component");
-        }
-
-        // Maaske kan vi godt saette to gange...
-        nameState |= NAME_SET;
+        
         if (name.equals(this.name)) {
             return;
         }
 
-        if (nameInitializedWithWirelet) {
-            return;
-        }
+        // maybe assume s==0
+
+
+        // Maaske kan vi godt saette to gange...
 
         setName0(name, null);
     }
@@ -433,7 +394,7 @@ public abstract class ComponentSetup {
         // check realm.open + attribute.write
     }
 
-    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         WireableComponentDriver<C> pcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // Check that the realm this component is a part of is still open
@@ -509,7 +470,7 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public String name() {
-            return component.getName();
+            return component.name;
         }
 
         /** {@inheritDoc} */

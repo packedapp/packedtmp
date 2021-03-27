@@ -92,7 +92,7 @@ public enum ComponentModifier {
      * </ul>
      */
     IMAGE,
-
+    
     /**
      * Are components that should not be considered part of the system. But are nonetheless present in order to XXX.
      * 

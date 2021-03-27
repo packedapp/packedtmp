@@ -55,7 +55,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The modifiers of this application */
     public final int modifiers;
 
-    /** Wirelets that may be processed before any other wirelets. */
+    /** Wirelet(s) that must be processed before any wirelets supplied by the user. */
     @Nullable
     public final Wirelet wirelet;
 
@@ -71,10 +71,18 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.wirelet = builder.prefix;
     }
 
-    private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet prefix) {
+    /**
+     * Create a new driver by updating an existing driver with a new wirelet.
+     * 
+     * @param existing
+     *            the existing driver
+     * @param wirelet
+     *            the new wirelet
+     */
+    private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet wirelet) {
         this.mhConstructor = existing.mhConstructor;
         this.modifiers = existing.modifiers;
-        this.wirelet = prefix;
+        this.wirelet = wirelet;
     }
 
     /** {@inheritDoc} */
@@ -295,7 +303,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public Component component() {
-            return root.adaptor();
+            return root.adaptor(); // Tror den doer. Vi kan evt. gemme den som en attribute...
         }
 
         /** {@inheritDoc} */
@@ -305,25 +313,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
     }
 }
-
-// We currently do not support @Provide ect... Nope...
-// Must add it as a component
-// Would just be so nice if you could do @OnStart()->application started...
-// And then they would show as "properties" on the container...
-
-// Altsaa hvis vi nu siger, at vi tillader injection af de services der skal bruges...
-// Og saa gemmer vi ServiceLocator til hvis det er brugere der skal bruge den...
-
-// Altsaa om vi bruger ServiceWirelets.provide()... eller @Provide paa application...
-// Eller om vi bruger LifecycleWirelets.onStop()... eller @OnStop
-
-// Create a new MethodHandle that can create artifact instances.
-
-// Vi har maaske en ApplicationDriver builder...
-
-// Saa kan evt. specificere mandatory services som skal exportes. og saa behover man ikke
-// traekke det ud af service locatoren.
-
 // Uhh uhhh species... Job<R> kan vi lave det???
 
 // Create an infuser (SomeExtension, Class)

@@ -49,7 +49,7 @@ public final class BuildSetup implements BuildInfo {
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.component = (ContainerSetup) componentDriver.newComponent(this, new ApplicationSetup(applicationDriver, componentDriver), realm, null, wirelets);
+        this.component = (ContainerSetup) componentDriver.newComponent(this, new ApplicationSetup(applicationDriver, componentDriver, modifiers), realm, null, wirelets);
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */

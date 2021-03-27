@@ -63,9 +63,6 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     boolean hasRunPreContainerChildren;
 
-    @Nullable
-    private Boolean isImage;
-
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
     private ServiceManagerSetup sm;
@@ -215,21 +212,6 @@ public final class ContainerSetup extends WireableComponentSetup {
     public boolean isInUse(Class<? extends Extension> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
-    }
-
-    public boolean isPartOfImage() {
-        Boolean b = isImage;
-        if (b != null) {
-            return b;
-        }
-        ComponentSetup cc = getParent();
-        while (cc != null) {
-            if (cc.modifiers().isImage()) {
-                return isImage = Boolean.TRUE;
-            }
-            cc = cc.getParent();
-        }
-        return isImage = Boolean.FALSE;
     }
 
     /**

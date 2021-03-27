@@ -151,7 +151,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return container.isPartOfImage();
+        return application.isImage();
     }
 
     /** {@inheritDoc} */

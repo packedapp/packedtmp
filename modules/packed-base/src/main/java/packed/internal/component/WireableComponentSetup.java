@@ -63,4 +63,9 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
             }
         }
     }
+    
+    /** {@inheritDoc} */
+    public final String getName() {
+        return name;
+    }
 }

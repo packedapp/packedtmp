@@ -60,6 +60,10 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return isSet(modifiers, ComponentModifier.APPLICATION);
     }
 
+    public static boolean isImage(int modifiers) {
+        return isSet(modifiers, ComponentModifier.IMAGE);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public boolean contains(ComponentModifier modifier) {
