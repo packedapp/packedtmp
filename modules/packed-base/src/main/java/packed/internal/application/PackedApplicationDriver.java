@@ -144,7 +144,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         realm.close(build.component);
-
         return build;
     }
 

@@ -53,6 +53,7 @@ public final class RealmSetup {
     // Vi har faktisk 2 som jeg ser det.
     private final Class<?> realmType;
 
+    ComponentSetup root;
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
      * When we close the realm we then run through this list and recursively close each container.
