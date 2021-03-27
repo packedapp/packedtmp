@@ -59,17 +59,30 @@ public abstract class ComponentSetup {
     /** The build this component is part of. */
     public final BuildSetup build;
 
+    /** Children of this node (lazily initialized) in insertion order. */
+    @Nullable
+    LinkedHashMap<String, ComponentSetup> children;
+
     /** The container this component is a part of. A container is a part of it self. */
     public final ContainerSetup container;
 
-    /** The depth of the component in the hierarchy. */
+    /** The depth of the component in the tree. */
     protected final int depth;
+
+    boolean isClosed;
 
     /** The modifiers of this component. */
     protected final int modifiers;
 
     /** The name of this node. */
     protected String name;
+
+    /** Whether or not the name has been initialized via a wirelet, in which case it is not overridable by setName(). */
+    boolean nameInitializedWithWirelet;
+
+    /** An action that, if present, must be called whenever the component has been completely wired. */
+    @Nullable
+    protected Consumer<? super Component> onWire;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
@@ -79,18 +92,6 @@ public abstract class ComponentSetup {
 
     /** The realm this component is a part of. */
     public final RealmSetup realm;
-
-    /** Children of this node (lazily initialized). Insertion order maintained by {@link #treeNextSibling} and friends. */
-    @Nullable
-    LinkedHashMap<String, ComponentSetup> treeChildren;
-
-    /**************** See how much of this we can get rid of. *****************/
-
-    boolean isClosed = false;
-
-    boolean nameInitializedWithWirelet;
-
-    protected Consumer<? super Component> onWire;
 
     /**
      * Creates a new instance of this class
@@ -156,18 +157,18 @@ public abstract class ComponentSetup {
      * 
      * @return a component adaptor
      */
-    public Component adaptor() {
+    public final Component adaptor() {
         return new ComponentAdaptor(this);
     }
 
     // runtime???
     protected void addAttributes(DefaultAttributeMap dam) {}
 
-    public void addChildFinalName(ComponentSetup child, String name) {
-        Map<String, ComponentSetup> c = treeChildren;
+    public final void addChildFinalName(ComponentSetup child, String name) {
+        Map<String, ComponentSetup> c = children;
         if (c == null) {
             child.name = name;
-            c = treeChildren = new LinkedHashMap<>();
+            c = children = new LinkedHashMap<>();
             c.put(name, child);
             return;
         }
@@ -207,25 +208,25 @@ public abstract class ComponentSetup {
     }
 
     final int childrenCount() {
-        return treeChildren == null ? 0 : treeChildren.size();
+        return children == null ? 0 : children.size();
     }
 
     @SuppressWarnings("unchecked")
     <S> List<S> childrenToList(Function<ComponentSetup, S> mapper) {
         requireNonNull(mapper, "mapper is null");
-        LinkedHashMap<String, ComponentSetup> children = treeChildren;
-        if (children == null) {
+        LinkedHashMap<String, ComponentSetup> c = children;
+        if (c == null) {
             return List.of();
         } else {
-            List.copyOf(children.values());
+            List.copyOf(c.values());
         }
-        int size = treeChildren == null ? 0 : treeChildren.size();
+        int size = c == null ? 0 : c.size();
         if (size == 0) {
             return List.of();
         } else {
             Object[] o = new Object[size];
             int index = 0;
-            for (ComponentSetup child : children.values()) {
+            for (ComponentSetup child : c.values()) {
                 o[index++] = mapper.apply(child);
             }
             return (List<S>) List.of(o);
@@ -296,8 +297,8 @@ public abstract class ComponentSetup {
         // maybe assume s==0
 
         if (parent != null) {
-            parent.treeChildren.remove(this.name);
-            if (parent.treeChildren.putIfAbsent(name, this) != null) {
+            parent.children.remove(this.name);
+            if (parent.children.putIfAbsent(name, this) != null) {
                 throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
             }
         }
@@ -350,7 +351,7 @@ public abstract class ComponentSetup {
         throw new IllegalStateException("This method must be called before a component is instantiated");
     }
 
-    /** An adaptor of the {@link Component} interface from a {@link ComponentSetup}. */
+    /** An adaptor of the {@link Component} interface for a {@link ComponentSetup}. */
     private record ComponentAdaptor(ComponentSetup component) implements Component {
 
         /** {@inheritDoc} */
@@ -362,7 +363,29 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return component.childrenToList(ComponentSetup::adaptor);
+            return childrenToList(ComponentSetup::adaptor);
+        }
+
+        @SuppressWarnings("unchecked")
+        private <S> List<S> childrenToList(Function<ComponentSetup, S> mapper) {
+            requireNonNull(mapper, "mapper is null");
+            LinkedHashMap<String, ComponentSetup> c = component.children;
+            if (c == null) {
+                return List.of();
+            } else {
+                List.copyOf(c.values());
+            }
+            int size = c == null ? 0 : c.size();
+            if (size == 0) {
+                return List.of();
+            } else {
+                Object[] o = new Object[size];
+                int index = 0;
+                for (ComponentSetup child : c.values()) {
+                    o[index++] = mapper.apply(child);
+                }
+                return (List<S>) List.of(o);
+            }
         }
 
         /** {@inheritDoc} */
