@@ -78,7 +78,7 @@ public abstract class ComponentSetup {
     protected String name;
 
     /** Whether or not the name has been initialized via a wirelet, in which case it is not overridable by setName(). */
-    boolean nameInitializedWithWirelet;
+    protected boolean nameInitializedWithWirelet;
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
     @Nullable
@@ -103,11 +103,12 @@ public abstract class ComponentSetup {
             @Nullable ComponentSetup parent) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
-        this.application = requireNonNull(application);
+
         this.build = requireNonNull(build);
-
-        // Setup Realm
-
+        this.application = requireNonNull(application);
+        this.container = this instanceof ContainerSetup container ? container : parent.container;
+        this.realm = realm;
+        
         // Various
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
@@ -118,16 +119,12 @@ public abstract class ComponentSetup {
             this.onWire = parent.onWire;
         }
 
-        // Setup container
-        this.container = this instanceof ContainerSetup container ? container : parent.container;
-
         // Setup Runtime
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
 
-        // finally update the realm
-        this.realm = realm;
+        // finally update latest
         realm.updateCurrent(this);
     }
 
@@ -142,14 +139,16 @@ public abstract class ComponentSetup {
     protected ComponentSetup(ContainerSetup container, ExtensionModel model) {
         this.parent = container;
         this.depth = container.depth + 1;
-        this.application = container.application;
+
         this.build = container.build;
-        this.pool = container.pool;
+        this.application = container.application;
         this.container = container;
-        this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.realm = new RealmSetup(model, this);
+
+        this.pool = container.pool;
+        this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.onWire = container.onWire;
-        container.addChildFinalName(this, model.nameComponent);
+        initializeName(model.nameComponent);
     }
 
     /**
@@ -163,6 +162,13 @@ public abstract class ComponentSetup {
 
     // runtime???
     protected void addAttributes(DefaultAttributeMap dam) {}
+
+    protected final void initializeName(String name) {
+        if (parent != null) {
+            parent.addChildFinalName(this, name);
+        }
+        this.name = name;
+    }
 
     public final void addChildFinalName(ComponentSetup child, String name) {
         Map<String, ComponentSetup> c = children;

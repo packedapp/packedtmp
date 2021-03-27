@@ -89,7 +89,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             c.add(this);
         }
         // Set a default name if up default name
-        if (name == null) {
+        if (!nameInitializedWithWirelet) {
             // I think try and move some of this to ComponentNameWirelet
             @Nullable
             String n = null;
