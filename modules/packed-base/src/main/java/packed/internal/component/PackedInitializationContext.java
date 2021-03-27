@@ -72,15 +72,17 @@ public final class PackedInitializationContext {
     // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
     // Maybe this can be written in PodInstantiationContext
     String rootName(ComponentSetup component) {
-        Wirelet[] wirelets = wirelets().wirelets;
-        for (int i = wirelets.length - 1; i >= 0; i--) {
-            Wirelet w = wirelets[i];
-            if (w instanceof SetComponentNameWirelet sn) {
-                String newName = sn.name;
-                if (newName.endsWith("?")) {
-                    newName = newName.substring(0, newName.length() - 1);
+        if (wirelets() != null) {
+            Wirelet[] wirelets = wirelets().wirelets;
+            for (int i = wirelets.length - 1; i >= 0; i--) {
+                Wirelet w = wirelets[i];
+                if (w instanceof SetComponentNameWirelet sn) {
+                    String newName = sn.name;
+                    if (newName.endsWith("?")) {
+                        newName = newName.substring(0, newName.length() - 1);
+                    }
+                    return newName;
                 }
-                return newName;
             }
         }
         return component.name;

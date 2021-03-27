@@ -18,7 +18,6 @@ package packed.internal.component;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletHandle;
-import packed.internal.application.PackedApplicationDriver;
 
 /** A holder of wirelets. */
 // Vi har faktisk ogsaa for den her paa runtime...
@@ -51,23 +50,6 @@ public final class WireletWrapper {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
         }
         return new PackedWireletHandle<>(this, wireletClass);
-    }
-
-    @Nullable
-    public static WireletWrapper forApplication(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver, Wirelet... wirelets) {
-        Wirelet[] ws;
-        if (applicationDriver.wirelet == null) {
-            ws = WireletArray.flatten(wirelets);
-        } else {
-            ws = WireletArray.flatten(applicationDriver.wirelet, Wirelet.combine(wirelets));
-        }
-        return new WireletWrapper(ws);
-    }
-
-    @Nullable
-    public static WireletWrapper forComponent(WireableComponentDriver<?> driver, Wirelet... wirelets) {
-        Wirelet[] ws = WireletArray.flatten(wirelets);
-        return new WireletWrapper(ws);
     }
 
     @Nullable
