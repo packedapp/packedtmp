@@ -23,7 +23,6 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
@@ -48,9 +47,12 @@ public final class PackedInitializationContext {
 
     private final WireletWrapper wirelets;
 
+    String name;
+
     private PackedInitializationContext(ContainerSetup root, WireletWrapper wirelets) {
         this.root = root;
         this.wirelets = wirelets;
+        this.name = root.name;
     }
 
     ConstantPool pool() {
@@ -64,28 +66,6 @@ public final class PackedInitializationContext {
      */
     Component component() {
         return component;
-    }
-
-    // Initialize name, we don't want to override this in Configuration context. We don't want the conf to change if
-    // image...
-    // Check for any runtime wirelets that have been specified.
-    // This is probably not the right way to do it. Especially with hosts.. Fix it when we get to hosts...
-    // Maybe this can be written in PodInstantiationContext
-    String rootName(ComponentSetup component) {
-        if (wirelets() != null) {
-            Wirelet[] wirelets = wirelets().wirelets;
-            for (int i = wirelets.length - 1; i >= 0; i--) {
-                Wirelet w = wirelets[i];
-                if (w instanceof SetComponentNameWirelet sn) {
-                    String newName = sn.name;
-                    if (newName.endsWith("?")) {
-                        newName = newName.substring(0, newName.length() - 1);
-                    }
-                    return newName;
-                }
-            }
-        }
-        return component.name;
     }
 
     ApplicationRuntime runtime() {
@@ -126,6 +106,12 @@ public final class PackedInitializationContext {
         // Der kommer kun wirelets med fra image, ellers er arrayet bare tomt...
         PackedInitializationContext pic = new PackedInitializationContext(root,
                 root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : root.wirelets);
+
+        for (Wirelet w : imageWirelets) {
+            if (w instanceof InternalWirelet iw) {
+                iw.onImageInstantiation(root, pic);
+            }
+        }
 
         // Instantiates the whole component tree (well @Initialize does not yet work)
         // pic.component is set from PackedComponent

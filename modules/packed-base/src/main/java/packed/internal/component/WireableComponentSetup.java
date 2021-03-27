@@ -15,6 +15,7 @@ import packed.internal.container.ExtensionSetup;
 public abstract class WireableComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
 
     /** Wirelets that was specified when creating the component. */
+    // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
     @Nullable
     public final WireletWrapper wirelets;
 
@@ -46,7 +47,8 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
             int unconsumed = 0;
             for (Wirelet w : ws) {
                 if (w instanceof InternalWirelet bw) {
-                    bw.firstPass(this);
+                    // Maaske er alle internal wirelets first passe
+                    bw.onBuild(this);
                 } else {
                     unconsumed++;
                 }

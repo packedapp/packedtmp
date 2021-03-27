@@ -72,7 +72,7 @@ public final class PackedComponent implements Component {
         this.model = RuntimeComponentModel.of(compBuild);
         if (parent == null) {
             pic.component = this;
-            this.name = pic.rootName(compBuild);
+            this.name = pic.name;
         } else {
             this.name = requireNonNull(compBuild.name);
         }

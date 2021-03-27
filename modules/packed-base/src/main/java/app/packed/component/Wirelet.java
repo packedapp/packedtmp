@@ -18,7 +18,7 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Extension;
-import packed.internal.component.InternalWirelet.SetComponentNameWirelet;
+import packed.internal.component.InternalWirelet.OverrideNameWirelet;
 import packed.internal.component.WireletArray;
 import packed.internal.component.WireletModel;
 import packed.internal.util.StackWalkerUtil;
@@ -205,7 +205,7 @@ public abstract class Wirelet {
      */
     // String intrapolation?
     public static Wirelet named(String name) {
-        return new SetComponentNameWirelet(name);
+        return new OverrideNameWirelet(name);
     }
 }
 ///**

@@ -22,35 +22,29 @@ import java.util.function.Consumer;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
 
-/**
- *
- */
-// Tror meningen er at smide ind i .component igen...
+/** A type of wirelet where its logic is directly embedded in the wirelet. */
 public abstract class InternalWirelet extends Wirelet {
 
-    protected abstract void firstPass(ComponentSetup c);
+    abstract void onBuild(ComponentSetup c);
 
-    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class FailOnFirstPass extends InternalWirelet {
-
-        @Override
-        protected void firstPass(ComponentSetup component) {
-            // throw new Error();
-        }
+    void onImageInstantiation(ComponentSetup c, PackedInitializationContext ic) {
+        throw new IllegalArgumentException("The wirelet {" + getClass().getSimpleName() + "} cannot be specified when instantiating an image");
     }
 
-    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class OnWireCallbackWirelet extends InternalWirelet {
+    /** A wirelet that will perform a given action once the component has been fully wired. */
+    public static final class OnWireActionWirelet extends InternalWirelet {
 
+        /** The action to perform on the component after it has been fully wired. */
         private final Consumer<? super Component> action;
 
-        public OnWireCallbackWirelet(Consumer<? super Component> action) {
+        public OnWireActionWirelet(Consumer<? super Component> action) {
             this.action = requireNonNull(action, "action is null");
         }
 
+        /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected void firstPass(ComponentSetup component) {
+        void onBuild(ComponentSetup component) {
             Consumer<? super Component> existing = component.onWire;
             if (existing == null) {
                 component.onWire = action;
@@ -60,26 +54,32 @@ public abstract class InternalWirelet extends Wirelet {
         }
     }
 
-    /** A wirelet that will set the name of the container. Used by {@link Wirelet#named(String)}. */
-    public static final class SetComponentNameWirelet extends InternalWirelet {
+    /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */
+    public static final class OverrideNameWirelet extends InternalWirelet {
 
-        /** The (checked) name to override with. */
+        /** The (validated) name to override with. */
         final String name;
 
         /**
-         * Creates a new option
+         * Creates a new name wirelet
          * 
          * @param name
          *            the name to override any existing container name with
          */
-        public SetComponentNameWirelet(String name) {
-            this.name = ComponentSetup.checkComponentName(name);
+        public OverrideNameWirelet(String name) {
+            this.name = ComponentSetup.checkComponentName(name); // throws IAE
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        void onBuild(ComponentSetup c) {
+            c.nameInitializedWithWirelet = true;
+            c.name = name;
         }
 
         @Override
-        protected void firstPass(ComponentSetup c) {
-            c.nameInitializedWithWirelet = true;
-            c.name = name;
+        void onImageInstantiation(ComponentSetup c, PackedInitializationContext ic) {
+            ic.name = name;
         }
     }
 }

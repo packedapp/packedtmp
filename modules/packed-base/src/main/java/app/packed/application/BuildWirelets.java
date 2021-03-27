@@ -56,7 +56,7 @@ public final class BuildWirelets {
     // Lifecycle
     // wired - fixed - closed (always with realm) 
     public static Wirelet onWire(Consumer<? super Component> action) {
-        return new InternalWirelet.OnWireCallbackWirelet(action);
+        return new InternalWirelet.OnWireActionWirelet(action);
     }
 
     // NO FAIL <--- maaske brugbart for analyse
