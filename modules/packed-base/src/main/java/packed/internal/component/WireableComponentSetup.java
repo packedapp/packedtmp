@@ -63,10 +63,33 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
             }
         }
     }
-    
-    
+
     /** {@inheritDoc} */
     public final String getName() {
         return name;
+    }
+    
+    /** {@inheritDoc} */
+    public final void setName(String name) {
+        checkComponentName(name); // Check if the name is valid
+        checkIsWiring();
+
+        // If a name has been set using a wirelet it cannot be overridden
+        // We might change this later
+        if (nameInitializedWithWirelet) {
+            return;
+        } else if (name.equals(this.name)) {
+            return;
+        }
+
+        // maybe assume s==0
+
+        if (parent != null) {
+            parent.children.remove(this.name);
+            if (parent.children.putIfAbsent(name, this) != null) {
+                throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
+            }
+        }
+        this.name = name;
     }
 }

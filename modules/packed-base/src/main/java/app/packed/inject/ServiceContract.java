@@ -252,7 +252,7 @@ public final class ServiceContract extends Contract {
     public static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
         Component c = driver.analyze(assembly);
         if (!c.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only specify a system where the root component is a container, was " + c);
+            throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + c);
         }
         ContainerSetup compConf = (ContainerSetup) ComponentSetup.unadapt(null, c);
         ServiceManagerSetup sm = compConf.getServiceManager();
