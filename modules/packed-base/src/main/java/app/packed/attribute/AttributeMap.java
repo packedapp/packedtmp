@@ -201,6 +201,10 @@ public interface AttributeMap {
     static AttributeMap of() {
         return EmptyAttributeMap.INSTANCE;
     }
+
+    default void print() {
+        System.out.println(toString());
+    }
 }
 
 // AttributeSet open(Lookup lookup);

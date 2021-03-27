@@ -107,7 +107,7 @@ public final class RealmSetup {
 
     public void close(WireableComponentSetup root) {
         if (current != null) {
-            current.fixCurrent();
+            current.finishWiring();
         }
         isClosed = true;
         for (ContainerSetup c : rootContainers) {
@@ -142,7 +142,7 @@ public final class RealmSetup {
 
     public void updateCurrent(ComponentSetup component) {
         if (current != null) {
-            current.fixCurrent();
+            current.finishWiring();
         }
         current = component;
         if (component instanceof ContainerSetup container) {

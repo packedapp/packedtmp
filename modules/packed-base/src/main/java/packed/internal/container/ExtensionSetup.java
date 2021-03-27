@@ -69,6 +69,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
         super(container, model);
         this.model = requireNonNull(model);
+        initializeName(model.nameComponent);
     }
 
     /** {@inheritDoc} */

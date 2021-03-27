@@ -101,6 +101,9 @@ public abstract class ComponentSetup {
      */
     public ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
             @Nullable ComponentSetup parent) {
+        // Update the current
+        realm.updateCurrent(this);
+
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
 
@@ -123,9 +126,6 @@ public abstract class ComponentSetup {
         if (modifiers().hasRuntime()) {
             pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
-
-        // finally update latest
-        realm.updateCurrent(this);
     }
 
     /**
@@ -148,7 +148,6 @@ public abstract class ComponentSetup {
         this.pool = container.pool;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.onWire = container.onWire;
-        initializeName(model.nameComponent);
     }
 
     /**
@@ -192,12 +191,10 @@ public abstract class ComponentSetup {
         return children == null ? 0 : children.size();
     }
 
-    final void fixCurrent() {
+    final void finishWiring() {
         if (onWire != null) {
             onWire.accept(adaptor());
         }
-        // run onWiret
-        // finalize name
     }
 
     protected final void initializeName(String name) {
@@ -387,6 +384,11 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Component resolve(CharSequence path) {
+            if (component.children != null) {
+                if (component.children.containsKey(path)) {
+                    return component.children.get(path.toString()).adaptor();
+                }
+            }
             throw new UnsupportedOperationException();
         }
 

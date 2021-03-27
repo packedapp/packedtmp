@@ -96,15 +96,15 @@ public final class ServiceContract extends Contract {
         this.provides = requireNonNull(provides);
     }
 
+    public ServiceContract assertEquals(ServiceContract other) {
+        // nicer
+        return this;
+    }
+
     public ServiceContract assertIsEmpty() {
         if (!isEmpty()) {
 
         }
-        return this;
-    }
-
-    public ServiceContract assertEquals(ServiceContract other) {
-        // nicer
         return this;
     }
 
@@ -291,10 +291,6 @@ public final class ServiceContract extends Contract {
      */
     public static final class Builder {
 
-        enum Type {
-            OPTIONAL, PROVIDES, REQUIRES;
-        }
-
         private final HashMap<Key<?>, Type> map = new HashMap<>();
 
         /**
@@ -429,6 +425,10 @@ public final class ServiceContract extends Contract {
          */
         public ServiceContract.Builder requires(Key<?>... keys) {
             return compute(Type.REQUIRES, keys);
+        }
+
+        enum Type {
+            OPTIONAL, PROVIDES, REQUIRES;
         }
     }
 }
