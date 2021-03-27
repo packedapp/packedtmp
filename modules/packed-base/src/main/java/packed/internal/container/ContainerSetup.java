@@ -108,17 +108,12 @@ public final class ContainerSetup extends WireableComponentSetup {
                     n = "Assembly";
                 }
             }
-
-            if (parent == null) {
-                this.name = n;
-            } else {
-                parent.addChildFinalName(this, n);
-            }
+            initializeName(n);
         }
     }
 
     @Override
-    protected void addAttributes(DefaultAttributeMap dam) {
+    protected void attributesAdd(DefaultAttributeMap dam) {
         // kan ogsaa test om container.application = application.container?
         if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
             PackedApplicationDriver<?> pac = application.driver;

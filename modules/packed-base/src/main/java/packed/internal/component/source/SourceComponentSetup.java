@@ -28,15 +28,14 @@ public final class SourceComponentSetup extends WireableComponentSetup {
         this.source = new ClassSourceSetup(this, driver);
 
         // Set a default name if up default name
-        if (name == null) {
+        if (!nameInitializedWithWirelet) {
             String n = name = source.model.simpleName();
-            parent.addChildFinalName(this, n);
-            // setName0(n);
+            initializeName(n);
         }
     }
 
     @Override
-    protected void addAttributes(DefaultAttributeMap dam) {
+    protected void attributesAdd(DefaultAttributeMap dam) {
         dam.addValue(ComponentAttributes.SOURCE_CLASS, source.model.type);
     }
 

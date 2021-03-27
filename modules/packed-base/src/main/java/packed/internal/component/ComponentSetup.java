@@ -108,7 +108,7 @@ public abstract class ComponentSetup {
         this.application = requireNonNull(application);
         this.container = this instanceof ContainerSetup container ? container : parent.container;
         this.realm = realm;
-        
+
         // Various
         if (parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
@@ -160,43 +160,18 @@ public abstract class ComponentSetup {
         return new ComponentAdaptor(this);
     }
 
-    // runtime???
-    protected void addAttributes(DefaultAttributeMap dam) {}
-
-    protected final void initializeName(String name) {
-        if (parent != null) {
-            parent.addChildFinalName(this, name);
-        }
-        this.name = name;
-    }
-
-    public final void addChildFinalName(ComponentSetup child, String name) {
-        Map<String, ComponentSetup> c = children;
-        if (c == null) {
-            child.name = name;
-            c = children = new LinkedHashMap<>();
-            c.put(name, child);
-            return;
-        }
-
-        String n = name;
-        int counter = 1;
-        while (c.putIfAbsent(n, child) != null) {
-            n = name + counter++;
-        }
-        child.name = n;
-    }
-
     AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
         // Maaske er det simpelthen et view...
         // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
         DefaultAttributeMap dam = new DefaultAttributeMap();
-        addAttributes(dam);
+        attributesAdd(dam);
         return dam;
     }
 
-    public BuildSetup build() {
+    protected void attributesAdd(DefaultAttributeMap dam) {}
+
+    public final BuildSetup build() {
         return build;
     }
 
@@ -217,34 +192,29 @@ public abstract class ComponentSetup {
         return children == null ? 0 : children.size();
     }
 
-    @SuppressWarnings("unchecked")
-    <S> List<S> childrenToList(Function<ComponentSetup, S> mapper) {
-        requireNonNull(mapper, "mapper is null");
-        LinkedHashMap<String, ComponentSetup> c = children;
-        if (c == null) {
-            return List.of();
-        } else {
-            List.copyOf(c.values());
-        }
-        int size = c == null ? 0 : c.size();
-        if (size == 0) {
-            return List.of();
-        } else {
-            Object[] o = new Object[size];
-            int index = 0;
-            for (ComponentSetup child : c.values()) {
-                o[index++] = mapper.apply(child);
-            }
-            return (List<S>) List.of(o);
-        }
-    }
-
     final void fixCurrent() {
         if (onWire != null) {
             onWire.accept(adaptor());
         }
         // run onWiret
         // finalize name
+    }
+
+    protected final void initializeName(String name) {
+        String n = name;
+        if (parent != null) {
+            Map<String, ComponentSetup> c = parent.children;
+            if (c == null) {
+                c = parent.children = new LinkedHashMap<>();
+                c.put(name, this);
+            } else {
+                int counter = 1;
+                while (c.putIfAbsent(n, this) != null) {
+                    n = name + counter++; // maybe store some kind of fallback map on build.. for those that want to test adding 1 mil components
+                }
+            }
+        }
+        this.name = n;
     }
 
     public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
@@ -280,7 +250,7 @@ public abstract class ComponentSetup {
         return new ComponentAdaptor(component);
     }
 
-    public PackedComponentModifierSet modifiers() {
+    public final PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
 
@@ -288,30 +258,7 @@ public abstract class ComponentSetup {
         return PackedTreePath.of(this); // show we weak intern them????
     }
 
-    public final void setName(String name) {
-        checkComponentName(name); // Check if the name is valid
-        checkIsWiring();
-
-        // If a name has been set using a wirelet it cannot be overridden
-        // We might change this later
-        if (nameInitializedWithWirelet) {
-            return;
-        } else if (name.equals(this.name)) {
-            return;
-        }
-
-        // maybe assume s==0
-
-        if (parent != null) {
-            parent.children.remove(this.name);
-            if (parent.children.putIfAbsent(name, this) != null) {
-                throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
-            }
-        }
-        this.name = name;
-    }
-
-    public <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
+    public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
         requireNonNull(attribute, "attribute is null");
         requireNonNull(value, "value is null");
         // check realm.open + attribute.write

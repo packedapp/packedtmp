@@ -9,10 +9,7 @@ import app.packed.container.BaseAssembly;
 public class WTest extends BaseAssembly {
 
     @Override
-    protected void build() {
-        installInstance("sdfsdf");
-        installInstance("sdfsdf");
-    }
+    protected void build() {}
 
     public static void main(String[] args) {
         Program p = Program.start(new WTest(), Wirelet.named("sdfsf"), BuildWirelets.onWire(c -> System.out.println("Wired " + c.path())));
