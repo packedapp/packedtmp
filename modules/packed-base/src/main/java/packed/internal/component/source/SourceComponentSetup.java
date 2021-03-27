@@ -22,13 +22,16 @@ public final class SourceComponentSetup extends WireableComponentSetup {
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;
 
-    public SourceComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, SourcedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public SourceComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, SourcedComponentDriver<?> driver,
+            @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, application, realm, driver, parent, wirelets);
         this.source = new ClassSourceSetup(this, driver);
 
         // Set a default name if up default name
         if (name == null) {
-            setName0(null, null);
+            String n = name = source.model.simpleName();
+            parent.addChildFinalName(this, n);
+            // setName0(n);
         }
     }
 

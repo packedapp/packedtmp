@@ -44,8 +44,6 @@ import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.component.source.ClassSourceSetup;
-import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
@@ -78,7 +76,7 @@ public abstract class ComponentSetup {
     protected final ComponentSetup parent;
 
     public final ConstantPoolSetup pool;
-    
+
     /** The realm this component is a part of. */
     public final RealmSetup realm;
 
@@ -86,7 +84,6 @@ public abstract class ComponentSetup {
     @Nullable
     LinkedHashMap<String, ComponentSetup> treeChildren;
 
-    
     /**************** See how much of this we can get rid of. *****************/
 
     boolean isClosed = false;
@@ -94,6 +91,7 @@ public abstract class ComponentSetup {
     boolean nameInitializedWithWirelet;
 
     protected Consumer<? super Component> onWire;
+
     /**
      * Creates a new instance of this class
      * 
@@ -165,7 +163,7 @@ public abstract class ComponentSetup {
     // runtime???
     protected void addAttributes(DefaultAttributeMap dam) {}
 
-    protected void addChildFinalName(ComponentSetup child, String name) {
+    public void addChildFinalName(ComponentSetup child, String name) {
         Map<String, ComponentSetup> c = treeChildren;
         if (c == null) {
             child.name = name;
@@ -179,6 +177,7 @@ public abstract class ComponentSetup {
         while (c.putIfAbsent(n, child) != null) {
             n = name + counter++;
         }
+        child.name = n;
     }
 
     AttributeMap attributes() {
@@ -234,19 +233,11 @@ public abstract class ComponentSetup {
     }
 
     final void fixCurrent() {
-        if (name == null) {
-            setName(null);
-        }
         if (onWire != null) {
             onWire.accept(adaptor());
         }
         // run onWiret
         // finalize name
-    }
-
-    @Nullable
-    public ComponentSetup getParent() {
-        return parent;
     }
 
     public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
@@ -293,99 +284,24 @@ public abstract class ComponentSetup {
     public final void setName(String name) {
         checkComponentName(name); // Check if the name is valid
         checkIsWiring();
-        // If the name has already been set via a wirelet we ignore it
-        // Really vi override det ikke bagefter???
+
+        // If a name has been set using a wirelet it cannot be overridden
+        // We might change this later
         if (nameInitializedWithWirelet) {
             return;
-        }
-
-        
-        if (name.equals(this.name)) {
+        } else if (name.equals(this.name)) {
             return;
         }
 
         // maybe assume s==0
 
-
-        // Maaske kan vi godt saette to gange...
-
-        setName0(name, null);
-    }
-
-    protected void setName0(String newName, ExtensionModel extensionModel) {
-        String n = newName;
-        if (newName == null) {
-            if (nameInitializedWithWirelet) {
-                n = name;
-            }
-        }
-
-        boolean isFree = false;
-
-        if (n == null) {
-            ClassSourceSetup src = this instanceof SourceComponentSetup bcs ? bcs.source : null;
-            if (src != null) {
-                n = src.model.simpleName();
-            } else if (this instanceof ContainerSetup container) {
-                // I think try and move some of this to ComponentNameWirelet
-                @Nullable
-                Class<?> source = realm.realmType();
-                if (Assembly.class.isAssignableFrom(source)) {
-                    String nnn = source.getSimpleName();
-                    if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
-                        nnn = nnn.substring(0, nnn.length() - 8);
-                    }
-                    if (nnn.length() > 0) {
-                        // checkName, if not just App
-                        // TODO need prefix
-                        n = nnn;
-                    }
-                    if (nnn.length() == 0) {
-                        n = "Assembly";
-                    }
-                }
-                // TODO think it should be named Artifact type, for example, app, injector, ...
-            }
-            if (n == null) {
-                n = "Unknown";
-            }
-            isFree = true;
-        } else if (n.endsWith("?")) {
-            n = n.substring(0, n.length() - 1);
-            isFree = true;
-        }
-
-        // maybe just putIfAbsent, under the assumption that we will rarely need to override.
         if (parent != null) {
-            if (parent.treeChildren != null && parent.treeChildren.containsKey(n)) {
-                // If name exists. Lets keep a counter (maybe if bigger than 5). For people trying to
-                // insert a given component 1 million times...
-                // We can keep the counter in Build <ComponentSetup(parent), counter)
-                // In this way we do not need to main a map for every component.
-
-                if (!isFree) {
-                    throw new RuntimeException("Name already exist " + n);
-                }
-                int counter = 1;
-                String prefix = n;
-                do {
-                    n = prefix + counter++;
-                } while (parent.treeChildren.containsKey(n));
-            }
-
-            if (newName != null) {
-                // TODO check if changed name...
-                parent.treeChildren.remove(name);
-                parent.treeChildren.put(n, this);
-            } else {
-                name = n;
-                if (parent.treeChildren == null) {
-                    parent.treeChildren = new LinkedHashMap<>();
-                } else {}
-                parent.treeChildren.put(n, this);
+            parent.treeChildren.remove(this.name);
+            if (parent.treeChildren.putIfAbsent(name, this) != null) {
+                throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
             }
         }
-        name = n;
+        this.name = name;
     }
 
     public <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
@@ -89,7 +90,30 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
         // Set a default name if up default name
         if (name == null) {
-            setName0(null, null);
+            // I think try and move some of this to ComponentNameWirelet
+            @Nullable
+            String n = null;
+            Class<?> source = realm.realmType();
+            if (Assembly.class.isAssignableFrom(source)) {
+                String nnn = source.getSimpleName();
+                if (nnn.length() > 8 && nnn.endsWith("Assembly")) {
+                    nnn = nnn.substring(0, nnn.length() - 8);
+                }
+                if (nnn.length() > 0) {
+                    // checkName, if not just App
+                    // TODO need prefix
+                    n = nnn;
+                }
+                if (nnn.length() == 0) {
+                    n = "Assembly";
+                }
+            }
+
+            if (parent == null) {
+                this.name = n;
+            } else {
+                parent.addChildFinalName(this, n);
+            }
         }
     }
 
