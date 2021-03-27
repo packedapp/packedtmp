@@ -10,7 +10,7 @@ import packed.internal.application.BuildSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A component that can be wired. For now, this every component type except an {@link ExtensionSetup extension}.
+ * A component that can be wired. For now, this is every component type except an {@link ExtensionSetup extension}.
  */
 public abstract class WireableComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
 
@@ -26,30 +26,35 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
         if (wirelets.length == 0) {
             this.wirelets = null;
         } else {
-
-            // Various
-            if (parent == null) {
-                Wirelet[] ws;
+            // If it is the root
+            Wirelet[] ws;
+            if (PackedComponentModifierSet.isApplication(modifiers)) {
                 if (application.driver.wirelet == null) {
                     ws = WireletArray.flatten(wirelets);
                 } else {
                     ws = WireletArray.flatten(application.driver.wirelet, Wirelet.combine(wirelets));
                 }
-                this.wirelets = new WireletWrapper(ws);
             } else {
-                Wirelet[] ws = WireletArray.flatten(wirelets);
-                this.wirelets = new WireletWrapper(ws);
-                this.onWire = parent.onWire;
+                ws = WireletArray.flatten(wirelets);
             }
 
+            this.wirelets = new WireletWrapper(ws);
+
             // May initialize the component's name, onWire, ect
-            if (this.wirelets != null) {
-                for (Wirelet w : this.wirelets.wirelets) {
-                    if (w instanceof InternalWirelet bw) {
-                        bw.firstPass(this);
-                    }
+            // Do we need to consume internal wirelets???
+            // Maybe that is what they are...
+            int unconsumed = 0;
+            for (Wirelet w : ws) {
+                if (w instanceof InternalWirelet bw) {
+                    bw.firstPass(this);
+                } else {
+                    unconsumed++;
                 }
             }
+            if (unconsumed > 0) {
+                this.wirelets.unconsumed = unconsumed;
+            }
+            
             if (nameInitializedWithWirelet && parent != null) {
 
                 // addChild(child, name);

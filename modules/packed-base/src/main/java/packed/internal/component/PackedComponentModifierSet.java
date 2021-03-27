@@ -55,6 +55,10 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public PackedComponentModifierSet(int modifiers) {
         this.modifiers = modifiers;
     }
+    
+    public static boolean isApplication(int modifiers) {
+        return isSet(modifiers, ComponentModifier.APPLICATION);
+    }
 
     /** {@inheritDoc} */
     @Override
