@@ -18,6 +18,7 @@ package packed.internal.component;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationRuntime;
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
@@ -43,20 +44,17 @@ public final class PackedInitializationContext {
     /** The runtime component node we are building. */
     PackedComponent component;
 
+    String name;
+
     final ContainerSetup root;
 
+    @Nullable
     private final WireletWrapper wirelets;
-
-    String name;
 
     private PackedInitializationContext(ContainerSetup root, WireletWrapper wirelets) {
         this.root = root;
         this.wirelets = wirelets;
         this.name = root.name;
-    }
-
-    ConstantPool pool() {
-        return component.pool;
     }
 
     /**
@@ -66,6 +64,10 @@ public final class PackedInitializationContext {
      */
     Component component() {
         return component;
+    }
+
+    ConstantPool pool() {
+        return component.pool;
     }
 
     ApplicationRuntime runtime() {
@@ -105,7 +107,7 @@ public final class PackedInitializationContext {
     public static PackedInitializationContext process(ContainerSetup root, Wirelet[] imageWirelets) {
         // Der kommer kun wirelets med fra image, ellers er arrayet bare tomt...
         PackedInitializationContext pic = new PackedInitializationContext(root,
-                root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : root.wirelets);
+                root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : null);
 
         for (Wirelet w : imageWirelets) {
             if (w instanceof InternalWirelet iw) {
