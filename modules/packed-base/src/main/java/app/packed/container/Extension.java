@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.BuildInfo;
+import app.packed.application.Build;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
@@ -115,7 +115,7 @@ public abstract class Extension {
     // Det jeg ikke kan lide ved den er fx information om image... som jo kan vaereforskellige
     // for extension'en selv...
     // Hmm Assembly() <- you need to override build
-    protected final BuildInfo build() {
+    protected final Build build() {
         return configuration().build();
     }
 

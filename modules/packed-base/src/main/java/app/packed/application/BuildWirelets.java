@@ -18,15 +18,15 @@ package app.packed.application;
 import java.util.function.Consumer;
 
 import app.packed.component.Component;
+import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
 import packed.internal.component.InternalWirelet;
 
 /**
  * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link ApplicationImage} will
  * result in an extension being thrown.
+ * <p>
  */
-
-// Maaske hedder det BuildWireret... og saa definere den disse metoder...
 public final class BuildWirelets {
     // Features
     // Debuggin
@@ -46,17 +46,9 @@ public final class BuildWirelets {
     /** Not for you my friend. */
     private BuildWirelets() {}
 
-    /**
-     * Returns a wirelet that will perform the specified action every time a component is added.
-     * 
-     * @param action
-     *            the action to perform
-     * @return the wirelet
-     */
-    // Lifecycle
-    // wired - fixed - closed (always with realm) 
-    public static Wirelet onWire(Consumer<? super Component> action) {
-        return new InternalWirelet.OnWireActionWirelet(action);
+    // Additional to people overridding artifacts, assemblies, ect.
+    public static Wirelet checkRuleset(Object... ruleset) {
+        throw new UnsupportedOperationException();
     }
 
     // NO FAIL <--- maaske brugbart for analyse
@@ -65,17 +57,28 @@ public final class BuildWirelets {
 
     // Throw XX exception instead of
 
-    // Additional to people overridding artifacts, assemblies, ect.
-    public static Wirelet checkRuleset(Object... ruleset) {
-        throw new UnsupportedOperationException();
-    }
-
     // Taenker vi printer dem...
     // Og er det kun roden der kan disable dem???
     public static Wirelet disableWarnings() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Returns a wirelet that will perform the specified action every time a component has been wired.
+     * <p>
+     * 
+     * @param action
+     *            the action to perform
+     * @return the wirelet
+     */
+    public static Wirelet onWire(Consumer<? super Component> action) {
+        return new InternalWirelet.OnWireActionWirelet(action);
+    }
+
+    public static Wirelet onWire(Consumer<? super Component> action, ComponentScope scope) {
+        return new InternalWirelet.OnWireActionWirelet(action);
+    }
+    
     // Because it is just much easier than fiddling with loggers
     /**
      * A wirelet that will print various build information to {@code system.out}.

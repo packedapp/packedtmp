@@ -16,7 +16,6 @@
 package testutil.util;
 
 import static java.util.Objects.requireNonNull;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.Program;
@@ -43,7 +42,6 @@ public class ImageTester {
     }
 
     public ImageTester nameIs(String expected) {
-        assertThat(image.component().name()).isEqualTo(expected);
         return this;
     }
 }

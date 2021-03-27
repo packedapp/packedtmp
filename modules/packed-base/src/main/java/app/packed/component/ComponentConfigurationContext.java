@@ -17,7 +17,7 @@ package app.packed.component;
 
 import java.util.Optional;
 
-import app.packed.application.BuildInfo;
+import app.packed.application.Build;
 import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
@@ -51,7 +51,7 @@ public /* sealed */ interface ComponentConfigurationContext {
     <T> void setRuntimeAttribute(Attribute<T> attribute, T value);
 
     // Hmmmmmm, build() is normally something else
-    BuildInfo build();
+    Build build();
 
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.

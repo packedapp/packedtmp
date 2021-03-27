@@ -307,6 +307,9 @@ public final class ContainerSetup extends WireableComponentSetup {
             // Add the extension to the extension map
             extensions.put(extensionClass, extension);
 
+            // The extension has been not been fully wired
+            extension.onWire();
+            
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;
                 if (l == null) {

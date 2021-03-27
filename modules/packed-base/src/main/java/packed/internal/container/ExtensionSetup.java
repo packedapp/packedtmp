@@ -262,6 +262,9 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);
 
+        // Jeg taenker faktisk at vi skal wire Extension allerede naar vi tilfoejer den...
+        // Og ikke naar den extension lukker...
+        
         // Creates a new extension instance
         Extension instance = extension.instance = model.newInstance(extension);
         VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension (setup)

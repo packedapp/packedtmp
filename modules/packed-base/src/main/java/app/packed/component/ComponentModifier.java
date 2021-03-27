@@ -19,7 +19,6 @@ import java.lang.reflect.Modifier;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
-import app.packed.application.BuildInfo;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;

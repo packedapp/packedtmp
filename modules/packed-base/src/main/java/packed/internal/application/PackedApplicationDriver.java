@@ -301,12 +301,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Component component() {
-            return root.adaptor(); // Tror den doer. Vi kan evt. gemme den som en attribute...
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public A apply(Wirelet... wirelets) {
             return PackedInitializationContext.newInstance(driver, root, wirelets);
         }

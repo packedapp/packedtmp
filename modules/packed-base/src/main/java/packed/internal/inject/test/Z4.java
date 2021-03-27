@@ -18,7 +18,6 @@ package packed.internal.inject.test;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.application.ApplicationImage;
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
@@ -44,9 +43,8 @@ public class Z4 extends BaseAssembly {
         
         for (;;) {
             long s = System.currentTimeMillis();
-            ApplicationImage<Program> img = Program.newImage(new Z4());
+            Program.newImage(new Z4());
             System.out.println(System.currentTimeMillis() - s);
-            System.out.println(img.component().stream().count());
         }
         //Thread.sleep(10000);
     }

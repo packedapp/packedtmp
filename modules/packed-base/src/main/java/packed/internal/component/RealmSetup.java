@@ -108,7 +108,7 @@ public final class RealmSetup {
 
     public void close(WireableComponentSetup root) {
         if (current != null) {
-            current.finishWiring();
+            current.onWire();
             current = null;
         }
         isClosed = true;
@@ -160,7 +160,7 @@ public final class RealmSetup {
         }
         // We need to finish the existing wiring before adding new
         if (current != null) {
-            current.finishWiring();
+            current.onWire();
             current = null;
         }
     }

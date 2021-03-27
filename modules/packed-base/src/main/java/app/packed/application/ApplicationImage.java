@@ -16,7 +16,6 @@
 package app.packed.application;
 
 import app.packed.component.Assembly;
-import app.packed.component.Component;
 import app.packed.component.Wirelet;
 
 /**
@@ -50,13 +49,6 @@ import app.packed.component.Wirelet;
 public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
 
     /**
-     * Returns the root component of the image.
-     * 
-     * @return the root component of the image
-     */
-    Component component(); // IDK put it is an attribute???
-
-    /**
      * Applies the image to . What happens here is dependent on application driver that created the image. The behaviour of
      * this method is identical to {@link ApplicationDriver#apply(Assembly, Wirelet...)}.
      * 
@@ -65,7 +57,7 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
      * @return the result of using the image
      * @see {@link ApplicationDriver#apply(Assembly, Wirelet...)}
      */
-    A apply(Wirelet... wirelets); // instantiate???
+    A apply(Wirelet... wirelets); // instantiate? start/run/
 }
 
 interface ZImage<A> {

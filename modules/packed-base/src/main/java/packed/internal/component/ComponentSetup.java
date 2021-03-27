@@ -190,12 +190,6 @@ public abstract class ComponentSetup {
         return children == null ? 0 : children.size();
     }
 
-    final void finishWiring() {
-        if (onWire != null) {
-            onWire.accept(adaptor());
-        }
-    }
-
     protected final void initializeName(String name) {
         String n = name;
         if (parent != null) {
@@ -248,6 +242,12 @@ public abstract class ComponentSetup {
 
     public final PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
+    }
+
+    public final void onWire() {
+        if (onWire != null) {
+            onWire.accept(adaptor());
+        }
     }
 
     public final NamespacePath path() {

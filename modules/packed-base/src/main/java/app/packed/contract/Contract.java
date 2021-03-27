@@ -17,9 +17,12 @@ package app.packed.contract;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.Set;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Completion;
+import app.packed.component.Assembly;
+import app.packed.component.Wirelet;
 import packed.internal.component.PackedInitializationContext;
 
 /**
@@ -40,6 +43,12 @@ public abstract class Contract {
     @Override
     public abstract int hashCode();
 
+    static Set<Contract> allOf(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+        //DAEMON.analyze(assembly, wirelets).
+    }
+
+    
     /**
      * Returns an artifact driver that can be used for analysis. Statefull
      * 

@@ -190,7 +190,7 @@ public /* sealed */ interface ApplicationDriver<A> {
 
     // Maaske sender vi ikke en Component med over... Saa vi kan vi have ASSEMBLY_CLASS som en attribute
     // Og maaske kan vi det alligevel...
-    
+
     // Se fx InjectorComposer... vi kan ikke lide denne signatur...
     <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
             Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
@@ -264,7 +264,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
-     * Returns a builder for an {@code ApplicationDriver}.
+     * Returns a new {@code ApplicationDriver} builder.
      *
      * @return a application driver builder
      */
@@ -316,6 +316,13 @@ public /* sealed */ interface ApplicationDriver<A> {
             throw new UnsupportedOperationException();
         }
 
+        /**
+         * Will look for annotations
+         * <p>
+         * If you want to support your own annotations. You can do by registering your hooks
+         * 
+         * @return this builder
+         */
         Builder useShellAsSource();
 
 //        // Stuff on the container always belongs to the other side...

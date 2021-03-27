@@ -34,25 +34,25 @@ package app.packed.component;
 // This class only considers components that are in the same namespace
 
 // Scope???
-public enum ComponentSystemType {
+public enum ComponentScope {
 
-    /** A system that contains all components in the same namespace.  */
+    /** A system that contains all components in the same namespace. */
     NAMESPACE,
 
-    /** A system that contains all components in the same application.  */
+    /** A system that contains all components in the same application. */
     APPLICATION,
-    
-    /** A system that contains all components in the same container.  */
+
+    /** A system that contains all components in the same container. */
     CONTAINER,
-    
-    /** A system that contains a single component.  */
+
+    /** A system that contains a single component. */
     COMPONENT,
-    
+
     /**
      * A system where all components are part of the same build. Being part of the same build means that...
      */
     BUILD,
-    
+
     /**
      * A system where all components are part of the same image. An image may itself contain other images.
      * <p>
@@ -61,8 +61,11 @@ public enum ComponentSystemType {
     IMAGE,
 
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
-    REQUEST,
+    REQUEST;
 
+    public boolean in(Component c1, Component c2) {
+        return c1.inSame(this, c2);
+    }
 }
 
 // interessant at
@@ -70,11 +73,11 @@ public enum ComponentSystemType {
 // Alle i samme X
 class XComp2 {
 
-    boolean isPartOf(ComponentSystemType boundaryType) {
+    boolean isPartOf(ComponentScope boundaryType) {
         return false;
     }
 
-    boolean isPartOfSame(ComponentSystemType boundaryType, XComp2 as) {
+    boolean isPartOfSame(ComponentScope boundaryType, XComp2 as) {
         return true;
     }
 
@@ -84,14 +87,26 @@ class XComp2 {
      * @throws IllegalArgumentException
      *             if the specified modifier is not supported. For example SOURCE
      */
-    XComp2 rootOf(ComponentSystemType m) {
+    XComp2 rootOf(ComponentScope m) {
         return this;
     }
 
     public static void main(XComp2 c) {
-        c.rootOf(ComponentSystemType.IMAGE);
-        c.isPartOfSame(ComponentSystemType.IMAGE, c);
-        c.isPartOf(ComponentSystemType.IMAGE);
+        c.rootOf(ComponentScope.IMAGE);
+        c.isPartOfSame(ComponentScope.IMAGE, c);
+        c.isPartOf(ComponentScope.IMAGE);
+
+    }
+
+    public static void main(Component c1, Component c2) {
+        if (ComponentScope.IMAGE.in(c1, c2)) {
+
+        }
+
+        if (c1.inSame(ComponentScope.IMAGE, c2)) {
+
+        }
+
     }
 }
 

@@ -17,7 +17,7 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.BuildInfo;
+import app.packed.application.Build;
 import app.packed.attribute.Attribute;
 import app.packed.base.NamespacePath;
 import app.packed.base.TypeToken;
@@ -56,7 +56,7 @@ public class ComponentAttributes {
 
     /** An attribute that is available on any component with the {@link ComponentModifier#BUILD} modifier. */
     // Ved ikke praecis
-    public static final Attribute<BuildInfo> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", BuildInfo.class);
+    public static final Attribute<Build> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", Build.class);
 
     /**
      * 

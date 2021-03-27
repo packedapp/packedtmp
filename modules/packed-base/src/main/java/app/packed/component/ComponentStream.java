@@ -232,7 +232,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
         // FollowUnitialized guests...
 
         // Fail if not??
-        public static ComponentStream.Option partOfSame(ComponentSystemType boundaryType) {
+        public static ComponentStream.Option partOfSame(ComponentScope boundaryType) {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 

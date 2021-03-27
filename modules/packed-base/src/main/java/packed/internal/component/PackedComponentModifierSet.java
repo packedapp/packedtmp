@@ -60,6 +60,11 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         return isSet(modifiers, ComponentModifier.APPLICATION);
     }
 
+    public static boolean isAnalysis(int modifiers) {
+        return isSet(modifiers, ComponentModifier.ANALYSIS);
+    }
+    
+    
     public static boolean isImage(int modifiers) {
         return isSet(modifiers, ComponentModifier.IMAGE);
     }

@@ -15,7 +15,8 @@
  */
 package packed.internal.application;
 
-import app.packed.application.BuildInfo;
+import app.packed.application.Build;
+import app.packed.application.BuildTarget;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
@@ -25,7 +26,7 @@ import packed.internal.component.WireableComponentDriver;
 import packed.internal.container.ContainerSetup;
 
 /** The configuration of a build. */
-public final class BuildSetup implements BuildInfo {
+public final class BuildSetup implements Build {
 
     /** The root component. */
     final ContainerSetup component;
@@ -49,7 +50,8 @@ public final class BuildSetup implements BuildInfo {
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.component = (ContainerSetup) componentDriver.newComponent(this, new ApplicationSetup(applicationDriver, componentDriver, modifiers), realm, null, wirelets);
+        this.component = (ContainerSetup) componentDriver.newComponent(this, new ApplicationSetup(applicationDriver, componentDriver, modifiers), realm, null,
+                wirelets);
         realm.wireCommit(component, false);
     }
 
@@ -62,6 +64,32 @@ public final class BuildSetup implements BuildInfo {
     @Override
     public ComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
+    }
+
+    @Override
+    public BuildTarget target() {
+        if (PackedComponentModifierSet.isImage(modifiers)) {
+            return BuildTarget.IMAGE;
+        }
+        return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.ANALYSIS : BuildTarget.INSTANCE;
+    }
+
+    @Override
+    public boolean isFailed() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isSuccess() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public boolean isDone() {
+        // TODO Auto-generated method stub
+        return false;
     }
 }
 // Build setup does not maintain what thread is building the system.

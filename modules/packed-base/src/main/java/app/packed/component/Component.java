@@ -151,6 +151,10 @@ public /* sealed */ interface Component extends AttributedElement {
         throw new UnsupportedOperationException();
     }
 
+    default boolean inSame(ComponentScope scope, Component other) {
+        throw new UnsupportedOperationException();
+    }
+
 //    // The returned component is always a system component
 //    default Component viewAs(Object options) {
 //        // F.eks. tage et system. Og saa sige vi kun vil

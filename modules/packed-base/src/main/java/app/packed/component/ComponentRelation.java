@@ -63,7 +63,7 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
     // Maaske har vi kun de to andre...
     boolean inSameGuest();
 
-    default boolean isInSame(ComponentSystemType systemType) {
+    default boolean isInSame(ComponentScope systemType) {
         return source().root() == target().root();
     }
 
@@ -75,7 +75,7 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
      * @see Component#root()
      */
     default boolean isInSameNamespace() {
-        return isInSame(ComponentSystemType.NAMESPACE);
+        return isInSame(ComponentScope.NAMESPACE);
     }
 
     // Just here because it might be easier to remember...

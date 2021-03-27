@@ -41,15 +41,26 @@ import app.packed.component.ComponentModifierSet;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 
-
 // BuildTree / BuildSystem / 
 // @ActiveService(phase=Building)
-public interface BuildInfo {
+public interface Build {
 
     // Whether or not we are building????
-    default boolean isActive() {
+    boolean isDone();
+
+    // Hmm saa skal vi jo til at lave builds i try/catch...
+    boolean isFailed();
+
+    /**
+     * A root build is responsible for creating the root component of a system.
+     * 
+     * @return A system build is a root build that builds a system
+     */
+    default boolean isRoot() {
         return true;
     }
+
+    boolean isSuccess();
 
     // Maaske vi hellere vil tilfoeje det lokalt???
     // F.eks. via Extension, eller assembly...
@@ -62,15 +73,6 @@ public interface BuildInfo {
     // void addError(ErrorMessage message);
 
     /**
-     * A root build is responsible for creating the root component of a system.
-     * 
-     * @return A system build is a root build that builds a system
-     */
-    default boolean isRoot() {
-        return false;
-    }
-
-    /**
      * Returns the set of modifiers used for this assembling.
      * <p>
      * The returned set will always contain the {@link ComponentModifier#BUILD} modifier.
@@ -80,9 +82,7 @@ public interface BuildInfo {
     // It is not nessesarily the system component. Just the top component of the assembling.
     ComponentModifierSet modifiers();
 
-    // isDone
-    // isFailed
-    // isSuccess
+    BuildTarget target();
 
     // It can be on error path...
 //    enum State {
@@ -99,23 +99,5 @@ public interface BuildInfo {
 //  return !(modifiers().contains(ComponentModifier.IMAGE) || modifiers().contains(ComponentModifier.ANALYSIS));
 //}
 
-///**
-//* The action is mainly used.
-//* 
-//* For example, for image to clean up ressources that are not after stuff has been resolved...
-//* 
-//* Introspect, Stuff that is not needed if we know we are never going to instantiate anything... (for example, method
-//* handles)
-//*/
-//public enum Mode {
-//
-//  IMAGE_GENERATION,
-//
-//  /** Performs an introspection of some kind. */
-//  INTROSPECT,
-//
-//  /** Instantiates a new artifact. */
-//  INSTANTIATE;
-//}
 // We could add ComponentPath path();
 //// But it will freeze the name of the top level. Which we don't want.
