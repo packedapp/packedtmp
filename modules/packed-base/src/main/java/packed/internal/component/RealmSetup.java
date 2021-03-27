@@ -105,18 +105,10 @@ public final class RealmSetup {
         }
     }
 
-    public void wireNew() {
-        checkOpen();
-        // We need to finish the existing wiring before adding new
-        if (current != null) {
-            current.finishWiring();
-            current = null;
-        }
-    }
-
     public void close(WireableComponentSetup root) {
         if (current != null) {
             current.finishWiring();
+            current = null;
         }
         isClosed = true;
         for (ContainerSetup c : rootContainers) {
@@ -148,24 +140,27 @@ public final class RealmSetup {
         requireNonNull(lookup, "lookup is null");
         this.accessor = accessor().withLookup(lookup);
     }
-    public void newCurrent(ComponentSetup component) {
+
+    public void wireCommit(WireableComponentSetup component, boolean closeRealm) {
         current = component;
         if (component instanceof ContainerSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {
                 rootContainers.add(container);
             }
         }
+        if (closeRealm) {
+            close(component);
+        }
     }
-    public void updateCurrent(ComponentSetup component) {
+
+    public void wirePrepare() {
+        if (isClosed) {
+            throw new IllegalStateException();
+        }
         // We need to finish the existing wiring before adding new
         if (current != null) {
             current.finishWiring();
-        }
-        current = component;
-        if (component instanceof ContainerSetup container) {
-            if (container.containerParent == null || container.containerParent.realm != this) {
-                rootContainers.add(container);
-            }
+            current = null;
         }
     }
 }
