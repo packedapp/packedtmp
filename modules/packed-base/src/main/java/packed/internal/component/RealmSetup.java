@@ -105,6 +105,15 @@ public final class RealmSetup {
         }
     }
 
+    public void wireNew() {
+        checkOpen();
+        // We need to finish the existing wiring before adding new
+        if (current != null) {
+            current.finishWiring();
+            current = null;
+        }
+    }
+
     public void close(WireableComponentSetup root) {
         if (current != null) {
             current.finishWiring();
@@ -139,8 +148,16 @@ public final class RealmSetup {
         requireNonNull(lookup, "lookup is null");
         this.accessor = accessor().withLookup(lookup);
     }
-
+    public void newCurrent(ComponentSetup component) {
+        current = component;
+        if (component instanceof ContainerSetup container) {
+            if (container.containerParent == null || container.containerParent.realm != this) {
+                rootContainers.add(container);
+            }
+        }
+    }
     public void updateCurrent(ComponentSetup component) {
+        // We need to finish the existing wiring before adding new
         if (current != null) {
             current.finishWiring();
         }

@@ -102,7 +102,7 @@ public abstract class ComponentSetup {
     public ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
             @Nullable ComponentSetup parent) {
         // Update the current
-        realm.updateCurrent(this);
+        realm.newCurrent(this);
 
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
@@ -219,7 +219,7 @@ public abstract class ComponentSetup {
         WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
 
         // Check that the realm this component is a part of is still open
-        realm.checkOpen();
+        realm.wireNew();
 
         // If this component is an extension, we link to extension's container. As the extension itself is not available at
         // runtime
@@ -264,15 +264,15 @@ public abstract class ComponentSetup {
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         WireableComponentDriver<C> pcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
-        // Check that the realm this component is a part of is still open
-        realm.checkOpen();
+        // Check that this component's is still open
+        realm.wireNew();
 
         // If this component is an extension, we wire to the container the extension is part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
 
         // Create the new component
         WireableComponentSetup component = pcd.newComponent(build, application, realm, wireTo, wirelets);
-
+        
         // Return a component configuration to the user
         return pcd.toConfiguration(component);
     }
