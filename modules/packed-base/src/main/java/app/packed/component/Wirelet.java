@@ -81,16 +81,16 @@ public abstract class Wirelet {
      * <p>
      * If the specified array is empty, returns this wirelet.
      * 
-     * @param afters
+     * @param wirelets
      *            the wirelets to process after this wirelet
      * @return the combined wirelet
      * @see #andThen(Wirelet)
      * @see #beforeThis(Wirelet...)
      * @see #of(Wirelet...)
      */
-    public final Wirelet andThen(Wirelet... afters) {
-        requireNonNull(afters, "afters is null");
-        return WireletArray.of(this, combine(afters));
+    // rename to wirelets...
+    public final Wirelet andThen(Wirelet... wirelets) {
+        return WireletArray.of(this, combine(wirelets));
     }
 
     /**
@@ -98,16 +98,15 @@ public abstract class Wirelet {
      * <p>
      * If the specified array is empty, returns this wirelet.
      * 
-     * @param befores
+     * @param wirelets
      *            the wirelets to process before this wirelet
      * @return the combined wirelet
      * @see #andThen(Wirelet)
      * @see #beforeThis(Wirelet...)
      * @see #of(Wirelet...)
      */
-    public final Wirelet beforeThis(Wirelet... befores) {
-        requireNonNull(befores, "befores is null");
-        return WireletArray.of(combine(befores), this);
+    public final Wirelet beforeThis(Wirelet... wirelets) {
+        return WireletArray.of(combine(wirelets), this);
     }
 
 

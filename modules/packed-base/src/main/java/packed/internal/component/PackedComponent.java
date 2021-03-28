@@ -32,7 +32,9 @@ import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
+import app.packed.component.ComponentScope;
 import app.packed.component.ComponentStream;
+import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
@@ -55,7 +57,7 @@ public final class PackedComponent implements Component {
     final PackedComponent parent;
 
     /** The region this component is part of. */
-    final ConstantPool pool;
+    public final ConstantPool pool;
 
     /**
      * Creates a new component.
@@ -67,7 +69,7 @@ public final class PackedComponent implements Component {
      * @param pic
      *            initialization context
      */
-    PackedComponent(@Nullable PackedComponent parent, ComponentSetup compBuild, PackedInitializationContext pic) {
+    public PackedComponent(@Nullable PackedComponent parent, ComponentSetup compBuild, ApplicationLaunchContext pic) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(compBuild);
         if (parent == null) {
@@ -226,7 +228,7 @@ public final class PackedComponent implements Component {
     @Override
     public ComponentRelation relationTo(Component other) {
         requireNonNull(other, "other is null");
-        return PackedComponentRelation.relation(this, (PackedComponent) other);
+        return PackedComponentInstanceRelation.relation(this, (PackedComponent) other);
     }
 
     /**
@@ -273,5 +275,10 @@ public final class PackedComponent implements Component {
         } else {
             return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
         }
+    }
+
+    @Override
+    public boolean isInSame(ComponentScope scope, Component other) {
+        throw new UnsupportedOperationException();
     }
 }

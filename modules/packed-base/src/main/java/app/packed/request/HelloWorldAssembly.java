@@ -37,7 +37,7 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     public static void main(String[] args) {
         ApplicationDriver<Aaaa> ad = ApplicationDriver.builder().build(MethodHandles.lookup(), Aaaa.class);
-        ad.apply(new HelloWorldAssembly());
+        ad.launch(new HelloWorldAssembly());
 
         // Job.compute()
         App.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {

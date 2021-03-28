@@ -18,9 +18,9 @@ package packed.internal.invoke.constantpool;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 
+import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.PackedComponent;
-import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.util.ThrowableUtil;
@@ -53,7 +53,7 @@ public final class ConstantPoolSetup {
         constants.add(s);
     }
 
-    public ConstantPool newPool(PackedInitializationContext pic, PackedComponent root) {
+    public ConstantPool newPool(ApplicationLaunchContext pic, PackedComponent root) {
         ConstantPool pool = new ConstantPool(nextIndex);
 
         // Not sure we want to create the guest here, we do it for now though

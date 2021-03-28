@@ -89,7 +89,7 @@ public final class RealmSetup {
      */
     public RealmSetup(ExtensionModel model, ComponentSetup extension) {
         this.realmType = model.extensionClass();
-        this.current = requireNonNull(extension);
+        // this.current = requireNonNull(extension);
     }
 
     public RealmAccessor accessor() {
@@ -159,6 +159,13 @@ public final class RealmSetup {
             throw new IllegalStateException();
         }
         // We need to finish the existing wiring before adding new
+        if (current != null) {
+            current.onWire();
+            current = null;
+        }
+    }
+
+    public void wireLatest() {
         if (current != null) {
             current.onWire();
             current = null;

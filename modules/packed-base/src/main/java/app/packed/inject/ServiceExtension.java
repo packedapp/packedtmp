@@ -334,7 +334,7 @@ public class ServiceExtension extends Extension {
      * @return a service configuration for the service
      */
     public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
-        return configuration().wire(ServiceComponentConfiguration.provideInstance(instance)).provide();
+        return userWire(ServiceComponentConfiguration.provideInstance(instance)).provide();
     }
 
     public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {

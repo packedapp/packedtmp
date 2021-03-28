@@ -23,7 +23,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.base.Completion;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import packed.internal.component.PackedInitializationContext;
+import packed.internal.application.ApplicationLaunchContext;
 
 /**
  * This class is the base class for contracts in Packed.
@@ -33,7 +33,7 @@ public abstract class Contract {
 
     /** A daemon driver. */
     public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
-            .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
+            .old(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** {@inheritDoc} */
     @Override

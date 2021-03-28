@@ -64,4 +64,5 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
         requireNonNull(assembly, "assembly is null");
         return (WireableComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
+    
 }

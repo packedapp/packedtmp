@@ -35,6 +35,7 @@ import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.InitializationException;
+import app.packed.state.RunState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
 
@@ -62,13 +63,6 @@ import packed.internal.application.PackedApplicationDriver;
 // Environment + Shell + Result
 public /* sealed */ interface ApplicationDriver<A> {
 
-    // analyze
-    // validate
-    // check
-    ///// Kunne vaere interessant fx
-    // ComponentAnalysis = Either<Component, Validatable>
-    // ComponentAnalysis extends Validatable
-
     // Structure record(Application, Component, Strea
     // Det ville vaere rigtig rart tror hvis BuildException have en liste af
     // validation violations...
@@ -83,29 +77,6 @@ public /* sealed */ interface ApplicationDriver<A> {
     default Application analyze2(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Uses the driver to create a new application using the specified assembly.
-     * <p>
-     * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
-     * 
-     * @param assembly
-     *            the system assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return the new artifact or null if void artifact
-     * @throws BuildException
-     *             if the application could not be build
-     * @throws InitializationException
-     *             if the application failed to initializing
-     * @throws PanicException
-     *             if the application had an executing phase and it fails
-     * @see Program#start(Assembly, Wirelet...)
-     * @see App#run(Assembly, Wirelet...)
-     * @see ServiceLocator#of(Assembly, Wirelet...)
-     */
-    A apply(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Builds and validates the application
@@ -216,6 +187,39 @@ public /* sealed */ interface ApplicationDriver<A> {
     }
 
     /**
+     * Launches a new application using the specified assembly and optional wirelets.
+     * <p>
+     * This method is typical not called directly by end-users. But indirectly through methods such as
+     * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * 
+     * @param assembly
+     *            the system assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return the new artifact or null if void artifact
+     * @throws BuildException
+     *             if the application could not be build
+     * @throws InitializationException
+     *             if the application failed to initializing
+     * @throws PanicException
+     *             if the application had an executing phase and it fails
+     * @see Program#start(Assembly, Wirelet...)
+     * @see App#run(Assembly, Wirelet...)
+     * @see ServiceLocator#of(Assembly, Wirelet...)
+     */
+    A launch(Assembly<?> assembly, Wirelet... wirelets);
+
+    default RunState launchMode() {
+        throw new UnsupportedOperationException();
+    }
+    // analyze
+    // validate
+    // check
+    ///// Kunne vaere interessant fx
+    // ComponentAnalysis = Either<Component, Validatable>
+    // ComponentAnalysis extends Validatable
+
+    /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
      * @param assembly
@@ -263,6 +267,11 @@ public /* sealed */ interface ApplicationDriver<A> {
 
     ApplicationDriver<A> with(Wirelet... wirelets);
 
+    default TypeToken<? super A> typeToken() {
+        // What if Job<?>
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns a new {@code ApplicationDriver} builder.
      *
@@ -299,22 +308,30 @@ public /* sealed */ interface ApplicationDriver<A> {
 
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
 
-        /**
-         * Indicates that the applications the driver produces are stateless. Stateless applications will not have a runtime
-         * 
-         * @return this builder
-         */
-        Builder stateless();
-
         <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets);
         // Maybe just look for matching method/field hooks???
         // So always scan...
+
+        default Builder launchMode(LaunchMode launchMode) {
+            // I think it can always be overridden...
+            // Or maybe only overridden to longer...
+            // IDK
+
+            return this;
+        }
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
         @SuppressWarnings("unchecked")
         default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
             throw new UnsupportedOperationException();
         }
+
+        /**
+         * Indicates that the applications the driver produces are stateless. Stateless applications will not have a runtime
+         * 
+         * @return this builder
+         */
+        Builder stateless();
 
         /**
          * Will look for annotations

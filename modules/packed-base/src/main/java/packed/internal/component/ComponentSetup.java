@@ -39,6 +39,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
+import app.packed.component.ComponentScope;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationSetup;
@@ -75,7 +76,7 @@ public abstract class ComponentSetup {
     protected final int modifiers;
 
     /** The name of this node. */
-    protected String name;
+    public String name;
 
     /** Whether or not the name has been initialized via a wirelet, in which case it is not overridable by setName(). */
     protected boolean nameInitializedWithWirelet;
@@ -207,6 +208,19 @@ public abstract class ComponentSetup {
         this.name = n;
     }
 
+    public final boolean isInSame(ComponentScope scope, ComponentSetup other) {
+        requireNonNull(scope, "scope is null");
+        return switch (scope) {
+        case APPLICATION -> application == other.application;
+        case BUILD -> build == other.build;
+        case COMPONENT -> this == other;
+        case CONTAINER -> container == other.container;
+        case IMAGE -> throw new UnsupportedOperationException();
+        case NAMESPACE -> build.namespace == other.build.namespace;
+        case REQUEST -> throw new UnsupportedOperationException();
+        };
+    }
+
     public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
@@ -271,9 +285,9 @@ public abstract class ComponentSetup {
 
         // Create the new component
         WireableComponentSetup component = pcd.newComponent(build, application, realm, wireTo, wirelets);
-        
+
         realm.wireCommit(component, false);
-        
+
         // Return a component configuration to the user
         return pcd.toConfiguration(component);
     }
@@ -379,7 +393,8 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public ComponentRelation relationTo(Component other) {
-            throw new UnsupportedOperationException();
+            requireNonNull(other, "other is null");
+            return ComponentSetupRelation.relation(component, ((ComponentAdaptor) other).component);
         }
 
         /** {@inheritDoc} */
@@ -413,6 +428,13 @@ public abstract class ComponentSetup {
             } else {
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isInSame(ComponentScope scope, Component other) {
+            requireNonNull(other, "other is null");
+            return component.isInSame(scope, ((ComponentAdaptor) other).component);
         }
     }
 }

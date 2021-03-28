@@ -35,9 +35,9 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.RunState;
 import app.packed.validate.Validation;
 import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.component.PackedInitializationContext;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireletArray;
@@ -89,17 +89,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
         BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
-        return build.component.adaptor();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public A apply(Assembly<?> assembly, Wirelet... wirelets) {
-        // Build the system
-        BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
-
-        // Initialize the system. And start it if necessary (if it is a guest)
-        return PackedInitializationContext.newInstance(this, build.component, WireletArray.EMPTY);
+        return build.container.adaptor();
     }
 
     /**
@@ -134,7 +124,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         BuildSetup build = new BuildSetup(this, realm, componentDriver, modifiers, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = componentDriver.toConfiguration(build.component);
+        ComponentConfiguration configuration = componentDriver.toConfiguration(build.container);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -143,7 +133,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        realm.close(build.component);
+        realm.close(build.container);
         return build;
     }
 
@@ -161,7 +151,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, realm, pcd, 0, wirelets);
 
-        CC componentConfiguration = pcd.toConfiguration(build.component);
+        CC componentConfiguration = pcd.toConfiguration(build.container);
 
         // Used the supplied composer factory to create a composer from a component configuration instance
         CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
@@ -169,10 +159,20 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Invoked the consumer supplied by the end-user
         consumer.accept(composer);
 
-        realm.close(build.component);
+        realm.close(build.container);
 
         // Initialize the application. And start it if necessary (if it is a guest)
-        return PackedInitializationContext.newInstance(this, build.component, WireletArray.EMPTY);
+        return ApplicationLaunchContext.launch(this, build.container, WireletArray.EMPTY);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public A launch(Assembly<?> assembly, Wirelet... wirelets) {
+        // Build the system
+        BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
+
+        // Initialize the system. And start it if necessary (if it is a guest)
+        return ApplicationLaunchContext.launch(this, build.container, WireletArray.EMPTY);
     }
 
     /**
@@ -184,7 +184,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     // application interface???
     @SuppressWarnings("unchecked")
-    public A newApplication(PackedInitializationContext pic) {
+    public A newApplication(ApplicationLaunchContext pic) {
         Object result;
         try {
             result = mhConstructor.invoke(pic);
@@ -198,7 +198,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
         BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_IMAGE);
-        return new PackedApplicationImage<>(this, build.component);
+        return new PackedApplicationImage<>(this, build.container);
     }
 
     /** {@inheritDoc} */
@@ -227,16 +227,16 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Implementation of {@link ApplicationDriver.Builder} */
     public static class Builder implements ApplicationDriver.Builder {
 
-        /** A MethodHandle for invoking {@link PackedInitializationContext#component()}. */
-        private static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "component",
+        /** A MethodHandle for invoking {@link ApplicationLaunchContext#component()}. */
+        private static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "component",
                 Component.class);
 
-        /** A MethodHandle for invoking {@link PackedInitializationContext#runtime()}. */
-        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "runtime",
+        /** A MethodHandle for invoking {@link ApplicationLaunchContext#runtime()}. */
+        private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "runtime",
                 ApplicationRuntime.class);
 
-        /** A MethodHandle for invoking {@link PackedInitializationContext#services()}. */
-        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), PackedInitializationContext.class, "services",
+        /** A MethodHandle for invoking {@link ApplicationLaunchContext#services()}. */
+        private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "services",
                 ServiceLocator.class);
 
         MethodHandle mhConstructor;
@@ -253,7 +253,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
 
             // Find a method handle for the application shell's constructor
-            Infuser.Builder builder = Infuser.builder(caller, implementation, PackedInitializationContext.class);
+            Infuser.Builder builder = Infuser.builder(caller, implementation, ApplicationLaunchContext.class);
             builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
@@ -277,7 +277,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, PackedInitializationContext.class));
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             return new PackedApplicationDriver<>(this);
         }
 
@@ -301,8 +301,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A apply(Wirelet... wirelets) {
-            return PackedInitializationContext.newInstance(driver, root, wirelets);
+        public A launch(Wirelet... wirelets) {
+            return ApplicationLaunchContext.launch(driver, root, wirelets);
+        }
+
+        @Override
+        public RunState launchMode() {
+            throw new UnsupportedOperationException();
         }
     }
 }

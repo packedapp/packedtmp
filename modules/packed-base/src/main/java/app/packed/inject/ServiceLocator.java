@@ -259,7 +259,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @see #driver()
      */
     static ServiceLocator of(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().apply(assembly, wirelets);
+        return driver().launch(assembly, wirelets);
     }
 
     /**

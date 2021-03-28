@@ -152,7 +152,7 @@ public interface ApplicationRuntime {
     // Tror main er bl.a. propper det ind som et system image...
 
     static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        ApplicationRuntimeHelper.DRIVER.apply(assembly, wirelets);
+        ApplicationRuntimeHelper.DRIVER.launch(assembly, wirelets);
     }
 
     // TODO return Image<Host>?

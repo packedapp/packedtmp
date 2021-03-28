@@ -43,9 +43,7 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
      * 
      * @return whether or not the two components are in the same application
      */
-    default boolean inSameApplication() {
-        return source().application().equals(target().application());
-    }
+    boolean inSameApplication();
 
     /**
      * Returns whether or not the two components are in the same container.
@@ -53,19 +51,8 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
      * @return whether or not the two components are in the same container
      */
     boolean inSameContainer();
-
-    /**
-     * Whether or not {@link #source()} and {@link #target()} belongs to the same guest. Or in other words whether or not
-     * they are strongly connected.
-     * 
-     * @return whether or not source and target belongs to the same guest
-     */
-    // Maaske har vi kun de to andre...
-    boolean inSameGuest();
-
-    default boolean isInSame(ComponentScope systemType) {
-        return source().root() == target().root();
-    }
+    
+    boolean isInSame(ComponentScope scope);
 
     /**
      * Returns whether or not the two components are in the same system. Two components are in the same system, iff they
@@ -81,11 +68,11 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
     // Just here because it might be easier to remember...
     // isStronglyWired...
     default boolean isStronglyWired() {
-        return inSameGuest();
+        throw new UnsupportedOperationException();
     }
 
     default boolean isWeaklyWired() {
-        return !inSameGuest();
+        throw new UnsupportedOperationException();
     }
 
     /**

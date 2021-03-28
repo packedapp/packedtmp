@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
@@ -23,7 +23,10 @@ import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
-import packed.internal.application.PackedApplicationDriver;
+import app.packed.state.RunState;
+import packed.internal.component.InternalWirelet;
+import packed.internal.component.PackedComponent;
+import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
@@ -39,22 +42,25 @@ import packed.internal.invoke.constantpool.ConstantPool;
 // Ideen er vi skal bruge den til at registrere fejl...
 
 // MethodHandle stableAccess(Object[] array) <-- returns 
-public final class PackedInitializationContext {
+public final class ApplicationLaunchContext {
 
     /** The runtime component node we are building. */
-    PackedComponent component;
+    public PackedComponent component;
 
-    String name;
+    final ContainerSetup container;
 
-    final ContainerSetup root;
+    public RunState launchMode;
+
+    public String name;
 
     @Nullable
     private final WireletWrapper wirelets;
 
-    private PackedInitializationContext(ContainerSetup root, WireletWrapper wirelets) {
-        this.root = root;
+    private ApplicationLaunchContext(ContainerSetup root, WireletWrapper wirelets) {
+        this.container = root;
         this.wirelets = wirelets;
         this.name = root.name;
+        this.launchMode = root.application.launchMode();
     }
 
     /**
@@ -66,7 +72,7 @@ public final class PackedInitializationContext {
         return component;
     }
 
-    ConstantPool pool() {
+    public ConstantPool pool() {
         return component.pool;
     }
 
@@ -84,7 +90,7 @@ public final class PackedInitializationContext {
      * @return a service locator for the system
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = root.getServiceManager();
+        ServiceManagerSetup sm = container.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.pool);
     }
 
@@ -98,32 +104,30 @@ public final class PackedInitializationContext {
         return wirelets;
     }
 
-    public static <A> A newInstance(PackedApplicationDriver<A> driver, ContainerSetup root, Wirelet[] wirelets) {
+    static <A> A launch(PackedApplicationDriver<A> driver, ContainerSetup container, Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
-        PackedInitializationContext pic = process(root, wirelets);
-        return driver.newApplication(pic);
-    }
 
-    public static PackedInitializationContext process(ContainerSetup root, Wirelet[] imageWirelets) {
-        // Der kommer kun wirelets med fra image, ellers er arrayet bare tomt...
-        PackedInitializationContext pic = new PackedInitializationContext(root,
-                root.build.isImage() ? WireletWrapper.forImageInstantiate(root, imageWirelets) : null);
+        ApplicationLaunchContext pic = new ApplicationLaunchContext(container,
+                container.build.isImage() ? WireletWrapper.forImageInstantiate(container, wirelets) : null);
 
-        for (Wirelet w : imageWirelets) {
+        for (Wirelet w : wirelets) {
             if (w instanceof InternalWirelet iw) {
-                iw.onImageInstantiation(root, pic);
+                iw.onImageInstantiation(container, pic);
             }
         }
 
         // Instantiates the whole component tree (well @Initialize does not yet work)
         // pic.component is set from PackedComponent
-        new PackedComponent(null, root, pic);
+        new PackedComponent(null, container, pic);
 
         // TODO initialize
 
-        if (root.modifiers().hasRuntime()) {
-            pic.component.pool.container().onInitialized(root, pic);
+        if (container.modifiers().hasRuntime()) {
+            pic.component.pool.container().onInitialized(container, pic);
         }
-        return pic; // don't know do we want to gc PIC at fast as possible
+        
+        
+        return driver.newApplication(pic);
+
     }
 }

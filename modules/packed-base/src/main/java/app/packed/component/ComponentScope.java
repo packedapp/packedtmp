@@ -63,8 +63,14 @@ public enum ComponentScope {
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
     REQUEST;
 
+    /*
+     * REALM
+     *
+     * Hovedgrunden til vi ikke har den med, er at extensions ikke har runtime services som boern...
+     * Saa den er lidt ubrugelig 
+     */
     public boolean in(Component c1, Component c2) {
-        return c1.inSame(this, c2);
+        return c1.isInSame(this, c2);
     }
 }
 
@@ -100,10 +106,6 @@ class XComp2 {
 
     public static void main(Component c1, Component c2) {
         if (ComponentScope.IMAGE.in(c1, c2)) {
-
-        }
-
-        if (c1.inSame(ComponentScope.IMAGE, c2)) {
 
         }
 

@@ -15,6 +15,8 @@
  */
 package app.packed.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.function.Consumer;
 
 import app.packed.component.Component;
@@ -23,11 +25,33 @@ import app.packed.component.Wirelet;
 import packed.internal.component.InternalWirelet;
 
 /**
- * A set of wirelets that can be specified at build-time only. Attempts to use them on an {@link ApplicationImage} will
- * result in an extension being thrown.
- * <p>
+ * Wirelets that can be specified at when building an application. Attempts to use them with
+ * {@link ApplicationImage#launch(Wirelet...)} will fail with {@link IllegalArgumentException}.
  */
 public final class BuildWirelets {
+
+    /** Not for you my friend. */
+    private BuildWirelets() {}
+
+    /**
+     * Returns a wirelet that will perform the specified action every time a component has been wired.
+     * <p>
+     * 
+     * @param action
+     *            the action to perform
+     * @return the wirelet
+     */
+    public static Wirelet onWire(Consumer<? super Component> action) {
+        return new InternalWirelet.OnWireActionWirelet(action, null);
+    }
+
+    public static Wirelet onWire(Consumer<? super Component> action, ComponentScope scope) {
+        requireNonNull(scope, "scope is null");
+        return new InternalWirelet.OnWireActionWirelet(action, scope);
+    }
+}
+
+class SandboxBuild {
     // Features
     // Debuggin
     // We could have app.packed.build package.
@@ -43,8 +67,6 @@ public final class BuildWirelets {
 
     // Wirelet printDebug().inherit();
     // printDebug().inherit();
-    /** Not for you my friend. */
-    private BuildWirelets() {}
 
     // Additional to people overridding artifacts, assemblies, ect.
     public static Wirelet checkRuleset(Object... ruleset) {
@@ -63,22 +85,6 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a wirelet that will perform the specified action every time a component has been wired.
-     * <p>
-     * 
-     * @param action
-     *            the action to perform
-     * @return the wirelet
-     */
-    public static Wirelet onWire(Consumer<? super Component> action) {
-        return new InternalWirelet.OnWireActionWirelet(action);
-    }
-
-    public static Wirelet onWire(Consumer<? super Component> action, ComponentScope scope) {
-        return new InternalWirelet.OnWireActionWirelet(action);
-    }
-    
     // Because it is just much easier than fiddling with loggers
     /**
      * A wirelet that will print various build information to {@code system.out}.
@@ -107,5 +113,6 @@ public final class BuildWirelets {
 
     // Disable Host <--- Nej, det er et ruleset....
 }
+
 //Wirelet assemblyTimeOnly(Wirelet w); Hmmm idk if useful
 /// Interface with only static methods are

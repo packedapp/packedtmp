@@ -20,6 +20,7 @@ import app.packed.application.BuildTarget;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
+import packed.internal.component.NamespaceSetup;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
@@ -28,8 +29,14 @@ import packed.internal.container.ContainerSetup;
 /** The configuration of a build. */
 public final class BuildSetup implements Build {
 
-    /** The root component. */
-    final ContainerSetup component;
+    /** The namespace this build belongs to. */
+    public final NamespaceSetup namespace = new NamespaceSetup();
+
+    /** The application we are building. */
+    final ApplicationSetup application;
+
+    /** The root container in the application we are building. */
+    final ContainerSetup container;
 
     /** Modifiers of the build. */
     // Hmm hvad er disse i forhold til component modifiers???
@@ -50,9 +57,9 @@ public final class BuildSetup implements Build {
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.component = (ContainerSetup) componentDriver.newComponent(this, new ApplicationSetup(applicationDriver, componentDriver, modifiers), realm, null,
-                wirelets);
-        realm.wireCommit(component, false);
+        this.application = new ApplicationSetup(this, applicationDriver, realm, componentDriver, modifiers, wirelets);
+        this.container = application.container;
+        realm.wireCommit(container, false);
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */

@@ -25,7 +25,7 @@ import app.packed.application.Program;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
-import packed.internal.component.PackedInitializationContext;
+import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -174,18 +174,18 @@ public interface Injector extends ServiceLocator {
      */
     // Of er maaske fin. Saa understreger vi ligesom
     static Injector create(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().apply(assembly, wirelets);
+        return driver().launch(assembly, wirelets);
     }
 }
 
 /** An artifact driver for creating {@link Program} instances. */
 final class InjectorApplicationHelper {
 
-    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, PackedInitializationContext.class);
+    static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);
 
     static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().stateless().build(MethodHandles.lookup(), Injector.class, CONV);
 
-    static Injector convert(PackedInitializationContext container) {
+    static Injector convert(ApplicationLaunchContext container) {
         return (Injector) container.services();
     }
 }

@@ -33,7 +33,7 @@ public /* sealed */ interface Component extends AttributedElement {
     default Application application() {
         throw new UnsupportedOperationException();
     }
-    
+
     /**
      * Returns an unmodifiable view of all of this component's children.
      *
@@ -51,6 +51,8 @@ public /* sealed */ interface Component extends AttributedElement {
     default boolean hasModifier(ComponentModifier modifier) {
         return modifiers().contains(modifier);
     }
+
+    boolean isInSame(ComponentScope scope, Component other);
 
     /**
      * Returns the modifiers of this component.
@@ -118,7 +120,7 @@ public /* sealed */ interface Component extends AttributedElement {
         }
         return c;
     }
-    
+
     /**
      * Returns a stream consisting of this component and all of its descendants in any order.
      *
@@ -151,10 +153,6 @@ public /* sealed */ interface Component extends AttributedElement {
         throw new UnsupportedOperationException();
     }
 
-    default boolean inSame(ComponentScope scope, Component other) {
-        throw new UnsupportedOperationException();
-    }
-
 //    // The returned component is always a system component
 //    default Component viewAs(Object options) {
 //        // F.eks. tage et system. Og saa sige vi kun vil
@@ -168,7 +166,7 @@ public /* sealed */ interface Component extends AttributedElement {
 //        // der sker internt...
 //        throw new UnsupportedOperationException();
 //    }
-       
+
 }
 
 ///**

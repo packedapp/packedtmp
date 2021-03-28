@@ -131,6 +131,16 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     boolean isPartOfImage(); // BoundaryTypes
 
+    default boolean isConnected() {
+        // isInterConnected?
+        // isJoined (sounds very permanent)
+        throw new UnsupportedOperationException();
+    }
+
+    boolean isConnectedWithParent();
+
+    boolean isConnectedInSameApplication();
+
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
      * 

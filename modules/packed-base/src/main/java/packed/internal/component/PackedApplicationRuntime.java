@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import app.packed.application.ApplicationRuntime;
 import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
+import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.ApplicationSetup.Lifecycle;
 import packed.internal.util.ThrowableUtil;
@@ -61,7 +62,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
-    public PackedApplicationRuntime(PackedInitializationContext pic) {
+    public PackedApplicationRuntime(ApplicationLaunchContext pic) {
 
     }
 
@@ -111,7 +112,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
         return null;
     }
 
-    void onInitialized(ComponentSetup component, PackedInitializationContext pic) {
+    public void onInitialized(ComponentSetup component, ApplicationLaunchContext pic) {
         ApplicationSetup application = component.application;
         boolean isMain = application.hasMain();
         boolean start = isMain;

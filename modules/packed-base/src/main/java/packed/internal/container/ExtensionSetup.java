@@ -48,6 +48,12 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
+    @Nullable
+    ExtensionSetup ancestor;
+
+    /** Whether {@link #ancestor} is a direct parent or "just" an ancestor. */
+    boolean ancestorIsParent; // kan jo teste med ancestor.continer = container.parent
+
     /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
@@ -57,7 +63,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** A model of the extension. */
     private final ExtensionModel model;
-    
+
     /**
      * Creates a new extension setup.
      * 
@@ -147,6 +153,18 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     @Override
     public BaseComponentConfiguration installInstance(Object instance) {
         return wire(ComponentDriver.driverInstallInstance(instance));
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConnectedInSameApplication() {
+        return ancestor != null && ancestor.application == application;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isConnectedWithParent() {
+        return ancestor != null && ancestor.container == container.containerParent;
     }
 
     /** {@inheritDoc} */
@@ -264,7 +282,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
         // Jeg taenker faktisk at vi skal wire Extension allerede naar vi tilfoejer den...
         // Og ikke naar den extension lukker...
-        
+
         // Creates a new extension instance
         Extension instance = extension.instance = model.newInstance(extension);
         VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension (setup)

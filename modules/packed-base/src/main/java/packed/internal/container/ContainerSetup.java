@@ -23,12 +23,14 @@ import java.util.IdentityHashMap;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.application.Application;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
+import app.packed.container.Container;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
@@ -112,16 +114,6 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
     }
 
-    @Override
-    protected void attributesAdd(DefaultAttributeMap dam) {
-        // kan ogsaa test om container.application = application.container?
-        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
-            PackedApplicationDriver<?> pac = application.driver;
-            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
-        }
-
-    }
-
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
      * 
@@ -137,6 +129,16 @@ public final class ContainerSetup extends WireableComponentSetup {
         if (sm == null && !dependant.dependencies.isEmpty()) {
             useExtension(ServiceExtension.class);
         }
+    }
+
+    @Override
+    protected void attributesAdd(DefaultAttributeMap dam) {
+        // kan ogsaa test om container.application = application.container?
+        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
+            PackedApplicationDriver<?> pac = application.driver;
+            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
+        }
+
     }
 
     public void closeRealm() {
@@ -268,6 +270,26 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
     }
 
+    @Override
+    public <T> ExportedServiceConfiguration<T> sourceExport() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sourceProvide() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sourceProvideAs(Key<?> key) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Optional<Key<?>> sourceProvideAsKey() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * 
@@ -309,7 +331,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
             // The extension has been not been fully wired
             extension.onWire();
-            
+
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;
                 if (l == null) {
@@ -321,28 +343,28 @@ public final class ContainerSetup extends WireableComponentSetup {
         return extension;
     }
 
+    public Container containerAdaptor() {
+        return new ContainerAdaptor(this);
+    }
+
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
+        realm.wireLatest();
         return (T) useDependencyCheckedExtension(extensionClass, null).extensionInstance();
     }
 
-    @Override
-    public <T> ExportedServiceConfiguration<T> sourceExport() {
-        throw new UnsupportedOperationException();
-    }
+    record ContainerAdaptor(ContainerSetup container) implements Container {
 
-    @Override
-    public void sourceProvide() {
-        throw new UnsupportedOperationException();
-    }
+        /** {@inheritDoc} */
+        @Override
+        public Application application() {
+            return container.application.adaptor();
+        }
 
-    @Override
-    public void sourceProvideAs(Key<?> key) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Optional<Key<?>> sourceProvideAsKey() {
-        throw new UnsupportedOperationException();
+        /** {@inheritDoc} */
+        @Override
+        public String name() {
+            return container.name;
+        }
     }
 }

@@ -24,12 +24,40 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
 
 /** Implementation of {@link ComponentRelation}. */
-record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, ComponentSetup lcd) implements ComponentRelation {
+// source + target vs from + to
+/* primitive */ final class PackedComponentInstanceRelation implements ComponentRelation {
+
+    private final int distance;
+
+    private final PackedComponent from;
+
+    private final PackedComponent lcd;
+
+    private final PackedComponent to;
+
+    public PackedComponentInstanceRelation(PackedComponent from, PackedComponent to, int distance, PackedComponent lcd) {
+        this.from = from;
+        this.to = to;
+        this.distance = distance;
+        this.lcd = lcd;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public int distance() {
+        return distance;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component source() {
+        return from;
+    }
 
     /** {@inheritDoc} */
     @Override
     public boolean inSameContainer() {
-        return from.container == to.container;
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -43,17 +71,17 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
             Component[] components = new Component[distance];
 
             int i = 0;
-            ComponentSetup pc = from;
+            PackedComponent pc = from;
             while (pc != lcd) {
-                components[i++] = pc.adaptor();
+                components[i++] = pc;
             }
 
-            components[i++] = lcd.adaptor();
+            components[i++] = lcd;
 
             i = components.length - 1;
             pc = to;
             while (pc != lcd) {
-                components[i++] = pc.adaptor();
+                components[i++] = pc;
             }
             return List.of(components).iterator();
         }
@@ -62,25 +90,25 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
     /** {@inheritDoc} */
     @Override
     public Optional<Component> findLowestCommonAncestor() {
-        return lcd == null ? Optional.empty() : Optional.of(lcd.adaptor());
+        return Optional.ofNullable(lcd);
     }
 
     /** {@inheritDoc} */
     @Override
     public Component target() {
-        return to.adaptor();
+        return to;
     }
 
-    static ComponentRelation relation(ComponentSetup from, ComponentSetup to) {
-        int fd = from.depth;
-        int td = to.depth;
+    static ComponentRelation relation(PackedComponent from, PackedComponent to) {
+        int fd = from.depth();
+        int td = to.depth();
         if (from.pool == to.pool) {
             if (fd == td) {
-                return new ComponentSetupRelation(from, to, 0, from);
+                return new PackedComponentInstanceRelation(from, to, 0, from);
             }
 
-            ComponentSetup f = from;
-            ComponentSetup t = to;
+            PackedComponent f = from;
+            PackedComponent t = to;
             int distance = 0;
 
             if (fd > td) {
@@ -90,7 +118,7 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
                     distance++;
                 }
                 if (f == to) {
-                    return new ComponentSetupRelation(from, to, distance, to);
+                    return new PackedComponentInstanceRelation(from, to, distance, to);
                 }
             } else {
                 while (td > fd) {
@@ -99,7 +127,7 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
                     distance++;
                 }
                 if (t == from) {
-                    return new ComponentSetupRelation(from, to, distance, from);
+                    return new PackedComponentInstanceRelation(from, to, distance, from);
                 }
             }
             while (f != t) {
@@ -107,24 +135,19 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
                 t = t.parent;
                 distance += 2;
             }
-            return new ComponentSetupRelation(from, to, distance, f);
+            return new PackedComponentInstanceRelation(from, to, distance, f);
         }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean inSameApplication() {
-        return from.application == to.application;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isInSame(ComponentScope scope) {
-        return from.isInSame(scope, to);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Component source() {
-        return from.adaptor();
+        // TODO Auto-generated method stub
+        return false;
     }
 }

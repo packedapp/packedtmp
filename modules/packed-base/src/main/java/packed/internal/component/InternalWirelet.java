@@ -19,16 +19,34 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.base.Nullable;
 import app.packed.component.Component;
+import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
+import packed.internal.application.ApplicationLaunchContext;
+import packed.internal.application.ApplicationSetup;
 
 /** A type of wirelet where its logic is directly embedded in the wirelet. */
 public abstract class InternalWirelet extends Wirelet {
 
-    abstract void onBuild(ComponentSetup c);
+    protected abstract void onBuild(ComponentSetup component);
 
-    void onImageInstantiation(ComponentSetup c, PackedInitializationContext ic) {
+    public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext ic) {
         throw new IllegalArgumentException("The wirelet {" + getClass().getSimpleName() + "} cannot be specified when instantiating an image");
+    }
+
+    /** {@inheritDoc} */
+    public String toString() {
+        return getClass().getSimpleName();
+    }
+
+    protected static ApplicationSetup checkApplication(ComponentSetup component) {
+        ApplicationSetup a = component.application;
+        ComponentSetup parent = component.parent;
+        if (parent != null && a == parent.application) {
+            throw new IllegalArgumentException("This wirelet can only be specified when wiring an application");
+        }
+        return component.application;
     }
 
     /** A wirelet that will perform a given action once the component has been fully wired. */
@@ -37,14 +55,20 @@ public abstract class InternalWirelet extends Wirelet {
         /** The action to perform on the component after it has been fully wired. */
         private final Consumer<? super Component> action;
 
-        public OnWireActionWirelet(Consumer<? super Component> action) {
+        /** The scope of the wirelet */
+        @Nullable
+        final ComponentScope scope;
+
+        public OnWireActionWirelet(Consumer<? super Component> action, ComponentScope scope) {
             this.action = requireNonNull(action, "action is null");
+            this.scope = scope;
         }
 
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        void onBuild(ComponentSetup component) {
+        protected void onBuild(ComponentSetup component) {
+            // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
             Consumer<? super Component> existing = component.onWire;
             if (existing == null) {
                 component.onWire = action;
@@ -72,14 +96,15 @@ public abstract class InternalWirelet extends Wirelet {
 
         /** {@inheritDoc} */
         @Override
-        void onBuild(ComponentSetup c) {
+        protected void onBuild(ComponentSetup c) {
             c.nameInitializedWithWirelet = true;
             c.name = name;
         }
 
         @Override
-        void onImageInstantiation(ComponentSetup c, PackedInitializationContext ic) {
+        public void onImageInstantiation(ComponentSetup c, ApplicationLaunchContext ic) {
             ic.name = name;
         }
     }
+
 }

@@ -25,7 +25,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets;
-import packed.internal.component.PackedInitializationContext;
+import packed.internal.application.ApplicationLaunchContext;
 
 /**
  * An entry point for... This class contains a number of methods that can be to execute or analyze programs that are
@@ -50,7 +50,7 @@ public final class App {
 
     /** A daemon driver. */
     private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder()
-            .old(MethodHandles.empty(MethodType.methodType(Void.class, PackedInitializationContext.class)));
+            .old(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** Not today Satan, not today. */
     private App() {}
@@ -95,7 +95,7 @@ public final class App {
      *             if the application failed to run properly
      */
     public static void run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        driver().apply(assembly, CliWirelets.args(args).andThen(wirelets));
+        driver().launch(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     /**
@@ -115,7 +115,7 @@ public final class App {
      *             if the application failed to run properly
      */
     public static void run(Assembly<?> assembly, Wirelet... wirelets) {
-        driver().apply(assembly, wirelets);
+        driver().launch(assembly, wirelets);
     }
 }
 

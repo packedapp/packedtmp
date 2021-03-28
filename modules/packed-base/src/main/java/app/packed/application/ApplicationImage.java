@@ -17,6 +17,7 @@ package app.packed.application;
 
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.state.RunState;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
@@ -48,16 +49,34 @@ import app.packed.component.Wirelet;
  */
 public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
 
+    default boolean isLaunchable() {
+        // An image returns true always
+        
+        // Optional<A> tryLaunch(Wirelet... wirelets)???
+        return true;
+    }
+    
     /**
-     * Applies the image to . What happens here is dependent on application driver that created the image. The behaviour of
-     * this method is identical to {@link ApplicationDriver#apply(Assembly, Wirelet...)}.
+     * Launches an instance of the application. What happens here is dependent on application driver that created the image.
+     * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets
-     * @return the result of using the image
-     * @see {@link ApplicationDriver#apply(Assembly, Wirelet...)}
+     * @return an application instance
+     * @see {@link ApplicationDriver#launch(Assembly, Wirelet...)}
      */
-    A apply(Wirelet... wirelets); // instantiate? start/run/
+    A launch(Wirelet... wirelets);
+
+    /**
+     * <p>
+     * The launch mode can be overridden by specifying a launch mode wirelet using
+     * {@link ApplicationWirelets#launchMode(RunState)}.
+     * 
+     * @return the launch mode of the application
+     * 
+     * @see ApplicationDriver#launchMode()
+     */
+    RunState launchMode();
 }
 
 interface ZImage<A> {
