@@ -146,13 +146,7 @@ public abstract class Key<T> {
     /** {@inheritDoc} */
     @Override
     public final boolean equals(@Nullable Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (!(obj instanceof Key)) {
-            return false;
-        }
-        Key<?> other = (Key<?>) obj;
-        return Arrays.equals(qualifiers, other.qualifiers) && typeToken.equals(other.typeToken);
+        return obj instanceof Key<?> key && Arrays.equals(qualifiers, key.qualifiers) && typeToken.equals(key.typeToken);
     }
 
     /** {@inheritDoc} */

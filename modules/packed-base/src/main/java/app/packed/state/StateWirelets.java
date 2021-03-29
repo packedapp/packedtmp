@@ -15,14 +15,7 @@
  */
 package app.packed.state;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
-
-import app.packed.application.ApplicationRuntime;
 import app.packed.application.Program;
-import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 
@@ -45,24 +38,6 @@ import app.packed.component.Wirelet;
 // HostWirelet
 public interface StateWirelets {
 
-    // after which the guest will be shutdown normally
-    static Wirelet deadline(Instant deadline, StopOption... options) {
-        // Shuts down container normally
-        throw new UnsupportedOperationException();
-    }
-
-    // Teankt som en lille hjaelper metode
-    static Wirelet enterToStop() {
-        // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
-//        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
-//        try {
-//          System.out.println("Press ENTER to exit");
-//          System.in.read();
-//        } finally {
-//          system.terminate();
-//        }
-        throw new UnsupportedOperationException();
-    }
 
     // foo with x = 45;
     // foo with { x = 45; y = 34 }
@@ -126,29 +101,6 @@ public interface StateWirelets {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns a wirelet that will install a shutdown hook.
-     * 
-     * @return a shutdown hook wirelet
-     *
-     * @see Runtime#addShutdownHook(Thread)
-     */
-    // StopOption.panic(()->throw new DooException());
-    static Wirelet shutdownHook(ApplicationRuntime.StopOption... options) {
-        // https://www.baeldung.com/spring-boot-shutdown
-        return shutdownHook(r -> new Thread(r), options);
-    }
-
-    /**
-     * @param threadFactory
-     * @param options
-     * @return a shutdown hook wirelet
-     * @see Runtime#addShutdownHook(Thread)
-     */
-    static Wirelet shutdownHook(Function<Runnable, Thread> threadFactory, ApplicationRuntime.StopOption... options) {
-        return new ShutdownHookWirelet();
-    }
-
     static class ShutdownHookWirelet extends Wirelet {}
 
     /**
@@ -173,15 +125,6 @@ public interface StateWirelets {
 
     // allowForLink() returns false // check(WireletPosition) <- if (wp == link -> throw new X)
 
-    static Wirelet timeToRun(long timeout, TimeUnit unit, ApplicationRuntime.StopOption... options) {
-        return timeToRun(Duration.of(timeout, unit.toChronoUnit()), options);
-    }
-
-    // excludes start?? IDK
-    static Wirelet timeToRun(Duration duration, ApplicationRuntime.StopOption... options) {
-        // can make a timeToLive() <-- which includes start
-        throw new UnsupportedOperationException();
-    }
 
 //    private static Wirelet timeToLive(long timeout, TimeUnit unit, Supplier<Throwable> supplier) {
 //        timeToLive(10, TimeUnit.SECONDS, GuestStopOption.erroneous(() -> new CancellationException()));

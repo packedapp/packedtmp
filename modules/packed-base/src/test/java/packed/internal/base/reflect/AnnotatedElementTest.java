@@ -50,6 +50,11 @@ abstract class AnnotatedElementTest {
     }
 
     static void validateMember(Member expected, Member actual) {
+        assert expected.getDeclaringClass() == actual.getDeclaringClass();
+        assert expected.getModifiers() == actual.getModifiers();
+        assertThat(expected.getName()).isEqualTo(actual.getName());
+        assertThat(expected.isSynthetic()).isEqualTo(actual.isSynthetic());
+
         assertThat(expected.getDeclaringClass()).isSameAs(actual.getDeclaringClass());
         assertThat(expected.getModifiers()).isEqualTo(actual.getModifiers());
         assertThat(expected.getName()).isEqualTo(actual.getName());

@@ -42,7 +42,7 @@ import app.packed.state.RunState;
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.application.Program} or other artifact images.
+ * An image can be used to create new instances of {@link app.packed.application.Program} or other applications.
  * Artifact images can not be used as a part of other containers, for example, via
  * 
  * @see Program#newImage(Assembly, Wirelet...)
@@ -51,11 +51,11 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
 
     default boolean isLaunchable() {
         // An image returns true always
-        
+
         // Optional<A> tryLaunch(Wirelet... wirelets)???
         return true;
     }
-    
+
     /**
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
      * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
@@ -68,6 +68,7 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
     A launch(Wirelet... wirelets);
 
     /**
+     * Returns the launch mode of this image. The launch mode is the runmode target
      * <p>
      * The launch mode can be overridden by specifying a launch mode wirelet using
      * {@link ApplicationWirelets#launchMode(RunState)}.

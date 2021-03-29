@@ -577,8 +577,8 @@ public abstract class Factory<T> {
             return (Factory<T>) TYPE_LITERAL_CACHE.get(implementation.getClass());
         }
         Type t = implementation.type();
-        if (t instanceof Class) {
-            return (Factory<T>) of((Class<?>) t);
+        if (t instanceof Class<?> cl) {
+            return (Factory<T>) of(cl);
         } else {
             ExecutableFactory<?> f = CLASS_CACHE.get(implementation.rawType());
             return new ExecutableFactory<>(f, implementation);

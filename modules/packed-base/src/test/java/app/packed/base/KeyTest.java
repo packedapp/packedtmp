@@ -249,12 +249,21 @@ public class KeyTest {
         assertThat(KEY_INTEGER_X.typeToken()).isEqualTo(TL_INTEGER);
         assertThat(KEY_LIST_WILDCARD.typeToken()).isEqualTo(TL_LIST_WILDCARD);
         assertThat(KEY_LIST_WILDCARD_X.typeToken()).isEqualTo(TL_LIST_WILDCARD);
+        
+        assert KEY_INT_OF.typeToken().equals(TL_INTEGER);
+        assert KEY_INTEGER.typeToken().equals(TL_INTEGER);
+        assert KEY_INTEGER_X.typeToken().equals(TL_INTEGER);
+        assert KEY_LIST_WILDCARD.typeToken().equals(TL_LIST_WILDCARD);
+        assert KEY_LIST_WILDCARD_X.typeToken().equals(TL_LIST_WILDCARD);
     }
 
     @Test
     public void hasQualifiers() {
         assertThat(KEY_INTEGER.hasQualifiers()).isFalse();
         assertThat(KEY_INTEGER_X.hasQualifiers()).isTrue();
+        
+        assert !KEY_INTEGER.hasQualifiers();
+        assert KEY_INTEGER_X.hasQualifiers();
     }
 
     @Test

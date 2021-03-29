@@ -36,42 +36,47 @@ package app.packed.component;
 // Scope???
 public enum ComponentScope {
 
-    /** A system that contains all components in the same namespace. */
+    /** A scope that indicates any component in the same namespace. */
     NAMESPACE,
 
-    /** A system that contains all components in the same application. */
+    /** A scope that indicates any component within the same application. */
     APPLICATION,
 
-    /** A system that contains all components in the same container. */
+    /** A scope that indicates any component within the same container. */
     CONTAINER,
 
-    /** A system that contains a single component. */
+    /** A scope that indicates the single component. */
     COMPONENT,
 
     /**
      * A system where all components are part of the same build. Being part of the same build means that...
      */
-    BUILD,
+    BUILD;
+
+    /*
+     * REALM
+     *
+     * Hovedgrunden til vi ikke har den med, er at extensions ikke har runtime services som boern... Saa den er lidt
+     * ubrugelig
+     */
+    public boolean in(Component c1, Component c2) {
+        return c1.isInSame(this, c2);
+    }
+}
+
+enum ComponentScope2 {
 
     /**
      * A system where all components are part of the same image. An image may itself contain other images.
      * <p>
      * Det her er maaske bare Application med en marker... Altsaa det hedder jo application image nu
      */
+    // Tror ikke den er saa brugbar...
     IMAGE,
 
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
     REQUEST;
 
-    /*
-     * REALM
-     *
-     * Hovedgrunden til vi ikke har den med, er at extensions ikke har runtime services som boern...
-     * Saa den er lidt ubrugelig 
-     */
-    public boolean in(Component c1, Component c2) {
-        return c1.isInSame(this, c2);
-    }
 }
 
 // interessant at
@@ -97,15 +102,21 @@ class XComp2 {
         return this;
     }
 
+    public void ev(@Scoped(ComponentScope.APPLICATION) EventBus eb) {
+
+    }
+
+    interface EventBus {}
+
     public static void main(XComp2 c) {
-        c.rootOf(ComponentScope.IMAGE);
-        c.isPartOfSame(ComponentScope.IMAGE, c);
-        c.isPartOf(ComponentScope.IMAGE);
+        c.rootOf(ComponentScope.NAMESPACE);
+        c.isPartOfSame(ComponentScope.NAMESPACE, c);
+        c.isPartOf(ComponentScope.NAMESPACE);
 
     }
 
     public static void main(Component c1, Component c2) {
-        if (ComponentScope.IMAGE.in(c1, c2)) {
+        if (ComponentScope.NAMESPACE.in(c1, c2)) {
 
         }
 

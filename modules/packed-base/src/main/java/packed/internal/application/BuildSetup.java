@@ -24,6 +24,7 @@ import packed.internal.component.NamespaceSetup;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.container.ContainerSetup;
 
 /** The configuration of a build. */
@@ -56,8 +57,12 @@ public final class BuildSetup implements Build {
      *            the output of the build process
      */
     BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
+        if (!componentDriver.modifiers().isContainer()) {
+            throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
+        }
+        ContainerComponentDriver ccd = (ContainerComponentDriver) componentDriver;
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.application = new ApplicationSetup(this, applicationDriver, realm, componentDriver, modifiers, wirelets);
+        this.application = new ApplicationSetup(this, applicationDriver, realm, ccd, modifiers, wirelets);
         this.container = application.container;
         realm.wireCommit(container, false);
     }

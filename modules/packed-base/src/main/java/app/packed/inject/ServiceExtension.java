@@ -312,12 +312,12 @@ public class ServiceExtension extends Extension {
      */
     public void provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
-        if (!(locator instanceof PackedInjector)) {
+        if (!(locator instanceof PackedInjector pi)) {
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, injector type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        services.provideAll((PackedInjector) locator /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
+        services.provideAll(pi /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
     }
 
     /**

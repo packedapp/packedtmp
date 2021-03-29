@@ -215,9 +215,7 @@ public abstract class ComponentSetup {
         case BUILD -> build == other.build;
         case COMPONENT -> this == other;
         case CONTAINER -> container == other.container;
-        case IMAGE -> throw new UnsupportedOperationException();
         case NAMESPACE -> build.namespace == other.build.namespace;
-        case REQUEST -> throw new UnsupportedOperationException();
         };
     }
 

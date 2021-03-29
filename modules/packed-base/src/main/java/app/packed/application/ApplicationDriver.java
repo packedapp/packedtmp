@@ -40,7 +40,7 @@ import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
 
 /**
- * An application driver is responsible for analyzing and controlling the various lifecycle phases an application goes
+ * Application drivers are responsible for analyzing and controlling the various lifecycle phases an application goes
  * through.
  * <p>
  * Packed comes with a number of predefined application drivers If these are not sufficient, your best bet is to look at
@@ -209,9 +209,17 @@ public /* sealed */ interface ApplicationDriver<A> {
      */
     A launch(Assembly<?> assembly, Wirelet... wirelets);
 
-    default RunState launchMode() {
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Returns the default launch mode of applications's created by this driver.
+     * <p>
+     * The launch mode can be overridden at build or runtime by using {@link ApplicationWirelets#launchMode(RunState)}.
+     * 
+     * @return the default launch mode of application's created by this driver
+     * @see #launch(Assembly, Wirelet...)
+     * @see #compose(ComponentDriver, Function, Consumer, Wirelet...)
+     * @see #newImage(Assembly, Wirelet...)
+     */
+    RunState launchMode();
     // analyze
     // validate
     // check
@@ -312,13 +320,7 @@ public /* sealed */ interface ApplicationDriver<A> {
         // Maybe just look for matching method/field hooks???
         // So always scan...
 
-        default Builder launchMode(LaunchMode launchMode) {
-            // I think it can always be overridden...
-            // Or maybe only overridden to longer...
-            // IDK
-
-            return this;
-        }
+        Builder launchMode(RunState launchMode);
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
         @SuppressWarnings("unchecked")

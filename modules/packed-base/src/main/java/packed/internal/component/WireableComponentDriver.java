@@ -10,9 +10,13 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentModifier;
+import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
+import app.packed.container.ContainerConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
+import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 
 public abstract class WireableComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
@@ -65,4 +69,28 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
         return (WireableComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
     
+    
+    /** A component driver that create containers. */
+    public static abstract class ContainerComponentDriver extends WireableComponentDriver<ContainerConfiguration> {
+
+        private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
+
+        public ContainerComponentDriver(Wirelet wirelet) {
+            super(wirelet, PackedComponentModifierSet.I_CONTAINER);
+        }
+
+        public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+            return new ContainerSetup(build, application, realm, this, parent, wirelets);
+        }
+        
+        @Override
+        public final ComponentDriver<ContainerConfiguration> bind(Object object) {
+            throw new UnsupportedOperationException("Cannot bind to a container component driver");
+        }
+
+        @Override
+        public final ComponentModifierSet modifiers() {
+            return CONTAINER_MODIFIERS;
+        }
+    }
 }

@@ -24,16 +24,13 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -43,7 +40,7 @@ import packed.internal.container.ContainerSetup;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = new ContainerComponentDriver(null);
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = new PackedContainerComponentDriver(null);
 
     /**
      * Creates a new ContainerConfiguration, only used by {@link #DRIVER}.
@@ -180,26 +177,14 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     }
 
     /** A component driver that create containers. */
-    private static class ContainerComponentDriver extends WireableComponentDriver<ContainerConfiguration> {
+    private static class PackedContainerComponentDriver extends ContainerComponentDriver {
 
-        private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
-
-        private ContainerComponentDriver(Wirelet wirelet) {
-            super(wirelet, PackedComponentModifierSet.I_CONTAINER);
+        private PackedContainerComponentDriver(Wirelet wirelet) {
+            super(wirelet);
         }
 
         public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
             return new ContainerSetup(build, application, realm, this, parent, wirelets);
-        }
-        
-        @Override
-        public ComponentDriver<ContainerConfiguration> bind(Object object) {
-            throw new UnsupportedOperationException("Cannot bind to a container component driver");
-        }
-
-        @Override
-        public ComponentModifierSet modifiers() {
-            return CONTAINER_MODIFIERS;
         }
 
         @Override
@@ -208,8 +193,8 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
         }
 
         @Override
-        protected ComponentDriver<ContainerConfiguration> withWirelet(Wirelet w) {
-            return new ContainerComponentDriver(w);
+        protected PackedContainerComponentDriver withWirelet(Wirelet w) {
+            return new PackedContainerComponentDriver(w);
         }
     }
 }

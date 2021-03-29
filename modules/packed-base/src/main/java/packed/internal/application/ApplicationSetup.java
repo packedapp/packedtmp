@@ -13,7 +13,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
@@ -41,13 +41,10 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers,
+    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver componentDriver, int modifiers,
             Wirelet[] wirelets) {
         this.driver = requireNonNull(driver, "driver is null");
-        if (!componentDriver.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only create an application using a container component driver");
-        }
-        container = (ContainerSetup) componentDriver.newComponent(build, this, realm, null, wirelets);
+        container = componentDriver.newComponent(build, this, realm, null, wirelets);
         this.modifiers = modifiers;
     }
 
