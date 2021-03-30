@@ -30,6 +30,7 @@ import app.packed.hooks.MethodHook;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.application.ApplicationSetup.MainThreadOfControl;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.SourceComponentSetup;
 
@@ -77,9 +78,10 @@ class MySidecar extends RealMethodSidecarBootstrap {
             // Der er noget constant pool thingeling der ikke bliver kaldt
             // ordentligt hvis der ikke er registered en ServiceManagerSetup
             c.container.useExtension(ServiceExtension.class);
-            c.application.lifecycle.isStatic = Modifier.isStatic(m.getModifiers());
-            c.application.lifecycle.cs =  (SourceComponentSetup) c;
-            c.application.lifecycle.methodHandle = mh;
+            MainThreadOfControl mc = c.application.mainThread();
+            mc.isStatic = Modifier.isStatic(m.getModifiers());
+            mc.cs =  (SourceComponentSetup) c;
+            mc.methodHandle = mh;
         });
     }
 

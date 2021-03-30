@@ -27,7 +27,7 @@ import app.packed.state.RunState;
 import app.packed.state.RunStateInfo;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.ApplicationSetup.Lifecycle;
+import packed.internal.application.ApplicationSetup.MainThreadOfControl;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -145,21 +145,23 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
             lock.unlock();
         }
 
-        Lifecycle l = application.lifecycle;
-        if (!l.hasExecutionBlock()) {
-            return; // runnint as deamon
-        }
-
-        try {
-            if (l.cs.source.poolIndex > -1 && !l.isStatic) {
-                Object o = pic.pool().read(l.cs.source.poolIndex);
-                l.methodHandle.invoke(o);
-            } else {
-                l.methodHandle.invoke();
+        if (application.hasMain()) {
+            MainThreadOfControl l = application.mainThread();
+            if (!l.hasExecutionBlock()) {
+                return; // runnint as deamon
             }
 
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
+            try {
+                if (l.cs.source.poolIndex > -1 && !l.isStatic) {
+                    Object o = pic.pool().read(l.cs.source.poolIndex);
+                    l.methodHandle.invoke(o);
+                } else {
+                    l.methodHandle.invoke();
+                }
+
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
         // todo run execution block
 

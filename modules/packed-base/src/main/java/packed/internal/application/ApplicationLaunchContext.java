@@ -53,6 +53,7 @@ public final class ApplicationLaunchContext {
 
     public RunState launchMode;
 
+    /** The name of the root component. May be replaced by {@link Wirelet#named(String)}. */
     public String name;
 
     @Nullable
@@ -63,7 +64,7 @@ public final class ApplicationLaunchContext {
         this.container = application.container;
         this.wirelets = wirelets;
         this.name = container.name;
-        this.launchMode = application.launchMode();
+        this.launchMode = application.launchMode;
     }
 
     /**
@@ -116,31 +117,32 @@ public final class ApplicationLaunchContext {
      * @param wirelets
      * @return
      */
+    // Or is is a build we are launching???
     static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
         assert driver == application.driver;
         ContainerSetup container = application.container;
 
-        ApplicationLaunchContext pic = new ApplicationLaunchContext(application, wirelets);
+        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
 
+        // Apply all internal wirelets
         if (wirelets != null) {
             for (Wirelet w : wirelets.wirelets) {
                 if (w instanceof InternalWirelet iw) {
-                    iw.onImageInstantiation(container, pic);
+                    iw.onImageInstantiation(container, context);
                 }
             }
         }
 
         // Instantiates the whole component tree (well @Initialize does not yet work)
         // pic.component is set from PackedComponent
-        new PackedComponent(null, container, pic);
+        new PackedComponent(null, container, context);
 
         // TODO initialize
 
         if (container.modifiers().hasRuntime()) {
-            pic.component.pool.container().onInitialized(container, pic);
+            context.component.pool.container().onInitialized(container, context);
         }
 
-        return driver.newApplication(pic);
-
+        return driver.newApplication(context);
     }
 }

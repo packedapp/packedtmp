@@ -64,33 +64,33 @@ public final class PackedComponent implements Component {
      * 
      * @param parent
      *            the parent component, iff this component has a parent.
-     * @param compBuild
+     * @param component
      *            the component build used to create this node
-     * @param pic
+     * @param launch
      *            initialization context
      */
-    public PackedComponent(@Nullable PackedComponent parent, ComponentSetup compBuild, ApplicationLaunchContext pic) {
+    public PackedComponent(@Nullable PackedComponent parent, ComponentSetup component, ApplicationLaunchContext launch) {
         this.parent = parent;
-        this.model = RuntimeComponentModel.of(compBuild);
+        this.model = RuntimeComponentModel.of(component);
         if (parent == null) {
-            pic.component = this;
-            this.name = pic.name;
+            launch.component = this;
+            this.name = launch.name;
         } else {
-            this.name = requireNonNull(compBuild.name);
+            this.name = requireNonNull(component.name);
         }
 
         // Vi opbygger structuren foerst...
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
         Map<String, PackedComponent> children = null;
-        if (compBuild.children != null) {
+        if (component.children != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(compBuild.childrenCount());
+            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(component.childrenCount());
 
-            for (ComponentSetup cc : compBuild.children.values()) {
+            for (ComponentSetup cc : component.children.values()) {
                 // We never carry over extensions into the runtime
                 if (!(cc instanceof ExtensionSetup)) {
-                    PackedComponent ac = new PackedComponent(this, cc, pic);
+                    PackedComponent ac = new PackedComponent(this, cc, launch);
                     result.put(ac.name(), ac);
                 }
             }
@@ -109,8 +109,8 @@ public final class PackedComponent implements Component {
         // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
 
         // Vi create a new region is its the root, or if the component is a guest
-        if (parent == null || compBuild.modifiers().hasRuntime()) {
-            this.pool = compBuild.pool.newPool(pic, this);
+        if (parent == null || component.modifiers().hasRuntime()) {
+            this.pool = component.pool.newPool(launch, this);
         } else {
             this.pool = parent.pool;
         }

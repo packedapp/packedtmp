@@ -5,6 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.Application;
+import app.packed.application.ApplicationWirelets;
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
 import app.packed.container.Container;
@@ -21,17 +23,20 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /** Build-time configuration for an application. */
 public final class ApplicationSetup {
 
-    final ContainerSetup container;
-
     /** The configuration of the main constant build. */
     public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
 
-    /** The applications's driver. */
+    /** The root container of the application. */
+    public final ContainerSetup container;
+
+    /** The driver of the applications. */
     public final PackedApplicationDriver<?> driver;
 
+    /** The launch mode of the application, may be updated via usage of {@link ApplicationWirelets#launchMode(RunState)}. */
     RunState launchMode;
 
-    public final Lifecycle lifecycle = new Lifecycle();
+    @Nullable
+    private MainThreadOfControl mainThread;
 
     private final int modifiers;
 
@@ -41,30 +46,33 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver componentDriver, int modifiers,
+    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver containerDriver, int modifiers,
             Wirelet[] wirelets) {
         this.driver = requireNonNull(driver, "driver is null");
-        container = componentDriver.newComponent(build, this, realm, null, wirelets);
+        this.container = containerDriver.newComponent(build, this, realm, null, wirelets);
         this.modifiers = modifiers;
     }
 
-    /**
-     * @return
-     */
+    /** {@return returns an Application adaptor that can be exposed to end-users} */
     public Application adaptor() {
         return new Adaptor(this);
     }
 
     public boolean hasMain() {
-        return lifecycle.methodHandle != null;
+        return mainThread != null;
     }
 
+    public MainThreadOfControl mainThread() {
+        MainThreadOfControl m = mainThread;
+        if (m == null) {
+            m = mainThread = new MainThreadOfControl();
+        }
+        return m;
+    }
+
+    /** {@return whether or not the application is part of an image}. */
     public boolean isImage() {
         return PackedComponentModifierSet.isImage(modifiers);
-    }
-
-    public RunState launchMode() {
-        return launchMode;
     }
 
     /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */
@@ -92,14 +100,16 @@ public final class ApplicationSetup {
             checkApplication(c).launchMode = launchMode;
         }
 
+        /** {@inheritDoc} */
         @Override
         public void onImageInstantiation(ComponentSetup c, ApplicationLaunchContext ic) {
             ic.launchMode = launchMode;
         }
     }
 
-    public static class Lifecycle {
+    public class MainThreadOfControl {
         public SourceComponentSetup cs;
+
         public boolean isStatic;
 
         public MethodHandle methodHandle;
