@@ -208,8 +208,18 @@ public abstract class ComponentSetup {
         this.name = n;
     }
 
+    /**
+     * Tests that this component is in the same specified scope as other.
+     * 
+     * @param scope
+     *            the scope to test
+     * @param other
+     *            the other component to test
+     * @return true if in the same scope, otherwise false
+     */
     public final boolean isInSame(ComponentScope scope, ComponentSetup other) {
         requireNonNull(scope, "scope is null");
+        requireNonNull(other, "other is null");
         return switch (scope) {
         case APPLICATION -> application == other.application;
         case BUILD -> build == other.build;
@@ -256,12 +266,13 @@ public abstract class ComponentSetup {
         return new PackedComponentModifierSet(modifiers);
     }
 
-    public final void onWire() {
+    protected final void onWire() {
         if (onWire != null) {
             onWire.accept(adaptor());
         }
     }
 
+    /** {@return the path of this component */
     public final NamespacePath path() {
         return PackedTreePath.of(this); // show we weak intern them????
     }

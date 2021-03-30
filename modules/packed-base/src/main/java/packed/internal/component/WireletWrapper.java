@@ -17,7 +17,7 @@ package packed.internal.component;
 
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletHandle;
+import app.packed.component.WireletList;
 
 /** A holder of wirelets. */
 // Vi har faktisk ogsaa for den her paa runtime...
@@ -28,13 +28,14 @@ public final class WireletWrapper {
     static final WireletWrapper EMPTY = new WireletWrapper(WireletArray.EMPTY);
 
     /** The number of unconsumed wirelets. */
+    // Maaske tracker vi kun ikke interne wirelets
     int unconsumed;
 
     /** The wirelets we are wrapping. This array is safe for internal use. But must be cloned if exposed to users. */
     public final Wirelet[] wirelets;
 
-    /** Creates a new pack. */
-    WireletWrapper(Wirelet[] wirelets) {
+    /** Creates a new wrapper. */
+    public WireletWrapper(Wirelet[] wirelets) {
         this.wirelets = wirelets;
         this.unconsumed = wirelets.length;
     }
@@ -44,7 +45,7 @@ public final class WireletWrapper {
     }
     
     // Hooks kan ogsaa faa i Wirelets...
-    public <T extends Wirelet> WireletHandle<T> handleOf(Module module, Class<? extends T> wireletClass) {
+    public <T extends Wirelet> WireletList<T> handleOf(Module module, Class<? extends T> wireletClass) {
         // Maaske skal vi have en caller med ala "Must be in the same module as"
         if (module != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());

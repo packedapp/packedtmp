@@ -43,6 +43,7 @@ import app.packed.inject.ServiceComponentConfiguration;
  * 
  * @see BaseAssembly
  */
+// Altsaa har vi brug for at lave container assemblies uden en masse metoder
 public abstract class ContainerAssembly extends Assembly<ContainerConfiguration> {
 
     /** Creates a new assembly using {@link ContainerConfiguration#driver()}. */

@@ -46,7 +46,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 //TODO WE NEED TO CHECK INTRA Assembly REFERENCES
 // BitMap???
-final class ServiceManagerTree {
+final class ApplicationInjectionManager {
 
     /**
      * Tries to find a dependency cycle.

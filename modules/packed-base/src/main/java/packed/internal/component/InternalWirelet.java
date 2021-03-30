@@ -29,24 +29,33 @@ import packed.internal.application.ApplicationSetup;
 /** A type of wirelet where its logic is directly embedded in the wirelet. */
 public abstract class InternalWirelet extends Wirelet {
 
+    /**
+     * Checks that the specified component is the root component of an application.
+     * 
+     * @param component
+     *            the component that is being wired
+     * @throws IllegalArgumentException
+     *             if the specified component is not the root component of an application
+     * @return the application of the component (for method chaining)
+     */
+    protected ApplicationSetup checkApplication(ComponentSetup component) {
+        ApplicationSetup application = component.application;
+        ComponentSetup parent = component.parent;
+        if (parent != null && application == parent.application) {
+            throw new IllegalArgumentException("This wirelet can only be specified when wiring an application, wirelet = " + this);
+        }
+        return component.application;
+    }
+
     protected abstract void onBuild(ComponentSetup component);
 
-    public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext ic) {
+    public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext context) {
         throw new IllegalArgumentException("The wirelet {" + getClass().getSimpleName() + "} cannot be specified when instantiating an image");
     }
 
     /** {@inheritDoc} */
     public String toString() {
         return getClass().getSimpleName();
-    }
-
-    protected static ApplicationSetup checkApplication(ComponentSetup component) {
-        ApplicationSetup a = component.application;
-        ComponentSetup parent = component.parent;
-        if (parent != null && a == parent.application) {
-            throw new IllegalArgumentException("This wirelet can only be specified when wiring an application");
-        }
-        return component.application;
     }
 
     /** A wirelet that will perform a given action once the component has been fully wired. */
@@ -106,5 +115,4 @@ public abstract class InternalWirelet extends Wirelet {
             ic.name = name;
         }
     }
-
 }

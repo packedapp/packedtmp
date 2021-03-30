@@ -58,11 +58,13 @@ public final class ContainerSetup extends WireableComponentSetup {
     @Nullable
     public final ContainerSetup containerParent;
 
+    /** All extensions in use, in no particular order. */
+    final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
+
+    /* Cleanup */
+    
     /** All dependants that needs to be resolved. */
     public final ArrayList<Dependant> dependants = new ArrayList<>();
-
-    /** All extensions in use, in no particular order. */
-    private final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
 
@@ -184,6 +186,10 @@ public final class ContainerSetup extends WireableComponentSetup {
         // TODO Check any contracts we might as well catch it early
     }
 
+    public Container containerAdaptor() {
+        return new ContainerAdaptor(this);
+    }
+
     /**
      * Returns an unmodifiable view of the extension registered with this container.
      * 
@@ -201,7 +207,6 @@ public final class ContainerSetup extends WireableComponentSetup {
      *            the type of extension to return a context for
      * @return an extension's context, iff the specified extension type has already been added
      * @see #useExtension(Class)
-     * @see #useDependencyCheckedExtension(Class, ExtensionSetup)
      */
     @Nullable
     public ExtensionSetup getExtensionContext(Class<? extends Extension> extensionClass) {
@@ -290,12 +295,18 @@ public final class ContainerSetup extends WireableComponentSetup {
         throw new UnsupportedOperationException();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T extends Extension> T useExtension(Class<T> extensionClass) {
+        realm.wireLatest();
+        return (T) useExtension(extensionClass, null).extensionInstance();
+    }
+
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * 
      * @param extensionClass
      *            the type of extension
-     * @param caller
+     * @param requestedBy
      *            non-null if it is another extension that is requesting the extension
      * @return the extension's context
      * @throws IllegalStateException
@@ -305,32 +316,27 @@ public final class ContainerSetup extends WireableComponentSetup {
      *             if the
      */
     // Any dependencies needed have been checked
-    ExtensionSetup useDependencyCheckedExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup caller) {
+    ExtensionSetup useExtension(Class<? extends Extension> extensionClass, @Nullable ExtensionSetup requestedBy) {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
         // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
-        // Which will fail with ConcurrentModificationException (see ExtensionDependenciesTest)
+        // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
             if (containerChildren != null) {
                 throw new IllegalStateException(
                         "Cannot install new extensions after child containers have been added to this container, extensionClass = " + extensionClass);
             }
 
-            // Checks that we are still configurable
-            if (caller == null) {
+            // Checks that container is still configurable
+            if (requestedBy == null) {
                 checkConfigurable();
             } else {
-                caller.checkConfigurable();
+                requestedBy.checkConfigurable();
             }
-            // Create the new extension
+            
+            // Create the new extension and adds into the map of extensions
             extension = ExtensionSetup.initialize(this, extensionClass);
-
-            // Add the extension to the extension map
-            extensions.put(extensionClass, extension);
-
-            // The extension has been not been fully wired
-            extension.onWire();
 
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;
@@ -341,16 +347,6 @@ public final class ContainerSetup extends WireableComponentSetup {
             }
         }
         return extension;
-    }
-
-    public Container containerAdaptor() {
-        return new ContainerAdaptor(this);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends Extension> T useExtension(Class<T> extensionClass) {
-        realm.wireLatest();
-        return (T) useDependencyCheckedExtension(extensionClass, null).extensionInstance();
     }
 
     record ContainerAdaptor(ContainerSetup container) implements Container {

@@ -41,7 +41,7 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireletArray;
-import packed.internal.container.ContainerSetup;
+import packed.internal.component.WireletWrapper;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -166,7 +166,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         realm.close(build.container);
 
         // Initialize the application. And start it if necessary (if it is a guest)
-        return ApplicationLaunchContext.launch(this, build.container, WireletArray.EMPTY);
+        return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
     /** {@inheritDoc} */
@@ -176,7 +176,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
 
         // Initialize the system. And start it if necessary (if it is a guest)
-        return ApplicationLaunchContext.launch(this, build.container, WireletArray.EMPTY);
+        return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
     /** {@inheritDoc} */
@@ -208,7 +208,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
         BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_IMAGE);
-        return new PackedApplicationImage<>(this, build.container);
+        return new PackedApplicationImage<>(this, build.application);
     }
 
     /** {@inheritDoc} */
@@ -319,12 +319,21 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ContainerSetup root) implements ApplicationImage<A> {
+    private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
         public A launch(Wirelet... wirelets) {
-            return ApplicationLaunchContext.launch(driver, root, wirelets);
+            requireNonNull(wirelets, "wirelets is null");
+
+            // If launching an image, the user might have specified additional runtime wirelets
+            WireletWrapper wrapper = null;
+            if (wirelets.length > 0) {
+                Wirelet[] ws = WireletArray.flatten(wirelets);
+                wrapper = new WireletWrapper(ws);
+            }
+
+            return ApplicationLaunchContext.launch(driver, application, wrapper);
         }
 
         /** {@inheritDoc} */

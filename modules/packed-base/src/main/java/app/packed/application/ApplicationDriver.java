@@ -86,7 +86,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @param wirelets
      *            optional wirelets
      * @throws AssertionError
-     *             if something is invalid
+     *             if the application failed to build
      */
     // Validation vs Build exceptions
     // Smider vi
@@ -174,18 +174,6 @@ public /* sealed */ interface ApplicationDriver<A> {
         throw new UnsupportedOperationException();
     }
 
-    // Ideen er at man kan smide checked exceptions...
-    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
-    default A invoke(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
-        // Tror den bliver brugt via noget ErrorHandler...
-        // Hvor man specificere hvordan exceptions bliver handled
-
-        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
-
-        // Her er ihvertfald noget der skal kunne konfigureres
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Launches a new application using the specified assembly and optional wirelets.
      * <p>
@@ -227,6 +215,23 @@ public /* sealed */ interface ApplicationDriver<A> {
     // ComponentAnalysis = Either<Component, Validatable>
     // ComponentAnalysis extends Validatable
 
+    // Ideen er at man kan smide checked exceptions...
+    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
+
+    default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
+        throw new UnsupportedOperationException();
+    }
+
+    default A launchThrowing(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
+        // Tror den bliver brugt via noget ErrorHandler...
+        // Hvor man specificere hvordan exceptions bliver handled
+
+        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
+
+        // Her er ihvertfald noget der skal kunne konfigureres
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
@@ -266,6 +271,11 @@ public /* sealed */ interface ApplicationDriver<A> {
 
     }
 
+    default TypeToken<? super A> typeToken() {
+        // What if Job<?>
+        throw new UnsupportedOperationException();
+    }
+
     // Smider vi build exception??? Eller
     // Bare invalid???
     // Vil mene invalid...
@@ -274,11 +284,6 @@ public /* sealed */ interface ApplicationDriver<A> {
     ApplicationDriver<A> with(Wirelet wirelet);
 
     ApplicationDriver<A> with(Wirelet... wirelets);
-
-    default TypeToken<? super A> typeToken() {
-        // What if Job<?>
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Returns a new {@code ApplicationDriver} builder.
@@ -316,11 +321,11 @@ public /* sealed */ interface ApplicationDriver<A> {
 
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
 
+        Builder launchMode(RunState launchMode);
+
         <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets);
         // Maybe just look for matching method/field hooks???
         // So always scan...
-
-        Builder launchMode(RunState launchMode);
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
         @SuppressWarnings("unchecked")

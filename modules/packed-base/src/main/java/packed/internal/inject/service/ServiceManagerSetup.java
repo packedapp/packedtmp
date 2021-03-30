@@ -51,7 +51,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /**
  * A service manager is responsible for managing the services for a single container at build time.
  * <p>
- * A {@link ServiceManagerTree} is responsible for managing 1 or more service manager tree that are directly connected
+ * A {@link ApplicationInjectionManager} is responsible for managing 1 or more service manager tree that are directly connected
  * and part of the same build.
  */
 public final class ServiceManagerSetup {
@@ -83,7 +83,7 @@ public final class ServiceManagerSetup {
     private final ServiceManagerSetup parent;
 
     /** The tree this service manager is a part of. */
-    private final ServiceManagerTree tree;
+    private final ApplicationInjectionManager tree;
 
     @Nullable
     public Predicate<? super Service> anchorFilter;
@@ -95,7 +95,7 @@ public final class ServiceManagerSetup {
     public ServiceManagerSetup(ContainerSetup container, @Nullable ServiceManagerSetup parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
-        this.tree = parent == null ? new ServiceManagerTree() : parent.tree;
+        this.tree = parent == null ? new ApplicationInjectionManager() : parent.tree;
     }
 
     public void close(ConstantPoolSetup region) {

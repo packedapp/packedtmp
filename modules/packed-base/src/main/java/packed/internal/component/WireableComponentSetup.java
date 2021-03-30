@@ -7,10 +7,9 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
-import packed.internal.container.ExtensionSetup;
 
 /**
- * A component that can be wired. For now, this is every component type except an {@link ExtensionSetup extension}.
+ * A component that can be wired. For now, this is every component setup type except ExtensionSetup.
  */
 public abstract class WireableComponentSetup extends ComponentSetup implements ComponentConfigurationContext {
 
@@ -66,6 +65,7 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
 
     /** {@inheritDoc} */
     public final String getName() {
+        // Dette kunne ogsaa wire componenten?
         return name;
     }
     
@@ -75,7 +75,6 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
         checkIsWiring();
 
         // If a name has been set using a wirelet it cannot be overridden
-        // We might change this later
         if (nameInitializedWithWirelet) {
             return;
         } else if (name.equals(this.name)) {

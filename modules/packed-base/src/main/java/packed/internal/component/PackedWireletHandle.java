@@ -6,31 +6,34 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.component.Wirelet;
-import app.packed.component.WireletHandle;
+import app.packed.component.WireletList;
 
 // Lige nu bliver den brugt 3 steder fra.
 // WireletHandle.of <- mainly for test
 // ComponentSetup
 // RuntimeSetup
 
-/** Implementation of {@link WireletHandle}. */
-public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implements WireletHandle<W> {
+/** Implementation of {@link WireletList}. */
+public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implements WireletList<W> {
 
-    /** An empty handle used by {@link WireletHandle#of()}. */
+    /** An empty handle used by {@link WireletList#of()}. */
     private static final PackedWireletHandle<?> EMPTY = new PackedWireletHandle<>();
 
+    /** The type of wirelet's that will be handled. All other types are ignored */
     private final Class<? extends W> wireletClass;
 
-    private final WireletWrapper wrapper;
+    /** The wirelet wrapper containing the actual wirelets */
+    private final WireletWrapper wirelets;
 
+    /** Creates a new empty list. */
     @SuppressWarnings("unchecked")
     private PackedWireletHandle() {
-        this.wrapper = WireletWrapper.EMPTY;
+        this.wirelets = WireletWrapper.EMPTY;
         this.wireletClass = (Class<? extends W>) Wirelet.class;
     }
 
     public PackedWireletHandle(WireletWrapper wirelets, Class<? extends W> wireletClass) {
-        this.wrapper = wirelets;
+        this.wirelets = wirelets;
         // We should check all public wirelet types here
         if (Wirelet.class == wireletClass) {
             throw new IllegalArgumentException("Cannot specify " + Wirelet.class.getSimpleName() + ".class");
@@ -41,15 +44,15 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
     /** {@inheritDoc} */
     @Override
     public void consumeEach(Consumer<? super W> action) {
-        consumeEach(wrapper, wireletClass, action);
+        consumeEach(wirelets, wireletClass, action);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int count() {
+    public int size() {
         int count = 0;
-        if (wrapper.unconsumed > 0) {
-            Wirelet[] ws = wrapper.wirelets;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
             for (int i = 0; i < ws.length; i++) {
                 if (wireletClass.isInstance(ws[i])) {
                     count++;
@@ -61,14 +64,14 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     /** {@inheritDoc} */
     @Override
-    public boolean isAbsent() {
+    public boolean isEmpty() {
         boolean result = true;
-        if (wrapper.unconsumed > 0) {
-            Wirelet[] ws = wrapper.wirelets;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
             for (int i = 0; i < ws.length; i++) {
                 Wirelet w = ws[i];
                 if (wireletClass.isInstance(w)) {
-                    result = false;
+                    return false;
                 }
             }
         }
@@ -76,18 +79,12 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean isPresent() {
-        return !isAbsent();
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public Optional<W> last() {
         W result = null;
-        if (wrapper.unconsumed > 0) {
-            Wirelet[] ws = wrapper.wirelets;
+        if (wirelets.unconsumed > 0) {
+            Wirelet[] ws = wirelets.wirelets;
             for (int i = 0; i < ws.length; i++) {
                 Wirelet w = ws[i];
                 if (wireletClass.isInstance(w)) {
@@ -95,7 +92,7 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
                         result = (W) w;
                     }
                     ws[i] = null;
-                    wrapper.unconsumed--;
+                    wirelets.unconsumed--;
                 }
             }
         }
@@ -123,9 +120,15 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
         return (PackedWireletHandle<T>) EMPTY;
     }
 
-    public static <T extends Wirelet> WireletHandle<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
+    public static <T extends Wirelet> WireletList<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
         WireletWrapper wp = new WireletWrapper(WireletArray.flatten(wirelets));
         return new PackedWireletHandle<>(wp, wireletClass);
+    }
+
+    @Override
+    public void peekEach(Consumer<? super W> action) {
+        // TODO Auto-generated method stub
+        
     }
 }

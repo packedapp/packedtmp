@@ -109,17 +109,6 @@ public abstract class Wirelet {
         return WireletArray.of(combine(wirelets), this);
     }
 
-
-    // cannot be consumed individually. Only as either
-    // List or Set....
-    // Must be a super type of this wirelet type
-    // Is inherited
-    // Can only be a part of one aggregate type...
-    // And can only be injected as an aggregate type
-    protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
-        WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).stackBy(wireletType);
-    }
-
     /**
      * A static initializer method that indicates that the wirelet must be specified at build-time.
      * 
@@ -191,7 +180,6 @@ public abstract class Wirelet {
         return WireletArray.of(wirelets);
     }
 
-
     /**
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
@@ -207,6 +195,17 @@ public abstract class Wirelet {
         return new OverrideNameWirelet(name);
     }
 }
+
+//
+//// cannot be consumed individually. Only as either
+//// List or Set....
+//// Must be a super type of this wirelet type
+//// Is inherited
+//// Can only be a part of one aggregate type...
+//// And can only be injected as an aggregate type
+//protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
+//  WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).stackBy(wireletType);
+//}
 ///**
 //* This
 //* 

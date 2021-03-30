@@ -136,15 +136,15 @@ public abstract class Assembly<C extends ComponentConfiguration> {
             try {
                 build();
             } finally {
-                // sets Assembly.configuration to a marker that indicates the assembly has been consumed
+                // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
             }
         } else if (existing == USED) {
             // Assembly has already been used (successfully or unsuccessfully)
-            throw new IllegalStateException("This assembly has already been used, type = " + getClass());
+            throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
         } else {
             // Can be this thread or another thread that is already using the assembly.
-            throw new IllegalStateException("This assembly is currently being used elsewhere, type = " + getClass());
+            throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
     }
 
@@ -160,7 +160,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
 
-    final <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wirelet) {
+    final <T extends Wirelet> WireletList<T> wirelets(Class<T> wirelet) {
         // Jeg ved ikke hvor tid vi har brug for den her...
         throw new UnsupportedOperationException();
     }

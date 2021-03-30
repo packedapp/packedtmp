@@ -31,8 +31,9 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.Composer;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletHandle;
+import app.packed.component.WireletList;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
@@ -60,6 +61,14 @@ import packed.internal.container.ExtensionSetup;
 // Det er jo ikke rigtig tilfaeldet mere... efter vi har lavet om...
 public /* sealed */ interface ExtensionConfiguration {
 
+    default <C extends Composer<ExtensionWireletConfiguration>> void compose(C composer, Consumer<? super C> consumer) {
+        // Composer implementation must be in same module as the extension
+
+        // Hvad faar man af configuration????? 
+        // ExtensionConfiguration og saa user wire??? Hmm ExtensionConfiguration extender ikke ComponentConfiguration
+        // Eller container configuration???? Folk man skal ikke kunne faa fat paa extensions...
+        /// Eller noget helt tredje????
+    }
     // ComponentAttributes
 
     /**
@@ -238,7 +247,7 @@ public /* sealed */ interface ExtensionConfiguration {
      *            the type of wirelet to return a handle for
      * @return
      */
-    <T extends Wirelet> WireletHandle<T> wirelets(Class<T> wireletType);
+    <T extends Wirelet> WireletList<T> wirelets(Class<T> wireletType);
 
     @Nullable
     private static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
@@ -264,8 +273,8 @@ public /* sealed */ interface ExtensionConfiguration {
                     + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
         }
 
-        ContainerSetup compConf = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
-        return compConf.getExtensionContext(extensionClass);
+        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
+        return container.getExtensionContext(extensionClass);
     }
 
     /**

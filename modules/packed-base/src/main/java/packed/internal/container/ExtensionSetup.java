@@ -48,11 +48,13 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
+    /**
+     * If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean no ancestors
+     * <p>
+     * An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.  
+     **/
     @Nullable
     ExtensionSetup ancestor;
-
-    /** Whether {@link #ancestor} is a direct parent or "just" an ancestor. */
-    boolean ancestorIsParent; // kan jo teste med ancestor.continer = container.parent
 
     /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
     @Nullable
@@ -129,7 +131,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     Extension injectParent() {
         ContainerSetup parent = container.containerParent;
         if (parent != null) {
-            ExtensionSetup extensionContext = parent.getExtensionContext(extensionClass());
+            ExtensionSetup extensionContext = parent.extensions.get(extensionClass());
             if (extensionContext != null) {
                 return extensionContext.instance;
             }
@@ -235,7 +237,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = container.useDependencyCheckedExtension(subExtensionClass, this).instance;
+        Extension instance = container.useExtension(subExtensionClass, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) subModel.newInstance(instance, extensionClass());
@@ -252,12 +254,14 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     public <T extends Wirelet> PackedWireletHandle<T> wirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
-        // We only allow consummation of wirelets in the same module as the extension
+        // We only allow consummation of wirelets in the same module as the extension class
+        // Otherwise people would be able to use something like wirelets(ServiceWirelet.provide(..).getClass()).consumeAll
         Module m = model.extensionClass().getModule();
         if (m != wireletClass.getModule()) {
             throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
+
         // The extension does not store any wirelets itself, fetch them from the extension's container instead
         WireletWrapper wirelets = container.wirelets;
         if (wirelets == null || wirelets.unconsumed() == 0) {
@@ -280,12 +284,15 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);
 
-        // Jeg taenker faktisk at vi skal wire Extension allerede naar vi tilfoejer den...
-        // Og ikke naar den extension lukker...
-
+        // Connect to ancestors
+        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
+        
         // Creates a new extension instance
         Extension instance = extension.instance = model.newInstance(extension);
         VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension (setup)
+
+        // Add the extension to the container's extension map
+        container.extensions.put(extensionClass, extension);
 
         // Invoke Extension#onNew()
         try {
@@ -293,6 +300,10 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+
+        // The extension has been now been fully wired, run any notifications
+        // Move up before OnNew???
+        extension.onWire();
 
         return extension;
     }

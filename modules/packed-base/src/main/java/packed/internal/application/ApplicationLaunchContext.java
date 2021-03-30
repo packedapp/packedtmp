@@ -32,7 +32,7 @@ import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /**
- * An instantiation context is created every time an artifact is being instantiated.
+ * A temporary context object that is created when launching an application.
  * <p>
  * Describes which phases it is available from
  * <p>
@@ -43,6 +43,8 @@ import packed.internal.invoke.constantpool.ConstantPool;
 
 // MethodHandle stableAccess(Object[] array) <-- returns 
 public final class ApplicationLaunchContext {
+
+    public final ApplicationSetup application;
 
     /** The runtime component node we are building. */
     public PackedComponent component;
@@ -56,11 +58,12 @@ public final class ApplicationLaunchContext {
     @Nullable
     private final WireletWrapper wirelets;
 
-    private ApplicationLaunchContext(ContainerSetup root, WireletWrapper wirelets) {
-        this.container = root;
+    private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
+        this.application = requireNonNull(application);
+        this.container = application.container;
         this.wirelets = wirelets;
-        this.name = root.name;
-        this.launchMode = root.application.launchMode();
+        this.name = container.name;
+        this.launchMode = application.launchMode();
     }
 
     /**
@@ -104,15 +107,26 @@ public final class ApplicationLaunchContext {
         return wirelets;
     }
 
-    static <A> A launch(PackedApplicationDriver<A> driver, ContainerSetup container, Wirelet[] wirelets) {
-        requireNonNull(wirelets, "wirelets is null");
+    /**
+     * @param <A>
+     *            the type of application shell
+     * @param driver
+     *            the driver of the application
+     * @param application
+     * @param wirelets
+     * @return
+     */
+    static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+        assert driver == application.driver;
+        ContainerSetup container = application.container;
 
-        ApplicationLaunchContext pic = new ApplicationLaunchContext(container,
-                container.build.isImage() ? WireletWrapper.forImageInstantiate(container, wirelets) : null);
+        ApplicationLaunchContext pic = new ApplicationLaunchContext(application, wirelets);
 
-        for (Wirelet w : wirelets) {
-            if (w instanceof InternalWirelet iw) {
-                iw.onImageInstantiation(container, pic);
+        if (wirelets != null) {
+            for (Wirelet w : wirelets.wirelets) {
+                if (w instanceof InternalWirelet iw) {
+                    iw.onImageInstantiation(container, pic);
+                }
             }
         }
 
@@ -125,8 +139,7 @@ public final class ApplicationLaunchContext {
         if (container.modifiers().hasRuntime()) {
             pic.component.pool.container().onInitialized(container, pic);
         }
-        
-        
+
         return driver.newApplication(pic);
 
     }

@@ -82,7 +82,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
         }
     }
 
-    static Wirelet[] flatten(Wirelet[] wirelets) {
+    public static Wirelet[] flatten(Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         return switch (wirelets.length) {
         case 0 -> EMPTY;

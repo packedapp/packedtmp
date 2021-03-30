@@ -14,6 +14,8 @@ import packed.internal.component.PackedWireletHandle;
 // Component
 // WireletReceiver
 /**
+ * A consumable list of wirelets.
+ * 
  * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
  * can do what you want
  * 
@@ -22,29 +24,53 @@ import packed.internal.component.PackedWireletHandle;
  *           unlikely to effect performance.
  */
 //WireletContainer/WireletHolder/WireletBag
-public /* sealed */ interface WireletHandle<W extends Wirelet> {
 
-    default List<W> consumeAll() {
+// Do we want to have partial consumes at all??? I cannot think of any usecase.
+// When it is not handled
+
+// TODO
+// Implement iterator
+// Must have matching peek versions of everything
+
+// ConsumeAll -> returns whether or not we have any match, useful for boolean is present wirelets
+// ConsumeAll -> returns latest
+// ConsumeAll -> Fails if more than 1.. (or is this in extension model... probably bad in extensions model.. We need to iterate though all every time then
+
+public /* sealed */ interface WireletList<W extends Wirelet> {
+
+    /**
+     * @return true if at least one wirelet was consumed, false otherwise
+     */
+    default boolean consumeAll() {
+        throw new UnsupportedOperationException();
+    }
+
+    default List<W> consumeAllToList() {
         throw new UnsupportedOperationException();
     }
 
     void consumeEach(Consumer<? super W> action);
 
     /** {@return the number of unconsumed wirelets} */
-    int count();
+
+    /**
+     * Returns the number of unconsumed wirelets in this list.
+     * <p>
+     * This operation will <strong>not</strong> consume any wirelets.
+     * 
+     * @return the number of unconsumed wirelets
+     */
+    int size();
 
     /**
      * Returns whether or not this handle contains any unconsumed matching wirelets. Consuming each and every matching
      * wirelet.
      * <p>
+     * This operation will <strong>not</strong> consume any wirelets.
      * 
      * @return true if at least one matching wirelet, false otherwise
-     * @throws IllegalStateException
-     *             if this handler has been handled
      */
-    boolean isAbsent(); // hasMatch
-
-    boolean isPresent();
+    boolean isEmpty(); // hasMatch
 
     // forEach
     // will consume any matching wirelet and return the last one..
@@ -55,6 +81,8 @@ public /* sealed */ interface WireletHandle<W extends Wirelet> {
         throw new UnsupportedOperationException();
     }
 
+    void peekEach(Consumer<? super W> action);
+
     /**
      * Returns a wirelet handle with no wirelets to consume
      * 
@@ -62,14 +90,14 @@ public /* sealed */ interface WireletHandle<W extends Wirelet> {
      *            the {@code WireletHandle}'s element type
      * @return an empty wirelet handle
      */
-    public static <W extends Wirelet> WireletHandle<W> of() {
+    public static <W extends Wirelet> WireletList<W> of() {
         return PackedWireletHandle.of();
     }
 
     // Hvad skal vi bruge den her til??? Testing primaert ville jeg mene...
     // Hvad med dem der ikke bliver consumet? skal vi have en WireletHandle.peekCount()???
     @SafeVarargs
-    static <W extends Wirelet> WireletHandle<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
+    static <W extends Wirelet> WireletList<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
         return PackedWireletHandle.of(wireletClass, wirelets);
     }
 }
