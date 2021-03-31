@@ -25,8 +25,8 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.TypeVariable;
 import java.util.Optional;
 
-import packed.internal.component.variable.FieldVariable;
-import packed.internal.component.variable.ParameterVariable;
+import packed.internal.hooks.variable.FieldVariable;
+import packed.internal.hooks.variable.ParameterVariable;
 
 /**
  * {@code AnnotatedVariable} represents a type and an annotated element. A variable is simple wrapper around a

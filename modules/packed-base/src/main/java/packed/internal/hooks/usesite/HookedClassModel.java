@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
+import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.invoke.ClassMemberAccessor;
@@ -85,8 +87,8 @@ public final class HookedClassModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static HookedClassModel newModel(ClassMemberAccessor oc) {
-        return new Builder(oc).build();
+    public static HookedClassModel newModel(ClassMemberAccessor oc, @Nullable ExtensionModel extension) {
+        return new Builder(oc, extension).build();
     }
 
     /** A builder object for {@link HookedClassModel}. */
@@ -104,6 +106,10 @@ public final class HookedClassModel {
 
         final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
 
+        // In order to use @Provide, FooExtension must have ServiceExtension as a dependency.
+        @Nullable
+        final ExtensionModel extension;
+
         /**
          * Creates a new component model builder
          * 
@@ -111,9 +117,10 @@ public final class HookedClassModel {
          *            a class processor usable by hooks
          * 
          */
-        public Builder(ClassMemberAccessor cp) {
+        public Builder(ClassMemberAccessor cp, ExtensionModel extension) {
             super(cp.type());
             this.oc = requireNonNull(cp);
+            this.extension = extension;
         }
 
         /**
@@ -142,8 +149,7 @@ public final class HookedClassModel {
         }
 
         UseSiteClassHookModel.Builder manageMemberBy(UseSiteMemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
-            return classes.computeIfAbsent(classBootStrap,
-                    c -> new UseSiteClassHookModel.Builder(this, ClassHookModel.ofManaged(classBootStrap)));
+            return classes.computeIfAbsent(classBootStrap, c -> new UseSiteClassHookModel.Builder(this, ClassHookModel.ofManaged(classBootStrap)));
         }
 
         @Override
@@ -161,25 +167,26 @@ public final class HookedClassModel {
         }
     }
 
-    // Ideen er lidt at vi ikke laver metoder for mange gange...
-    // Vi kan maaske endda cache dem... Saa hvis vi har en shared
-    // abstract class saa kan vi genbruge den..
-    // Ved ikke lige med mht til MethodHandle???
-    // Et array, med entries for already resolved MethodHandle
-//    class ScannedClass {
-//        @Nullable
-//        Constructor<?>[] constructors; // nah..
-//        @Nullable
-//        Field[] declaredFields;
-//        @Nullable
-//        Method[] declaredMethods;
-//        @Nullable
-//        ScannedClass parent;
-//        final Class<?> type;
-//
-//        ScannedClass(Class<?> type) {
-//            this.type = requireNonNull(type);
-//        }
-//
-//    }
 }
+
+// Ideen er lidt at vi ikke laver metoder for mange gange...
+// Vi kan maaske endda cache dem... Saa hvis vi har en shared
+// abstract class saa kan vi genbruge den..
+// Ved ikke lige med mht til MethodHandle???
+// Et array, med entries for already resolved MethodHandle
+//class ScannedClass {
+//    @Nullable
+//    Constructor<?>[] constructors; // nah..
+//    @Nullable
+//    Field[] declaredFields;
+//    @Nullable
+//    Method[] declaredMethods;
+//    @Nullable
+//    ScannedClass parent;
+//    final Class<?> type;
+//
+//    ScannedClass(Class<?> type) {
+//        this.type = requireNonNull(type);
+//    }
+//
+//}

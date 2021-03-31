@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.variable;
+package packed.internal.hooks.variable;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;

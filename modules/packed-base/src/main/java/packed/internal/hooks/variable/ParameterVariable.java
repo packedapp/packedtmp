@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.variable;
+package packed.internal.hooks.variable;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.Parameter;
 import java.util.Optional;
 
 import app.packed.base.TypeToken;
@@ -25,14 +25,14 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class TypeVariableVariable extends AbstractAnnotatedVariable {
+public final class ParameterVariable extends AbstractAnnotatedVariable {
 
-    final TypeVariable<?> p;
+    final Parameter p;
 
     /**
      * @param e
      */
-    public TypeVariableVariable(TypeVariable<?> e) {
+    public ParameterVariable(Parameter e) {
         super(e);
         this.p = requireNonNull(e);
     }
@@ -46,7 +46,7 @@ public final class TypeVariableVariable extends AbstractAnnotatedVariable {
     /** {@inheritDoc} */
     @Override
     public Class<?> rawType() {
-        return p.getGenericDeclaration().getClass();
+        return p.getType();
     }
 
     /** {@inheritDoc} */

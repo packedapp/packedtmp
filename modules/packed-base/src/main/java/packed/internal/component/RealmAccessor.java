@@ -34,8 +34,7 @@ import packed.internal.util.ThrowableUtil;
  * This class exists because we have two ways to access the members of a component instance. One with a {@link Lookup}
  * object, and one using whatever power a module descriptor has given us.
  */
-// Realm Accessor
-public abstract class RealmAccessor {
+abstract class RealmAccessor {
 
     /** Calls package-private method Factory.toMethodHandle(Lookup). */
     private static final MethodHandle MH_FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
@@ -47,7 +46,7 @@ public abstract class RealmAccessor {
         @Override
         protected HookedClassModel computeValue(Class<?> type) {
             ClassMemberAccessor oc = ClassMemberAccessor.of(lookup(), type);
-            return HookedClassModel.newModel(oc);
+            return HookedClassModel.newModel(oc, null);
         }
     };
 
@@ -65,7 +64,7 @@ public abstract class RealmAccessor {
         }
     }
 
-    public abstract RealmAccessor withLookup(Lookup lookup);
+    abstract RealmAccessor withLookup(Lookup lookup);
 
     /**
      * A realm that makes use of a explicitly registered lookup object, for example, via ContainerAssembly#lookup(Lookup).
@@ -89,7 +88,7 @@ public abstract class RealmAccessor {
         }
 
         @Override
-        public RealmAccessor withLookup(Lookup lookup) {
+        RealmAccessor withLookup(Lookup lookup) {
             return parent.withLookup(lookup);
         }
     }
@@ -149,7 +148,7 @@ public abstract class RealmAccessor {
                 try {
                     l = cachedLookup = MethodHandles.privateLookupIn(type, l);
                 } catch (IllegalAccessException ignore) {
-                    //e.printStackTrace();
+                    // e.printStackTrace();
                 }
             }
             return l;
@@ -160,7 +159,7 @@ public abstract class RealmAccessor {
          *            the lookup object
          * @return the new realm
          */
-        public RealmAccessor withLookup(Lookup lookup) {
+       RealmAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 
             // We need to check this in a separate class. Because from Java 13.
@@ -186,7 +185,7 @@ public abstract class RealmAccessor {
          *            the container source type
          * @return a container source model for the specified type
          */
-        public static RealmAccessor.WithModuleInfo of(Class<?> sourceType) {
+        static RealmAccessor.WithModuleInfo of(Class<?> sourceType) {
             return MODELS.get(sourceType);
         }
     }
