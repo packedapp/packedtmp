@@ -34,7 +34,6 @@ import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 import packed.internal.component.source.MethodHookModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.ClassMemberAccessor;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -123,9 +122,8 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
         /** {@inheritDoc} */
         @Override
         protected BootstrapClassMethodHookModel build() {
-            ClassMemberAccessor oc = ib.oc();
             
-            scan(oc.type(), false, MethodHook.Bootstrap.class);
+            scan(false, MethodHook.Bootstrap.class);
             
             return new BootstrapClassMethodHookModel(this);
         }

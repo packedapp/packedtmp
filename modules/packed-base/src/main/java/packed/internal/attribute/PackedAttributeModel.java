@@ -43,26 +43,39 @@ public class PackedAttributeModel {
 
     @Nullable
     public static PackedAttributeModel analyse(ClassMemberAccessor oc) {
-        // OpenClass oc = new OpenClass(MethodHandles.lookup(), c, true);
-        HashMap<PackedAttribute<?>, Attt> types = new HashMap<>();
-        new ClassScanner() {
-            
-            @Override
-            protected void onMethod(Method method) {
-                ExposeAttribute ap = method.getAnnotation(ExposeAttribute.class);
-                if (ap != null) {
-                    PackedAttribute<?> pa = ClassAttributes.find(ap);
-                    requireNonNull(pa, "Unknown Attribute " + ap + " on " + oc.type());
-                    MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    types.put(pa, new Attt(mh, method.isAnnotationPresent(Nullable.class)));
-                }
-            }
-        }.scan(oc.type(), false, Object.class);
-        
-        if (types.isEmpty()) {
-            return null;
+        return new Builder(oc).build();
+    }
+
+    static class Builder extends ClassScanner {
+        final ClassMemberAccessor oc;
+
+        protected Builder(ClassMemberAccessor oc) {
+            super(oc.type());
+            this.oc = oc;
         }
-        return new PackedAttributeModel(types);
+
+        @Nullable
+        private PackedAttributeModel build() {
+            scan(false, Object.class);
+            if (types.isEmpty()) {
+                return null;
+            }
+            return new PackedAttributeModel(types);
+        }
+
+        HashMap<PackedAttribute<?>, Attt> types = new HashMap<>();
+
+        @Override
+        protected void onMethod(Method method) {
+            ExposeAttribute ap = method.getAnnotation(ExposeAttribute.class);
+            if (ap != null) {
+                PackedAttribute<?> pa = ClassAttributes.find(ap);
+                requireNonNull(pa, "Unknown Attribute " + ap + " on " + classToScan);
+                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                types.put(pa, new Attt(mh, method.isAnnotationPresent(Nullable.class)));
+            }
+        }
+
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

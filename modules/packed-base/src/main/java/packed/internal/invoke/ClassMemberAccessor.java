@@ -32,7 +32,6 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.FindInjectableConstructor;
 import packed.internal.util.NativeImage;
 import packed.internal.util.StringFormatter;
-import packed.internal.util.ThrowableConsumer;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -92,15 +91,6 @@ public final class ClassMemberAccessor {
 
     public MethodHandle resolve(MethodHandleBuilder builder, Constructor<?> constructor) {
         return new MethodHandleBuilderHelper(this, constructor, builder).find();
-    }
-
-    public <T extends Throwable> void findMethods(ThrowableConsumer<? super Method, T> methodConsumer) throws T {
-        ClassMemberAccessorHelper.find(Object.class, type, methodConsumer, null);
-    }
-
-    public <T extends Throwable> void findMethodsAndFields(ThrowableConsumer<? super Method, T> methodConsumer,
-            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        ClassMemberAccessorHelper.find(Object.class, type, methodConsumer, fieldConsumer);
     }
 
     private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {

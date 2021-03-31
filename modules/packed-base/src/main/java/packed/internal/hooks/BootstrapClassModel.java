@@ -66,8 +66,6 @@ public abstract class BootstrapClassModel<T> {
 
         final InstantiatorBuilder ib;
 
-        final Class<?> bootstrapClass;
-
         // If we get a shared Sidecar we can have a single MethodHandle configure
         /**
          * Creates a new builder.
@@ -76,8 +74,8 @@ public abstract class BootstrapClassModel<T> {
          *            the bootstrap implementation
          */
         Builder(Class<?> bootstrapImplementation) {
+            super(bootstrapImplementation);
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), bootstrapImplementation);
-            this.bootstrapClass = bootstrapImplementation;
         }
 
         /**

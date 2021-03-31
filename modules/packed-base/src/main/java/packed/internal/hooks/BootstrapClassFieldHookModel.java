@@ -29,7 +29,6 @@ import app.packed.hooks.FieldHook.Bootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.ClassMemberAccessor;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
 public final class BootstrapClassFieldHookModel extends BootstrapClassModel<FieldHook.Bootstrap> {
@@ -90,8 +89,7 @@ public final class BootstrapClassFieldHookModel extends BootstrapClassModel<Fiel
         /** {@inheritDoc} */
         @Override
         protected BootstrapClassFieldHookModel build() {
-            ClassMemberAccessor oc = ib.oc();
-            scan(oc.type(), false, FieldHook.Bootstrap.class);
+            scan(false, FieldHook.Bootstrap.class);
             return new BootstrapClassFieldHookModel(this);
         }
 

@@ -34,6 +34,7 @@ import packed.internal.hooks.BootstrapClassClassHookModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.Dependant;
 import packed.internal.invoke.ClassMemberAccessor;
+import packed.internal.invoke.ClassScanner;
 
 /** A model of a class source. */
 public final class ClassSourceModel {
@@ -114,7 +115,7 @@ public final class ClassSourceModel {
     }
 
     /** A builder object for {@link ClassSourceModel}. */
-    static final class Builder {
+    static final class Builder extends ClassScanner {
 
         final Map<Class<? extends ClassHook.Bootstrap>, ClassHookModel.Builder> classes = new HashMap<>();
 
@@ -136,6 +137,7 @@ public final class ClassSourceModel {
          * 
          */
         Builder(ClassMemberAccessor cp) {
+            super(cp.type());
             this.oc = requireNonNull(cp);
         }
 
@@ -155,8 +157,9 @@ public final class ClassSourceModel {
             // findAnnotatedTypes(htp, componentType);
             // Inherited annotations???
 
-            oc.findMethodsAndFields(method -> MethodHookModel.process(this, method), field -> FieldHookModel.process(this, field));
 
+            scan(true, Object.class);
+            
             // Finish all classes
             for (ClassHookModel.Builder b : classes.values()) {
                 b.complete();
@@ -166,6 +169,16 @@ public final class ClassSourceModel {
 
         ClassHookModel.Builder manageMemberBy(MemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
             return classes.computeIfAbsent(classBootStrap, c -> new ClassHookModel.Builder(this, BootstrapClassClassHookModel.ofManaged(classBootStrap)));
+        }
+
+        @Override
+        protected void onField(Field field) {
+            FieldHookModel.process(this, field);
+        }
+
+        @Override
+        protected void onMethod(Method method) {
+            MethodHookModel.process(this, method);
         }
 
         Class<?> type() {

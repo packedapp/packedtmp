@@ -1,5 +1,7 @@
 package packed.internal.invoke;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -12,17 +14,23 @@ public abstract class ClassScanner {
     /** We never process classes that are located in the java.base module. */
     private static final Module JAVA_BASE_MODULE = Class.class.getModule();
 
+    protected final Class<?> classToScan;
+
+    protected ClassScanner(Class<?> classToScan) {
+        this.classToScan = requireNonNull(classToScan);
+    }
+
     protected abstract void onMethod(Method method);
 
     protected void onField(Field field) {}
 
-    public final void scan(Class<?> actualType, boolean reflectOnFields, Class<?> baseType) {
+    public final void scan(boolean reflectOnFields, Class<?> baseType) {
         HashSet<Package> packages = new HashSet<>();
         HashMap<Helper, HashSet<Package>> types = new HashMap<>();
 
         // Step 1, .getMethods() is the easiest way to find all default methods. Even if we also have to call
         // getDeclaredMethods() later.
-        for (Method m : actualType.getMethods()) {
+        for (Method m : classToScan.getMethods()) {
             // Filter methods whose from java.base module and bridge methods
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
@@ -31,11 +39,11 @@ public abstract class ClassScanner {
                 onMethod(m);// move this to step 2???
             }
         }
-        
+
         // Step 2 process all declared methods
-        
-        // Maybe some kind of detection if current type (c) switches modules. 
-        for (Class<?> c = actualType; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
+
+        // Maybe some kind of detection if current type (c) switches modules.
+        for (Class<?> c = classToScan; c != baseType && c.getModule() != JAVA_BASE_MODULE; c = c.getSuperclass()) {
             // First process every field
             if (reflectOnFields) {
                 for (Field field : c.getDeclaredFields()) {
@@ -45,7 +53,7 @@ public abstract class ClassScanner {
             for (Method m : c.getDeclaredMethods()) {
                 int mod = m.getModifiers();
                 if (Modifier.isStatic(mod)) {
-                    if (c == actualType && !Modifier.isPublic(mod)) { // we have already processed public static methods
+                    if (c == classToScan && !Modifier.isPublic(mod)) { // we have already processed public static methods
                         // only include static methods in the top level class
                         // We do this, because it would be strange to include
                         // static methods on any interfaces this class implements.
