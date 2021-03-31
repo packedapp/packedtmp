@@ -31,7 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ContextMethodProvide;
-import packed.internal.hooks.FieldHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassFieldHookModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -58,12 +58,12 @@ public final class FieldHookModel extends MemberHookModel {
     private final Field field;
 
     /** A model of the field hooks bootstrap. */
-    private final FieldHookBootstrapModel model;
+    private final BootstrapClassFieldHookModel model;
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
-    FieldHookModel(Builder builder, Field method, FieldHookBootstrapModel model, VarHandle mh) {
+    FieldHookModel(Builder builder, Field method, BootstrapClassFieldHookModel model, VarHandle mh) {
         super(builder, List.of());
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
@@ -105,7 +105,7 @@ public final class FieldHookModel extends MemberHookModel {
     static void process(ClassSourceModel.Builder source, Field field) {
         VarHandle varHandle = null;
         for (Annotation a : field.getAnnotations()) {
-            FieldHookBootstrapModel model = FieldHookBootstrapModel.getModelForAnnotatedMethod(a.annotationType());
+            BootstrapClassFieldHookModel model = BootstrapClassFieldHookModel.getModelForAnnotatedMethod(a.annotationType());
             if (model != null) {
                 // We can have more than 1 sidecar attached to a method
                 if (varHandle == null) {
@@ -124,16 +124,16 @@ public final class FieldHookModel extends MemberHookModel {
     public static final class Builder extends MemberHookModel.Builder {
         final Field field;
 
-        final FieldHookBootstrapModel model;
+        final BootstrapClassFieldHookModel model;
 
-        Builder(ClassHookModel.Builder classBuilder, FieldHookBootstrapModel model, Field field) {
+        Builder(ClassHookModel.Builder classBuilder, BootstrapClassFieldHookModel model, Field field) {
             super(classBuilder.source, model);
             this.model = model;
             this.field = field;
             this.managedBy = classBuilder;
         }
 
-        Builder(ClassSourceModel.Builder source, FieldHookBootstrapModel model, Field field) {
+        Builder(ClassSourceModel.Builder source, BootstrapClassFieldHookModel model, Field field) {
             super(source, model);
             this.model = model;
             this.field = field;

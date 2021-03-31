@@ -17,6 +17,7 @@ package packed.internal.hooks;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,13 +32,13 @@ import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.ClassMemberAccessor;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
-public final class FieldHookBootstrapModel extends AbstractHookBootstrapModel<FieldHook.Bootstrap> {
+public final class BootstrapClassFieldHookModel extends BootstrapClassModel<FieldHook.Bootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
-    static final ClassValue<FieldHookBootstrapModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
+    static final ClassValue<BootstrapClassFieldHookModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
 
         @Override
-        protected FieldHookBootstrapModel computeValue(Class<?> type) {
+        protected BootstrapClassFieldHookModel computeValue(Class<?> type) {
             FieldHook afs = type.getAnnotation(FieldHook.class);
             return afs == null ? null : new Builder(afs).build();
         }
@@ -54,7 +55,7 @@ public final class FieldHookBootstrapModel extends AbstractHookBootstrapModel<Fi
      * @param builder
      *            the builder
      */
-    private FieldHookBootstrapModel(Builder builder) {
+    private BootstrapClassFieldHookModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
         Map<Key<?>, ContextMethodProvide> tmp = new HashMap<>();
@@ -63,16 +64,16 @@ public final class FieldHookBootstrapModel extends AbstractHookBootstrapModel<Fi
     }
 
     @Nullable
-    public static FieldHookBootstrapModel getModelForAnnotatedMethod(Class<? extends Annotation> c) {
+    public static BootstrapClassFieldHookModel getModelForAnnotatedMethod(Class<? extends Annotation> c) {
         return ANNOTATION_ON_METHOD_SIDECARS.get(c);
     }
 
-    public static FieldHookBootstrapModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {
+    public static BootstrapClassFieldHookModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
-    /** A builder for for a {@link FieldHookBootstrapModel}. */
-    private final static class Builder extends AbstractHookBootstrapModel.Builder<FieldHook.Bootstrap> {
+    /** A builder for for a {@link BootstrapClassFieldHookModel}. */
+    private final static class Builder extends BootstrapClassModel.Builder<FieldHook.Bootstrap> {
 
         private MethodHandle onInitialize;
 
@@ -88,29 +89,31 @@ public final class FieldHookBootstrapModel extends AbstractHookBootstrapModel<Fi
 
         /** {@inheritDoc} */
         @Override
-        protected FieldHookBootstrapModel build() {
+        protected BootstrapClassFieldHookModel build() {
             ClassMemberAccessor oc = ib.oc();
-            oc.findMethods(m -> {
-                Provide ap = m.getAnnotation(Provide.class);
-                if (ap != null) {
-                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    ContextMethodProvide.Builder b = new ContextMethodProvide.Builder(m, mh);
-                    if (providing.putIfAbsent(b.key, b) != null) {
-                        throw new InternalExtensionException("Multiple methods on " + oc.type() + " that provide " + b.key);
-                    }
-                }
+            scan(oc.type(), false, FieldHook.Bootstrap.class);
+            return new BootstrapClassFieldHookModel(this);
+        }
 
-                OnInitialize oi = m.getAnnotation(OnInitialize.class);
-                if (oi != null) {
-                    if (onInitialize != null) {
-                        throw new IllegalStateException(oc.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
-                    }
-                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    onInitialize = mh;
+        @Override
+        protected void onMethod(Method method) {
+            Provide ap = method.getAnnotation(Provide.class);
+            if (ap != null) {
+                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                ContextMethodProvide.Builder b = new ContextMethodProvide.Builder(method, mh);
+                if (providing.putIfAbsent(b.key, b) != null) {
+                    throw new InternalExtensionException("Multiple methods on " + ib.type() + " that provide " + b.key);
                 }
-            });
+            }
 
-            return new FieldHookBootstrapModel(this);
+            OnInitialize oi = method.getAnnotation(OnInitialize.class);
+            if (oi != null) {
+                if (onInitialize != null) {
+                    throw new IllegalStateException(ib.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
+                }
+                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                onInitialize = mh;
+            }
         }
     }
 }

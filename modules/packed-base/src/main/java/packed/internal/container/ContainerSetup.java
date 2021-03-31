@@ -47,7 +47,7 @@ import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 
-/** The internal configuration of a container. */
+/** Build-time configuration of a container. */
 public final class ContainerSetup extends WireableComponentSetup {
 
     /** Child containers, lazy initialized (we rely on this in ExtensionSetup) */

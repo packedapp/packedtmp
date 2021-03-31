@@ -18,11 +18,12 @@ package packed.internal.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
+import packed.internal.invoke.ClassScanner;
 import packed.internal.invoke.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /** An abstract base class for bootstrap hook classes. */
-public abstract class AbstractHookBootstrapModel<T> {
+public abstract class BootstrapClassModel<T> {
 
     /** A method handle for the bootstrap's constructor. */
     private final MethodHandle mhConstructor; // ()Object
@@ -33,7 +34,7 @@ public abstract class AbstractHookBootstrapModel<T> {
      * @param builder
      *            the builder.
      */
-    protected AbstractHookBootstrapModel(Builder<T> builder) {
+    protected BootstrapClassModel(Builder<T> builder) {
         this.mhConstructor = builder.ib.build();
     }
 
@@ -61,9 +62,11 @@ public abstract class AbstractHookBootstrapModel<T> {
     }
 
     /** A builder for a bootstrap model. */
-    static abstract class Builder<T> {
+    static abstract class Builder<T> extends ClassScanner {
 
         final InstantiatorBuilder ib;
+
+        final Class<?> bootstrapClass;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
         /**
@@ -74,6 +77,7 @@ public abstract class AbstractHookBootstrapModel<T> {
          */
         Builder(Class<?> bootstrapImplementation) {
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), bootstrapImplementation);
+            this.bootstrapClass = bootstrapImplementation;
         }
 
         /**
@@ -81,10 +85,6 @@ public abstract class AbstractHookBootstrapModel<T> {
          * 
          * @return the new model
          */
-        protected abstract AbstractHookBootstrapModel<T> build();
-    }
-
-    static enum Scope {
-        BOOTSTRAP, BUILD, BUILD_INSTANCE; // skal vi separere mellem BUILD_INSTANCE og build_Construct
+        protected abstract BootstrapClassModel<T> build();
     }
 }

@@ -25,14 +25,16 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public class PackedAttribute<T> implements Attribute<T> {
+public final class PackedAttribute<T> implements Attribute<T> {
 
     private final String displayAs;
+
     private final String name;
 
     private final Class<?> owner;
 
     private final Class<?> rawType;
+
     private final TypeToken<T> typeLiteral;
 
     private PackedAttribute(Class<?> owner, String name, Class<?> rawType, TypeToken<T> typeLiteral) {
@@ -47,6 +49,11 @@ public class PackedAttribute<T> implements Attribute<T> {
     @Override
     public String displayAs() {
         return displayAs;
+    }
+
+    @Override
+    public boolean isHidden() {
+        return name().startsWith(".");
     }
 
     /** {@inheritDoc} */
@@ -84,17 +91,16 @@ public class PackedAttribute<T> implements Attribute<T> {
         return typeLiteral;
     }
 
-    @SuppressWarnings("deprecation")
     public static <T> Attribute<T> of(Lookup lookup, String name, Class<?> rawType, TypeToken<T> type, Option<?>[] options) {
         requireNonNull(lookup, "lookup is null");
         requireNonNull(name, "name is null");
         requireNonNull(type, "type is null");
         requireNonNull(options, "options is null");
-        if (!lookup.hasPrivateAccess()) {
-            throw new IllegalArgumentException("The specified lookup object must have full access");
+        if (!lookup.hasFullPrivilegeAccess()) {
+            throw new IllegalArgumentException("The specified lookup object must have full privilege access");
         }
         if (options.length > 0) {
-            AttributeBuilder ab = new AttributeBuilder();
+            Builder ab = new Builder();
             for (Option<?> o : options) {
                 ((PackedOption) o).process(ab);
             }
@@ -110,20 +116,30 @@ public class PackedAttribute<T> implements Attribute<T> {
         return of(lookup, name, type.rawType(), type, options);
     }
 
-    static class AttributeBuilder {
+    static class Builder implements Attribute.Builder {
+        boolean open;
 
+        public Builder open() {
+            open = true;
+            return this;
+        }
+
+        @Override
+        public Builder hidden() {
+            return this;
+        }
     }
 
     // Ideen er at alle options extender denne
     public static abstract class PackedOption implements Attribute.Option<Object> {
 
-        abstract void process(AttributeBuilder builder);
+        abstract void process(Builder builder);
 
         public static PackedOption someSome() {
             return new PackedOption() {
 
                 @Override
-                void process(AttributeBuilder builder) {}
+                void process(Builder builder) {}
             };
         }
     }

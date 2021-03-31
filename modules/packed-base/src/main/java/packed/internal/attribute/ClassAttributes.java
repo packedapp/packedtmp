@@ -25,7 +25,8 @@ import app.packed.attribute.ExposeAttribute;
  */
 public class ClassAttributes {
 
-    private static final ClassValue<Map<String, PackedAttribute<?>>> ATR = new ClassValue<>() {
+    /** Contains all defined attributes. */
+    private static final ClassValue<Map<String, PackedAttribute<?>>> ATTRIBUTES = new ClassValue<>() {
 
         @Override
         protected Map<String, PackedAttribute<?>> computeValue(Class<?> type) {
@@ -35,12 +36,13 @@ public class ClassAttributes {
             } catch (ClassNotFoundException e) {
                 // ignore
             }
+            
             return CV.get(type).close();
         }
     };
 
     public static PackedAttribute<?> find(Class<?> owner, String name) {
-        Map<String, PackedAttribute<?>> m = ATR.get(owner);
+        Map<String, PackedAttribute<?>> m = ATTRIBUTES.get(owner);
         if (m != null) {
             return m.get(name);
         }
@@ -56,7 +58,7 @@ public class ClassAttributes {
     }
 
     public static void printFor(Class<?> clazz) {
-        System.out.println(ATR.get(clazz));
+        System.out.println(ATTRIBUTES.get(clazz));
     }
 
     private static final ClassValue<Tmp> CV = new ClassValue<>() {

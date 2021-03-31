@@ -62,24 +62,21 @@ public /* sealed */ interface Attribute<T> {
      * 
      * @return whether or not the attribute is hidden.
      */
-    default boolean isHidden() {
-        return name().startsWith(".");
-    }
+    boolean isHidden();
 
     /**
      * Returns {@code true} if this is an open attribute.
      * <p>
+     * Attributes that are An open attribute can always be set by any one.
      *
-     * An open attribute can always be set by any one.
-     *
-     * @return {@code true} if this is an open attribute
+     * @return {@code true} if this is an open attribute, {@code false} otherwise
      */
     boolean isOpen();
 
     /**
      * Returns the module the attribute belongs to.
      * <p>
-     * The module is always the module in which {@link #owner()} is located.
+     * An attribute always belongs to the same module as its {@link #owner()}.
      * 
      * @return the module the attribute belongs to
      */
@@ -95,12 +92,12 @@ public /* sealed */ interface Attribute<T> {
     String name();
 
     /**
-     * Returns the class that declares the attribute.
+     * Returns the attribute's owner.
      * <p>
      * This class is always identical to the class returned by {@link Lookup#lookupClass()} of the lookup object that is
      * used for construction.
      * 
-     * @return the class that declares the attribute
+     * @return the attribute's owner
      * 
      * @see Lookup#lookupClass()
      */
@@ -149,6 +146,16 @@ public /* sealed */ interface Attribute<T> {
     }
 
     @SafeVarargs
+    static <T> Attribute<T> of2(Class<?> owner, String name, Class<T> type, Option<T>... options) {
+        // owner must be in same module as calling class
+        // use calling class
+
+        // Hooks should maybe take a MethodHandle that can extract the attribute value from
+        // the slot table
+        throw new UnsupportedOperationException();
+    }
+
+    @SafeVarargs
     static <T> Attribute<T> of2(String name, Class<T> type, Option<T>... options) {
         // I think we should use the calling class as owner...
         // And have one where we specify the owner but the owner must be in the same module as the calling class
@@ -156,17 +163,6 @@ public /* sealed */ interface Attribute<T> {
         throw new UnsupportedOperationException();
     }
 
-    @SafeVarargs
-    static <T> Attribute<T> of2(Class<?> owner, String name, Class<T> type, Option<T>... options) {
-        // owner must be in same module as calling class
-        // use calling class
-        
-        // Hooks should maybe take a MethodHandle that can extract the attribute value from
-        // the slot table
-        throw new UnsupportedOperationException();
-    }
-
-    
     // Use a builder...
     // And have methods with an without a builder
     /** Various options that can be specified when creating new attributes. */
@@ -217,6 +213,32 @@ public /* sealed */ interface Attribute<T> {
 //        static Option permanent() {
 //            throw new UnsupportedOperationException();
 //        }
+    }
+
+    interface Builder {
+
+        /**
+         * Attributes that are not open can only be set by code from the owner's module.
+         * 
+         * @return
+         */
+        Builder open();
+
+        // Problemet er at nu er size og isEmpty ikke constant operationer...
+        /**
+         * Marks the attribute as hidden.
+         * <p>
+         * Hidden attributes will never show in {@link AttributeMap#keys()} or {@link AttributeMap#entrySet()},
+         * {@link AttributeMap#isEmpty()}. All other methods work as normal.
+         * 
+         * @return this builder
+         */
+        
+        // Et alternativt kunne vaere at man man har en context som man altid accesser attribute maps i
+        // Saa man kan sige. Har Context readable adgang til owner?? Hvis ja hvis attributen. Hvis nej
+        // lad vaere
+        
+        Builder hidden(); // secret is maybe better
     }
 }
 //

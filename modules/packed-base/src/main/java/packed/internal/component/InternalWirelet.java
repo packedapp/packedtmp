@@ -38,7 +38,7 @@ public abstract class InternalWirelet extends Wirelet {
      *             if the specified component is not the root component of an application
      * @return the application of the component (for method chaining)
      */
-    protected ApplicationSetup checkApplication(ComponentSetup component) {
+    protected ApplicationSetup checkIsApplication(ComponentSetup component) {
         ApplicationSetup application = component.application;
         ComponentSetup parent = component.parent;
         if (parent != null && application == parent.application) {

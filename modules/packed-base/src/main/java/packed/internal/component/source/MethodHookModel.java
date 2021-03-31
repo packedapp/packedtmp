@@ -30,7 +30,7 @@ import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ContextMethodProvide;
-import packed.internal.hooks.MethodHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassMethodHookModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -46,7 +46,7 @@ public final class MethodHookModel extends MemberHookModel {
             "builder", MethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
-    public final MethodHookBootstrapModel bootstrapModel;
+    public final BootstrapClassMethodHookModel bootstrapModel;
 
     /** A direct method handle to the method. */
     private final MethodHandle directMethodHandle;
@@ -98,7 +98,7 @@ public final class MethodHookModel extends MemberHookModel {
     static void process(ClassSourceModel.Builder source, Method method) {
         Shared shared = null;
         for (Annotation a : method.getAnnotations()) {
-            MethodHookBootstrapModel model = MethodHookBootstrapModel.getForAnnotatedMethod(a.annotationType());
+            BootstrapClassMethodHookModel model = BootstrapClassMethodHookModel.getForAnnotatedMethod(a.annotationType());
             if (model != null) {
                 if (shared == null) {
                     shared = new Shared(source, method);
@@ -125,21 +125,21 @@ public final class MethodHookModel extends MemberHookModel {
         private Method exposedMethod;
 
         /** A model of the bootstrap class. */
-        private final MethodHookBootstrapModel model;
+        private final BootstrapClassMethodHookModel model;
 
         /** The shared context. */
         private final Shared shared;
 
         private final Method unsafeMethod;
 
-        Builder(MethodHookBootstrapModel model, Shared shared) {
+        Builder(BootstrapClassMethodHookModel model, Shared shared) {
             super(shared.source, model);
             this.shared = requireNonNull(shared);
             this.model = requireNonNull(model);
             this.unsafeMethod = shared.methodUnsafe;
         }
 
-        Builder(ClassSourceModel.Builder source, MethodHookBootstrapModel model, Method method) {
+        Builder(ClassSourceModel.Builder source, BootstrapClassMethodHookModel model, Method method) {
             this(model, new Shared(source, method));
         }
 

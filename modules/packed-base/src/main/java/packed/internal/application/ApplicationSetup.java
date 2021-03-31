@@ -20,7 +20,7 @@ import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
-/** Build-time configuration for an application. */
+/** Build-time configuration of an application. */
 public final class ApplicationSetup {
 
     /** The configuration of the main constant build. */
@@ -32,9 +32,13 @@ public final class ApplicationSetup {
     /** The driver of the applications. */
     public final PackedApplicationDriver<?> driver;
 
-    /** The launch mode of the application, may be updated via usage of {@link ApplicationWirelets#launchMode(RunState)}. */
+    /**
+     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)},
+     * both at build-time and if launched from an image.
+     */
     RunState launchMode;
 
+    //sync entrypoint
     @Nullable
     private MainThreadOfControl mainThread;
 
@@ -97,7 +101,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         protected void onBuild(ComponentSetup c) {
-            checkApplication(c).launchMode = launchMode;
+            checkIsApplication(c).launchMode = launchMode;
         }
 
         /** {@inheritDoc} */

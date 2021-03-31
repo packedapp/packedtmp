@@ -22,7 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.base.Nullable;
-import packed.internal.hooks.AbstractHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassModel;
 import packed.internal.hooks.VariableSidecarModel.VariableSidecarConfiguration;
 
 /**
@@ -32,7 +32,7 @@ import packed.internal.hooks.VariableSidecarModel.VariableSidecarConfiguration;
 // annotated with (non-qualifier)
 public abstract class VariableSidecar {
 
-    /** A sidecar configurations object. Updated by {@link AbstractHookBootstrapModel.Builder}. */
+    /** A sidecar configurations object. Updated by {@link BootstrapClassModel.Builder}. */
     @Nullable
     private VariableSidecarConfiguration configuration;
 

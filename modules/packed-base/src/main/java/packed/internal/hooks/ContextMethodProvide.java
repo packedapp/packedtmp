@@ -40,9 +40,9 @@ public final class ContextMethodProvide implements DependencyProvider {
     private final MethodHandle methodHandle;
 
     /** The sidecar that provides the instance. */
-    public final AbstractHookBootstrapModel<?> sidecarModel;
+    public final BootstrapClassModel<?> sidecarModel;
 
-    private ContextMethodProvide(AbstractHookBootstrapModel<?> sidecarModel, Builder builder) {
+    private ContextMethodProvide(BootstrapClassModel<?> sidecarModel, Builder builder) {
         this.key = builder.key;
         this.sidecarModel = sidecarModel;
         this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, ConstantPool.class);
@@ -72,7 +72,7 @@ public final class ContextMethodProvide implements DependencyProvider {
             this.methodHandle = requireNonNull(methodHandle);
         }
 
-        ContextMethodProvide build(AbstractHookBootstrapModel<?> sidecarModel) {
+        ContextMethodProvide build(BootstrapClassModel<?> sidecarModel) {
             return new ContextMethodProvide(sidecarModel, this);
         }
     }

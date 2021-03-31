@@ -26,9 +26,14 @@ import app.packed.container.Extension;
 /**
  *
  */
-// Tilbage paa components??
+// Tilbage paa components?? Syntes maaske det er fint at X (extends AttributeHolder) har en XAttributes klasse
+// Hvis den altsaa definere custom annoteringer
+
 // Eller man kunne jo bruge et Lookup object for method handle???
-public class ComponentAttributes {
+
+// Must be defined in a static field
+
+public final class ComponentAttributes {
 
     // Save this on TypeLiteral??
     static final TypeToken<Class<?>> _CLASS = new TypeToken<Class<?>>() {};

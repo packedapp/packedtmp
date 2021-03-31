@@ -98,11 +98,6 @@ public final class ClassMemberAccessor {
         ClassMemberAccessorHelper.find(Object.class, type, methodConsumer, null);
     }
 
-    public <T extends Throwable> void findMethodsAndFields(Class<?> baseType, ThrowableConsumer<? super Method, T> methodConsumer,
-            ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
-        ClassMemberAccessorHelper.find(baseType, type, methodConsumer, fieldConsumer);
-    }
-
     public <T extends Throwable> void findMethodsAndFields(ThrowableConsumer<? super Method, T> methodConsumer,
             ThrowableConsumer<? super Field, T> fieldConsumer) throws T {
         ClassMemberAccessorHelper.find(Object.class, type, methodConsumer, fieldConsumer);

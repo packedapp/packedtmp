@@ -16,6 +16,7 @@
 package packed.internal.hooks;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
@@ -23,48 +24,48 @@ import app.packed.hooks.ClassHook;
 /**
  *
  */
-public final class ClassHookBootstrapModel extends AbstractHookBootstrapModel<ClassHook.Bootstrap> {
+public final class BootstrapClassClassHookModel extends BootstrapClassModel<ClassHook.Bootstrap> {
 
     public final boolean allowAllAccess;
 
     /**
      * @param builder
      */
-    private ClassHookBootstrapModel(Builder builder) {
+    private BootstrapClassClassHookModel(Builder builder) {
         super(builder);
         this.allowAllAccess = builder.allowAllAccess;
     }
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<ClassHookBootstrapModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+    private static final ClassValue<BootstrapClassClassHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
 
         @Override
-        protected ClassHookBootstrapModel computeValue(Class<?> type) {
+        protected BootstrapClassClassHookModel computeValue(Class<?> type) {
             ClassHook ec = type.getAnnotation(ClassHook.class);
             return ec == null ? null : new Builder(ec.bootstrap(), ec.allowAllAccess()).build();
         }
     };
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<ClassHookBootstrapModel> MANAGED_NOT_ANNOTATED = new ClassValue<>() {
+    private static final ClassValue<BootstrapClassClassHookModel> MANAGED_NOT_ANNOTATED = new ClassValue<>() {
 
         @Override
-        protected ClassHookBootstrapModel computeValue(Class<?> type) {
+        protected BootstrapClassClassHookModel computeValue(Class<?> type) {
             return new Builder(type, false).build();
         }
     };
 
     @Nullable
-    public static ClassHookBootstrapModel getForAnnotatedClass(Class<? extends Annotation> c) {
+    public static BootstrapClassClassHookModel getForAnnotatedClass(Class<? extends Annotation> c) {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
-    public static ClassHookBootstrapModel ofManaged(Class<? extends ClassHook.Bootstrap> cl) {
+    public static BootstrapClassClassHookModel ofManaged(Class<? extends ClassHook.Bootstrap> cl) {
         return MANAGED_NOT_ANNOTATED.get(cl);
     }
 
     /** A builder for method sidecar. */
-    public final static class Builder extends AbstractHookBootstrapModel.Builder<ClassHook.Bootstrap> {
+    public final static class Builder extends BootstrapClassModel.Builder<ClassHook.Bootstrap> {
 
         public final boolean allowAllAccess;
 
@@ -75,8 +76,13 @@ public final class ClassHookBootstrapModel extends AbstractHookBootstrapModel<Cl
 
         /** {@inheritDoc} */
         @Override
-        protected ClassHookBootstrapModel build() {
-            return new ClassHookBootstrapModel(this);
+        protected BootstrapClassClassHookModel build() {
+            return new BootstrapClassClassHookModel(this);
+        }
+
+        @Override
+        protected void onMethod(Method method) {
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -19,6 +19,7 @@ import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,20 +39,20 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a {@link Bootstrap} class. */
-public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<RealMethodSidecarBootstrap> {
+public final class BootstrapClassMethodHookModel extends BootstrapClassModel<RealMethodSidecarBootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<MethodHookBootstrapModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+    private static final ClassValue<BootstrapClassMethodHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
 
         @Override
-        protected MethodHookBootstrapModel computeValue(Class<?> type) {
+        protected BootstrapClassMethodHookModel computeValue(Class<?> type) {
             MethodHook ams = type.getAnnotation(MethodHook.class);
             return ams == null ? null : new Builder(ams).build();
         }
     };
 
     @Nullable
-    public static MethodHookBootstrapModel getForAnnotatedMethod(Class<? extends Annotation> c) {
+    public static BootstrapClassMethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
@@ -74,7 +75,7 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
      * @param builder
      *            the builder
      */
-    private MethodHookBootstrapModel(Builder builder) {
+    private BootstrapClassMethodHookModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
         Map<Key<?>, ContextMethodProvide> tmp = new HashMap<>();
@@ -86,7 +87,7 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
     }
 
-    public static MethodHookBootstrapModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
+    public static BootstrapClassMethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
@@ -103,7 +104,7 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
     }
 
     /** A builder for method sidecar. This class is public because it used from {@link MethodHook}. */
-    public final static class Builder extends AbstractHookBootstrapModel.Builder<RealMethodSidecarBootstrap> {
+    public final static class Builder extends BootstrapClassModel.Builder<RealMethodSidecarBootstrap> {
 
         Class<?> invoker;
 
@@ -121,29 +122,12 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
 
         /** {@inheritDoc} */
         @Override
-        protected MethodHookBootstrapModel build() {
+        protected BootstrapClassMethodHookModel build() {
             ClassMemberAccessor oc = ib.oc();
-            oc.findMethods(m -> {
-                Provide ap = m.getAnnotation(Provide.class);
-                if (ap != null) {
-                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    ContextMethodProvide.Builder b = new ContextMethodProvide.Builder(m, mh);
-                    if (providing.putIfAbsent(b.key, b) != null) {
-                        throw new InternalExtensionException("Multiple methods on " + oc.type() + " that provide " + b.key);
-                    }
-                }
-
-                OnInitialize oi = m.getAnnotation(OnInitialize.class);
-                if (oi != null) {
-                    if (onInitialize != null) {
-                        throw new IllegalStateException(oc.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
-                    }
-                    MethodHandle mh = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                    onInitialize = mh;
-                }
-            });
-
-            return new MethodHookBootstrapModel(this);
+            
+            scan(oc.type(), false, MethodHook.Bootstrap.class);
+            
+            return new BootstrapClassMethodHookModel(this);
         }
 
         public void provideInvoker() {
@@ -151,6 +135,27 @@ public final class MethodHookBootstrapModel extends AbstractHookBootstrapModel<R
                 throw new IllegalStateException("Cannot provide more than 1 " + MethodAccessor.class.getSimpleName());
             }
             invoker = Object.class;
+        }
+
+        @Override
+        protected void onMethod(Method method) {
+            Provide ap = method.getAnnotation(Provide.class);
+            if (ap != null) {
+                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                ContextMethodProvide.Builder b = new ContextMethodProvide.Builder(method, mh);
+                if (providing.putIfAbsent(b.key, b) != null) {
+                    throw new InternalExtensionException("Multiple methods on " + ib.type() + " that provide " + b.key);
+                }
+            }
+
+            OnInitialize oi = method.getAnnotation(OnInitialize.class);
+            if (oi != null) {
+                if (onInitialize != null) {
+                    throw new IllegalStateException(ib.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
+                }
+                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                onInitialize = mh;
+            }
         }
     }
 }

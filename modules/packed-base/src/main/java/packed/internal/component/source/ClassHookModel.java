@@ -28,9 +28,9 @@ import app.packed.hooks.ClassHook;
 import app.packed.hooks.ClassHook.Bootstrap;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
-import packed.internal.hooks.ClassHookBootstrapModel;
-import packed.internal.hooks.FieldHookBootstrapModel;
-import packed.internal.hooks.MethodHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassClassHookModel;
+import packed.internal.hooks.BootstrapClassFieldHookModel;
+import packed.internal.hooks.BootstrapClassMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -54,9 +54,9 @@ public final class ClassHookModel {
         final LinkedHashSet<MemberHookModel.Builder> managedMembers = new LinkedHashSet<>();
 
         /** The model of the bootstrap class. */
-        public final ClassHookBootstrapModel model;
+        public final BootstrapClassClassHookModel model;
 
-        Builder(ClassSourceModel.Builder source, ClassHookBootstrapModel model) {
+        Builder(ClassSourceModel.Builder source, BootstrapClassClassHookModel model) {
             super(source);
             this.model = model;
             this.instance = (Bootstrap) model.newInstance();
@@ -105,11 +105,11 @@ public final class ClassHookModel {
         }
 
         static class ExposedFieldBootstrap extends FieldHook.Bootstrap {
-            static final FieldHookBootstrapModel MODEL = FieldHookBootstrapModel.getModelForFake(ExposedFieldBootstrap.class);
+            static final BootstrapClassFieldHookModel MODEL = BootstrapClassFieldHookModel.getModelForFake(ExposedFieldBootstrap.class);
         }
 
         static class ExposedMethodBootstrap extends MethodHook.Bootstrap {
-            static final MethodHookBootstrapModel MODEL = MethodHookBootstrapModel.getModelForFake(ExposedMethodBootstrap.class);
+            static final BootstrapClassMethodHookModel MODEL = BootstrapClassMethodHookModel.getModelForFake(ExposedMethodBootstrap.class);
         }
     }
 }

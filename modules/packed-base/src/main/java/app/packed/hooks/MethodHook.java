@@ -89,8 +89,11 @@ public @interface MethodHook {
     /** The hook's {@link Bootstrap} class. */
     Class<? extends MethodHook.Bootstrap> bootstrap();
 
-    /** The extension this hook is part of. */
-    Class<? extends Extension> extension();
+    /** Any extension this hook is part of. */
+    // I think it is okay to require that. We could have an InternalExtension.class for our own special hooks
+    // And then have Extension.class for users... Which would then be the default for our own non-extension hooks. fx @Main
+    // Maaske kan man bare ikke have invoking user method hooks...
+    Class<? extends Extension> extension(); // maybe just have it as an array with defaults...
 
     /** Any annotations that activates the method hook. */
     Class<? extends Annotation>[] matchesAnnotation() default {};

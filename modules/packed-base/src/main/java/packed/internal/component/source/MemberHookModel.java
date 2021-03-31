@@ -28,8 +28,8 @@ import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.hooks.AbstractHookBootstrapModel;
-import packed.internal.hooks.ClassHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassModel;
+import packed.internal.hooks.BootstrapClassClassHookModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 
@@ -83,7 +83,7 @@ public abstract class MemberHookModel {
         @Nullable
         // Eneste problem er at dette ogsaa kan vaere en buildTime model..
         // Maaske skal vi have en faelles klasse??
-        AbstractHookBootstrapModel<?> buildtimeModel;
+        BootstrapClassModel<?> buildtimeModel;
 
         /** Any extension class that manages this member. */
         ClassHookModel.@Nullable Builder managedBy;
@@ -98,7 +98,7 @@ public abstract class MemberHookModel {
         @Nullable
         Key<?> provideAsKey;
 
-        Builder(ClassSourceModel.Builder source, AbstractHookBootstrapModel<?> model) {
+        Builder(ClassSourceModel.Builder source, BootstrapClassModel<?> model) {
             super(source);
             this.buildtimeModel = model;
         }
@@ -132,7 +132,7 @@ public abstract class MemberHookModel {
                 throw new IllegalStateException("This method can only be invoked once");
             }
             ClassHookModel.Builder builder = managedBy = source.classes.computeIfAbsent(type,
-                    c -> new ClassHookModel.Builder(source, ClassHookBootstrapModel.ofManaged(type)));
+                    c -> new ClassHookModel.Builder(source, BootstrapClassClassHookModel.ofManaged(type)));
             return (T) builder.instance;
         }
 

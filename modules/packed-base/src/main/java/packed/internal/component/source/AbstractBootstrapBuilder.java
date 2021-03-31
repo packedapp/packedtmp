@@ -17,7 +17,7 @@ package packed.internal.component.source;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.hooks.AbstractHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassModel;
 
 /**
  * 
@@ -27,7 +27,7 @@ public abstract class AbstractBootstrapBuilder {
     /** The single source this builder is a part of. */
     final ClassSourceModel.Builder source;
 
-    final AbstractHookBootstrapModel<?> bootstrapModel;
+    final BootstrapClassModel<?> bootstrapModel;
 
     boolean disabled;
     

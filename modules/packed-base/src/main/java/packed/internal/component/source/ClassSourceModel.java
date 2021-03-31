@@ -30,7 +30,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentSetup;
-import packed.internal.hooks.ClassHookBootstrapModel;
+import packed.internal.hooks.BootstrapClassClassHookModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.Dependant;
 import packed.internal.invoke.ClassMemberAccessor;
@@ -165,7 +165,7 @@ public final class ClassSourceModel {
         }
 
         ClassHookModel.Builder manageMemberBy(MemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
-            return classes.computeIfAbsent(classBootStrap, c -> new ClassHookModel.Builder(this, ClassHookBootstrapModel.ofManaged(classBootStrap)));
+            return classes.computeIfAbsent(classBootStrap, c -> new ClassHookModel.Builder(this, BootstrapClassClassHookModel.ofManaged(classBootStrap)));
         }
 
         Class<?> type() {
