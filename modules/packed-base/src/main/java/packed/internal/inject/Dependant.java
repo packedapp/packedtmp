@@ -25,9 +25,9 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.ClassSourceModel;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.ComponentSetup;
+import packed.internal.hooks.usesite.HookedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;
@@ -231,7 +231,7 @@ public class Dependant {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProvider e = null;
                 if (source != null) {
-                    ClassSourceModel sm = source.model;
+                    HookedClassModel sm = source.model;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }

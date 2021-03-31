@@ -24,48 +24,48 @@ import app.packed.hooks.ClassHook;
 /**
  *
  */
-public final class BootstrapClassClassHookModel extends BootstrapClassModel<ClassHook.Bootstrap> {
+public final class ClassHookModel extends AbstractHookModel<ClassHook.Bootstrap> {
 
     public final boolean allowAllAccess;
 
     /**
      * @param builder
      */
-    private BootstrapClassClassHookModel(Builder builder) {
+    private ClassHookModel(Builder builder) {
         super(builder);
         this.allowAllAccess = builder.allowAllAccess;
     }
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<BootstrapClassClassHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+    private static final ClassValue<ClassHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
 
         @Override
-        protected BootstrapClassClassHookModel computeValue(Class<?> type) {
+        protected ClassHookModel computeValue(Class<?> type) {
             ClassHook ec = type.getAnnotation(ClassHook.class);
             return ec == null ? null : new Builder(ec.bootstrap(), ec.allowAllAccess()).build();
         }
     };
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<BootstrapClassClassHookModel> MANAGED_NOT_ANNOTATED = new ClassValue<>() {
+    private static final ClassValue<ClassHookModel> MANAGED_NOT_ANNOTATED = new ClassValue<>() {
 
         @Override
-        protected BootstrapClassClassHookModel computeValue(Class<?> type) {
+        protected ClassHookModel computeValue(Class<?> type) {
             return new Builder(type, false).build();
         }
     };
 
     @Nullable
-    public static BootstrapClassClassHookModel getForAnnotatedClass(Class<? extends Annotation> c) {
+    public static ClassHookModel getForAnnotatedClass(Class<? extends Annotation> c) {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
-    public static BootstrapClassClassHookModel ofManaged(Class<? extends ClassHook.Bootstrap> cl) {
+    public static ClassHookModel ofManaged(Class<? extends ClassHook.Bootstrap> cl) {
         return MANAGED_NOT_ANNOTATED.get(cl);
     }
 
     /** A builder for method sidecar. */
-    public final static class Builder extends BootstrapClassModel.Builder<ClassHook.Bootstrap> {
+    public final static class Builder extends AbstractHookModel.Builder<ClassHook.Bootstrap> {
 
         public final boolean allowAllAccess;
 
@@ -76,8 +76,8 @@ public final class BootstrapClassClassHookModel extends BootstrapClassModel<Clas
 
         /** {@inheritDoc} */
         @Override
-        protected BootstrapClassClassHookModel build() {
-            return new BootstrapClassClassHookModel(this);
+        protected ClassHookModel build() {
+            return new ClassHookModel(this);
         }
 
         @Override

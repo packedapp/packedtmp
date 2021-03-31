@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hooks;
+package packed.internal.hooks.old;
 
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
-import packed.internal.hooks.SomeBuilder.extensionClass;
+import packed.internal.hooks.old.SomeBuilder.extensionClass;
 import packed.internal.util.ThrowableUtil;
 
 /**

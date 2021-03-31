@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -27,34 +26,28 @@ import java.util.List;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.hooks.BootstrapClassClassHookModel;
+import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.ContextMethodProvide;
-import packed.internal.hooks.usesite.UseSiteClassHookModel;
-import packed.internal.hooks.usesite.UseSiteFieldHookModel;
-import packed.internal.hooks.usesite.UseSiteMemberHookModel;
-import packed.internal.hooks.usesite.UseSiteMethodHookModel;
-import packed.internal.inject.Dependant;
 import packed.internal.invoke.ClassMemberAccessor;
 import packed.internal.invoke.ClassScanner;
 
-/** A model of a class source. */
-public final class ClassSourceModel {
+/** A model of a class that uses class or member hooks. */
+public final class HookedClassModel {
 
     /** All field hooks. */
-    private final List<UseSiteFieldHookModel> fields;
+    public final List<UseSiteFieldHookModel> fields;
 
     /** All method hooks. */
-    private final List<UseSiteMethodHookModel> methods;
+    public final List<UseSiteMethodHookModel> methods;
 
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
 
-    // Noget med injection
+    // Noget med injection, som vi gerne vil metamodellere
     public final Map<Key<?>, ContextMethodProvide> sourceServices;
 
-    /** The type this is a model for. */
+    /** The type we are modelling. */
     public final Class<?> type;
 
     /**
@@ -63,32 +56,11 @@ public final class ClassSourceModel {
      * @param builder
      *            a builder for this descriptor
      */
-    private ClassSourceModel(ClassSourceModel.Builder builder) {
+    private HookedClassModel(HookedClassModel.Builder builder) {
         this.type = builder.oc.type();
         this.methods = List.copyOf(builder.methods);
         this.fields = List.copyOf(builder.fields);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
-    }
-
-    public <T> void registerHooks(ComponentSetup component, ClassSourceSetup source) {
-        for (UseSiteFieldHookModel f : fields) {
-            registerMember(component, source, f);
-        }
-
-        for (UseSiteMethodHookModel m : methods) {
-            registerMember(component, source, m);
-        }
-    }
-
-    private void registerMember(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel m) {
-        requireNonNull(source);
-        Dependant i = new Dependant(compConf, source, m, m.createProviders());
-//        if (i.hasUnresolved()) {
-        compConf.container.addDependant(i);
-        // }
-        if (m.processor != null) {
-            m.processor.accept(compConf);
-        }
     }
 
     /**
@@ -113,24 +85,24 @@ public final class ClassSourceModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static ClassSourceModel newModel(ClassMemberAccessor oc) {
+    public static HookedClassModel newModel(ClassMemberAccessor oc) {
         return new Builder(oc).build();
     }
 
-    /** A builder object for {@link ClassSourceModel}. */
+    /** A builder object for {@link HookedClassModel}. */
     public static final class Builder extends ClassScanner {
 
-        public final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
+        final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 
         /** All field hooks. */
-        public final ArrayList<UseSiteFieldHookModel> fields = new ArrayList<>();
+        final ArrayList<UseSiteFieldHookModel> fields = new ArrayList<>();
 
         /** All method hooks. */
-        public final ArrayList<UseSiteMethodHookModel> methods = new ArrayList<>();
+        final ArrayList<UseSiteMethodHookModel> methods = new ArrayList<>();
 
-        public final ClassMemberAccessor oc;
+        final ClassMemberAccessor oc;
 
-        public final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
+        final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
 
         /**
          * Creates a new component model builder
@@ -139,7 +111,7 @@ public final class ClassSourceModel {
          *            a class processor usable by hooks
          * 
          */
-        Builder(ClassMemberAccessor cp) {
+        public Builder(ClassMemberAccessor cp) {
             super(cp.type());
             this.oc = requireNonNull(cp);
         }
@@ -149,7 +121,7 @@ public final class ClassSourceModel {
          * 
          * @return a new model
          */
-        ClassSourceModel build() {
+        public HookedClassModel build() {
             for (Annotation a : oc.type().getAnnotations()) {
                 System.out.println(a);
             }
@@ -166,12 +138,12 @@ public final class ClassSourceModel {
             for (UseSiteClassHookModel.Builder b : classes.values()) {
                 b.complete();
             }
-            return new ClassSourceModel(this);
+            return new HookedClassModel(this);
         }
 
         UseSiteClassHookModel.Builder manageMemberBy(UseSiteMemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
             return classes.computeIfAbsent(classBootStrap,
-                    c -> new UseSiteClassHookModel.Builder(this, BootstrapClassClassHookModel.ofManaged(classBootStrap)));
+                    c -> new UseSiteClassHookModel.Builder(this, ClassHookModel.ofManaged(classBootStrap)));
         }
 
         @Override
@@ -194,21 +166,20 @@ public final class ClassSourceModel {
     // abstract class saa kan vi genbruge den..
     // Ved ikke lige med mht til MethodHandle???
     // Et array, med entries for already resolved MethodHandle
-
-    class ScannedClass {
-        @Nullable
-        Constructor<?>[] constructors; // nah..
-        @Nullable
-        Field[] declaredFields;
-        @Nullable
-        Method[] declaredMethods;
-        @Nullable
-        ScannedClass parent;
-        final Class<?> type;
-
-        ScannedClass(Class<?> type) {
-            this.type = requireNonNull(type);
-        }
-
-    }
+//    class ScannedClass {
+//        @Nullable
+//        Constructor<?>[] constructors; // nah..
+//        @Nullable
+//        Field[] declaredFields;
+//        @Nullable
+//        Method[] declaredMethods;
+//        @Nullable
+//        ScannedClass parent;
+//        final Class<?> type;
+//
+//        ScannedClass(Class<?> type) {
+//            this.type = requireNonNull(type);
+//        }
+//
+//    }
 }

@@ -21,6 +21,10 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
+import packed.internal.hooks.usesite.HookedClassModel;
+import packed.internal.hooks.usesite.UseSiteFieldHookModel;
+import packed.internal.hooks.usesite.UseSiteMemberHookModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -47,7 +51,7 @@ public final class ClassSourceSetup implements DependencyProvider {
     private final Object constant;
 
     /** The source model. */
-    public final ClassSourceModel model;
+    public final HookedClassModel model;
 
     /** The index at which to store the runtime instance, or -1 if it should not be stored. */
     public final int poolIndex;
@@ -101,9 +105,30 @@ public final class ClassSourceSetup implements DependencyProvider {
         }
 
         // Register hooks, maybe move to component setup
-        model.registerHooks(component, this);
+        registerHooks(model, component);
     }
 
+
+    public <T> void registerHooks(HookedClassModel model, ComponentSetup component) {
+        for (UseSiteFieldHookModel f : model.fields) {
+            registerMember(component, f);
+        }
+
+        for (UseSiteMethodHookModel m : model.methods) {
+            registerMember(component, m);
+        }
+    }
+
+    private void registerMember(ComponentSetup compConf, UseSiteMemberHookModel m) {
+        Dependant i = new Dependant(compConf, this, m, m.createProviders());
+//        if (i.hasUnresolved()) {
+        compConf.container.addDependant(i);
+        // }
+        if (m.processor != null) {
+            m.processor.accept(compConf);
+        }
+    }
+    
     public void writeConstantPool(ConstantPool pool) {
         assert poolIndex >= 0;
         assert constant != null;

@@ -31,13 +31,13 @@ import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
-public final class BootstrapClassFieldHookModel extends BootstrapClassModel<FieldHook.Bootstrap> {
+public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
-    static final ClassValue<BootstrapClassFieldHookModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
+    static final ClassValue<FieldHookModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
 
         @Override
-        protected BootstrapClassFieldHookModel computeValue(Class<?> type) {
+        protected FieldHookModel computeValue(Class<?> type) {
             FieldHook afs = type.getAnnotation(FieldHook.class);
             return afs == null ? null : new Builder(afs).build();
         }
@@ -54,7 +54,7 @@ public final class BootstrapClassFieldHookModel extends BootstrapClassModel<Fiel
      * @param builder
      *            the builder
      */
-    private BootstrapClassFieldHookModel(Builder builder) {
+    private FieldHookModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
         Map<Key<?>, ContextMethodProvide> tmp = new HashMap<>();
@@ -63,16 +63,16 @@ public final class BootstrapClassFieldHookModel extends BootstrapClassModel<Fiel
     }
 
     @Nullable
-    public static BootstrapClassFieldHookModel getModelForAnnotatedMethod(Class<? extends Annotation> c) {
+    public static FieldHookModel getModelForAnnotatedMethod(Class<? extends Annotation> c) {
         return ANNOTATION_ON_METHOD_SIDECARS.get(c);
     }
 
-    public static BootstrapClassFieldHookModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {
+    public static FieldHookModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
-    /** A builder for for a {@link BootstrapClassFieldHookModel}. */
-    private final static class Builder extends BootstrapClassModel.Builder<FieldHook.Bootstrap> {
+    /** A builder for for a {@link FieldHookModel}. */
+    private final static class Builder extends AbstractHookModel.Builder<FieldHook.Bootstrap> {
 
         private MethodHandle onInitialize;
 
@@ -88,9 +88,9 @@ public final class BootstrapClassFieldHookModel extends BootstrapClassModel<Fiel
 
         /** {@inheritDoc} */
         @Override
-        protected BootstrapClassFieldHookModel build() {
+        protected FieldHookModel build() {
             scan(false, FieldHook.Bootstrap.class);
-            return new BootstrapClassFieldHookModel(this);
+            return new FieldHookModel(this);
         }
 
         @Override

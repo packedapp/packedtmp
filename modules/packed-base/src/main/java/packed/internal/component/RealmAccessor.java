@@ -24,6 +24,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.inject.Factory;
+import packed.internal.hooks.usesite.HookedClassModel;
 import packed.internal.invoke.ClassMemberAccessor;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.LookupValue;
@@ -41,19 +42,18 @@ public abstract class RealmAccessor {
             MethodHandle.class, Lookup.class);
 
     /** A cache of component class descriptors. */
-    private final ClassValue<ClassSourceModel> components = new ClassValue<>() {
+    private final ClassValue<HookedClassModel> components = new ClassValue<>() {
 
         @Override
-        protected ClassSourceModel computeValue(Class<?> type) {
+        protected HookedClassModel computeValue(Class<?> type) {
             ClassMemberAccessor oc = ClassMemberAccessor.of(lookup(), type);
-            return new ClassSourceModel.Builder(oc).build();
-            //return ClassSourceModel.newModel(oc);
+            return HookedClassModel.newModel(oc);
         }
     };
 
     abstract Lookup lookup();
 
-    final ClassSourceModel modelOf(Class<?> componentType) {
+    final HookedClassModel modelOf(Class<?> componentType) {
         return components.get(componentType);
     }
 

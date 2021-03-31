@@ -26,10 +26,9 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.component.ClassSourceModel;
 import packed.internal.component.ComponentSetup;
-import packed.internal.hooks.BootstrapClassClassHookModel;
-import packed.internal.hooks.BootstrapClassModel;
+import packed.internal.hooks.ClassHookModel;
+import packed.internal.hooks.AbstractHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -84,7 +83,7 @@ public abstract class UseSiteMemberHookModel {
         @Nullable
         // Eneste problem er at dette ogsaa kan vaere en buildTime model..
         // Maaske skal vi have en faelles klasse??
-        BootstrapClassModel<?> buildtimeModel;
+        AbstractHookModel<?> buildtimeModel;
 
         /** Any extension class that manages this member. */
         UseSiteClassHookModel.@Nullable Builder managedBy;
@@ -99,7 +98,7 @@ public abstract class UseSiteMemberHookModel {
         @Nullable
         Key<?> provideAsKey;
 
-        Builder(ClassSourceModel.Builder source, BootstrapClassModel<?> model) {
+        Builder(HookedClassModel.Builder source, AbstractHookModel<?> model) {
             super(source);
             this.buildtimeModel = model;
         }
@@ -133,7 +132,7 @@ public abstract class UseSiteMemberHookModel {
                 throw new IllegalStateException("This method can only be invoked once");
             }
             UseSiteClassHookModel.Builder builder = managedBy = source.classes.computeIfAbsent(type,
-                    c -> new UseSiteClassHookModel.Builder(source, BootstrapClassClassHookModel.ofManaged(type)));
+                    c -> new UseSiteClassHookModel.Builder(source, ClassHookModel.ofManaged(type)));
             return (T) builder.instance;
         }
 

@@ -17,22 +17,21 @@ package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.component.ClassSourceModel;
-import packed.internal.hooks.BootstrapClassModel;
+import packed.internal.hooks.AbstractHookModel;
 
 /**
  * 
  */
-public abstract class AbstractBootstrapBuilder {
+abstract class AbstractBootstrapBuilder {
 
     /** The single source this builder is a part of. */
-    public final ClassSourceModel.Builder source;
+    public final HookedClassModel.Builder source;
 
-    protected final BootstrapClassModel<?> bootstrapModel;
+    protected final AbstractHookModel<?> bootstrapModel;
 
     protected boolean disabled;
     
-    protected AbstractBootstrapBuilder(ClassSourceModel.Builder source) {
+    protected AbstractBootstrapBuilder(HookedClassModel.Builder source) {
         this.source = requireNonNull(source);
         this.bootstrapModel = null;
     }

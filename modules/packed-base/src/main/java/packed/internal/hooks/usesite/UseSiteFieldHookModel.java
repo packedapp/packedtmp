@@ -29,9 +29,8 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
-import packed.internal.component.ClassSourceModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.BootstrapClassFieldHookModel;
+import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -59,12 +58,12 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     private final Field field;
 
     /** A model of the field hooks bootstrap. */
-    private final BootstrapClassFieldHookModel model;
+    private final FieldHookModel model;
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
-    UseSiteFieldHookModel(Builder builder, Field method, BootstrapClassFieldHookModel model, VarHandle mh) {
+    UseSiteFieldHookModel(Builder builder, Field method, FieldHookModel model, VarHandle mh) {
         super(builder, List.of());
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
@@ -103,10 +102,10 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         return MethodHandleUtil.getFromField(field, directMethodHandle);
     }
 
-    public static void process(ClassSourceModel.Builder source, Field field) {
+    static void process(HookedClassModel.Builder source, Field field) {
         VarHandle varHandle = null;
         for (Annotation a : field.getAnnotations()) {
-            BootstrapClassFieldHookModel model = BootstrapClassFieldHookModel.getModelForAnnotatedMethod(a.annotationType());
+            FieldHookModel model = FieldHookModel.getModelForAnnotatedMethod(a.annotationType());
             if (model != null) {
                 // We can have more than 1 sidecar attached to a method
                 if (varHandle == null) {
@@ -125,19 +124,19 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     public static final class Builder extends UseSiteMemberHookModel.Builder {
         final Field field;
 
-        final BootstrapClassFieldHookModel model;
+        final FieldHookModel model;
 
-        Builder(UseSiteClassHookModel.Builder classBuilder, BootstrapClassFieldHookModel model, Field field) {
+        Builder(HookedClassModel.Builder source, FieldHookModel model, Field field) {
+            super(source, model);
+            this.model = model;
+            this.field = field;
+        }
+
+        Builder(UseSiteClassHookModel.Builder classBuilder, FieldHookModel model, Field field) {
             super(classBuilder.source, model);
             this.model = model;
             this.field = field;
             this.managedBy = classBuilder;
-        }
-
-        Builder(ClassSourceModel.Builder source, BootstrapClassFieldHookModel model, Field field) {
-            super(source, model);
-            this.model = model;
-            this.field = field;
         }
 
         public void checkWritable() {}
@@ -205,11 +204,11 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         private boolean isFieldUsed;
 
         /** The source. */
-        private final ClassSourceModel.Builder source;
+        private final HookedClassModel.Builder source;
 
         private VarHandle varHandle;
 
-        private Shared(ClassSourceModel.Builder source, Field field) {
+        private Shared(HookedClassModel.Builder source, Field field) {
             this.source = requireNonNull(source);
             this.fieldUnsafe = requireNonNull(field);
         }

@@ -23,7 +23,7 @@ import packed.internal.invoke.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
 /** An abstract base class for bootstrap hook classes. */
-public abstract class BootstrapClassModel<T> {
+public abstract class AbstractHookModel<T> {
 
     /** A method handle for the bootstrap's constructor. */
     private final MethodHandle mhConstructor; // ()Object
@@ -34,7 +34,7 @@ public abstract class BootstrapClassModel<T> {
      * @param builder
      *            the builder.
      */
-    protected BootstrapClassModel(Builder<T> builder) {
+    protected AbstractHookModel(Builder<T> builder) {
         this.mhConstructor = builder.ib.build();
     }
 
@@ -83,6 +83,6 @@ public abstract class BootstrapClassModel<T> {
          * 
          * @return the new model
          */
-        protected abstract BootstrapClassModel<T> build();
+        protected abstract AbstractHookModel<T> build();
     }
 }

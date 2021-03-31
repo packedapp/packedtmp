@@ -38,20 +38,20 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a {@link Bootstrap} class. */
-public final class BootstrapClassMethodHookModel extends BootstrapClassModel<RealMethodSidecarBootstrap> {
+public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<BootstrapClassMethodHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+    private static final ClassValue<MethodHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
 
         @Override
-        protected BootstrapClassMethodHookModel computeValue(Class<?> type) {
+        protected MethodHookModel computeValue(Class<?> type) {
             MethodHook ams = type.getAnnotation(MethodHook.class);
             return ams == null ? null : new Builder(ams).build();
         }
     };
 
     @Nullable
-    public static BootstrapClassMethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
+    public static MethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
@@ -74,7 +74,7 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
      * @param builder
      *            the builder
      */
-    private BootstrapClassMethodHookModel(Builder builder) {
+    private MethodHookModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
         Map<Key<?>, ContextMethodProvide> tmp = new HashMap<>();
@@ -86,7 +86,7 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
     }
 
-    public static BootstrapClassMethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
+    public static MethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
@@ -103,7 +103,7 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
     }
 
     /** A builder for method sidecar. This class is public because it used from {@link MethodHook}. */
-    public final static class Builder extends BootstrapClassModel.Builder<RealMethodSidecarBootstrap> {
+    public final static class Builder extends AbstractHookModel.Builder<RealMethodSidecarBootstrap> {
 
         Class<?> invoker;
 
@@ -121,11 +121,11 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
 
         /** {@inheritDoc} */
         @Override
-        protected BootstrapClassMethodHookModel build() {
+        protected MethodHookModel build() {
             
             scan(false, MethodHook.Bootstrap.class);
             
-            return new BootstrapClassMethodHookModel(this);
+            return new MethodHookModel(this);
         }
 
         public void provideInvoker() {

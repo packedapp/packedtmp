@@ -13,24 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hooks;
-
-import java.lang.invoke.MethodHandle;
+package packed.internal.hooks.old;
 
 /**
  *
  */
-public class BootstrapHelper {
+public class SomeBuildModel {
 
-    private static final ClassValue<MethodHandle> BOOTSTRAP_CONSTRUCTORS = new ClassValue<>() {
+    SomeBuildModel(SomeBuilder builder) {
 
-        @Override
-        protected MethodHandle computeValue(Class<?> type) {
-            return null;
-        }
-    };
-
-    static MethodHandle bootstrapConstructor(Class<?> bootstrapImplementation) {
-        return BOOTSTRAP_CONSTRUCTORS.get(bootstrapImplementation);
     }
 }
