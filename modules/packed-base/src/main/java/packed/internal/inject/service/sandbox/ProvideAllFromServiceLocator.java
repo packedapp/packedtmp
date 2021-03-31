@@ -23,8 +23,8 @@ import app.packed.base.Key;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
+import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /** Represents an injector that used via {@link ServiceExtension#provideAll(ServiceLocator)}. */

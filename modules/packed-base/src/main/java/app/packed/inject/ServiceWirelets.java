@@ -28,8 +28,8 @@ import app.packed.component.Wirelet;
 import packed.internal.inject.service.Service1stPassWirelet;
 import packed.internal.inject.service.Service2ndPassWirelet;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.PackedServiceComposer;
+import packed.internal.inject.service.build.ServiceSetup;
 
 /**
  * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
