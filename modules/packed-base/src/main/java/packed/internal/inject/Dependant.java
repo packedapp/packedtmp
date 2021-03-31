@@ -28,9 +28,9 @@ import app.packed.exceptionhandling.BuildException;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.source.ClassSourceModel;
 import packed.internal.component.source.ClassSourceSetup;
-import packed.internal.component.source.MemberHookModel;
-import packed.internal.component.source.MethodHookModel;
-import packed.internal.component.source.MethodHookModel.RunAt;
+import packed.internal.hooks.usesite.UseSiteMemberHookModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -81,7 +81,7 @@ public class Dependant {
     public final ClassSourceSetup source;
 
     @Nullable
-    private final MemberHookModel sourceMember;
+    private final UseSiteMemberHookModel sourceMember;
 
     public final int providerDelta;
 
@@ -97,7 +97,7 @@ public class Dependant {
         this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentSetup compConf, ClassSourceSetup source, MemberHookModel smm, DependencyProvider[] dependencyProviders) {
+    public Dependant(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProvider[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -200,7 +200,7 @@ public class Dependant {
                     // the method on the sidecar: sourceMember.model.onInitialize
 
                     // MethodHandle(Invoker)void -> MethodHandle(MethodHandle,RuntimeRegion)void
-                    if (sourceMember instanceof MethodHookModel msm) {
+                    if (sourceMember instanceof UseSiteMethodHookModel msm) {
                         if (msm.bootstrapModel.onInitialize != null) {
                             // System.out.println(msm.model.onInitialize);
                             MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, ConstantPoolInvoker.MH_INVOKER);

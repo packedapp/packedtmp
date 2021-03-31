@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,9 +27,11 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.source.MethodHookModel.RunAt;
-import packed.internal.hooks.BootstrapClassModel;
+import packed.internal.component.source.AbstractBootstrapBuilder;
+import packed.internal.component.source.ClassSourceModel;
 import packed.internal.hooks.BootstrapClassClassHookModel;
+import packed.internal.hooks.BootstrapClassModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 
@@ -38,7 +40,7 @@ import packed.internal.inject.DependencyProvider;
  */
 // SourceModel...
 // Maa have en liste af regions slots den skal bruge
-public abstract class MemberHookModel {
+public abstract class UseSiteMemberHookModel {
 
     /** Dependencies that needs to be resolved. */
     public final List<DependencyDescriptor> dependencies;
@@ -57,7 +59,7 @@ public abstract class MemberHookModel {
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
 
-    MemberHookModel(Builder builder, List<DependencyDescriptor> dependencies) {
+    UseSiteMemberHookModel(Builder builder, List<DependencyDescriptor> dependencies) {
         this.dependencies = requireNonNull(dependencies);
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
@@ -78,7 +80,7 @@ public abstract class MemberHookModel {
 
     public abstract MethodHandle methodHandle();
 
-    static abstract class Builder extends AbstractBootstrapBuilder {
+    public static abstract class Builder extends AbstractBootstrapBuilder {
 
         @Nullable
         // Eneste problem er at dette ogsaa kan vaere en buildTime model..
@@ -86,7 +88,7 @@ public abstract class MemberHookModel {
         BootstrapClassModel<?> buildtimeModel;
 
         /** Any extension class that manages this member. */
-        ClassHookModel.@Nullable Builder managedBy;
+        UseSiteClassHookModel.@Nullable Builder managedBy;
 
         @Nullable
         Consumer<? super ComponentSetup> processor;
@@ -131,8 +133,8 @@ public abstract class MemberHookModel {
             if (managedBy != null) {
                 throw new IllegalStateException("This method can only be invoked once");
             }
-            ClassHookModel.Builder builder = managedBy = source.classes.computeIfAbsent(type,
-                    c -> new ClassHookModel.Builder(source, BootstrapClassClassHookModel.ofManaged(type)));
+            UseSiteClassHookModel.Builder builder = managedBy = source.classes.computeIfAbsent(type,
+                    c -> new UseSiteClassHookModel.Builder(source, BootstrapClassClassHookModel.ofManaged(type)));
             return (T) builder.instance;
         }
 

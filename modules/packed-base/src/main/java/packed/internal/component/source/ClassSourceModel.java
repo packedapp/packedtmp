@@ -32,6 +32,10 @@ import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.BootstrapClassClassHookModel;
 import packed.internal.hooks.ContextMethodProvide;
+import packed.internal.hooks.usesite.UseSiteClassHookModel;
+import packed.internal.hooks.usesite.UseSiteFieldHookModel;
+import packed.internal.hooks.usesite.UseSiteMemberHookModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.inject.Dependant;
 import packed.internal.invoke.ClassMemberAccessor;
 import packed.internal.invoke.ClassScanner;
@@ -40,10 +44,10 @@ import packed.internal.invoke.ClassScanner;
 public final class ClassSourceModel {
 
     /** All field hooks. */
-    private final List<FieldHookModel> fields;
+    private final List<UseSiteFieldHookModel> fields;
 
     /** All method hooks. */
-    private final List<MethodHookModel> methods;
+    private final List<UseSiteMethodHookModel> methods;
 
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
@@ -68,16 +72,16 @@ public final class ClassSourceModel {
     }
 
     public <T> void registerHooks(ComponentSetup component, ClassSourceSetup source) {
-        for (FieldHookModel f : fields) {
+        for (UseSiteFieldHookModel f : fields) {
             registerMember(component, source, f);
         }
 
-        for (MethodHookModel m : methods) {
+        for (UseSiteMethodHookModel m : methods) {
             registerMember(component, source, m);
         }
     }
 
-    private void registerMember(ComponentSetup compConf, ClassSourceSetup source, MemberHookModel m) {
+    private void registerMember(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel m) {
         requireNonNull(source);
         Dependant i = new Dependant(compConf, source, m, m.createProviders());
 //        if (i.hasUnresolved()) {
@@ -115,19 +119,19 @@ public final class ClassSourceModel {
     }
 
     /** A builder object for {@link ClassSourceModel}. */
-    static final class Builder extends ClassScanner {
+    public static final class Builder extends ClassScanner {
 
-        final Map<Class<? extends ClassHook.Bootstrap>, ClassHookModel.Builder> classes = new HashMap<>();
+        public final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 
         /** All field hooks. */
-        final ArrayList<FieldHookModel> fields = new ArrayList<>();
+        public final ArrayList<UseSiteFieldHookModel> fields = new ArrayList<>();
 
         /** All method hooks. */
-        final ArrayList<MethodHookModel> methods = new ArrayList<>();
+        public final ArrayList<UseSiteMethodHookModel> methods = new ArrayList<>();
 
-        final ClassMemberAccessor oc;
+        public final ClassMemberAccessor oc;
 
-        final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
+        public final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
 
         /**
          * Creates a new component model builder
@@ -157,31 +161,31 @@ public final class ClassSourceModel {
             // findAnnotatedTypes(htp, componentType);
             // Inherited annotations???
 
-
             scan(true, Object.class);
-            
+
             // Finish all classes
-            for (ClassHookModel.Builder b : classes.values()) {
+            for (UseSiteClassHookModel.Builder b : classes.values()) {
                 b.complete();
             }
             return new ClassSourceModel(this);
         }
 
-        ClassHookModel.Builder manageMemberBy(MemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
-            return classes.computeIfAbsent(classBootStrap, c -> new ClassHookModel.Builder(this, BootstrapClassClassHookModel.ofManaged(classBootStrap)));
+        UseSiteClassHookModel.Builder manageMemberBy(UseSiteMemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
+            return classes.computeIfAbsent(classBootStrap,
+                    c -> new UseSiteClassHookModel.Builder(this, BootstrapClassClassHookModel.ofManaged(classBootStrap)));
         }
 
         @Override
         protected void onField(Field field) {
-            FieldHookModel.process(this, field);
+            UseSiteFieldHookModel.process(this, field);
         }
 
         @Override
         protected void onMethod(Method method) {
-            MethodHookModel.process(this, method);
+            UseSiteMethodHookModel.process(this, method);
         }
 
-        Class<?> type() {
+        public Class<?> type() {
             return oc.type();
         }
     }

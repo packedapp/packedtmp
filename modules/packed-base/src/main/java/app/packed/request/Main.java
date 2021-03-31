@@ -31,8 +31,8 @@ import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
-import packed.internal.component.source.MethodHookModel;
 import packed.internal.component.source.SourceComponentSetup;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 
 /**
  * Trying to build a container with more than a single method annotated with this annotation will fail with
@@ -73,7 +73,7 @@ class MySidecar extends RealMethodSidecarBootstrap {
     protected void bootstrap() {
         MethodHandle mh = methodHandle();
         Method m = method();
-        MethodHookModel.Builder.registerProcessor(this, c -> {
+        UseSiteMethodHookModel.Builder.registerProcessor(this, c -> {
             // Okay we do not automatically
             // Der er noget constant pool thingeling der ikke bliver kaldt
             // ordentligt hvis der ikke er registered en ServiceManagerSetup

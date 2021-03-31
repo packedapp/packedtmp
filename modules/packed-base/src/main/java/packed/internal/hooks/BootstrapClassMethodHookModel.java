@@ -32,8 +32,8 @@ import app.packed.hooks.MethodHook.Bootstrap;
 import app.packed.hooks.RealMethodSidecarBootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.component.source.MethodHookModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -61,7 +61,7 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
 
     /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
-            "builder", MethodHookModel.Builder.class);
+            "builder", UseSiteMethodHookModel.Builder.class);
 
     public final Map<Key<?>, ContextMethodProvide> keys;
 
@@ -90,7 +90,7 @@ public final class BootstrapClassMethodHookModel extends BootstrapClassModel<Rea
         return new Builder(c).build();
     }
 
-    public MethodHook.Bootstrap configure(MethodHookModel.Builder builder) {
+    public MethodHook.Bootstrap configure(UseSiteMethodHookModel.Builder builder) {
         MethodHook.Bootstrap instance = (Bootstrap) newInstance();
 
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, builder);

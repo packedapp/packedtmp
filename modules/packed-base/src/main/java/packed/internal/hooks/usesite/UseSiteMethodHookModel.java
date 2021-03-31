@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
@@ -28,9 +28,10 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.source.ClassSourceModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.hooks.BootstrapClassMethodHookModel;
+import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -39,11 +40,11 @@ import packed.internal.util.ThrowableUtil;
 /**
  * We create an
  */
-public final class MethodHookModel extends MemberHookModel {
+public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
     /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
-            "builder", MethodHookModel.Builder.class);
+            "builder", UseSiteMethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
     public final BootstrapClassMethodHookModel bootstrapModel;
@@ -54,7 +55,7 @@ public final class MethodHookModel extends MemberHookModel {
     /** The method we are creating a model for. */
     private final Method method;
 
-    private MethodHookModel(Builder builder) {
+    private UseSiteMethodHookModel(Builder builder) {
         super(builder, DependencyDescriptor.fromExecutable(builder.shared.methodUnsafe));
         this.method = requireNonNull(builder.shared.methodUnsafe);
         this.bootstrapModel = requireNonNull(builder.model);
@@ -95,7 +96,7 @@ public final class MethodHookModel extends MemberHookModel {
         return directMethodHandle;
     }
 
-    static void process(ClassSourceModel.Builder source, Method method) {
+    public static void process(ClassSourceModel.Builder source, Method method) {
         Shared shared = null;
         for (Annotation a : method.getAnnotations()) {
             BootstrapClassMethodHookModel model = BootstrapClassMethodHookModel.getForAnnotatedMethod(a.annotationType());
@@ -110,7 +111,7 @@ public final class MethodHookModel extends MemberHookModel {
                     model.clearBuilder(bootstrap);
                 }
                 if (builder.buildtimeModel != null) {
-                    MethodHookModel smm = new MethodHookModel(builder);
+                    UseSiteMethodHookModel smm = new UseSiteMethodHookModel(builder);
                     shared.source.methods.add(smm);
                 }
             }
@@ -118,7 +119,7 @@ public final class MethodHookModel extends MemberHookModel {
     }
 
     /** A builder. */
-    public static final class Builder extends MemberHookModel.Builder {
+    public static final class Builder extends UseSiteMemberHookModel.Builder {
 
         /** The method, if exposed to end-users. */
         @Nullable

@@ -33,7 +33,7 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import packed.internal.component.source.FieldHookModel;
+import packed.internal.hooks.usesite.UseSiteFieldHookModel;
 
 /**
  *
@@ -63,8 +63,8 @@ public @interface FieldHook {
 
     abstract class Bootstrap {
 
-        /** The builder used by this bootstrap. Updated by {@link FieldHookModel}. */
-        private FieldHookModel.@Nullable Builder builder;
+        /** The builder used by this bootstrap. Updated by {@link UseSiteFieldHookModel}. */
+        private UseSiteFieldHookModel.@Nullable Builder builder;
 
         Class<?> invoker;
 
@@ -88,8 +88,8 @@ public @interface FieldHook {
          * 
          * @return this sidecar's builder object
          */
-        private FieldHookModel.Builder builder() {
-            FieldHookModel.Builder b = builder;
+        private UseSiteFieldHookModel.Builder builder() {
+            UseSiteFieldHookModel.Builder b = builder;
             if (b == null) {
                 throw new IllegalStateException("This method cannot called outside of the #configure() method. Maybe you tried to call #configure() directly");
             }

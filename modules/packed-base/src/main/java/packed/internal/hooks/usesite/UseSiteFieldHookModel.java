@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,9 +29,10 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
+import packed.internal.component.source.ClassSourceModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.hooks.BootstrapClassFieldHookModel;
+import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -41,7 +42,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-public final class FieldHookModel extends MemberHookModel {
+public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
     /** A MethodHandle that can invoke {@link FieldHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
@@ -49,7 +50,7 @@ public final class FieldHookModel extends MemberHookModel {
 
     /** A VarHandle that can access {@link FieldHook.Bootstrap#builder}. */
     private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
-            "builder", FieldHookModel.Builder.class);
+            "builder", UseSiteFieldHookModel.Builder.class);
 
     /** A direct method handle to the field. */
     public final VarHandle directMethodHandle;
@@ -63,7 +64,7 @@ public final class FieldHookModel extends MemberHookModel {
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
-    FieldHookModel(Builder builder, Field method, BootstrapClassFieldHookModel model, VarHandle mh) {
+    UseSiteFieldHookModel(Builder builder, Field method, BootstrapClassFieldHookModel model, VarHandle mh) {
         super(builder, List.of());
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
@@ -102,7 +103,7 @@ public final class FieldHookModel extends MemberHookModel {
         return MethodHandleUtil.getFromField(field, directMethodHandle);
     }
 
-    static void process(ClassSourceModel.Builder source, Field field) {
+    public static void process(ClassSourceModel.Builder source, Field field) {
         VarHandle varHandle = null;
         for (Annotation a : field.getAnnotations()) {
             BootstrapClassFieldHookModel model = BootstrapClassFieldHookModel.getModelForAnnotatedMethod(a.annotationType());
@@ -114,19 +115,19 @@ public final class FieldHookModel extends MemberHookModel {
                 Builder builder = new Builder(source, model, field);
                 builder.configure();
                 if (builder.buildtimeModel != null) {
-                    FieldHookModel smm = new FieldHookModel(builder, field, model, varHandle);
+                    UseSiteFieldHookModel smm = new UseSiteFieldHookModel(builder, field, model, varHandle);
                     source.fields.add(smm);
                 }
             }
         }
     }
 
-    public static final class Builder extends MemberHookModel.Builder {
+    public static final class Builder extends UseSiteMemberHookModel.Builder {
         final Field field;
 
         final BootstrapClassFieldHookModel model;
 
-        Builder(ClassHookModel.Builder classBuilder, BootstrapClassFieldHookModel model, Field field) {
+        Builder(UseSiteClassHookModel.Builder classBuilder, BootstrapClassFieldHookModel model, Field field) {
             super(classBuilder.source, model);
             this.model = model;
             this.field = field;

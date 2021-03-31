@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import packed.internal.component.source.ClassHookModel;
+import packed.internal.hooks.usesite.UseSiteClassHookModel;
 
 /**
  * A class hook allows for runtime
@@ -72,8 +72,8 @@ public @interface ClassHook {
      */
     public abstract class Bootstrap {
 
-        /** The builder used for bootstrapping. Accessed by {@link ClassHookModel}. */
-        private ClassHookModel.@Nullable Builder builder;
+        /** The builder used for bootstrapping. Accessed by {@link UseSiteClassHookModel}. */
+        private UseSiteClassHookModel.@Nullable Builder builder;
 
         /** Invoked by Packed at bootstrap time. */
         protected void bootstrap() {}
@@ -83,8 +83,8 @@ public @interface ClassHook {
          * 
          * @return a builder object for this bootstrap
          */
-        private final ClassHookModel.Builder builder() {
-            ClassHookModel.Builder b = builder;
+        private final UseSiteClassHookModel.Builder builder() {
+            UseSiteClassHookModel.Builder b = builder;
             if (b == null) {
                 throw new IllegalStateException(
                         "This method cannot be called outside of the #bootstrap() method. Maybe you tried to call #bootstrap() directly");

@@ -43,7 +43,7 @@ import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.component.source.MethodHookModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**
@@ -120,8 +120,8 @@ public @interface MethodHook {
      */
     abstract class Bootstrap {
 
-        /** The builder used for bootstrapping. Updated by {@link MethodHookModel}. */
-        private MethodHookModel.@Nullable Builder builder;
+        /** The builder used for bootstrapping. Updated by {@link UseSiteMethodHookModel}. */
+        private UseSiteMethodHookModel.@Nullable Builder builder;
 
         /** Create a new bootstrap instance. */
         protected Bootstrap() {}
@@ -137,8 +137,8 @@ public @interface MethodHook {
          *             if called after the methods declaring class has been bootstrapped or from the constructor of the
          *             bootstrap class.
          */
-        /* Todoprivate (RealTimeBootstrap) */ final MethodHookModel.Builder builder() {
-            MethodHookModel.Builder b = builder;
+        /* Todoprivate (RealTimeBootstrap) */ final UseSiteMethodHookModel.Builder builder() {
+            UseSiteMethodHookModel.Builder b = builder;
             if (b == null) {
                 if (StackWalkerUtil.containsConstructorOf(getClass())) {
                     throw new IllegalStateException("This method cannot be called from the constructor of " + getClass()
