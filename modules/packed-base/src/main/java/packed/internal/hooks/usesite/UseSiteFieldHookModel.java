@@ -29,7 +29,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
-import packed.internal.component.source.ClassSourceModel;
+import packed.internal.component.ClassSourceModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.BootstrapClassFieldHookModel;
 import packed.internal.hooks.ContextMethodProvide;

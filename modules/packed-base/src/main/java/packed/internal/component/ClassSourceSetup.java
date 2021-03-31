@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.component;
 
 import java.lang.invoke.MethodHandle;
 import java.util.List;
@@ -21,8 +21,6 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentSetup;
-import packed.internal.component.SourcedComponentDriver;
 import packed.internal.inject.Dependant;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
@@ -131,7 +129,7 @@ public final class ClassSourceSetup implements DependencyProvider {
         }
     }
 
-    public ServiceSetup provide(SourceComponentSetup component) {
+    public ServiceSetup provide(SourcedComponentSetup component) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;
         if (s == null) {

@@ -28,7 +28,6 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.container.Extension;
-import packed.internal.component.source.RealmAccessor;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;

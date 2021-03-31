@@ -25,9 +25,9 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
+import packed.internal.component.ClassSourceModel;
+import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.source.ClassSourceModel;
-import packed.internal.component.source.ClassSourceSetup;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;

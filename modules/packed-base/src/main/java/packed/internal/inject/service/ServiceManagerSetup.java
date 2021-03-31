@@ -32,8 +32,8 @@ import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
+import packed.internal.component.SourcedComponentSetup;
 import packed.internal.component.WireletWrapper;
-import packed.internal.component.source.SourceComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
@@ -208,7 +208,7 @@ public final class ServiceManagerSetup {
         p.add(pi);
     }
 
-    public <T> ServiceSetup provideSource(SourceComponentSetup component, Key<T> key) {
+    public <T> ServiceSetup provideSource(SourcedComponentSetup component, Key<T> key) {
         ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
         localServices.add(e);
         return e;

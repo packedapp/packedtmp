@@ -1,4 +1,4 @@
-package packed.internal.component.source;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,17 +12,13 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
-import packed.internal.component.ComponentSetup;
-import packed.internal.component.RealmSetup;
-import packed.internal.component.SourcedComponentDriver;
-import packed.internal.component.WireableComponentSetup;
 
-public final class SourceComponentSetup extends WireableComponentSetup {
+public final class SourcedComponentSetup extends WireableComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;
 
-    public SourceComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, SourcedComponentDriver<?> driver,
+    public SourcedComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, SourcedComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, application, realm, driver, parent, wirelets);
         this.source = new ClassSourceSetup(this, driver);

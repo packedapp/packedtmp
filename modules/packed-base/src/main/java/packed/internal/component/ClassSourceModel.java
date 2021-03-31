@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,7 +29,6 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.BootstrapClassClassHookModel;
 import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.hooks.usesite.UseSiteClassHookModel;

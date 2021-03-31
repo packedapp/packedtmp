@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component.source;
+package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
+import packed.internal.component.ClassSourceModel;
 import packed.internal.hooks.BootstrapClassModel;
 
 /**
