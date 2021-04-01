@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.Key;
 import app.packed.hooks.AutoService;
-import packed.internal.inject.AbstractServiceRegistry;
+import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**

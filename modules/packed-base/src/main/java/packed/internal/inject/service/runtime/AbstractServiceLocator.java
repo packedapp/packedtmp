@@ -33,8 +33,7 @@ import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.ServiceSelection;
-import packed.internal.inject.AbstractServiceRegistry;
-import packed.internal.inject.PackedProvisionContext;
+import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.inject.service.build.PackedServiceComposer;
 
 /**

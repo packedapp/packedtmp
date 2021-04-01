@@ -30,9 +30,9 @@ import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.OldMethodHookModel;
+import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.hooks.ContextMethodProvide;
-import packed.internal.inject.DependencyDescriptor;
-import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 

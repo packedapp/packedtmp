@@ -22,7 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 
 import app.packed.base.OldVariable;
 import app.packed.base.Variable;
-import packed.internal.inject.DependencyDescriptor;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  *

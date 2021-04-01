@@ -22,7 +22,7 @@ import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.PackedComponent;
-import packed.internal.inject.Dependant;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.util.ThrowableUtil;
 
 /**

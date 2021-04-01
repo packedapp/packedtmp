@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.inject.service.runtime;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,9 +27,10 @@ import app.packed.component.Component;
 import app.packed.container.Extension;
 import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceLocator;
+import packed.internal.inject.dependency.DependencyDescriptor;
 
 /** Implementation of {@link ProvisionContext}. */
-public final class PackedProvisionContext implements ProvisionContext {
+final class PackedProvisionContext implements ProvisionContext {
 
     /** An optional component, in case the request is via a component's private injector. */
     @Nullable

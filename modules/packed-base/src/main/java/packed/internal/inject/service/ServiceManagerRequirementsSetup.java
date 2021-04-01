@@ -31,9 +31,9 @@ import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.config.ConfigSite;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.Dependant;
-import packed.internal.inject.DependencyDescriptor;
-import packed.internal.inject.DependencyProvider;
+import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependencyDescriptor;
+import packed.internal.inject.dependency.DependencyProvider;
 import packed.internal.util.ReflectionUtil;
 
 /**

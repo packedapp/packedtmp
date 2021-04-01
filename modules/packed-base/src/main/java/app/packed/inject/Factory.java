@@ -41,7 +41,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
-import packed.internal.inject.DependencyDescriptor;
+import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.invoke.FindInjectableConstructor;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;

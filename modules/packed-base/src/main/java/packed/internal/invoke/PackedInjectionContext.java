@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject;
+package packed.internal.invoke;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,6 +22,7 @@ import java.util.Map;
 import app.packed.base.Key;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.Service;
+import packed.internal.inject.service.AbstractServiceRegistry;
 
 /** Implementation of {@link InjectionContext}. */
 public final class PackedInjectionContext extends AbstractServiceRegistry implements InjectionContext {

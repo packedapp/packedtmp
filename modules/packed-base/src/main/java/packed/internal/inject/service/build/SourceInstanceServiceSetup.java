@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.SourcedComponentSetup;
-import packed.internal.inject.Dependant;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;

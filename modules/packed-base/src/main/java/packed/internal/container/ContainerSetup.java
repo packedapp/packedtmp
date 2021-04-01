@@ -44,7 +44,7 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireableComponentSetup;
-import packed.internal.inject.Dependant;
+import packed.internal.inject.dependency.Dependant;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /** Build-time configuration of a container. */
