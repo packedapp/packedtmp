@@ -22,8 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 
-import packed.internal.inject.FindInjectableConstructor;
-
 /**
  *
  */

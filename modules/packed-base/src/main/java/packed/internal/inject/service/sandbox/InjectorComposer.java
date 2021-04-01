@@ -38,6 +38,7 @@ import app.packed.inject.ServiceLocator;
  * The main difference compared assemblies is that there is no concept of encapsulation. All services are exported by
  * default.
  */
+// Maaske er den bare abstract og sealed...
 public final class InjectorComposer extends Composer<ContainerConfiguration> {
 
     private boolean initialized;

@@ -30,7 +30,6 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.usesite.HookedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
-import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;
 import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -190,9 +189,9 @@ public class Dependant {
         if (sourceMember != null) {
             if (source.poolIndex > -1) {
                 // Maybe shared with SourceAssembly
-                if (sourceMember.runAt == RunAt.INITIALIZATION) {
-
-                }
+//                if (sourceMember.runAt == RunAt.INITIALIZATION) {
+//
+//                }
                 if (sourceMember.provideAskey == null) {
                     MethodHandle mh1 = buildMethodHandle();
 

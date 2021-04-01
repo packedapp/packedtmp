@@ -15,7 +15,6 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.inject.FindInjectableConstructor;
 
 public final class Infuser {
 

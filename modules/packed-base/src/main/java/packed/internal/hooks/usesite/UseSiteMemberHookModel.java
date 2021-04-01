@@ -27,9 +27,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentSetup;
-import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.AbstractHookModel;
-import packed.internal.hooks.usesite.UseSiteMethodHookModel.RunAt;
+import packed.internal.hooks.ClassHookModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 
@@ -51,8 +50,6 @@ public abstract class UseSiteMemberHookModel {
     @Nullable
     public final Key<?> provideAskey;
 
-    @Nullable
-    public RunAt runAt = RunAt.INITIALIZATION;
     // Jeg tror man loeber alle parameterene igennem og ser om der
     // er en sidecar provide der passer dem
     // Saa man sidecar providen dertil.
@@ -66,7 +63,6 @@ public abstract class UseSiteMemberHookModel {
 
     public abstract DependencyProvider[] createProviders();
 
-    // Sidecar provideren tager i oevrigt RegionAssembly
     /**
      * Returns the modifiers of the underlying member.
      * 

@@ -121,9 +121,7 @@ public final class ClassSourceSetup implements DependencyProvider {
 
     private void registerMember(ComponentSetup compConf, UseSiteMemberHookModel m) {
         Dependant i = new Dependant(compConf, this, m, m.createProviders());
-//        if (i.hasUnresolved()) {
         compConf.container.addDependant(i);
-        // }
         if (m.processor != null) {
             m.processor.accept(compConf);
         }
