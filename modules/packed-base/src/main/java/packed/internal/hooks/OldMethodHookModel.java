@@ -38,25 +38,25 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a {@link Bootstrap} class. */
-public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
+public final class OldMethodHookModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<MethodHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+    private static final ClassValue<OldMethodHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
 
         @Override
-        protected MethodHookModel computeValue(Class<?> type) {
+        protected OldMethodHookModel computeValue(Class<?> type) {
             MethodHook ams = type.getAnnotation(MethodHook.class);
             return ams == null ? null : new Builder(ams).build();
         }
     };
 
     @Nullable
-    public static MethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
+    public static OldMethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
     /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "bootstrap", void.class);
 
     /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
@@ -74,7 +74,7 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
      * @param builder
      *            the builder
      */
-    private MethodHookModel(Builder builder) {
+    private OldMethodHookModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
         Map<Key<?>, ContextMethodProvide> tmp = new HashMap<>();
@@ -86,16 +86,16 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
     }
 
-    public static MethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
+    public static OldMethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
-    public MethodHook.Bootstrap configure(UseSiteMethodHookModel.Builder builder) {
+    public MethodHook.Bootstrap bootstrap(UseSiteMethodHookModel.Builder builder) {
         MethodHook.Bootstrap instance = (Bootstrap) newInstance();
 
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, builder);
         try {
-            MH_METHOD_SIDECAR_CONFIGURE.invoke(instance); // Invokes sidecar#configure()
+            MH_METHOD_HOOK_BOOTSTRAP.invoke(instance); // Invokes Bootstrap#bootstrap()
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
@@ -121,11 +121,11 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
 
         /** {@inheritDoc} */
         @Override
-        protected MethodHookModel build() {
+        protected OldMethodHookModel build() {
             
             scan(false, MethodHook.Bootstrap.class);
             
-            return new MethodHookModel(this);
+            return new OldMethodHookModel(this);
         }
 
         public void provideInvoker() {

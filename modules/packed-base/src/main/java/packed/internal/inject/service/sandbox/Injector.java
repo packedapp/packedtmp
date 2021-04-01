@@ -24,6 +24,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.Program;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.ContainerConfiguration;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.util.LookupUtil;
@@ -156,8 +157,11 @@ public interface Injector extends ServiceLocator {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
+    
+    // Rename to of...Stateless Methodhoooks should have of
     static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return InjectorComposer.configure(configurator, wirelets);
+        return driver().compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
+//        return InjectorComposer.configure(configurator, wirelets);
     }
 
     /**
@@ -173,7 +177,7 @@ public interface Injector extends ServiceLocator {
      *             that requires a lifecycle
      */
     // Of er maaske fin. Saa understreger vi ligesom
-    static Injector create(Assembly<?> assembly, Wirelet... wirelets) {
+    static Injector of(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
 }

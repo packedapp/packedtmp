@@ -55,12 +55,12 @@ public class InjectorMicro {
 
     @Benchmark
     public Injector injectorStringExportedInstance() {
-        return Injector.create(new SimpleInjector());
+        return Injector.of(new SimpleInjectorAssembly());
     }
 
     @Benchmark
     public String injectorStringInstanceUse() {
-        return Injector.create(new SimpleInjector()).use(String.class);
+        return Injector.of(new SimpleInjectorAssembly()).use(String.class);
     }
 
     @Benchmark
@@ -76,7 +76,7 @@ public class InjectorMicro {
         NeedsString(String s) {}
     }
 
-    static class SimpleInjector extends BaseAssembly {
+    static class SimpleInjectorAssembly extends BaseAssembly {
 
         @Override
         public void build() {

@@ -23,8 +23,6 @@ import java.lang.invoke.MethodHandles;
 import org.junit.jupiter.api.Test;
 
 import packed.internal.inject.service.sandbox.Injector;
-import tck.injectorconfigurator.of.VarArgsInjectionTest.ArrayConstructor;
-import tck.injectorconfigurator.of.VarArgsInjectionTest.VarArgsConstructor;
 
 /** Tests that we can inject varargs as ordinary arrays. */
 public class VarArgsInjectionTest {

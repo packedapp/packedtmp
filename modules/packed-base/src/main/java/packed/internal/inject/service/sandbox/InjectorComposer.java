@@ -17,7 +17,6 @@ package packed.internal.inject.service.sandbox;
 
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationDriver;
 import app.packed.base.Qualifier;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
@@ -196,13 +195,6 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
-
-    // configure()
-    static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        ApplicationDriver<Injector> d = InjectorApplicationHelper.DRIVER;
-        return d.compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
-    }
-
 }
 // addStatics(); useStatics()
 // @OnHook

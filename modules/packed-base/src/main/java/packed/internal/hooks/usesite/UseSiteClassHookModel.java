@@ -30,7 +30,7 @@ import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;
-import packed.internal.hooks.MethodHookModel;
+import packed.internal.hooks.OldMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -109,7 +109,7 @@ public final class UseSiteClassHookModel {
         }
 
         static class ExposedMethodBootstrap extends MethodHook.Bootstrap {
-            static final MethodHookModel MODEL = MethodHookModel.getModelForFake(ExposedMethodBootstrap.class);
+            static final OldMethodHookModel MODEL = OldMethodHookModel.getModelForFake(ExposedMethodBootstrap.class);
         }
     }
 }

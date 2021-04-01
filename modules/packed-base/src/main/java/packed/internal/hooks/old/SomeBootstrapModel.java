@@ -34,7 +34,7 @@ public class SomeBootstrapModel extends SomeBuildModel {
         @Override
         protected SomeBootstrapModel computeValue(Class<?> type) {
             MethodHook ams = type.getAnnotation(MethodHook.class);
-            return ams == null ? null : new SomeBuilder(ams.bootstrap(), extensionClass.METHOD, 0).bootstrap();
+            return ams == null ? null : new SomeBuilder(null, extensionClass.METHOD, 0).bootstrap();
         }
     };
 

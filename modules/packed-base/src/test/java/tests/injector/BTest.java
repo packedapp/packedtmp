@@ -28,7 +28,7 @@ import packed.internal.inject.service.sandbox.Injector;
 public class BTest {
 
     public static void main(String[] args) {
-        Injector i = Injector.create(new MyAssembly());
+        Injector i = Injector.of(new MyAssembly());
 
         i.find(PrivateImplementation.class).get().attribute(ConfigSite.ATTRIBUTE).print();
 

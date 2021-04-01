@@ -54,10 +54,6 @@ public @interface FieldHook {
     // nameStartsWith()
     Class<? extends Annotation>[] annotation() default {};
 
-    // om extension's automatisk skal aktiveres...
-    // Har endnu ikke fundet
-    boolean autoActivate() default true;
-
     /** The hook's {@link Bootstrap} class. */
     Class<? extends FieldHook.Bootstrap> bootstrap();
 

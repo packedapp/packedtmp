@@ -66,6 +66,8 @@ import packed.internal.util.StackWalkerUtil;
  * In order to be usable with {@link ComposedAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its
  * targets.
  */
+// InvokableMethodHook
+// UpdatableFieldHook
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Repeatable(MethodHook.All.class)
@@ -86,7 +88,7 @@ public @interface MethodHook {
      */
     boolean allowInvoke() default false; // allowIntercept...
 
-    /** The hook's {@link Bootstrap} class. */
+    /** Bootstrap classes for this hook. */
     Class<? extends MethodHook.Bootstrap>[] bootstrap();
 
     /** Any extension this hook is part of. */
@@ -361,6 +363,8 @@ public @interface MethodHook {
     // saa skal tit have 2 klasser.
     // 2. Hvis man vil have injected Extension ogsaa skal vi have noget med noget
     // annotering
+    
+    // Er den her ens paa tvars af hooks???
     public interface BuildContext {
 
         // hvordan fungere den for pooled components???

@@ -29,7 +29,7 @@ import packed.internal.inject.DependencyProvider;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /**
- * Represents a method on a sidecar annotated with {@link Provide}.
+ * Represents a method on a hook class annotated with {@link Provide}.
  */
 public final class ContextMethodProvide implements DependencyProvider {
 
