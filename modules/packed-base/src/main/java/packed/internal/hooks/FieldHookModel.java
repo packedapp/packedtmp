@@ -15,6 +15,8 @@
  */
 package packed.internal.hooks;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
@@ -28,7 +30,9 @@ import app.packed.hooks.FieldHook;
 import app.packed.hooks.FieldHook.Bootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
+import packed.internal.container.ExtensionModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.hooks.usesite.HookUseSite;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
 public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap> {
@@ -63,8 +67,13 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
     }
 
     @Nullable
-    public static FieldHookModel getModelForAnnotatedMethod(Class<? extends Annotation> c) {
-        return ANNOTATION_ON_METHOD_SIDECARS.get(c);
+    public static FieldHookModel of(HookUseSite useSite, ExtensionModel extension, Class<? extends Annotation> c) {
+        requireNonNull(useSite);
+        return switch (useSite) {
+        case COMPONENT_SOURCE -> ANNOTATION_ON_METHOD_SIDECARS.get(c);
+        case APPLICATION_SHELL -> throw new UnsupportedOperationException();
+        case HOOK_CLASS -> throw new UnsupportedOperationException();
+        };
     }
 
     public static FieldHookModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {

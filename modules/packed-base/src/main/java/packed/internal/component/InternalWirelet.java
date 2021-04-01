@@ -30,7 +30,7 @@ import packed.internal.application.ApplicationSetup;
 public abstract class InternalWirelet extends Wirelet {
 
     /**
-     * Checks that the specified component is the root component of an application.
+     * Checks that the specified component is the root component (container) of an application.
      * 
      * @param component
      *            the component that is being wired
@@ -47,6 +47,12 @@ public abstract class InternalWirelet extends Wirelet {
         return component.application;
     }
 
+    /**
+     * Invoked by the runtime when the component is initially wired at build-time.
+     * 
+     * @param component
+     *            the component that is being wired
+     */
     protected abstract void onBuild(ComponentSetup component);
 
     public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext context) {
@@ -61,7 +67,7 @@ public abstract class InternalWirelet extends Wirelet {
     /** A wirelet that will perform a given action once the component has been fully wired. */
     public static final class OnWireActionWirelet extends InternalWirelet {
 
-        /** The action to perform on the component after it has been fully wired. */
+        /** The action to perform on each in-scope component after it has been fully wired. */
         private final Consumer<? super Component> action;
 
         /** The scope of the wirelet */

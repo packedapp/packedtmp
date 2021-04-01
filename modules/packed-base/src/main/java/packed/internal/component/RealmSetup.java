@@ -94,7 +94,7 @@ public final class RealmSetup {
     public RealmAccessor accessor() {
         RealmAccessor r = accessor;
         if (r == null) {
-            this.accessor = r = RealmAccessor.WithModuleInfo.of(realmType);
+            this.accessor = r = RealmAccessor.defaultFor(realmType);
         }
         return r;
     }

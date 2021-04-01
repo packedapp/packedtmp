@@ -2,13 +2,13 @@ package packed.internal.component;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
+import app.packed.inject.Provide;
 
 public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
         link(new LinkMe());
- 
     }
 
     public static void main(String[] args) {
@@ -21,7 +21,11 @@ public class ZapAssembly extends BaseAssembly {
         protected void build() {
             installInstance("SDADs");
             install(My.class);
-            throw new Error();
+        }
+        
+        @Provide 
+        public String foo() {
+            return "asdsad";
         }
     }
 

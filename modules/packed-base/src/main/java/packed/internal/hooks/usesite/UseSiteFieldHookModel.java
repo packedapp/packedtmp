@@ -30,8 +30,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.ContextMethodProvide;
+import packed.internal.hooks.FieldHookModel;
 import packed.internal.inject.DependencyDescriptor;
 import packed.internal.inject.DependencyProvider;
 import packed.internal.util.LookupUtil;
@@ -44,12 +44,12 @@ import packed.internal.util.ThrowableUtil;
 public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
     /** A MethodHandle that can invoke {@link FieldHook.Bootstrap#bootstrap}. */
-    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
-            "bootstrap", void.class);
+    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class, "bootstrap",
+            void.class);
 
     /** A VarHandle that can access {@link FieldHook.Bootstrap#builder}. */
-    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class,
-            "builder", UseSiteFieldHookModel.Builder.class);
+    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class, "builder",
+            UseSiteFieldHookModel.Builder.class);
 
     /** A direct method handle to the field. */
     public final VarHandle directMethodHandle;
@@ -60,11 +60,14 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     /** A model of the field hooks bootstrap. */
     private final FieldHookModel model;
 
+    final HookUseSite hus;
+
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
     UseSiteFieldHookModel(Builder builder, Field method, FieldHookModel model, VarHandle mh) {
         super(builder, List.of());
+        this.hus = requireNonNull(builder.hus);
         this.field = requireNonNull(method);
         this.model = requireNonNull(model);
         // FieldDescriptor m = FieldDescriptor.from(method);
@@ -105,7 +108,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     static void process(HookedClassModel.Builder source, Field field) {
         VarHandle varHandle = null;
         for (Annotation a : field.getAnnotations()) {
-            FieldHookModel model = FieldHookModel.getModelForAnnotatedMethod(a.annotationType());
+            FieldHookModel model = FieldHookModel.of(source.hus, null, a.annotationType());
             if (model != null) {
                 // We can have more than 1 sidecar attached to a method
                 if (varHandle == null) {
@@ -126,14 +129,18 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         final FieldHookModel model;
 
+        final HookUseSite hus;
+
         Builder(HookedClassModel.Builder source, FieldHookModel model, Field field) {
             super(source, model);
+            this.hus = source.hus;
             this.model = model;
             this.field = field;
         }
 
         Builder(UseSiteClassHookModel.Builder classBuilder, FieldHookModel model, Field field) {
             super(classBuilder.source, model);
+            this.hus = null;
             this.model = model;
             this.field = field;
             this.managedBy = classBuilder;

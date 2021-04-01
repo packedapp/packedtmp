@@ -87,8 +87,8 @@ public final class HookedClassModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static HookedClassModel newModel(ClassMemberAccessor oc, @Nullable ExtensionModel extension) {
-        return new Builder(oc, extension).build();
+    public static HookedClassModel newModel(HookUseSite hus, ClassMemberAccessor oc, @Nullable ExtensionModel extension) {
+        return new Builder(hus, oc, extension).build();
     }
 
     /** A builder object for {@link HookedClassModel}. */
@@ -110,6 +110,8 @@ public final class HookedClassModel {
         @Nullable
         final ExtensionModel extension;
 
+        final HookUseSite hus;
+
         /**
          * Creates a new component model builder
          * 
@@ -117,8 +119,9 @@ public final class HookedClassModel {
          *            a class processor usable by hooks
          * 
          */
-        public Builder(ClassMemberAccessor cp, ExtensionModel extension) {
+        public Builder(HookUseSite hus, ClassMemberAccessor cp, ExtensionModel extension) {
             super(cp.type());
+            this.hus = requireNonNull(hus);
             this.oc = requireNonNull(cp);
             this.extension = extension;
         }
