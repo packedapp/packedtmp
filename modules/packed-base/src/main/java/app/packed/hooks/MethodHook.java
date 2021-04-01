@@ -87,7 +87,7 @@ public @interface MethodHook {
     boolean allowInvoke() default false; // allowIntercept...
 
     /** The hook's {@link Bootstrap} class. */
-    Class<? extends MethodHook.Bootstrap> bootstrap();
+    Class<? extends MethodHook.Bootstrap>[] bootstrap();
 
     /** Any extension this hook is part of. */
     // I think it is okay to require that. We could have an InternalExtension.class for our own special hooks
@@ -330,23 +330,23 @@ public @interface MethodHook {
         // Maybe input it default, and you need to call output
         protected static final void $outputMethod() {}
 
-        // Hmmm skal det vaere paa annoteringen istedet for...
-        protected static final void $supportApplicationShell(Class<? extends Bootstrap> bootstrap) {
-            // hook.isApplicationShell
-
-            // Det er her den er grim...
-            // Vi er i samme container...
-            // Men saa alligevel ikke
-            // Maa vaere en special case...
-
-            // Hvis comp is parent and wirelet
-        }
+//        // Hmmm skal det vaere paa annoteringen istedet for...
+//        protected static final void $supportApplicationShell(Class<? extends Bootstrap> bootstrap) {
+//            // hook.isApplicationShell
+//
+//            // Det er her den er grim...
+//            // Vi er i samme container...
+//            // Men saa alligevel ikke
+//            // Maa vaere en special case...
+//
+//            // Hvis comp is parent and wirelet
+//        }
 
         // Do we need a new bootstrap??? I'm mostly worried about injection...
         // Can always handle a few if/elses/...
         // @Path("${component.id}/")
         // Altsaa vi kan jo altid bare kalde WebSubextension.add...
-        protected static final void $supportMetaHook(Class<? extends Bootstrap> bootstrap) {}
+     //   protected static final void $supportMetaHook(Class<? extends Bootstrap> bootstrap) {}
     }
 
     /**

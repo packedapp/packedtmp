@@ -112,7 +112,7 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
         private final HashMap<Key<?>, ContextMethodProvide.Builder> providing = new HashMap<>();
 
         Builder(MethodHook ams) {
-            super(ams.bootstrap());
+            super(ams.bootstrap()[0]);
         }
 
         Builder(Class<?> c) {

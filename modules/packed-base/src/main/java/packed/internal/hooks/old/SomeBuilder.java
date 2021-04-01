@@ -23,11 +23,11 @@ import static java.util.Objects.requireNonNull;
 public final class SomeBuilder {
     //final InstantiatorBuilder ib;
 
-    final Class<?> implementation;
+    final Class<?>[] implementation;
 
     final extensionClass type;
 
-    SomeBuilder(Class<?> implementation, extensionClass type, int modifiers) {
+    SomeBuilder(Class<?>[] implementation, extensionClass type, int modifiers) {
         this.implementation = requireNonNull(implementation);
         this.type = requireNonNull(type);
         //this.ib = Infuser.of(MethodHandles.lookup()).findConstructorFor(implementation);
