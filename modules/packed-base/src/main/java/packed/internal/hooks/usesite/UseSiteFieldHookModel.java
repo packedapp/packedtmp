@@ -27,7 +27,6 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.FieldHookModel;
@@ -60,16 +59,11 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
     final HookUseSite hus;
 
-    @Nullable
-    public RunAt runAt = RunAt.INITIALIZATION;
-
     UseSiteFieldHookModel(Builder builder, VarHandle mh) {
         super(builder, List.of());
         this.hus = requireNonNull(builder.hus);
         this.modifiers = requireNonNull(builder.field.getModifiers());
         this.hook = requireNonNull(builder.hook);
-        // FieldDescriptor m = FieldDescriptor.from(method);
-        // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
         this.varHandle = requireNonNull(mh);
     }
 
@@ -196,10 +190,6 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         }
 
         public void set(Object argument) {}
-    }
-
-    public enum RunAt {
-        INITIALIZATION;
     }
 
     /**

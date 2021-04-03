@@ -83,9 +83,10 @@ public final class PackedComponent implements Component {
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
         Map<String, PackedComponent> children = null;
-        if (component.children != null) {
+        LinkedHashMap<String, ComponentSetup> childComponents = component.children;
+        if (childComponents != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(component.childrenCount());
+            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(childComponents.size());
 
             for (ComponentSetup cc : component.children.values()) {
                 // We never carry over extensions into the runtime

@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import app.packed.attribute.Attribute;
@@ -96,22 +95,25 @@ public abstract class ComponentSetup {
     public final RealmSetup realm;
 
     /**
-     * Creates a new instance of this class
-     * 
+     * @param build
+     *            the build this component is a part of
+     * @param application
+     *            the application this component is a part of
+     * @param realm
+     *            the realm this component is part of
+     * @param driver
+     *            the driver of the component
      * @param parent
-     *            the parent of the component
+     *            any parent this component might have
      */
-    public ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
-            @Nullable ComponentSetup parent) {
-        // Update the current
-
+    ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
-
+        
         this.build = requireNonNull(build);
         this.application = requireNonNull(application);
+        this.realm = requireNonNull(realm);
         this.container = this instanceof ContainerSetup container ? container : parent.container;
-        this.realm = realm;
 
         // Various
         if (parent == null) {
@@ -121,11 +123,6 @@ public abstract class ComponentSetup {
             this.modifiers = driver.modifiers;
             this.pool = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.pool;
             this.onWire = parent.onWire;
-        }
-
-        // Setup Runtime
-        if (modifiers().hasRuntime()) {
-            pool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
         }
     }
 
@@ -146,9 +143,11 @@ public abstract class ComponentSetup {
         this.container = container;
         this.realm = new RealmSetup(model, this);
 
-        this.pool = container.pool;
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
+        this.pool = container.pool;
         this.onWire = container.onWire;
+        
+        initializeName(model.nameComponent);
     }
 
     /**
@@ -188,9 +187,6 @@ public abstract class ComponentSetup {
         }
     }
 
-    final int childrenCount() {
-        return children == null ? 0 : children.size();
-    }
 
     protected final void initializeName(String name) {
         String n = name;
@@ -338,28 +334,16 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return childrenToList(ComponentSetup::adaptor);
-        }
-
-        @SuppressWarnings("unchecked")
-        private <S> List<S> childrenToList(Function<ComponentSetup, S> mapper) {
-            requireNonNull(mapper, "mapper is null");
             LinkedHashMap<String, ComponentSetup> c = component.children;
             if (c == null) {
                 return List.of();
             } else {
-                List.copyOf(c.values());
-            }
-            int size = c == null ? 0 : c.size();
-            if (size == 0) {
-                return List.of();
-            } else {
-                Object[] o = new Object[size];
+                Component[] o = new Component[c.size()];
                 int index = 0;
                 for (ComponentSetup child : c.values()) {
-                    o[index++] = mapper.apply(child);
+                    o[index++] = child.adaptor();
                 }
-                return (List<S>) List.of(o);
+                return List.of(o);
             }
         }
 

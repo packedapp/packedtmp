@@ -29,7 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.OldMethodHookModel;
+import packed.internal.hooks.MethodHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.hooks.HookedMethodProvide;
@@ -41,12 +41,16 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
+    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
+    private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
+            "bootstrap", void.class);
+
     /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "builder", UseSiteMethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
-    public final OldMethodHookModel bootstrapModel;
+    public final MethodHookModel bootstrapModel;
 
     /** A direct method handle to the method. */
     private final MethodHandle directMethodHandle;
@@ -60,10 +64,6 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         this.bootstrapModel = requireNonNull(builder.model);
         this.directMethodHandle = requireNonNull(builder.shared.direct());
     }
-
-    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
-    private static final MethodHandle MH_METHOD_SIDECAR_CONFIGURE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
-            "bootstrap", void.class);
 
     @Override
     public DependencyProducer[] createProviders() {
@@ -98,7 +98,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
     public static void process(HookedClassModel.Builder source, Method method) {
         Shared shared = null;
         for (Annotation a : method.getAnnotations()) {
-            OldMethodHookModel model = OldMethodHookModel.getForAnnotatedMethod(a.annotationType());
+            MethodHookModel model = MethodHookModel.getForAnnotatedMethod(a.annotationType());
             if (model != null) {
                 if (shared == null) {
                     shared = new Shared(source, method);
@@ -125,37 +125,42 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         private Method exposedMethod;
 
         /** A model of the bootstrap class. */
-        private final OldMethodHookModel model;
+        private final MethodHookModel model;
 
         /** The shared context. */
         private final Shared shared;
 
         private final Method unsafeMethod;
 
-        Builder(OldMethodHookModel model, Shared shared) {
+        Builder(HookedClassModel.Builder source, MethodHookModel model, Method method) {
+            this(model, new Shared(source, method));
+        }
+
+        Builder(MethodHookModel model, Shared shared) {
             super(shared.source, model);
             this.shared = requireNonNull(shared);
             this.model = requireNonNull(model);
             this.unsafeMethod = shared.methodUnsafe;
         }
 
-        Builder(HookedClassModel.Builder source, OldMethodHookModel model, Method method) {
-            this(model, new Shared(source, method));
+        /**
+         * @param b
+         */
+        public void buildWith(Object b) {}
+
+        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+            return unsafeMethod.getAnnotation(annotationClass);
         }
 
         Object initialize() {
             Object instance = model.newInstance();
             VH_METHOD_SIDECAR_CONFIGURATION.set(instance, this);
             try {
-                MH_METHOD_SIDECAR_CONFIGURE.invoke(instance); // Invokes sidecar#configure()
+                MH_METHOD_HOOK_BOOTSTRAP.invoke(instance); // Invokes sidecar#configure()
                 return instance;
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             }
-        }
-
-        public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-            return unsafeMethod.getAnnotation(annotationClass);
         }
 
         public MethodHandle methodHandle() {
@@ -214,11 +219,6 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             Builder b = (Builder) VH_METHOD_SIDECAR_CONFIGURATION.get(sidecar);
             b.processor = processor;
         }
-
-        /**
-         * @param b
-         */
-        public void buildWith(Object b) {}
     }
 
     public enum RunAt {

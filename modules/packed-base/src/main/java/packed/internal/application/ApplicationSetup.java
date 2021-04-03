@@ -55,6 +55,10 @@ public final class ApplicationSetup {
         this.driver = requireNonNull(driver, "driver is null");
         this.container = containerDriver.newComponent(build, this, realm, null, wirelets);
         this.modifiers = modifiers;
+        // Setup Runtime
+        if (container.modifiers().hasRuntime()) {
+            constantPool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
+        }
     }
 
     /** {@return returns an Application adaptor that can be exposed to end-users} */
@@ -79,7 +83,7 @@ public final class ApplicationSetup {
         return PackedComponentModifierSet.isImage(modifiers);
     }
 
-    /** A wirelet that will set the name of the component. Used by {@link Wirelet#named(String)}. */
+    /** A wirelet that will set the launch mode of the application. Used by {@link ApplicationWirelets#launchMode(RunState)}. */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
         /** The (validated) name to override with. */
@@ -88,8 +92,8 @@ public final class ApplicationSetup {
         /**
          * Creates a new name wirelet
          * 
-         * @param name
-         *            the name to override any existing container name with
+         * @param launchMode
+         *            the new launch mode of the application
          */
         public ApplicationLaunchModeWirelet(RunState launchMode) {
             this.launchMode = requireNonNull(launchMode, "launchMode is null");
@@ -100,13 +104,13 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        protected void onBuild(ComponentSetup c) {
-            checkIsApplication(c).launchMode = launchMode;
+        protected void onBuild(ComponentSetup component) {
+            checkIsApplication(component).launchMode = launchMode;
         }
 
         /** {@inheritDoc} */
         @Override
-        public void onImageInstantiation(ComponentSetup c, ApplicationLaunchContext ic) {
+        public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext ic) {
             ic.launchMode = launchMode;
         }
     }
@@ -141,7 +145,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public String name() {
-            return application.container.name;
+            return application.container.getName();
         }
 
         /** {@inheritDoc} */
