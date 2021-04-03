@@ -75,7 +75,7 @@ public abstract class ComponentSetup {
     protected final int modifiers;
 
     /** The name of this node. */
-    public String name;
+    String name;
 
     /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by setName(). */
     protected boolean nameInitializedWithWirelet;
@@ -269,9 +269,9 @@ public abstract class ComponentSetup {
         }
     }
 
-    /** {@return the path of this component */
+    /** {@return the path of this component} */
     public final NamespacePath path() {
-        return PackedTreePath.of(this); // show we weak intern them????
+        return PackedTreePath.of(this);
     }
 
     public final <T> void setRuntimeAttribute(Attribute<T> attribute, T value) {
@@ -281,21 +281,21 @@ public abstract class ComponentSetup {
     }
 
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        WireableComponentDriver<C> pcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
+        WireableComponentDriver<C> wcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
-        // Check that this component's is still open
+        // Prepare to wire the component (make sure the realm is still open)
         realm.wirePrepare();
 
         // If this component is an extension, we wire to the container the extension is part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
 
         // Create the new component
-        WireableComponentSetup component = pcd.newComponent(build, application, realm, wireTo, wirelets);
+        WireableComponentSetup component = wcd.newComponent(build, application, realm, wireTo, wirelets);
 
         realm.wireCommit(component, false);
 
         // Return a component configuration to the user
-        return pcd.toConfiguration(component);
+        return wcd.toConfiguration(component);
     }
 
     /**

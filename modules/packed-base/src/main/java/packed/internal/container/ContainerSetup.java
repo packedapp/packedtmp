@@ -371,7 +371,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         /** {@inheritDoc} */
         @Override
         public String name() {
-            return container.name;
+            return container.getName();
         }
     }
 }

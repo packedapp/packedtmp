@@ -53,7 +53,6 @@ public final class ApplicationLaunchContext {
 
     public RunState launchMode;
 
-    /** The name of the root component. May be replaced by {@link Wirelet#named(String)}. */
     public String name;
 
     @Nullable
@@ -63,7 +62,7 @@ public final class ApplicationLaunchContext {
         this.application = requireNonNull(application);
         this.container = application.container;
         this.wirelets = wirelets;
-        this.name = container.name;
+        this.name = container.getName();
         this.launchMode = application.launchMode;
     }
 
