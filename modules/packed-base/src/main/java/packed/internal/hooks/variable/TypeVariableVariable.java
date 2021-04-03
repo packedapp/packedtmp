@@ -25,7 +25,7 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class TypeVariableVariable extends AbstractAnnotatedVariable {
+public final class TypeVariableVariable extends AbstractVariable {
 
     final TypeVariable<?> p;
 

@@ -44,10 +44,13 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireableComponentSetup;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /** Build-time configuration of a container. */
+/**
+ *
+ */
 public final class ContainerSetup extends WireableComponentSetup {
 
     /** Child containers, lazy initialized (we rely on this in ExtensionSetup) */
@@ -58,13 +61,13 @@ public final class ContainerSetup extends WireableComponentSetup {
     @Nullable
     public final ContainerSetup containerParent;
 
-    /** All extensions in use, in no particular order. */
-    final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
+    /** All dependants that needs to be resolved. */
+    public final ArrayList<DependancyConsumer> dependants = new ArrayList<>();
 
     /* Cleanup */
-    
-    /** All dependants that needs to be resolved. */
-    public final ArrayList<Dependant> dependants = new ArrayList<>();
+
+    /** All extensions in use, in no particular order. */
+    final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
 
     boolean hasRunPreContainerChildren;
 
@@ -75,10 +78,18 @@ public final class ContainerSetup extends WireableComponentSetup {
     private ArrayList<ExtensionSetup> tmpExtensions;
 
     /**
-     * Creates a new container
-     * 
-     * @param compConf
-     *            the configuration of the component the container is a part of
+     * @param build
+     *            the build this container is a part of
+     * @param application
+     *            the application this container is a part of
+     * @param realm
+     *            the realm this container is a part of
+     * @param driver
+     *            the driver that was used to create the container, is always
+     *            {@link WireableComponentDriver.ContainerComponentDriver}
+     * @param parent
+     *            any parent component
+     * @param wirelets optional wirelets specified when creating or wiring the container
      */
     public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
@@ -122,7 +133,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param dependant
      *            the injectable to add
      */
-    public void addDependant(Dependant dependant) {
+    public void addDependant(DependancyConsumer dependant) {
         dependants.add(requireNonNull(dependant));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
@@ -172,7 +183,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             sm.prepareDependants();
         }
 
-        for (Dependant i : dependants) {
+        for (DependancyConsumer i : dependants) {
             i.resolve(sm);
         }
 
@@ -295,12 +306,6 @@ public final class ContainerSetup extends WireableComponentSetup {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends Extension> T useExtension(Class<T> extensionClass) {
-        realm.wireLatest();
-        return (T) useExtension(extensionClass, null).extensionInstance();
-    }
-
     /**
      * If an extension of the specified type has not already been installed, installs it. Returns the extension's context.
      * 
@@ -334,7 +339,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             } else {
                 requestedBy.checkConfigurable();
             }
-            
+
             // Create the new extension and adds into the map of extensions
             extension = ExtensionSetup.initialize(this, extensionClass);
 
@@ -347,6 +352,12 @@ public final class ContainerSetup extends WireableComponentSetup {
             }
         }
         return extension;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Extension> T useExtension(Class<T> extensionClass) {
+        realm.wireLatest();
+        return (T) useExtension(extensionClass, null).extensionInstance();
     }
 
     record ContainerAdaptor(ContainerSetup container) implements Container {

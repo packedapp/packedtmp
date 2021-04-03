@@ -30,17 +30,15 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.FieldHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.ContextMethodProvide;
 import packed.internal.hooks.FieldHookModel;
+import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 import packed.internal.util.ThrowableUtil;
 
-/**
- *
- */
+/** Represents the use site of a field hook. */
 public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
     /** A MethodHandle that can invoke {@link FieldHook.Bootstrap#bootstrap}. */
@@ -52,39 +50,39 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
             UseSiteFieldHookModel.Builder.class);
 
     /** A direct method handle to the field. */
-    public final VarHandle directMethodHandle;
+    public final VarHandle varHandle;
 
-    /** The field this model models. */
-    private final Field field;
+    /** The modifiers of the field. */
+    private final int modifiers;
 
     /** A model of the field hooks bootstrap. */
-    private final FieldHookModel model;
+    private final FieldHookModel hook;
 
     final HookUseSite hus;
 
     @Nullable
     public RunAt runAt = RunAt.INITIALIZATION;
 
-    UseSiteFieldHookModel(Builder builder, Field method, FieldHookModel model, VarHandle mh) {
+    UseSiteFieldHookModel(Builder builder, VarHandle mh) {
         super(builder, List.of());
         this.hus = requireNonNull(builder.hus);
-        this.field = requireNonNull(method);
-        this.model = requireNonNull(model);
+        this.modifiers = requireNonNull(builder.field.getModifiers());
+        this.hook = requireNonNull(builder.hook);
         // FieldDescriptor m = FieldDescriptor.from(method);
         // this.dependencies = Arrays.asList(DependencyDescriptor.fromField(m));
-        this.directMethodHandle = requireNonNull(mh);
+        this.varHandle = requireNonNull(mh);
     }
 
     @Override
-    public DependencyProvider[] createProviders() {
-        DependencyProvider[] providers = new DependencyProvider[Modifier.isStatic(field.getModifiers()) ? 0 : 1];
+    public DependencyProducer[] createProviders() {
+        DependencyProducer[] providers = new DependencyProducer[Modifier.isStatic(modifiers) ? 0 : 1];
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
-            ContextMethodProvide dp = model.keys.get(d.key());
+            HookedMethodProvide dp = hook.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
-                int index = i + (Modifier.isStatic(field.getModifiers()) ? 0 : 1);
+                int index = i + (Modifier.isStatic(modifiers) ? 0 : 1);
                 providers[index] = dp;
                 // System.out.println("SEtting provider " + dp.dependencyAccessor());
             }
@@ -96,71 +94,80 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     /** {@inheritDoc} */
     @Override
     public int getModifiers() {
-        return field.getModifiers();
+        return modifiers;
     }
 
     /** {@inheritDoc} */
     @Override
     public MethodHandle methodHandle() {
-        return MethodHandleUtil.getFromField(field, directMethodHandle);
+        return MethodHandleUtil.getFromField(modifiers, varHandle);
     }
 
-    static void process(HookedClassModel.Builder source, Field field) {
+    static void processField(HookedClassModel.Builder source, Field field) {
         VarHandle varHandle = null;
+
+        // Run through every annotation on the field, and see if we any hook that are activated
         for (Annotation a : field.getAnnotations()) {
-            FieldHookModel model = FieldHookModel.of(source.hus, null, a.annotationType());
-            if (model != null) {
+            FieldHookModel hook = FieldHookModel.of(source.hus, null, a.annotationType());
+
+            if (hook != null) {
                 // We can have more than 1 sidecar attached to a method
                 if (varHandle == null) {
                     varHandle = source.oc.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 }
-                Builder builder = new Builder(source, model, field);
-                builder.configure();
+
+                Builder builder = new Builder(source, hook, field);
+                builder.invokeBootstrap();
                 if (builder.buildtimeModel != null) {
-                    UseSiteFieldHookModel smm = new UseSiteFieldHookModel(builder, field, model, varHandle);
+                    UseSiteFieldHookModel smm = new UseSiteFieldHookModel(builder, varHandle);
                     source.fields.add(smm);
                 }
             }
         }
     }
 
+    /**
+     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link FieldHook#bootstrap()}.
+     */
     public static final class Builder extends UseSiteMemberHookModel.Builder {
-        final Field field;
 
-        final FieldHookModel model;
+        /** The field that activate the hook. */
+        final Field field;
 
         final HookUseSite hus;
 
-        Builder(HookedClassModel.Builder source, FieldHookModel model, Field field) {
-            super(source, model);
+        final FieldHookModel hook;
+
+        Builder(HookedClassModel.Builder source, FieldHookModel hook, Field field) {
+            super(source, hook);
             this.hus = source.hus;
-            this.model = model;
+            this.hook = hook;
             this.field = field;
         }
 
         Builder(UseSiteClassHookModel.Builder classBuilder, FieldHookModel model, Field field) {
             super(classBuilder.source, model);
             this.hus = null;
-            this.model = model;
+            this.hook = model;
             this.field = field;
             this.managedBy = classBuilder;
         }
 
         public void checkWritable() {}
 
-        private void configure() {
+        private void invokeBootstrap() {
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this assembly.
             // Don't think it makes sense to register
-            Object instance = model.newInstance();
+            Object instance = hook.newInstance();
 
             VH_FIELD_HOOK_BUILDER.set(instance, this);
             try {
-                MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes sidecar#configure()
+                MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes FieldHook.Bootstrap#bootstrap()
             } catch (Throwable e) {
                 throw ThrowableUtil.orUndeclared(e);
             } finally {
-                VH_FIELD_HOOK_BUILDER.set(instance, null); // clears the configuration
+                VH_FIELD_HOOK_BUILDER.set(instance, null); // clears this builder
             }
         }
 
@@ -169,7 +176,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         }
 
         Object initialize() {
-            Object instance = model.newInstance();
+            Object instance = hook.newInstance();
             VH_FIELD_HOOK_BUILDER.set(instance, this);
             try {
                 MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes sidecar#configure()
@@ -211,18 +218,18 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         private boolean isFieldUsed;
 
         /** The source. */
-        private final HookedClassModel.Builder source;
+        private final HookedClassModel.Builder builder;
 
         private VarHandle varHandle;
 
         private Shared(HookedClassModel.Builder source, Field field) {
-            this.source = requireNonNull(source);
+            this.builder = requireNonNull(source);
             this.fieldUnsafe = requireNonNull(field);
         }
 
         VarHandle direct() {
             if (varHandle == null) {
-                varHandle = source.oc.unreflectVarHandle(fieldUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                varHandle = builder.oc.unreflectVarHandle(fieldUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
             }
             return varHandle;
         }

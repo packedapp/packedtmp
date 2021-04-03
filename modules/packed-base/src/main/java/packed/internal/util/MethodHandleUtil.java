@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.lang.invoke.VarHandle.AccessMode;
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 /**
@@ -27,8 +26,8 @@ import java.lang.reflect.Modifier;
  */
 public class MethodHandleUtil {
 
-    public static MethodHandle getFromField(Field f, VarHandle vh) {
-        return Modifier.isVolatile(f.getModifiers()) ? vh.toMethodHandle(AccessMode.GET_VOLATILE) : vh.toMethodHandle(AccessMode.GET);
+    public static MethodHandle getFromField(int modifiers, VarHandle vh) {
+        return Modifier.isVolatile(modifiers) ? vh.toMethodHandle(AccessMode.GET_VOLATILE) : vh.toMethodHandle(AccessMode.GET);
     }
 
     public static MethodHandle bind(MethodHandle target, int position, Object... arguments) {

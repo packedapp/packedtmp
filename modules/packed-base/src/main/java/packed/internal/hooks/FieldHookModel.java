@@ -47,7 +47,7 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
         }
     };
 
-    public final Map<Key<?>, ContextMethodProvide> keys;
+    public final Map<Key<?>, HookedMethodProvide> keys;
 
     // Must take an invoker...
     public final MethodHandle onInitialize;
@@ -61,7 +61,7 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
     private FieldHookModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
-        Map<Key<?>, ContextMethodProvide> tmp = new HashMap<>();
+        Map<Key<?>, HookedMethodProvide> tmp = new HashMap<>();
         builder.providing.forEach((k, v) -> tmp.put(k, v.build(this)));
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
@@ -85,7 +85,7 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
 
         private MethodHandle onInitialize;
 
-        private final HashMap<Key<?>, ContextMethodProvide.Builder> providing = new HashMap<>();
+        private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
         private Builder(Class<? extends FieldHook.Bootstrap> c) {
             super(c);
@@ -107,7 +107,7 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
             Provide ap = method.getAnnotation(Provide.class);
             if (ap != null) {
                 MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                ContextMethodProvide.Builder b = new ContextMethodProvide.Builder(method, mh);
+                HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
                 if (providing.putIfAbsent(b.key, b) != null) {
                     throw new InternalExtensionException("Multiple methods on " + ib.type() + " that provide " + b.key);
                 }

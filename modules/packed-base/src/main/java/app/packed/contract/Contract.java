@@ -29,6 +29,7 @@ import packed.internal.application.ApplicationLaunchContext;
  * This class is the base class for contracts in Packed.
  */
 // Det er end slags beskrivelse. Og 
+// implements AttributeHolder???
 public abstract class Contract {
 
     /** A daemon driver. */
@@ -43,12 +44,20 @@ public abstract class Contract {
     @Override
     public abstract int hashCode();
 
+    /**
+     * Builds an application and returns a set of all of the contracts it exposes.
+     * 
+     * @param assembly
+     *            the assembly used for building the application
+     * @param wirelets
+     *            optional wirelets
+     * @return all contracts of the application
+     */
     static Set<Contract> allOf(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
-        //DAEMON.analyze(assembly, wirelets).
+        // DAEMON.analyze(assembly, wirelets).
     }
 
-    
     /**
      * Returns an artifact driver that can be used for analysis. Statefull
      * 

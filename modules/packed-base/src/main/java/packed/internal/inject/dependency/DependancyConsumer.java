@@ -58,7 +58,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
 // Something with dependencis
-public class Dependant {
+public class DependancyConsumer {
 
     @Nullable
     private final SourceMemberServiceSetup service;
@@ -74,7 +74,7 @@ public class Dependant {
     public boolean needsPostProcessing = true;
 
     /** Resolved dependencies. Must match the number of parameters in {@link #directMethodHandle}. */
-    public final DependencyProvider[] providers;
+    public final DependencyProducer[] providers;
 
     /** The source (component) this dependent is or is a part of. */
     public final ClassSourceSetup source;
@@ -84,7 +84,7 @@ public class Dependant {
 
     public final int providerDelta;
 
-    public Dependant(ClassSourceSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public DependancyConsumer(ClassSourceSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -93,10 +93,10 @@ public class Dependant {
         this.directMethodHandle = mh;
 
         this.providerDelta = 0;
-        this.providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
+        this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
     }
 
-    public Dependant(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProvider[] dependencyProviders) {
+    public DependancyConsumer(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -139,7 +139,7 @@ public class Dependant {
 
             // We create a new method that a
             for (int i = 0; i < providers.length; i++) {
-                DependencyProvider dp = providers[i];
+                DependencyProducer dp = providers[i];
                 requireNonNull(dp);
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
@@ -165,7 +165,7 @@ public class Dependant {
         if (dependencies.size() == 0) {
             return false;
         }
-        for (DependencyProvider p : providers) {
+        for (DependencyProducer p : providers) {
             if (p == null) {
                 return true;
             }
@@ -215,7 +215,7 @@ public class Dependant {
         }
     }
 
-    public void setDependencyProvider(int index, DependencyProvider p) {
+    public void setDependencyProvider(int index, DependencyProducer p) {
         int providerIndex = index + providerDelta;
         if (providers[providerIndex] != null) {
             throw new IllegalStateException();
@@ -228,7 +228,7 @@ public class Dependant {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {
                 DependencyDescriptor sd = dependencies.get(i);
-                DependencyProvider e = null;
+                DependencyProducer e = null;
                 if (source != null) {
                     HookedClassModel sm = source.model;
                     if (sm.sourceServices != null) {

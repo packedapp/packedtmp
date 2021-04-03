@@ -31,8 +31,8 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.OldMethodHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.hooks.ContextMethodProvide;
+import packed.internal.inject.dependency.DependencyProducer;
+import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -66,12 +66,12 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             "bootstrap", void.class);
 
     @Override
-    public DependencyProvider[] createProviders() {
-        DependencyProvider[] providers = new DependencyProvider[directMethodHandle.type().parameterCount()];
+    public DependencyProducer[] createProviders() {
+        DependencyProducer[] providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
         // System.out.println("RESOLVING " + directMethodHandle);
         for (int i = 0; i < dependencies.size(); i++) {
             DependencyDescriptor d = dependencies.get(i);
-            ContextMethodProvide dp = bootstrapModel.keys.get(d.key());
+            HookedMethodProvide dp = bootstrapModel.keys.get(d.key());
             if (dp != null) {
                 // System.out.println("MAtches for " + d.key());
                 int index = i + directMethodHandle.type().parameterCount() == dependencies.size() ? 0 : 1;

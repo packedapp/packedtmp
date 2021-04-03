@@ -45,7 +45,7 @@ import packed.internal.hooks.variable.ParameterVariable;
 
 // tror vi bliver noedt til at have specielle metoder for repeatable annotations
 
-public interface Variable extends AnnotatedElement, OldVariable {
+public interface Variable extends AnnotatedElement /*, OldVariable */ {
 
     // Variable addNullable(); intoOptional()
     // lots of little transformations
@@ -66,7 +66,6 @@ public interface Variable extends AnnotatedElement, OldVariable {
      * 
      * @return the raw type of the variable
      */
-    @Override
     Class<?> rawType();
 
     default Optional<?> source() {

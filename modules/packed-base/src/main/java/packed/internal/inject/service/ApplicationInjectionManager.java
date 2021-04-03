@@ -22,8 +22,8 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.dependency.Dependant;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /**
@@ -34,8 +34,8 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
  * 
  * Finds dependency circles either within the same container or across containers that are not in a parent-child relationship.
  * 
- * Responsible for invoking the {@link Dependant#onAllDependenciesResolved(ConstantPoolSetup)} callback for every
- * {@link Dependant}. We do this here, because we guarantee that all dependants of a dependant are always invoked before
+ * Responsible for invoking the {@link DependancyConsumer#onAllDependenciesResolved(ConstantPoolSetup)} callback for every
+ * {@link DependancyConsumer}. We do this here, because we guarantee that all dependants of a dependant are always invoked before
  * the dependant itself.
  */
 // New algorithm
@@ -63,15 +63,15 @@ final class ApplicationInjectionManager {
     }
 
     private DependencyCycle dependencyCyclesFind(ConstantPoolSetup region, ContainerSetup container) {
-        ArrayDeque<Dependant> stack = new ArrayDeque<>();
-        ArrayDeque<Dependant> dependencies = new ArrayDeque<>();
+        ArrayDeque<DependancyConsumer> stack = new ArrayDeque<>();
+        ArrayDeque<DependancyConsumer> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private DependencyCycle dependencyCyclesFind(ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies, ConstantPoolSetup region,
+    private DependencyCycle dependencyCyclesFind(ArrayDeque<DependancyConsumer> stack, ArrayDeque<DependancyConsumer> dependencies, ConstantPoolSetup region,
             ContainerSetup container) {
-        for (Dependant node : container.dependants) {
+        for (DependancyConsumer node : container.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
@@ -103,14 +103,14 @@ final class ApplicationInjectionManager {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(ConstantPoolSetup region, Dependant injectable, ArrayDeque<Dependant> stack, ArrayDeque<Dependant> dependencies) {
-        DependencyProvider[] deps = injectable.providers;
+    private DependencyCycle detectCycle(ConstantPoolSetup region, DependancyConsumer injectable, ArrayDeque<DependancyConsumer> stack, ArrayDeque<DependancyConsumer> dependencies) {
+        DependencyProducer[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);
             for (int i = 0; i < deps.length; i++) {
-                DependencyProvider dependency = deps[i];
+                DependencyProducer dependency = deps[i];
                 if (dependency != null) {
-                    Dependant next = dependency.dependant();
+                    DependancyConsumer next = dependency.dependant();
                     if (next != null) {
                         if (next.needsPostProcessing) {
                             dependencies.push(next);
@@ -143,9 +143,9 @@ final class ApplicationInjectionManager {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<Dependant> dependencies;
+        final ArrayDeque<DependancyConsumer> dependencies;
 
-        DependencyCycle(ArrayDeque<Dependant> dependencies) {
+        DependencyCycle(ArrayDeque<DependancyConsumer> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 

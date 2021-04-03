@@ -17,24 +17,19 @@ package packed.internal.inject.service;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.StringJoiner;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.base.Variable;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.config.ConfigSite;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
-import packed.internal.util.ReflectionUtil;
+import packed.internal.inject.dependency.DependencyProducer;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.
@@ -84,31 +79,31 @@ public final class ServiceManagerRequirementsSetup {
                     sb.append("parameter on ");
                     if (dependency.variable() != null) {
 
-                        Executable ed = ((PackedParameterDescriptor) dependency.variable().get()).unsafeExecutable();
-                        sb.append(ReflectionUtil.typeOf(ed)).append(": ");
-                        sb.append(ed.getDeclaringClass().getCanonicalName());
-                        if (ed instanceof Method met) {
-                            sb.append("#").append(met.getName());
-                        }
-                        sb.append("(");
-                        if (dependencies.size() > 1) {
-                            StringJoiner sj = new StringJoiner(", ");
-                            for (int j = 0; j < dependencies.size(); j++) {
-                                Variable vd = dependency.variable().orElse(null);
-                                int pindex = vd instanceof PackedParameterDescriptor ppd ? ppd.index() : -1;
-                                if (j == pindex) {
-                                    sj.add("-> " + dependency.key().toString() + " <-");
-                                } else {
-                                    sj.add(dependencies.get(j).key().rawType().getSimpleName());
-                                }
-                            }
-                            sb.append(sj.toString());
-                        } else {
-                            sb.append(dependency.key().toString());
-                            sb.append(" ");
-                            sb.append(dependency.variable().get().name());
-                        }
-                        sb.append(")");
+//                        Executable ed = ((PackedParameterDescriptor) dependency.variable().get()).unsafeExecutable();
+//                        sb.append(ReflectionUtil.typeOf(ed)).append(": ");
+//                        sb.append(ed.getDeclaringClass().getCanonicalName());
+//                        if (ed instanceof Method met) {
+//                            sb.append("#").append(met.getName());
+//                        }
+//                        sb.append("(");
+//                        if (dependencies.size() > 1) {
+//                            StringJoiner sj = new StringJoiner(", ");
+//                            for (int j = 0; j < dependencies.size(); j++) {
+//                                Variable vd = dependency.variable().orElse(null);
+//                                int pindex = vd instanceof PackedParameterDescriptor ppd ? ppd.index() : -1;
+//                                if (j == pindex) {
+//                                    sj.add("-> " + dependency.key().toString() + " <-");
+//                                } else {
+//                                    sj.add(dependencies.get(j).key().rawType().getSimpleName());
+//                                }
+//                            }
+//                            sb.append(sj.toString());
+//                        } else {
+//                            sb.append(dependency.key().toString());
+//                            sb.append(" ");
+//                            sb.append(dependency.variable().get().name());
+//                        }
+//                        sb.append(")");
                     }
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
@@ -125,7 +120,7 @@ public final class ServiceManagerRequirementsSetup {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(Dependant entry, int index, DependencyDescriptor dependency, @Nullable DependencyProvider resolvedTo,
+    public void recordResolvedDependency(DependancyConsumer entry, int index, DependencyDescriptor dependency, @Nullable DependencyProducer resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -165,7 +160,7 @@ public final class ServiceManagerRequirementsSetup {
         final DependencyDescriptor dependency;
 
         @Nullable
-        final Dependant entry;
+        final DependancyConsumer entry;
 
         ServiceDependencyRequirement(DependencyDescriptor dependency, ConfigSite configSite) {
             this.dependency = requireNonNull(dependency, "dependency is null");
@@ -173,7 +168,7 @@ public final class ServiceManagerRequirementsSetup {
             this.entry = null;
         }
 
-        ServiceDependencyRequirement(DependencyDescriptor dependency, Dependant entry) {
+        ServiceDependencyRequirement(DependencyDescriptor dependency, DependancyConsumer entry) {
             this.dependency = requireNonNull(dependency, "dependency is null");
             this.configSite = null;
             this.entry = entry;
@@ -193,7 +188,7 @@ public final class ServiceManagerRequirementsSetup {
             this.key = key;
         }
 
-        void missingDependency(Dependant i, int dependencyIndex, DependencyDescriptor d) {
+        void missingDependency(DependancyConsumer i, int dependencyIndex, DependencyDescriptor d) {
             if (!d.isOptional()) {
                 isOptional = false;
             }
@@ -201,11 +196,11 @@ public final class ServiceManagerRequirementsSetup {
         }
 
         static class FromInjectable {
-            final Dependant i;
+            final DependancyConsumer i;
             final int dependencyIndex;
             final DependencyDescriptor d;
 
-            FromInjectable(Dependant i, int dependencyIndex, DependencyDescriptor d) {
+            FromInjectable(DependancyConsumer i, int dependencyIndex, DependencyDescriptor d) {
                 this.i = requireNonNull(i);
                 this.dependencyIndex = dependencyIndex;
                 this.d = d;

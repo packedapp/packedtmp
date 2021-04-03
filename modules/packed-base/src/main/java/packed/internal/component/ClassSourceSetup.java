@@ -25,19 +25,19 @@ import packed.internal.hooks.usesite.HookedClassModel;
 import packed.internal.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */
-public final class ClassSourceSetup implements DependencyProvider {
+public final class ClassSourceSetup implements DependencyProducer {
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
-    private final Dependant dependant;
+    private final DependancyConsumer dependant;
 
     /**
      * Factory that was specified. We only keep this around to find the key that it should be exposed as a service with. As
@@ -92,7 +92,6 @@ public final class ClassSourceSetup implements DependencyProvider {
         }
 
         // if (driver.modifiers().isSingleton())
-
         if (factory == null) {
             this.dependant = null;
         } else {
@@ -100,7 +99,7 @@ public final class ClassSourceSetup implements DependencyProvider {
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
-            this.dependant = new Dependant(this, dependencies, mh);
+            this.dependant = new DependancyConsumer(this, dependencies, mh);
             component.container.addDependant(dependant);
         }
 
@@ -109,7 +108,7 @@ public final class ClassSourceSetup implements DependencyProvider {
     }
 
 
-    public <T> void registerHooks(HookedClassModel model, ComponentSetup component) {
+    private <T> void registerHooks(HookedClassModel model, ComponentSetup component) {
         for (UseSiteFieldHookModel f : model.fields) {
             registerMember(component, f);
         }
@@ -119,11 +118,11 @@ public final class ClassSourceSetup implements DependencyProvider {
         }
     }
 
-    private void registerMember(ComponentSetup compConf, UseSiteMemberHookModel m) {
-        Dependant i = new Dependant(compConf, this, m, m.createProviders());
-        compConf.container.addDependant(i);
+    private void registerMember(ComponentSetup component, UseSiteMemberHookModel m) {
+        DependancyConsumer i = new DependancyConsumer(component, this, m, m.createProviders());
+        component.container.addDependant(i);
         if (m.processor != null) {
-            m.processor.accept(compConf);
+            m.processor.accept(component);
         }
     }
     
@@ -136,7 +135,7 @@ public final class ClassSourceSetup implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Dependant dependant() {
+    public DependancyConsumer dependant() {
         return dependant;
     }
 

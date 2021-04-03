@@ -33,7 +33,7 @@ import app.packed.base.Variable;
  * <strong>Note:</strong> This interface should only be used doing development. As the runtime needs to retain detailed
  * information about the dependency graph. Information which is normally only available at build time.
  */
-public /*/* sealed */ interface InjectionContext extends ServiceRegistry {
+public /* /* sealed */ interface InjectionContext extends ServiceRegistry {
 
     // 3 Variables types
     // Annotation.class -> @SystemProperty
@@ -78,6 +78,8 @@ public /*/* sealed */ interface InjectionContext extends ServiceRegistry {
     // adgang til... Men
     Class<?> targetClass(); // Det er jo bare .getClass(); Med mindre det er en Composite...
 
+    // Maaske har det ikke rigtig type information med???
+    // Det kan jo sagtens taenkes at det er noget andet information vi vil have...
     default List<Variable> variables() {
         throw new UnsupportedOperationException();
     }

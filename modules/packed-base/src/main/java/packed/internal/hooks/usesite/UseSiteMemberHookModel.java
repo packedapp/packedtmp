@@ -30,7 +30,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.AbstractHookModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.DependencyProducer;
 
 /**
  *
@@ -61,7 +61,7 @@ public abstract class UseSiteMemberHookModel {
         this.processor = builder.processor;
     }
 
-    public abstract DependencyProvider[] createProviders();
+    public abstract DependencyProducer[] createProviders();
 
     /**
      * Returns the modifiers of the underlying member.

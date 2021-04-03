@@ -30,7 +30,7 @@ import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
-import packed.internal.hooks.ContextMethodProvide;
+import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.invoke.ClassMemberAccessor;
 import packed.internal.invoke.ClassScanner;
 
@@ -47,7 +47,7 @@ public final class HookedClassModel {
     private String simpleName;
 
     // Noget med injection, som vi gerne vil metamodellere
-    public final Map<Key<?>, ContextMethodProvide> sourceServices;
+    public final Map<Key<?>, HookedMethodProvide> sourceServices;
 
     /** The type we are modelling. */
     public final Class<?> type;
@@ -104,7 +104,7 @@ public final class HookedClassModel {
 
         final ClassMemberAccessor oc;
 
-        final Map<Key<?>, ContextMethodProvide> sourceContexts = new HashMap<>();
+        final Map<Key<?>, HookedMethodProvide> sourceContexts = new HashMap<>();
 
         // In order to use @Provide, FooExtension must have ServiceExtension as a dependency.
         @Nullable
@@ -157,7 +157,7 @@ public final class HookedClassModel {
 
         @Override
         protected void onField(Field field) {
-            UseSiteFieldHookModel.process(this, field);
+            UseSiteFieldHookModel.processField(this, field);
         }
 
         @Override

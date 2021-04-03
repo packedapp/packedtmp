@@ -20,22 +20,18 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import app.packed.base.OldVariable;
 import app.packed.base.Variable;
-import packed.internal.inject.dependency.DependencyDescriptor;
 
 /**
  *
  */
-public abstract class AbstractAnnotatedVariable implements Variable, OldVariable {
-
-    public DependencyDescriptor descriptor;
+public abstract class AbstractVariable implements Variable {
 
     /** The annotated element. */
     // Maybe make an abstract method instead. then we don't need to store it.
     final AnnotatedElement element;
 
-    AbstractAnnotatedVariable(AnnotatedElement e) {
+    AbstractVariable(AnnotatedElement e) {
         this.element = requireNonNull(e);
     }
 

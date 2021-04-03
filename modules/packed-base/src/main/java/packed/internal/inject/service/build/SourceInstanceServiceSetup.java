@@ -23,7 +23,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.SourcedComponentSetup;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
@@ -50,7 +50,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Dependant dependant() {
+    public DependancyConsumer dependant() {
         return source.dependant();
     }
 

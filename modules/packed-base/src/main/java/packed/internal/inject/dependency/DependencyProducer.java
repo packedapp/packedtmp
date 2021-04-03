@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
 import packed.internal.component.ClassSourceSetup;
-import packed.internal.hooks.ContextMethodProvide;
+import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
@@ -30,11 +30,11 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
  * 
  * {@link ClassSourceSetup} for methods or fields that needs an instance of the component source
  * 
- * {@link ContextMethodProvide} for methods annotated with {@link Provide}
+ * {@link HookedMethodProvide} for methods annotated with {@link Provide}
  * 
  * {@link ServiceSetup} a service of some kind
  */
-public interface DependencyProvider {
+public interface DependencyProducer {
 
     /**
      * Returns a method handle that can be used to access a dependency. This is typically done by either having previously
@@ -66,5 +66,5 @@ public interface DependencyProvider {
      * @return an injectable if this dependency provider itself needs dependencies fulfilled, otherwise null
      */
     @Nullable
-    Dependant dependant();
+    DependancyConsumer dependant();
 }

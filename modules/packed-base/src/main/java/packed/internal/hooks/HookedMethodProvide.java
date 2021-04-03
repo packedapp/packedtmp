@@ -24,14 +24,14 @@ import java.lang.reflect.Method;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.inject.dependency.Dependant;
-import packed.internal.inject.dependency.DependencyProvider;
+import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /**
  * Represents a method on a hook class annotated with {@link Provide}.
  */
-public final class ContextMethodProvide implements DependencyProvider {
+public final class HookedMethodProvide implements DependencyProducer {
 
     /** The key under which the dependency is provided. */
     public final Key<?> key;
@@ -40,11 +40,11 @@ public final class ContextMethodProvide implements DependencyProvider {
     private final MethodHandle methodHandle;
 
     /** The sidecar that provides the instance. */
-    public final AbstractHookModel<?> sidecarModel;
+    public final AbstractHookModel<?> hookModel;
 
-    private ContextMethodProvide(AbstractHookModel<?> sidecarModel, Builder builder) {
+    private HookedMethodProvide(AbstractHookModel<?> sidecarModel, Builder builder) {
         this.key = builder.key;
-        this.sidecarModel = sidecarModel;
+        this.hookModel = sidecarModel;
         this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, ConstantPool.class);
     }
 
@@ -57,7 +57,7 @@ public final class ContextMethodProvide implements DependencyProvider {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public Dependant dependant() {
+    public DependancyConsumer dependant() {
         return null;
     }
 
@@ -72,8 +72,8 @@ public final class ContextMethodProvide implements DependencyProvider {
             this.methodHandle = requireNonNull(methodHandle);
         }
 
-        ContextMethodProvide build(AbstractHookModel<?> sidecarModel) {
-            return new ContextMethodProvide(sidecarModel, this);
+        HookedMethodProvide build(AbstractHookModel<?> sidecarModel) {
+            return new HookedMethodProvide(sidecarModel, this);
         }
     }
 }

@@ -25,7 +25,7 @@ import app.packed.base.TypeToken;
 /**
  *
  */
-public final class FieldVariable extends AbstractAnnotatedVariable {
+public final class FieldVariable extends AbstractVariable {
 
     final Field field;
 

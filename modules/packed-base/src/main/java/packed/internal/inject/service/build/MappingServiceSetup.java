@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.inject.dependency.Dependant;
+import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.service.runtime.MappingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -52,7 +52,7 @@ final class MappingServiceSetup extends ServiceSetup {
 
     @Override
     @Nullable
-    public Dependant dependant() {
+    public DependancyConsumer dependant() {
         return entryToMap.dependant();
     }
 

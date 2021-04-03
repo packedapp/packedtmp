@@ -78,7 +78,7 @@ public abstract class ComponentSetup {
     /** The name of this node. */
     public String name;
 
-    /** Whether or not the name has been initialized via a wirelet, in which case it is not overridable by setName(). */
+    /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by setName(). */
     protected boolean nameInitializedWithWirelet;
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
@@ -89,6 +89,7 @@ public abstract class ComponentSetup {
     @Nullable
     protected final ComponentSetup parent;
 
+    /** This component's constant pool. */
     public final ConstantPoolSetup pool;
 
     /** The realm this component is a part of. */

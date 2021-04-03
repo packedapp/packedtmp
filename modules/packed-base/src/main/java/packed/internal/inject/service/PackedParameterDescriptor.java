@@ -49,7 +49,7 @@ public final class PackedParameterDescriptor implements Variable {
      * @param index
      *            the index of the parameter
      */
-    PackedParameterDescriptor(Parameter parameter, int index) {
+    private PackedParameterDescriptor(Parameter parameter, int index) {
         this.parameter = parameter;
         this.index = index;
     }

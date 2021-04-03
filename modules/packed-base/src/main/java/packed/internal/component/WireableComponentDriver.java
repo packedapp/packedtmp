@@ -25,9 +25,11 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
             WireableComponentDriver.class);
 
+    public final int modifiers;
+
+    /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
     final Wirelet wirelet;
-    public final int modifiers;
 
     public WireableComponentDriver(Wirelet wirelet, int modifiers) {
         this.wirelet = wirelet;
@@ -36,9 +38,10 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
 
     public void checkBound() {}
 
-    public abstract C toConfiguration(ComponentConfigurationContext context);
+    public abstract WireableComponentSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
+            Wirelet[] wirelets);
 
-    public abstract WireableComponentSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
+    public abstract C toConfiguration(ComponentConfigurationContext context);
 
     /** {@inheritDoc} */
     @Override
@@ -68,21 +71,17 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
         requireNonNull(assembly, "assembly is null");
         return (WireableComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
-    
-    
-    /** A component driver that create containers. */
+
+    /** A special component driver that create containers. */
     public static abstract class ContainerComponentDriver extends WireableComponentDriver<ContainerConfiguration> {
 
+        /** A component modifier set shared by every container. */
         private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
 
         public ContainerComponentDriver(Wirelet wirelet) {
             super(wirelet, PackedComponentModifierSet.I_CONTAINER);
         }
 
-        public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            return new ContainerSetup(build, application, realm, this, parent, wirelets);
-        }
-        
         @Override
         public final ComponentDriver<ContainerConfiguration> bind(Object object) {
             throw new UnsupportedOperationException("Cannot bind to a container component driver");
@@ -91,6 +90,12 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
         @Override
         public final ComponentModifierSet modifiers() {
             return CONTAINER_MODIFIERS;
+        }
+
+        /** {@inheritDoc} */
+        public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
+                Wirelet[] wirelets) {
+            return new ContainerSetup(build, application, realm, this, parent, wirelets);
         }
     }
 }

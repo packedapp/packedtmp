@@ -33,6 +33,7 @@ import packed.internal.component.SourcedComponentDriver;
  * It it also possible to install components at runtime via {@link Component}.
  */
 //ProvidableComponentConfiguration
+// Serviceable
 public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration implements ServiceConfiguration<T> {
 
     @SuppressWarnings("rawtypes")
