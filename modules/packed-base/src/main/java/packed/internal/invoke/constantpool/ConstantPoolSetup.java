@@ -18,9 +18,7 @@ package packed.internal.invoke.constantpool;
 import java.util.ArrayList;
 
 import packed.internal.application.ApplicationLaunchContext;
-import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.PackedApplicationRuntime;
-import packed.internal.inject.dependency.DependancyConsumer;
 
 /**
  *
@@ -29,19 +27,17 @@ import packed.internal.inject.dependency.DependancyConsumer;
 public final class ConstantPoolSetup {
 
     /** All constants that should be stored in the constant pool. */
-    private final ArrayList<ClassSourceSetup> constants = new ArrayList<>();
-
-    private final ArrayList<DependancyConsumer> ordered = new ArrayList<>();
+    private final ArrayList<PoolWriteable> entries = new ArrayList<>();
 
     /** The size of the pool. */
     private int size;
 
-    public void addConstant(ClassSourceSetup s) {
-        constants.add(s);
+    public void addConstant(PoolWriteable s) {
+        entries.add(s);
     }
 
-    public void addOrdered(DependancyConsumer c) {
-        ordered.add(c);
+    public void addOrdered(PoolWriteable c) {
+        entries.add(c);
     }
 
     public ConstantPool newPool(ApplicationLaunchContext pic) {
@@ -52,17 +48,8 @@ public final class ConstantPoolSetup {
             pool.store(0, new PackedApplicationRuntime(pic));
         }
 
-        // We start by storing all constants in the pool
-        // TODO it is likely that we
-        for (ClassSourceSetup sa : constants) {
-            sa.writeConstantPool(pool);
-        }
-
-        // All constants that must be instantiated and stored
-        // Order here is very important. As for every constant.
-        // Its dependencies are guaranteed to have been already stored
-        for (DependancyConsumer injectable : ordered) {
-            injectable.writeConstantPool(pool);
+        for (PoolWriteable e : entries) {
+            e.writeConstantPool(pool);
         }
         return pool;
     }

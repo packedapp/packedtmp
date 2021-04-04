@@ -37,6 +37,7 @@ import packed.internal.inject.service.build.SourceMemberServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.invoke.constantpool.ConstantPoolInvoker;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.invoke.constantpool.PoolWriteable;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -59,7 +60,7 @@ import packed.internal.util.ThrowableUtil;
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
 // Something with dependencis
-public final class DependancyConsumer {
+public final class DependancyConsumer implements PoolWriteable {
 
     @Nullable
     private final SourceMemberServiceSetup service;
@@ -132,8 +133,8 @@ public final class DependancyConsumer {
             return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, ConstantPool.class);
         } else if (providers.length == 1) {
             requireNonNull(providers[0]);
-            //System.out.println(providers[0].getClass());
-            //System.out.println(providers[0].dependencyAccessor());
+            // System.out.println(providers[0].getClass());
+            // System.out.println(providers[0].dependencyAccessor());
             return buildMethodHandle = MethodHandles.collectArguments(directMethodHandle, 0, providers[0].dependencyAccessor());
         } else {
             mh = directMethodHandle;
@@ -247,7 +248,7 @@ public final class DependancyConsumer {
             }
         }
     }
-    
+
     public void writeConstantPool(ConstantPool pool) {
         MethodHandle mh = buildMethodHandle();
 
@@ -266,4 +267,3 @@ public final class DependancyConsumer {
         pool.store(index, instance);
     }
 }
-

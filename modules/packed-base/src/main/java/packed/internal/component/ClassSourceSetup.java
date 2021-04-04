@@ -32,10 +32,11 @@ import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.invoke.constantpool.PoolWriteable;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */
-public final class ClassSourceSetup implements DependencyProducer {
+public final class ClassSourceSetup implements DependencyProducer, PoolWriteable {
 
     /** An injectable, if this source needs to be created at runtime (not a constant). */
     @Nullable
