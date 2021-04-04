@@ -33,9 +33,7 @@ public final class ConstantPoolSetup {
     /** All constants that should be stored in the constant pool. */
     private final ArrayList<ClassSourceSetup> constants = new ArrayList<>();
 
-    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
-
-    public final ArrayList<DependancyConsumer> regionStores = new ArrayList<>();
+    public final ArrayList<DependancyConsumer> ordered = new ArrayList<>();
 
     /** The size of the pool. */
     private int size;
@@ -61,7 +59,7 @@ public final class ConstantPoolSetup {
         // All constants that must be instantiated and stored
         // Order here is very important. As for every constant.
         // Its dependencies are guaranteed to have been already stored
-        for (DependancyConsumer injectable : regionStores) {
+        for (DependancyConsumer injectable : ordered) {
             MethodHandle mh = injectable.buildMethodHandle();
 
             Object instance;
@@ -77,15 +75,6 @@ public final class ConstantPoolSetup {
 
             int index = injectable.poolIndex();
             pool.store(index, instance);
-        }
-
-        // Initialize
-        for (MethodHandle mh : initializers) {
-            try {
-                mh.invoke(pool);
-            } catch (Throwable e) {
-                throw ThrowableUtil.orUndeclared(e);
-            }
         }
         return pool;
     }

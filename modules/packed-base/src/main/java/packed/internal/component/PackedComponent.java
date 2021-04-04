@@ -17,6 +17,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -37,6 +38,7 @@ import app.packed.component.ComponentStream;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.util.ThrowableUtil;
 
 /** An runtime representation of a component. */
 // PackedComponentInstance
@@ -112,6 +114,15 @@ public final class PackedComponent implements Component {
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || component.modifiers().hasRuntime()) {
             this.pool = component.pool.newPool(launch);
+            
+            // Run all initializers
+            for (MethodHandle mh : component.application.initializers) {
+                try {
+                    mh.invoke(pool);
+                } catch (Throwable e) {
+                    throw ThrowableUtil.orUndeclared(e);
+                }
+            }
         } else {
             this.pool = parent.pool;
         }

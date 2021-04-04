@@ -15,6 +15,8 @@
  */
 package packed.internal.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
@@ -60,6 +62,8 @@ public final class ClassSourceSetup implements DependencyProducer {
     @Nullable
     public ServiceSetup service;
 
+    public final ComponentSetup component;
+
     /**
      * Creates a new setup.
      * 
@@ -69,6 +73,8 @@ public final class ClassSourceSetup implements DependencyProducer {
      *            the component driver
      */
     ClassSourceSetup(ComponentSetup component, SourcedComponentDriver<?> driver) {
+        this.component = requireNonNull(component);
+
         // Reserve a place in the constant pool if the source is a singleton
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserve() : -1;
 
@@ -107,7 +113,6 @@ public final class ClassSourceSetup implements DependencyProducer {
         registerHooks(model, component);
     }
 
-
     private <T> void registerHooks(HookedClassModel model, ComponentSetup component) {
         for (UseSiteFieldHookModel f : model.fields) {
             registerMember(component, f);
@@ -125,7 +130,7 @@ public final class ClassSourceSetup implements DependencyProducer {
             m.processor.accept(component);
         }
     }
-    
+
     public void writeConstantPool(ConstantPool pool) {
         assert poolIndex >= 0;
         assert constant != null;
@@ -143,7 +148,8 @@ public final class ClassSourceSetup implements DependencyProducer {
     @Override
     public MethodHandle dependencyAccessor() {
         if (constant != null) {
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T -> MethodHandle(ConstantPool)T
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
+                                                                                                                  // MethodHandle(ConstantPool)T
         } else if (poolIndex > -1) {
             return ConstantPool.readConstant(poolIndex, model.type);
         } else {

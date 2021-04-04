@@ -182,7 +182,7 @@ public class DependancyConsumer {
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
         if (poolIndex() > -1) {
-            region.regionStores.add(this);
+            region.ordered.add(this);
         }
         needsPostProcessing = false;
 
@@ -206,7 +206,7 @@ public class DependancyConsumer {
 
                             mh2 = mh2.bindTo(mh1);
 
-                            region.initializers.add(mh2);
+                            source.component.application.initializers.add(mh2);
                         }
                     }
                 }

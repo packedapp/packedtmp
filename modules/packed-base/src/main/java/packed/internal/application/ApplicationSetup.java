@@ -3,6 +3,7 @@ package packed.internal.application;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
+import java.util.ArrayList;
 
 import app.packed.application.Application;
 import app.packed.application.ApplicationWirelets;
@@ -44,6 +45,8 @@ public final class ApplicationSetup {
 
     private final int modifiers;
 
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+    
     /**
      * Create a new application setup
      * 
