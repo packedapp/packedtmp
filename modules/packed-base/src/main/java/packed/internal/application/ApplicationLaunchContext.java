@@ -150,7 +150,7 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     }
 
     @Override
-    public void writeConstantPool(ConstantPool pool) {
+    public void writeToPool(ConstantPool pool) {
         if (runtime != null) {
             pool.storeObject(application.runtimePoolIndex, runtime);
         }

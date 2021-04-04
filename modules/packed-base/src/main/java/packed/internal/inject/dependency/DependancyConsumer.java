@@ -151,7 +151,7 @@ public final class DependancyConsumer implements PoolWriteable {
         }
     }
 
-    public int poolIndex() {
+    private int poolIndex() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (service != null) {
@@ -176,7 +176,12 @@ public final class DependancyConsumer implements PoolWriteable {
     }
 
     // All dependencies have been successfully resolved
-    public void onAllDependenciesResolved(ConstantPoolSetup region) {
+    /**
+     * All of this consumers dependencies have been resolved
+     * 
+     * @param pool
+     */
+    public void onAllDependenciesResolved(ConstantPoolSetup pool) {
         // If analysis we should not need to create method handles...
 
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
@@ -184,7 +189,7 @@ public final class DependancyConsumer implements PoolWriteable {
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
         if (poolIndex() > -1) {
-            region.addOrdered(this);
+            pool.addOrdered(this);
         }
         needsPostProcessing = false;
 
@@ -249,7 +254,7 @@ public final class DependancyConsumer implements PoolWriteable {
         }
     }
 
-    public void writeConstantPool(ConstantPool pool) {
+    public void writeToPool(ConstantPool pool) {
         MethodHandle mh = buildMethodHandle();
 
         Object instance;

@@ -25,21 +25,21 @@ import packed.internal.util.MethodHandleUtil;
  * All strongly connected components relate to the same pod.
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
-public final /* primitive*/ class ConstantPool {
+public final /* primitive */ class ConstantPool {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
     private static final MethodHandle MH_CONSTANT_POOL_READ = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
-    private final Object[] elements;
+    private final Object[] objects;
 
     ConstantPool(int size) {
-        elements = new Object[size];
+        objects = new Object[size];
     }
 
     public void print() {
         System.out.println("--");
-        for (int i = 0; i < elements.length; i++) {
-            System.out.println(i + " = " + elements[i]);
+        for (int i = 0; i < objects.length; i++) {
+            System.out.println(i + " = " + objects[i]);
         }
 
         System.out.println("--");
@@ -49,14 +49,19 @@ public final /* primitive*/ class ConstantPool {
 //        Object value = store[index];
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
-        return elements[index];
+        return objects[index];
     }
 
     public void storeObject(int index, Object instance) {
-        if (elements[index] != null) {
+        if (objects[index] != null) {
             throw new IllegalStateException();
         }
-        elements[index] = instance;
+        objects[index] = instance;
+    }
+
+    /** {@inheritDoc} */
+    public String toString() {
+        return "ConstantPool [size = " + objects.length + "]";
     }
 
     public static MethodHandle indexedReader(int index, Class<?> as) {

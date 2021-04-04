@@ -34,7 +34,7 @@ ConstantPool pool) implements MethodAccessor<T> {
 
     /**
      * A method handle for creating new RuntimeRegionInvoker instance. We explicitly cast return type from
-     * RuntimeRegionInvoker->MethodAccessor.
+     * ConstantPoolMethodAccessor->MethodAccessor.
      */
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
             .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, ConstantPool.class), MethodAccessor.class);
@@ -47,6 +47,8 @@ ConstantPool pool) implements MethodAccessor<T> {
     /** {@inheritDoc} */
     @Override
     public void call() throws Throwable {
+        // I think we might need one void() and no arguments...
+        // We cannot do invoke exact her
         mh.invoke(pool);
     }
 

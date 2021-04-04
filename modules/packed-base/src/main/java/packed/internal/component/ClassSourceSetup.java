@@ -132,7 +132,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         }
     }
 
-    public void writeConstantPool(ConstantPool pool) {
+    public void writeToPool(ConstantPool pool) {
         assert poolIndex >= 0;
         assert constant != null;
         pool.storeObject(poolIndex, constant);

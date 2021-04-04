@@ -43,10 +43,10 @@ public final class ConstantPoolSetup {
     public ConstantPool newPool(ApplicationLaunchContext launchContext) {
         ConstantPool pool = new ConstantPool(size);
 
-        launchContext.writeConstantPool(pool);
+        launchContext.writeToPool(pool);
 
         for (PoolWriteable e : entries) {
-            e.writeConstantPool(pool);
+            e.writeToPool(pool);
         }
         return pool;
     }
