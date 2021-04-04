@@ -64,8 +64,6 @@ public final class ContainerSetup extends WireableComponentSetup {
     /** All dependants that needs to be resolved. */
     public final ArrayList<DependancyConsumer> dependants = new ArrayList<>();
 
-    /* Cleanup */
-
     /** All extensions in use, in no particular order. */
     final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
 
@@ -329,7 +327,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         requireNonNull(extensionClass, "extensionClass is null");
         ExtensionSetup extension = extensions.get(extensionClass);
 
-        // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onAdded.
+        // We do not use #computeIfAbsent, because extensions might install other extensions via Extension#onNew.
         // Which would then fail with ConcurrentModificationException (see ExtensionDependenciesTest)
         if (extension == null) {
             if (containerChildren != null) {
@@ -364,6 +362,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         return (T) useExtension(extensionClass, null).extensionInstance();
     }
 
+    /** An adaptor of {@code ContainerSetup->Container} */
     record ContainerAdaptor(ContainerSetup container) implements Container {
 
         /** {@inheritDoc} */

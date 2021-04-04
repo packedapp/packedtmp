@@ -98,7 +98,7 @@ public final class ApplicationLaunchContext implements PoolWriteable {
      */
     public ServiceLocator services() {
         ServiceManagerSetup sm = container.getServiceManager();
-        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(component, component.pool);
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(pool());
     }
 
     /**

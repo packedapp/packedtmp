@@ -30,7 +30,6 @@ import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.PackedComponent;
 import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.SourcedComponentSetup;
 import packed.internal.component.WireletWrapper;
@@ -178,7 +177,7 @@ public final class ServiceManagerSetup {
         return builder.build();
     }
 
-    public ServiceLocator newServiceLocator(PackedComponent comp, ConstantPool region) {
+    public ServiceLocator newServiceLocator(ConstantPool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (ServiceSetup e : exports) {
@@ -193,7 +192,7 @@ public final class ServiceManagerSetup {
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
-            return new ExportedServiceLocator(comp, runtimeEntries);
+            return new ExportedServiceLocator( runtimeEntries);
         }
     }
 
@@ -319,15 +318,11 @@ public final class ServiceManagerSetup {
     /** A service locator wrapping all exported services. */
     private static final class ExportedServiceLocator extends AbstractServiceLocator {
 
-        /** The root component */
-        private final PackedComponent component;
-
         /** All services that this injector provides. */
         private final Map<Key<?>, ? extends Service> services;
 
-        private ExportedServiceLocator(PackedComponent component, Map<Key<?>, ? extends Service> services) {
+        private ExportedServiceLocator(Map<Key<?>, ? extends Service> services) {
             this.services = requireNonNull(services);
-            this.component = requireNonNull(component);
         }
 
         @Override
@@ -338,7 +333,7 @@ public final class ServiceManagerSetup {
             // It has an internal service. Maybe you forgot to export it()
             // Is that breaking encapsulation
             // container.realm().realmType();
-            return "'" + component.path() + "' does not export a service with the specified key, key = " + key;
+            return "A service with the specified key, key = " + key;
         }
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
