@@ -33,16 +33,11 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-
 // Altsaa det fede var jo hvis vi kunne lave en generisk statemachine.
-
 /// current state + Mask
 /// Error bit (data = 
 // Desired state + Mask
-//
-
 // Extra data... Startup/Initialization exception
-
 public class PackedApplicationRuntime implements ApplicationRuntime {
 
     // Sagtens encode det i sync ogsaa
@@ -62,9 +57,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
-    public PackedApplicationRuntime(ApplicationLaunchContext pic) {
-
-    }
+    public PackedApplicationRuntime(ApplicationLaunchContext launchContext) {}
 
     // Hmm, maybe not
 //    @Nullable
@@ -222,36 +215,6 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
             lock.unlock();
         }
     }
-
-//    /** An implementation of {@link Image} used by {@link ArtifactDriver#buildImage(Assembly, Wirelet...)}. */
-//    public static final class ExecutingImage implements Image<Void> {
-//
-//        /** The assembled image node. */
-//        private final PackedBuildInfo build;
-//
-//        /**
-//         * Create a new image from the specified component.
-//         * 
-//         * @param build
-//         *            the assembled component
-//         */
-//        public ExecutingImage(PackedBuildInfo build) {
-//            this.build = requireNonNull(build);
-//        }
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        public Component component() {
-//            return build.asComponent();
-//        }
-//
-//        /** {@inheritDoc} */
-//        @Override
-//        public Void use(Wirelet... wirelets) {
-//            build.process(wirelets);
-//            return null;
-//        }
-//    }
 
     @SuppressWarnings("serial") // Guest is not synchronized
     public static final class Sync extends AbstractQueuedSynchronizer {

@@ -31,7 +31,7 @@ public class MethodHandleUtil {
     }
 
     public static MethodHandle bind(MethodHandle target, int position, Object... arguments) {
-        return MethodHandles.insertArguments(target, 1, arguments);
+        return MethodHandles.insertArguments(target, position, arguments);
     }
 
     public static MethodHandle castReturnType(MethodHandle target, Class<?> newReturnType) {

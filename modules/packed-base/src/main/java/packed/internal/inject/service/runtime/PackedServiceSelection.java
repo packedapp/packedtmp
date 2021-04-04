@@ -104,7 +104,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     @SuppressWarnings("unchecked")
     @Override
     public Stream<S> instances() {
-        return (Stream<S>) services.values().stream();
+        return services.values().stream().map(s -> (S) provideInstanceForLocator(s));
     }
 
     /** {@inheritDoc} */

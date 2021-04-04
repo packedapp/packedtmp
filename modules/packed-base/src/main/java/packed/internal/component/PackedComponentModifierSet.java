@@ -33,7 +33,6 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public static final int I_ANALYSIS = intOf(ComponentModifier.ANALYSIS);
     public static final int I_BUILD = intOf(ComponentModifier.BUILD);
     
-    
     public static final int I_RUNTIME = intOf(ComponentModifier.RUNTIME);
     public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINER);
     

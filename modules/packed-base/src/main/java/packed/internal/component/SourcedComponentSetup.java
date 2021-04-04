@@ -23,10 +23,9 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
         super(build, application, realm, driver, parent, wirelets);
         this.source = new ClassSourceSetup(this, driver);
 
-        // Set a default name if up default name
-        if (!nameInitializedWithWirelet) {
-            String n = name = source.model.simpleName();
-            initializeName(n);
+        // Set the name of the component if it have not already been set using a wirelet
+        if (name == null) {
+            initializeNameWithPrefix(source.model.simpleName());
         }
     }
 

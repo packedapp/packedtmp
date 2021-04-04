@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -75,10 +74,10 @@ public abstract class ComponentSetup {
     protected final int modifiers;
 
     /** The name of this node. */
-    String name;
+    protected String name;
 
     /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by setName(). */
-    protected boolean nameInitializedWithWirelet;
+    boolean nameInitializedWithWirelet;
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
     @Nullable
@@ -109,7 +108,7 @@ public abstract class ComponentSetup {
     ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
-        
+
         this.build = requireNonNull(build);
         this.application = requireNonNull(application);
         this.realm = requireNonNull(realm);
@@ -146,8 +145,8 @@ public abstract class ComponentSetup {
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.pool = container.pool;
         this.onWire = container.onWire;
-        
-        initializeName(model.nameComponent);
+        // Cannot use wirelets with extensions. So the (template) name is fixed
+        initializeNameWithPrefix(model.nameComponent);
     }
 
     /**
@@ -187,11 +186,10 @@ public abstract class ComponentSetup {
         }
     }
 
-
-    protected final void initializeName(String name) {
+    protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (parent != null) {
-            Map<String, ComponentSetup> c = parent.children;
+            LinkedHashMap<String, ComponentSetup> c = parent.children;
             if (c == null) {
                 c = parent.children = new LinkedHashMap<>();
                 c.put(name, this);
@@ -233,12 +231,12 @@ public abstract class ComponentSetup {
         // Check that the realm this component is a part of is still open
         realm.wirePrepare();
 
+        // Create the new realm that should be used for linking
+        RealmSetup realm = new RealmSetup(assembly);
+
         // If this component is an extension, we link to extension's container. As the extension itself is not available at
         // runtime
         ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
-
-        // Create a new realm for the assembly
-        RealmSetup realm = new RealmSetup(assembly);
 
         // Create a new component and a new realm
         WireableComponentSetup component = driver.newComponent(build, application, realm, linkTo, wirelets);
@@ -335,16 +333,7 @@ public abstract class ComponentSetup {
         @Override
         public Collection<Component> children() {
             LinkedHashMap<String, ComponentSetup> c = component.children;
-            if (c == null) {
-                return List.of();
-            } else {
-                Component[] o = new Component[c.size()];
-                int index = 0;
-                for (ComponentSetup child : c.values()) {
-                    o[index++] = child.adaptor();
-                }
-                return List.of(o);
-            }
+            return c == null ? List.of() : c.values().stream().map(e -> e.adaptor()).toList();
         }
 
         /** {@inheritDoc} */
@@ -394,9 +383,11 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Component resolve(CharSequence path) {
-            if (component.children != null) {
-                if (component.children.containsKey(path)) {
-                    return component.children.get(path.toString()).adaptor();
+            LinkedHashMap<String, ComponentSetup> c = component.children;
+            if (c != null) {
+                ComponentSetup cs = c.get(path.toString());
+                if (cs != null) {
+                    return cs.adaptor();
                 }
             }
             throw new UnsupportedOperationException();
@@ -410,11 +401,10 @@ public abstract class ComponentSetup {
 
         private Stream<Component> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-            children(); // lazy calc
             @SuppressWarnings({ "unchecked", "rawtypes" })
             List<ComponentAdaptor> c = (List) children();
             if (c != null && !c.isEmpty()) {
-                if (option.processThisDeeper(origin, this.component)) {
+                if (option.processThisDeeper(origin, component)) {
                     Stream<Component> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
                     return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
                 }

@@ -78,6 +78,8 @@ public final class ContainerSetup extends WireableComponentSetup {
     private ArrayList<ExtensionSetup> tmpExtensions;
 
     /**
+     * Create a new container (component).
+     * 
      * @param build
      *            the build this container is a part of
      * @param application
@@ -89,11 +91,13 @@ public final class ContainerSetup extends WireableComponentSetup {
      *            {@link WireableComponentDriver.ContainerComponentDriver}
      * @param parent
      *            any parent component
-     * @param wirelets optional wirelets specified when creating or wiring the container
+     * @param wirelets
+     *            optional wirelets specified when creating or wiring the container
      */
     public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
         super(build, application, realm, driver, parent, wirelets);
+
         this.containerParent = parent == null ? null : parent.container;
         if (containerParent != null) {
             containerParent.runPredContainerChildren();
@@ -103,10 +107,10 @@ public final class ContainerSetup extends WireableComponentSetup {
             }
             c.add(this);
         }
-        // Set a default name if up default name
-        if (!nameInitializedWithWirelet) {
+
+        // Set the name of the component if it have not already been set using a wirelet
+        if (name == null) {
             // I think try and move some of this to ComponentNameWirelet
-            @Nullable
             String n = null;
             Class<?> source = realm.realmType();
             if (Assembly.class.isAssignableFrom(source)) {
@@ -123,7 +127,7 @@ public final class ContainerSetup extends WireableComponentSetup {
                     n = "Assembly";
                 }
             }
-            initializeName(n);
+            initializeNameWithPrefix(n);
         }
     }
 
