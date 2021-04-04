@@ -28,11 +28,6 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-// Vi gemmer alt det her i en region...
-// Fordi raekkefoelgen af initialisering gaar paa tvaers af containere
-// Idet de kan dependende paa hinanden
-
-// Is this a ConstantPool?????
 public final class ConstantPoolSetup {
 
     /**
@@ -40,21 +35,22 @@ public final class ConstantPoolSetup {
      */
     private final ArrayList<ClassSourceSetup> constants = new ArrayList<>();
 
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+
+    /** The size of the pool. */
+    private int size;
+
     // List of services that must be instantiated and stored in the region
     // They are ordered in the order they should be initialized
     // For now written by DependencyCycleDetector via BFS
     public final ArrayList<DependancyConsumer> regionStores = new ArrayList<>();
-
-    private int nextIndex;
-
-    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     public void addSourceClass(ClassSourceSetup s) {
         constants.add(s);
     }
 
     public ConstantPool newPool(ApplicationLaunchContext pic, PackedComponent root) {
-        ConstantPool pool = new ConstantPool(nextIndex);
+        ConstantPool pool = new ConstantPool(size);
 
         // Not sure we want to create the guest here, we do it for now though
         if (root.modifiers().hasRuntime()) {
@@ -99,7 +95,6 @@ public final class ConstantPoolSetup {
     }
 
     public int reserve() {
-        return nextIndex++;
+        return size++;
     }
-
 }
