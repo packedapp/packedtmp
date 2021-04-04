@@ -34,6 +34,7 @@ import packed.internal.component.PackedWireletHandle;
 import packed.internal.component.SourcedComponentSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
+import packed.internal.inject.dependency.ApplicationInjectorSetup;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement.FromInjectable;
 import packed.internal.inject.service.build.ServiceSetup;
@@ -50,9 +51,10 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /**
  * A service manager is responsible for managing the services for a single container at build time.
  * <p>
- * A {@link ApplicationInjectionManager} is responsible for managing 1 or more service manager tree that are directly connected
- * and part of the same build.
+ * A {@link ApplicationInjectorSetup} is responsible for managing 1 or more service manager tree that are directly
+ * connected and part of the same build.
  */
+// ServiceExtensionSetup
 public final class ServiceManagerSetup {
 
     /** The container this service manager is a part of. */
@@ -82,7 +84,7 @@ public final class ServiceManagerSetup {
     private final ServiceManagerSetup parent;
 
     /** The tree this service manager is a part of. */
-    private final ApplicationInjectionManager tree;
+    private final ApplicationInjectorSetup tree;
 
     @Nullable
     public Predicate<? super Service> anchorFilter;
@@ -94,7 +96,7 @@ public final class ServiceManagerSetup {
     public ServiceManagerSetup(ContainerSetup container, @Nullable ServiceManagerSetup parent) {
         this.container = requireNonNull(container);
         this.parent = parent;
-        this.tree = parent == null ? new ApplicationInjectionManager() : parent.tree;
+        this.tree = parent == null ? new ApplicationInjectorSetup() : parent.tree;
     }
 
     public void close(ConstantPoolSetup region) {
@@ -192,7 +194,7 @@ public final class ServiceManagerSetup {
         if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
-            return new ExportedServiceLocator( runtimeEntries);
+            return new ExportedServiceLocator(runtimeEntries);
         }
     }
 
@@ -212,14 +214,6 @@ public final class ServiceManagerSetup {
         localServices.add(e);
         return e;
     }
-
-    // Altsaa det er taenkt tll naar vi skal f.eks. slaa Wirelets op...
-    // Saa det der med at resolve. Det er ikke services...
-    // men injection...
-
-    // Vi smide alt omkring services der...
-
-    // Lazy laver den...
 
     public void prepareDependants() {
         // First we take all locally defined services
@@ -273,14 +267,13 @@ public final class ServiceManagerSetup {
             for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup m = c.getServiceManager();
                 if (m != null) {
-                    m.processIncomingPipelines(this);
+                    m.processWirelets();
                 }
             }
         }
     }
 
-    private void processIncomingPipelines(@Nullable ServiceManagerSetup parent) {
-
+    private void processWirelets() {
         LinkedHashMap<Key<?>, ServiceSetup> map = new LinkedHashMap<>();
 
         if (parent != null) {
@@ -293,8 +286,8 @@ public final class ServiceManagerSetup {
         }
 
         System.out.println("HMMM " + map);
-        WireletWrapper wirelets = container.wirelets;
 
+        WireletWrapper wirelets = container.wirelets;
         if (wirelets != null) {
             // For now we just ignore the wirelets
             PackedWireletHandle.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
@@ -308,7 +301,7 @@ public final class ServiceManagerSetup {
                 ServiceSetup sa = map.get(r.key);
                 if (sa != null) {
                     for (FromInjectable i : r.list) {
-                        i.i.setDependencyProvider(i.dependencyIndex, sa);
+                        i.i().setDependencyProvider(i.dependencyIndex(), sa);
                     }
                 }
             }
@@ -344,5 +337,4 @@ public final class ServiceManagerSetup {
             return (Map) services;
         }
     }
-
 }

@@ -25,7 +25,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
-import packed.internal.config.ConfigSite;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -153,27 +152,7 @@ public final class ServiceManagerRequirementsSetup {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 
-    static class ServiceDependencyRequirement {
-
-        final ConfigSite configSite;
-
-        final DependencyDescriptor dependency;
-
-        @Nullable
-        final DependancyConsumer entry;
-
-        ServiceDependencyRequirement(DependencyDescriptor dependency, ConfigSite configSite) {
-            this.dependency = requireNonNull(dependency, "dependency is null");
-            this.configSite = requireNonNull(configSite);
-            this.entry = null;
-        }
-
-        ServiceDependencyRequirement(DependencyDescriptor dependency, DependancyConsumer entry) {
-            this.dependency = requireNonNull(dependency, "dependency is null");
-            this.configSite = null;
-            this.entry = entry;
-        }
-    }
+    record ServiceDependencyRequirement(DependencyDescriptor dependency, DependancyConsumer entry) {}
 
     static class Requirement {
 
@@ -195,18 +174,7 @@ public final class ServiceManagerRequirementsSetup {
             list.add(new FromInjectable(i, dependencyIndex, d));
         }
 
-        static class FromInjectable {
-            final DependancyConsumer i;
-            final int dependencyIndex;
-            final DependencyDescriptor d;
-
-            FromInjectable(DependancyConsumer i, int dependencyIndex, DependencyDescriptor d) {
-                this.i = requireNonNull(i);
-                this.dependencyIndex = dependencyIndex;
-                this.d = d;
-            }
-
-        }
+        record FromInjectable(DependancyConsumer i, int dependencyIndex, DependencyDescriptor d) {}
     }
 
 }

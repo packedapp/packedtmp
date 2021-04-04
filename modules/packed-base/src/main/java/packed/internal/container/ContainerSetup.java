@@ -48,9 +48,6 @@ import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /** Build-time configuration of a container. */
-/**
- *
- */
 public final class ContainerSetup extends WireableComponentSetup {
 
     /** Child containers, lazy initialized (we rely on this in ExtensionSetup) */
@@ -60,9 +57,6 @@ public final class ContainerSetup extends WireableComponentSetup {
     /** This container's parent (if non-root). */
     @Nullable
     public final ContainerSetup containerParent;
-
-    /** All dependants that needs to be resolved. */
-    public final ArrayList<DependancyConsumer> dependants = new ArrayList<>();
 
     /** All extensions in use, in no particular order. */
     final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
@@ -74,6 +68,8 @@ public final class ContainerSetup extends WireableComponentSetup {
     private ServiceManagerSetup sm;
 
     private ArrayList<ExtensionSetup> tmpExtensions;
+
+    public final ContainerInjectorSetup cis = new ContainerInjectorSetup();
 
     /**
      * Create a new container (component).
@@ -136,7 +132,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      *            the injectable to add
      */
     public void addDependant(DependancyConsumer dependant) {
-        dependants.add(requireNonNull(dependant));
+        cis.dependants.add(requireNonNull(dependant));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
         // I virkeligheden vil vi bare gerne checke at om man
@@ -185,7 +181,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             sm.prepareDependants();
         }
 
-        for (DependancyConsumer i : dependants) {
+        for (DependancyConsumer i : cis.dependants) {
             i.resolve(sm);
         }
 

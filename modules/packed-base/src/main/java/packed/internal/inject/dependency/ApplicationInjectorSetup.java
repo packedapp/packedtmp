@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.service;
+package packed.internal.inject.dependency;
 
 import static java.util.Objects.requireNonNull;
 
@@ -22,8 +22,7 @@ import java.util.ArrayDeque;
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.dependency.DependancyConsumer;
-import packed.internal.inject.dependency.DependencyProducer;
+import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 /**
@@ -32,21 +31,21 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
  * <p>
  * This class server two main purposes:
  * 
- * Finds dependency circles either within the same container or across containers that are not in a parent-child relationship.
+ * Finds dependency circles either within the same container or across containers that are not in a parent-child
+ * relationship.
  * 
- * Responsible for invoking the {@link DependancyConsumer#onAllDependenciesResolved(ConstantPoolSetup)} callback for every
- * {@link DependancyConsumer}. We do this here, because we guarantee that all dependants of a dependant are always invoked before
- * the dependant itself.
+ * Responsible for invoking the {@link DependancyConsumer#onAllDependenciesResolved(ConstantPoolSetup)} callback for
+ * every {@link DependancyConsumer}. We do this here, because we guarantee that all dependants of a dependant are always
+ * invoked before the dependant itself.
  */
 // New algorithm
-
 // resolve + create id for each node
 // https://algs4.cs.princeton.edu/42digraph/TarjanSCC.java.html
 // https://www.youtube.com/watch?v=TyWtx7q2D7Y
 
 //TODO WE NEED TO CHECK INTRA Assembly REFERENCES
 // BitMap???
-final class ApplicationInjectionManager {
+public final class ApplicationInjectorSetup {
 
     /**
      * Tries to find a dependency cycle.
@@ -55,7 +54,7 @@ final class ApplicationInjectionManager {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    void finish(ConstantPoolSetup region, ContainerSetup container) {
+    public void finish(ConstantPoolSetup region, ContainerSetup container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
@@ -71,7 +70,7 @@ final class ApplicationInjectionManager {
 
     private DependencyCycle dependencyCyclesFind(ArrayDeque<DependancyConsumer> stack, ArrayDeque<DependancyConsumer> dependencies, ConstantPoolSetup region,
             ContainerSetup container) {
-        for (DependancyConsumer node : container.dependants) {
+        for (DependancyConsumer node : container.cis.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
@@ -103,7 +102,8 @@ final class ApplicationInjectionManager {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(ConstantPoolSetup region, DependancyConsumer injectable, ArrayDeque<DependancyConsumer> stack, ArrayDeque<DependancyConsumer> dependencies) {
+    private DependencyCycle detectCycle(ConstantPoolSetup region, DependancyConsumer injectable, ArrayDeque<DependancyConsumer> stack,
+            ArrayDeque<DependancyConsumer> dependencies) {
         DependencyProducer[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);

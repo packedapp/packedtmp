@@ -74,16 +74,6 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         this.sm = requireNonNull(sm);
     }
 
-    /**
-     * @param transformer
-     */
-    public void addExportTransformer(Consumer<? super ServiceComposer> transformer) {
-        if (this.transformer != null) {
-            throw new IllegalStateException("Can only set an export transformer once");
-        }
-        this.transformer = requireNonNull(transformer, "transformer is null");
-    }
-
     public boolean contains(Key<?> key) {
         return resolvedExports.containsKey(key);
     }
@@ -100,7 +90,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
      * @see ServiceExtension#export(Key)
      */
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
-        return export0(new ExportedServiceSetup( key));
+        return export0(new ExportedServiceSetup(key));
     }
 
     /**
@@ -166,7 +156,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     public boolean hasExports() {
         return !resolvedExports.isEmpty();
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public Iterator<ServiceSetup> iterator() {
@@ -228,6 +218,16 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         // Finally, make the resolved exports visible.
     }
 
+    /**
+     * @param transformer
+     */
+    public void setExportTransformer(Consumer<? super ServiceComposer> transformer) {
+        if (this.transformer != null) {
+            throw new IllegalStateException("This method can only be called once");
+        }
+        this.transformer = requireNonNull(transformer, "transformer is null");
+    }
+
     public void transform(BiConsumer<? super ServiceComposer, ? super ServiceContract> transformer) {
         PackedServiceComposer.transformInplaceAttachment(resolvedExports, transformer, sm.newServiceContract());
     }
@@ -241,28 +241,14 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     public void transform(Consumer<? super ServiceComposer> transformer) {
         PackedServiceComposer.transformInplace(resolvedExports, transformer);
     }
-    
+
     /**
      * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
      * 
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    // Move to ExportManager when we key + check configurable has been finalized
-    static final class ExportedServiceConfigurationSetup<T> implements ExportedServiceConfiguration<T> {
-
-        /** The entry that is exported. */
-        private final ExportedServiceSetup entry;
-
-        /**
-         * Creates a new service configuration object.
-         * 
-         * @param entry
-         *            the entry to export
-         */
-        public ExportedServiceConfigurationSetup(ExportedServiceSetup entry) {
-            this.entry = requireNonNull(entry);
-        }
+    record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup entry) implements ExportedServiceConfiguration<T> {
 
         /** {@inheritDoc} */
         @Override

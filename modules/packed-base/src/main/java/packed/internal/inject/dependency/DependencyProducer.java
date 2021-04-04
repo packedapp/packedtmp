@@ -44,8 +44,6 @@ public interface DependencyProducer {
      * 
      * A constant that is created an initialization time
      * 
-     * 
-     * 
      * The returned method handle takes a single argument of type {@link ConstantPoolSetup}. And returns an instance of the
      * dependency.
      * <p>

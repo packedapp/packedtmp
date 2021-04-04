@@ -413,7 +413,7 @@ public class ServiceExtension extends Extension {
      *            transforms the exported services
      */
     public void transformExports(Consumer<? super ServiceComposer> transformer) {
-        services.exports().addExportTransformer(transformer);
+        services.exports().setExportTransformer(transformer);
     }
 
     /**
