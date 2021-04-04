@@ -37,6 +37,7 @@ import packed.internal.inject.service.build.SourceMemberServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.invoke.constantpool.ConstantPoolInvoker;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.util.ThrowableUtil;
 
 /**
  *
@@ -58,7 +59,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
 // Something with dependencis
-public class DependancyConsumer {
+public final class DependancyConsumer {
 
     @Nullable
     private final SourceMemberServiceSetup service;
@@ -182,7 +183,7 @@ public class DependancyConsumer {
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
         if (poolIndex() > -1) {
-            region.ordered.add(this);
+            region.addOrdered(this);
         }
         needsPostProcessing = false;
 
@@ -245,6 +246,24 @@ public class DependancyConsumer {
                 providers[providerIndex] = e;
             }
         }
+    }
+    
+    public void writeConstantPool(ConstantPool pool) {
+        MethodHandle mh = buildMethodHandle();
+
+        Object instance;
+        try {
+            instance = mh.invoke(pool);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+
+        if (instance == null) {
+            throw new NullPointerException(this + " returned null");
+        }
+
+        int index = poolIndex();
+        pool.store(index, instance);
     }
 }
 
