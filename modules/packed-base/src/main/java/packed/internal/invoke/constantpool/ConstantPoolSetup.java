@@ -18,7 +18,6 @@ package packed.internal.invoke.constantpool;
 import java.util.ArrayList;
 
 import packed.internal.application.ApplicationLaunchContext;
-import packed.internal.component.PackedApplicationRuntime;
 
 /**
  *
@@ -43,10 +42,7 @@ public final class ConstantPoolSetup {
     public ConstantPool newPool(ApplicationLaunchContext pic) {
         ConstantPool pool = new ConstantPool(size);
 
-        // Not sure we want to create the guest here, we do it for now though
-        if (pic.component.modifiers().hasRuntime()) {
-            pool.store(0, new PackedApplicationRuntime(pic));
-        }
+        pic.writeConstantPool(pool);
 
         for (PoolWriteable e : entries) {
             e.writeConstantPool(pool);

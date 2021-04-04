@@ -39,14 +39,16 @@ public final class ApplicationSetup {
      */
     RunState launchMode;
 
-    //sync entrypoint
+    // sync entrypoint
     @Nullable
     private MainThreadOfControl mainThread;
 
     private final int modifiers;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
-    
+
+    final int runtimePoolIndex;
+
     /**
      * Create a new application setup
      * 
@@ -60,7 +62,9 @@ public final class ApplicationSetup {
         this.modifiers = modifiers;
         // Setup Runtime
         if (container.modifiers().hasRuntime()) {
-            constantPool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
+            runtimePoolIndex = constantPool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
+        } else {
+            runtimePoolIndex = -1;
         }
     }
 
@@ -86,7 +90,9 @@ public final class ApplicationSetup {
         return PackedComponentModifierSet.isImage(modifiers);
     }
 
-    /** A wirelet that will set the launch mode of the application. Used by {@link ApplicationWirelets#launchMode(RunState)}. */
+    /**
+     * A wirelet that will set the launch mode of the application. Used by {@link ApplicationWirelets#launchMode(RunState)}.
+     */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
         /** The (validated) name to override with. */

@@ -25,11 +25,13 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.RunState;
 import packed.internal.component.InternalWirelet;
+import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.invoke.constantpool.PoolWriteable;
 
 /**
  * A temporary context object that is created when launching an application.
@@ -42,7 +44,7 @@ import packed.internal.invoke.constantpool.ConstantPool;
 // Ideen er vi skal bruge den til at registrere fejl...
 
 // MethodHandle stableAccess(Object[] array) <-- returns 
-public final class ApplicationLaunchContext {
+public final class ApplicationLaunchContext implements PoolWriteable {
 
     public final ApplicationSetup application;
 
@@ -58,12 +60,15 @@ public final class ApplicationLaunchContext {
     @Nullable
     private final WireletWrapper wirelets;
 
+    final PackedApplicationRuntime runtime;
+
     private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
         this.application = requireNonNull(application);
         this.container = application.container;
         this.wirelets = wirelets;
         this.name = container.getName();
         this.launchMode = application.launchMode;
+        this.runtime = application.runtimePoolIndex == -1 ? null : new PackedApplicationRuntime(this);
     }
 
     /**
@@ -143,5 +148,12 @@ public final class ApplicationLaunchContext {
         }
 
         return driver.newApplication(context);
+    }
+
+    @Override
+    public void writeConstantPool(ConstantPool pool) {
+        if (runtime != null) {
+            pool.store(application.runtimePoolIndex, runtime);
+        }
     }
 }
