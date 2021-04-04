@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.ClassMemberAccessor;
+import packed.internal.invoke.OpenClass;
 import packed.internal.invoke.ClassScanner;
 import packed.internal.util.ThrowableUtil;
 
@@ -42,14 +42,14 @@ public class PackedAttributeModel {
     }
 
     @Nullable
-    public static PackedAttributeModel analyse(ClassMemberAccessor oc) {
+    public static PackedAttributeModel analyse(OpenClass oc) {
         return new Builder(oc).build();
     }
 
     static class Builder extends ClassScanner {
-        final ClassMemberAccessor oc;
+        final OpenClass oc;
 
-        protected Builder(ClassMemberAccessor oc) {
+        protected Builder(OpenClass oc) {
             super(oc.type());
             this.oc = oc;
         }

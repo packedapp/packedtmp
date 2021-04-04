@@ -46,5 +46,4 @@ final class MethodHandleBuilderConstants {
     static final MethodHandle optionalOfNullableTo(Class<?> type) {
         return MethodHandles.explicitCastArguments(MethodHandleBuilderConstants.OPTIONAL_OF_NULLABLE, MethodType.methodType(Optional.class, type));
     }
-
 }

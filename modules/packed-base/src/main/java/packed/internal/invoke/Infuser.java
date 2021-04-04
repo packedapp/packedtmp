@@ -43,12 +43,11 @@ public final class Infuser {
         return parameterTypes;
     }
 
-    @Deprecated
-    public MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
+    private MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
         // First lets find a constructor
         Constructor<?> constructor = FindInjectableConstructor.get(type, false, errorMaker);
 
-        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, type);
+        OpenClass oc = OpenClass.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);
         mhb.add(this);
         MethodHandle mh = mhb.build(oc, constructor);
@@ -77,12 +76,8 @@ public final class Infuser {
             entries.put(builder.key, entry);
         }
 
-        public Infuser build() {
-            return new Infuser(this);
-        }
-
         public MethodHandle findConstructor(Class<?> returnType, Function<String, RuntimeException> errorMaker) {
-            Infuser infuser = build();
+            Infuser infuser = new Infuser(this);
             return infuser.singleConstructor(clazz, returnType, errorMaker);
         }
 

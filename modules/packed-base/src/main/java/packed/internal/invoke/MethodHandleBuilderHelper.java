@@ -65,7 +65,7 @@ class MethodHandleBuilderHelper {
 
     final Class<?> declaringClass;
 
-    MethodHandleBuilderHelper(ClassMemberAccessor oc, Executable e, MethodHandleBuilder aa) {
+    MethodHandleBuilderHelper(OpenClass oc, Executable e, MethodHandleBuilder aa) {
         this.aa = aa;
         input = aa.targetType();
 

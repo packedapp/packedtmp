@@ -39,10 +39,10 @@ import packed.internal.util.StringFormatter;
  */
 //TODO should we know whether or the lookup is Packed one or a user supplied??
 // lookup.getClass().getModule==OpenClass.getModule...? nah virker ikke paa classpath
-public final class ClassMemberAccessor {
+public final class OpenClass {
 
     /** The app.packed.base module. */
-    private static final Module APP_PACKED_BASE_MODULE = ClassMemberAccessor.class.getModule();
+    private static final Module APP_PACKED_BASE_MODULE = OpenClass.class.getModule();
 
     /** A lookup object that can be used to access {@link #type}. */
     private final MethodHandles.Lookup lookup;
@@ -59,14 +59,14 @@ public final class ClassMemberAccessor {
     /** The class that is wrapped. */
     private final Class<?> type;
 
-    private ClassMemberAccessor(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
+    private OpenClass(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
         this.lookup = requireNonNull(lookup);
         this.type = requireNonNull(clazz);
         this.registerForNative = registerForNative;
     }
 
-    public static ClassMemberAccessor of(MethodHandles.Lookup lookup, Class<?> clazz) {
-        return new ClassMemberAccessor(lookup, clazz, true);
+    public static OpenClass of(MethodHandles.Lookup lookup, Class<?> clazz) {
+        return new OpenClass(lookup, clazz, true);
     }
 
     private <T extends RuntimeException> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
@@ -79,8 +79,8 @@ public final class ClassMemberAccessor {
         }
     }
 
-    public ClassMemberAccessor copy() {
-        return new ClassMemberAccessor(lookup, type, registerForNative);
+    public OpenClass copy() {
+        return new OpenClass(lookup, type, registerForNative);
     }
 
     public MethodHandle findConstructor(MethodHandleBuilder dim) {
@@ -126,7 +126,7 @@ public final class ClassMemberAccessor {
         }
     }
 
-    public ClassMemberAccessor spawn(Class<?> clazz) {
+    public OpenClass spawn(Class<?> clazz) {
         // Used for classes in the same nest
         // So maybe check that they are nest mates
         // We need it because private lookup is attached to one particular class.
@@ -134,7 +134,7 @@ public final class ClassMemberAccessor {
         if (clazz.getModule() != this.type.getModule()) {
             throw new IllegalArgumentException();
         }
-        return new ClassMemberAccessor(lookup, clazz, registerForNative);
+        return new OpenClass(lookup, clazz, registerForNative);
     }
 
     /**

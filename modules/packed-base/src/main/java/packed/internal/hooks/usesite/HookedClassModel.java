@@ -31,7 +31,7 @@ import app.packed.hooks.ClassHook;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.HookedMethodProvide;
-import packed.internal.invoke.ClassMemberAccessor;
+import packed.internal.invoke.OpenClass;
 import packed.internal.invoke.ClassScanner;
 
 /** A model of a class that uses class or member hooks. */
@@ -87,7 +87,7 @@ public final class HookedClassModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static HookedClassModel newModel(HookUseSite hus, ClassMemberAccessor oc, @Nullable ExtensionModel extension) {
+    public static HookedClassModel newModel(HookUseSite hus, OpenClass oc, @Nullable ExtensionModel extension) {
         return new Builder(hus, oc, extension).build();
     }
 
@@ -102,7 +102,7 @@ public final class HookedClassModel {
         /** All method hooks. */
         final ArrayList<UseSiteMethodHookModel> methods = new ArrayList<>();
 
-        final ClassMemberAccessor oc;
+        final OpenClass oc;
 
         final Map<Key<?>, HookedMethodProvide> sourceContexts = new HashMap<>();
 
@@ -119,7 +119,7 @@ public final class HookedClassModel {
          *            a class processor usable by hooks
          * 
          */
-        public Builder(HookUseSite hus, ClassMemberAccessor cp, ExtensionModel extension) {
+        public Builder(HookUseSite hus, OpenClass cp, ExtensionModel extension) {
             super(cp.type());
             this.hus = requireNonNull(hus);
             this.oc = requireNonNull(cp);

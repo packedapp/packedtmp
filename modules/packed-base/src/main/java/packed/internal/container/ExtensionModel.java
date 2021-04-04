@@ -35,7 +35,7 @@ import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import packed.internal.attribute.PackedAttributeModel;
-import packed.internal.invoke.ClassMemberAccessor;
+import packed.internal.invoke.OpenClass;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.StringFormatter;
@@ -289,10 +289,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));
 
             // So far we scan for constructors
-            ClassMemberAccessor cp = ClassMemberAccessor.of(MethodHandles.lookup(), extensionClass);
+            OpenClass oc = OpenClass.of(MethodHandles.lookup(), extensionClass);
 
             // Okay maybe we need to scan for contracts...
-            this.pam = PackedAttributeModel.analyse(cp);
+            this.pam = PackedAttributeModel.analyse(oc);
 
             return new ExtensionModel(this);
         }

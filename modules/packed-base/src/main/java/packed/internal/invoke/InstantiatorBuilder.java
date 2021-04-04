@@ -31,9 +31,9 @@ public final class InstantiatorBuilder {
 
     final MethodHandleBuilder mh;
 
-    final ClassMemberAccessor oc;
+    final OpenClass oc;
 
-    InstantiatorBuilder(ClassMemberAccessor oc, MethodHandleBuilder mh, Executable executable) {
+    InstantiatorBuilder(OpenClass oc, MethodHandleBuilder mh, Executable executable) {
         this.oc = requireNonNull(oc);
         this.mh = mh;
         this.executable = requireNonNull(executable);
@@ -47,12 +47,12 @@ public final class InstantiatorBuilder {
         return mh.build(oc, executable);
     }
 
-    public ClassMemberAccessor oc() {
+    public OpenClass oc() {
         return oc;
     }
 
     public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {
-        ClassMemberAccessor oc = ClassMemberAccessor.of(lookup, implementation);
+        OpenClass oc = OpenClass.of(lookup, implementation);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
         Constructor<?> constructor = FindInjectableConstructor.get(implementation, false, e -> new IllegalArgumentException(e));
         return new InstantiatorBuilder(oc, mhb, constructor);

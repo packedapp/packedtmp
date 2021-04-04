@@ -283,26 +283,25 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);
 
-        // Connect to ancestors
-        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
-        
-        // Creates a new extension instance
+        // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
         Extension instance = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(instance, extension); // sets Extension.configuration = extension (setup)
+        VH_EXTENSION_CONFIGURATION.set(instance, extension);
 
         // Add the extension to the container's extension map
         container.extensions.put(extensionClass, extension);
 
-        // Invoke Extension#onNew()
+        // The extension has been now been fully wired, run any notifications
+        extension.onWire();
+
+        // Connect to ancestors
+        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
+        
+        // Finally, invoke Extension#onNew() before returning to user
         try {
             MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-
-        // The extension has been now been fully wired, run any notifications
-        // Move up before OnNew???
-        extension.onWire();
 
         return extension;
     }
