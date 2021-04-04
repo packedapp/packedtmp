@@ -48,10 +48,10 @@ public abstract class Composer<C extends ComponentConfiguration> {
     /**
      * Checks that the underlying component is still configurable.
      * 
-     * @see ComponentConfigurationContext#checkConfigurable()
+     * @see ComponentConfigurationContext#checkOpen()
      */
     protected final void checkConfigurable() {
-        configuration.context.checkConfigurable();
+        configuration.context.checkOpen();
     }
 
     /**

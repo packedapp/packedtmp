@@ -21,17 +21,17 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
     public SourcedComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, SourcedComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, application, realm, driver, parent, wirelets);
-        this.source = new ClassSourceSetup(this, driver);
+        this.source = new ClassSourceSetup(this, driver.binding);
 
         // Set the name of the component if it have not already been set using a wirelet
         if (name == null) {
-            initializeNameWithPrefix(source.model.simpleName());
+            initializeNameWithPrefix(source.hooks.simpleName());
         }
     }
 
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
-        dam.addValue(ComponentAttributes.SOURCE_CLASS, source.model.type);
+        dam.addValue(ComponentAttributes.SOURCE_CLASS, source.hooks.type);
     }
 
     @SuppressWarnings("unchecked")
@@ -41,13 +41,13 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
     }
 
     public void sourceProvide() {
-        checkConfigurable();
+        checkOpen();
         source.provide(this);
     }
 
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
-        checkConfigurable();
+        checkOpen();
         source.provide(this).as(key);
     }
 

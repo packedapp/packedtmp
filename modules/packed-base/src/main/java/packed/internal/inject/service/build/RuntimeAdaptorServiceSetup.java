@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -39,7 +39,7 @@ public final class RuntimeAdaptorServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public DependancyConsumer dependant() {
+    public InjectionNode dependant() {
         return null; // runtime entries never has any unresolved dependencies
     }
 

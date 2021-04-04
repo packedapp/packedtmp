@@ -44,7 +44,7 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireableComponentSetup;
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
 
 /** Build-time configuration of a container. */
@@ -131,7 +131,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param dependant
      *            the injectable to add
      */
-    public void addDependant(DependancyConsumer dependant) {
+    public void addDependant(InjectionNode dependant) {
         cis.dependants.add(requireNonNull(dependant));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
@@ -172,6 +172,8 @@ public final class ContainerSetup extends WireableComponentSetup {
 
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
         Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
+        
+        // Close every extension
         for (ExtensionSetup pec : extensionsOrdered) {
             pec.onComplete();
         }
@@ -181,7 +183,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             sm.prepareDependants();
         }
 
-        for (DependancyConsumer i : cis.dependants) {
+        for (InjectionNode i : cis.dependants) {
             i.resolve(sm);
         }
 
@@ -333,13 +335,13 @@ public final class ContainerSetup extends WireableComponentSetup {
 
             // Checks that container is still configurable
             if (requestedBy == null) {
-                checkConfigurable();
+                checkOpen();
             } else {
-                requestedBy.checkConfigurable();
+                requestedBy.checkOpen();
             }
 
             // Create the new extension and adds into the map of extensions
-            extension = ExtensionSetup.initialize(this, extensionClass);
+            extension = ExtensionSetup.createNew(this, extensionClass);
 
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;

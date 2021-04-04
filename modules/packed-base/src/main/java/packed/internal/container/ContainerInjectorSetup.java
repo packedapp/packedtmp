@@ -2,10 +2,10 @@ package packed.internal.container;
 
 import java.util.ArrayList;
 
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 
 public class ContainerInjectorSetup {
 
     /** All dependants that needs to be resolved. */
-    public final ArrayList<DependancyConsumer> dependants = new ArrayList<>();
+    public final ArrayList<InjectionNode> dependants = new ArrayList<>();
 }

@@ -38,13 +38,13 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onExtensionsFixed", void.class);
 
-    /** A handle for invoking {@link Extension#onNew()}, used by {@link #initialize(ContainerSetup, Class)}. */
+    /** A handle for invoking {@link Extension#onNew()}, used by {@link #createNew(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
 
-    /** A handle for setting the field Extension#configuration, used by {@link #initialize(ContainerSetup, Class)}. */
+    /** A handle for setting the field Extension#configuration, used by {@link #createNew(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -56,7 +56,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     @Nullable
     ExtensionSetup ancestor;
 
-    /** The extension instance, instantiated in {@link #initialize(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated in {@link #createNew(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -91,7 +91,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** {@inheritDoc} */
     @Override
-    public void checkConfigurable() {
+    public void checkOpen() {
         if (isConfigured) {
             throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
         }
@@ -270,15 +270,15 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     }
 
     /**
-     * Instantiation the extension and create a new extension setup.
+     * Create a new extension.
      * 
      * @param container
-     *            the container setup
+     *            the container in which the extension should be created
      * @param extensionClass
      *            the extension to instantiate
-     * @return the new setup
+     * @return the new extension
      */
-    static ExtensionSetup initialize(ContainerSetup container, Class<? extends Extension> extensionClass) {
+    static ExtensionSetup createNew(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);
@@ -291,7 +291,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         container.extensions.put(extensionClass, extension);
 
         // The extension has been now been fully wired, run any notifications
-        extension.onWire();
+        extension.onWired();
 
         // Connect to ancestors
         //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceComposer;
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.runtime.DelegatingRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -52,7 +52,7 @@ public final class RekeyServiceSetup extends ServiceSetup {
 
     @Override
     @Nullable
-    public DependancyConsumer dependant() {
+    public InjectionNode dependant() {
         return serviceToRekey.dependant();
     }
 

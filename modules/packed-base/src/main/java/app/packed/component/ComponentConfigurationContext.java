@@ -62,7 +62,7 @@ public /* sealed */ interface ComponentConfigurationContext {
      *             if the component is no longer configurable.
      */
     // checkRealmActive
-    void checkConfigurable();
+    void checkOpen();
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is

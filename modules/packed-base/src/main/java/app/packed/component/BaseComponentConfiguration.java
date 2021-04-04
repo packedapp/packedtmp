@@ -43,7 +43,7 @@ public class BaseComponentConfiguration extends ComponentConfiguration {
      *             if the component is no long configurable.
      */
     public void checkConfigurable() {
-        context.checkConfigurable();
+        context.checkOpen();
     }
 
     /**

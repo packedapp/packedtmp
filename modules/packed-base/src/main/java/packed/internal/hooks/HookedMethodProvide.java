@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.invoke.constantpool.ConstantPool;
 
@@ -57,7 +57,7 @@ public final class HookedMethodProvide implements DependencyProducer {
     /** {@inheritDoc} */
     @Override
     @Nullable
-    public DependancyConsumer dependant() {
+    public InjectionNode dependant() {
         return null;
     }
 

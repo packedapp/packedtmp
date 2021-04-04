@@ -86,7 +86,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void checkConfigurable();
+    void checkOpen();
 
     /**
      * Checks that child containers has been aded

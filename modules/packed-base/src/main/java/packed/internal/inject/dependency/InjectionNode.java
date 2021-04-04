@@ -60,7 +60,7 @@ import packed.internal.util.ThrowableUtil;
 // Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
 
 // Something with dependencis
-public final class DependancyConsumer implements PoolWriteable {
+public final class InjectionNode implements PoolWriteable {
 
     @Nullable
     private final SourceMemberServiceSetup service;
@@ -86,7 +86,7 @@ public final class DependancyConsumer implements PoolWriteable {
 
     public final int providerDelta;
 
-    public DependancyConsumer(ClassSourceSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public InjectionNode(ClassSourceSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -98,7 +98,7 @@ public final class DependancyConsumer implements PoolWriteable {
         this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
     }
 
-    public DependancyConsumer(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+    public InjectionNode(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -236,7 +236,7 @@ public final class DependancyConsumer implements PoolWriteable {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProducer e = null;
                 if (source != null) {
-                    HookedClassModel sm = source.model;
+                    HookedClassModel sm = source.hooks;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }

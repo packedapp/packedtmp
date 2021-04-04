@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import packed.internal.component.ComponentSetup;
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
@@ -33,12 +33,12 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  */
 public class SourceMemberServiceSetup extends ServiceSetup {
 
-    private final DependancyConsumer dependant;
+    private final InjectionNode dependant;
 
     /** If constant, the region index to store it in */
     public final int regionIndex;
 
-    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, DependancyConsumer dependant, Key<?> key, boolean isConst) {
+    public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, InjectionNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.dependant = requireNonNull(dependant);
         this.regionIndex = isConst ? compConf.pool.reserveObject() : -1;
@@ -46,7 +46,7 @@ public class SourceMemberServiceSetup extends ServiceSetup {
 
     /** {@inheritDoc} */
     @Override
-    public DependancyConsumer dependant() {
+    public InjectionNode dependant() {
         return dependant;
     }
 

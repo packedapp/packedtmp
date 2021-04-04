@@ -64,5 +64,5 @@ public interface DependencyProducer {
      * @return an injectable if this dependency provider itself needs dependencies fulfilled, otherwise null
      */
     @Nullable
-    DependancyConsumer dependant();
+    InjectionNode dependant();
 }

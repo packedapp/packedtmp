@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.dependency.DependancyConsumer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 
@@ -119,7 +119,7 @@ public final class ServiceManagerRequirementsSetup {
      * @param entry
      * @param dependency
      */
-    public void recordResolvedDependency(DependancyConsumer entry, int index, DependencyDescriptor dependency, @Nullable DependencyProducer resolvedTo,
+    public void recordResolvedDependency(InjectionNode entry, int index, DependencyDescriptor dependency, @Nullable DependencyProducer resolvedTo,
             boolean fromParent) {
         requireNonNull(entry);
         requireNonNull(dependency);
@@ -152,7 +152,7 @@ public final class ServiceManagerRequirementsSetup {
         // explicitRequirements.add(new ServiceDependencyRequirement(dependency, configSite));
     }
 
-    record ServiceDependencyRequirement(DependencyDescriptor dependency, DependancyConsumer entry) {}
+    record ServiceDependencyRequirement(DependencyDescriptor dependency, InjectionNode entry) {}
 
     static class Requirement {
 
@@ -167,14 +167,14 @@ public final class ServiceManagerRequirementsSetup {
             this.key = key;
         }
 
-        void missingDependency(DependancyConsumer i, int dependencyIndex, DependencyDescriptor d) {
+        void missingDependency(InjectionNode i, int dependencyIndex, DependencyDescriptor d) {
             if (!d.isOptional()) {
                 isOptional = false;
             }
             list.add(new FromInjectable(i, dependencyIndex, d));
         }
 
-        record FromInjectable(DependancyConsumer i, int dependencyIndex, DependencyDescriptor d) {}
+        record FromInjectable(InjectionNode i, int dependencyIndex, DependencyDescriptor d) {}
     }
 
 }

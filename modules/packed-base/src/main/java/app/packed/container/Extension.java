@@ -94,7 +94,7 @@ public abstract class Extension {
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#initialize(ContainerSetup, Class)} via a varhandle.
+     * This field is initialized in {@link ExtensionSetup#createNew(ContainerSetup, Class)} via a varhandle.
      * <p>
      * This field is not nulled out after the configuration of the extension has completed. This allows for invoking
      * methods such as {@link #checkConfigurable()} at any time.
@@ -122,13 +122,13 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionConfiguration#checkConfigurable()}.
+     * This method delegate all calls to {@link ExtensionConfiguration#checkOpen()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        configuration().checkConfigurable();
+        configuration().checkOpen();
     }
 
     // checkExtendable...

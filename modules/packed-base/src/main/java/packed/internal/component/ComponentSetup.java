@@ -68,8 +68,6 @@ public abstract class ComponentSetup {
     /** The depth of the component in the tree. */
     protected final int depth;
 
-    boolean isClosed;
-
     /** The modifiers of this component. */
     protected final int modifiers;
 
@@ -173,17 +171,14 @@ public abstract class ComponentSetup {
         return build;
     }
 
-    public void checkConfigurable() {
-        realm.checkOpen();
-        if (isClosed) {
-            throw new IllegalStateException("This component can no longer be configured");
-        }
-    }
-
     public final void checkIsWiring() {
         if (realm.current() != this) {
             throw new IllegalStateException("This operation must be called immediately after wiring of the component");
         }
+    }
+
+    public void checkOpen() {
+        realm.checkOpen();
     }
 
     protected final void initializeNameWithPrefix(String name) {
@@ -261,7 +256,7 @@ public abstract class ComponentSetup {
         return new PackedComponentModifierSet(modifiers);
     }
 
-    protected final void onWire() {
+    protected final void onWired() {
         if (onWire != null) {
             onWire.accept(adaptor());
         }

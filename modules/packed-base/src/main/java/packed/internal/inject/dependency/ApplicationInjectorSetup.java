@@ -34,8 +34,8 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
  * 
- * Responsible for invoking the {@link DependancyConsumer#onAllDependenciesResolved(ConstantPoolSetup)} callback for
- * every {@link DependancyConsumer}. We do this here, because we guarantee that all dependants of a dependant are always
+ * Responsible for invoking the {@link InjectionNode#onAllDependenciesResolved(ConstantPoolSetup)} callback for
+ * every {@link InjectionNode}. We do this here, because we guarantee that all dependants of a dependant are always
  * invoked before the dependant itself.
  */
 // New algorithm
@@ -62,15 +62,15 @@ public final class ApplicationInjectorSetup {
     }
 
     private DependencyCycle dependencyCyclesFind(ConstantPoolSetup region, ContainerSetup container) {
-        ArrayDeque<DependancyConsumer> stack = new ArrayDeque<>();
-        ArrayDeque<DependancyConsumer> dependencies = new ArrayDeque<>();
+        ArrayDeque<InjectionNode> stack = new ArrayDeque<>();
+        ArrayDeque<InjectionNode> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private DependencyCycle dependencyCyclesFind(ArrayDeque<DependancyConsumer> stack, ArrayDeque<DependancyConsumer> dependencies, ConstantPoolSetup region,
+    private DependencyCycle dependencyCyclesFind(ArrayDeque<InjectionNode> stack, ArrayDeque<InjectionNode> dependencies, ConstantPoolSetup region,
             ContainerSetup container) {
-        for (DependancyConsumer node : container.cis.dependants) {
+        for (InjectionNode node : container.cis.dependants) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {
@@ -102,15 +102,15 @@ public final class ApplicationInjectorSetup {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(ConstantPoolSetup region, DependancyConsumer injectable, ArrayDeque<DependancyConsumer> stack,
-            ArrayDeque<DependancyConsumer> dependencies) {
+    private DependencyCycle detectCycle(ConstantPoolSetup region, InjectionNode injectable, ArrayDeque<InjectionNode> stack,
+            ArrayDeque<InjectionNode> dependencies) {
         DependencyProducer[] deps = injectable.providers;
         if (deps.length > 0) {
             stack.push(injectable);
             for (int i = 0; i < deps.length; i++) {
                 DependencyProducer dependency = deps[i];
                 if (dependency != null) {
-                    DependancyConsumer next = dependency.dependant();
+                    InjectionNode next = dependency.dependant();
                     if (next != null) {
                         if (next.needsPostProcessing) {
                             dependencies.push(next);
@@ -143,9 +143,9 @@ public final class ApplicationInjectorSetup {
     /** A class indicating a dependency cycle. */
     public static class DependencyCycle {
 
-        final ArrayDeque<DependancyConsumer> dependencies;
+        final ArrayDeque<InjectionNode> dependencies;
 
-        DependencyCycle(ArrayDeque<DependancyConsumer> dependencies) {
+        DependencyCycle(ArrayDeque<InjectionNode> dependencies) {
             this.dependencies = requireNonNull(dependencies);
         }
 

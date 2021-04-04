@@ -27,9 +27,9 @@ import packed.internal.hooks.usesite.HookedClassModel;
 import packed.internal.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
-import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.invoke.constantpool.PoolWriteable;
@@ -38,9 +38,11 @@ import packed.internal.util.MethodHandleUtil;
 /** A configuration object for a component class source. */
 public final class ClassSourceSetup implements DependencyProducer, PoolWriteable {
 
-    /** An injectable, if this source needs to be created at runtime (not a constant). */
+    public final SourcedComponentSetup component;
+
+    /** If the source represents a constant. */
     @Nullable
-    private final DependancyConsumer dependant;
+    private final Object constant;
 
     /**
      * Factory that was specified. We only keep this around to find the key that it should be exposed as a service with. As
@@ -49,12 +51,12 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     @Nullable
     private final Factory<?> factory;
 
-    /** If the source represents a constant. */
-    @Nullable
-    private final Object constant;
+    /** A model of every hook on the source. */
+    public final HookedClassModel hooks;
 
-    /** The source model. */
-    public final HookedClassModel model;
+    /** An injection node, if instances of the source needs to be created at runtime (not a constant). */
+    @Nullable
+    private final InjectionNode instantiator;
 
     /** The index at which to store the runtime instance, or -1 if it should not be stored. */
     public final int poolIndex;
@@ -62,8 +64,6 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     /** A service object if the source is provided as a service. */
     @Nullable
     public ServiceSetup service;
-
-    public final ComponentSetup component;
 
     /**
      * Creates a new setup.
@@ -73,59 +73,94 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
      * @param driver
      *            the component driver
      */
-    ClassSourceSetup(ComponentSetup component, SourcedComponentDriver<?> driver) {
+    ClassSourceSetup(SourcedComponentSetup component, Object source) {
         this.component = requireNonNull(component);
 
         // Reserve a place in the constant pool if the source is a singleton
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
 
+        // A realm accessor that allows us to find all hooks a component source
         RealmAccessor realm = component.realm.accessor();
 
         // The source is either a Class, a Factory, or a generic instance
-        Object source = driver.binding;
         if (source instanceof Class<?> cl) {
             this.constant = null;
             this.factory = component.modifiers().isStaticClassSource() ? null : Factory.of(cl);
-            this.model = realm.modelOf(cl);
+            this.hooks = realm.modelOf(cl);
         } else if (source instanceof Factory<?> fac) {
             this.constant = null;
             this.factory = fac;
-            this.model = realm.modelOf(factory.rawType());
+            this.hooks = realm.modelOf(factory.rawType());
         } else {
             this.constant = source;
             this.factory = null;
-            this.model = realm.modelOf(source.getClass());
+            this.hooks = realm.modelOf(source.getClass());
             component.pool.addConstant(this); // non-constants singlestons are added to the constant pool elsewhere
         }
 
-        // if (driver.modifiers().isSingleton())
         if (factory == null) {
-            this.dependant = null;
+            this.instantiator = null;
         } else {
             MethodHandle mh = realm.toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
-            this.dependant = new DependancyConsumer(this, dependencies, mh);
-            component.container.addDependant(dependant);
+            this.instantiator = new InjectionNode(this, dependencies, mh);
+            component.container.addDependant(instantiator);
         }
 
         // Register hooks, maybe move to component setup
-        registerHooks(model, component);
+        registerHooks(hooks);
     }
 
-    private <T> void registerHooks(HookedClassModel model, ComponentSetup component) {
+    /** {@inheritDoc} */
+    @Override
+    @Nullable
+    public InjectionNode dependant() {
+        return instantiator;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public MethodHandle dependencyAccessor() {
+        // Must return MethodHandle(ConstantPool)T
+        if (constant != null) {
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
+                                                                                                                  // MethodHandle(ConstantPool)T
+        } else if (poolIndex > -1) {
+            return ConstantPool.indexedReader(poolIndex, hooks.type);
+        } else {
+            return instantiator.buildMethodHandle();
+        }
+    }
+
+    public ServiceSetup provide(SourcedComponentSetup component) {
+        // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
+        ServiceSetup s = service;
+        if (s == null) {
+            Key<?> key;
+            if (constant != null) {
+                key = Key.of(hooks.type); // Move to model?? What if instance has Qualifier???
+            } else {
+                key = factory.key();
+            }
+            s = service = component.container.getServiceManagerOrCreate().provideSource(component, key);
+        }
+        return s;
+    }
+
+    private <T> void registerHooks(HookedClassModel model) {
         for (UseSiteFieldHookModel f : model.fields) {
-            registerMember(component, f);
+            registerMember(f);
         }
 
         for (UseSiteMethodHookModel m : model.methods) {
-            registerMember(component, m);
+            registerMember(m);
         }
     }
 
-    private void registerMember(ComponentSetup component, UseSiteMemberHookModel m) {
-        DependancyConsumer i = new DependancyConsumer(component, this, m, m.createProviders());
+    private void registerMember(UseSiteMemberHookModel m) {
+        InjectionNode i = new InjectionNode(component, this, m, m.createProviders());
         component.container.addDependant(i);
         if (m.processor != null) {
             m.processor.accept(component);
@@ -136,40 +171,5 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         assert poolIndex >= 0;
         assert constant != null;
         pool.storeObject(poolIndex, constant);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    @Nullable
-    public DependancyConsumer dependant() {
-        return dependant;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public MethodHandle dependencyAccessor() {
-        if (constant != null) {
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
-                                                                                                                  // MethodHandle(ConstantPool)T
-        } else if (poolIndex > -1) {
-            return ConstantPool.indexedReader(poolIndex, model.type);
-        } else {
-            return dependant.buildMethodHandle();
-        }
-    }
-
-    public ServiceSetup provide(SourcedComponentSetup component) {
-        // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
-        ServiceSetup s = service;
-        if (s == null) {
-            Key<?> key;
-            if (constant != null) {
-                key = Key.of(model.type); // Move to model?? What if instance has Qualifier???
-            } else {
-                key = factory.key();
-            }
-            s = service = component.container.getServiceManagerOrCreate().provideSource(component, key);
-        }
-        return s;
     }
 }
