@@ -149,7 +149,7 @@ public class DependancyConsumer {
         }
     }
 
-    public int regionIndex() {
+    public int poolIndex() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (service != null) {
@@ -181,7 +181,7 @@ public class DependancyConsumer {
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
-        if (regionIndex() > -1) {
+        if (poolIndex() > -1) {
             region.regionStores.add(this);
         }
         needsPostProcessing = false;
@@ -204,7 +204,6 @@ public class DependancyConsumer {
                             // System.out.println(msm.model.onInitialize);
                             MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, ConstantPoolInvoker.MH_INVOKER);
 
-//                        System.out.println(mh2);
                             mh2 = mh2.bindTo(mh1);
 
                             region.initializers.add(mh2);

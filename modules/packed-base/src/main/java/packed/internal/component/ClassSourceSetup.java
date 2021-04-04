@@ -88,7 +88,7 @@ public final class ClassSourceSetup implements DependencyProducer {
             this.constant = source;
             this.factory = null;
             this.model = realm.modelOf(source.getClass());
-            component.pool.addSourceClass(this); // non-constants singlestons are added to the constant pool elsewhere
+            component.pool.addConstant(this); // non-constants singlestons are added to the constant pool elsewhere
         }
 
         // if (driver.modifiers().isSingleton())

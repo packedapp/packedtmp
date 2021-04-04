@@ -21,43 +21,39 @@ import java.util.ArrayList;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.PackedApplicationRuntime;
-import packed.internal.component.PackedComponent;
 import packed.internal.inject.dependency.DependancyConsumer;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
+// Long term.. Could we rewrite all the indexes for images. In this way we could store all constants in another array that we would just reference
 public final class ConstantPoolSetup {
 
-    /**
-     * Components that contains constants that should be stored in a region. Is only written by {@link ClassSourceSetup}.
-     */
+    /** All constants that should be stored in the constant pool. */
     private final ArrayList<ClassSourceSetup> constants = new ArrayList<>();
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
+    public final ArrayList<DependancyConsumer> regionStores = new ArrayList<>();
+
     /** The size of the pool. */
     private int size;
 
-    // List of services that must be instantiated and stored in the region
-    // They are ordered in the order they should be initialized
-    // For now written by DependencyCycleDetector via BFS
-    public final ArrayList<DependancyConsumer> regionStores = new ArrayList<>();
-
-    public void addSourceClass(ClassSourceSetup s) {
+    public void addConstant(ClassSourceSetup s) {
         constants.add(s);
     }
 
-    public ConstantPool newPool(ApplicationLaunchContext pic, PackedComponent root) {
+    public ConstantPool newPool(ApplicationLaunchContext pic) {
         ConstantPool pool = new ConstantPool(size);
 
         // Not sure we want to create the guest here, we do it for now though
-        if (root.modifiers().hasRuntime()) {
+        if (pic.component.modifiers().hasRuntime()) {
             pool.store(0, new PackedApplicationRuntime(pic));
         }
 
-        // We start by storing all constant instances in the region array
+        // We start by storing all constants in the pool
+        // TODO it is likely that we
         for (ClassSourceSetup sa : constants) {
             sa.writeConstantPool(pool);
         }
@@ -79,7 +75,7 @@ public final class ConstantPoolSetup {
                 throw new NullPointerException(injectable + " returned null");
             }
 
-            int index = injectable.regionIndex();
+            int index = injectable.poolIndex();
             pool.store(index, instance);
         }
 

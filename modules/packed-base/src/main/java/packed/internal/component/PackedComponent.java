@@ -111,7 +111,7 @@ public final class PackedComponent implements Component {
 
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || component.modifiers().hasRuntime()) {
-            this.pool = component.pool.newPool(launch, this);
+            this.pool = component.pool.newPool(launch);
         } else {
             this.pool = parent.pool;
         }
