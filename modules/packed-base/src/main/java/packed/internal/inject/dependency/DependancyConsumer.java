@@ -35,7 +35,7 @@ import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceMemberServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.invoke.constantpool.ConstantPoolInvoker;
+import packed.internal.invoke.constantpool.ConstantPoolMethodAccessor;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.invoke.constantpool.PoolWriteable;
 import packed.internal.util.ThrowableUtil;
@@ -204,7 +204,7 @@ public final class DependancyConsumer implements PoolWriteable {
                     if (sourceMember instanceof UseSiteMethodHookModel msm) {
                         if (msm.bootstrapModel.onInitialize != null) {
                             // System.out.println(msm.model.onInitialize);
-                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, ConstantPoolInvoker.MH_INVOKER);
+                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, ConstantPoolMethodAccessor.MH_INVOKER);
 
                             mh2 = mh2.bindTo(mh1);
 
@@ -264,6 +264,6 @@ public final class DependancyConsumer implements PoolWriteable {
         }
 
         int index = poolIndex();
-        pool.store(index, instance);
+        pool.storeObject(index, instance);
     }
 }

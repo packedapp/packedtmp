@@ -36,13 +36,14 @@ public final class ConstantPoolSetup {
     }
 
     public void addOrdered(PoolWriteable c) {
+        // We just keep both these 2 method that does the same for now
         entries.add(c);
     }
 
-    public ConstantPool newPool(ApplicationLaunchContext pic) {
+    public ConstantPool newPool(ApplicationLaunchContext launchContext) {
         ConstantPool pool = new ConstantPool(size);
 
-        pic.writeConstantPool(pool);
+        launchContext.writeConstantPool(pool);
 
         for (PoolWriteable e : entries) {
             e.writeConstantPool(pool);
@@ -50,7 +51,7 @@ public final class ConstantPoolSetup {
         return pool;
     }
 
-    public int reserve() {
+    public int reserveObject() {
         return size++;
     }
 }

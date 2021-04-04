@@ -77,7 +77,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         this.component = requireNonNull(component);
 
         // Reserve a place in the constant pool if the source is a singleton
-        this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserve() : -1;
+        this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
 
         RealmAccessor realm = component.realm.accessor();
 
@@ -135,7 +135,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     public void writeConstantPool(ConstantPool pool) {
         assert poolIndex >= 0;
         assert constant != null;
-        pool.store(poolIndex, constant);
+        pool.storeObject(poolIndex, constant);
     }
 
     /** {@inheritDoc} */
@@ -152,7 +152,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
                                                                                                                   // MethodHandle(ConstantPool)T
         } else if (poolIndex > -1) {
-            return ConstantPool.readConstant(poolIndex, model.type);
+            return ConstantPool.indexedReader(poolIndex, model.type);
         } else {
             return dependant.buildMethodHandle();
         }

@@ -28,7 +28,9 @@ import packed.internal.util.MethodHandleUtil;
  * A implementation of {@link MethodAccessor} that takes a method handle that needs a single {@link ConstantPool} to be
  * invoked.
  */
-public record ConstantPoolInvoker<T>(/** The method handle to invoke */ MethodHandle mh, /** The constant pool that stores needed data. */ ConstantPool pool) implements MethodAccessor<T> {
+public record ConstantPoolMethodAccessor<T> (/** The method handle to invoke */
+MethodHandle mh, /** The constant pool that stores needed data. */
+ConstantPool pool) implements MethodAccessor<T> {
 
     /**
      * A method handle for creating new RuntimeRegionInvoker instance. We explicitly cast return type from
@@ -37,7 +39,7 @@ public record ConstantPoolInvoker<T>(/** The method handle to invoke */ MethodHa
     public static final MethodHandle MH_INVOKER = MethodHandleUtil
             .castReturnType(LookupUtil.lookupConstructor(MethodHandles.lookup(), MethodHandle.class, ConstantPool.class), MethodAccessor.class);
 
-    public ConstantPoolInvoker {
+    public ConstantPoolMethodAccessor {
         requireNonNull(mh);
         requireNonNull(pool);
     }

@@ -62,7 +62,7 @@ public final class ApplicationSetup {
         this.modifiers = modifiers;
         // Setup Runtime
         if (container.modifiers().hasRuntime()) {
-            runtimePoolIndex = constantPool.reserve(); // reserve a slot to an instance of PackedApplicationRuntime
+            runtimePoolIndex = constantPool.reserveObject(); // reserve a slot to an instance of PackedApplicationRuntime
         } else {
             runtimePoolIndex = -1;
         }

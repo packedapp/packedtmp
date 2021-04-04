@@ -18,41 +18,28 @@ package packed.internal.invoke.constantpool;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 
 /**
  * All strongly connected components relate to the same pod.
  */
-// Passive System -> 1 NodeStore
-// Active System -> 1 NodeStore per guest
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
-
 public final /* primitive*/ class ConstantPool {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    static final MethodHandle MH_CONSTANT_POOL_READ = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
+    private static final MethodHandle MH_CONSTANT_POOL_READ = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
-    private final Object[] table;
+    private final Object[] elements;
 
     ConstantPool(int size) {
-        table = new Object[size];
-    }
-
-    // Don't know
-    public PackedApplicationRuntime container() {
-        return (PackedApplicationRuntime) table[0];
-    }
-
-    public boolean isSet(int index) {
-        return table[index] != null;
+        elements = new Object[size];
     }
 
     public void print() {
         System.out.println("--");
-        for (int i = 0; i < table.length; i++) {
-            System.out.println(i + " = " + table[i]);
+        for (int i = 0; i < elements.length; i++) {
+            System.out.println(i + " = " + elements[i]);
         }
 
         System.out.println("--");
@@ -62,18 +49,17 @@ public final /* primitive*/ class ConstantPool {
 //        Object value = store[index];
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
-        return table[index];
+        return elements[index];
     }
 
-    public void store(int index, Object instance) {
-        if (table[index] != null) {
+    public void storeObject(int index, Object instance) {
+        if (elements[index] != null) {
             throw new IllegalStateException();
         }
-        table[index] = instance;
-        // new Exception().printStackTrace();
+        elements[index] = instance;
     }
 
-    public static MethodHandle readConstant(int index, Class<?> as) {
+    public static MethodHandle indexedReader(int index, Class<?> as) {
         MethodHandle mh = MethodHandleUtil.bind(MH_CONSTANT_POOL_READ, 1, index);
         return MethodHandleUtil.castReturnType(mh, as);
     }

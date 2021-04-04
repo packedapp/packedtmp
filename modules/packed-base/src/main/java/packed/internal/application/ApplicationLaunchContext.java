@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import app.packed.application.ApplicationRuntime;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
-import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.RunState;
@@ -85,8 +84,8 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     }
 
     ApplicationRuntime runtime() {
-        if (component.hasModifier(ComponentModifier.RUNTIME)) {
-            return component.pool.container();
+        if (runtime != null) {
+            return runtime;
         }
         throw new UnsupportedOperationException("This component does not have a runtime");
     }
@@ -143,8 +142,8 @@ public final class ApplicationLaunchContext implements PoolWriteable {
 
         // TODO initialize
 
-        if (container.modifiers().hasRuntime()) {
-            context.component.pool.container().onInitialized(container, context);
+        if (context.runtime != null) {
+            context.runtime.onInitialized(container, context);
         }
 
         return driver.newApplication(context);
@@ -153,7 +152,7 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     @Override
     public void writeConstantPool(ConstantPool pool) {
         if (runtime != null) {
-            pool.store(application.runtimePoolIndex, runtime);
+            pool.storeObject(application.runtimePoolIndex, runtime);
         }
     }
 }
