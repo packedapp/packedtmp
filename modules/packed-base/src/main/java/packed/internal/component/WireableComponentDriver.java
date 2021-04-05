@@ -12,6 +12,7 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import packed.internal.application.ApplicationSetup;
@@ -25,6 +26,11 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
             WireableComponentDriver.class);
 
+    /** A handle that can access Assembly#driver. */
+    private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
+            WireableComponentDriver.class);
+
+    
     public final int modifiers;
 
     /** Optional wirelets that will be applied to any component created by this driver. */
@@ -70,6 +76,18 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
     public static <C extends ComponentConfiguration> WireableComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
         requireNonNull(assembly, "assembly is null");
         return (WireableComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
+    }
+    
+    /**
+     * Extracts the component driver from the specified assembly.
+     * 
+     * @param assembly
+     *            the assembly to extract the component driver from
+     * @return the component driver of the specified assembly
+     */
+    public static WireableComponentDriver<?> getDriver2(Composer<?> composer) {
+        requireNonNull(composer, "composer is null");
+        return (WireableComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
     }
 
     /** A special component driver that create containers. */

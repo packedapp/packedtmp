@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
@@ -32,7 +31,6 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
@@ -143,32 +141,37 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return build;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
-            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets) {
-        WireableComponentDriver<CC> pcd = (WireableComponentDriver<CC>) requireNonNull(componentDriver, "componentDriver is null");
-        requireNonNull(composerFactory, "composerFactory is null");
-        requireNonNull(consumer, "consumer is null");
 
+    @Override
+    public <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
+        requireNonNull(composer, "composer is null");
+        
+        // Extract the component driver from the composer
+        WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver2(composer);
+        
         // Create a new realm
         RealmSetup realm = new RealmSetup(consumer);
-
+        
         // Create a new build and root application/container/component
-        BuildSetup build = new BuildSetup(this, realm, pcd, 0, wirelets);
+        BuildSetup build = new BuildSetup(this, realm, componentDriver, 0, wirelets);
+        
 
-        CC componentConfiguration = pcd.toConfiguration(build.container);
-
-        // Used the supplied composer factory to create a composer from a component configuration instance
-        CO composer = requireNonNull(composerFactory.apply(componentConfiguration), "composerFactory.apply() returned null");
+        var componentConfiguration = componentDriver.toConfiguration(build.container);
 
         // Invoked the consumer supplied by the end-user
-        consumer.accept(composer);
+        
+        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        try {
+            RealmSetup.MH_COMPOSER_DO_COMPOSE.invoke(composer, componentConfiguration, consumer);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
 
         realm.close(build.container);
 
         // Initialize the application. And start it if necessary (if it is a guest)
         return ApplicationLaunchContext.launch(this, build.application, null);
+
     }
 
     /** {@inheritDoc} */

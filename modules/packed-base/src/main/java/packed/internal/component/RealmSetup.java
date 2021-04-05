@@ -39,6 +39,10 @@ public final class RealmSetup {
     public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
             ComponentConfiguration.class);
 
+    /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
+    public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doCompose", void.class,
+            ComponentConfiguration.class, Consumer.class);
+    
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 

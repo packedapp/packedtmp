@@ -43,6 +43,10 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
 
     private boolean initialized;
 
+    public InjectorComposer() {
+        super(ContainerConfiguration.driver());
+    }
+
     /**
      * Creates a new composer
      * 

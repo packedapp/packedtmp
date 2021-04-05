@@ -24,7 +24,6 @@ import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Composer;
@@ -156,23 +155,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @see ServiceComposer
      * @see ServiceLocator#of(Consumer)
      */
-    // Hvad hvis vi laver composeren om til at tage en ComponentDriver... ligesom assembly.
-    // Og saa tager vi en composer
-
-    // Maaske sender vi ikke en Component med over... Saa vi kan vi have ASSEMBLY_CLASS som en attribute
-    // Og maaske kan vi det alligevel...
-
-    // Se fx InjectorComposer... vi kan ikke lide denne signatur...
-    <CC extends ComponentConfiguration, CO extends Composer<?>> A compose(ComponentDriver<CC> componentDriver,
-            Function<? super CC, ? extends CO> composerFactory, Consumer<? super CO> consumer, Wirelet... wirelets);
-
-    default <C extends Composer<?>> A compose2(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
-        // enable composer
-        // consumer.apply
-        // disable consuper
-        // return a
-        throw new UnsupportedOperationException();
-    }
+    <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets);
 
     /**
      * Launches a new application using the specified assembly and optional wirelets.

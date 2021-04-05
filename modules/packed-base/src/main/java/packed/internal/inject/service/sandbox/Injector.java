@@ -24,7 +24,6 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.Program;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerConfiguration;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.RunState;
 import packed.internal.application.ApplicationLaunchContext;
@@ -158,11 +157,10 @@ public interface Injector extends ServiceLocator {
     // or maybe Injector.configure() instead
     // interface ArtifactConfigurator() {}
     // configure()
-    
-    // Rename to of...Stateless Methodhoooks should have of
+
+
     static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return driver().compose(ContainerConfiguration.driver(), c -> new InjectorComposer(c), configurator, wirelets);
-//        return InjectorComposer.configure(configurator, wirelets);
+        return driver().compose(new InjectorComposer(), configurator, wirelets);
     }
 
     /**
@@ -188,7 +186,8 @@ final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);
 
-    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().launchMode(RunState.INITIALIZED).stateless().build(MethodHandles.lookup(), Injector.class, CONV);
+    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().launchMode(RunState.INITIALIZED).stateless().build(MethodHandles.lookup(),
+            Injector.class, CONV);
 
     static Injector convert(ApplicationLaunchContext container) {
         return (Injector) container.services();

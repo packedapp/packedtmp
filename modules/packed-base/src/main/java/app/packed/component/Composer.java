@@ -15,9 +15,12 @@
  */
 package app.packed.component;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
@@ -75,6 +78,51 @@ public abstract class Composer<C extends ComponentConfiguration> {
         // requireNonNull(configuration, "configuration is null");
     }
 
+    /**
+     * Creates a new assembly using the specified driver.
+     * 
+     * @param driver
+     *            the component driver used to create the configuration objects this assembly wraps
+     */
+    protected Composer(ComponentDriver<? extends C> driver) {
+        this.driver = requireNonNull((WireableComponentDriver<? extends C>) driver, "driver is null");
+        this.driver.checkBound(); // Checks that the driver does not have unbound bindings
+    }
+    
+    /**
+     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
+     * used more than once.
+     * 
+     * @param configuration
+     *            the configuration to use for the assembling process
+     */
+    @SuppressWarnings({ "unused", "unchecked" })
+    private void doCompose(C configuration, @SuppressWarnings("rawtypes") Consumer consumer) {
+        Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
+        if (existing == null) {
+            try {
+                onComposable();
+                
+                consumer.accept(this);
+                
+                onCompletable();
+                
+            } finally {
+                // Sets #configuration to a marker object that indicates the assembly has been used
+                VH_CONFIGURATION.setVolatile(this, USED);
+            }
+        } else if (existing == USED) {
+            // Assembly has already been used (successfully or unsuccessfully)
+            throw new IllegalStateException("This composer has already been used, composer = " + getClass());
+        } else {
+            // Can be this thread or another thread that is already using the assembly.
+            throw new IllegalStateException("This composer is currently being used elsewhere, composer = " + getClass());
+        }
+    }
+
+    protected void onComposable() {}
+    
+    protected void onCompletable() {}
     /**
      * Checks that the underlying component is still configurable.
      * 
