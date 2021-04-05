@@ -440,14 +440,7 @@ public abstract class ServiceComposer extends Composer<ComponentConfiguration> i
     }
 }
 
-abstract class UNext extends ServiceComposer {
-
-    /**
-     * @param cc
-     */
-    protected UNext(ComponentConfiguration cc) {
-        super(cc);
-    }
+abstract class UNext {
 
     // Den sidste der mangler er jo en maade at aendre attributer paa
 
@@ -476,13 +469,7 @@ abstract class UNext extends ServiceComposer {
 }
 
 // Various ideas on provide/rekey
-abstract class YIdeas extends ServiceComposer {
-    /**
-     * @param cc
-     */
-    protected YIdeas(ComponentConfiguration cc) {
-        super(cc);
-    }
+abstract class YIdeas {
 
     // Ideas for consta fying things...
     // Maybe we have some special decorators????
@@ -499,12 +486,12 @@ abstract class YIdeas extends ServiceComposer {
      * @param name
      */
     public void addNameAll(String name) {
-        rekeyAll(k -> k.key().withTag(name));
+        // rekeyAll(k -> k.key().withTag(name));
     }
 
     // Maybe mirror key names
     public void addQualifierAll(Annotation qualifier) {
-        rekeyAll(s -> s.key().with(qualifier));
+        // rekeyAll(s -> s.key().with(qualifier));
     }
 
     // provide(new Foo<>(e->e)); eller
@@ -545,14 +532,7 @@ abstract class YIdeas extends ServiceComposer {
 
 }
 
-abstract class ZBadIdeas extends ServiceComposer {
-
-    /**
-     * @param cc
-     */
-    protected ZBadIdeas(ComponentConfiguration cc) {
-        super(cc);
-    }
+abstract class ZBadIdeas {
 
     public abstract Object attachment();
 
