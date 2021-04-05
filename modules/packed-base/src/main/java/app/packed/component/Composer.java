@@ -17,9 +17,13 @@ package app.packed.component;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.VarHandle;
 
+import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.WireableComponentDriver;
+import packed.internal.util.LookupUtil;
 
 /**
  * Composers does not usually have any public constructors.
@@ -29,8 +33,34 @@ import packed.internal.component.ComponentSetup;
 // Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
 public abstract class Composer<C extends ComponentConfiguration> {
 
-    /** The underlying component configuration. */
-    private final C configuration;
+    /** A marker object to indicate that the assembly has already been used. */
+    private static Object USED = Composer.class;
+
+    /** A handle that can access #configuration. */
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", Object.class);
+
+    /**
+     * The configuration of this assembly.
+     * <p>
+     * The value of this field goes through 3 states:
+     * <p>
+     * <ul>
+     * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
+     * <li>Then, as a part of the build process, it is initialized with the actual configuration object of the component.
+     * <li>Finally, {@link #USED} is set to indicate that the assembly has been used
+     * </ul>
+     * <p>
+     * This field is updated via a VarHandle.
+     */
+    @Nullable
+    private Object configuration;
+
+    /**
+     * The component driver of this assembly.
+     * <p>
+     * This field is read from {@link WireableComponentDriver#getDriver(Assembly)} via a varhandle.
+     */
+    private final WireableComponentDriver<? extends C> driver;
 
     /**
      * Create a new composer.
@@ -40,12 +70,9 @@ public abstract class Composer<C extends ComponentConfiguration> {
      */
     protected Composer(C configuration) {
         this.configuration = configuration;
+        driver = null;
         // Disabled because of test
         // requireNonNull(configuration, "configuration is null");
-    }
-
-    protected final C configuration() {
-        return configuration;
     }
 
     /**
@@ -54,7 +81,12 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * @see ComponentConfigurationContext#checkOpen()
      */
     protected final void checkConfigurable() {
-        configuration.context.checkOpen();
+        configuration().context.checkOpen();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final C configuration() {
+        return (C) configuration;
     }
 
     /**
@@ -75,7 +107,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        ((ComponentSetup) configuration.context).realm.setLookup(lookup);
+        ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
 }
 
