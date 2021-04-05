@@ -57,9 +57,6 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 // ServiceExtensionSetup
 public final class ServiceManagerSetup {
 
-    /** The container this service manager is a part of. */
-    private final ContainerSetup container;
-
     /** Handles everything to do with dependencies, for example, explicit requirements. */
     private ServiceManagerRequirementsSetup dependencies;
 
@@ -93,13 +90,12 @@ public final class ServiceManagerSetup {
      * @param container
      *            the container this service manager is a part of
      */
-    public ServiceManagerSetup(ContainerSetup container, @Nullable ServiceManagerSetup parent) {
-        this.container = requireNonNull(container);
+    public ServiceManagerSetup(@Nullable ServiceManagerSetup parent) {
         this.parent = parent;
         this.tree = parent == null ? new ApplicationInjectorSetup() : parent.tree;
     }
 
-    public void close(ConstantPoolSetup region) {
+    public void close(ContainerSetup container, ConstantPoolSetup region) {
         if (parent == null) {
             tree.finish(region, container);
         }
@@ -179,7 +175,7 @@ public final class ServiceManagerSetup {
         return builder.build();
     }
 
-    public ServiceLocator newServiceLocator(ConstantPool region) {
+    public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, ConstantPool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (ServiceSetup e : exports) {
@@ -190,18 +186,17 @@ public final class ServiceManagerSetup {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        PackedApplicationDriver<?> psd = (PackedApplicationDriver<?>) container.application.driver;
-        if (Injector.class.isAssignableFrom(psd.artifactRawType())) {
+        if (Injector.class.isAssignableFrom(driver.artifactRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
             return new ExportedServiceLocator(runtimeEntries);
         }
     }
 
-    public void provideAll(PackedInjector injector /* , ConfigSite configSite */) {
+    public void provideAll(AbstractServiceLocator locator) {
         // We add this immediately to resolved services, as their keys are immutable.
 
-        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, injector);
+        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, locator);
         ArrayList<ProvideAllFromServiceLocator> p = provideAll;
         if (provideAll == null) {
             p = provideAll = new ArrayList<>(1);
@@ -215,7 +210,7 @@ public final class ServiceManagerSetup {
         return e;
     }
 
-    public void prepareDependants() {
+    public void prepareDependants(ContainerSetup container) {
         // First we take all locally defined services
         for (ServiceSetup entry : localServices) {
             resolvedServices.computeIfAbsent(entry.key(), k -> new ServiceDelegate()).resolve(this, entry);
@@ -267,13 +262,13 @@ public final class ServiceManagerSetup {
             for (ContainerSetup c : container.containerChildren) {
                 ServiceManagerSetup m = c.getServiceManager();
                 if (m != null) {
-                    m.processWirelets();
+                    m.processWirelets(container);
                 }
             }
         }
     }
 
-    private void processWirelets() {
+    private void processWirelets(ContainerSetup container) {
         LinkedHashMap<Key<?>, ServiceSetup> map = new LinkedHashMap<>();
 
         if (parent != null) {

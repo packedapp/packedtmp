@@ -25,36 +25,36 @@ import app.packed.inject.ServiceLocator;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.RuntimeAdaptorServiceSetup;
 import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
+import packed.internal.inject.service.runtime.RuntimeService;
 
-/** Represents an injector that used via {@link ServiceExtension#provideAll(ServiceLocator)}. */
+/** Represents an invocation of {@link ServiceExtension#provideAll(ServiceLocator)}. */
 public final class ProvideAllFromServiceLocator {
-
-    /** The injector builder from where the service will be provided. */
-    public final ServiceManagerSetup node;
 
     /** All entries that was imported, any wirelets that was specified when importing the injector may modify this map. */
     // Is not ProvideABE because we might transform some of the entries...
     public final LinkedHashMap<Key<?>, ServiceSetup> entries = new LinkedHashMap<>();
 
-    /** The injector that provides the services. */
-    final PackedInjector injector;
+    /** The locator containing every service. */
+    final AbstractServiceLocator locator; // currently not used
+
+    /** The injector builder from where the service will be provided. */
+    public final ServiceManagerSetup sm;
 
     /**
      * Creates a new instance.
      * 
-     * @param node
+     * @param sm
      *            A builder for the injector that the injector is being imported into
-     * @param injector
-     *            the injector that is being imported
+     * @param locator
+     *            the locator we are importing from
      */
-    public ProvideAllFromServiceLocator(ServiceManagerSetup node, PackedInjector injector) {
-        this.node = requireNonNull(node);
-        this.injector = requireNonNull(injector);
+    public ProvideAllFromServiceLocator(ServiceManagerSetup sm, AbstractServiceLocator locator) {
+        this.sm = requireNonNull(sm);
+        this.locator = requireNonNull(locator);
 
-        injector.forEachEntry(e -> {
-            // ConfigSite cs = configSite.withParent(e.configSite());
-            entries.put(e.key(), new RuntimeAdaptorServiceSetup(e));
-        });
+        for (RuntimeService s : locator.runtimeServices()) {
+            entries.put(s.key(), new RuntimeAdaptorServiceSetup(s));
+        }
     }
 }

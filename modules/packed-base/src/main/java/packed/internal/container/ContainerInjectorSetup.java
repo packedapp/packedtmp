@@ -7,5 +7,5 @@ import packed.internal.inject.dependency.InjectionNode;
 public class ContainerInjectorSetup {
 
     /** All dependants that needs to be resolved. */
-    public final ArrayList<InjectionNode> dependants = new ArrayList<>();
+    public final ArrayList<InjectionNode> nodes = new ArrayList<>();
 }

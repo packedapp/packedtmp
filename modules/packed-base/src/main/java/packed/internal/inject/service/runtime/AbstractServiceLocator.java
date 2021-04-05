@@ -70,6 +70,11 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     }
     
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public Collection<RuntimeService> runtimeServices() {
+        return (Collection) asMap().values();
+    }
+    
     final Object provideInstanceForLocator(RuntimeService s) {
         ProvisionContext pc = PackedProvisionContext.of(s.key());
         return s.provideInstance(pc);

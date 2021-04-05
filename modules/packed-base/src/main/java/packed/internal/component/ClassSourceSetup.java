@@ -52,7 +52,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     private final Factory<?> factory;
 
     /** A model of every hook on the source. */
-    public final HookedClassModel hooks;
+    public final HookedClassModel hooks; // contains provided stuff
 
     /** An injection node, if instances of the source needs to be created at runtime (not a constant). */
     @Nullable
@@ -70,8 +70,8 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
      * 
      * @param component
      *            the component
-     * @param driver
-     *            the component driver
+     * @param source
+     *            the class, factory or instance source
      */
     ClassSourceSetup(SourcedComponentSetup component, Object source) {
         this.component = requireNonNull(component);
@@ -106,7 +106,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
             this.instantiator = new InjectionNode(this, dependencies, mh);
-            component.container.addDependant(instantiator);
+            component.container.addNode(instantiator);
         }
 
         // Register hooks, maybe move to component setup
@@ -159,11 +159,11 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         }
     }
 
-    private void registerMember(UseSiteMemberHookModel m) {
-        InjectionNode i = new InjectionNode(component, this, m, m.createProviders());
-        component.container.addDependant(i);
-        if (m.processor != null) {
-            m.processor.accept(component);
+    private void registerMember(UseSiteMemberHookModel memberHook) {
+        InjectionNode i = new InjectionNode(component, this, memberHook, memberHook.createProviders());
+        component.container.addNode(i);
+        if (memberHook.processor != null) {
+            memberHook.processor.accept(component);
         }
     }
 

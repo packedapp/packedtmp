@@ -16,7 +16,6 @@
 package packed.internal.inject.service.runtime;
 
 import java.util.Map;
-import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.inject.Service;
@@ -41,10 +40,6 @@ public final class PackedInjector extends AbstractServiceLocator implements Inje
     @Override
     protected String useFailedMessage(Key<?> key) {
         return "No service with the specified key could be found, key = " + key;
-    }
-
-    public void forEachEntry(Consumer<? super RuntimeService> action) {
-        entries.values().forEach(action);
     }
 
     /** {@inheritDoc} */

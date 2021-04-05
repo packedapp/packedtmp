@@ -34,7 +34,7 @@ import app.packed.state.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.runtime.PackedInjector;
+import packed.internal.inject.service.runtime.AbstractServiceLocator;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
@@ -312,12 +312,12 @@ public class ServiceExtension extends Extension {
      */
     public void provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
-        if (!(locator instanceof PackedInjector pi)) {
+        if (!(locator instanceof AbstractServiceLocator asl)) {
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
-                    + " are currently not supported, injector type = " + locator.getClass().getName());
+                    + " are currently not supported, locator type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        services.provideAll(pi /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_PROVIDE_ALL) */);
+        services.provideAll(asl);
     }
 
     /**

@@ -31,8 +31,8 @@ import app.packed.hooks.ClassHook;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.HookedMethodProvide;
-import packed.internal.invoke.OpenClass;
 import packed.internal.invoke.ClassScanner;
+import packed.internal.invoke.OpenClass;
 
 /** A model of a class that uses class or member hooks. */
 public final class HookedClassModel {
@@ -47,6 +47,7 @@ public final class HookedClassModel {
     private String simpleName;
 
     // Noget med injection, som vi gerne vil metamodellere
+    // Tror det er hooks som provider en keyed service paa klasse niveau
     public final Map<Key<?>, HookedMethodProvide> sourceServices;
 
     /** The type we are modelling. */

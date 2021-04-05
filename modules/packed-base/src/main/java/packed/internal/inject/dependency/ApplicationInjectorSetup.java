@@ -70,7 +70,7 @@ public final class ApplicationInjectorSetup {
 
     private DependencyCycle dependencyCyclesFind(ArrayDeque<InjectionNode> stack, ArrayDeque<InjectionNode> dependencies, ConstantPoolSetup region,
             ContainerSetup container) {
-        for (InjectionNode node : container.cis.dependants) {
+        for (InjectionNode node : container.cis.nodes) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
                 DependencyCycle dc = detectCycle(region, node, stack, dependencies);
                 if (dc != null) {

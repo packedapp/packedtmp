@@ -50,11 +50,6 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
         }
     };
 
-    @Nullable
-    public static MethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
-        return EXTENSION_METHOD_ANNOTATION.get(c);
-    }
-
     /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "bootstrap", void.class);
@@ -82,14 +77,6 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
 
-    public void clearBuilder(Object instance) {
-        VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
-    }
-
-    public static MethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
-        return new Builder(c).build();
-    }
-
     public MethodHook.Bootstrap bootstrap(UseSiteMethodHookModel.Builder builder) {
         MethodHook.Bootstrap instance = (Bootstrap) newInstance();
 
@@ -102,6 +89,19 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
         return instance;
     }
 
+    public void clearBuilder(Object instance) {
+        VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
+    }
+
+    @Nullable
+    public static MethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
+        return EXTENSION_METHOD_ANNOTATION.get(c);
+    }
+
+    public static MethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
+        return new Builder(c).build();
+    }
+
     /** A builder for method sidecar. This class is public because it used from {@link MethodHook}. */
     public final static class Builder extends AbstractHookModel.Builder<RealMethodSidecarBootstrap> {
 
@@ -111,12 +111,12 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
 
         private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
-        Builder(MethodHook ams) {
-            super(ams.bootstrap()[0]);
-        }
-
         Builder(Class<?> c) {
             super(c);
+        }
+
+        Builder(MethodHook ams) {
+            super(ams.bootstrap()[0]);
         }
 
         /** {@inheritDoc} */
@@ -126,13 +126,6 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
             scan(false, MethodHook.Bootstrap.class);
             
             return new MethodHookModel(this);
-        }
-
-        public void provideInvoker() {
-            if (invoker != null) {
-                throw new IllegalStateException("Cannot provide more than 1 " + MethodAccessor.class.getSimpleName());
-            }
-            invoker = Object.class;
         }
 
         @Override
@@ -154,6 +147,13 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
                 MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 onInitialize = mh;
             }
+        }
+
+        public void provideInvoker() {
+            if (invoker != null) {
+                throw new IllegalStateException("Cannot provide more than 1 " + MethodAccessor.class.getSimpleName());
+            }
+            invoker = Object.class;
         }
     }
 }

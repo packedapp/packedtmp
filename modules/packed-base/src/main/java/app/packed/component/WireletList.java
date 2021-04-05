@@ -90,8 +90,9 @@ public /* sealed */ interface WireletList<W extends Wirelet> {
      *            the {@code WireletHandle}'s element type
      * @return an empty wirelet handle
      */
+    @SuppressWarnings("unchecked")
     public static <W extends Wirelet> WireletList<W> of() {
-        return PackedWireletHandle.of();
+        return (WireletList<W>) PackedWireletHandle.EMPTY;
     }
 
     // Hvad skal vi bruge den her til??? Testing primaert ville jeg mene...

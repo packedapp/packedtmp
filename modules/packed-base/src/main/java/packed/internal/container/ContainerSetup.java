@@ -131,8 +131,8 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param dependant
      *            the injectable to add
      */
-    public void addDependant(InjectionNode dependant) {
-        cis.dependants.add(requireNonNull(dependant));
+    public void addNode(InjectionNode dependant) {
+        cis.nodes.add(requireNonNull(dependant));
 
         // Bliver noedt til at lave noget sidecar preresolve her.
         // I virkeligheden vil vi bare gerne checke at om man
@@ -154,6 +154,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     public void closeRealm() {
         // We recursively close all children in the same realm first
+        // We do not close individual components
         if (containerChildren != null) {
             for (ContainerSetup c : containerChildren) {
                 if (c.realm == realm) {
@@ -168,22 +169,20 @@ public final class ContainerSetup extends WireableComponentSetup {
         // Complete all extensions in order
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
-        // TreeSet<ExtensionSetup> extensionsOrdered = new TreeSet<>(extensions.values(), );
-
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
         Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
-        
+
         // Close every extension
-        for (ExtensionSetup pec : extensionsOrdered) {
-            pec.onComplete();
+        for (ExtensionSetup extension : extensionsOrdered) {
+            extension.onComplete();
         }
 
         // Resolve local services
         if (sm != null) {
-            sm.prepareDependants();
+            sm.prepareDependants(this);
         }
 
-        for (InjectionNode i : cis.dependants) {
+        for (InjectionNode i : cis.nodes) {
             i.resolve(sm);
         }
 
@@ -192,7 +191,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
         if (sm != null) {
             sm.dependencies().checkForMissingDependencies(this);
-            sm.close(pool);
+            sm.close(this, pool);
         }
         // TODO Check any contracts we might as well catch it early
     }
@@ -258,7 +257,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @return the new service manager
      */
     public ServiceManagerSetup newServiceManagerFromServiceExtension() {
-        return sm = new ServiceManagerSetup(this, sm);
+        return sm = new ServiceManagerSetup(sm);
     }
 
     private void runPredContainerChildren() {
