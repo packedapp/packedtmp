@@ -73,11 +73,7 @@ public /* sealed */ interface Component extends AttributedElement {
      */
     String name();
 
-    /**
-     * Returns the parent component of this component. Or empty if this component has no parent.
-     * 
-     * @return the parent component of this component. Or empty if this component has no parent
-     */
+    /** {@return the parent component of this component. Or empty if this component has no parent} */
     Optional<Component> parent();
 
     /**

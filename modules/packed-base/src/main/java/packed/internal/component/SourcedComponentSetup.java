@@ -37,7 +37,7 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
     @SuppressWarnings("unchecked")
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) container.cis.getServiceManagerOrCreate().exports().export(source.service);
+        return (ExportedServiceConfiguration<T>) container.injection.getServiceManagerOrCreate().exports().export(source.service);
     }
 
     public void sourceProvide() {

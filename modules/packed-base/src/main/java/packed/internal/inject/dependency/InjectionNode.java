@@ -43,23 +43,6 @@ import packed.internal.util.ThrowableUtil;
 /**
  *
  */
-
-// Types....
-
-// Source Factory/Class
-// @Provides
-// Other Method
-
-// Limitations
-// Everything must have a source
-// Injectable...
-// Har vi en purpose????? Taenker ja
-// Fordi vi skal bruge den til at resolve...
-// Vi har ikke nogen region index, fordi det boerg ligge hos dependencien
-
-// Vi skal have noget PackletModel. Tilhoere @Get. De her 3 AOP ting skal vikles rundt om MHs
-
-// Something with dependencis
 public final class InjectionNode implements PoolWriteable {
 
     @Nullable
@@ -106,7 +89,7 @@ public final class InjectionNode implements PoolWriteable {
             if (!Modifier.isStatic(smm.getModifiers()) && source.poolIndex == -1) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManagerSetup sbm = compConf.container.cis.getServiceManagerOrCreate();
+            ServiceManagerSetup sbm = compConf.container.injection.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
@@ -161,18 +144,6 @@ public final class InjectionNode implements PoolWriteable {
             return -1;
         }
         return source.poolIndex;
-    }
-
-    public boolean hasUnresolved() {
-        if (dependencies.size() == 0) {
-            return false;
-        }
-        for (DependencyProducer p : providers) {
-            if (p == null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     // All dependencies have been successfully resolved

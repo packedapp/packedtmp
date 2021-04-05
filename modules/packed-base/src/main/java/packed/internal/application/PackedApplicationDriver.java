@@ -27,6 +27,7 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
+import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
@@ -49,10 +50,11 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
+    /** The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(RunState)}. */
     private final RunState launchMode;
 
     /** The method handle used for creating new application instances. */
-    private final MethodHandle mhConstructor; // (PackedInitializationContext)Object
+    private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
     /** The modifiers of this application */
     public final int modifiers;
@@ -68,10 +70,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the used for construction
      */
     private PackedApplicationDriver(Builder builder) {
-        this.mhConstructor = builder.mhConstructor;
+        this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.modifiers = builder.modifiers;
         this.wirelet = builder.prefix;
-        this.launchMode = builder.launchMode;
+        this.launchMode = requireNonNull(builder.launchMode);
     }
 
     /**
@@ -234,8 +236,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return new PackedApplicationDriver<>(this, w);
     }
 
-    /** Implementation of {@link ApplicationDriver.Builder} */
-    public static class Builder implements ApplicationDriver.Builder {
+    /** Single implementation of {@link ApplicationDriver.Builder}. */
+    public static final class Builder implements ApplicationDriver.Builder {
 
         /** A MethodHandle for invoking {@link ApplicationLaunchContext#component()}. */
         private static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "component",
@@ -249,6 +251,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "services",
                 ServiceLocator.class);
 
+        /** The default launch mode of the application. */
         private RunState launchMode;
 
         MethodHandle mhConstructor;
@@ -286,6 +289,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
+        /** {@inheritDoc} */
         @Override
         public Builder launchMode(RunState launchMode) {
             requireNonNull(launchMode, "launchMode is null");
@@ -319,7 +323,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    private final record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationImage<A> {
+    private final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
@@ -339,7 +343,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** {@inheritDoc} */
         @Override
         public RunState launchMode() {
-            return driver.launchMode;
+            return application.launchMode;
         }
     }
 }

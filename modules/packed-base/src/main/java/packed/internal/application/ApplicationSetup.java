@@ -30,12 +30,14 @@ public final class ApplicationSetup {
     /** The root container of the application. */
     public final ContainerSetup container;
 
-    /** The driver of the applications. */
+    /** The driver of the application. */
     public final PackedApplicationDriver<?> driver;
 
+    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+
     /**
-     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)},
-     * both at build-time and if launched from an image.
+     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
+     * build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
     RunState launchMode;
 
@@ -44,8 +46,6 @@ public final class ApplicationSetup {
     private MainThreadOfControl mainThread;
 
     private final int modifiers;
-
-    public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     final int runtimePoolIndex;
 
@@ -58,6 +58,7 @@ public final class ApplicationSetup {
     ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver containerDriver, int modifiers,
             Wirelet[] wirelets) {
         this.driver = requireNonNull(driver, "driver is null");
+        this.launchMode = requireNonNull(driver.launchMode());
         this.container = containerDriver.newComponent(build, this, realm, null, wirelets);
         this.modifiers = modifiers;
         // Setup Runtime
@@ -77,17 +78,17 @@ public final class ApplicationSetup {
         return mainThread != null;
     }
 
+    /** {@return whether or not the application is part of an image}. */
+    public boolean isImage() {
+        return PackedComponentModifierSet.isImage(modifiers);
+    }
+
     public MainThreadOfControl mainThread() {
         MainThreadOfControl m = mainThread;
         if (m == null) {
             m = mainThread = new MainThreadOfControl();
         }
         return m;
-    }
-
-    /** {@return whether or not the application is part of an image}. */
-    public boolean isImage() {
-        return PackedComponentModifierSet.isImage(modifiers);
     }
 
     /**
@@ -119,8 +120,8 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext ic) {
-            ic.launchMode = launchMode;
+        public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext launch) {
+            launch.launchMode = launchMode;
         }
     }
 
@@ -160,7 +161,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public boolean isStronglyWired() {
-            throw new UnsupportedOperationException();
+            return false; // we do not support
         }
     }
 }

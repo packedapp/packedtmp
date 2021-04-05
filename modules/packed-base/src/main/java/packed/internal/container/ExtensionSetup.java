@@ -178,7 +178,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public boolean isUsed(Class<? extends Extension> extensionClass) {
-        return container.isInUse(extensionClass);
+        return container.isUsed(extensionClass);
     }
 
     /**

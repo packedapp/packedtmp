@@ -8,7 +8,6 @@ import app.packed.base.Nullable;
 import app.packed.inject.ServiceExtension;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
 public class ContainerInjectorSetup {
 
@@ -20,11 +19,10 @@ public class ContainerInjectorSetup {
     /** A service manager that handles everything to do with services, is lazily initialized. */
     @Nullable
     private ServiceManagerSetup sm;
-    
+
     public ContainerInjectorSetup(ContainerSetup container) {
         this.container = requireNonNull(container);
     }
-    
 
     /**
      * Adds the specified injectable to list of injectables that needs to be resolved.
@@ -42,8 +40,8 @@ public class ContainerInjectorSetup {
             container.useExtension(ServiceExtension.class);
         }
     }
-    
-    public void close(ConstantPoolSetup pool) {
+
+    public void resolve() {
         // Resolve local services
         if (sm != null) {
             sm.prepareDependants(container);
@@ -58,7 +56,7 @@ public class ContainerInjectorSetup {
 
         if (sm != null) {
             sm.dependencies().checkForMissingDependencies(container);
-            sm.close(container, pool);
+            sm.close(container, container.pool);
         }
         // TODO Check any contracts we might as well catch it early
     }

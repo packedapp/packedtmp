@@ -156,7 +156,7 @@ public abstract class ComponentSetup {
         return new ComponentAdaptor(this);
     }
 
-    AttributeMap attributes() {
+   final AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
         // Maaske er det simpelthen et view...
         // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)

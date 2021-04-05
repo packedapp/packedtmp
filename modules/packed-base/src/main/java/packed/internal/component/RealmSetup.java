@@ -114,6 +114,7 @@ public final class RealmSetup {
         for (ContainerSetup c : rootContainers) {
             c.closeRealm();
         }
+        assert root.name != null;
     }
 
     public ComponentSetup current() {

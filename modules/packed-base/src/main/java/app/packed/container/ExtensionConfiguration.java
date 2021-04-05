@@ -274,7 +274,7 @@ public /* sealed */ interface ExtensionConfiguration {
         }
 
         ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
-        return container.getExtensionContext(extensionClass);
+        return container.getExtensionSetup(extensionClass);
     }
 
     /**

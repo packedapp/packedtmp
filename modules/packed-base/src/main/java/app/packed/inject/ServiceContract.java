@@ -254,8 +254,8 @@ public final class ServiceContract extends Contract {
         if (!c.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + c);
         }
-        ContainerSetup compConf = (ContainerSetup) ComponentSetup.unadapt(null, c);
-        ServiceManagerSetup sm = compConf.cis.getServiceManager();
+        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(null, c);
+        ServiceManagerSetup sm = container.injection.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }
 

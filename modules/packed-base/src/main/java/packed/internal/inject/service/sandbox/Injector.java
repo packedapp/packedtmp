@@ -26,6 +26,7 @@ import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.ServiceLocator;
+import app.packed.state.RunState;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.util.LookupUtil;
 
@@ -187,7 +188,7 @@ final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);
 
-    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().stateless().build(MethodHandles.lookup(), Injector.class, CONV);
+    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().launchMode(RunState.INITIALIZED).stateless().build(MethodHandles.lookup(), Injector.class, CONV);
 
     static Injector convert(ApplicationLaunchContext container) {
         return (Injector) container.services();

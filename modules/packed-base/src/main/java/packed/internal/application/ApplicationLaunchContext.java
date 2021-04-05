@@ -18,6 +18,7 @@ package packed.internal.application;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.application.ApplicationRuntime;
+import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
@@ -27,46 +28,42 @@ import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.PackedComponent;
 import packed.internal.component.WireletWrapper;
-import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.invoke.constantpool.PoolWriteable;
 
 /**
- * A temporary context object that is created when launching an application.
- * <p>
- * Describes which phases it is available from
- * <p>
- * <p>
- * <strong>Note that this implementation is not synchronized.</strong>
+ * A temporary context object that is created whenever we launch an application.
  */
-// Ideen er vi skal bruge den til at registrere fejl...
-
-// MethodHandle stableAccess(Object[] array) <-- returns 
 public final class ApplicationLaunchContext implements PoolWriteable {
 
+    /** The application we are launching */
     public final ApplicationSetup application;
 
     /** The runtime component node we are building. */
     public PackedComponent component;
 
-    final ContainerSetup container;
+    /**
+     * The launch mode of the application. May be overridden via {@link ApplicationWirelets#launchMode(RunState)} if image.
+     */
+    RunState launchMode;
 
-    public RunState launchMode;
-
+    /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
 
+    /** If the application is stateful, the applications runtime. */
+    @Nullable
+    final PackedApplicationRuntime runtime;
+
+    /** Wirelets specified if instantiating an image. */
     @Nullable
     private final WireletWrapper wirelets;
 
-    final PackedApplicationRuntime runtime;
-
     private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
         this.application = requireNonNull(application);
-        this.container = application.container;
         this.wirelets = wirelets;
-        this.name = container.getName();
-        this.launchMode = application.launchMode;
+        this.name = requireNonNull(application.container.getName());
+        this.launchMode = requireNonNull(application.launchMode);
         this.runtime = application.runtimePoolIndex == -1 ? null : new PackedApplicationRuntime(this);
     }
 
@@ -97,56 +94,8 @@ public final class ApplicationLaunchContext implements PoolWriteable {
      * @return a service locator for the system
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = container.cis.getServiceManager();
+        ServiceManagerSetup sm = application.container.injection.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool());
-    }
-
-    /**
-     * Returns a list of wirelets that used to instantiate. This may include wirelets that are not present at build time if
-     * using an image.
-     * 
-     * @return a list of wirelets that used to instantiate
-     */
-    public WireletWrapper wirelets() {
-        return wirelets;
-    }
-
-    /**
-     * @param <A>
-     *            the type of application shell
-     * @param driver
-     *            the driver of the application
-     * @param application
-     * @param wirelets
-     * @return
-     */
-    // Or is is a build we are launching???
-    static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
-        assert driver == application.driver;
-        ContainerSetup container = application.container;
-
-        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
-
-        // Apply all internal wirelets
-        if (wirelets != null) {
-            for (Wirelet w : wirelets.wirelets) {
-                if (w instanceof InternalWirelet iw) {
-                    iw.onImageInstantiation(container, context);
-                }
-            }
-        }
-
-        // Instantiates the whole component tree (well @Initialize does not yet work)
-        // pic.component is set from PackedComponent
-        new PackedComponent(null, container, context);
-
-        // TODO initialize
-
-        if (context.runtime != null) {
-            context.runtime.onInitialized(container, context);
-        }
-
-        return driver.newApplication(context);
     }
 
     @Override
@@ -154,5 +103,46 @@ public final class ApplicationLaunchContext implements PoolWriteable {
         if (runtime != null) {
             pool.storeObject(application.runtimePoolIndex, runtime);
         }
+    }
+
+    /**
+     * Launches the application. Either directly or from an image
+     * 
+     * @param <A>
+     *            the type of application shell
+     * @param driver
+     *            the driver of the application.
+     * @param application
+     *            the application we are launching
+     * @param wirelets
+     *            optional wirelets is always null if not launched from an image
+     * @return the application instance
+     */
+    static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
+        assert driver == application.driver; // it is just here because of <A>
+
+        // Create a launch context
+        ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
+
+        // Apply all internal wirelets
+        if (wirelets != null) {
+            for (Wirelet w : wirelets.wirelets) {
+                if (w instanceof InternalWirelet iw) {
+                    iw.onImageInstantiation(application.container, context);
+                }
+            }
+        }
+
+        // Instantiates the whole component tree (well @Initialize does not yet work)
+        // pic.component is set from PackedComponent
+        new PackedComponent(null, application.container, context);
+
+        // TODO initialize
+
+        if (context.runtime != null) {
+            context.runtime.onInitialized(application.container, context);
+        }
+
+        return driver.newApplication(context);
     }
 }

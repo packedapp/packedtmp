@@ -59,11 +59,12 @@ public final class ContainerSetup extends WireableComponentSetup {
     /** All extensions in use, in no particular order. */
     final IdentityHashMap<Class<? extends Extension>, ExtensionSetup> extensions = new IdentityHashMap<>();
 
-    boolean hasRunPreContainerChildren;
+    private boolean hasRunPreContainerChildren;
 
     private ArrayList<ExtensionSetup> tmpExtensions;
 
-    public final ContainerInjectorSetup cis = new ContainerInjectorSetup(this);
+    /** Injection configuration for this container. */
+    public final ContainerInjectorSetup injection = new ContainerInjectorSetup(this);
 
     /**
      * Create a new container (component).
@@ -114,9 +115,12 @@ public final class ContainerSetup extends WireableComponentSetup {
                 if (nnn.length() == 0) {
                     n = "Assembly";
                 }
+            } else {
+                n = "Unknown";
             }
             initializeNameWithPrefix(n);
         }
+        assert name != null;
     }
 
     @Override
@@ -153,8 +157,8 @@ public final class ContainerSetup extends WireableComponentSetup {
         for (ExtensionSetup extension : extensionsOrdered) {
             extension.onComplete();
         }
-        cis.close(pool);
 
+        injection.resolve();
     }
 
     public Container containerAdaptor() {
@@ -180,7 +184,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @see #useExtension(Class)
      */
     @Nullable
-    public ExtensionSetup getExtensionContext(Class<? extends Extension> extensionClass) {
+    public ExtensionSetup getExtensionSetup(Class<? extends Extension> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.get(extensionClass);
     }
@@ -192,7 +196,7 @@ public final class ContainerSetup extends WireableComponentSetup {
      *            the extension to test
      * @return true if the specified extension is in use, otherwise false
      */
-    public boolean isInUse(Class<? extends Extension> extensionClass) {
+    public boolean isUsed(Class<? extends Extension> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
     }

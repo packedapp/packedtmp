@@ -106,7 +106,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
             this.instantiator = new InjectionNode(this, dependencies, mh);
-            component.container.cis.addNode(instantiator);
+            component.container.injection.addNode(instantiator);
         }
 
         // Register hooks, maybe move to component setup
@@ -144,7 +144,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             } else {
                 key = factory.key();
             }
-            s = service = component.container.cis.getServiceManagerOrCreate().provideSource(component, key);
+            s = service = component.container.injection.getServiceManagerOrCreate().provideSource(component, key);
         }
         return s;
     }
@@ -161,7 +161,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
 
     private void registerMember(UseSiteMemberHookModel memberHook) {
         InjectionNode i = new InjectionNode(component, this, memberHook, memberHook.createProviders());
-        component.container.cis.addNode(i);
+        component.container.injection.addNode(i);
         if (memberHook.processor != null) {
             memberHook.processor.accept(component);
         }

@@ -23,6 +23,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.base.Completion;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.state.RunState;
 import packed.internal.application.ApplicationLaunchContext;
 
 /**
@@ -33,7 +34,7 @@ import packed.internal.application.ApplicationLaunchContext;
 public abstract class Contract {
 
     /** A daemon driver. */
-    public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
+    public static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder().launchMode(RunState.INITIALIZED)
             .old(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** {@inheritDoc} */

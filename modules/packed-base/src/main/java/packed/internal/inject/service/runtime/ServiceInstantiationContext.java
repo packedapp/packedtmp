@@ -35,7 +35,7 @@ public final class ServiceInstantiationContext {
         pool = null;
     }
 
-    public ServiceInstantiationContext(ConstantPool region) {
-        this.pool = requireNonNull(region);
+    public ServiceInstantiationContext(ConstantPool pool) {
+        this.pool = requireNonNull(pool);
     }
 }

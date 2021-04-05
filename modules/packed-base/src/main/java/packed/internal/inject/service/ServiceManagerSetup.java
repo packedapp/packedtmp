@@ -95,9 +95,9 @@ public final class ServiceManagerSetup {
         this.tree = parent == null ? new ApplicationInjectorSetup() : parent.tree;
     }
 
-    public void close(ContainerSetup container, ConstantPoolSetup region) {
+    public void close(ContainerSetup container, ConstantPoolSetup pool) {
         if (parent == null) {
-            tree.finish(region, container);
+            tree.finish(pool, container);
         }
     }
 
@@ -178,8 +178,8 @@ public final class ServiceManagerSetup {
     public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, ConstantPool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
-        for (ServiceSetup e : exports) {
-            runtimeEntries.put(e.key(), e.toRuntimeEntry(con));
+        for (ServiceSetup export : exports) {
+            runtimeEntries.put(export.key(), export.toRuntimeEntry(con));
         }
 
         // make the entries immutable
@@ -229,7 +229,7 @@ public final class ServiceManagerSetup {
         // Process exports from any children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup child = c.cis.getServiceManager();
+                ServiceManagerSetup child = c.injection.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
@@ -260,7 +260,7 @@ public final class ServiceManagerSetup {
         // Process child requirements to children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup m = c.cis.getServiceManager();
+                ServiceManagerSetup m = c.injection.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);
                 }
@@ -279,8 +279,6 @@ public final class ServiceManagerSetup {
                 }
             }
         }
-
-        System.out.println("HMMM " + map);
 
         WireletWrapper wirelets = container.wirelets;
         if (wirelets != null) {
