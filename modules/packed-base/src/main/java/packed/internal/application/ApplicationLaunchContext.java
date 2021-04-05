@@ -68,6 +68,7 @@ public final class ApplicationLaunchContext implements PoolWriteable {
         this.runtime = application.runtimePoolIndex == -1 ? null : new PackedApplicationRuntime(this);
     }
 
+    /** {@return the name of the application} */
     public String name() {
         return name;
     }
@@ -84,14 +85,14 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     }
 
     /**
-     * Returns a service locator for the system. If the service extension is not installed, returns
+     * Returns a service locator for the system. If a service extension is not installed, returns
      * {@link ServiceLocator#of()}.
      * 
-     * @return a service locator for the system
+     * @return a service locator for the application
      */
     public ServiceLocator services() {
         ServiceManagerSetup sm = application.container.injection.getServiceManager();
-        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool());
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
     }
 
     @Override

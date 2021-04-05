@@ -39,8 +39,7 @@ import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
-/** An runtime representation of a component. */
-// PackedComponentInstance
+/** An runtime more efficient representation of a component. We may use it again at a later time */
 public final class PackedComponentInstance implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
