@@ -137,19 +137,15 @@ public /* sealed */ interface ApplicationDriver<A> {
      * This method is is rarely called directly by end-users. But indirectly through methods such as
      * {@link ServiceLocator#of(Consumer)}.
      * 
-     * @param <CC>
-     *            the type of component configuration the composer wraps
-     * @param <CO>
+     * @param <C>
      *            the type of composer that is exposed to the user
-     * @param componentDriver
-     *            a component driver that is responsible for creating the component configuration that the composer wraps
-     * @param composerFactory
-     *            a factory function responsible for creating a composer instance from a component configuration
+     * @param composer
+     *            the composer
      * @param consumer
      *            the consumer specified by the end user
      * @param wirelets
      *            optional wirelets
-     * @return the artifact
+     * @return the application instance
      * 
      * @see Composer
      * @see ServiceComposer
@@ -181,9 +177,9 @@ public /* sealed */ interface ApplicationDriver<A> {
     A launch(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
-     * Returns the default launch mode of applications's created by this driver.
+     * Returns the launch mode of applications's created by this driver.
      * <p>
-     * The launch mode can be overridden at build or runtime by using {@link ApplicationWirelets#launchMode(RunState)}.
+     * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(RunState)}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
@@ -259,9 +255,6 @@ public /* sealed */ interface ApplicationDriver<A> {
         throw new UnsupportedOperationException();
     }
 
-    // Smider vi build exception??? Eller
-    // Bare invalid???
-    // Vil mene invalid...
     Validation validate(Assembly<?> assembly, Wirelet... wirelets);
 
     ApplicationDriver<A> with(Wirelet wirelet);

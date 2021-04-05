@@ -141,32 +141,29 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return build;
     }
 
-
+    /** {@inheritDoc} */
     @Override
     public <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
-        requireNonNull(composer, "composer is null");
-        
+
         // Extract the component driver from the composer
-        WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver2(composer);
+        WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(composer);
         
         // Create a new realm
         RealmSetup realm = new RealmSetup(consumer);
         
         // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, realm, componentDriver, 0, wirelets);
-        
 
-        var componentConfiguration = componentDriver.toConfiguration(build.container);
+        // Create the component configuration that is needed by the assembly
+        ComponentConfiguration componentConfiguration = componentDriver.toConfiguration(build.container);
 
-        // Invoked the consumer supplied by the end-user
-        
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        // Invoke Consumer::doConsumer which in turn will invoke consumer.accept
         try {
             RealmSetup.MH_COMPOSER_DO_COMPOSE.invoke(composer, componentConfiguration, consumer);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-
+        
         realm.close(build.container);
 
         // Initialize the application. And start it if necessary (if it is a guest)

@@ -30,7 +30,6 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
             WireableComponentDriver.class);
 
-    
     public final int modifiers;
 
     /** Optional wirelets that will be applied to any component created by this driver. */
@@ -73,11 +72,11 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static <C extends ComponentConfiguration> WireableComponentDriver<? extends C> getDriver(Assembly<C> assembly) {
+    public static WireableComponentDriver<?> getDriver(Assembly<?> assembly) {
         requireNonNull(assembly, "assembly is null");
-        return (WireableComponentDriver<? extends C>) VH_ASSEMBLY_DRIVER.get(assembly);
+        return (WireableComponentDriver<?>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
-    
+
     /**
      * Extracts the component driver from the specified assembly.
      * 
@@ -85,7 +84,7 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
      *            the assembly to extract the component driver from
      * @return the component driver of the specified assembly
      */
-    public static WireableComponentDriver<?> getDriver2(Composer<?> composer) {
+    public static WireableComponentDriver<?> getDriver(Composer<?> composer) {
         requireNonNull(composer, "composer is null");
         return (WireableComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
     }
