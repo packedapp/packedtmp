@@ -11,6 +11,10 @@ record ProgramDefault(Component component, ServiceLocator services, ApplicationR
 
     /** An driver for creating App instances. */
     static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().launchMode(RunState.RUNNING).build(MethodHandles.lookup(), ProgramDefault.class);
+    @Override
+    public String name() {
+        return component.name();
+    }
 
     /** {@inheritDoc} */
     @Override

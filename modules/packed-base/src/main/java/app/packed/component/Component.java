@@ -30,14 +30,10 @@ import app.packed.component.ComponentStream.Option;
  */
 public /* sealed */ interface Component extends AttributedElement {
 
-    /** { @return the application this component is part of} */
+    /** { @return the application this component is a part of} */
     Application application();
 
-    /**
-     * Returns an unmodifiable view of all of this component's children.
-     *
-     * @return an unmodifiable view of all of this component's children
-     */
+    /** {@return an unmodifiable view of all of this component's children} */
     Collection<Component> children();
 
     /**
@@ -75,11 +71,7 @@ public /* sealed */ interface Component extends AttributedElement {
     /** {@return the parent component of this component. Or empty if this component has no parent} */
     Optional<Component> parent();
 
-    /**
-     * Returns the path of this component.
-     *
-     * @return the path of this component
-     */
+    /** {@return the path of this component} */
     NamespacePath path();
 
     default void print() {
@@ -101,20 +93,8 @@ public /* sealed */ interface Component extends AttributedElement {
     // Syntes ikke vi skal have baade tryResolve or resolve...
     Component resolve(CharSequence path);
 
-    /**
-     * Returns the root component of the namespace this component is located in.
-     * 
-     * @return the root component
-     */
-    default Component root() {
-        Component c = this;
-        Optional<Component> p = parent();
-        while (!p.isEmpty()) {
-            c = p.get();
-            p = c.parent();
-        }
-        return c;
-    }
+    /** {@return the root component, returns this is this is the root component} */
+    Component root();
 
     /**
      * Returns a stream consisting of this component and all of its descendants in any order.

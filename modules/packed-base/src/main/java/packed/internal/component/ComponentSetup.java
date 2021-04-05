@@ -157,7 +157,7 @@ public abstract class ComponentSetup {
         return new ComponentAdaptor(this);
     }
 
-   final AttributeMap attributes() {
+    final AttributeMap attributes() {
         // Det er ikke super vigtigt at den her er hurtig paa configurations tidspunktet...
         // Maaske er det simpelthen et view...
         // Hvor vi lazily fx calculere EntrySet (og gemmer i et felt)
@@ -421,6 +421,16 @@ public abstract class ComponentSetup {
         @Override
         public Application application() {
             return component.application.adaptor();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component root() {
+            ComponentSetup c = component;
+            while (c.parent != null) {
+                c = c.parent;
+            }
+            return c == component ? this : c.adaptor();
         }
     }
 }

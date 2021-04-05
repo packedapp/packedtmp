@@ -42,7 +42,6 @@ public class AppTest {
 
         assertThat(app).isNotNull();
         assertThat(app.name()).isNotNull();
-        assertThat(app.stream()).size().isEqualTo(1);
 
         ContainerConfiguration cc = requireNonNull(ar.get());
 

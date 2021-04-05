@@ -19,11 +19,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
-import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
-import app.packed.component.ComponentStream;
-import app.packed.component.ComponentStream.Option;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
@@ -49,14 +46,6 @@ public interface Program extends AutoCloseable {
     }
 
     /**
-     * The component this is delegating
-     * 
-     * @return the component
-     */
-    // Not sure we want this...
-    Component component();
-
-    /**
      * Returns the name of this application.
      * <p>
      * The name of an application is identical to the name of the application's component.
@@ -69,24 +58,7 @@ public interface Program extends AutoCloseable {
     // Taenker her paa noget der restarter. Og hver app hedder noget nyt...
     // Men altsaa er ikke sikker paa man bruger en app saa...
     // Kan ikke se noget alternativt...
-    default String name() {
-        return component().name();
-    }
-
-    /**
-     * <p>
-     * This method takes a {@link CharSequence} as parameter, so it is easy to passe either a {@link String} or a
-     * {@link NamespacePath}.
-     * 
-     * @param path
-     *            the path of the component to return
-     * @throws IllegalArgumentException
-     *             if no component exists with the specified path
-     * @return a component with the specified path
-     */
-    default Component resolve(CharSequence path) {
-        return component().resolve(path);
-    }
+    String name();
 
     /**
      * Returns the applications's host.
@@ -101,31 +73,6 @@ public interface Program extends AutoCloseable {
      * @return the service locator for this app
      */
     ServiceLocator services();
-
-    /**
-     * Returns a component stream consisting of this applications underlying container and all of its descendants in any
-     * order.
-     * <p>
-     * Calling this method does <strong>not</strong> effect the lifecycle state of this application.
-     * 
-     * @return a component stream
-     * @see #stream(Option...)
-     */
-    default ComponentStream stream() {
-        return component().stream();
-    }
-
-    /**
-     * Returns a component stream consisting of all the components in this image.
-     * 
-     * @param options
-     *            stream options
-     * @return the component stream
-     * @see Component#stream(app.packed.component.ComponentStream.Option...)
-     */
-    default ComponentStream stream(ComponentStream.Option... options) {
-        return component().stream(options);
-    }
 
     /**
      * Returns a service with the specified key, if it exists. Otherwise, fails by throwing {@link NoSuchElementException}.
