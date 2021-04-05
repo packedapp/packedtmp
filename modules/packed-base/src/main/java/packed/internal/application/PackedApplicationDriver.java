@@ -145,13 +145,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
-        
+
         // Extract the component driver from the composer
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(composer);
-        
+
         // Create a new realm
         RealmSetup realm = new RealmSetup(consumer);
-        
+
         // Create a new build and root application/container/component
         BuildSetup build = new BuildSetup(this, realm, componentDriver, 0, wirelets);
 
@@ -164,7 +164,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-        
+
         realm.close(build.container);
 
         // Initialize the application. And start it if necessary (if it is a guest)
@@ -241,8 +241,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public static final class Builder implements ApplicationDriver.Builder {
 
         /** A MethodHandle for invoking {@link ApplicationLaunchContext#component()}. */
-        private static final MethodHandle MH_COMPONENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "component",
-                Component.class);
+        private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "name",
+                String.class);
 
         /** A MethodHandle for invoking {@link ApplicationLaunchContext#runtime()}. */
         private static final MethodHandle MH_RUNTIME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "runtime",
@@ -270,8 +270,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
             // Find a method handle for the application shell's constructor
             Infuser.Builder builder = Infuser.builder(caller, implementation, ApplicationLaunchContext.class);
-            builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
+            //builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
+            builder.provide(String.class).invokeExact(MH_NAME, 0);
             if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
                 builder.provide(ApplicationRuntime.class).invokeExact(MH_RUNTIME, 0);
             }
@@ -324,7 +325,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    private final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application) implements ApplicationImage<A> {
+    private final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
+            implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override

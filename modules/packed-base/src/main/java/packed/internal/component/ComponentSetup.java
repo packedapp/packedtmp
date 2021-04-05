@@ -373,7 +373,7 @@ public abstract class ComponentSetup {
         @Override
         public ComponentRelation relationTo(Component other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.relation(component, ((ComponentAdaptor) other).component);
+            return ComponentSetupRelation.of(component, ((ComponentAdaptor) other).component);
         }
 
         /** {@inheritDoc} */

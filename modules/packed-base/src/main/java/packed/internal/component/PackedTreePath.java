@@ -143,7 +143,7 @@ public final class PackedTreePath implements NamespacePath {
 
     }
 
-    static NamespacePath of(PackedComponent component) {
+    static NamespacePath of(PackedComponentInstance component) {
         int depth = component.depth();
         switch (depth) {
         case 0:
@@ -152,7 +152,7 @@ public final class PackedTreePath implements NamespacePath {
             return new PackedTreePath(component.name());
         default:
             String[] paths = new String[depth];
-            PackedComponent acc = component;
+            PackedComponentInstance acc = component;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name();
                 acc = acc.parent;

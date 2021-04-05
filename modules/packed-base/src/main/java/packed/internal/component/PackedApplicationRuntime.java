@@ -57,7 +57,9 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
-    public PackedApplicationRuntime(ApplicationLaunchContext launchContext) {}
+    public PackedApplicationRuntime(ApplicationLaunchContext launchContext) {
+        
+    }
 
     // Hmm, maybe not
 //    @Nullable
@@ -105,8 +107,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
         return null;
     }
 
-    public void onInitialized(ComponentSetup component, ApplicationLaunchContext pic) {
-        ApplicationSetup application = component.application;
+    public void launch(ApplicationSetup application, ApplicationLaunchContext launchContext) {
         boolean isMain = application.hasMain();
         boolean start = isMain;
         final ReentrantLock lock = this.lock;
@@ -146,7 +147,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
 
             try {
                 if (l.cs.source.poolIndex > -1 && !l.isStatic) {
-                    Object o = pic.pool().read(l.cs.source.poolIndex);
+                    Object o = launchContext.pool().read(l.cs.source.poolIndex);
                     l.methodHandle.invoke(o);
                 } else {
                     l.methodHandle.invoke();

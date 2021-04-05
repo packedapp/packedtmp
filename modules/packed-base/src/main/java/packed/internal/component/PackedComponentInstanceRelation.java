@@ -29,13 +29,13 @@ import app.packed.component.ComponentScope;
 
     private final int distance;
 
-    private final PackedComponent from;
+    private final PackedComponentInstance from;
 
-    private final PackedComponent lcd;
+    private final PackedComponentInstance lcd;
 
-    private final PackedComponent to;
+    private final PackedComponentInstance to;
 
-    public PackedComponentInstanceRelation(PackedComponent from, PackedComponent to, int distance, PackedComponent lcd) {
+    public PackedComponentInstanceRelation(PackedComponentInstance from, PackedComponentInstance to, int distance, PackedComponentInstance lcd) {
         this.from = from;
         this.to = to;
         this.distance = distance;
@@ -71,7 +71,7 @@ import app.packed.component.ComponentScope;
             Component[] components = new Component[distance];
 
             int i = 0;
-            PackedComponent pc = from;
+            PackedComponentInstance pc = from;
             while (pc != lcd) {
                 components[i++] = pc;
             }
@@ -99,7 +99,7 @@ import app.packed.component.ComponentScope;
         return to;
     }
 
-    static ComponentRelation relation(PackedComponent from, PackedComponent to) {
+    static ComponentRelation relation(PackedComponentInstance from, PackedComponentInstance to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.pool == to.pool) {
@@ -107,8 +107,8 @@ import app.packed.component.ComponentScope;
                 return new PackedComponentInstanceRelation(from, to, 0, from);
             }
 
-            PackedComponent f = from;
-            PackedComponent t = to;
+            PackedComponentInstance f = from;
+            PackedComponentInstance t = to;
             int distance = 0;
 
             if (fd > td) {

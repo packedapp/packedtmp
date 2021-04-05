@@ -17,20 +17,21 @@ package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
-import app.packed.component.Component;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.RunState;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedApplicationRuntime;
-import packed.internal.component.PackedComponent;
 import packed.internal.component.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.invoke.constantpool.PoolWriteable;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
@@ -40,9 +41,6 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     /** The application we are launching */
     public final ApplicationSetup application;
 
-    /** The runtime component node we are building. */
-    public PackedComponent component;
-
     /**
      * The launch mode of the application. May be overridden via {@link ApplicationWirelets#launchMode(RunState)} if image.
      */
@@ -50,6 +48,9 @@ public final class ApplicationLaunchContext implements PoolWriteable {
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;
+
+    /** The runtime component node we are building. */
+    private ConstantPool pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
@@ -67,17 +68,12 @@ public final class ApplicationLaunchContext implements PoolWriteable {
         this.runtime = application.runtimePoolIndex == -1 ? null : new PackedApplicationRuntime(this);
     }
 
-    /**
-     * Returns the top component.
-     * 
-     * @return the top component
-     */
-    Component component() {
-        return component;
+    public String name() {
+        return name;
     }
 
     public ConstantPool pool() {
-        return component.pool;
+        return pool;
     }
 
     ApplicationRuntime runtime() {
@@ -133,14 +129,19 @@ public final class ApplicationLaunchContext implements PoolWriteable {
             }
         }
 
-        // Instantiates the whole component tree (well @Initialize does not yet work)
-        // pic.component is set from PackedComponent
-        new PackedComponent(null, application.container, context);
+        ConstantPool pool = context.pool = application.constantPool.newPool(context);
 
-        // TODO initialize
+        // Run all initializers
+        for (MethodHandle mh : application.initializers) {
+            try {
+                mh.invoke(pool);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
+        }
 
         if (context.runtime != null) {
-            context.runtime.onInitialized(application.container, context);
+            context.runtime.launch(application, context);
         }
 
         return driver.newApplication(context);

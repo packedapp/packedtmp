@@ -20,7 +20,6 @@ import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
 import app.packed.component.Assembly;
-import app.packed.component.Component;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
@@ -45,19 +44,7 @@ public interface Program extends AutoCloseable {
         runtime().stop();
     }
 
-    /**
-     * Returns the name of this application.
-     * <p>
-     * The name of an application is identical to the name of the application's component.
-     * 
-     * @return the name of this application
-     * @see Component#name()
-     */
-    // Her knaekker filmen saa lidt..
-    // Hvis vi har multiple apps saa skal state navnet jo vaere en del af navnet???
-    // Taenker her paa noget der restarter. Og hver app hedder noget nyt...
-    // Men altsaa er ikke sikker paa man bruger en app saa...
-    // Kan ikke se noget alternativt...
+    /** {@return the name of this application} */
     String name();
 
     /**
@@ -112,6 +99,10 @@ public interface Program extends AutoCloseable {
         return services().use(key);
     }
 
+    static Application analyze(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().analyze2(assembly, wirelets);
+    }
+    
     /**
      * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.
      * 

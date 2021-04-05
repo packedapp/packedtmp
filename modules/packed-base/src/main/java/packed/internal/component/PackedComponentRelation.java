@@ -19,12 +19,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
 
 /** Implementation of {@link ComponentRelation}. */
-record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, ComponentSetup lcd) implements ComponentRelation {
+record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements ComponentRelation {
 
     /** {@inheritDoc} */
     @Override
@@ -71,7 +72,23 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
         return to.adaptor();
     }
 
-    static ComponentRelation relation(ComponentSetup from, ComponentSetup to) {
+    @Override
+    public boolean inSameApplication() {
+        return from.application == to.application;
+    }
+
+    @Override
+    public boolean isInSame(ComponentScope scope) {
+        return from.isInSame(scope, to);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component source() {
+        return from.adaptor();
+    }
+
+    static ComponentRelation of(ComponentSetup from, ComponentSetup to) {
         int fd = from.depth;
         int td = to.depth;
         if (from.pool == to.pool) {
@@ -110,21 +127,5 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
             return new ComponentSetupRelation(from, to, distance, f);
         }
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean inSameApplication() {
-        return from.application == to.application;
-    }
-
-    @Override
-    public boolean isInSame(ComponentScope scope) {
-        return from.isInSame(scope, to);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Component source() {
-        return from.adaptor();
     }
 }

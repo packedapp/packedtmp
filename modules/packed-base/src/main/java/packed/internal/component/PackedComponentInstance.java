@@ -17,7 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -39,15 +38,14 @@ import app.packed.component.ComponentStream;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.util.ThrowableUtil;
 
 /** An runtime representation of a component. */
 // PackedComponentInstance
-public final class PackedComponent implements Component {
+public final class PackedComponentInstance implements Component {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
-    private final Map<String, PackedComponent> children;
+    private final Map<String, PackedComponentInstance> children;
 
     /** The runtime model of the component. */
     final RuntimeComponentModel model;
@@ -57,7 +55,7 @@ public final class PackedComponent implements Component {
 
     /** The parent component, or null if root. */
     @Nullable
-    final PackedComponent parent;
+    final PackedComponentInstance parent;
 
     /** The region this component is part of. */
     public final ConstantPool pool;
@@ -72,11 +70,10 @@ public final class PackedComponent implements Component {
      * @param launch
      *            initialization context
      */
-    public PackedComponent(@Nullable PackedComponent parent, ComponentSetup component, ApplicationLaunchContext launch) {
+    public PackedComponentInstance(@Nullable PackedComponentInstance parent, ComponentSetup component, ApplicationLaunchContext launch) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(component);
         if (parent == null) {
-            launch.component = this;
             this.name = launch.name;
         } else {
             this.name = requireNonNull(component.name);
@@ -85,16 +82,16 @@ public final class PackedComponent implements Component {
         // Vi opbygger structuren foerst...
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
-        Map<String, PackedComponent> children = null;
+        Map<String, PackedComponentInstance> children = null;
         LinkedHashMap<String, ComponentSetup> childComponents = component.children;
         if (childComponents != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, PackedComponent> result = new LinkedHashMap<>(childComponents.size());
+            LinkedHashMap<String, PackedComponentInstance> result = new LinkedHashMap<>(childComponents.size());
 
             for (ComponentSetup cc : component.children.values()) {
                 // We never carry over extensions into the runtime
                 if (!(cc instanceof ExtensionSetup)) {
-                    PackedComponent ac = new PackedComponent(this, cc, launch);
+                    PackedComponentInstance ac = new PackedComponentInstance(this, cc, launch);
                     result.put(ac.name(), ac);
                 }
             }
@@ -114,18 +111,22 @@ public final class PackedComponent implements Component {
 
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || component.modifiers().hasRuntime()) {
-            this.pool = component.pool.newPool(launch);
-
-            // Run all initializers
-            for (MethodHandle mh : component.application.initializers) {
-                try {
-                    mh.invoke(pool);
-                } catch (Throwable e) {
-                    throw ThrowableUtil.orUndeclared(e);
-                }
-            }
+//            this.pool = component.pool.newPool(launch);
+//
+//            // Run all initializers
+//            for (MethodHandle mh : component.application.initializers) {
+//                try {
+//                    mh.invoke(pool);
+//                } catch (Throwable e) {
+//                    throw ThrowableUtil.orUndeclared(e);
+//                }
+//            }
+            this.pool = null;
         } else {
             this.pool = parent.pool;
+        }
+        if (parent == null) {
+            // launch.pool = this.pool;
         }
     }
 
@@ -138,7 +139,7 @@ public final class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public Collection<Component> children() {
-        Map<String, PackedComponent> c = children;
+        Map<String, PackedComponentInstance> c = children;
         if (c == null) {
             return Collections.emptySet();
         }
@@ -156,7 +157,7 @@ public final class PackedComponent implements Component {
         return findComponent(path.toString());
     }
 
-    private PackedComponent findComponent(String path) {
+    private PackedComponentInstance findComponent(String path) {
         if (path.length() == 0) {
             throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
         }
@@ -168,17 +169,17 @@ public final class PackedComponent implements Component {
         // Vi smider IllegalArgumentException hvis man absolute path, og man ikke har samme prefix....
 
         // TODO fix for non-absolute paths....
-        PackedComponent c = children.get(path);
+        PackedComponentInstance c = children.get(path);
         if (c == null) {
             String p = path.toString();
             String[] splits = p.split("/");
-            Map<String, PackedComponent> chi = children;
+            Map<String, PackedComponentInstance> chi = children;
             for (int i = 1; i < splits.length; i++) {
                 if (chi == null) {
                     return null;
                 }
                 String ch = splits[i];
-                PackedComponent ac = chi.get(ch);
+                PackedComponentInstance ac = chi.get(ch);
                 if (ac == null) {
                     return null;
                 }
@@ -197,12 +198,12 @@ public final class PackedComponent implements Component {
         return PackedComponentModifierSet.isSet(model.modifiers, modifier);
     }
 
-    public boolean isInSameContainer(PackedComponent other) {
+    public boolean isInSameContainer(PackedComponentInstance other) {
         return isInSameContainer0() == other.isInSameContainer0();
     }
 
-    private PackedComponent isInSameContainer0() {
-        PackedComponent c = this;
+    private PackedComponentInstance isInSameContainer0() {
+        PackedComponentInstance c = this;
         while (!(c.model.isContainer())) {
             c = c.parent;
         }
@@ -241,7 +242,7 @@ public final class PackedComponent implements Component {
     @Override
     public ComponentRelation relationTo(Component other) {
         requireNonNull(other, "other is null");
-        return PackedComponentInstanceRelation.relation(this, (PackedComponent) other);
+        return PackedComponentInstanceRelation.relation(this, (PackedComponentInstance) other);
     }
 
     /**
@@ -261,8 +262,8 @@ public final class PackedComponent implements Component {
     /** {@inheritDoc} */
     @Override
     public Component root() {
-        PackedComponent c = this;
-        PackedComponent p = parent;
+        PackedComponentInstance c = this;
+        PackedComponentInstance p = parent;
         while (p != null) {
             c = p;
             p = p.parent;
@@ -276,9 +277,9 @@ public final class PackedComponent implements Component {
         return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
 
-    private Stream<Component> stream0(PackedComponent origin, boolean isRoot, PackedComponentStreamOption option) {
+    private Stream<Component> stream0(PackedComponentInstance origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-        Map<String, PackedComponent> c = children;
+        Map<String, PackedComponentInstance> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, this)) {
                 Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
