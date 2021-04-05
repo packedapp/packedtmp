@@ -59,7 +59,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      * @return an instance of the injector extension
      */
     private ServiceExtension extension() {
-        ServiceExtension se = configuration.use(ServiceExtension.class);
+        ServiceExtension se = configuration().use(ServiceExtension.class);
         if (!initialized) {
             se.exportAll();
             initialized = true;
@@ -74,7 +74,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      *            optional import/export wirelets
      */
     public Component link(Assembly<?> assembly, Wirelet... wirelets) {
-        return configuration.link(assembly, wirelets);
+        return configuration().link(assembly, wirelets);
     }
 
     /**

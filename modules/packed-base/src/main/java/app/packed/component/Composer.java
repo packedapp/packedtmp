@@ -29,9 +29,8 @@ import packed.internal.component.ComponentSetup;
 // Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
 public abstract class Composer<C extends ComponentConfiguration> {
 
-    // I don't think we have access to component configuration context...
     /** The underlying component configuration. */
-    protected final C configuration;
+    private final C configuration;
 
     /**
      * Create a new composer.
@@ -43,6 +42,10 @@ public abstract class Composer<C extends ComponentConfiguration> {
         this.configuration = configuration;
         // Disabled because of test
         // requireNonNull(configuration, "configuration is null");
+    }
+
+    protected final C configuration() {
+        return configuration;
     }
 
     /**
