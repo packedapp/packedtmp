@@ -153,12 +153,6 @@ public interface Injector extends ServiceLocator {
      *            wirelets
      * @return the new injector
      */
-    // TODO I think move this to InjectorCongurator, InjectorConfigurator.spawn...
-    // or maybe Injector.configure() instead
-    // interface ArtifactConfigurator() {}
-    // configure()
-
-
     static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return driver().compose(new InjectorComposer(), configurator, wirelets);
     }
