@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.application.Application;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
@@ -414,6 +415,12 @@ public abstract class ComponentSetup {
         public boolean isInSame(ComponentScope scope, Component other) {
             requireNonNull(other, "other is null");
             return component.isInSame(scope, ((ComponentAdaptor) other).component);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Application application() {
+            return component.application.adaptor();
         }
     }
 }

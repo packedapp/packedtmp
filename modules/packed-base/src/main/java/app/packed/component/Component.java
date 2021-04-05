@@ -30,9 +30,8 @@ import app.packed.component.ComponentStream.Option;
  */
 public /* sealed */ interface Component extends AttributedElement {
 
-    default Application application() {
-        throw new UnsupportedOperationException();
-    }
+    /** { @return the application this component is part of} */
+    Application application();
 
     /**
      * Returns an unmodifiable view of all of this component's children.

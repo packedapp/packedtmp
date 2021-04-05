@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import app.packed.application.Application;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -114,7 +115,7 @@ public final class PackedComponent implements Component {
         // Vi create a new region is its the root, or if the component is a guest
         if (parent == null || component.modifiers().hasRuntime()) {
             this.pool = component.pool.newPool(launch);
-            
+
             // Run all initializers
             for (MethodHandle mh : component.application.initializers) {
                 try {
@@ -291,6 +292,11 @@ public final class PackedComponent implements Component {
 
     @Override
     public boolean isInSame(ComponentScope scope, Component other) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Application application() {
         throw new UnsupportedOperationException();
     }
 }

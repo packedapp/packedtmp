@@ -144,7 +144,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
-
+        requireNonNull(consumer, "consumer is null");
+        
         // Extract the component driver from the composer
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(composer);
         
