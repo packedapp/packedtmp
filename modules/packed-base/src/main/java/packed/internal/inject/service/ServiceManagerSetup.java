@@ -229,7 +229,7 @@ public final class ServiceManagerSetup {
         // Process exports from any children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup child = c.getServiceManager();
+                ServiceManagerSetup child = c.cis.getServiceManager();
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
@@ -260,7 +260,7 @@ public final class ServiceManagerSetup {
         // Process child requirements to children
         if (container.containerChildren != null) {
             for (ContainerSetup c : container.containerChildren) {
-                ServiceManagerSetup m = c.getServiceManager();
+                ServiceManagerSetup m = c.cis.getServiceManager();
                 if (m != null) {
                     m.processWirelets(container);
                 }

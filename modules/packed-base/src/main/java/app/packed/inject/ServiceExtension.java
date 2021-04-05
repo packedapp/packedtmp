@@ -85,7 +85,7 @@ public class ServiceExtension extends Extension {
      *            an extension setup object (hidden).
      */
     /* package-private */ ServiceExtension(ExtensionSetup setup) {
-        this.services = setup.container.newServiceManagerFromServiceExtension();
+        this.services = setup.container.cis.newServiceManagerFromServiceExtension();
     }
 
     /**

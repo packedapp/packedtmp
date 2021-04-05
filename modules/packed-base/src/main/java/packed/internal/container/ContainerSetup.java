@@ -33,7 +33,6 @@ import app.packed.component.Wirelet;
 import app.packed.container.Container;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
-import app.packed.inject.ServiceExtension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
@@ -44,8 +43,7 @@ import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.component.WireableComponentSetup;
-import packed.internal.inject.dependency.InjectionNode;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.inject.dependency.ContainerInjectorSetup;
 
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends WireableComponentSetup {
@@ -63,13 +61,9 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     boolean hasRunPreContainerChildren;
 
-    /** A service manager that handles everything to do with services, is lazily initialized. */
-    @Nullable
-    private ServiceManagerSetup sm;
-
     private ArrayList<ExtensionSetup> tmpExtensions;
 
-    public final ContainerInjectorSetup cis = new ContainerInjectorSetup();
+    public final ContainerInjectorSetup cis = new ContainerInjectorSetup(this);
 
     /**
      * Create a new container (component).
@@ -125,23 +119,6 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
     }
 
-    /**
-     * Adds the specified injectable to list of injectables that needs to be resolved.
-     * 
-     * @param dependant
-     *            the injectable to add
-     */
-    public void addNode(InjectionNode dependant) {
-        cis.nodes.add(requireNonNull(dependant));
-
-        // Bliver noedt til at lave noget sidecar preresolve her.
-        // I virkeligheden vil vi bare gerne checke at om man
-        // har ting der ikke kan resolves via contexts
-        if (sm == null && !dependant.dependencies.isEmpty()) {
-            useExtension(ServiceExtension.class);
-        }
-    }
-
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
         // kan ogsaa test om container.application = application.container?
@@ -176,24 +153,8 @@ public final class ContainerSetup extends WireableComponentSetup {
         for (ExtensionSetup extension : extensionsOrdered) {
             extension.onComplete();
         }
+        cis.close(pool);
 
-        // Resolve local services
-        if (sm != null) {
-            sm.prepareDependants(this);
-        }
-
-        for (InjectionNode i : cis.nodes) {
-            i.resolve(sm);
-        }
-
-        // Now we know every dependency that we are missing
-        // I think we must plug this in somewhere
-
-        if (sm != null) {
-            sm.dependencies().checkForMissingDependencies(this);
-            sm.close(this, pool);
-        }
-        // TODO Check any contracts we might as well catch it early
     }
 
     public Container containerAdaptor() {
@@ -224,20 +185,6 @@ public final class ContainerSetup extends WireableComponentSetup {
         return extensions.get(extensionClass);
     }
 
-    @Nullable
-    public ServiceManagerSetup getServiceManager() {
-        return sm;
-    }
-
-    public ServiceManagerSetup getServiceManagerOrCreate() {
-        ServiceManagerSetup s = sm;
-        if (s == null) {
-            useExtension(ServiceExtension.class);
-            s = sm;
-        }
-        return s;
-    }
-
     /**
      * Returns whether or not the specified extension is in use.
      * 
@@ -248,16 +195,6 @@ public final class ContainerSetup extends WireableComponentSetup {
     public boolean isInUse(Class<? extends Extension> extensionClass) {
         requireNonNull(extensionClass, "extensionClass is null");
         return extensions.containsKey(extensionClass);
-    }
-
-    /**
-     * This method is invoked from the constructor of a {@link ServiceExtension} to create a new
-     * {@link ServiceManagerSetup}.
-     * 
-     * @return the new service manager
-     */
-    public ServiceManagerSetup newServiceManagerFromServiceExtension() {
-        return sm = new ServiceManagerSetup(sm);
     }
 
     private void runPredContainerChildren() {

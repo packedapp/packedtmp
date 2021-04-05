@@ -106,7 +106,7 @@ public final class InjectionNode implements PoolWriteable {
             if (!Modifier.isStatic(smm.getModifiers()) && source.poolIndex == -1) {
                 throw new BuildException("Not okay)");
             }
-            ServiceManagerSetup sbm = compConf.container.getServiceManagerOrCreate();
+            ServiceManagerSetup sbm = compConf.container.cis.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
