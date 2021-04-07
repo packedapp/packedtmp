@@ -39,7 +39,7 @@ public final class ExportedServiceSetup extends ServiceSetup {
 
     /** The actual entry that is exported. Is initially null for keyed exports, until it is resolved. */
     @Nullable
-    public ServiceSetup exportedEntry;
+    public ServiceSetup serviceToExport;
 
     /**
      * Exports an entry via its key.
@@ -49,7 +49,7 @@ public final class ExportedServiceSetup extends ServiceSetup {
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    public ExportedServiceSetup( Key<?> exportAsKey) {
+    public ExportedServiceSetup(Key<?> exportAsKey) {
         super(exportAsKey);
         this.exportAsKey = requireNonNull(exportAsKey);
     }
@@ -63,7 +63,7 @@ public final class ExportedServiceSetup extends ServiceSetup {
      */
     public ExportedServiceSetup(ServiceSetup entryToExport) {
         super(entryToExport.key());
-        this.exportedEntry = entryToExport;
+        this.serviceToExport = entryToExport;
         this.exportAsKey = null;
         // Export of export, of export????
         // Hvad hvis en eller anden aendrer en key midt i chainen.
@@ -73,23 +73,23 @@ public final class ExportedServiceSetup extends ServiceSetup {
     @Override
     @Nullable
     public InjectionNode dependant() {
-        return exportedEntry.dependant();
+        return serviceToExport.dependant();
     }
 
     @Override
     public MethodHandle dependencyAccessor() {
-        return exportedEntry.dependencyAccessor();
+        return serviceToExport.dependencyAccessor();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return exportedEntry.isConstant();
+        return serviceToExport.isConstant();
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new DelegatingRuntimeService(key(), exportedEntry.toRuntimeEntry(context));
+        return new DelegatingRuntimeService(key(), serviceToExport.toRuntimeEntry(context));
     }
 }

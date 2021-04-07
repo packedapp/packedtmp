@@ -21,6 +21,7 @@ import app.packed.base.Key;
  *
  */
 public interface ServiceConfiguration<T> {
+    
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.

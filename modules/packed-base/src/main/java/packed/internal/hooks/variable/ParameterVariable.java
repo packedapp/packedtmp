@@ -29,6 +29,8 @@ public final class ParameterVariable extends AbstractVariable {
 
     final Parameter p;
 
+    int index;
+
     /**
      * @param e
      */

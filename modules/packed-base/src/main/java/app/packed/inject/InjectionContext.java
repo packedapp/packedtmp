@@ -15,10 +15,7 @@
  */
 package app.packed.inject;
 
-import java.util.List;
-
 import app.packed.base.Key;
-import app.packed.base.Variable;
 
 /**
  * An injection context object can be injected into any injection site (typically a method or constructor) to query
@@ -80,9 +77,9 @@ public /* /* sealed */ interface InjectionContext extends ServiceRegistry {
 
     // Maaske har det ikke rigtig type information med???
     // Det kan jo sagtens taenkes at det er noget andet information vi vil have...
-    default List<Variable> variables() {
-        throw new UnsupportedOperationException();
-    }
+//    default List<Variable> variables() {
+//        throw new UnsupportedOperationException();
+//    }
 }
 
 // Set<Class<Context>> contextTypes();

@@ -38,13 +38,13 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** A model of a {@link Bootstrap} class. */
-public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
+public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
     /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<MethodHookModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+    private static final ClassValue<MethodHookBootstrapModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
 
         @Override
-        protected MethodHookModel computeValue(Class<?> type) {
+        protected MethodHookBootstrapModel computeValue(Class<?> type) {
             MethodHook ams = type.getAnnotation(MethodHook.class);
             return ams == null ? null : new Builder(ams).build();
         }
@@ -69,7 +69,7 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
      * @param builder
      *            the builder
      */
-    private MethodHookModel(Builder builder) {
+    private MethodHookBootstrapModel(Builder builder) {
         super(builder);
         this.onInitialize = builder.onInitialize;
         Map<Key<?>, HookedMethodProvide> tmp = new HashMap<>();
@@ -94,11 +94,11 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
     }
 
     @Nullable
-    public static MethodHookModel getForAnnotatedMethod(Class<? extends Annotation> c) {
+    public static MethodHookBootstrapModel getForAnnotatedMethod(Class<? extends Annotation> c) {
         return EXTENSION_METHOD_ANNOTATION.get(c);
     }
 
-    public static MethodHookModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
+    public static MethodHookBootstrapModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
@@ -121,30 +121,30 @@ public final class MethodHookModel extends AbstractHookModel<RealMethodSidecarBo
 
         /** {@inheritDoc} */
         @Override
-        protected MethodHookModel build() {
-            
+        protected MethodHookBootstrapModel build() {
+
             scan(false, MethodHook.Bootstrap.class);
-            
-            return new MethodHookModel(this);
+
+            return new MethodHookBootstrapModel(this);
         }
 
         @Override
         protected void onMethod(Method method) {
             Provide ap = method.getAnnotation(Provide.class);
             if (ap != null) {
-                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
                 if (providing.putIfAbsent(b.key, b) != null) {
-                    throw new InternalExtensionException("Multiple methods on " + ib.type() + " that provide " + b.key);
+                    throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
                 }
             }
 
             OnInitialize oi = method.getAnnotation(OnInitialize.class);
             if (oi != null) {
                 if (onInitialize != null) {
-                    throw new IllegalStateException(ib.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
+                    throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                 }
-                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 onInitialize = mh;
             }
         }

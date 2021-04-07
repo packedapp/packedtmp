@@ -19,16 +19,14 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.InternalService;
 
 /** Represents a service at runtime. */
-public abstract class RuntimeService implements InternalService {
+public interface RuntimeService extends InternalService {
 
     @Override
-    public <T> InternalService decorate(Function<? super T, ? extends T> decoratingFunction) {
+    default <T> InternalService decorate(Function<? super T, ? extends T> decoratingFunction) {
         throw new UnsupportedOperationException();
     }
 
@@ -36,7 +34,7 @@ public abstract class RuntimeService implements InternalService {
     public abstract MethodHandle dependencyAccessor();
 
     @Override
-    public final boolean isConstant() {
+    default boolean isConstant() {
         return mode() == ServiceMode.CONSTANT;
     }
 
@@ -47,21 +45,23 @@ public abstract class RuntimeService implements InternalService {
      *            a request if needed by {@link #requiresProvisionContext()}
      * @return the instance
      */
-    public abstract Object provideInstance(@Nullable ProvisionContext request);
+    public abstract Object provideInstance();
 
     @Override
-    public final InternalService rekeyAs(Key<?> key) {
+    default InternalService rekeyAs(Key<?> key) {
         return new DelegatingRuntimeService(key, this);
     }
 
     public abstract boolean requiresProvisionContext();
 
-    /** {@inheritDoc} */
-    @Override
-    public final String toString() {
+    public static String toString(RuntimeService rs) {
         StringBuilder sb = new StringBuilder();
-        sb.append(key());
-        sb.append("[mode=").append(mode()).append(']');
+        sb.append(rs.key());
+        sb.append("[mode=").append(rs.mode()).append(']');
         return sb.toString();
+    }
+    
+    static RuntimeService constant(Key<?> key, Object constant) {
+        return new ConstantRuntimeService(key, constant);
     }
 }

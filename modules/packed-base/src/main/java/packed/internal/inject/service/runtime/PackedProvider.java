@@ -16,17 +16,16 @@
 package packed.internal.inject.service.runtime;
 
 import app.packed.inject.Provider;
-import app.packed.inject.ProvisionContext;
 
 /**
  *
  */
-record ProvisionContextProvider<T> (RuntimeService service, ProvisionContext context) implements Provider<T> {
+/* primitive */ record PackedProvider<T> (RuntimeService service) implements Provider<T> {
 
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public T provide() {
-        return (T) service.provideInstance(context);
+        return (T) service.provideInstance();
     }
 }

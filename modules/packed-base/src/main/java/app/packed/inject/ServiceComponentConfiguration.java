@@ -86,6 +86,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     }
 
     // Once a bean has been exported, its key cannot be changed...
+    // Ja tror den bliver wired...
     public ServiceComponentConfiguration<T> export() {
         context.sourceExport();
         return this;

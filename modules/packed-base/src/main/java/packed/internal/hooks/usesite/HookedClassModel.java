@@ -167,7 +167,7 @@ public final class HookedClassModel {
         }
 
         public Class<?> type() {
-            return oc.type();
+            return classToScan;
         }
     }
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.inject.dependency;
+package packed.internal.hooks.variable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
@@ -24,7 +24,6 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
-import app.packed.base.Variable;
 import packed.internal.util.ReflectionUtil;
 
 /**
@@ -33,7 +32,7 @@ import packed.internal.util.ReflectionUtil;
  * Unlike the {@link Parameter} class, this interface contains no mutable operations, so it can be freely shared.
  * 
  */
-public final class PackedParameterDescriptor implements Variable {
+public final class PackedParameterVariable {
 
     /** The index of the parameter. */
     private final int index;
@@ -49,7 +48,7 @@ public final class PackedParameterDescriptor implements Variable {
      * @param index
      *            the index of the parameter
      */
-    private PackedParameterDescriptor(Parameter parameter, int index) {
+    private PackedParameterVariable(Parameter parameter, int index) {
         this.parameter = parameter;
         this.index = index;
     }
@@ -63,44 +62,38 @@ public final class PackedParameterDescriptor implements Variable {
     public boolean equals(@Nullable Object obj) {
         if (obj == this) {
             return true;
-        } else if (obj instanceof PackedParameterDescriptor ppd) {
+        } else if (obj instanceof PackedParameterVariable ppd) {
             return ppd.parameter.equals(parameter);
         }
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
         return parameter.getAnnotation(annotationClass);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Annotation[] getAnnotations() {
         return parameter.getAnnotations();
     }
 
     /** {@inheritDoc} */
-    @Override
     public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
         return parameter.getAnnotationsByType(annotationClass);
     }
 
     /** {@inheritDoc} */
-    @Override
     public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         return parameter.getDeclaredAnnotation(annotationClass);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Annotation[] getDeclaredAnnotations() {
         return parameter.getDeclaredAnnotations();
     }
 
     /** {@inheritDoc} */
-    @Override
     public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
         return parameter.getDeclaredAnnotationsByType(annotationClass);
     }
@@ -138,7 +131,6 @@ public final class PackedParameterDescriptor implements Variable {
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
         return parameter.isAnnotationPresent(annotationClass);
     }
@@ -154,19 +146,16 @@ public final class PackedParameterDescriptor implements Variable {
     }
 
     /** {@inheritDoc} */
-    @Override
     public Optional<String> name() {
         return Optional.of(parameter.getName());
     }
 
     /** {@inheritDoc} */
-    @Override
     public Class<?> rawType() {
         return parameter.getType();
     }
 
     /** {@inheritDoc} */
-    @Override
     public TypeToken<?> typeToken() {
         Type t = ReflectionUtil.getParameterizedType(parameter, index);
         return TypeToken.fromType(t);

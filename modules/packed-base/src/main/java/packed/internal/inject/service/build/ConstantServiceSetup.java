@@ -23,7 +23,6 @@ import java.lang.invoke.MethodHandles;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.inject.dependency.InjectionNode;
-import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 
@@ -62,6 +61,6 @@ public final class ConstantServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
-        return new ConstantRuntimeService(key(), constant);
+        return RuntimeService.constant(key(), constant);
     }
 }

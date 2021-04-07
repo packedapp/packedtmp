@@ -21,11 +21,10 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 
 /** A runtime service that uses a {@link Function} to map a service instance from another service. */
-public final class MappingRuntimeService extends RuntimeService {
+public final class MappingRuntimeService implements RuntimeService {
 
     /** The runtime entry whose service should mapped. */
     private final RuntimeService delegate;
@@ -47,7 +46,6 @@ public final class MappingRuntimeService extends RuntimeService {
         this.delegate = requireNonNull(delegate);
         this.function = requireNonNull(function);
     }
-
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
@@ -68,8 +66,8 @@ public final class MappingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object provideInstance(ProvisionContext site) {
-        Object other = delegate.provideInstance(site);
+    public Object provideInstance() {
+        Object other = delegate.provideInstance();
 
         @SuppressWarnings({ "unchecked", "rawtypes" })
         Object t = ((Function) function).apply(other);
@@ -87,5 +85,10 @@ public final class MappingRuntimeService extends RuntimeService {
     @Override
     public boolean requiresProvisionContext() {
         return delegate.requiresProvisionContext();
+    }
+
+    @Override
+    public String toString() {
+        return RuntimeService.toString(this);
     }
 }

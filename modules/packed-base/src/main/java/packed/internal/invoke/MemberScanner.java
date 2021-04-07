@@ -20,6 +20,7 @@ import packed.internal.util.StringFormatter;
 /**
  * An class that helps with finding members (fields, constructors and methods) on a class.
  */
+// Maybe have MethodScanner and MethodAndFieldScanner (extends MethodScanner) + ConstructorScanner
 public abstract class MemberScanner {
 
     /** We never process classes that are located in the java.base module. */

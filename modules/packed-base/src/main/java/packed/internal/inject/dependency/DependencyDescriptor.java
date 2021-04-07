@@ -39,7 +39,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
-import app.packed.base.Variable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
@@ -213,7 +212,6 @@ public final class DependencyDescriptor implements OldVariable {
      * 
      * @return the member that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         member.
-     * @see #variable()
      */
     public Optional<Member> member() {
         // MemberDescriptor???
@@ -252,10 +250,10 @@ public final class DependencyDescriptor implements OldVariable {
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
      */
-    public Optional<Variable> variable() {
-        return Optional.empty();
-        // return Optional.ofNullable(variable);
-    }
+//    public Optional<Variable> variable() {
+//        return Optional.empty();
+//        // return Optional.ofNullable(variable);
+//    }
 
     /**
      * TODO add nullable... Returns the specified object if not optional, or a the specified object in an optional type

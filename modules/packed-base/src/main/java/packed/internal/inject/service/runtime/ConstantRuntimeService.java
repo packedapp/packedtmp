@@ -21,55 +21,20 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
-import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime service holding a constant. */
-public final class ConstantRuntimeService extends RuntimeService {
+record ConstantRuntimeService(Key<?> key, Object constant) implements RuntimeService {
 
-    /** The constant the runtime service is holding. */
-    private final Object constant;
-
-    /** The key under which the service is available. */
-    private final Key<?> key;
-
-    /**
-     * @param key
-     */
-    public ConstantRuntimeService(Key<?> key, Object constant) {
-        this.key = requireNonNull(key);
-        this.constant = requireNonNull(constant);
+    ConstantRuntimeService {
+        requireNonNull(key);
+        requireNonNull(constant);
     }
 
-    /**
-     * Creates a new entry.
-     *
-     * @param service
-     *            the build entry to create this entry from
-     */
-    public ConstantRuntimeService(ServiceSetup service, ConstantPool pool, int poolIndex) {
-        this.key = requireNonNull(service.key());
-        this.constant = requireNonNull(pool.read(poolIndex));
-    }
-    
     /** {@inheritDoc} */
     @Override
     public MethodHandle dependencyAccessor() {
         return MethodHandles.constant(key().rawType(), constant);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Object provideInstance(ProvisionContext ignore) {
-        return constant;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public final Key<?> key() {
-        return key;
     }
 
     /** {@inheritDoc} */
@@ -80,7 +45,18 @@ public final class ConstantRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
+    public Object provideInstance() {
+        return constant;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public boolean requiresProvisionContext() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return RuntimeService.toString(this);
     }
 }

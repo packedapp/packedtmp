@@ -15,13 +15,14 @@ import app.packed.container.Extension;
 /**
  * This hook can be activated in 3 different ways
  */
+// Maaske bare ServiceHook
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ClassServiceHook {
+public @interface ServiceHook {
 
     /** Bootstrap classes for this hook. */
-    Class<? extends ClassServiceHook.Bootstrap>[] bootstrap();
+    Class<? extends ServiceHook.Bootstrap>[] bootstrap();
 
     /** Any extension this hook is part of. */
     Class<? extends Extension> extension();
@@ -33,6 +34,30 @@ public @interface ClassServiceHook {
 
         public final Class<?> declaringClass() {
             return Class.class;
+        }
+
+        /**
+         * If the requesting party is part of an extension, returns the extension. Otherwise returns empty.
+         * <p>
+         * Any extension returned by this method is guaranteed to have {@link ServiceHook#extension()} as a (direct) dependency.
+         * 
+         * @return the extension using the hook, or empty if user code
+         * @see #$failForOtherExtensions()
+         */
+        public final Optional<Class<? extends Extension>> extension() {
+            throw new UnsupportedOperationException();
+        }
+
+        final boolean isField() {
+            return false;
+        }
+        
+        final boolean isParameter() {
+            return false;
+        }
+
+        final boolean isTypeVariable() {
+            return false;
         }
 
         /**
@@ -52,28 +77,29 @@ public @interface ClassServiceHook {
             throw new UnsupportedOperationException();
         }
 
-        final boolean isField() {
-            return false;
-        }
-
-        final boolean isParameter() {
-            return false;
-        }
-
-        final boolean isTypeVariable() {
-            return false;
-        }
-
         final Optional<Member> member() {
             throw new UnsupportedOperationException();
         }
 
-        static void $failForTypeVariable() {}
-        static void $failForField() {}
-        static void $failForParameter() {}
-        
+        public final Module module() {
+            throw new UnsupportedOperationException();
+        }
+
         // Altsaa hvis klassen er parameterized... Gaar jeg udfra man gerne vil bruge den...
         static void $allowParameterized() {}
+
+        static void $failForField() {}
+
+        // Only user code can use the service...
+        // IDK if it makes sense
+        //// Maybe have an error message???
+        //// For example, @Provide on an extension... A user service???
+        //// IDK
+        static void $failForOtherExtensions() {}
+
+        static void $failForParameter() {}
+
+        static void $failForTypeVariable() {}
 
         // ignore|fail on Provider
 

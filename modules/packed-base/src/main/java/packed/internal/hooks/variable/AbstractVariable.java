@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import app.packed.base.Variable;
+import app.packed.hooks.Variable;
 
 /**
  *

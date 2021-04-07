@@ -29,7 +29,7 @@ import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.MethodHookModel;
+import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.hooks.HookedMethodProvide;
@@ -50,7 +50,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
             "builder", UseSiteMethodHookModel.Builder.class);
 
     /** A model of the bootstrap class. */
-    public final MethodHookModel bootstrapModel;
+    public final MethodHookBootstrapModel bootstrapModel;
 
     /** A direct method handle to the method. */
     private final MethodHandle directMethodHandle;
@@ -98,7 +98,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
     public static void process(HookedClassModel.Builder source, Method method) {
         Shared shared = null;
         for (Annotation a : method.getAnnotations()) {
-            MethodHookModel model = MethodHookModel.getForAnnotatedMethod(a.annotationType());
+            MethodHookBootstrapModel model = MethodHookBootstrapModel.getForAnnotatedMethod(a.annotationType());
             if (model != null) {
                 if (shared == null) {
                     shared = new Shared(source, method);
@@ -125,18 +125,18 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         private Method exposedMethod;
 
         /** A model of the bootstrap class. */
-        private final MethodHookModel model;
+        private final MethodHookBootstrapModel model;
 
         /** The shared context. */
         private final Shared shared;
 
         private final Method unsafeMethod;
 
-        Builder(HookedClassModel.Builder source, MethodHookModel model, Method method) {
+        Builder(HookedClassModel.Builder source, MethodHookBootstrapModel model, Method method) {
             this(model, new Shared(source, method));
         }
 
-        Builder(MethodHookModel model, Shared shared) {
+        Builder(MethodHookBootstrapModel model, Shared shared) {
             super(shared.source, model);
             this.shared = requireNonNull(shared);
             this.model = requireNonNull(model);

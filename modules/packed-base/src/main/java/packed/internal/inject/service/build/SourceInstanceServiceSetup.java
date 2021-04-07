@@ -25,7 +25,6 @@ import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.SourcedComponentSetup;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.runtime.ConstantRuntimeService;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
@@ -70,7 +69,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return new ConstantRuntimeService(key(), context.pool.read(source.poolIndex));
+            return RuntimeService.constant(key(), context.pool.read(source.poolIndex));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

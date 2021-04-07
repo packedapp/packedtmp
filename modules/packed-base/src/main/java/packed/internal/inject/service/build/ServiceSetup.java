@@ -34,11 +34,11 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
  * needed at runtime.
  * 
  * <p>
- * Instances of this class are only exposed as a {@link Service} to end users if {@link #isFrozen}. 
+ * Instances of this class are only exposed as a {@link Service} to end users if {@link #isKeyFrozen}. 
  */
 public abstract class ServiceSetup implements InternalService, DependencyProducer {
 
-    private boolean isFrozen;
+    private boolean isKeyFrozen;
 
     /**
      * The key of the node (optional). Can be null, for example, for a class that is not exposed as a service but has
@@ -52,7 +52,7 @@ public abstract class ServiceSetup implements InternalService, DependencyProduce
     }
 
     public final void as(Key<?> key) {
-        if (isFrozen) {
+        if (isKeyFrozen) {
             throw new IllegalStateException("The key of the service can no longer be changed");
         }
         // requireConfigurable();
@@ -68,14 +68,14 @@ public abstract class ServiceSetup implements InternalService, DependencyProduce
     }
 
     public final Service exposeAsService() {
-        if (isFrozen) {
+        if (isKeyFrozen) {
             return this;
         }
         return simple(key, isConstant());
     }
 
     public final void freeze() {
-        isFrozen = true;
+        isKeyFrozen = true;
     }
 
     @Override
@@ -110,11 +110,11 @@ public abstract class ServiceSetup implements InternalService, DependencyProduce
     // Maaske flyt den til service... Naar vi sealer ting.. Er det godt at give folk en 
     // mulighed for at kunne instanser af dem
     public static Service simple(Key<?> key, boolean isConstant) {
-        return new ServiceDescription(key, isConstant);
+        return new ServiceWrapper(key, isConstant);
     }
     
     /** An implementation of {@link Service} because {@link ServiceSetup} is mutable. */
-    private static final record ServiceDescription(Key<?> key, boolean isConstant) implements Service {
+    private static final record ServiceWrapper(Key<?> key, boolean isConstant) implements Service {
 
         /** {@inheritDoc} */
         @Override

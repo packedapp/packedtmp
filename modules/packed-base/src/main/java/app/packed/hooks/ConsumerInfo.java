@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.hooks;
 
 import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.base.Variable;
 import app.packed.component.Component;
 import app.packed.container.Extension;
+import app.packed.inject.Provide;
+import app.packed.inject.ServiceLocator;
 
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
@@ -51,21 +52,21 @@ import app.packed.container.Extension;
  * }
  * </pre>
  * 
- * @apiNote In the future, if the Java language permits, {@link ProvisionContext} may become a {@code sealed} interface,
+ * @apiNote In the future, if the Java language permits, {@link ConsumerInfo} may become a {@code sealed} interface,
  *          which would prohibit subclassing except by explicitly permitted types.
  */
-public interface ProvisionContext {
+public interface ConsumerInfo {
 
-    /**
-     * Returns weather or not the provided instance will be treated as a constant.
-     * <p>
-     * The runtime may choose to create
-     * 
-     * @return whether or not the provided instance will be treated as a constant
-     * 
-     * @see Provide#constant()
-     */
-    boolean isConstant();
+//    /**
+//     * Returns weather or not the provided instance will be treated as a constant.
+//     * <p>
+//     * The runtime may choose to create
+//     * 
+//     * @return whether or not the provided instance will be treated as a constant
+//     * 
+//     * @see Provide#constant()
+//     */
+//    boolean isConstant();
 
     /**
      * Returns whether or the instance is being injected into, for example, a field, method, constructor.
@@ -88,15 +89,15 @@ public interface ProvisionContext {
      */
     boolean isLookup();
 
-    /**
-     * Returns whether or not this dependency is optional.
-     *
-     * @return whether or not this dependency is optional
-     */
-    // Tillader vi det??? Hvorfor ikke
-    // Hvis man vil vaere optional skal man bruge ProvisionContext
-    // Og man skal lade sig styre af isOptional
-    boolean isOptional();
+//    /**
+//     * Returns whether or not this dependency is optional.
+//     *
+//     * @return whether or not this dependency is optional
+//     */
+//    // Tillader vi det??? Hvorfor ikke
+//    // Hvis man vil vaere optional skal man bruge ProvisionContext
+//    // Og man skal lade sig styre af isOptional
+//    boolean isOptional();
 
     /**
      * If the provisioning is part of an injection and not a {@link #isConstant() constant}. Returns the type of class that
@@ -147,5 +148,5 @@ public interface ProvisionContext {
      * @return the variable that is being injected, or an empty {@link Optional} if this dependency was not created from a
      *         variable.
      */
-    Optional<Variable> targetVariable();
+   // Optional<Variable> targetVariable();
 }

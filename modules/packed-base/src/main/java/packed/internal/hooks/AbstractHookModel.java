@@ -17,9 +17,12 @@ package packed.internal.hooks;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 
 import packed.internal.invoke.MemberScanner;
-import packed.internal.invoke.InstantiatorBuilder;
+import packed.internal.invoke.MethodHandleBuilder;
+import packed.internal.invoke.OpenClass;
 import packed.internal.util.ThrowableUtil;
 
 /** An abstract base class for bootstrap hook classes. */
@@ -64,7 +67,9 @@ public abstract class AbstractHookModel<T> {
     /** A builder for a bootstrap model. */
     static abstract class Builder<T> extends MemberScanner {
 
-        final InstantiatorBuilder ib;
+        private final InstantiatorBuilder ib;
+
+        final OpenClass oc;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
         /**
@@ -76,6 +81,7 @@ public abstract class AbstractHookModel<T> {
         Builder(Class<?> bootstrapImplementation) {
             super(bootstrapImplementation);
             ib = InstantiatorBuilder.of(MethodHandles.lookup(), bootstrapImplementation);
+            this.oc = ib.oc();
         }
 
         /**
@@ -85,4 +91,23 @@ public abstract class AbstractHookModel<T> {
          */
         protected abstract AbstractHookModel<T> build();
     }
+    
+    private record InstantiatorBuilder(OpenClass oc, MethodHandleBuilder mh, Executable executable) {
+
+        public MethodHandle build() {
+            return mh.build(oc, executable);
+        }
+
+        public OpenClass oc() {
+            return oc;
+        }
+
+        public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {
+            OpenClass oc = OpenClass.of(lookup, implementation);
+            MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
+            Constructor<?> constructor = MemberScanner.getConstructor(implementation, false, e -> new IllegalArgumentException(e));
+            return new InstantiatorBuilder(oc, mhb, constructor);
+        }
+    }
+
 }

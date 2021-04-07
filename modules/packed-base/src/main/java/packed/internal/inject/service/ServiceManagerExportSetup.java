@@ -27,6 +27,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.ServiceComposer;
+import app.packed.inject.ServiceConfiguration;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceRegistry;
@@ -176,17 +177,17 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
             for (ExportedServiceSetup entry : exportedEntries) {
                 // try and find a matching service entry for key'ed exports via
                 // exportedEntry != null for entries added via InjectionExtension#export(ProvidedComponentConfiguration)
-                ServiceSetup entryToExport = entry.exportedEntry;
+                ServiceSetup entryToExport = entry.serviceToExport;
                 if (entryToExport == null) {
                     ServiceDelegate wrapper = sm.resolvedServices.get(entry.exportAsKey);
                     entryToExport = wrapper == null ? null : wrapper.getSingle();
-                    entry.exportedEntry = entryToExport;
+                    entry.serviceToExport = entryToExport;
                     if (entryToExport == null) {
                         sm.errorManager().failingUnresolvedKeyedExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>()).add(entry);
                     }
                 }
 
-                if (entry.exportedEntry != null) {
+                if (entry.serviceToExport != null) {
                     ServiceSetup existing = resolvedExports.putIfAbsent(entry.key(), entry);
                     if (existing != null) {
                         LinkedHashSet<ServiceSetup> hs = sm.errorManager().failingDuplicateExports.computeIfAbsent(entry.key(), m -> new LinkedHashSet<>());
@@ -243,12 +244,13 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
     }
 
     /**
-     * An instance of {@link ExportedServiceConfiguration} that is returned to the user when he exports a service
+     * An instance of {@link ExportedServiceConfiguration} that is returned to the user when they export a service
      * 
+     * @see ServiceConfiguration#export()
      * @see ServiceExtension#export(Class)
      * @see ServiceExtension#export(Key)
      */
-    record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup entry) implements ExportedServiceConfiguration<T> {
+    record ExportedServiceConfigurationSetup<T> (ExportedServiceSetup service) implements ExportedServiceConfiguration<T> {
 
         /** {@inheritDoc} */
         @Override
@@ -256,7 +258,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
             // TODO, maybe it gets disabled the minute we start analyzing exports???
             // Nah, lige saa snart, vi begynder
 //            entry.sm.checkExportConfigurable();
-            entry.as(key);
+            service.as(key);
             return this;
         }
 
@@ -264,7 +266,7 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
         @Override
         @Nullable
         public Key<?> key() {
-            return entry.key();
+            return service.key();
         }
     }
 }

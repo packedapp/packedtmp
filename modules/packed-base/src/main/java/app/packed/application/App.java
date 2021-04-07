@@ -49,7 +49,7 @@ public final class App {
     // PanicException hvad jeg syntes vi skal
 
     /** A daemon driver. */
-    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder()
+    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder().launchMode(RunState.RUNNING)
             .old(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** Not today Satan, not today. */

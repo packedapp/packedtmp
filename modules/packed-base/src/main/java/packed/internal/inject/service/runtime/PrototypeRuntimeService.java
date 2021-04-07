@@ -20,14 +20,13 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.util.ThrowableUtil;
 
 /** A runtime service node for prototypes. */
-public final class PrototypeRuntimeService extends RuntimeService {
+public final class PrototypeRuntimeService implements RuntimeService {
 
     /** The key under which the service is available. */
     private final Key<?> key;
@@ -67,7 +66,7 @@ public final class PrototypeRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Object provideInstance(ProvisionContext ignore) {
+    public Object provideInstance() {
         try {
             return mh.invoke(pool);
         } catch (Throwable e) {
@@ -79,5 +78,10 @@ public final class PrototypeRuntimeService extends RuntimeService {
     @Override
     public boolean requiresProvisionContext() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return RuntimeService.toString(this);
     }
 }

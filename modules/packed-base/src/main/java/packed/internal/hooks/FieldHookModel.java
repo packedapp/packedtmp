@@ -106,19 +106,19 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
         protected void onMethod(Method method) {
             Provide ap = method.getAnnotation(Provide.class);
             if (ap != null) {
-                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
                 if (providing.putIfAbsent(b.key, b) != null) {
-                    throw new InternalExtensionException("Multiple methods on " + ib.type() + " that provide " + b.key);
+                    throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
                 }
             }
 
             OnInitialize oi = method.getAnnotation(OnInitialize.class);
             if (oi != null) {
                 if (onInitialize != null) {
-                    throw new IllegalStateException(ib.type() + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
+                    throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                 }
-                MethodHandle mh = ib.oc().unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 onInitialize = mh;
             }
         }

@@ -17,8 +17,6 @@ package app.packed.inject;
 
 import java.lang.invoke.MethodType;
 
-import app.packed.base.Variable;
-
 /**
  * Like {@link MethodType} but retains generic type information and annotations.
  */
@@ -27,17 +25,17 @@ import app.packed.base.Variable;
 // InjectionType, FunctionType, ...
 public final class FactoryType {
 
-    public Variable variable(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    public FactoryType changeReturnType(Variable variable) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Variable returnType() {
-        throw new UnsupportedOperationException();
-    }
+//    public Variable variable(int index) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public FactoryType changeReturnType(Variable variable) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    public Variable returnType() {
+//        throw new UnsupportedOperationException();
+//    }
 
     MethodType methodType() {
         throw new UnsupportedOperationException();

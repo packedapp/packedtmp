@@ -26,9 +26,9 @@ import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.inject.ServiceExtension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
+import packed.internal.inject.dependency.InjectionNode;
 
 /**
  * This class manages everything to do with the requirements for a {@link ServiceExtension}.
@@ -74,9 +74,9 @@ public final class ServiceManagerRequirementsSetup {
                     if (dependencies.size() == 1) {
                         sb.append("single ");
                     }
-                    DependencyDescriptor dependency = e.dependency;
+                   // DependencyDescriptor dependency = e.dependency;
                     sb.append("parameter on ");
-                    if (dependency.variable() != null) {
+                  //  if (dependency.variable() != null) {
 
 //                        Executable ed = ((PackedParameterDescriptor) dependency.variable().get()).unsafeExecutable();
 //                        sb.append(ReflectionUtil.typeOf(ed)).append(": ");
@@ -103,7 +103,7 @@ public final class ServiceManagerRequirementsSetup {
 //                            sb.append(dependency.variable().get().name());
 //                        }
 //                        sb.append(")");
-                    }
+                    //}
                     // b.root.requiredServicesMandatory.add(e.get)
                     // System.err.println(b.root.privateNodeMap.stream().map(e -> e.key()).collect(Collectors.toList()));
                     // UnresolvedVariableException

@@ -18,7 +18,6 @@ public class WTest extends BaseAssembly {
         System.out.println(p.services());
 
         System.out.println(p.name());
-
     }
 
 }

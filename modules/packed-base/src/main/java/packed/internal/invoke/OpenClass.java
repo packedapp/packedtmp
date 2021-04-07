@@ -75,10 +75,6 @@ public final class OpenClass {
         }
     }
 
-    public OpenClass copy() {
-        return new OpenClass(lookup, type, registerForNative);
-    }
-
     private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {
         if (!member.getDeclaringClass().isAssignableFrom(type)) {
             throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + type);
@@ -112,17 +108,17 @@ public final class OpenClass {
             throw new InaccessibleMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }
     }
-
-    public OpenClass spawn(Class<?> clazz) {
-        // Used for classes in the same nest
-        // So maybe check that they are nest mates
-        // We need it because private lookup is attached to one particular class.
-        // So need a private lookup object for every class in the same nest.
-        if (clazz.getModule() != this.type.getModule()) {
-            throw new IllegalArgumentException();
-        }
-        return new OpenClass(lookup, clazz, registerForNative);
-    }
+//
+//    public OpenClass spawn(Class<?> clazz) {
+//        // Used for classes in the same nest
+//        // So maybe check that they are nest mates
+//        // We need it because private lookup is attached to one particular class.
+//        // So need a private lookup object for every class in the same nest.
+//        if (clazz.getModule() != this.type.getModule()) {
+//            throw new IllegalArgumentException();
+//        }
+//        return new OpenClass(lookup, clazz, registerForNative);
+//    }
 
     /**
      * Returns the class that is processed.

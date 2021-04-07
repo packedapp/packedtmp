@@ -28,7 +28,6 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.inject.Provider;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
@@ -76,8 +75,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     }
     
     final Object provideInstanceForLocator(RuntimeService s) {
-        ProvisionContext pc = PackedProvisionContext.of(s.key());
-        return s.provideInstance(pc);
+        return s.provideInstance();
     }
 
     final Provider<?> getProviderForLocator(RuntimeService s) {
@@ -85,8 +83,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
             Object constant = provideInstanceForLocator(s);
             return Provider.ofConstant(constant);
         } else {
-            ProvisionContext pc = PackedProvisionContext.of(s.key());
-            return new ProvisionContextProvider<>(s, pc);
+            return new PackedProvider<>(s);
         }
     }
 

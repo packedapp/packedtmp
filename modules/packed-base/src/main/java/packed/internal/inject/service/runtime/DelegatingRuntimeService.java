@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import app.packed.inject.ProvisionContext;
 import app.packed.inject.ServiceMode;
 
 /**
@@ -28,14 +27,7 @@ import app.packed.inject.ServiceMode;
  * <p>
  * This type is used for exported nodes as well as nodes that are imported from other containers.
  */
-// Alias???
-public final class DelegatingRuntimeService extends RuntimeService {
-
-    /** The runtime node to delegate to. */
-    private final RuntimeService delegate;
-
-    /** The key under which the service is available. */
-    private final Key<?> key;
+public record DelegatingRuntimeService(Key<?> key, RuntimeService delegate) implements RuntimeService {
 
     /**
      * Creates a new runtime alias node.
@@ -43,9 +35,9 @@ public final class DelegatingRuntimeService extends RuntimeService {
      * @param delegate
      *            the build time alias node to create a runtime node from
      */
-    public DelegatingRuntimeService(Key<?> key, RuntimeService delegate) {
-        this.key = requireNonNull(key);
-        this.delegate = requireNonNull(delegate);
+    public DelegatingRuntimeService {
+        requireNonNull(key);
+        requireNonNull(delegate);
     }
 
     /** {@inheritDoc} */
@@ -56,25 +48,24 @@ public final class DelegatingRuntimeService extends RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public Key<?> key() {
-        return key;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ServiceMode mode() {
         return delegate.mode();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Object provideInstance(ProvisionContext site) {
-        return delegate.provideInstance(site);
+    public Object provideInstance() {
+        return delegate.provideInstance();
     }
 
     /** {@inheritDoc} */
     @Override
     public boolean requiresProvisionContext() {
         return delegate.requiresProvisionContext();
+    }
+
+    @Override
+    public String toString() {
+        return RuntimeService.toString(this);
     }
 }

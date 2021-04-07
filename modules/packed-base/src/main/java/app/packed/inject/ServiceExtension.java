@@ -312,12 +312,12 @@ public class ServiceExtension extends Extension {
      */
     public void provideAll(ServiceLocator locator) {
         requireNonNull(locator, "locator is null");
-        if (!(locator instanceof AbstractServiceLocator asl)) {
+        if (!(locator instanceof AbstractServiceLocator l)) {
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
         checkConfigurable();
-        services.provideAll(asl);
+        services.provideAll(l);
     }
 
     /**
@@ -463,20 +463,20 @@ class ZExtraFunc {
     // Vi vil gerne tilfoejer
 //    protected ExportedServiceConfiguration<ServiceSelection> addSelectin(Function<>) {}
 
-    <T> ExportedServiceConfiguration<T> addOptional(Class<T> optional) {
+    <T> ServiceConfiguration<T> addOptional(Class<T> optional) {
         // @Inject is allowed, but other annotations, types und so weiter is not...
         // Den har ihvertfald slet ikke noget providing...
         throw new UnsupportedOperationException();
     }
 
-    <T> ExportedServiceConfiguration<T> alias(Class<T> key) {
+    <T> ServiceConfiguration<T> alias(Class<T> key) {
         // Hmm maaske vi skal kalde den noget andet...
         // SingletonService kan sikkert sagtens extende den...
         // ProtoypeConfiguration has altid en noegle og ikek optional..
         throw new UnsupportedOperationException();
     }
 
-    <T> ExportedServiceConfiguration<T> assistedInject(Class<T> interfase) {
+    <T> ServiceConfiguration<T> assistedInject(Class<T> interfase) {
         // Only support interface to start with
         // Will never try and implement default methods
 
@@ -575,12 +575,12 @@ class ZExtraFunc {
     // Vi venter med den...
     // Altsaa det er jo kun services den kan exportere...
     // Altsaa vi kan jo have nogle
-    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
-        // Exports a service by mapping an existing service
-        // Eneste problem er nu har vi exported services som ikke er services...
-        // Men det er vel ikke anderledes end install(X).provide();
-        throw new UnsupportedOperationException();
-    }
+//    <T, R> ExportedServiceConfiguration<T> export(Factory1<T, R> factory) {
+//        // Exports a service by mapping an existing service
+//        // Eneste problem er nu har vi exported services som ikke er services...
+//        // Men det er vel ikke anderledes end install(X).provide();
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * Returns an unmodifiable view of the services that are currently available within the container.

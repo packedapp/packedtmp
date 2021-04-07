@@ -24,6 +24,7 @@ package app.packed.hooks;
 // Men ved ikke hvordan det vil fungere end gang med generics specialization.
 // Kan vi ende ud i en situation hvor vi har @Nullable paa en metode
 // Og saa kan den lige pludselig ikke specialiseres???
+
 public interface MethodAccessor<R> {
 
     /**

@@ -21,9 +21,10 @@ import app.packed.inject.ServiceExtension;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * A configuration object for an exported service. An instance of this interface is usually obtained by calling the
- * various provide or export methods located on {@link ServiceExtension}, {@link InjectorComposer} or
- * {@link BaseAssembly}.
+ * A configuration object for an exported service.
+ * <p>
+ * An instance of this interface is usually obtained by calling the various provide or export methods located on
+ * {@link ServiceExtension}, {@link InjectorComposer} or {@link BaseAssembly}.
  */
 public interface ExportedServiceConfiguration<T> {
 
