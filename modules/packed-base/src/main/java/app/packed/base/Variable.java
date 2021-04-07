@@ -45,7 +45,7 @@ import packed.internal.hooks.variable.ParameterVariable;
 
 // tror vi bliver noedt til at have specielle metoder for repeatable annotations
 
-public interface Variable extends AnnotatedElement /*, OldVariable */ {
+public interface Variable extends AnnotatedElement {
 
     // Variable addNullable(); intoOptional()
     // lots of little transformations

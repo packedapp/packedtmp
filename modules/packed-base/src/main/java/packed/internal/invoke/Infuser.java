@@ -45,7 +45,7 @@ public final class Infuser {
 
     private MethodHandle singleConstructor(Class<?> type, Class<?> returnType, Function<String, RuntimeException> errorMaker) {
         // First lets find a constructor
-        Constructor<?> constructor = FindInjectableConstructor.get(type, false, errorMaker);
+        Constructor<?> constructor = MemberScanner.getConstructor(type, false, errorMaker);
 
         OpenClass oc = OpenClass.of(lookup, type);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(type, parameterTypes);

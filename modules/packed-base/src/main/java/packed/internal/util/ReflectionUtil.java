@@ -16,9 +16,7 @@
 package packed.internal.util;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
@@ -45,10 +43,6 @@ public final class ReflectionUtil {
         } catch (NoSuchFieldException e) {
             throw new IllegalStateException(e);
         }
-    }
-
-    public static String typeOf(Executable e) {
-        return e instanceof Method ? "method" : "constructor";
     }
 
     public static Type getParameterizedType(Parameter parameter, int index) {

@@ -19,12 +19,12 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.List;
 
-import app.packed.hooks.AutoService;
+import app.packed.hooks.sandbox2.OldAutoService;
 
 /**
  * Represents the arguments to a method main.
  */
-@AutoService
+@OldAutoService
 // CliArgs???
 public final class MainArgs {
 

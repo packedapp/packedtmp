@@ -31,7 +31,7 @@ import app.packed.hooks.ClassHook;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.HookedMethodProvide;
-import packed.internal.invoke.ClassScanner;
+import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.OpenClass;
 
 /** A model of a class that uses class or member hooks. */
@@ -93,7 +93,7 @@ public final class HookedClassModel {
     }
 
     /** A builder object for {@link HookedClassModel}. */
-    public static final class Builder extends ClassScanner {
+    public static final class Builder extends MemberScanner {
 
         final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 

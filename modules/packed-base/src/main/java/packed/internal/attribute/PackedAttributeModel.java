@@ -27,7 +27,7 @@ import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.invoke.OpenClass;
-import packed.internal.invoke.ClassScanner;
+import packed.internal.invoke.MemberScanner;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -46,7 +46,7 @@ public class PackedAttributeModel {
         return new Builder(oc).build();
     }
 
-    static class Builder extends ClassScanner {
+    static class Builder extends MemberScanner {
         final OpenClass oc;
 
         protected Builder(OpenClass oc) {

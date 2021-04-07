@@ -15,6 +15,7 @@
  */
 package app.packed.micro;
 
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.Benchmark;
@@ -44,12 +45,14 @@ public class ImageBigMicro {
     static final ApplicationImage<Program> INSTALL31 = Program.newImage(new BaseAssembly() {
         @Override
         public void build() {
+            lookup(MethodHandles.lookup());
             // install(A.class);
             // install(NeedsA.class);
             for (int i = 0; i < 10; i++) {
                 link(new BaseAssembly() {
                     @Override
                     public void build() {
+                        lookup(MethodHandles.lookup());
                         install(A.class);
                         install(NeedsA.class);
                     }
@@ -61,22 +64,26 @@ public class ImageBigMicro {
     static final ApplicationImage<Program> INSTALL253 = Program.newImage(new BaseAssembly() {
         @Override
         public void build() {
+            lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
                 link(new BaseAssembly() {
                     @Override
                     public void build() {
+                        lookup(MethodHandles.lookup());
                         install(A.class);
                         install(NeedsA.class);
                         for (int i = 0; i < 4; i++) {
                             link(new BaseAssembly() {
                                 @Override
                                 public void build() {
+                                    lookup(MethodHandles.lookup());
                                     install(A.class);
                                     install(NeedsA.class);
                                     for (int i = 0; i < 4; i++) {
                                         link(new BaseAssembly() {
                                             @Override
                                             public void build() {
+                                                lookup(MethodHandles.lookup());
                                                 install(A.class);
                                                 install(NeedsA.class);
                                             }
@@ -93,22 +100,26 @@ public class ImageBigMicro {
     static final ApplicationImage<Program> INSTALL253_NOS = Program.newImage(new BaseAssembly() {
         @Override
         public void build() {
+            lookup(MethodHandles.lookup());
             for (int i = 0; i < 4; i++) {
                 link(new BaseAssembly() {
                     @Override
                     public void build() {
+                        lookup(MethodHandles.lookup());
                         installInstance(new A());
                         installInstance(new NeedsA(new A()));
                         for (int i = 0; i < 4; i++) {
                             link(new BaseAssembly() {
                                 @Override
                                 public void build() {
+                                    lookup(MethodHandles.lookup());
                                     installInstance(new A());
                                     installInstance(new NeedsA(new A()));
                                     for (int i = 0; i < 4; i++) {
                                         link(new BaseAssembly() {
                                             @Override
                                             public void build() {
+                                                lookup(MethodHandles.lookup());
                                                 installInstance(new A());
                                                 installInstance(new NeedsA(new A()));
                                             }

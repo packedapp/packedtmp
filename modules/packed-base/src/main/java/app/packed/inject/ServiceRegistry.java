@@ -27,23 +27,25 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.base.Key;
-import app.packed.hooks.AutoService;
+import app.packed.hooks.sandbox2.OldAutoService;
 import packed.internal.inject.service.AbstractServiceRegistry;
 import packed.internal.util.PackedAttributeHolderStream;
 
 /**
- * A collection of services where each service have a unique {@link Service#key() key}. This interface does not directly
- * support any way to acquire actual service instances. Instead this functionality is available via some of its
- * subinterfaces.
+ * A collection of services, with each service having a unique {@link Service#key() key}.
+ * <p>
+ * This interface does not directly support any way to acquire actual service instances. However, this functionality is
+ * available via some of its subinterfaces.
  * <p>
  * Packed provides a number of subinterfaces and abstract implementations of this interface:
  * <ul>
- * <li>{@link ServiceLocator}, extends this interface with various method for obtaining service instances or service
+ * <li>{@link ServiceLocator}, extends this interface with various method for obtaining service instances and service
  * instance providers.</li>
- * <li>{@link ServiceSelection}, extends service locator (and this interface) and</li>
- * <li>{@link ServiceComposer}, an abstract implementation of this interface that is used for configuring service
- * registry. Unlike service locator and service selection this is mutable
- * <li>
+ * <li>{@link ServiceSelection}, a type of service locator, where every service shares a common super type. This is
+ * typically used for creating plugin-based systems.</li>
+ * <li>{@link ServiceComposer}, an abstract implementation of this interface that is used for configuring the service
+ * registry. Unlike service locator and service selection this is mutable</li>
+ * </ul>
  * <p>
  * Unless otherwise specified, implementations of this interface holds an unchangeable collection of services. One
  * notable exception is the {@link ServiceComposer} interface.
@@ -53,15 +55,15 @@ import packed.internal.util.PackedAttributeHolderStream;
  * If this interface is used as an auto service. The registry will contain all services that available to a given
  * component instance. It will not include auto services.
  */
-@AutoService
+@OldAutoService
 public interface ServiceRegistry extends Iterable<Service> {
 
     /**
      * Returns a map view of every entry (key-service pair) in this registry in no particular order.
      * <p>
      * If this registry supports removals, the returned map will also support removal operations: {@link Map#clear()},
-     * {@link Map#remove(Object)}, and {@link Map#remove(Object, Object)} or via views on {@link Map#keySet()},
-     * {@link Map#values()} and {@link Map#entrySet()}. The returned map will never support insertion or update operations.
+     * {@link Map#remove(Object)}, and {@link Map#remove(Object, Object)} and via views on {@link Map#keySet()},
+     * {@link Map#values()} and {@link Map#entrySet()}. The returned map never supports insertion or update operations.
      * <p>
      * The returned map will retain any thread-safety guarantees provided by the registry itself.
      * 
@@ -125,11 +127,7 @@ public interface ServiceRegistry extends Iterable<Service> {
         asMap().values().forEach(action);
     }
 
-    /**
-     * Returns whether or this registry contains any services.
-     * 
-     * @return true if this registry contains at least 1 service, otherwise false
-     */
+    /** {@return true if this registry contains any services, otherwise false} */
     default boolean isEmpty() {
         return asMap().isEmpty();
     }
@@ -156,20 +154,12 @@ public interface ServiceRegistry extends Iterable<Service> {
         return asMap().keySet();
     }
 
-    /**
-     * Returns a unordered {@code Stream} of all services in this registry.
-     *
-     * @return a unordered {@code Stream} of all services in this registry
-     */
+    /** {@return a unordered {@code Stream} of all services in this registry} */
     default Stream<Service> services() {
         return new PackedAttributeHolderStream<>(asMap().values().stream());
     }
 
-    /**
-     * Returns the number of services in this registry.
-     * 
-     * @return the number of services in this registry
-     */
+    /** { @return the number of services in this registry} */
     default int size() {
         return asMap().size();
     }
@@ -180,16 +170,18 @@ public interface ServiceRegistry extends Iterable<Service> {
         return asMap().values().spliterator();
     }
 
-    /**
-     * Returns an unmodifiable registry containing no services.
-     * 
-     * @return an unmodifiable registry containing no services
-     */
+    /** {@return an immutable service registry containing no services} */
     static ServiceRegistry of() {
         return AbstractServiceRegistry.EMPTY;
     }
+}
+// --------- NOTES --------
+//
+// extends AttributeHolder?
 
-    static ServiceRegistry copyOf(ServiceRegistry other) {
+interface ServiceRegistryZandbox {
+
+    static ServiceRegistry copyOf(ServiceRegistry registrys) {
         // Vi vil gerne expose en immutable tingeling
         throw new UnsupportedOperationException();
     }
@@ -200,6 +192,3 @@ public interface ServiceRegistry extends Iterable<Service> {
         throw new UnsupportedOperationException();
     }
 }
-// --------- NOTES --------
-//
-// extends AttributeHolder?

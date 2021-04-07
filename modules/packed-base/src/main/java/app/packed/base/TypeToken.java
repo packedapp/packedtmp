@@ -116,22 +116,6 @@ public abstract class TypeToken<T> {
     }
 
     /**
-     * If this type token is a {@link Class#isPrimitive() primitive type}, returns a boxed type token. Otherwise returns
-     * this.
-     * 
-     * @return if this type token is a primitive returns the boxed version, otherwise returns this
-     */
-    // wrap instead of box
-    @SuppressWarnings("unchecked")
-    public final TypeToken<T> wrap() {
-        // TODO fix for Valhalla? reference type, inline type...
-        if (rawType().isPrimitive()) {
-            return (TypeToken<T>) of(ClassUtil.wrap(rawType()));
-        }
-        return this;
-    }
-
-    /**
      * To avoid accidentally holding on to any instance that defines this type token as an anonymous class. This method
      * creates a new type token instance without any reference to the instance that defined the anonymous class.
      * 
@@ -144,32 +128,10 @@ public abstract class TypeToken<T> {
         return new CanonicalizedTypeToken<>(type);
     }
 
-    public boolean isCanonicalized() {
-        return getClass() == CanonicalizedTypeToken.class;
-    }
-
     /** {@inheritDoc} */
     @Override
     public final boolean equals(@Nullable Object obj) {
         return obj instanceof TypeToken<?> tt && type.equals(tt.type);
-    }
-
-    /**
-     * Returns the raw (non-generic) type.
-     *
-     * @return the raw (non-generic) type
-     */
-    public final Class<? super T> rawType() {
-        return rawType;
-    }
-
-    /**
-     * Returns the underlying type instance.
-     *
-     * @return the underlying type instance
-     */
-    public final Type type() {
-        return type;
     }
 
     /** {@inheritDoc} */
@@ -180,6 +142,19 @@ public abstract class TypeToken<T> {
             return h;
         }
         return hash = type.hashCode();
+    }
+
+    public final boolean isCanonicalized() {
+        return getClass() == CanonicalizedTypeToken.class;
+    }
+
+    /**
+     * Returns the raw (non-generic) type.
+     *
+     * @return the raw (non-generic) type
+     */
+    public final Class<? super T> rawType() {
+        return rawType;
     }
 
     /** {@inheritDoc} */
@@ -196,6 +171,31 @@ public abstract class TypeToken<T> {
      */
     public final String toStringSimple() {
         return formatSimple(type);
+    }
+
+    /**
+     * Returns the underlying type instance.
+     *
+     * @return the underlying type instance
+     */
+    public final Type type() {
+        return type;
+    }
+
+    /**
+     * If this type token is a {@link Class#isPrimitive() primitive type}, returns a boxed type token. Otherwise returns
+     * this.
+     * 
+     * @return if this type token is a primitive returns the boxed version, otherwise returns this
+     */
+    // wrap instead of box
+    @SuppressWarnings("unchecked")
+    public final TypeToken<T> wrap() {
+        // TODO fix for Valhalla? reference type, inline type...
+        if (rawType().isPrimitive()) {
+            return (TypeToken<T>) of(ClassUtil.wrap(rawType()));
+        }
+        return this;
     }
 
     /**
@@ -273,13 +273,13 @@ public abstract class TypeToken<T> {
     }
 
     /**
-     * Returns a type token of the specified class type.
+     * Returns a type token for the specified class.
      *
      * @param <T>
      *            the type
      * @param type
-     *            the class instance to return a type token of
-     * @return a type token of the specified class type
+     *            the class to return a type token for
+     * @return a type token for the specified class type
      */
     public static <T> TypeToken<T> of(Class<T> type) {
         requireNonNull(type, "type is null");

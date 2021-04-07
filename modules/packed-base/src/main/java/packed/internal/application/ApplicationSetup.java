@@ -69,7 +69,7 @@ public final class ApplicationSetup {
         }
     }
 
-    /** {@return returns an Application adaptor that can be exposed to end-users} */
+    /** {@return an application adaptor that can be exposed to end-users} */
     public Application adaptor() {
         return new Adaptor(this);
     }

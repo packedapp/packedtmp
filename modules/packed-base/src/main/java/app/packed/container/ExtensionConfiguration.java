@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationImage;
 import app.packed.application.Build;
 import app.packed.base.NamespacePath;
-import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
@@ -36,8 +35,6 @@ import app.packed.component.Wirelet;
 import app.packed.component.WireletList;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentSetup;
-import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
 /**
@@ -249,34 +246,6 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     <T extends Wirelet> WireletList<T> wirelets(Class<T> wireletType);
 
-    @Nullable
-    private static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
-        requireNonNull(lookup, "containerComponent is null");
-
-        // We only allow to call in directly on the container itself
-        if (!containerComponent.modifiers().isContainer()) {
-            throw new IllegalArgumentException("The specified component '" + containerComponent.path() + "' must have the Container modifier, modifiers = "
-                    + containerComponent.modifiers());
-        }
-
-        // lookup.lookupClass() must point to the extension that should be extracted
-        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
-            throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
-                    + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
-        }
-
-        @SuppressWarnings("unchecked")
-        Class<? extends Extension> extensionClass = (Class<? extends Extension>) lookup.lookupClass();
-        // Must have full access to the extension class
-        if (!lookup.hasFullPrivilegeAccess()) {
-            throw new IllegalArgumentException("The specified lookup object must have full privilege access to " + extensionClass
-                    + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
-        }
-
-        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
-        return container.getExtensionSetup(extensionClass);
-    }
-
     /**
      * Typically used, for example, for testing.
      * 
@@ -307,7 +276,7 @@ public /* sealed */ interface ExtensionConfiguration {
     private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
             Component containerComponent) {
         requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(getExtensionSetup(caller, containerComponent));
+        return Optional.ofNullable(ExtensionSetup.getExtensionSetup(caller, containerComponent));
     }
 
     /**
@@ -332,7 +301,7 @@ public /* sealed */ interface ExtensionConfiguration {
                     "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + caller.lookupClass());
         }
 
-        ExtensionSetup eb = getExtensionSetup(caller, containerComponent);
+        ExtensionSetup eb = ExtensionSetup.getExtensionSetup(caller, containerComponent);
         return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
     }
 }

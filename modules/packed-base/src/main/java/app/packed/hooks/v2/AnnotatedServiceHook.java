@@ -1,4 +1,4 @@
-package app.packed.hooks;
+package app.packed.hooks.v2;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -30,7 +30,5 @@ public @interface AnnotatedServiceHook {
 
         // Extension must have ConverterExtension as a dependency (if @Defauls() type!= parameter.type)
         void $enableDefaultValue() {}
-        
     }
 }
-//CustomBootstrap

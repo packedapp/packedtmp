@@ -41,14 +41,14 @@ import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends WireableComponentSetup {
 
-    /** Child containers, lazy initialized (we rely on this in ExtensionSetup) */
+    /** Child containers, lazy initialized. */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
@@ -61,10 +61,10 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     private boolean hasRunPreContainerChildren;
 
-    private ArrayList<ExtensionSetup> tmpExtensions;
-
-    /** Injection configuration for this container. */
+    /** The injector of this container. */
     public final ContainerInjectorSetup injection = new ContainerInjectorSetup(this);
+
+    private ArrayList<ExtensionSetup> tmpExtensions;
 
     /**
      * Create a new container (component).
@@ -76,17 +76,17 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param realm
      *            the realm this container is a part of
      * @param driver
-     *            the driver that was used to create the container, is always
-     *            {@link WireableComponentDriver.ContainerComponentDriver}
+     *            the driver that was used to create the container
      * @param parent
      *            any parent component
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent,
+    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, ContainerComponentDriver driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
         super(build, application, realm, driver, parent, wirelets);
 
+        // Various container tree management
         this.containerParent = parent == null ? null : parent.container;
         if (containerParent != null) {
             containerParent.runPredContainerChildren();
@@ -97,7 +97,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             c.add(this);
         }
 
-        // Set the name of the component if it have not already been set using a wirelet
+        // Set the name of the component if it was not set by a wirelet
         if (name == null) {
             // I think try and move some of this to ComponentNameWirelet
             String n = null;
@@ -130,7 +130,6 @@ public final class ContainerSetup extends WireableComponentSetup {
             PackedApplicationDriver<?> pac = application.driver;
             dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
         }
-
     }
 
     public void closeRealm() {
@@ -161,6 +160,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         injection.resolve();
     }
 
+    /** {@return a container adaptor that can be exposed to end-users} */
     public Container containerAdaptor() {
         return new ContainerAdaptor(this);
     }
@@ -172,21 +172,6 @@ public final class ContainerSetup extends WireableComponentSetup {
      */
     public Set<Class<? extends Extension>> extensionView() {
         return Collections.unmodifiableSet(extensions.keySet());
-    }
-
-    /**
-     * Returns the context for the specified extension type. Or null if no extension of the specified type has already been
-     * added.
-     * 
-     * @param extensionClass
-     *            the type of extension to return a context for
-     * @return an extension's context, iff the specified extension type has already been added
-     * @see #useExtension(Class)
-     */
-    @Nullable
-    public ExtensionSetup getExtensionSetup(Class<? extends Extension> extensionClass) {
-        requireNonNull(extensionClass, "extensionClass is null");
-        return extensions.get(extensionClass);
     }
 
     /**
@@ -228,22 +213,22 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     @Override
     public <T> ExportedServiceConfiguration<T> sourceExport() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This operation is not supported for a container");
     }
 
     @Override
     public void sourceProvide() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This operation is not supported for a container");
     }
 
     @Override
     public void sourceProvideAs(Key<?> key) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This operation is not supported for a container");
     }
 
     @Override
     public Optional<Key<?>> sourceProvideAsKey() {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("This operation is not supported for a container");
     }
 
     /**
@@ -300,7 +285,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         return (T) useExtension(extensionClass, null).extensionInstance();
     }
 
-    /** An adaptor of {@code ContainerSetup->Container} */
+    /** A Container adaptor. */
     record ContainerAdaptor(ContainerSetup container) implements Container {
 
         /** {@inheritDoc} */

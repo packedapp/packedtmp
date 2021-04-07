@@ -18,7 +18,7 @@ package packed.internal.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import packed.internal.invoke.ClassScanner;
+import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.InstantiatorBuilder;
 import packed.internal.util.ThrowableUtil;
 
@@ -62,7 +62,7 @@ public abstract class AbstractHookModel<T> {
     }
 
     /** A builder for a bootstrap model. */
-    static abstract class Builder<T> extends ClassScanner {
+    static abstract class Builder<T> extends MemberScanner {
 
         final InstantiatorBuilder ib;
 

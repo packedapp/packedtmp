@@ -84,7 +84,7 @@ public interface ConfigSite {
      */
     default void forEach(Consumer<? super ConfigSite> action) {
         requireNonNull(action, "action is null");
-        var cs = this;
+        ConfigSite cs = this;
         while (cs != null) {
             action.accept(cs);
             cs = cs.parent().orElse(null);

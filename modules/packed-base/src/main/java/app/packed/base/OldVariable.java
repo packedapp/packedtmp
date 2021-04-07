@@ -20,6 +20,5 @@ package app.packed.base;
  */
 
 public interface OldVariable {
-
     Class<?> rawType();
 }

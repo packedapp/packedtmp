@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.hooks.sandbox2;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 
 // Taenker ikke man kan registere AutoServices...
 // Det er maaske det der interessant..
-public @interface AutoService {
+public @interface OldAutoService {
 
     Class<?>[] bootstrap() default {};
     // Tror det kan blive lidt problematisk...

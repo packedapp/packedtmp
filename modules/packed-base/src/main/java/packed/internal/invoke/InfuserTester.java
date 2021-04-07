@@ -5,7 +5,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.stream.IntStream;
 
 import app.packed.container.Extension;
-import app.packed.hooks.AutoService;
+import app.packed.hooks.sandbox2.OldAutoService;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.Provide;
 import packed.internal.util.LookupUtil;
@@ -44,7 +44,7 @@ public class InfuserTester {
         }
     }
 
-    @AutoService
+    @OldAutoService
     interface XX {
 
         @Provide

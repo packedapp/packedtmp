@@ -65,10 +65,6 @@ public final class OpenClass {
         this.registerForNative = registerForNative;
     }
 
-    public static OpenClass of(MethodHandles.Lookup lookup, Class<?> clazz) {
-        return new OpenClass(lookup, clazz, true);
-    }
-
     private <T extends RuntimeException> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
         String pckName = type.getPackageName();
         if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
@@ -81,15 +77,6 @@ public final class OpenClass {
 
     public OpenClass copy() {
         return new OpenClass(lookup, type, registerForNative);
-    }
-
-    public MethodHandle findConstructor(MethodHandleBuilder dim) {
-        Constructor<?> constructor = FindInjectableConstructor.get(type, true, e -> new IllegalArgumentException(e));
-        return new MethodHandleBuilderHelper(this, constructor, dim).find();
-    }
-
-    public MethodHandle resolve(MethodHandleBuilder builder, Constructor<?> constructor) {
-        return new MethodHandleBuilderHelper(this, constructor, builder).find();
     }
 
     private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {
@@ -236,12 +223,13 @@ public final class OpenClass {
         int decMod = m.getDeclaringClass().getModifiers();
         return !((Modifier.isPublic(decMod) || Modifier.isProtected(decMod)) && Modifier.isPublic(m.getModifiers()));
     }
+
+    public static OpenClass of(MethodHandles.Lookup lookup, Class<?> clazz) {
+        return new OpenClass(lookup, clazz, true);
+    }
 }
 
 //IDeen er at man kan specificere den til OpenClass...
-enum SourceModelX {
-    INJECT_ONLY, FULL;
-}
 // Check to see, if we need to use a private lookup
 
 // if (needsPrivateLookup(constructor)) {

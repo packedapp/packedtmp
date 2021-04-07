@@ -27,19 +27,16 @@ import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.hooks.AutoService;
+import app.packed.hooks.sandbox2.OldAutoService;
 import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.runtime.PackedInjector;
 
 /**
- * A collection of instance providing services each having a unique {@link Service#key() key}.
- * <p>
- * A service locator provides 
- * 
+ * Extends {@link ServiceRegistry} with method for acquiring service instances.
  * <p>
  * Unless otherwise specified service locators are always immutable.
  */
-@AutoService
+@OldAutoService
 public interface ServiceLocator extends ServiceRegistry {
 
     /**
@@ -239,11 +236,7 @@ public interface ServiceLocator extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Returns an empty service locator.
-     * 
-     * @return an empty service locator
-     */
+    /** {@return a service locator with no services} */
     static ServiceLocator of() {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }
@@ -280,7 +273,7 @@ public interface ServiceLocator extends ServiceRegistry {
 
 // Kunne godt taenke mig at finde et godt navn.
 // Naar en noegle er en super noegle???
-interface ZelectSandbox extends ServiceLocator {
+interface ServiceLocatorZandbox extends ServiceLocator {
 
     // may define any qualifiers
     default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {

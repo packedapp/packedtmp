@@ -74,6 +74,7 @@ public interface ProvisionContext {
      * 
      * @return whether or the instance is being injected
      */
+    // Tror ikke vi har den her... isLookup er altsaa kalre...
     boolean isInjection();
 
     /**

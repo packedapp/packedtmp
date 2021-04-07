@@ -10,6 +10,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
@@ -92,19 +93,19 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** {@inheritDoc} */
     @Override
-    public void checkOpen() {
-        if (isConfigured) {
-            throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void checkExtendable() {
         // Ja og saa alligevel ikke. Hvis vi lige saa stille taeller ned...
         // Og disable hver extension loebende
         if (container.containerChildren != null) {
             throw new IllegalStateException();
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void checkOpen() {
+        if (isConfigured) {
+            throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
         }
     }
 
@@ -306,4 +307,32 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
         return extension;
     }
+
+    public static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
+        requireNonNull(lookup, "containerComponent is null");
+
+        // We only allow to call in directly on the container itself
+        if (!containerComponent.modifiers().isContainer()) {
+            throw new IllegalArgumentException("The specified component '" + containerComponent.path() + "' must have the Container modifier, modifiers = "
+                    + containerComponent.modifiers());
+        }
+
+        // lookup.lookupClass() must point to the extension that should be extracted
+        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
+            throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
+                    + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
+        }
+
+        @SuppressWarnings("unchecked")
+        Class<? extends Extension> extensionClass = (Class<? extends Extension>) lookup.lookupClass();
+        // Must have full access to the extension class
+        if (!lookup.hasFullPrivilegeAccess()) {
+            throw new IllegalArgumentException("The specified lookup object must have full privilege access to " + extensionClass
+                    + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
+        }
+
+        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
+        return container.extensions.get(extensionClass);
+    }
+
 }

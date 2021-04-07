@@ -54,7 +54,7 @@ public final class InstantiatorBuilder {
     public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {
         OpenClass oc = OpenClass.of(lookup, implementation);
         MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-        Constructor<?> constructor = FindInjectableConstructor.get(implementation, false, e -> new IllegalArgumentException(e));
+        Constructor<?> constructor = MemberScanner.getConstructor(implementation, false, e -> new IllegalArgumentException(e));
         return new InstantiatorBuilder(oc, mhb, constructor);
     }
 }

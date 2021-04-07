@@ -13,8 +13,6 @@ module app.packed.base {
     exports app.packed.state;
     exports app.packed.validate;
     exports app.packed.request;
-    opens app.packed.cli to foo;
-    uses packed.internal.util.Plugin;
 }
 
 // requires static org.graalvm.sdk;

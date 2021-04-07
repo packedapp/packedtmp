@@ -23,6 +23,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -414,6 +415,10 @@ public abstract class Key<T> {
         TypeToken<?> tl = TypeToken.fromField(field).wrap(); // checks null
         Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
         return convertTypeLiteralNullableAnnotation(field, tl, annotation);
+    }
+    
+    public static Key<?> convertParameter(Parameter parameter) {
+        throw new UnsupportedOperationException();
     }
 
     /**

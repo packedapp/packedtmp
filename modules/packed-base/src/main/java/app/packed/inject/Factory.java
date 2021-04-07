@@ -42,7 +42,7 @@ import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
 import packed.internal.inject.dependency.DependencyDescriptor;
-import packed.internal.invoke.FindInjectableConstructor;
+import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;
 import packed.internal.util.LookupUtil;
@@ -749,7 +749,7 @@ public abstract class Factory<T> {
 
         private ExecutableFactory(TypeToken<T> key, Class<?> findConstructorOn) {
             super(key);
-            this.executable = FindInjectableConstructor.get(findConstructorOn, true, e -> new IllegalArgumentException(e));
+            this.executable = MemberScanner.getConstructor(findConstructorOn, true, e -> new IllegalArgumentException(e));
             this.dependencies = DependencyDescriptor.fromExecutable(executable);
         }
 
