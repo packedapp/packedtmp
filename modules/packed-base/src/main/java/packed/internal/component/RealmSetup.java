@@ -60,7 +60,8 @@ public final class RealmSetup {
     // Hmm. Realm er en ting. Men naar vi laeser extra hooks saa er det jo ikke paa denne type
     // Vi har faktisk 2 som jeg ser det.
     private final Class<?> realmType;
-    public WireableComponentSetup root;
+
+    public final WireableComponentSetup root;
 
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
@@ -90,6 +91,7 @@ public final class RealmSetup {
     public RealmSetup(ExtensionModel model, ComponentSetup extension) {
         this.realmType = model.extensionClass();
         this.build = extension.build;
+        this.root = null; //??????
         // this.current = requireNonNull(extension);
     }
 
@@ -178,7 +180,7 @@ public final class RealmSetup {
         this.accessor = accessor().withLookup(lookup);
     }
 
-    public void wireCommit(WireableComponentSetup component) {
+    private void wireCommit(WireableComponentSetup component) {
         current = component;
         if (component instanceof ContainerSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {

@@ -243,10 +243,10 @@ public abstract class ComponentSetup {
         ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
 
         // Create the new realm that should be used for linking
-        RealmSetup realm = this.realm.link(driver, linkTo, assembly, wirelets);
+        RealmSetup newRealm = realm.link(driver, linkTo, assembly, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = driver.toConfiguration(realm.root);
+        ComponentConfiguration configuration = driver.toConfiguration(newRealm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -256,9 +256,9 @@ public abstract class ComponentSetup {
         }
 
         // Close the newly create realm
-        realm.close();
+        newRealm.close();
 
-        return realm.root.adaptor();
+        return newRealm.root.adaptor();
     }
 
     public final PackedComponentModifierSet modifiers() {
