@@ -98,6 +98,7 @@ public final class RealmSetup {
         this.realmType = composer.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, 0, wirelets);
         root = build.container;
+        wireCommit(root);
     }
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver, int modifiers, Assembly<?> assembly,
@@ -105,6 +106,7 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, modifiers, wirelets);
         root = build.container;
+        wireCommit(root);
     }
 
     public RealmAccessor accessor() {
@@ -192,7 +194,7 @@ public final class RealmSetup {
         }
     }
 
-    public void wirePrepare() {
+    private void wirePrepare() {
         if (isClosed) {
             throw new IllegalStateException();
         }

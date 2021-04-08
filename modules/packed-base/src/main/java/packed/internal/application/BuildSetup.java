@@ -64,7 +64,6 @@ public final class BuildSetup implements Build {
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
         this.application = new ApplicationSetup(this, applicationDriver, realm, ccd, modifiers, wirelets);
         this.container = application.container;
-        realm.wireCommit(container);
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */

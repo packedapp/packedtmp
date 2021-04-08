@@ -238,7 +238,7 @@ public abstract class ComponentSetup {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
 
-        // If this component is an extension, we link to the extension's container. 
+        // If this component is an extension, we link to the extension's container.
         // As the extension itself is not present at runtime
         ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
 
@@ -285,9 +285,10 @@ public abstract class ComponentSetup {
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         WireableComponentDriver<C> wcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
-        // If this component is an extension, we wire to the container the extension is part of
+        // If this component is an extension, we wire to the container the extension is a part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
 
+        // Wire a new component
         WireableComponentSetup component = realm.wire(wcd, wireTo, wirelets);
 
         // Return a component configuration to the user
