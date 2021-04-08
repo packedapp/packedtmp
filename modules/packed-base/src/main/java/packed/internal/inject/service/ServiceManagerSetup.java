@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -82,9 +81,6 @@ public final class ServiceManagerSetup {
 
     /** The tree this service manager is a part of. */
     private final ApplicationInjectorSetup tree;
-
-    @Nullable
-    public Predicate<? super Service> anchorFilter;
 
     /**
      * @param container

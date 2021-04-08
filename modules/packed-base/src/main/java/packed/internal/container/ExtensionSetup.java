@@ -37,8 +37,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
             void.class);
 
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
-    private static final MethodHandle MH_EXTENSION_ON_CONTAINER_LINKAGE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onExtensionsFixed", void.class);
+    private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onPreembleComplete", void.class);
 
     /** A handle for invoking {@link Extension#onNew()}, used by {@link #createNew(ContainerSetup, Class)}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
@@ -210,7 +210,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     void preContainerChildren() {
         try {
-            MH_EXTENSION_ON_CONTAINER_LINKAGE.invokeExact(instance);
+            MH_EXTENSION_ON_PREEMBLE_COMPLETE.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }

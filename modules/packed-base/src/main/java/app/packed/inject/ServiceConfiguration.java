@@ -16,6 +16,7 @@
 package app.packed.inject;
 
 import app.packed.base.Key;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
 
 /**
  *
@@ -33,9 +34,6 @@ public interface ServiceConfiguration<T> {
      */
     ServiceConfiguration<T> as(Class<? super T> key);
 
-    // addQualififer();
-    // Nahh
-
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -48,7 +46,5 @@ public interface ServiceConfiguration<T> {
     ServiceConfiguration<T> as(Key<? super T> key);
 
     // Once a bean has been exported, its key cannot be changed...
-    ServiceConfiguration<T> export();
-
-    ServiceConfiguration<T> exportAs(Class<? super T> key);
+    ExportedServiceConfiguration<T> export();
 }

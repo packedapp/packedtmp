@@ -96,8 +96,8 @@ public abstract class Extension {
      * <p>
      * This field is initialized in {@link ExtensionSetup#createNew(ContainerSetup, Class)} via a varhandle.
      * <p>
-     * This field is not nulled out after the configuration of the extension has completed. This allows for invoking
-     * methods such as {@link #checkConfigurable()} at any time.
+     * This field is not nulled out after the configuration of the extension has completed. This allows for invoking methods
+     * such as {@link #checkConfigurable()} at any time.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -135,7 +135,7 @@ public abstract class Extension {
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
      * 
-     * @see #onExtensionsFixed()
+     * @see #onPreembleComplete()
      */
     // CheckNoLeafs()
     protected final void checkExtendable() {
@@ -261,6 +261,22 @@ public abstract class Extension {
         // An extension cannot link a container as long as it (the container?) is extendable.
     }
 
+    /**
+     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned), but before the
+     * new extension instance is returned to the end-user.
+     * <p>
+     * Since most methods on this class cannot be invoked from the constructor of an extension instance. This method can be
+     * used to perform post instantiation as needed.
+     * 
+     * @see #onPreembleComplete()
+     * @see #onComplete()
+     */
+    protected void onNew() {}
+
+    // Hvad hvis den selv tilfoejer komponenter med en child container???
+    // Problemet er hvis den bruger extensions som den ikke har defineret
+    // Det tror jeg maaske bare ikke den kan
+
     // onPreUserContainerWiring???
     /**
      * Invoked (by the runtime) when. This is the last opportunity to wire any components that requires extensions that have
@@ -268,7 +284,8 @@ public abstract class Extension {
      * 
      * @see #checkExtendable()
      */
-    protected void onExtensionsFixed() {
+    // onPreembleComplete
+    protected void onPreembleComplete() {
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
 
@@ -283,17 +300,6 @@ public abstract class Extension {
 
         // lazy operations should be idempotent
     }
-
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
-
-    /**
-     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned). But before the
-     * new extension instance is returned to the end-user. Since most methods on this class cannot be invoked from the
-     * constructor of the extension instance. This method can be used to perform post instantiation if needed.
-     */
-    protected void onNew() {}
 
     /**
      * Used to lookup other extensions.

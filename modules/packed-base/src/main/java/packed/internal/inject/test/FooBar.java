@@ -68,8 +68,7 @@ public class FooBar extends BaseAssembly {
         @Override
         protected void build() {
             provide(ChildServ.class).export();
-            provideInstance("asdasd").exportAs(new Key<@Tag("Fooo") String>() {});
-            provideInstance("asdasd").exportAs(new Key<@Tag("dFooo") String>() {});
+            provideInstance("asdasd").export();// .exportAs(new Key<@Tag("dFooo") String>() {});
             provideInstance(new Runnable() {
                 @Override
                 public void run() {

@@ -48,10 +48,14 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceProvideAs();
 public /* sealed */ interface ComponentConfigurationContext {
 
-    <T> void setRuntimeAttribute(Attribute<T> attribute, T value);
-
     // Hmmmmmm, build() is normally something else
     Build build();
+
+    default void checkIsWiring() {
+        // Check that we are in the process of wiring.
+        // set properties, set name, setKey()...
+        
+    }
 
     /**
      * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
@@ -124,6 +128,8 @@ public /* sealed */ interface ComponentConfigurationContext {
      * @see Component#name()
      */
     void setName(String name);
+
+    <T> void setRuntimeAttribute(Attribute<T> attribute, T value);
 
     <T> ExportedServiceConfiguration<T> sourceExport();
 

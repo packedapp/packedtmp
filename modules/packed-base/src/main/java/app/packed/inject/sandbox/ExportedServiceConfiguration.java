@@ -25,6 +25,8 @@ import packed.internal.inject.service.sandbox.InjectorComposer;
  * <p>
  * An instance of this interface is usually obtained by calling the various provide or export methods located on
  * {@link ServiceExtension}, {@link InjectorComposer} or {@link BaseAssembly}.
+ * 
+ * @see ServiceExtension#export(Class)
  */
 public interface ExportedServiceConfiguration<T> {
 
@@ -50,12 +52,6 @@ public interface ExportedServiceConfiguration<T> {
      */
     ExportedServiceConfiguration<T> as(Key<? super T> key);
 
-    /**
-     * Returns the key that the service is registered under.
-     *
-     * @return the key that the service is registered under
-     * @see #as(Key)
-     * @see #as(Class)
-     */
+    /** {@return the key that the service is exported under}. */
     Key<?> key();
 }

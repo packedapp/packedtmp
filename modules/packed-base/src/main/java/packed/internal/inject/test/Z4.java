@@ -100,7 +100,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void onExtensionsFixed() {
+        protected void onPreembleComplete() {
             // System.out.println(ai + "E-PreChildContainers");
         }
 
@@ -127,7 +127,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void onExtensionsFixed() {
+        protected void onPreembleComplete() {
             System.out.println("F-PreChildContainers");
             use(E.Sub.class);
         }

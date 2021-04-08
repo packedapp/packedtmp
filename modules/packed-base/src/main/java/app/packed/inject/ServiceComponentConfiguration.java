@@ -24,6 +24,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.SourcedComponentDriver;
 
 /**
@@ -34,7 +35,7 @@ import packed.internal.component.SourcedComponentDriver;
  */
 //ProvidableComponentConfiguration
 // Serviceable
-public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration implements ServiceConfiguration<T> {
+public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
     private static final ComponentDriver DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
@@ -84,22 +85,10 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
         context.sourceProvideAs(null);
         return this;
     }
-
-    // Once a bean has been exported, its key cannot be changed...
-    // Ja tror den bliver wired...
-    public ServiceComponentConfiguration<T> export() {
-        context.sourceExport();
-        return this;
-    }
-
-    public ServiceComponentConfiguration<T> exportAs(Class<? super T> key) {
-        export().as(key);
-        return this;
-    }
-
-    public ServiceComponentConfiguration<T> exportAs(Key<? super T> key) {
-        export().as(key);
-        return this;
+    
+    /** {@inheritDoc} */
+    public ExportedServiceConfiguration<T> export() {
+        return context.sourceExport();
     }
 
     // The key unless asNone()
@@ -144,12 +133,5 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
     @SuppressWarnings("unchecked")
     public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Factory<T> factory) {
         return PROTOTYPE_DRIVER.bind(factory);
-    }
-}
-
-class Zandb0x<T> {
-
-    public Zandb0x<T> aliasAs(Class<? super T> key) {
-        return this;
     }
 }

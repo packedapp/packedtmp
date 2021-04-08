@@ -19,8 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Key;
@@ -88,32 +86,6 @@ public class ServiceExtension extends Extension {
         this.services = setup.container.injection.newServiceManagerFromServiceExtension();
     }
 
-    /**
-     * 
-     * This method is typically used if you work with plugin structures. Where you do not now ahead of time what kind of
-     * services the plugins export.
-     * <p>
-     * If you only want to anchor ind.... {@link ServiceSelection}
-     * 
-     * @see ServiceWirelets#anchorAll()
-     */
-    // export does not anchor I think..
-    // only if a service...
-    public void anchorAll() {
-        anchorIf(t -> true);
-    }
-
-    /**
-     * @param filter
-     *            the filter
-     * @see ServiceWirelets#anchorIf(Predicate)
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void anchorIf(Predicate<? super Service> filter) {
-        requireNonNull(filter, "filter is null");
-        Predicate<? super Service> a = services.anchorFilter;
-        services.anchorFilter = a == null ? filter : ((Predicate) a).or(filter);
-    }
 
     // Validates the outward facing contract
     public void checkContract(Validator<? super ServiceContract> validator) {
@@ -209,6 +181,8 @@ public class ServiceExtension extends Extension {
      * This method can be invoked more than once. But use cases for this are limited.
      */
     public void exportAll() {
+        // Tror vi aendre den til streng service solve...
+        // Og saa tager vi bare alle services() og exportere
 
         // Add exportAll(Predicate); //Maybe some exportAll(Consumer<ExportedConfg>)
         // exportAllAs(Function<?, Key>
@@ -220,15 +194,6 @@ public class ServiceExtension extends Extension {
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
         services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
-    }
-
-    public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
-        // Hmm
-    }
-
-    public void exportIf(Predicate<? super Service> filter) {
-        // Only anchrored services??? Yes
-        // ContainerServices and Ac
     }
 
     /**
@@ -345,6 +310,11 @@ public class ServiceExtension extends Extension {
         return userWire(ServiceComponentConfiguration.providePrototype(factory));
     }
 
+    public ServiceRegistry services() {
+        // Why not composer? Or at least mutable Service registry
+        throw new UnsupportedOperationException();
+    }
+
     // requires bliver automatisk anchoret...
     // anchorAllChildExports-> requireAllChildExports();
     public void require(Class<?>... keys) {
@@ -452,6 +422,51 @@ public class ServiceExtension extends Extension {
     }
 }
 
+class ServiceExtensionBadIdeas {
+    // Syntes anchorAll paa selve extensionen er en daarlig ide...
+    
+    
+//  /**
+//   * 
+//   * This method is typically used if you work with plugin structures. Where you do not now ahead of time what kind of
+//   * services the plugins export.
+//   * <p>
+//   * If you only want to anchor ind.... {@link ServiceSelection}
+//   * 
+//   * @see ServiceWirelets#anchorAll()
+//   */
+//  // export does not anchor I think..
+//  // only if a service...
+//  public void anchorAll() {
+//      anchorIf(t -> true);
+//  }
+//
+//  /**
+//   * @param filter
+//   *            the filter
+//   * @see ServiceWirelets#anchorIf(Predicate)
+//   */
+//  @SuppressWarnings({ "rawtypes", "unchecked" })
+//  public void anchorIf(Predicate<? super Service> filter) {
+//      requireNonNull(filter, "filter is null");
+//      Predicate<? super Service> a = services.anchorFilter;
+//      services.anchorFilter = a == null ? filter : ((Predicate) a).or(filter);
+//  }
+    
+    //
+//  // Hmm hvis vi gerne vil smide attributer paa...
+//  // Maaske har vi en for each der giver en ServiceConfiguration som man kan kalde export paa...
+//  public void exportAll(Function<? super Service, @Nullable Key<?>> exportFunction) {
+//      services().forEach(s -> export(s.key()));
+//  }
+//
+//  public void exportIf(Predicate<? super Service> filter) {
+//      services().services().filter(filter).forEach(s -> export(s.key()));
+//      // Only anchrored services??? Yes
+//      // ContainerServices and Ac
+//  }
+
+}
 class ZExtraFunc {
 
     protected void addAlias(Class<?> existing, Class<?> newKey) {}
@@ -595,8 +610,6 @@ class ZExtraFunc {
     // Det er vel en slags Wirelet
     // CycleBreaker(SE, ...);
     // CycleBreaker(SE, ...);
-
-
 
     // autoExport
 
