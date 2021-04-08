@@ -108,7 +108,13 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         }
 
         // Register hooks, maybe move to component setup
-        registerHooks(hooks);
+        for (UseSiteMemberHookModel hook : hooks.models) {
+            InjectionNode i = new InjectionNode(component, this, hook, hook.createProviders());
+            component.container.injection.addNode(i);
+            if (hook.processor != null) {
+                hook.processor.accept(component);
+            }
+        }
     }
 
     /** {@inheritDoc} */
@@ -145,16 +151,6 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             s = service = component.container.injection.getServiceManagerOrCreate().provideSource(component, key);
         }
         return s;
-    }
-
-    private <T> void registerHooks(HookedClassModel model) {
-        for (UseSiteMemberHookModel hook : model.models) {
-            InjectionNode i = new InjectionNode(component, this, hook, hook.createProviders());
-            component.container.injection.addNode(i);
-            if (hook.processor != null) {
-                hook.processor.accept(component);
-            }
-        }
     }
 
     public void writeToPool(ConstantPool pool) {
