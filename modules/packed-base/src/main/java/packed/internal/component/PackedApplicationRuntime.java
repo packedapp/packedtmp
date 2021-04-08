@@ -57,9 +57,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
-    public PackedApplicationRuntime(ApplicationLaunchContext launchContext) {
-        
-    }
+    public PackedApplicationRuntime(ApplicationLaunchContext launchContext) {}
 
     // Hmm, maybe not
 //    @Nullable
