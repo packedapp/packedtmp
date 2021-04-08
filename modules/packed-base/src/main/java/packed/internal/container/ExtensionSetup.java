@@ -36,17 +36,17 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
             void.class);
 
+    /** A handle for invoking {@link Extension#onNew()}, used by {@link #newInstance(ContainerSetup, Class)}. */
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
+
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreembleComplete", void.class);
 
-    /** A handle for invoking {@link Extension#onNew()}, used by {@link #createNew(ContainerSetup, Class)}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
     /** A handle for invoking {@link Extension#onContainerLinkage()}. */
     static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
 
-    /** A handle for setting the field Extension#configuration, used by {@link #createNew(ContainerSetup, Class)}. */
+    /** A handle for setting the field Extension#configuration, used by {@link #newInstance(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
@@ -58,7 +58,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     @Nullable
     ExtensionSetup ancestor;
 
-    /** The extension instance, instantiated in {@link #createNew(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated in {@link #newInstance(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -271,43 +271,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return new PackedWireletHandle<>(wirelets, wireletClass);
     }
 
-    /**
-     * Create a new extension.
-     * 
-     * @param container
-     *            the container in which the extension should be created
-     * @param extensionClass
-     *            the extension to instantiate
-     * @return the new extension
-     */
-    static ExtensionSetup createNew(ContainerSetup container, Class<? extends Extension> extensionClass) {
-        // Find extension model and create extension setup.
-        ExtensionModel model = ExtensionModel.of(extensionClass);
-        ExtensionSetup extension = new ExtensionSetup(container, model);
-
-        // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
-        Extension instance = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(instance, extension);
-
-        // Add the extension to the container's extension map
-        container.extensions.put(extensionClass, extension);
-
-        // The extension has been now been fully wired, run any notifications
-        extension.onWired();
-
-        // Connect to ancestors
-        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
-        
-        // Finally, invoke Extension#onNew() before returning to user
-        try {
-            MH_EXTENSION_ON_NEW.invokeExact(instance);
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-
-        return extension;
-    }
-
     public static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
         requireNonNull(lookup, "containerComponent is null");
 
@@ -335,4 +298,40 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return container.extensions.get(extensionClass);
     }
 
+    /**
+     * Create a new extension.
+     * 
+     * @param container
+     *            the container in which the extension should be created
+     * @param extensionClass
+     *            the extension to instantiate
+     * @return the new extension
+     */
+    static ExtensionSetup newInstance(ContainerSetup container, Class<? extends Extension> extensionClass) {
+        // Find extension model and create extension setup.
+        ExtensionModel model = ExtensionModel.of(extensionClass);
+        ExtensionSetup extension = new ExtensionSetup(container, model);
+
+        // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
+        Extension instance = extension.instance = model.newInstance(extension);
+        VH_EXTENSION_CONFIGURATION.set(instance, extension);
+
+        // Add the extension to the container's extension map
+        container.extensions.put(extensionClass, extension);
+
+        // The extension has been now been fully wired, run any notifications
+        extension.onWired();
+
+        // Connect to ancestors
+        //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
+        
+        // Finally, invoke Extension#onNew() before returning to user
+        try {
+            MH_EXTENSION_ON_NEW.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+
+        return extension;
+    }
 }

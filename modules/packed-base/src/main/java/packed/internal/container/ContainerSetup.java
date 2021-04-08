@@ -266,7 +266,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             }
 
             // Create the new extension and adds into the map of extensions
-            extension = ExtensionSetup.createNew(this, extensionClass);
+            extension = ExtensionSetup.newInstance(this, extensionClass);
 
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;

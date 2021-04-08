@@ -94,7 +94,7 @@ public abstract class Extension {
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#createNew(ContainerSetup, Class)} via a varhandle.
+     * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle.
      * <p>
      * This field is not nulled out after the configuration of the extension has completed. This allows for invoking methods
      * such as {@link #checkConfigurable()} at any time.
