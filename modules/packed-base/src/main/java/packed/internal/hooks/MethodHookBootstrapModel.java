@@ -38,8 +38,6 @@ import packed.internal.util.ThrowableUtil;
 /** A model of a {@link Bootstrap} class. */
 public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
-   
-
     /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "bootstrap", void.class);

@@ -18,7 +18,6 @@ package packed.internal.hooks;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
 
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.MethodHandleBuilder;
@@ -38,7 +37,9 @@ public abstract class AbstractHookModel<T> {
      *            the builder.
      */
     protected AbstractHookModel(Builder<T> builder) {
-        this.mhConstructor = builder.ib.build();
+        MethodHandleBuilder mhb = MethodHandleBuilder.of(builder.oc.type());
+        Constructor<?> constructor = MemberScanner.getConstructor(builder.oc.type(), false, e -> new IllegalArgumentException(e));
+        this.mhConstructor = mhb.build(builder.oc, constructor);
     }
 
     /**
@@ -67,8 +68,6 @@ public abstract class AbstractHookModel<T> {
     /** A builder for a bootstrap model. */
     static abstract class Builder<T> extends MemberScanner {
 
-        private final InstantiatorBuilder ib;
-
         final OpenClass oc;
 
         // If we get a shared Sidecar we can have a single MethodHandle configure
@@ -80,8 +79,7 @@ public abstract class AbstractHookModel<T> {
          */
         Builder(Class<?> bootstrapImplementation) {
             super(bootstrapImplementation);
-            ib = InstantiatorBuilder.of(MethodHandles.lookup(), bootstrapImplementation);
-            this.oc = ib.oc();
+            this.oc = OpenClass.of(MethodHandles.lookup(), bootstrapImplementation);
         }
 
         /**
@@ -90,24 +88,6 @@ public abstract class AbstractHookModel<T> {
          * @return the new model
          */
         protected abstract AbstractHookModel<T> build();
-    }
-    
-    private record InstantiatorBuilder(OpenClass oc, MethodHandleBuilder mh, Executable executable) {
-
-        public MethodHandle build() {
-            return mh.build(oc, executable);
-        }
-
-        public OpenClass oc() {
-            return oc;
-        }
-
-        public static InstantiatorBuilder of(MethodHandles.Lookup lookup, Class<?> implementation, Class<?>... parameterTypes) {
-            OpenClass oc = OpenClass.of(lookup, implementation);
-            MethodHandleBuilder mhb = MethodHandleBuilder.of(implementation, parameterTypes);
-            Constructor<?> constructor = MemberScanner.getConstructor(implementation, false, e -> new IllegalArgumentException(e));
-            return new InstantiatorBuilder(oc, mhb, constructor);
-        }
     }
 
 }

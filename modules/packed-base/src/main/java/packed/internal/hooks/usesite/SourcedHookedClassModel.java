@@ -26,7 +26,7 @@ public class SourcedHookedClassModel {
     private static class Builder extends HookedClassModel.Builder {
 
         /** A cache of any extensions a particular annotation activates. */
-        private static final ClassValue<MethodHookBootstrapModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
+        private static final ClassValue<MethodHookBootstrapModel> METHOD_ANNOTATIONS = new ClassValue<>() {
 
             @Override
             protected MethodHookBootstrapModel computeValue(Class<?> type) {
@@ -40,7 +40,7 @@ public class SourcedHookedClassModel {
         }
 
         protected @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType) {
-            return EXTENSION_METHOD_ANNOTATION.get(annotationType);
+            return METHOD_ANNOTATIONS.get(annotationType);
         }
     }
 }

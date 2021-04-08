@@ -172,6 +172,7 @@ public final class HookedClassModel {
                     if (builder.managedBy == null) {
                         model.clearBuilder(bootstrap);
                     }
+                    
                     if (builder.buildtimeModel != null) {
                         UseSiteMethodHookModel smm = new UseSiteMethodHookModel(builder);
                         shared.source.methods.add(smm);
