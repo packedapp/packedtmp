@@ -285,16 +285,10 @@ public abstract class ComponentSetup {
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         WireableComponentDriver<C> wcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
-        // Prepare to wire the component (make sure the realm is still open)
-        realm.wirePrepare();
-
         // If this component is an extension, we wire to the container the extension is part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
 
-        // Create the new component
-        WireableComponentSetup component = wcd.newComponent(build, application, realm, wireTo, wirelets);
-
-        realm.wireCommit(component);
+        WireableComponentSetup component = realm.wire(wcd, wireTo, wirelets);
 
         // Return a component configuration to the user
         return wcd.toConfiguration(component);

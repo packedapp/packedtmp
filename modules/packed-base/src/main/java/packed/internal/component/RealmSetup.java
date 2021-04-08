@@ -49,7 +49,7 @@ public final class RealmSetup {
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
-    public BuildSetup build;
+    public final BuildSetup build;
 
     /** The current active component in the realm. */
     private ComponentSetup current;
@@ -89,7 +89,7 @@ public final class RealmSetup {
      */
     public RealmSetup(ExtensionModel model, ComponentSetup extension) {
         this.realmType = model.extensionClass();
-
+        this.build = extension.build;
         // this.current = requireNonNull(extension);
     }
 
@@ -135,6 +135,17 @@ public final class RealmSetup {
 
     public ComponentSetup current() {
         return current;
+    }
+
+    public WireableComponentSetup wire(WireableComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
+        // Prepare to wire the component (make sure the realm is still open)
+        wirePrepare();
+
+        // Create the new component
+        WireableComponentSetup component = driver.newComponent(build, build.application, this, wireTo, wirelets);
+
+        wireCommit(component);
+        return component;
     }
 
     public RealmSetup link(WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
