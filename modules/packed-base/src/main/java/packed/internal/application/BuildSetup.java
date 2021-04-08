@@ -34,10 +34,10 @@ public final class BuildSetup implements Build {
     public final NamespaceSetup namespace = new NamespaceSetup();
 
     /** The application we are building. */
-    final ApplicationSetup application;
+    public final ApplicationSetup application;
 
     /** The root container in the application we are building. */
-    final ContainerSetup container;
+    public final ContainerSetup container;
 
     /** Modifiers of the build. */
     // Hmm hvad er disse i forhold til component modifiers???
@@ -56,7 +56,7 @@ public final class BuildSetup implements Build {
      * @param modifiers
      *            the output of the build process
      */
-    BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
+    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
         if (!componentDriver.modifiers().isContainer()) {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
         }
@@ -64,7 +64,7 @@ public final class BuildSetup implements Build {
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
         this.application = new ApplicationSetup(this, applicationDriver, realm, ccd, modifiers, wirelets);
         this.container = application.container;
-        realm.wireCommit(container, false);
+        realm.wireCommit(container);
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */

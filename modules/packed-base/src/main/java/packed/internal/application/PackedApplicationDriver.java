@@ -122,13 +122,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(assembly);
 
-        RealmSetup realm = new RealmSetup(assembly);
-
-        // Create a new build and root application/container/component
-        BuildSetup build = new BuildSetup(this, realm, componentDriver, modifiers, wirelets);
+        // Create a new root realm
+        RealmSetup realm = new RealmSetup(this, componentDriver, modifiers, assembly, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = componentDriver.toConfiguration(build.container);
+        ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -137,8 +135,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        realm.close(build.container);
-        return build;
+        // Close the realm for modifications
+        realm.close();
+
+        return realm.build;
     }
 
     /** {@inheritDoc} */
@@ -150,13 +150,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(composer);
 
         // Create a new realm
-        RealmSetup realm = new RealmSetup(consumer);
-
-        // Create a new build and root application/container/component
-        BuildSetup build = new BuildSetup(this, realm, componentDriver, 0, wirelets);
+        RealmSetup realm = new RealmSetup(this, componentDriver, consumer, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration componentConfiguration = componentDriver.toConfiguration(build.container);
+        ComponentConfiguration componentConfiguration = componentDriver.toConfiguration(realm.root);
 
         // Invoke Consumer::doConsumer which in turn will invoke consumer.accept
         try {
@@ -165,11 +162,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        realm.close(build.container);
+        realm.close();
 
-        // Initialize the application. And start it if necessary (if it is a guest)
-        return ApplicationLaunchContext.launch(this, build.application, null);
-
+        // Launch the application
+        return ApplicationLaunchContext.launch(this, realm.build.application, null);
     }
 
     /** {@inheritDoc} */
@@ -270,7 +266,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
             // Find a method handle for the application shell's constructor
             Infuser.Builder builder = Infuser.builder(caller, implementation, ApplicationLaunchContext.class);
-            //builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
+            // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
             if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime

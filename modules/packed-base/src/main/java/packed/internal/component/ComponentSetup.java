@@ -238,21 +238,15 @@ public abstract class ComponentSetup {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
 
-        // Check that the realm this component is a part of is still open
-        realm.wirePrepare();
-
-        // Create the new realm that should be used for linking
-        RealmSetup realm = new RealmSetup(assembly);
-
         // If this component is an extension, we link to the extension's container. 
         // As the extension itself is not present at runtime
         ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
 
-        // Create a new component and a new realm
-        WireableComponentSetup component = driver.newComponent(build, application, realm, linkTo, wirelets);
+        // Create the new realm that should be used for linking
+        RealmSetup realm = this.realm.link(driver, linkTo, assembly, wirelets);
 
         // Create the component configuration that is needed by the assembly
-        ComponentConfiguration configuration = driver.toConfiguration(component);
+        ComponentConfiguration configuration = driver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
         try {
@@ -262,9 +256,9 @@ public abstract class ComponentSetup {
         }
 
         // Close the newly create realm
-        realm.wireCommit(component, true);
+        realm.close();
 
-        return component.adaptor();
+        return realm.root.adaptor();
     }
 
     public final PackedComponentModifierSet modifiers() {
@@ -300,7 +294,7 @@ public abstract class ComponentSetup {
         // Create the new component
         WireableComponentSetup component = wcd.newComponent(build, application, realm, wireTo, wirelets);
 
-        realm.wireCommit(component, false);
+        realm.wireCommit(component);
 
         // Return a component configuration to the user
         return wcd.toConfiguration(component);
