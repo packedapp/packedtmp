@@ -188,7 +188,7 @@ public abstract class ComponentSetup {
             } else {
                 int counter = 1;
                 while (c.putIfAbsent(n, this) != null) {
-                    n = name + counter++; // maybe store some kind of fallback map on build.. for those that want to test adding 1 mil components
+                    n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1 million of the same component type
                 }
             }
         }
@@ -196,7 +196,7 @@ public abstract class ComponentSetup {
     }
 
     /**
-     * Tests that this component is in the same specified scope as other.
+     * Tests that this component is in the same specified scope as another component.
      * 
      * @param scope
      *            the scope to test
@@ -248,7 +248,7 @@ public abstract class ComponentSetup {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        // Close the newly create realm
+        // Close the new realm again after the assembly has been successfully linked
         newRealm.close();
 
         return newRealm.root.adaptor();

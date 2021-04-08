@@ -128,7 +128,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
                                                                                                                   // MethodHandle(ConstantPool)T
         } else if (poolIndex > -1) {
-            return ConstantPool.indexedReader(poolIndex, hooks.type);
+            return ConstantPool.indexedReader(poolIndex, hooks.clazz);
         } else {
             return instantiator.buildMethodHandle();
         }
@@ -140,7 +140,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         if (s == null) {
             Key<?> key;
             if (constant != null) {
-                key = Key.of(hooks.type); // Move to model?? What if instance has Qualifier???
+                key = Key.of(hooks.clazz); // Move to model?? What if instance has Qualifier???
             } else {
                 key = factory.key();
             }

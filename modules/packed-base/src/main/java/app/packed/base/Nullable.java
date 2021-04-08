@@ -43,6 +43,6 @@ import java.lang.annotation.Target;
 // * as optional. The same behavior can be observed by the dependencies on {@link Factory1} and {@link Factory2}.
 // https://github.com/uber/NullAway
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.TYPE_USE})
+@Target( ElementType.TYPE_USE)
 @Documented
 public @interface Nullable {}

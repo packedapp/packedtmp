@@ -28,6 +28,7 @@ import app.packed.container.Extension;
 final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? extends Extension>> {
 
     /** The extension types this set contains */
+    // Need to changes this to a list
     final List<Class<? extends Extension>> extensions;
 
     private ExtensionDependencySet(List<Class<? extends Extension>> extensions) {

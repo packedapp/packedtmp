@@ -27,10 +27,14 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
+import app.packed.hooks.MethodHook;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.HookedMethodProvide;
+import packed.internal.hooks.MethodHookBootstrapModel;
+import packed.internal.hooks.usesite.UseSiteMethodHookModel.Shared;
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.OpenClass;
 
@@ -50,8 +54,11 @@ public final class HookedClassModel {
     // Tror det er hooks som provider en keyed service paa klasse niveau
     public final Map<Key<?>, HookedMethodProvide> sourceServices;
 
-    /** The type we are modelling. */
-    public final Class<?> type;
+    /** The class we have modeled. */
+    public final Class<?> clazz;
+
+    /** Any extension this model is a part of. */
+    public final @Nullable Class<? extends Extension> extensionClass;
 
     /**
      * Creates a new model.
@@ -60,10 +67,11 @@ public final class HookedClassModel {
      *            a builder for this descriptor
      */
     private HookedClassModel(HookedClassModel.Builder builder) {
-        this.type = builder.oc.type();
+        this.clazz = builder.oc.type();
         this.methods = List.copyOf(builder.methods);
         this.fields = List.copyOf(builder.fields);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
+        this.extensionClass = builder.extension == null ? null : builder.extension.extensionClass();
     }
 
     /**
@@ -74,7 +82,7 @@ public final class HookedClassModel {
     public String simpleName() {
         String s = simpleName;
         if (s == null) {
-            s = simpleName = type.getSimpleName();
+            s = simpleName = clazz.getSimpleName();
         }
         return s;
     }
@@ -120,7 +128,7 @@ public final class HookedClassModel {
          *            a class processor usable by hooks
          * 
          */
-        public Builder(HookUseSite hus, OpenClass cp, ExtensionModel extension) {
+        public Builder(HookUseSite hus, OpenClass cp, @Nullable ExtensionModel extension) {
             super(cp.type());
             this.hus = requireNonNull(hus);
             this.oc = requireNonNull(cp);
@@ -133,9 +141,7 @@ public final class HookedClassModel {
          * @return a new model
          */
         public HookedClassModel build() {
-            for (Annotation a : oc.type().getAnnotations()) {
-                System.out.println(a);
-            }
+            
 
             // TODO run through annotations
 
@@ -161,16 +167,38 @@ public final class HookedClassModel {
             UseSiteFieldHookModel.processField(this, field);
         }
 
+        protected @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType) {
+            return MethodHookBootstrapModel.getForAnnotatedMethod(annotationType);
+        }
+
         @Override
         protected void onMethod(Method method) {
-            UseSiteMethodHookModel.process(this, method);
+            UseSiteMethodHookModel.Shared shared = null;
+            for (Annotation a : method.getAnnotations()) {
+                MethodHookBootstrapModel model = getMethodModel(a.annotationType());
+                if (model != null) {
+                    if (shared == null) {
+                        shared = new Shared(this, method);
+                    }
+                    UseSiteMethodHookModel.Builder builder = new UseSiteMethodHookModel.Builder(model, shared);
+
+                    MethodHook.Bootstrap bootstrap = model.bootstrap(builder);
+                    if (builder.managedBy == null) {
+                        model.clearBuilder(bootstrap);
+                    }
+                    if (builder.buildtimeModel != null) {
+                        UseSiteMethodHookModel smm = new UseSiteMethodHookModel(builder);
+                        shared.source.methods.add(smm);
+                    }
+                }
+            }
+            //  I guess we might need to run through and look for ServiceHooks?
         }
 
         public Class<?> type() {
             return classToScan;
         }
     }
-
 }
 
 // Ideen er lidt at vi ikke laver metoder for mange gange...

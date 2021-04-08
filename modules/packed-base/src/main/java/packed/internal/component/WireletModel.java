@@ -49,7 +49,7 @@ public final class WireletModel {
     /**
      * Create a new wirelet model.
      * 
-     * @param type
+     * @param clazz
      *            the wirelet type
      */
     private WireletModel(Builder b) {

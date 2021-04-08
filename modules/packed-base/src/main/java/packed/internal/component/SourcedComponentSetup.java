@@ -30,7 +30,7 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
 
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
-        dam.addValue(ComponentAttributes.SOURCE_CLASS, source.hooks.type);
+        dam.addValue(ComponentAttributes.SOURCE_CLASS, source.hooks.clazz);
     }
 
     @SuppressWarnings("unchecked")

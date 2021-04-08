@@ -29,10 +29,10 @@ import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
+import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
-import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -58,7 +58,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
     /** The method we are creating a model for. */
     private final Method method;
 
-    private UseSiteMethodHookModel(Builder builder) {
+    UseSiteMethodHookModel(Builder builder) {
         super(builder, DependencyDescriptor.fromExecutable(builder.shared.methodUnsafe));
         this.method = requireNonNull(builder.shared.methodUnsafe);
         this.bootstrapModel = requireNonNull(builder.model);
@@ -93,28 +93,6 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
     @Override
     public MethodHandle methodHandle() {
         return directMethodHandle;
-    }
-
-    public static void process(HookedClassModel.Builder source, Method method) {
-        Shared shared = null;
-        for (Annotation a : method.getAnnotations()) {
-            MethodHookBootstrapModel model = MethodHookBootstrapModel.getForAnnotatedMethod(a.annotationType());
-            if (model != null) {
-                if (shared == null) {
-                    shared = new Shared(source, method);
-                }
-                Builder builder = new Builder(model, shared);
-
-                MethodHook.Bootstrap bootstrap = model.bootstrap(builder);
-                if (builder.managedBy == null) {
-                    model.clearBuilder(bootstrap);
-                }
-                if (builder.buildtimeModel != null) {
-                    UseSiteMethodHookModel smm = new UseSiteMethodHookModel(builder);
-                    shared.source.methods.add(smm);
-                }
-            }
-        }
     }
 
     /** A builder. */
@@ -221,17 +199,13 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         }
     }
 
-    public enum RunAt {
-        INITIALIZATION;
-    }
-
     /**
      * This class mainly exists because {@link Method} is mutable. We want to avoid situations where a method activates two
      * different sidecars. And both sidecars access the Method instance. And one of them may call
      * {@link Method#setAccessible(boolean)} which could then allow the other sidecar to unintentional have access to an
      * accessible method.
      */
-    private static class Shared {
+    static class Shared {
 
         /** A direct method handle to the method (lazily computed). */
         @Nullable
@@ -244,9 +218,9 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         private final Method methodUnsafe;
 
         /** The source. */
-        private final HookedClassModel.Builder source;
+        final HookedClassModel.Builder source;
 
-        private Shared(HookedClassModel.Builder source, Method method) {
+        Shared(HookedClassModel.Builder source, Method method) {
             this.source = requireNonNull(source);
             this.methodUnsafe = requireNonNull(method);
         }

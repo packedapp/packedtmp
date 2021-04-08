@@ -173,6 +173,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
         // Build the system
         BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
+        // try {
+//        } catch (Throwable t) {
+//            StackTraceElement[] stackTrace = t.getStackTrace();
+//            List<StackTraceElement> list = Arrays.stream(stackTrace).filter(st -> !st.getClassName().startsWith("app.packed") && !st.getClassName().startsWith("packed.internal")).toList();
+//            t.setStackTrace(list.toArray(StackTraceElement[]::new));
+//            throw t;
+//        }
 
         // Initialize the system. And start it if necessary (if it is a guest)
         return ApplicationLaunchContext.launch(this, build.application, null);
