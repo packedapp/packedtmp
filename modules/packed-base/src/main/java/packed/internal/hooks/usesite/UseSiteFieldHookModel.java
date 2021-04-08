@@ -132,14 +132,14 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         final FieldHookModel hook;
 
-        Builder(HookedClassModel.Builder source, FieldHookModel hook, Field field) {
+        public Builder(HookedClassModel.Builder source, FieldHookModel hook, Field field) {
             super(source, hook);
             this.hus = source.hus;
             this.hook = hook;
             this.field = field;
         }
 
-        Builder(UseSiteClassHookModel.Builder classBuilder, FieldHookModel model, Field field) {
+        public Builder(UseSiteClassHookModel.Builder classBuilder, FieldHookModel model, Field field) {
             super(classBuilder.source, model);
             this.hus = null;
             this.hook = model;
@@ -149,7 +149,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         public void checkWritable() {}
 
-        private void invokeBootstrap() {
+        void invokeBootstrap() {
             // We perform a compare and exchange with configuration. Guarding against
             // concurrent usage of this assembly.
             // Don't think it makes sense to register
@@ -199,7 +199,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
      * accessible method.
      */
     @SuppressWarnings("unused")
-    private static class Shared {
+    public static class Shared {
 
         /** The method we are processing. */
         private final Field fieldUnsafe;
@@ -212,7 +212,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         private VarHandle varHandle;
 
-        private Shared(HookedClassModel.Builder source, Field field) {
+        public Shared(HookedClassModel.Builder source, Field field) {
             this.builder = requireNonNull(source);
             this.fieldUnsafe = requireNonNull(field);
         }

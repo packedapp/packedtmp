@@ -18,6 +18,7 @@ package packed.internal.hooks.usesite;
 import static java.util.Objects.requireNonNull;
 
 import java.lang.annotation.Annotation;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,7 +32,9 @@ import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.container.ExtensionModel;
+import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ClassHookModel;
+import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel.Shared;
@@ -87,7 +90,6 @@ public final class HookedClassModel {
         }
         return s;
     }
-
 
     /** A builder object for {@link HookedClassModel}. */
     public static abstract class Builder extends MemberScanner {
@@ -152,7 +154,26 @@ public final class HookedClassModel {
 
         @Override
         protected void onField(Field field) {
-            UseSiteFieldHookModel.processField(this, field);
+            VarHandle varHandle = null;
+
+            // Run through every annotation on the field, and see if we any hook that are activated
+            for (Annotation a : field.getAnnotations()) {
+                FieldHookModel hook = FieldHookModel.of(hus, null, a.annotationType());
+
+                if (hook != null) {
+                    // We can have more than 1 sidecar attached to a method
+                    if (varHandle == null) {
+                        varHandle = oc.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                    }
+
+                    UseSiteFieldHookModel.Builder builder = new UseSiteFieldHookModel.Builder(this, hook, field);
+                    builder.invokeBootstrap();
+                    if (builder.buildtimeModel != null) {
+                        UseSiteFieldHookModel smm = new UseSiteFieldHookModel(builder, varHandle);
+                        fields.add(smm);
+                    }
+                }
+            }
         }
 
         protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
@@ -172,7 +193,7 @@ public final class HookedClassModel {
                     if (builder.managedBy == null) {
                         model.clearBuilder(bootstrap);
                     }
-                    
+
                     if (builder.buildtimeModel != null) {
                         UseSiteMethodHookModel smm = new UseSiteMethodHookModel(builder);
                         shared.source.methods.add(smm);
