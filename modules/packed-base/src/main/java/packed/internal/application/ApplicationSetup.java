@@ -35,6 +35,7 @@ public final class ApplicationSetup {
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
+    public final BuildSetup build;
     /**
      * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
      * build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
@@ -57,9 +58,10 @@ public final class ApplicationSetup {
      */
     ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver containerDriver, int modifiers,
             Wirelet[] wirelets) {
+        this.build = requireNonNull(build);
         this.driver = requireNonNull(driver, "driver is null");
         this.launchMode = requireNonNull(driver.launchMode());
-        this.container = containerDriver.newComponent(build, this, realm, null, wirelets);
+        this.container = containerDriver.newComponent(this, realm, null, wirelets);
         this.modifiers = modifiers;
         // Setup Runtime
         if (container.modifiers().hasRuntime()) {

@@ -30,7 +30,6 @@ import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
@@ -90,9 +89,9 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Wi
         return inner.modifiersSet;
     }
 
-    public SourcedComponentSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    public SourcedComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         requireNonNull(parent);
-        return new SourcedComponentSetup(build, application,  realm, this, parent, wirelets);
+        return new SourcedComponentSetup(application,  realm, this, parent, wirelets);
     }
 
     public C toConfiguration(ComponentConfigurationContext cnc) {

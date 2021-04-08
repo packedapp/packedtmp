@@ -67,6 +67,7 @@ public final class RealmSetup {
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
      * When we close the realm we then run through this list and recursively close each container.
      */
+    // Hmm burde kunne bruge traet istedet for
     private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
     /**
@@ -78,7 +79,7 @@ public final class RealmSetup {
     public RealmSetup(RealmSetup existing, WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = existing.build;
-        this.root = driver.newComponent(build, build.application, this, linkTo, wirelets);
+        this.root = driver.newComponent(build.application, this, linkTo, wirelets);
     }
 
     /**
@@ -90,7 +91,7 @@ public final class RealmSetup {
      */
     public RealmSetup(ExtensionModel model, ComponentSetup extension) {
         this.realmType = model.extensionClass();
-        this.build = extension.build;
+        this.build = extension.application.build;
         this.root = null; //??????
         // this.current = requireNonNull(extension);
     }
@@ -146,7 +147,7 @@ public final class RealmSetup {
         wirePrepare();
 
         // Create the new component
-        WireableComponentSetup component = driver.newComponent(build, build.application, this, wireTo, wirelets);
+        WireableComponentSetup component = driver.newComponent(build.application, this, wireTo, wirelets);
 
         wireCommit(component);
         return component;

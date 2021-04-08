@@ -35,7 +35,6 @@ import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
@@ -82,9 +81,9 @@ public final class ContainerSetup extends WireableComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, ContainerComponentDriver driver, @Nullable ComponentSetup parent,
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, ContainerComponentDriver driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
-        super(build, application, realm, driver, parent, wirelets);
+        super(application, realm, driver, parent, wirelets);
 
         // Various container tree management
         this.containerParent = parent == null ? null : parent.container;

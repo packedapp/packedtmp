@@ -27,7 +27,6 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
@@ -183,8 +182,8 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
             super(wirelet);
         }
 
-        public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            return new ContainerSetup(build, application, realm, this, parent, wirelets);
+        public ContainerSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+            return new ContainerSetup(application, realm, this, parent, wirelets);
         }
 
         @Override

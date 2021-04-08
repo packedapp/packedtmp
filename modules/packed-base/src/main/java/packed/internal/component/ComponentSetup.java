@@ -57,9 +57,6 @@ public abstract class ComponentSetup {
     /** The application this component is a part of. */
     public final ApplicationSetup application;
 
-    /** The build this component is part of. */
-    public final BuildSetup build;
-
     /** Children of this node (lazily initialized) in insertion order. */
     @Nullable
     LinkedHashMap<String, ComponentSetup> children;
@@ -96,8 +93,6 @@ public abstract class ComponentSetup {
     /**
      * Create a new component.
      * 
-     * @param build
-     *            the build this component is a part of
      * @param application
      *            the application this component is a part of
      * @param realm
@@ -107,18 +102,17 @@ public abstract class ComponentSetup {
      * @param parent
      *            any parent this component might have
      */
-    ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
+    ComponentSetup(ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
 
-        this.build = requireNonNull(build);
         this.application = requireNonNull(application);
         this.realm = requireNonNull(realm);
         this.container = this instanceof ContainerSetup container ? container : parent.container;
 
         // Various
         if (/* is root container */ parent == null) {
-            this.modifiers = build.modifiers | driver.modifiers;
+            this.modifiers = application.build.modifiers | driver.modifiers;
             this.pool = application.constantPool;
         } else {
             this.modifiers = driver.modifiers;
@@ -139,7 +133,6 @@ public abstract class ComponentSetup {
         this.parent = container;
         this.depth = container.depth + 1;
 
-        this.build = container.build;
         this.application = container.application;
         this.container = container;
         this.realm = new RealmSetup(model, this);
@@ -172,7 +165,7 @@ public abstract class ComponentSetup {
     protected void attributesAdd(DefaultAttributeMap dam) {}
 
     public final BuildSetup build() {
-        return build;
+        return application.build;
     }
 
     public final void checkIsWiring() {
@@ -216,10 +209,10 @@ public abstract class ComponentSetup {
         requireNonNull(other, "other is null");
         return switch (scope) {
         case APPLICATION -> application == other.application;
-        case BUILD -> build == other.build;
+        case BUILD -> application.build == other.application.build;
         case COMPONENT -> this == other;
         case CONTAINER -> container == other.container;
-        case NAMESPACE -> build.namespace == other.build.namespace;
+        case NAMESPACE -> application.build.namespace == other.application.build.namespace;
         };
     }
 

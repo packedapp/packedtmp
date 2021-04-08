@@ -6,7 +6,6 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 
 /**
  * A component that can be wired. For now, this is every component setup type except ExtensionSetup.
@@ -18,9 +17,9 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
     @Nullable
     public final WireletWrapper wirelets;
 
-    public WireableComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
+    public WireableComponentSetup(ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        super(build, application, realm, driver, parent);
+        super(application, realm, driver, parent);
 
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {

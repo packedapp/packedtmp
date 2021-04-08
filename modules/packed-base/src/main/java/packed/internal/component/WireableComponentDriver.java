@@ -16,7 +16,6 @@ import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 
@@ -43,7 +42,7 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
 
     public void checkBound() {}
 
-    public abstract WireableComponentSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
+    public abstract WireableComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
             Wirelet[] wirelets);
 
     public abstract C toConfiguration(ComponentConfigurationContext context);
@@ -110,9 +109,9 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
         }
 
         /** {@inheritDoc} */
-        public ContainerSetup newComponent(BuildSetup build, ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
+        public ContainerSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
                 Wirelet[] wirelets) {
-            return new ContainerSetup(build, application, realm, this, parent, wirelets);
+            return new ContainerSetup(application, realm, this, parent, wirelets);
         }
     }
 }
