@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
@@ -47,6 +48,10 @@ import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
+
+    /** A handle that can access Assembly#driver. */
+    private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
+            WireableComponentDriver.class);
 
     /** The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(RunState)}. */
     private final RunState launchMode;
@@ -105,7 +110,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public Class<?> artifactRawType() {
         return mhConstructor.type().returnType();
     }
-
+    
     /**
      * @param assembly
      *            the root assembly
@@ -135,19 +140,19 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
-        // Close the realm for modifications
         realm.close();
 
         return realm.build;
     }
-
+    
     /** {@inheritDoc} */
     @Override
     public <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
+        requireNonNull(composer, "composer is null");
 
         // Extract the component driver from the composer
-        WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(composer);
+        WireableComponentDriver<?> componentDriver = (WireableComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
 
         // Create a new realm
         RealmSetup realm = new RealmSetup(this, componentDriver, consumer, wirelets);

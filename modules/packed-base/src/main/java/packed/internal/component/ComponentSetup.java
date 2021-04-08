@@ -135,7 +135,7 @@ public abstract class ComponentSetup {
 
         this.application = container.application;
         this.container = container;
-        this.realm = new RealmSetup(model, this);
+        this.realm = container.realm.newExtension(model, this);
 
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.pool = container.pool;

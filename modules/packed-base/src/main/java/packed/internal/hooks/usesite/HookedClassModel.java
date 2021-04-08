@@ -158,7 +158,7 @@ public final class HookedClassModel {
 
             // Run through every annotation on the field, and see if we any hook that are activated
             for (Annotation a : field.getAnnotations()) {
-                FieldHookModel hook = FieldHookModel.of(hus, null, a.annotationType());
+                FieldHookModel hook = getFieldModel(a.annotationType());
 
                 if (hook != null) {
                     // We can have more than 1 sidecar attached to a method
@@ -178,6 +178,8 @@ public final class HookedClassModel {
 
         protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
 
+        protected abstract @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType);
+        
         @Override
         protected void onMethod(Method method) {
             UseSiteMethodHookModel.Shared shared = null;

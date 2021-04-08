@@ -49,6 +49,7 @@ public final class RealmSetup {
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
 
+    /** The build this realm is a part of. */
     public final BuildSetup build;
 
     /** The current active component in the realm. */
@@ -71,28 +72,16 @@ public final class RealmSetup {
     private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
     /**
-     * Creates a new realm for an assembly.
-     * 
-     * @param assembly
-     *            the assembly to create a realm for
-     */
-    public RealmSetup(RealmSetup existing, WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
-        this.realmType = assembly.getClass();
-        this.build = existing.build;
-        this.root = driver.newComponent(build.application, this, linkTo, wirelets);
-    }
-
-    /**
      * Creates a new realm for an extension.
      * 
      * @param model
      *            the extension model to create a realm for
      * @parem extension the extension setup
      */
-    public RealmSetup(ExtensionModel model, ComponentSetup extension) {
+    private RealmSetup(ExtensionModel model, ComponentSetup extension) {
         this.realmType = model.extensionClass();
         this.build = extension.application.build;
-        this.root = null; //??????
+        this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
 
@@ -108,8 +97,20 @@ public final class RealmSetup {
             Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, modifiers, wirelets);
-        root = build.container;
+        this.root = build.container;
         wireCommit(root);
+    }
+
+    /**
+     * Creates a new realm for an assembly.
+     * 
+     * @param assembly
+     *            the assembly to create a realm for
+     */
+    private RealmSetup(RealmSetup existing, WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
+        this.realmType = assembly.getClass();
+        this.build = existing.build;
+        this.root = driver.newComponent(build.application, this, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {
@@ -142,22 +143,15 @@ public final class RealmSetup {
         return current;
     }
 
-    public WireableComponentSetup wire(WireableComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
-        // Prepare to wire the component (make sure the realm is still open)
-        wirePrepare();
-
-        // Create the new component
-        WireableComponentSetup component = driver.newComponent(build.application, this, wireTo, wirelets);
-
-        wireCommit(component);
-        return component;
-    }
-
     public RealmSetup link(WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
         // Check that the realm this component is a part of is still open
         wirePrepare();
         // Create the new realm that should be used for linking
         return new RealmSetup(this, driver, linkTo, assembly, wirelets);
+    }
+
+    public RealmSetup newExtension(ExtensionModel model, ComponentSetup extension) {
+        return new RealmSetup(model, extension);
     }
 
     /**
@@ -179,6 +173,17 @@ public final class RealmSetup {
     public void setLookup(@Nullable Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         this.accessor = accessor().withLookup(lookup);
+    }
+
+    public WireableComponentSetup wire(WireableComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
+        // Prepare to wire the component (make sure the realm is still open)
+        wirePrepare();
+
+        // Create the new component
+        WireableComponentSetup component = driver.newComponent(build.application, this, wireTo, wirelets);
+
+        wireCommit(component);
+        return component;
     }
 
     private void wireCommit(WireableComponentSetup component) {

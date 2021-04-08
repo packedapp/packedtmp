@@ -15,37 +15,21 @@
  */
 package packed.internal.hooks;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.FieldHook.Bootstrap;
 import app.packed.inject.Provide;
 import app.packed.state.OnInitialize;
-import packed.internal.container.ExtensionModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.hooks.usesite.HookUseSite;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
 public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap> {
-
-    /** A cache of any extensions a particular annotation activates. */
-    static final ClassValue<FieldHookModel> ANNOTATION_ON_METHOD_SIDECARS = new ClassValue<>() {
-
-        @Override
-        protected FieldHookModel computeValue(Class<?> type) {
-            FieldHook afs = type.getAnnotation(FieldHook.class);
-            return afs == null ? null : new Builder(afs).build();
-        }
-    };
 
     public final Map<Key<?>, HookedMethodProvide> keys;
 
@@ -66,22 +50,13 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
         this.keys = builder.providing.size() == 0 ? null : Map.copyOf(tmp);
     }
 
-    @Nullable
-    public static FieldHookModel of(HookUseSite useSite, ExtensionModel extension, Class<? extends Annotation> c) {
-        requireNonNull(useSite);
-        return switch (useSite) {
-        case COMPONENT_SOURCE -> ANNOTATION_ON_METHOD_SIDECARS.get(c);
-        case APPLICATION_SHELL -> throw new UnsupportedOperationException();
-        case HOOK_CLASS -> throw new UnsupportedOperationException();
-        };
-    }
 
     public static FieldHookModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
     /** A builder for for a {@link FieldHookModel}. */
-    private final static class Builder extends AbstractHookModel.Builder<FieldHook.Bootstrap> {
+    public final static class Builder extends AbstractHookModel.Builder<FieldHook.Bootstrap> {
 
         private MethodHandle onInitialize;
 
@@ -91,13 +66,13 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
             super(c);
         }
 
-        private Builder(FieldHook afs) {
+        public Builder(FieldHook afs) {
             super(afs.bootstrap());
         }
 
         /** {@inheritDoc} */
         @Override
-        protected FieldHookModel build() {
+        public FieldHookModel build() {
             scan(false, FieldHook.Bootstrap.class);
             return new FieldHookModel(this);
         }

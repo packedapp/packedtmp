@@ -17,7 +17,6 @@ package packed.internal.hooks.usesite;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -95,29 +94,6 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     @Override
     public MethodHandle methodHandle() {
         return MethodHandleUtil.getFromField(modifiers, varHandle);
-    }
-
-    static void processField(HookedClassModel.Builder source, Field field) {
-        VarHandle varHandle = null;
-
-        // Run through every annotation on the field, and see if we any hook that are activated
-        for (Annotation a : field.getAnnotations()) {
-            FieldHookModel hook = FieldHookModel.of(source.hus, null, a.annotationType());
-
-            if (hook != null) {
-                // We can have more than 1 sidecar attached to a method
-                if (varHandle == null) {
-                    varHandle = source.oc.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-                }
-
-                Builder builder = new Builder(source, hook, field);
-                builder.invokeBootstrap();
-                if (builder.buildtimeModel != null) {
-                    UseSiteFieldHookModel smm = new UseSiteFieldHookModel(builder, varHandle);
-                    source.fields.add(smm);
-                }
-            }
-        }
     }
 
     /**

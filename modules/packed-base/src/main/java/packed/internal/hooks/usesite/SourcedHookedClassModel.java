@@ -3,8 +3,10 @@ package packed.internal.hooks.usesite;
 import java.lang.annotation.Annotation;
 
 import app.packed.base.Nullable;
+import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.container.ExtensionModel;
+import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.invoke.OpenClass;
 
@@ -35,12 +37,28 @@ public class SourcedHookedClassModel {
             }
         };
 
+
+        /** A cache of any extensions a particular annotation activates. */
+        static final ClassValue<FieldHookModel> FIELD_ANNOTATIONS = new ClassValue<>() {
+
+            @Override
+            protected FieldHookModel computeValue(Class<?> type) {
+                FieldHook afs = type.getAnnotation(FieldHook.class);
+                return afs == null ? null : new FieldHookModel.Builder(afs).build();
+            }
+        };
+        
         private Builder(OpenClass cp, @Nullable ExtensionModel extension) {
             super(HookUseSite.COMPONENT_SOURCE, cp, extension);
         }
 
         protected @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType) {
             return METHOD_ANNOTATIONS.get(annotationType);
+        }
+
+        @Override
+        protected @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType) {
+            return FIELD_ANNOTATIONS.get(annotationType);
         }
     }
 }
