@@ -15,7 +15,6 @@
  */
 package packed.internal.hooks;
 
-import java.lang.annotation.Annotation;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
@@ -24,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.container.InternalExtensionException;
 import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
@@ -40,15 +38,7 @@ import packed.internal.util.ThrowableUtil;
 /** A model of a {@link Bootstrap} class. */
 public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethodSidecarBootstrap> {
 
-    /** A cache of any extensions a particular annotation activates. */
-    private static final ClassValue<MethodHookBootstrapModel> EXTENSION_METHOD_ANNOTATION = new ClassValue<>() {
-
-        @Override
-        protected MethodHookBootstrapModel computeValue(Class<?> type) {
-            MethodHook ams = type.getAnnotation(MethodHook.class);
-            return ams == null ? null : new Builder(ams).build();
-        }
-    };
+   
 
     /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
@@ -93,11 +83,6 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         VH_METHOD_SIDECAR_CONFIGURATION.set(instance, null); // clears the configuration
     }
 
-    @Nullable
-    public static MethodHookBootstrapModel getForAnnotatedMethod(Class<? extends Annotation> c) {
-        return EXTENSION_METHOD_ANNOTATION.get(c);
-    }
-
     public static MethodHookBootstrapModel getModelForFake(Class<? extends MethodHook.Bootstrap> c) {
         return new Builder(c).build();
     }
@@ -115,13 +100,13 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
             super(c);
         }
 
-        Builder(MethodHook ams) {
+        public Builder(MethodHook ams) {
             super(ams.bootstrap()[0]);
         }
 
         /** {@inheritDoc} */
         @Override
-        protected MethodHookBootstrapModel build() {
+        public MethodHookBootstrapModel build() {
 
             scan(false, MethodHook.Bootstrap.class);
 

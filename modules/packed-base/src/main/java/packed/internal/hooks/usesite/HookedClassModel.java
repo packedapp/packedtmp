@@ -58,7 +58,8 @@ public final class HookedClassModel {
     public final Class<?> clazz;
 
     /** Any extension this model is a part of. */
-    public final @Nullable Class<? extends Extension> extensionClass;
+    @Nullable
+    public final Class<? extends Extension> extensionClass;
 
     /**
      * Creates a new model.
@@ -87,21 +88,9 @@ public final class HookedClassModel {
         return s;
     }
 
-    /**
-     * Creates a new component model instance.
-     * 
-     * @param realm
-     *            a model of the container source that is trying to install the component
-     * @param oc
-     *            a class processor usable by hooks
-     * @return a model of the component
-     */
-    public static HookedClassModel newModel(HookUseSite hus, OpenClass oc, @Nullable ExtensionModel extension) {
-        return new Builder(hus, oc, extension).build();
-    }
 
     /** A builder object for {@link HookedClassModel}. */
-    public static final class Builder extends MemberScanner {
+    public static abstract class Builder extends MemberScanner {
 
         final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 
@@ -141,7 +130,6 @@ public final class HookedClassModel {
          * @return a new model
          */
         public HookedClassModel build() {
-            
 
             // TODO run through annotations
 
@@ -167,9 +155,7 @@ public final class HookedClassModel {
             UseSiteFieldHookModel.processField(this, field);
         }
 
-        protected @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType) {
-            return MethodHookBootstrapModel.getForAnnotatedMethod(annotationType);
-        }
+        protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
 
         @Override
         protected void onMethod(Method method) {
@@ -192,7 +178,7 @@ public final class HookedClassModel {
                     }
                 }
             }
-            //  I guess we might need to run through and look for ServiceHooks?
+            // I guess we might need to run through and look for ServiceHooks?
         }
 
         public Class<?> type() {
