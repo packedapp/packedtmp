@@ -79,16 +79,36 @@ public abstract class Composer<C extends ComponentConfiguration> {
     }
 
     /**
-     * Creates a new assembly using the specified driver.
+     * Creates a new composer using the specified driver.
      * 
      * @param driver
-     *            the component driver used to create the configuration objects this assembly wraps
+     *            the component driver used to create the configuration objects this composer wraps
      */
     protected Composer(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((WireableComponentDriver<? extends C>) driver, "driver is null");
         this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
-    
+
+    /**
+     * Checks that the underlying component is still configurable.
+     * 
+     * @see ComponentConfigurationContext#checkOpen()
+     */
+    protected final void checkConfigurable() {
+        configuration().context.checkOpen();
+    }
+
+    @SuppressWarnings("unchecked")
+    protected final C configuration() {
+        Object c = configuration;
+        if (c == null) {
+            throw new IllegalStateException("This method cannot be called from the constructor of a composer");
+        } else if (c == USED) {
+            throw new IllegalStateException("This method must be called while the composer is active.");
+        }
+        return (C) c;
+    }
+
     /**
      * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
      * used more than once.
@@ -102,11 +122,11 @@ public abstract class Composer<C extends ComponentConfiguration> {
         if (existing == null) {
             try {
                 onComposable();
-                
+
+                // call the actual consumer
                 consumer.accept(this);
-                
+
                 onCompletable();
-                
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
@@ -118,23 +138,6 @@ public abstract class Composer<C extends ComponentConfiguration> {
             // Can be this thread or another thread that is already using the assembly.
             throw new IllegalStateException("This composer is currently being used elsewhere, composer = " + getClass());
         }
-    }
-
-    protected void onComposable() {}
-    
-    protected void onCompletable() {}
-    /**
-     * Checks that the underlying component is still configurable.
-     * 
-     * @see ComponentConfigurationContext#checkOpen()
-     */
-    protected final void checkConfigurable() {
-        configuration().context.checkOpen();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final C configuration() {
-        return (C) configuration;
     }
 
     /**
@@ -157,6 +160,10 @@ public abstract class Composer<C extends ComponentConfiguration> {
     public final void lookup(MethodHandles.Lookup lookup) {
         ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
+
+    protected void onCompletable() {}
+
+    protected void onComposable() {}
 }
 
 // Er det ikke noget vi skal definere i vores ArtifactDriver...

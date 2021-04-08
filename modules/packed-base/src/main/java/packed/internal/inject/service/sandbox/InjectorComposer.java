@@ -48,16 +48,6 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     }
 
     /**
-     * Creates a new composer
-     * 
-     * @param configuration
-     *            the configuration to wrap
-     */
-    InjectorComposer(ContainerConfiguration configuration) {
-        super(configuration);
-    }
-
-    /**
      * Returns an instance of the injector extension.
      * 
      * @return an instance of the injector extension
