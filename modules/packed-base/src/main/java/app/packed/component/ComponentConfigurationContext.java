@@ -51,22 +51,7 @@ public /* sealed */ interface ComponentConfigurationContext {
     // Hmmmmmm, build() is normally something else
     Build build();
 
-    default void checkIsWiring() {
-        // Check that we are in the process of wiring.
-        // set properties, set name, setKey()...
-        
-    }
-
-    /**
-     * Checks that the component is still configurable. Throwing an {@link IllegalStateException} if it is not.
-     * <p>
-     * A component is typically only configurable inside of {@link Assembly#build()}.
-     * 
-     * @throws IllegalStateException
-     *             if the component is no longer configurable.
-     */
-    // checkRealmActive
-    void checkOpen();
+    void checkIsWiring();
 
     /**
      * Returns the name of the component. If no name has previously been set via {@link #setName(String)} a name is

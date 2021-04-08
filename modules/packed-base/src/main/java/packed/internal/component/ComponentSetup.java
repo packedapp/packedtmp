@@ -170,7 +170,11 @@ public abstract class ComponentSetup {
 
     public final void checkIsWiring() {
         if (realm.current() != this) {
-            throw new IllegalStateException("This operation must be called immediately after wiring of the component");
+            String errorMsg = "This operation must be called immediately after the component has been wired";
+            if (realm.root == this) {
+                errorMsg = "This operation must be called as the first thing in Assembly#build()";
+            }
+            throw new IllegalStateException(errorMsg);
         }
     }
 
@@ -188,7 +192,8 @@ public abstract class ComponentSetup {
             } else {
                 int counter = 1;
                 while (c.putIfAbsent(n, this) != null) {
-                    n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1 million of the same component type
+                    n = name + counter++; // maybe store some kind of map<ComponentSetup, LongCounter> in BuildSetup.. for those that want to test adding 1
+                                          // million of the same component type
                 }
             }
         }

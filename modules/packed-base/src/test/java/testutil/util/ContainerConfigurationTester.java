@@ -67,25 +67,6 @@ public class ContainerConfigurationTester {
         return conf;
     }
 
-    public ContainerConfigurationTester isConfigurable() {
-        try {
-            cc.checkConfigurable();
-            return this;
-        } catch (IllegalStateException e) {
-            throw new AssertionError("Expected to be configurable, but was not", e);
-        }
-    }
-
-    public ContainerConfigurationTester isNotConfigurable() {
-        try {
-            cc.checkConfigurable();
-            throw new AssertionError("Expected to be not configurable, but was");
-        } catch (IllegalStateException e) {
-            // Check name???
-            return this;
-        }
-    }
-
     public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
         cc.link(child, wirelets);
         return this;

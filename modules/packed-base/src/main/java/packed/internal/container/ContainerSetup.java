@@ -280,7 +280,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
-        realm.wireLatest();
+        realm.newOperation();
         return (T) useExtension(extensionClass, null).extensionInstance();
     }
 

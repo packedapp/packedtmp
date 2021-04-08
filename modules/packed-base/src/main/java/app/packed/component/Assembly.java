@@ -24,6 +24,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.WireableComponentDriver;
 import packed.internal.util.LookupUtil;
@@ -160,6 +161,27 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
 
+
+    /**
+     * Checks that the assembly has not already been used. This method is typically used
+     * 
+     * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions
+     * does not try to configure the extension after it has been configured.
+     * 
+     * <p>
+     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkConfigurable()}.
+     * 
+     * @throws IllegalStateException
+     *             if {@link #build()} has been invoked
+     * @see ContainerConfiguration#checkConfigurable()
+     */
+    // Before build is started?? or do we allow to call these method
+    // checkPreBuild()??
+    protected final void checkConfigurable() {
+        ((ComponentSetup) configuration().context).checkOpen();
+    }
+
+    
     final <T extends Wirelet> WireletList<T> wirelets(Class<T> wirelet) {
         // Jeg ved ikke hvor tid vi har brug for den her...
         throw new UnsupportedOperationException();

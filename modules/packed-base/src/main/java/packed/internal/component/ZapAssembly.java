@@ -2,12 +2,12 @@ package packed.internal.component;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.Provide;
 
 public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
+        setName("asdasd");
         link(new LinkMe());
     }
 
@@ -23,10 +23,6 @@ public class ZapAssembly extends BaseAssembly {
             install(My.class);
         }
         
-        @Provide 
-        public String foo() {
-            return "asdsad";
-        }
     }
 
     static class My {}

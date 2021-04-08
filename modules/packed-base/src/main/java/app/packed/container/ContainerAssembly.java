@@ -62,25 +62,6 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     }
 
     /**
-     * Checks that the assembly has not already been used. This method is typically used
-     * 
-     * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions
-     * does not try to configure the extension after it has been configured.
-     * 
-     * <p>
-     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkConfigurable()}.
-     * 
-     * @throws IllegalStateException
-     *             if {@link #build()} has been invoked
-     * @see ContainerConfiguration#checkConfigurable()
-     */
-    // Before build is started?? or do we allow to call these method
-    // checkPreBuild()??
-    protected final void checkConfigurable() {
-        configuration().checkConfigurable();
-    }
-
-    /**
      * Returns an unmodifiable view of every extension that is currently used.
      * 
      * @return an unmodifiable view of every extension that is currently used

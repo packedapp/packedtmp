@@ -62,6 +62,7 @@ public final class RealmSetup {
     // Vi har faktisk 2 som jeg ser det.
     private final Class<?> realmType;
 
+    /** The root component of this realm. */
     public final WireableComponentSetup root;
 
     /**
@@ -89,7 +90,7 @@ public final class RealmSetup {
             Wirelet[] wirelets) {
         this.realmType = composer.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, 0, wirelets);
-        root = build.container;
+        this.root = build.container;
         wireCommit(root);
     }
 
@@ -139,7 +140,7 @@ public final class RealmSetup {
         assert root.name != null;
     }
 
-    public ComponentSetup current() {
+    ComponentSetup current() {
         return current;
     }
 
@@ -152,6 +153,13 @@ public final class RealmSetup {
 
     public RealmSetup newExtension(ExtensionModel model, ComponentSetup extension) {
         return new RealmSetup(model, extension);
+    }
+
+    public void newOperation() {
+        if (current != null) {
+            current.onWired();
+            current = null;
+        }
     }
 
     /**
@@ -192,13 +200,6 @@ public final class RealmSetup {
             if (container.containerParent == null || container.containerParent.realm != this) {
                 rootContainers.add(container);
             }
-        }
-    }
-
-    public void wireLatest() {
-        if (current != null) {
-            current.onWired();
-            current = null;
         }
     }
 
