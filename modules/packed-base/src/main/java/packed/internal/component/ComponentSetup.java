@@ -41,6 +41,7 @@ import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
 import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
+import app.packed.container.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -116,7 +117,7 @@ public abstract class ComponentSetup {
         this.container = this instanceof ContainerSetup container ? container : parent.container;
 
         // Various
-        if (/* is root container */ parent == null ) {
+        if (/* is root container */ parent == null) {
             this.modifiers = build.modifiers | driver.modifiers;
             this.pool = application.constantPool;
         } else {
@@ -222,6 +223,17 @@ public abstract class ComponentSetup {
         };
     }
 
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
+     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
+     */
     public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
@@ -232,8 +244,8 @@ public abstract class ComponentSetup {
         // Create the new realm that should be used for linking
         RealmSetup realm = new RealmSetup(assembly);
 
-        // If this component is an extension, we link to extension's container. As the extension itself is not available at
-        // runtime
+        // If this component is an extension, we link to the extension's container. 
+        // As the extension itself is not present at runtime
         ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
 
         // Create a new component and a new realm
@@ -252,7 +264,7 @@ public abstract class ComponentSetup {
         // Close the newly create realm
         realm.wireCommit(component, true);
 
-        return new ComponentAdaptor(component);
+        return component.adaptor();
     }
 
     public final PackedComponentModifierSet modifiers() {
