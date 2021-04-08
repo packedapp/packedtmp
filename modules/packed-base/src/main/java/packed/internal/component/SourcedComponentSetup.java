@@ -40,13 +40,13 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
     }
 
     public void sourceProvide() {
-        checkOpen();
+        realm.checkOpen();
         source.provide(this);
     }
 
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
-        checkOpen();
+        realm.checkOpen();
         source.provide(this).as(key);
     }
 

@@ -178,7 +178,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     // Before build is started?? or do we allow to call these method
     // checkPreBuild()??
     protected final void checkConfigurable() {
-        ((ComponentSetup) configuration().context).checkOpen();
+        ((ComponentSetup) configuration().context).realm.checkOpen();
     }
 
     

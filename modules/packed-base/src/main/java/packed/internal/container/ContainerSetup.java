@@ -259,7 +259,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
             // Checks that container is still configurable
             if (requestedBy == null) {
-                checkOpen();
+                realm.checkOpen();
             } else {
                 requestedBy.checkOpen();
             }

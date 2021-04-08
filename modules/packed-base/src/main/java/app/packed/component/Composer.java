@@ -94,7 +94,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * 
      */
     protected final void checkConfigurable() {
-        ((ComponentSetup) configuration().context).checkOpen();
+        ((ComponentSetup) configuration().context).realm.checkOpen();
     }
 
     @SuppressWarnings("unchecked")
