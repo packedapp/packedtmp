@@ -45,10 +45,7 @@ import packed.internal.invoke.OpenClass;
 public final class HookedClassModel {
 
     /** All field hooks. */
-    public final List<UseSiteFieldHookModel> fields;
-
-    /** All method hooks. */
-    public final List<UseSiteMethodHookModel> methods;
+    public final List<UseSiteMemberHookModel> models;
 
     /** The simple name of the component type (razy), typically used for lazy generating a component name. */
     private String simpleName;
@@ -72,8 +69,7 @@ public final class HookedClassModel {
      */
     private HookedClassModel(HookedClassModel.Builder builder) {
         this.clazz = builder.oc.type();
-        this.methods = List.copyOf(builder.methods);
-        this.fields = List.copyOf(builder.fields);
+        this.models= List.copyOf(builder.models);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
         this.extensionClass = builder.extension == null ? null : builder.extension.extensionClass();
     }
@@ -97,10 +93,8 @@ public final class HookedClassModel {
         final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 
         /** All field hooks. */
-        final ArrayList<UseSiteFieldHookModel> fields = new ArrayList<>();
+        final ArrayList<UseSiteMemberHookModel> models = new ArrayList<>();
 
-        /** All method hooks. */
-        final ArrayList<UseSiteMethodHookModel> methods = new ArrayList<>();
 
         final OpenClass oc;
 
@@ -170,7 +164,7 @@ public final class HookedClassModel {
                     builder.invokeBootstrap();
                     if (builder.buildtimeModel != null) {
                         UseSiteFieldHookModel smm = new UseSiteFieldHookModel(builder, varHandle);
-                        fields.add(smm);
+                        models.add(smm);
                     }
                 }
             }
@@ -198,7 +192,7 @@ public final class HookedClassModel {
 
                     if (builder.buildtimeModel != null) {
                         UseSiteMethodHookModel smm = new UseSiteMethodHookModel(builder);
-                        shared.source.methods.add(smm);
+                        models.add(smm);
                     }
                 }
             }

@@ -18,9 +18,10 @@ package app.packed.component;
 import static java.util.Objects.requireNonNull;
 
 /**
- * The base class for build-time configurations of components. The class is basically a thin wrapper on top of
- * {@link ComponentConfigurationContext}. All component configuration classes must extend, directly or indirectly, from
- * this class.
+ * The base class for component configuration classes.
+ * <p>
+ * The class is basically a thin wrapper on top of {@link ComponentConfigurationContext}. All component configuration
+ * classes must extend, directly or indirectly, from this class.
  * <p>
  * Instead of extending this class directly, you typically want to extend {@link BaseComponentConfiguration} instead.
  */
@@ -40,7 +41,7 @@ public abstract class ComponentConfiguration {
     }
 
     /**
-     * A callback method invoked by Packed immediatly before it is marked as no longer configurable
+     * Ivoked A callback method invoked by Packed immediatly before it is marked as no longer configurable
      */
     protected void onConfigured() {}
 }

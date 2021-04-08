@@ -26,7 +26,7 @@ package app.packed.container;
 // 2: Contaings actually functionality. But you cannot depend on it. And it will never show up under used extensions...
 
 // Nah vi returnere bare Extension hvis det er 
-public final class BaseExtension extends Extension {
+final class BaseExtension extends Extension {
 
     /** Not today Satan, not today. */
     private BaseExtension() {}

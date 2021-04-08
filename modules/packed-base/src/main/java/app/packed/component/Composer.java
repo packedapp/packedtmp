@@ -93,7 +93,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * Checks that the underlying component is still configurable.
      * 
      */
-    protected final void checkConfigurable() {
+    protected final void checkPreBuild() {
         ((ComponentSetup) configuration().context).realm.checkOpen();
     }
 

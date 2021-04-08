@@ -104,7 +104,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** {@inheritDoc} */
     @Override
-    public void checkOpen() {
+    public void checkIsBuilding() {
         if (isConfigured) {
             throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
         }

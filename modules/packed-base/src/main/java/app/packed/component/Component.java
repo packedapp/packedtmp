@@ -142,6 +142,9 @@ public /* sealed */ interface Component extends AttributedElement {
 //        throw new UnsupportedOperationException();
 //    }
 
+    default Component in(ComponentScope boundary) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 ///**

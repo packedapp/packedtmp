@@ -123,6 +123,7 @@ public final class RealmSetup {
     }
 
     public void checkOpen() {
+        // Tror maaske hellere vi skal kalde newOperation
         if (isClosed) {
             throw new IllegalStateException();
         }

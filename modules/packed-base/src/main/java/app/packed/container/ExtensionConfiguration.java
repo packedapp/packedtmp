@@ -30,7 +30,6 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Composer;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletList;
 import app.packed.container.Extension.Subtension;
@@ -58,22 +57,18 @@ import packed.internal.container.ExtensionSetup;
 // Det er jo ikke rigtig tilfaeldet mere... efter vi har lavet om...
 public /* sealed */ interface ExtensionConfiguration {
 
-    default <C extends Composer<ExtensionWireletConfiguration>> void compose(C composer, Consumer<? super C> consumer) {
-        // Composer implementation must be in same module as the extension
-
-        // Hvad faar man af configuration????? 
-        // ExtensionConfiguration og saa user wire??? Hmm ExtensionConfiguration extender ikke ComponentConfiguration
-        // Eller container configuration???? Folk man skal ikke kunne faa fat paa extensions...
-        /// Eller noget helt tredje????
-    }
-    // ComponentAttributes
-
     /**
      * Returns information about the build this extension is a part of.
      * 
      * @return information about the build this extension is a part of
      */
     Build build(); // I don't know if it should die...
+
+    /**
+     * Checks that child containers has been aded
+     */
+    // checkContainerFree, checkNoChildContainers
+    void checkExtendable();
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -83,13 +78,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void checkOpen();
-
-    /**
-     * Checks that child containers has been aded
-     */
-    // checkContainerFree, checkNoChildContainers
-    void checkExtendable();
+    void checkIsBuilding();
 
     /**
      * Returns the extension class.
@@ -128,6 +117,16 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     BaseComponentConfiguration installInstance(Object instance);
 
+    default boolean isConnected() {
+        // isInterConnected?
+        // isJoined (sounds very permanent)
+        throw new UnsupportedOperationException();
+    }
+
+    boolean isConnectedInSameApplication();
+
+    boolean isConnectedWithParent();
+
     /**
      * Returns whether or not the extension is part of an {@link ApplicationImage}.
      * <p>
@@ -136,16 +135,6 @@ public /* sealed */ interface ExtensionConfiguration {
      * @return whether or not the extension is part of an image
      */
     boolean isPartOfImage(); // BoundaryTypes
-
-    default boolean isConnected() {
-        // isInterConnected?
-        // isJoined (sounds very permanent)
-        throw new UnsupportedOperationException();
-    }
-
-    boolean isConnectedWithParent();
-
-    boolean isConnectedInSameApplication();
 
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.

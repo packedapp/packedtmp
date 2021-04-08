@@ -161,7 +161,6 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         ((ComponentSetup) configuration().context).realm.setLookup(lookup);
     }
 
-
     /**
      * Checks that the assembly has not already been used. This method is typically used
      * 
@@ -169,19 +168,21 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      * does not try to configure the extension after it has been configured.
      * 
      * <p>
-     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkConfigurable()}.
+     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkPreBuild()}.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see ContainerConfiguration#checkConfigurable()
+     * @see ContainerConfiguration#checkPreBuild()
      */
     // Before build is started?? or do we allow to call these method
     // checkPreBuild()??
-    protected final void checkConfigurable() {
+    protected final void checkPreBuild() {
+        // Why not just test configuration == null????
+        
+        // Det er vel det samme som at kalde configuration()??
         ((ComponentSetup) configuration().context).realm.checkOpen();
     }
 
-    
     final <T extends Wirelet> WireletList<T> wirelets(Class<T> wirelet) {
         // Jeg ved ikke hvor tid vi har brug for den her...
         throw new UnsupportedOperationException();

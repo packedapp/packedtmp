@@ -48,7 +48,7 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceProvideAs();
 public /* sealed */ interface ComponentConfigurationContext {
 
-    // Hmmmmmm, build() is normally something else
+    /** {@return the build that the component is part of} */
     Build build();
 
     void checkIsWiring();
@@ -141,10 +141,3 @@ public /* sealed */ interface ComponentConfigurationContext {
         throw new UnsupportedOperationException();
     }
 }
-//
-///**
-//* Returns the configuration site that created this configuration.
-//* 
-//* @return the configuration site that created this configuration
-//*/
-//ConfigSite configSite();

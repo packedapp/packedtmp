@@ -170,16 +170,14 @@ public abstract class ComponentSetup {
 
     public final void checkIsWiring() {
         if (realm.current() != this) {
-            String errorMsg = "This operation must be called immediately after the component has been wired";
+            String errorMsg;
             if (realm.root == this) {
                 errorMsg = "This operation must be called as the first thing in Assembly#build()";
+            } else {
+                errorMsg = "This operation must be called immediately after the component has been wired";
             }
             throw new IllegalStateException(errorMsg);
         }
-    }
-
-    public void checkOpen() {
-        realm.checkOpen();
     }
 
     protected final void initializeNameWithPrefix(String name) {
@@ -281,16 +279,16 @@ public abstract class ComponentSetup {
     }
 
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        WireableComponentDriver<C> wcd = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
+        WireableComponentDriver<C> realDriver = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // If this component is an extension, we wire to the container the extension is a part of
         ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
 
         // Wire a new component
-        WireableComponentSetup component = realm.wire(wcd, wireTo, wirelets);
+        WireableComponentSetup component = realm.wire(realDriver, wireTo, wirelets);
 
         // Return a component configuration to the user
-        return wcd.toConfiguration(component);
+        return realDriver.toConfiguration(component);
     }
 
     /**

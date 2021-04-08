@@ -122,13 +122,13 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionConfiguration#checkOpen()}.
+     * This method delegate all calls to {@link ExtensionConfiguration#checkIsBuilding()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        configuration().checkOpen();
+        configuration().checkIsBuilding();
     }
 
     // checkExtendable...
@@ -137,7 +137,9 @@ public abstract class Extension {
      * 
      * @see #onPreembleComplete()
      */
-    // CheckNoLeafs()
+    // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
+    // af brugeren med mindre XYZ...
+    // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
     protected final void checkExtendable() {
         configuration().checkExtendable();
     }
@@ -235,10 +237,10 @@ public abstract class Extension {
     protected final void link(Assembly<?> assembly, Wirelet... wirelets) {
         configuration().link(assembly, wirelets);
     }
-
-    protected final void lookup(MethodHandles.Lookup lookup) {
-        ((ExtensionSetup) configuration()).lookup(lookup);
-    }
+//
+//    protected final void lookup(MethodHandles.Lookup lookup) {
+//        ((ExtensionSetup) configuration()).lookup(lookup);
+//    }
 
     /**
      * Invoked by the runtime when the configuration of the container is completed.

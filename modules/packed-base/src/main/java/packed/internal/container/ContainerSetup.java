@@ -261,7 +261,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             if (requestedBy == null) {
                 realm.checkOpen();
             } else {
-                requestedBy.checkOpen();
+                requestedBy.checkIsBuilding();
             }
 
             // Create the new extension and adds into the map of extensions

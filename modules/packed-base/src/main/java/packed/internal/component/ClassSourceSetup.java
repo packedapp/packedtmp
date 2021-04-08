@@ -24,9 +24,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import packed.internal.hooks.usesite.HookedClassModel;
-import packed.internal.hooks.usesite.UseSiteFieldHookModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
-import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
@@ -150,20 +148,12 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     }
 
     private <T> void registerHooks(HookedClassModel model) {
-        for (UseSiteFieldHookModel f : model.fields) {
-            registerMember(f);
-        }
-
-        for (UseSiteMethodHookModel m : model.methods) {
-            registerMember(m);
-        }
-    }
-
-    private void registerMember(UseSiteMemberHookModel memberHook) {
-        InjectionNode i = new InjectionNode(component, this, memberHook, memberHook.createProviders());
-        component.container.injection.addNode(i);
-        if (memberHook.processor != null) {
-            memberHook.processor.accept(component);
+        for (UseSiteMemberHookModel hook : model.models) {
+            InjectionNode i = new InjectionNode(component, this, hook, hook.createProviders());
+            component.container.injection.addNode(i);
+            if (hook.processor != null) {
+                hook.processor.accept(component);
+            }
         }
     }
 
