@@ -51,9 +51,10 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
             ExtensionConfiguration.class);
 
     /**
-     * If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean no ancestors
+     * If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean
+     * no ancestors
      * <p>
-     * An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.  
+     * An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.
      **/
     @Nullable
     ExtensionSetup ancestor;
@@ -119,7 +120,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     public Extension extensionInstance() {
         Extension e = instance;
         if (e == null) {
-            throw new InternalExtensionException("Cannot call this method from the constructor of " + model.fullName());
+            throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
         }
         return e;
     }
@@ -271,7 +272,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return new PackedWireletHandle<>(wirelets, wireletClass);
     }
 
-    public static ExtensionSetup getExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
+    public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
         requireNonNull(lookup, "containerComponent is null");
 
         // We only allow to call in directly on the container itself
@@ -302,9 +303,9 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
      * Create a new extension.
      * 
      * @param container
-     *            the container in which the extension should be created
+     *            the container to which the extension should be added
      * @param extensionClass
-     *            the extension to instantiate
+     *            the extension to create
      * @return the new extension
      */
     static ExtensionSetup newInstance(ContainerSetup container, Class<? extends Extension> extensionClass) {
@@ -324,8 +325,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
         // Connect to ancestors
         //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
-        
-        // Finally, invoke Extension#onNew() before returning to user
+
+        // Finally, invoke Extension#onNew() before returning the new extension to the end-user
         try {
             MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {

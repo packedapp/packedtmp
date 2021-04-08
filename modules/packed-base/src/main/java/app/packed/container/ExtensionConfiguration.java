@@ -276,7 +276,7 @@ public /* sealed */ interface ExtensionConfiguration {
     private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
             Component containerComponent) {
         requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(ExtensionSetup.getExtensionSetup(caller, containerComponent));
+        return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
     }
 
     /**
@@ -301,7 +301,7 @@ public /* sealed */ interface ExtensionConfiguration {
                     "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + caller.lookupClass());
         }
 
-        ExtensionSetup eb = ExtensionSetup.getExtensionSetup(caller, containerComponent);
+        ExtensionSetup eb = ExtensionSetup.extractExtensionSetup(caller, containerComponent);
         return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
     }
 }

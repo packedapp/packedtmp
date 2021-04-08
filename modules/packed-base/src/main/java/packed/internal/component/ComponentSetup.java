@@ -50,7 +50,7 @@ import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.ThrowableUtil;
 
-/** A setup class for a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
+/** Build-time configuration of a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public abstract class ComponentSetup {
 
     /** The application this component is a part of. */
@@ -72,7 +72,7 @@ public abstract class ComponentSetup {
     /** The modifiers of this component. */
     protected final int modifiers;
 
-    /** The name of this node. */
+    /** The name of this component. */
     protected String name;
 
     /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by setName(). */
@@ -93,6 +93,8 @@ public abstract class ComponentSetup {
     public final RealmSetup realm;
 
     /**
+     * Create a new component.
+     * 
      * @param build
      *            the build this component is a part of
      * @param application
@@ -114,7 +116,7 @@ public abstract class ComponentSetup {
         this.container = this instanceof ContainerSetup container ? container : parent.container;
 
         // Various
-        if (parent == null) {
+        if (/* is root container */ parent == null ) {
             this.modifiers = build.modifiers | driver.modifiers;
             this.pool = application.constantPool;
         } else {
@@ -125,7 +127,7 @@ public abstract class ComponentSetup {
     }
 
     /**
-     * Constructor used by {@link ExtensionSetup}.
+     * Create a new extension via {@link ExtensionSetup}.
      * 
      * @param container
      *            the extension's container (parent)
@@ -144,7 +146,7 @@ public abstract class ComponentSetup {
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.pool = container.pool;
         this.onWire = container.onWire;
-        // Cannot use wirelets with extensions. So the (template) name is fixed
+        // Cannot use wirelets with extensions. So the name is final
         initializeNameWithPrefix(model.nameComponent);
     }
 
