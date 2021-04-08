@@ -49,7 +49,7 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
-    /** A handle that can access Assembly#driver. */
+    /** A handle that can access Composer#driver. */
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
             WireableComponentDriver.class);
 
@@ -75,12 +75,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private PackedApplicationDriver(Builder builder) {
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.modifiers = builder.modifiers;
-        this.wirelet = builder.prefix;
+        this.wirelet = builder.wirelet;
         this.launchMode = requireNonNull(builder.launchMode);
     }
 
     /**
-     * Create a new driver by updating an existing driver with a new wirelet.
+     * Update an application driver with a new wirelet.
      * 
      * @param existing
      *            the existing driver
@@ -91,13 +91,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.mhConstructor = existing.mhConstructor;
         this.modifiers = existing.modifiers;
         this.launchMode = existing.launchMode;
-        this.wirelet = wirelet;
+        this.wirelet = requireNonNull(wirelet);
     }
 
     /** {@inheritDoc} */
     @Override
     public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
+        BuildSetup build = build(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
         return build.container.adaptor();
     }
 
@@ -122,8 +122,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            is it an image
      * @return a build setup
      */
-    private BuildSetup buildFromAssembly(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
-
+    private BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(assembly);
 
@@ -176,17 +175,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
-        // Build the system
-        BuildSetup build = buildFromAssembly(assembly, wirelets, 0);
-        // try {
-//        } catch (Throwable t) {
-//            StackTraceElement[] stackTrace = t.getStackTrace();
-//            List<StackTraceElement> list = Arrays.stream(stackTrace).filter(st -> !st.getClassName().startsWith("app.packed") && !st.getClassName().startsWith("packed.internal")).toList();
-//            t.setStackTrace(list.toArray(StackTraceElement[]::new));
-//            throw t;
-//        }
-
-        // Initialize the system. And start it if necessary (if it is a guest)
+        BuildSetup build = build(assembly, wirelets, 0);
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
@@ -218,7 +207,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = buildFromAssembly(assembly, wirelets, PackedComponentModifierSet.I_IMAGE);
+        BuildSetup build = build(assembly, wirelets, PackedComponentModifierSet.I_IMAGE);
         return new PackedApplicationImage<>(this, build.application);
     }
 
@@ -248,7 +237,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Single implementation of {@link ApplicationDriver.Builder}. */
     public static final class Builder implements ApplicationDriver.Builder {
 
-        /** A MethodHandle for invoking {@link ApplicationLaunchContext#component()}. */
+        /** A MethodHandle for invoking {@link ApplicationLaunchContext#name()}. */
         private static final MethodHandle MH_NAME = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "name",
                 String.class);
 
@@ -268,9 +257,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** The modifiers of the application. We have a runtime modifier by default. */
         private int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
 
-        private Wirelet prefix;
-
         boolean useShellAsSource;
+
+        private Wirelet wirelet;
 
         /** {@inheritDoc} */
         @Override
