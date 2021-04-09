@@ -26,17 +26,17 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
+import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.AbstractHookModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
+import packed.internal.inject.dependency.InjectionNode;
 
 /**
  *
  */
-// SourceModel...
-// Maa have en liste af regions slots den skal bruge
 public abstract class UseSiteMemberHookModel {
 
     /** Dependencies that needs to be resolved. */
@@ -59,6 +59,15 @@ public abstract class UseSiteMemberHookModel {
         this.provideAsConstant = builder.provideAsConstant;
         this.provideAskey = builder.provideAsKey;
         this.processor = builder.processor;
+    }
+
+    public void onWire(ClassSourceSetup css) {
+        // Register hooks, maybe move to component setup
+        InjectionNode i = new InjectionNode(css, this, createProviders());
+        css.component.container.injection.addNode(i);
+        if (processor != null) {
+            processor.accept(css.component);
+        }
     }
 
     public abstract DependencyProducer[] createProviders();
@@ -108,12 +117,7 @@ public abstract class UseSiteMemberHookModel {
             return Optional.of(buildtimeModel.bootstrapImplementation());
         }
 
-        /**
-         * 
-         */
-        public void complete() {
-
-        }
+        public void complete() {}
 
         public final void disable() {
             disabled = true;
@@ -131,6 +135,5 @@ public abstract class UseSiteMemberHookModel {
                     c -> new UseSiteClassHookModel.Builder(source, ClassHookModel.ofManaged(type)));
             return (T) builder.instance;
         }
-
     }
 }

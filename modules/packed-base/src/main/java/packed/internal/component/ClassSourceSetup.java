@@ -75,21 +75,21 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
 
         // A realm accessor that allows us to find all hooks a component source
-        RealmAccessor realm = component.realm.accessor();
+        RealmAccessor accessor = component.realm.accessor();
 
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
             this.constant = null;
             this.factory = component.modifiers().isStaticClassSource() ? null : Factory.of(cl);
-            this.hooks = realm.modelOf(cl);
+            this.hooks = accessor.modelOf(cl);
         } else if (source instanceof Factory<?> fac) {
             this.constant = null;
             this.factory = fac;
-            this.hooks = realm.modelOf(factory.rawType());
+            this.hooks = accessor.modelOf(factory.rawType());
         } else {
             this.constant = source;
             this.factory = null;
-            this.hooks = realm.modelOf(source.getClass());
+            this.hooks = accessor.modelOf(source.getClass());
 
             // non-constants singlestons are added to the constant pool elsewhere
             component.pool.addConstant(this); // writeToPool will be called later
@@ -98,7 +98,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         if (factory == null) {
             this.instantiator = null;
         } else {
-            MethodHandle mh = realm.toMethodHandle(factory);
+            MethodHandle mh = accessor.toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
@@ -106,7 +106,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             component.container.injection.addNode(instantiator);
         }
 
-        hooks.register(this);
+        hooks.onWire(this);
     }
 
     /** {@inheritDoc} */
@@ -120,10 +120,10 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     @Override
     public MethodHandle dependencyAccessor() {
         // Must return MethodHandle(ConstantPool)T
-        if (constant != null) {
-            // MethodHandle mh = MethodHandles.constant(constant.getClass(), constant);
-            // MethodHandle()T -> MethodHandle(ConstantPool)T
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class);
+
+        if (constant != null) { // we have
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
+                                                                                                                  // MethodHandle(ConstantPool)T
         } else if (poolIndex > -1) {
             return ConstantPool.indexedReader(poolIndex, hooks.clazz);
         } else {

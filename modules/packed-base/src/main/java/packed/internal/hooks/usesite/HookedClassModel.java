@@ -39,22 +39,11 @@ import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel.Shared;
-import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.OpenClass;
 
 /** A model of a class that uses class or member hooks. */
 public final class HookedClassModel {
-
-    /** All field hooks. */
-    public final List<UseSiteMemberHookModel> models;
-
-    /** The simple name of the component type (razy), typically used for lazy generating a component name. */
-    private String simpleName;
-
-    // Noget med injection, som vi gerne vil metamodellere
-    // Tror det er hooks som provider en keyed service paa klasse niveau
-    public final Map<Key<?>, HookedMethodProvide> sourceServices;
 
     /** The class we have modeled. */
     public final Class<?> clazz;
@@ -62,6 +51,16 @@ public final class HookedClassModel {
     /** Any extension this model is a part of. */
     @Nullable
     public final Class<? extends Extension> extensionClass;
+
+    /** All hooks. */
+    private final List<UseSiteMemberHookModel> models;
+
+    /** The simple name of the component type (razy), typically used for lazy generating a component name. */
+    private String simpleName;
+
+    // Noget med injection, som vi gerne vil metamodellere
+    // Tror det er hooks som provider en keyed service paa klasse niveau
+    public final Map<Key<?>, HookedMethodProvide> sourceServices;
 
     /**
      * Creates a new model.
@@ -76,6 +75,13 @@ public final class HookedClassModel {
         this.extensionClass = builder.extension == null ? null : builder.extension.extensionClass();
     }
 
+    public void onWire(ClassSourceSetup css) {
+        // Register hooks, maybe move to component setup
+        for (UseSiteMemberHookModel hook : models) {
+            hook.onWire(css);
+        }
+    }
+
     /**
      * Returns the default prefix for the source.
      * 
@@ -88,23 +94,17 @@ public final class HookedClassModel {
         }
         return s;
     }
-
-    public void register(ClassSourceSetup css) {
-
-        // Register hooks, maybe move to component setup
-        for (UseSiteMemberHookModel hook : models) {
-            InjectionNode i = new InjectionNode(css, hook, hook.createProviders());
-            css.component.container.injection.addNode(i);
-            if (hook.processor != null) {
-                hook.processor.accept(css.component);
-            }
-        }
-    }
     
     /** A builder object for {@link HookedClassModel}. */
     public static abstract class Builder extends MemberScanner {
 
         final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
+
+        // In order to use @Provide, FooExtension must have ServiceExtension as a dependency.
+        @Nullable
+        final ExtensionModel extension;
+
+        final HookUseSite hus;
 
         /** All field hooks. */
         final ArrayList<UseSiteMemberHookModel> models = new ArrayList<>();
@@ -112,12 +112,6 @@ public final class HookedClassModel {
         final OpenClass oc;
 
         final Map<Key<?>, HookedMethodProvide> sourceContexts = new HashMap<>();
-
-        // In order to use @Provide, FooExtension must have ServiceExtension as a dependency.
-        @Nullable
-        final ExtensionModel extension;
-
-        final HookUseSite hus;
 
         /**
          * Creates a new component model builder
@@ -155,6 +149,10 @@ public final class HookedClassModel {
             return new HookedClassModel(this);
         }
 
+        protected abstract @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType);
+
+        protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
+
         UseSiteClassHookModel.Builder manageMemberBy(UseSiteMemberHookModel.Builder member, Class<? extends ClassHook.Bootstrap> classBootStrap) {
             return classes.computeIfAbsent(classBootStrap, c -> new UseSiteClassHookModel.Builder(this, ClassHookModel.ofManaged(classBootStrap)));
         }
@@ -182,10 +180,6 @@ public final class HookedClassModel {
                 }
             }
         }
-
-        protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
-
-        protected abstract @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType);
 
         @Override
         protected void onMethod(Method method) {
