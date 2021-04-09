@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.lang.invoke.MethodHandle;
 import java.util.List;
 
@@ -71,7 +69,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
      *            the class, factory or instance source
      */
     ClassSourceSetup(SourcedComponentSetup component, Object source) {
-        this.component = requireNonNull(component);
+        this.component = component;
 
         // Reserve a place in the constant pool if the source is a singleton
         this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
@@ -108,7 +106,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             component.container.injection.addNode(instantiator);
         }
 
-        hooks.register(component, this);
+        hooks.register(this);
     }
 
     /** {@inheritDoc} */

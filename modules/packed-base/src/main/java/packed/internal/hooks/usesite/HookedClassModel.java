@@ -32,7 +32,6 @@ import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ClassSourceSetup;
-import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ClassHookModel;
@@ -90,14 +89,14 @@ public final class HookedClassModel {
         return s;
     }
 
-    public void register(ComponentSetup component, ClassSourceSetup css) {
+    public void register(ClassSourceSetup css) {
 
         // Register hooks, maybe move to component setup
         for (UseSiteMemberHookModel hook : models) {
-            InjectionNode i = new InjectionNode(component, css, hook, hook.createProviders());
-            component.container.injection.addNode(i);
+            InjectionNode i = new InjectionNode(css, hook, hook.createProviders());
+            css.component.container.injection.addNode(i);
             if (hook.processor != null) {
-                hook.processor.accept(component);
+                hook.processor.accept(css.component);
             }
         }
     }

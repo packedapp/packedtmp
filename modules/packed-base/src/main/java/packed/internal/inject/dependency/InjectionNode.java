@@ -81,7 +81,7 @@ public final class InjectionNode implements PoolWriteable {
         this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
     }
 
-    public InjectionNode(ComponentSetup compConf, ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+    public InjectionNode(ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -89,6 +89,7 @@ public final class InjectionNode implements PoolWriteable {
             if (!Modifier.isStatic(smm.getModifiers()) && source.poolIndex == -1) {
                 throw new BuildException("Not okay)");
             }
+            ComponentSetup compConf = source.component;
             ServiceManagerSetup sbm = compConf.container.injection.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
