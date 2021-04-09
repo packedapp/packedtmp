@@ -100,6 +100,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         if (name == null) {
             // I think try and move some of this to ComponentNameWirelet
             String n = null;
+            
             Class<?> source = realm.realmType();
             if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
@@ -265,7 +266,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             }
 
             // Create the new extension and adds into the map of extensions
-            extension = ExtensionSetup.newInstance(this, extensionClass);
+            extension = ExtensionSetup.newExtension(this, extensionClass);
 
             if (hasRunPreContainerChildren) {
                 ArrayList<ExtensionSetup> l = tmpExtensions;

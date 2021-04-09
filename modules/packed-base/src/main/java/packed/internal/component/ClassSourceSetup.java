@@ -24,7 +24,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import packed.internal.hooks.usesite.HookedClassModel;
-import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
@@ -93,7 +92,9 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             this.constant = source;
             this.factory = null;
             this.hooks = realm.modelOf(source.getClass());
-            component.pool.addConstant(this); // non-constants singlestons are added to the constant pool elsewhere
+
+            // non-constants singlestons are added to the constant pool elsewhere
+            component.pool.addConstant(this); // writeToPool will be called later
         }
 
         if (factory == null) {
@@ -107,14 +108,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
             component.container.injection.addNode(instantiator);
         }
 
-        // Register hooks, maybe move to component setup
-        for (UseSiteMemberHookModel hook : hooks.models) {
-            InjectionNode i = new InjectionNode(component, this, hook, hook.createProviders());
-            component.container.injection.addNode(i);
-            if (hook.processor != null) {
-                hook.processor.accept(component);
-            }
-        }
+        hooks.register(component, this);
     }
 
     /** {@inheritDoc} */
@@ -129,8 +123,9 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     public MethodHandle dependencyAccessor() {
         // Must return MethodHandle(ConstantPool)T
         if (constant != null) {
-            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
-                                                                                                                  // MethodHandle(ConstantPool)T
+            // MethodHandle mh = MethodHandles.constant(constant.getClass(), constant);
+            // MethodHandle()T -> MethodHandle(ConstantPool)T
+            return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class);
         } else if (poolIndex > -1) {
             return ConstantPool.indexedReader(poolIndex, hooks.clazz);
         } else {

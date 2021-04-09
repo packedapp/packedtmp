@@ -28,7 +28,7 @@ import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
 /** A model for a {@link Extension.Subtension}. Not used outside of this package. */
-final class SubtensionModel {
+record SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle mhConstructor) {
 
     /** Models of all subtensions. */
     private final static ClassValue<SubtensionModel> MODELS = new ClassValue<>() {
@@ -58,28 +58,15 @@ final class SubtensionModel {
 
             // Find a method handle for the subtensions's constructor
             MethodHandle constructor = builder.findConstructor(Subtension.class, m -> new InternalExtensionException(m));
-            
+
             return new SubtensionModel(extensionClass, constructor);
         }
     };
 
-    /** The declaring extension class. */
-    final Class<? extends Extension> extensionClass;
-
-    /** The constructor of the subtension that we model. */
-    private final MethodHandle mhConstructor; // (Extension,Class)Subtension
-
-    /**
-     * Create a new model.
-     * 
-     * @param extensionClass
-     *            the declaring extension class
-     * @param mhConstructor
-     *            a constructor for the subtension
-     */
-    private SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle mhConstructor) {
-        this.extensionClass = requireNonNull(extensionClass);
-        this.mhConstructor = requireNonNull(mhConstructor);
+    /** Create a new model. */
+    SubtensionModel {
+        requireNonNull(extensionClass); // The declaring extension class.
+        requireNonNull(mhConstructor); // The constructor of the subtension that we model (Extension,Class)Subtension
     }
 
     /**
@@ -92,6 +79,7 @@ final class SubtensionModel {
      * @return the new subtension instance
      */
     Subtension newInstance(Extension extension, Class<? extends Extension> requestingExtensionClass) {
+        // mhConstructor = (Extension,Class)Subtension
         try {
             return (Subtension) mhConstructor.invokeExact(extension, requestingExtensionClass);
         } catch (Throwable e) {

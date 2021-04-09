@@ -31,6 +31,8 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
+import packed.internal.component.ClassSourceSetup;
+import packed.internal.component.ComponentSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ClassHookModel;
@@ -38,6 +40,7 @@ import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel.Shared;
+import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.OpenClass;
 
@@ -69,7 +72,7 @@ public final class HookedClassModel {
      */
     private HookedClassModel(HookedClassModel.Builder builder) {
         this.clazz = builder.oc.type();
-        this.models= List.copyOf(builder.models);
+        this.models = List.copyOf(builder.models);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
         this.extensionClass = builder.extension == null ? null : builder.extension.extensionClass();
     }
@@ -87,6 +90,18 @@ public final class HookedClassModel {
         return s;
     }
 
+    public void register(ComponentSetup component, ClassSourceSetup css) {
+
+        // Register hooks, maybe move to component setup
+        for (UseSiteMemberHookModel hook : models) {
+            InjectionNode i = new InjectionNode(component, css, hook, hook.createProviders());
+            component.container.injection.addNode(i);
+            if (hook.processor != null) {
+                hook.processor.accept(component);
+            }
+        }
+    }
+    
     /** A builder object for {@link HookedClassModel}. */
     public static abstract class Builder extends MemberScanner {
 
@@ -94,7 +109,6 @@ public final class HookedClassModel {
 
         /** All field hooks. */
         final ArrayList<UseSiteMemberHookModel> models = new ArrayList<>();
-
 
         final OpenClass oc;
 
@@ -173,7 +187,7 @@ public final class HookedClassModel {
         protected abstract @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType);
 
         protected abstract @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType);
-        
+
         @Override
         protected void onMethod(Method method) {
             UseSiteMethodHookModel.Shared shared = null;

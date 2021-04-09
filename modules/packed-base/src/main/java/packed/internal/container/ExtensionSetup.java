@@ -225,7 +225,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
         // Finds the subtension's model and its extension class
         SubtensionModel subModel = SubtensionModel.of(subtensionClass);
-        Class<? extends Extension> subExtensionClass = subModel.extensionClass;
+        Class<? extends Extension> subExtensionClass = subModel.extensionClass();
 
         // Check that the requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(subExtensionClass)) {
@@ -234,7 +234,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
                 throw new InternalExtensionException(model.extensionClass().getSimpleName() + " cannot use its own subtension "
                         + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
             }
-            throw new InternalExtensionException(model.extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass)
+            throw new InternalExtensionException(model.extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass())
                     + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
 
@@ -308,7 +308,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
      *            the extension to create
      * @return the new extension
      */
-    static ExtensionSetup newInstance(ContainerSetup container, Class<? extends Extension> extensionClass) {
+    static ExtensionSetup newExtension(ContainerSetup container, Class<? extends Extension> extensionClass) {
         // Find extension model and create extension setup.
         ExtensionModel model = ExtensionModel.of(extensionClass);
         ExtensionSetup extension = new ExtensionSetup(container, model);

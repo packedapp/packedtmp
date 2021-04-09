@@ -83,7 +83,7 @@ public final class ServiceManagerSetup {
     private final ApplicationInjectorSetup tree;
 
     /**
-     * @param container
+     * @param root
      *            the container this service manager is a part of
      */
     public ServiceManagerSetup(@Nullable ServiceManagerSetup parent) {

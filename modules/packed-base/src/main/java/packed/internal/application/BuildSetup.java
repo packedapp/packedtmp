@@ -30,9 +30,6 @@ import packed.internal.container.ContainerSetup;
 /** The configuration of a build. */
 public final class BuildSetup implements Build {
 
-    /** The namespace this build belongs to. */
-    public final NamespaceSetup namespace = new NamespaceSetup();
-
     /** The application we are building. */
     public final ApplicationSetup application;
 
@@ -42,6 +39,9 @@ public final class BuildSetup implements Build {
     /** Modifiers of the build. */
     // Hmm hvad er disse i forhold til component modifiers???
     public final int modifiers;
+
+    /** The namespace this build belongs to. */
+    public final NamespaceSetup namespace = new NamespaceSetup();
 
     // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
     // ruleBroken = FFF
@@ -56,19 +56,36 @@ public final class BuildSetup implements Build {
      * @param modifiers
      *            the output of the build process
      */
-    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers, Wirelet[] wirelets) {
+    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers,
+            Wirelet[] wirelets) {
         if (!componentDriver.modifiers().isContainer()) {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
         }
-        ContainerComponentDriver ccd = (ContainerComponentDriver) componentDriver;
-        this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + componentDriver.modifiers + modifiers;
-        this.application = new ApplicationSetup(this, applicationDriver, realm, ccd, modifiers, wirelets);
+        ContainerComponentDriver containerDriver = (ContainerComponentDriver) componentDriver;
+        
+        this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + containerDriver.modifiers + modifiers;
+        this.application = new ApplicationSetup(this, applicationDriver, realm, containerDriver, modifiers, wirelets);
         this.container = application.container;
+    }
+
+    @Override
+    public boolean isDone() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isFailed() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@return whether or not we are creating the root application is part of an image}. */
     public boolean isImage() {
         return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.IMAGE);
+    }
+
+    @Override
+    public boolean isSuccess() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -84,24 +101,4 @@ public final class BuildSetup implements Build {
         }
         return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.ANALYSIS : BuildTarget.INSTANCE;
     }
-
-    @Override
-    public boolean isFailed() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isSuccess() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean isDone() {
-        // TODO Auto-generated method stub
-        return false;
-    }
 }
-// Build setup does not maintain what thread is building the system.
-// If we want to have dynamically recomposable systems...

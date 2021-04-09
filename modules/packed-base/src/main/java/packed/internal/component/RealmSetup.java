@@ -114,7 +114,7 @@ public final class RealmSetup {
         this.root = driver.newComponent(build.application, this, linkTo, wirelets);
     }
 
-    public RealmAccessor accessor() {
+    RealmAccessor accessor() {
         RealmAccessor r = accessor;
         if (r == null) {
             this.accessor = r = RealmAccessor.defaultFor(realmType);

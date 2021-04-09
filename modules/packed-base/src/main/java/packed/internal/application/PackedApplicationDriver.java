@@ -60,7 +60,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
     /** The modifiers of this application */
-    public final int modifiers;
+    final int modifiers;
 
     /** Wirelet(s) that must be processed before any wirelets supplied by the user. */
     @Nullable
@@ -75,8 +75,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private PackedApplicationDriver(Builder builder) {
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.modifiers = builder.modifiers;
-        this.wirelet = builder.wirelet;
         this.launchMode = requireNonNull(builder.launchMode);
+        this.wirelet = builder.wirelet;
     }
 
     /**
