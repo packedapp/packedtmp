@@ -10,7 +10,7 @@ import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.invoke.OpenClass;
 
-public class SourcedHookedClassModel {
+public class BootstrappedSourcedClassModel {
 
     /**
      * Creates a new component model instance.
@@ -21,11 +21,11 @@ public class SourcedHookedClassModel {
      *            a class processor usable by hooks
      * @return a model of the component
      */
-    public static HookedClassModel newModel(OpenClass oc, @Nullable ExtensionModel extension) {
+    public static BootstrappedClassModel newModel(OpenClass oc, @Nullable ExtensionModel extension) {
         return new Builder(oc, extension).build();
     }
 
-    private static class Builder extends HookedClassModel.Builder {
+    private static class Builder extends BootstrappedClassModel.Builder {
 
         /** A cache of any extensions a particular annotation activates. */
         private static final ClassValue<MethodHookBootstrapModel> METHOD_ANNOTATIONS = new ClassValue<>() {
@@ -49,7 +49,7 @@ public class SourcedHookedClassModel {
         };
         
         private Builder(OpenClass cp, @Nullable ExtensionModel extension) {
-            super(HookUseSite.COMPONENT_SOURCE, cp, extension);
+            super(cp, extension);
         }
 
         protected @Nullable MethodHookBootstrapModel getMethodModel(Class<? extends Annotation> annotationType) {

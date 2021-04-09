@@ -25,13 +25,13 @@ import packed.internal.hooks.AbstractHookModel;
 abstract class AbstractBootstrapBuilder {
 
     /** The single source this builder is a part of. */
-    public final HookedClassModel.Builder source;
+    public final BootstrappedClassModel.Builder source;
 
     protected final AbstractHookModel<?> bootstrapModel;
 
     protected boolean disabled;
     
-    protected AbstractBootstrapBuilder(HookedClassModel.Builder source) {
+    protected AbstractBootstrapBuilder(BootstrappedClassModel.Builder source) {
         this.source = requireNonNull(source);
         this.bootstrapModel = null;
     }

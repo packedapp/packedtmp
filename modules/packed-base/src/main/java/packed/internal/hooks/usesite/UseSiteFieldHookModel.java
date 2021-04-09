@@ -56,11 +56,8 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     /** A model of the field hooks bootstrap. */
     private final FieldHookModel hook;
 
-    final HookUseSite hus;
-
     UseSiteFieldHookModel(Builder builder, VarHandle mh) {
         super(builder, List.of());
-        this.hus = requireNonNull(builder.hus);
         this.modifiers = requireNonNull(builder.field.getModifiers());
         this.hook = requireNonNull(builder.hook);
         this.varHandle = requireNonNull(mh);
@@ -104,20 +101,16 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         /** The field that activate the hook. */
         final Field field;
 
-        final HookUseSite hus;
-
         final FieldHookModel hook;
 
-        public Builder(HookedClassModel.Builder source, FieldHookModel hook, Field field) {
+        public Builder(BootstrappedClassModel.Builder source, FieldHookModel hook, Field field) {
             super(source, hook);
-            this.hus = source.hus;
             this.hook = hook;
             this.field = field;
         }
 
         public Builder(UseSiteClassHookModel.Builder classBuilder, FieldHookModel model, Field field) {
             super(classBuilder.source, model);
-            this.hus = null;
             this.hook = model;
             this.field = field;
             this.managedBy = classBuilder;
@@ -184,11 +177,11 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         private boolean isFieldUsed;
 
         /** The source. */
-        private final HookedClassModel.Builder builder;
+        private final BootstrappedClassModel.Builder builder;
 
         private VarHandle varHandle;
 
-        public Shared(HookedClassModel.Builder source, Field field) {
+        public Shared(BootstrappedClassModel.Builder source, Field field) {
             this.builder = requireNonNull(source);
             this.fieldUnsafe = requireNonNull(field);
         }

@@ -27,7 +27,7 @@ import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.hooks.usesite.HookedClassModel;
+import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.inject.service.ServiceDelegate;
@@ -208,7 +208,7 @@ public final class InjectionNode implements PoolWriteable {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProducer e = null;
                 if (source != null) {
-                    HookedClassModel sm = source.hooks;
+                    BootstrappedClassModel sm = source.hooks;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }

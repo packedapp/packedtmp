@@ -103,7 +103,7 @@ public abstract class UseSiteMemberHookModel {
         @Nullable
         Key<?> provideAsKey;
 
-        Builder(HookedClassModel.Builder source, AbstractHookModel<?> model) {
+        Builder(BootstrappedClassModel.Builder source, AbstractHookModel<?> model) {
             super(source);
             this.buildtimeModel = model;
         }

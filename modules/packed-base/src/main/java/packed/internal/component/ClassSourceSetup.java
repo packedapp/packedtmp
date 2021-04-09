@@ -21,7 +21,7 @@ import java.util.List;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import packed.internal.hooks.usesite.HookedClassModel;
+import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
@@ -47,7 +47,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
     private final Factory<?> factory;
 
     /** A model of every hook on the source. */
-    public final HookedClassModel hooks; // contains provided stuff
+    public final BootstrappedClassModel hooks; // contains provided stuff
 
     /** An injection node, if instances of the source needs to be created at runtime (not a constant). */
     @Nullable

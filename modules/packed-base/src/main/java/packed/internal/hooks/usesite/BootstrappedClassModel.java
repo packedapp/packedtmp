@@ -42,10 +42,10 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel.Shared;
 import packed.internal.invoke.MemberScanner;
 import packed.internal.invoke.OpenClass;
 
-/** A model of a class that uses class or member hooks. */
-public final class HookedClassModel {
+/** A model of a class that uses hooks. */
+public final class BootstrappedClassModel {
 
-    /** The class we have modeled. */
+    /** The class that this model was created from. */
     public final Class<?> clazz;
 
     /** Any extension this model is a part of. */
@@ -68,7 +68,7 @@ public final class HookedClassModel {
      * @param builder
      *            a builder for this descriptor
      */
-    private HookedClassModel(HookedClassModel.Builder builder) {
+    private BootstrappedClassModel(BootstrappedClassModel.Builder builder) {
         this.clazz = builder.oc.type();
         this.models = List.copyOf(builder.models);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
@@ -76,7 +76,6 @@ public final class HookedClassModel {
     }
 
     public void onWire(ClassSourceSetup css) {
-        // Register hooks, maybe move to component setup
         for (UseSiteMemberHookModel hook : models) {
             hook.onWire(css);
         }
@@ -95,7 +94,7 @@ public final class HookedClassModel {
         return s;
     }
     
-    /** A builder object for {@link HookedClassModel}. */
+    /** A builder object for {@link BootstrappedClassModel}. */
     public static abstract class Builder extends MemberScanner {
 
         final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
@@ -103,8 +102,6 @@ public final class HookedClassModel {
         // In order to use @Provide, FooExtension must have ServiceExtension as a dependency.
         @Nullable
         final ExtensionModel extension;
-
-        final HookUseSite hus;
 
         /** All field hooks. */
         final ArrayList<UseSiteMemberHookModel> models = new ArrayList<>();
@@ -120,9 +117,8 @@ public final class HookedClassModel {
          *            a class processor usable by hooks
          * 
          */
-        public Builder(HookUseSite hus, OpenClass cp, @Nullable ExtensionModel extension) {
+        public Builder(OpenClass cp, @Nullable ExtensionModel extension) {
             super(cp.type());
-            this.hus = requireNonNull(hus);
             this.oc = requireNonNull(cp);
             this.extension = extension;
         }
@@ -132,7 +128,7 @@ public final class HookedClassModel {
          * 
          * @return a new model
          */
-        public HookedClassModel build() {
+        public BootstrappedClassModel build() {
 
             // TODO run through annotations
 
@@ -146,7 +142,7 @@ public final class HookedClassModel {
             for (UseSiteClassHookModel.Builder b : classes.values()) {
                 b.complete();
             }
-            return new HookedClassModel(this);
+            return new BootstrappedClassModel(this);
         }
 
         protected abstract @Nullable FieldHookModel getFieldModel(Class<? extends Annotation> annotationType);

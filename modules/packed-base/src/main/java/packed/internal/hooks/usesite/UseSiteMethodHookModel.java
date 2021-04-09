@@ -110,7 +110,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
         private final Method unsafeMethod;
 
-        Builder(HookedClassModel.Builder source, MethodHookBootstrapModel model, Method method) {
+        Builder(BootstrappedClassModel.Builder source, MethodHookBootstrapModel model, Method method) {
             this(model, new Shared(source, method));
         }
 
@@ -218,9 +218,9 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
         private final Method methodUnsafe;
 
         /** The source. */
-        final HookedClassModel.Builder source;
+        final BootstrappedClassModel.Builder source;
 
-        Shared(HookedClassModel.Builder source, Method method) {
+        Shared(BootstrappedClassModel.Builder source, Method method) {
             this.source = requireNonNull(source);
             this.methodUnsafe = requireNonNull(method);
         }
