@@ -98,10 +98,6 @@ public interface Program extends AutoCloseable {
     default <T> T use(Key<T> key) {
         return services().use(key);
     }
-
-    static Application analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().analyze2(assembly, wirelets);
-    }
     
     /**
      * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.

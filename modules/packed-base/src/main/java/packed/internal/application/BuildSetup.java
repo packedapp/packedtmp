@@ -17,8 +17,10 @@ package packed.internal.application;
 
 import app.packed.application.Build;
 import app.packed.application.BuildTarget;
+import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.PackedComponentModifierSet;
@@ -100,5 +102,16 @@ public final class BuildSetup implements Build {
             return BuildTarget.IMAGE;
         }
         return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.ANALYSIS : BuildTarget.INSTANCE;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream components() {
+        return container.adaptor().stream();
+    }
+
+    @Override
+    public Component component() {
+        return container.adaptor();
     }
 }

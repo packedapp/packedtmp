@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.application.ApplicationDriver;
+import app.packed.application.Build;
 import app.packed.base.Key;
 import app.packed.component.Assembly;
 import app.packed.component.Component;
@@ -250,7 +251,8 @@ public final class ServiceContract extends Contract {
     }
 
     public static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
-        Component c = driver.analyze(assembly);
+        Build b = driver.analyze(assembly);
+        Component c= b.component();
         if (!c.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + c);
         }

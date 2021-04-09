@@ -15,8 +15,10 @@
  */
 package app.packed.application;
 
+import app.packed.component.Component;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.ComponentStream;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -59,6 +61,11 @@ public interface Build {
     default boolean isRoot() {
         return true;
     }
+    
+    Component component();
+    
+
+    ComponentStream components();
 
     boolean isSuccess();
 

@@ -22,7 +22,6 @@ import java.util.function.Function;
 
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
-import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
@@ -68,14 +67,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     // Tit vil man gerne have alle fejlene eller en Component...
     // Either<Component, Validation>
     // Validataion
-    Component analyze(Assembly<?> assembly, Wirelet... wirelets);
-
-    // Maybe return Application??? Instead of Component
-    // Maybe return something else? Alle componenter i appen'en eller component i namespaces
-    // Det er jo snare et Build man returnere...
-    default Application analyze2(Assembly<?> assembly, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+    Build analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Builds and validates the application
@@ -132,7 +124,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     }
 
     /**
-     * Used by composers such as {@link ServiceComposer}.
+     * Used by to create applications from composers such as {@link ServiceComposer}.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
      * {@link ServiceLocator#of(Consumer)}.
@@ -142,10 +134,10 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @param composer
      *            the composer
      * @param consumer
-     *            the consumer specified by the end user
+     *            the consumer specified by the end user for configuration
      * @param wirelets
      *            optional wirelets
-     * @return the application instance
+     * @return the launched application instance
      * 
      * @see Composer
      * @see ServiceComposer
@@ -160,10 +152,10 @@ public /* sealed */ interface ApplicationDriver<A> {
      * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
-     *            the system assembly
+     *            the main assembly of the application
      * @param wirelets
      *            optional wirelets
-     * @return the new artifact or null if void artifact
+     * @return the launched application instance
      * @throws BuildException
      *             if the application could not be build
      * @throws InitializationException
@@ -187,29 +179,6 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @see #newImage(Assembly, Wirelet...)
      */
     RunState launchMode();
-    // analyze
-    // validate
-    // check
-    ///// Kunne vaere interessant fx
-    // ComponentAnalysis = Either<Component, Validatable>
-    // ComponentAnalysis extends Validatable
-
-    // Ideen er at man kan smide checked exceptions...
-    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
-
-    default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
-        throw new UnsupportedOperationException();
-    }
-
-    default A launchThrowing(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
-        // Tror den bliver brugt via noget ErrorHandler...
-        // Hvor man specificere hvordan exceptions bliver handled
-
-        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
-
-        // Her er ihvertfald noget der skal kunne konfigureres
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -234,8 +203,8 @@ public /* sealed */ interface ApplicationDriver<A> {
     // Det er ihvertfald lettere at forklare...
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
-        Component c = analyze(assembly, wirelets);
-        c.stream().forEach(cc -> {
+        Build b = analyze(assembly, wirelets);
+        b.components().forEach(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append(" ").append(cc.modifiers());
             if (cc.modifiers().contains(ComponentModifier.SOURCED)) {
@@ -347,6 +316,33 @@ public /* sealed */ interface ApplicationDriver<A> {
 //            // if use source fail...
 //            throw new UnsupportedOperationException();
 //        }
+    }
+
+}
+
+interface ApplicationDriverSandbox<A> {
+    // analyze
+    // validate
+    // check
+    ///// Kunne vaere interessant fx
+    // ComponentAnalysis = Either<Component, Validatable>
+    // ComponentAnalysis extends Validatable
+
+    // Ideen er at man kan smide checked exceptions...
+    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
+
+    default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
+        throw new UnsupportedOperationException();
+    }
+
+    default A launchThrowing(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
+        // Tror den bliver brugt via noget ErrorHandler...
+        // Hvor man specificere hvordan exceptions bliver handled
+
+        // Skal vel ogsaa tilfoejes paa Image saa.. og paa Host#start()... lots of places
+
+        // Her er ihvertfald noget der skal kunne konfigureres
+        throw new UnsupportedOperationException();
     }
 
 }

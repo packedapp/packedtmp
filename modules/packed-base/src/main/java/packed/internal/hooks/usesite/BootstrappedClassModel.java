@@ -202,7 +202,7 @@ public final class BootstrappedClassModel {
             // I guess we might need to run through and look for ServiceHooks?
         }
 
-        public Class<?> type() {
+        Class<?> type() {
             return classToScan;
         }
     }

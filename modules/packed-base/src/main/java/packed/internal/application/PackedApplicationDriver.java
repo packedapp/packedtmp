@@ -28,9 +28,9 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationWirelets;
+import app.packed.application.Build;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.Wirelet;
@@ -96,9 +96,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Component analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
-        return build.container.adaptor();
+    public Build analyze(Assembly<?> assembly, Wirelet... wirelets) {
+        return build(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
     }
 
     /**
