@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.ServiceMode;
 
 /** A runtime service that uses a {@link Function} to map a service instance from another service. */
 public final class MappingRuntimeService implements RuntimeService {
@@ -60,12 +59,6 @@ public final class MappingRuntimeService implements RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode mode() {
-        return delegate.mode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Object provideInstance() {
         Object other = delegate.provideInstance();
 
@@ -90,5 +83,9 @@ public final class MappingRuntimeService implements RuntimeService {
     @Override
     public String toString() {
         return RuntimeService.toString(this);
+    }
+    @Override
+    public boolean isConstant() {
+        return delegate.isConstant();
     }
 }

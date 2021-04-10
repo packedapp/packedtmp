@@ -17,7 +17,6 @@ package app.packed.component;
 
 import java.util.Optional;
 
-import app.packed.application.Build;
 import app.packed.attribute.Attribute;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
@@ -47,9 +46,6 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 // sourceProvide();
 // sourceProvideAs();
 public /* sealed */ interface ComponentConfigurationContext {
-
-    /** {@return the build that the component is part of} */
-    Build build();
 
     void checkIsWiring();
 

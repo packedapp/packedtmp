@@ -1,6 +1,8 @@
-package app.packed.inject;
+package app.packed.inject.sandbox;
 
 import java.util.List;
+
+import app.packed.inject.Provider;
 
 // Altsaa vi har maaske 2 ting vi er interesseret i... Attributer
 // Og hvordan er servicen blevet resolvet

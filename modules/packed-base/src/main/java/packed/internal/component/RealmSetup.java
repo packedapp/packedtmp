@@ -21,12 +21,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
+import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import packed.internal.application.BuildSetup;
@@ -44,7 +44,7 @@ public final class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doCompose", void.class,
-            ComponentConfiguration.class, Consumer.class);
+            ComponentConfiguration.class, ComposerConfigurator.class);
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
@@ -86,7 +86,7 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver, Consumer<? /* extends Composer<?> */> composer,
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver, ComposerConfigurator<? /* extends Composer<?> */> composer,
             Wirelet[] wirelets) {
         this.realmType = composer.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, 0, wirelets);

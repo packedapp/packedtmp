@@ -35,15 +35,6 @@ public /* sealed */ interface Service extends AttributedElement {
      * @return the key of the service
      */
     Key<?> key();
-
-    /**
-     * Returns the mode of the service.
-     * 
-     * @return the mode of the service
-     */
-    default ServiceMode mode() {
-        return isConstant() ? ServiceMode.CONSTANT : ServiceMode.TRANSIENT;
-    }
 }
 
 

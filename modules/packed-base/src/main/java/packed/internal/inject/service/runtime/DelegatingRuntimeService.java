@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import app.packed.inject.ServiceMode;
 
 /**
  * A delegating runtime service node.
@@ -48,12 +47,6 @@ public record DelegatingRuntimeService(Key<?> key, RuntimeService delegate) impl
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode mode() {
-        return delegate.mode();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Object provideInstance() {
         return delegate.provideInstance();
     }
@@ -67,5 +60,10 @@ public record DelegatingRuntimeService(Key<?> key, RuntimeService delegate) impl
     @Override
     public String toString() {
         return RuntimeService.toString(this);
+    }
+
+    @Override
+    public boolean isConstant() {
+        return delegate.isConstant();
     }
 }

@@ -58,7 +58,7 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
 
     /**
      * Launches an instance of the application. What happens here is dependent on application driver that created the image.
-     * The behaviour of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
+     * The behavior of this method is identical to {@link ApplicationDriver#launch(Assembly, Wirelet...)}.
      * 
      * @param wirelets
      *            optional wirelets

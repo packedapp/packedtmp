@@ -44,7 +44,7 @@ import app.packed.state.RunStateInfo;
 public interface ApplicationRuntime {
 
     // Optional<Throwable> getFailure();
-    
+
     /**
      * Blocks until the underlying component has reached the specified state, or the current thread is interrupted,
      * whichever happens first.
@@ -156,7 +156,7 @@ public interface ApplicationRuntime {
     }
 
     // TODO return Image<Host>?
-    static ApplicationImage<?> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<?> newImage(Assembly<?> assembly, Wirelet... wirelets) {
         return ApplicationRuntimeHelper.DRIVER.newImage(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
@@ -253,7 +253,7 @@ public interface ApplicationRuntime {
         // linger would be nice
         // Or maybe somewhere to replace the guest with a tombstone of some kind.
         // Summarizing everything in the guest...
-        
+
         // Hmmmmmm IDK
         static StopOption undeploy() {
             throw new UnsupportedOperationException();

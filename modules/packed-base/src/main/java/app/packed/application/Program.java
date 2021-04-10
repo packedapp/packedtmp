@@ -105,7 +105,7 @@ public interface Program extends AutoCloseable {
      * @return an artifact driver for App
      */
     static ApplicationDriver<Program> driver() {
-        return ProgramDefault.DRIVER;
+        return ProgramImplementation.DRIVER;
     }
 
     /**

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject.sandbox;
+package app.packed.job;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ResultBearing;

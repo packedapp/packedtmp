@@ -43,29 +43,26 @@ import app.packed.component.ComponentStream;
 // addFailureProcess(Runnable r);
 // addCompletionProcesser(Consumer<@Nullable Throwable> d);
 
+// Analysis?
+
 // BuildTree / BuildSystem / 
 // @ActiveService(phase=Building)
 public interface Build {
+
+    /** {@return the root component of the build}. */
+    Application application();
+
+    /** {@return the root component of the build}. */
+    Component component();
+
+    /** {@return a component stream that includes every component in this build}. */
+    ComponentStream components();
 
     // Whether or not we are building????
     boolean isDone();
 
     // Hmm saa skal vi jo til at lave builds i try/catch...
     boolean isFailed();
-
-    /**
-     * A root build is responsible for creating the root component of a system.
-     * 
-     * @return A system build is a root build that builds a system
-     */
-    default boolean isRoot() {
-        return true;
-    }
-    
-    Component component();
-    
-
-    ComponentStream components();
 
     boolean isSuccess();
 
@@ -96,6 +93,17 @@ public interface Build {
 //        IN_PROCESS, FAILED, SUCCES;
 //    }
 }
+
+//
+///**
+//* A root build is responsible for creating the root component of a system.
+//* 
+//* @return A system build is a root build that builds a system
+//*/
+//default boolean isRoot() {
+//  return true;
+//}
+
 // Tror denne skaber mere forvirring end hjaelper
 ///**
 //* Returns whether or not we are instantiating an actual artifact. Or if we are just producing an image or a descriptor.

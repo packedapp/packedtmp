@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
-import app.packed.inject.ServiceMode;
 
 /** An runtime service holding a constant. */
 record ConstantRuntimeService(Key<?> key, Object constant) implements RuntimeService {
@@ -39,12 +38,6 @@ record ConstantRuntimeService(Key<?> key, Object constant) implements RuntimeSer
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode mode() {
-        return ServiceMode.CONSTANT;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Object provideInstance() {
         return constant;
     }
@@ -58,5 +51,10 @@ record ConstantRuntimeService(Key<?> key, Object constant) implements RuntimeSer
     @Override
     public String toString() {
         return RuntimeService.toString(this);
+    }
+
+    @Override
+    public boolean isConstant() {
+        return true;
     }
 }

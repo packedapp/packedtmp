@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
-import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.util.ThrowableUtil;
@@ -60,12 +59,6 @@ public final class PrototypeRuntimeService implements RuntimeService {
 
     /** {@inheritDoc} */
     @Override
-    public ServiceMode mode() {
-        return ServiceMode.TRANSIENT;
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public Object provideInstance() {
         try {
             return mh.invoke(pool);
@@ -83,5 +76,10 @@ public final class PrototypeRuntimeService implements RuntimeService {
     @Override
     public String toString() {
         return RuntimeService.toString(this);
+    }
+
+    @Override
+    public boolean isConstant() {
+        return false;
     }
 }

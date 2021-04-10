@@ -1,4 +1,4 @@
-package app.packed.inject;
+package app.packed.inject.sandbox;
 
 public enum ServiceType {
 

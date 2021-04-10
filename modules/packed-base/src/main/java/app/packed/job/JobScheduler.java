@@ -13,21 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.inject;
+package app.packed.job;
+
+import app.packed.application.ResultBearing;
+import app.packed.component.Assembly;
+import app.packed.container.BaseAssembly;
 
 /**
- * 
- * Unless otherwise specified, constant is the default mode.
+ *
  */
-// Jeg er faktisk ikke vild med den...
-public enum ServiceMode {
-    CONSTANT, TRANSIENT;
-}
-// Prototype, scopeless, ephemeral, 
+interface JobScheduler {
+    <S, T extends Assembly<?> & ResultBearing<S>> Job<S> schedule(T assembly);
 
-// Permanent
-//Teknisk set behoever vi ikke denne.
-//Og i lang tid klarede vi os med isConstant()
-//Men den er rigtig god for forstaaelsen og kunne linke til ting.
-//I hvad der uden tvivl bliver rigtigt svaert at forklare.
-// forskellen paa component og service scope
+}
+
+class Test extends BaseAssembly implements ResultBearing<String> {
+
+    @Override
+    protected void build() {}
+
+    public static void foo(JobScheduler js) {
+        js.schedule(new Test());
+    }
+
+}

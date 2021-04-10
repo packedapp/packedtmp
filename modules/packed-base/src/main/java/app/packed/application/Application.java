@@ -26,7 +26,6 @@ public interface Application {
      * @return
      */
     boolean isStronglyWired();
-
     
     /** {@return the name of the application} */
     String name();

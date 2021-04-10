@@ -55,24 +55,6 @@ public final class App {
     /** Not today Satan, not today. */
     private App() {}
 
-    // Vi skal vel have et dev-tools projekt, ved ikke lige om den skal vaere her
-    /**
-     * Validates the specified assembly.
-     * 
-     * Will build but not initialize or start
-     * 
-     * @param assembly
-     *            the assembly to validate
-     * @param wirelets
-     *            optional wirelets
-     * @throws AssertionError
-     * 
-     * @see ApplicationDriver#assertValid(Assembly, Wirelet...)
-     */
-    public static void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
-        driver().assertValid(assembly, wirelets);
-    }
-
     /**
      * Returns the artifact driver used by this class.
      * 

@@ -26,6 +26,7 @@ import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Composer;
+import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.exceptionhandling.BuildException;
@@ -59,72 +60,21 @@ import packed.internal.application.PackedApplicationDriver;
  * @see ServiceLocator#driver()
  */
 // Environment + Shell + Result
-public /* sealed */ interface ApplicationDriver<A> {
+public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */ {
 
-    // Structure record(Application, Component, Strea
-    // Det ville vaere rigtig rart tror hvis BuildException have en liste af
-    // validation violations...
-    // Tit vil man gerne have alle fejlene eller en Component...
-    // Either<Component, Validation>
-    // Validataion
+    /**
+     * Builds the applications and returns an object that can be used for further analysis.
+     * 
+     * @param assembly
+     *            the main assembly of the application
+     * @param wirelets
+     *            optional wirelets
+     * @return a build object
+     */
     Build analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
-     * Builds and validates the application
-     * 
-     * @param assembly
-     *            the assembly to validate
-     * @param wirelets
-     *            optional wirelets
-     * @throws AssertionError
-     *             if the application failed to build
-     */
-    // Validation vs Build exceptions
-    // Smider vi
-    // Altsaa maaske skal det starte i devtools
-    // I don't think it tests missing contract clauses
-    // assertValid(..., hasContract);
-    // I navnet valid ligger ikke fullfilled. Laver jeg en hjaelpe assembly.
-    // er den jo stadig valid... selvom vi ikke propper fake parametere ind..
-    //
-    default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
-        // Checks that the container can be sucessfully build...
-        // What about fullfilled??? Er den ok hvis vi f.eks.
-        // mangler nogle service argumenter???
-
-        // Usefull for test
-        // ServiceAsserts.exposes(fff)
-
-        // ServiceWirelet.assertContract(
-
-        // Maaske hedder wirelets ikke noget med assert...
-        // men validate (eller check)....
-        // Og assert goer saa bare at vi smider den med en AssertException...
-        // Men vi kan ogsaa vaelge at faa det i en liste....
-        // App.assertValid(new FooAssembly()), ServiceWirelets.assertExactContract(adasdasd.));
-        // App.assertValid(new FooAssembly()), ServiceWirelets.checkExactContract(adasdasd.));
-        // App.assertValid(new FooAssembly()), ServiceWirelets.validateExactContract(adasdasd.));
-
-        // App.assertValid(new FooAssembly(), ContractWirelets.checkFullfilled());
-        // App.assertValid(new FooAssembly(), ContractWirelets.validateFullfilled());
-        // A specific type of analyze that throws ValidationError...
-        validate(assembly, wirelets).assertValid();
-    }
-
-    default <T> ApplicationDriver<T> bind(Class<T> cl) {
-        // Ideen er lidt at man f.eks. fra Job<R> kan binde R...
-        // og sig Job.of(String.class, ....);
-        // og sig Job.buildImage(String.class, ....);
-        // og sig Job.buildImage(TypeToken<r> tt, ....);
-        // I sidste ende kan man maaske selv lave castet??
-        // Og saa bare tilfoeje en wirelet? ala
-        // return (ApplicationDriver<R>) driver.with(Wirelet.bindTypeVariable(...));
-        // BindableApplicationDriver???
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Used by to create applications from composers such as {@link ServiceComposer}.
+     * Create an application using the specified consumer and configurator.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
      * {@link ServiceLocator#of(Consumer)}.
@@ -133,7 +83,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      *            the type of composer that is exposed to the user
      * @param composer
      *            the composer
-     * @param consumer
+     * @param configurator
      *            the consumer specified by the end user for configuration
      * @param wirelets
      *            optional wirelets
@@ -143,7 +93,17 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @see ServiceComposer
      * @see ServiceLocator#of(Consumer)
      */
-    <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets);
+    // Create a configurator class???
+    <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> configurator, Wirelet... wirelets);
+
+    default Class<?> instanceClass() {
+        throw new UnsupportedOperationException();
+    }
+
+    default TypeToken<? super A> instanceTypeToken() {
+        // What if Job<?>
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Launches a new application using the specified assembly and optional wirelets.
@@ -191,16 +151,9 @@ public /* sealed */ interface ApplicationDriver<A> {
      * @throws BuildException
      *             if the image could not be build
      * @see Program#newImage(Assembly, Wirelet...)
-     * @see ServiceLocator#buildImage(Assembly, Wirelet...)
+     * @see ServiceLocator#newImage(Assembly, Wirelet...)
      */
-    // Was buildImage
     ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
-
-    // driver.use(A, W1, W2) == driver.with(W1).use(A, W2)
-    // Hmmm, saa er den jo lige pludselig foerend..
-    // ComponentDriveren
-    // Maaske det giver mening alligevel...
-    // Det er ihvertfald lettere at forklare...
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
         Build b = analyze(assembly, wirelets);
@@ -215,19 +168,11 @@ public /* sealed */ interface ApplicationDriver<A> {
         });
     }
 
-    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
-
-    }
-
-    default TypeToken<? super A> typeToken() {
-        // What if Job<?>
-        throw new UnsupportedOperationException();
-    }
-
-    Validation validate(Assembly<?> assembly, Wirelet... wirelets);
-
-    ApplicationDriver<A> with(Wirelet wirelet);
-
+    /**
+     * @param wirelets
+     *            the wirelets to add
+     * @return the new application driver
+     */
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
@@ -285,14 +230,16 @@ public /* sealed */ interface ApplicationDriver<A> {
          */
         Builder stateless();
 
-        /**
-         * Will look for annotations
-         * <p>
-         * If you want to support your own annotations. You can do by registering your hooks
-         * 
-         * @return this builder
-         */
-        Builder useShellAsSource();
+//        /**
+//         * Will look for annotations
+//         * <p>
+//         * If you want to support your own annotations. You can do by registering your hooks
+//         * 
+//         * @return this builder
+//         */
+//        // Jeg vil mene vi goer det her automatisk...
+//        // Hvad hvis vi returnere forskellige typer???
+//        Builder useShellAsSource();
 
 //        // Stuff on the container always belongs to the other side...
 //        // Cannot use Factory...
@@ -321,15 +268,64 @@ public /* sealed */ interface ApplicationDriver<A> {
 }
 
 interface ApplicationDriverSandbox<A> {
-    // analyze
-    // validate
-    // check
-    ///// Kunne vaere interessant fx
-    // ComponentAnalysis = Either<Component, Validatable>
-    // ComponentAnalysis extends Validatable
+    // driver.use(A, W1, W2) == driver.with(W1).use(A, W2)
+    // Hmmm, saa er den jo lige pludselig foerend..
+    // ComponentDriveren
+    // Maaske det giver mening alligevel...
+    // Det er ihvertfald lettere at forklare...
+    /**
+     * Builds and validates the application
+     * 
+     * @param assembly
+     *            the assembly to validate
+     * @param wirelets
+     *            optional wirelets
+     * @throws AssertionError
+     *             if the application failed to build
+     */
+    // Validation vs Build exceptions
+    // Smider vi
+    // Altsaa maaske skal det starte i devtools
+    // I don't think it tests missing contract clauses
+    // assertValid(..., hasContract);
+    // I navnet valid ligger ikke fullfilled. Laver jeg en hjaelpe assembly.
+    // er den jo stadig valid... selvom vi ikke propper fake parametere ind..
+    //
+    default void assertValid(Assembly<?> assembly, Wirelet... wirelets) {
+        // Checks that the container can be sucessfully build...
+        // What about fullfilled??? Er den ok hvis vi f.eks.
+        // mangler nogle service argumenter???
 
-    // Ideen er at man kan smide checked exceptions...
-    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
+        // Usefull for test
+        // ServiceAsserts.exposes(fff)
+
+        // ServiceWirelet.assertContract(
+
+        // Maaske hedder wirelets ikke noget med assert...
+        // men validate (eller check)....
+        // Og assert goer saa bare at vi smider den med en AssertException...
+        // Men vi kan ogsaa vaelge at faa det i en liste....
+        // App.assertValid(new FooAssembly()), ServiceWirelets.assertExactContract(adasdasd.));
+        // App.assertValid(new FooAssembly()), ServiceWirelets.checkExactContract(adasdasd.));
+        // App.assertValid(new FooAssembly()), ServiceWirelets.validateExactContract(adasdasd.));
+
+        // App.assertValid(new FooAssembly(), ContractWirelets.checkFullfilled());
+        // App.assertValid(new FooAssembly(), ContractWirelets.validateFullfilled());
+        // A specific type of analyze that throws ValidationError...
+        validate(assembly, wirelets).assertValid();
+    }
+
+    default <T> ApplicationDriver<T> bind(Class<T> cl) {
+        // Ideen er lidt at man f.eks. fra Job<R> kan binde R...
+        // og sig Job.of(String.class, ....);
+        // og sig Job.buildImage(String.class, ....);
+        // og sig Job.buildImage(TypeToken<r> tt, ....);
+        // I sidste ende kan man maaske selv lave castet??
+        // Og saa bare tilfoeje en wirelet? ala
+        // return (ApplicationDriver<R>) driver.with(Wirelet.bindTypeVariable(...));
+        // BindableApplicationDriver???
+        throw new UnsupportedOperationException();
+    }
 
     default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
         throw new UnsupportedOperationException();
@@ -344,6 +340,41 @@ interface ApplicationDriverSandbox<A> {
         // Her er ihvertfald noget der skal kunne konfigureres
         throw new UnsupportedOperationException();
     }
+
+    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
+
+    }
+
+    // Structure record(Application, Component, Strea
+    // Det ville vaere rigtig rart tror hvis BuildException have en liste af
+    // validation violations...
+    // Tit vil man gerne have alle fejlene eller en Component...
+    // Either<Component, Validation>
+    // Validataion
+
+    // analyze
+    // validate
+    // check
+    ///// Kunne vaere interessant fx
+    // ComponentAnalysis = Either<Component, Validatable>
+    // ComponentAnalysis extends Validatable
+
+    // Ideen er at man kan smide checked exceptions...
+    // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
+
+    Validation validate(Assembly<?> assembly, Wirelet... wirelets);
+
+    /**
+     * Create a new application driver that.
+     * 
+     * <p>
+     * Wirelets that have been specified at previous occusion will be processed before the specified wirelet
+     * 
+     * @param wirelet
+     *            the wirelet to append
+     * @return the new application driver
+     */
+    ApplicationDriver<A> with(Wirelet wirelet);
 
 }
 

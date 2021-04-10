@@ -50,36 +50,52 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-    /**
-     * If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean
-     * no ancestors
-     * <p>
-     * An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.
-     **/
-    @Nullable
-    ExtensionSetup ancestor;
+//    /**
+//     * If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean
+//     * no ancestors
+//     * <p>
+//     * An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.
+//     **/
+//    @Nullable
+//    final ExtensionSetup ancestor;
 
-    /** The extension instance, instantiated in {@link #newInstance(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** A model of the extension. */
+    /** This extension's model. */
     private final ExtensionModel model;
 
     /**
      * Creates a new extension setup.
      * 
      * @param container
-     *            the container this extension belongs to part
+     *            the container this extension belongs to
      * @param model
-     *            a model of the extension
+     *            the model of the extension
      */
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
         super(container, model);
         this.model = requireNonNull(model);
+
+        // Tror vi beregner ExtensionSetup on demand...
+        
+        // Dvs hvis man vil vide om man er connected saa tager man det ind i constructuren...
+        
+        
+//        ExtensionSetup anc;
+//        if (model.extensionLinkedDirectChildrenOnly) {
+//            if (container.containerParent != null) {
+//                ancestor = container.containerParent.extensions.get(extensionClass());
+//            } else {
+//                ancestor = null;
+//            }
+//        } else {
+//            ancestor = null;
+//        }
     }
 
     /** {@inheritDoc} */
@@ -159,17 +175,17 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return wire(ComponentDriver.driverInstallInstance(instance));
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConnectedInSameApplication() {
-        return ancestor != null && ancestor.application == application;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConnectedWithParent() {
-        return ancestor != null && ancestor.container == container.containerParent;
-    }
+//    /** {@inheritDoc} */
+//    @Override
+//    public boolean isConnectedInSameApplication() {
+//        return ancestor != null && ancestor.application == application;
+//    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public boolean isConnectedWithParent() {
+//        return ancestor != null && ancestor.container == container.containerParent;
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -230,11 +246,11 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         // Check that the requested subtension's extension is a direct dependency of this extension
         if (!model.dependencies().contains(subExtensionClass)) {
             // Special message if you try to use your own subtension
-            if (model.extensionClass() == subExtensionClass) {
-                throw new InternalExtensionException(model.extensionClass().getSimpleName() + " cannot use its own subtension "
+            if (extensionClass() == subExtensionClass) {
+                throw new InternalExtensionException(extensionClass().getSimpleName() + " cannot use its own subtension "
                         + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
             }
-            throw new InternalExtensionException(model.extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass())
+            throw new InternalExtensionException(extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass())
                     + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
 
@@ -258,7 +274,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
         // We only allow consummation of wirelets in the same module as the extension class
         // Otherwise people would be able to use something like wirelets(ServiceWirelet.provide(..).getClass()).consumeAll
-        Module m = model.extensionClass().getModule();
+        Module m = extensionClass().getModule();
         if (m != wireletClass.getModule()) {
             throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", wireletClass.getModule() = " + wireletClass.getModule());
@@ -323,7 +339,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         // The extension has been now been fully wired, run any notifications
         extension.onWired();
 
-        // Connect to ancestors
         //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
 
         // Finally, invoke Extension#onNew() before returning the new extension to the end-user

@@ -15,6 +15,7 @@
  */
 package packed.internal.application;
 
+import app.packed.application.Application;
 import app.packed.application.Build;
 import app.packed.application.BuildTarget;
 import app.packed.component.Component;
@@ -70,6 +71,24 @@ public final class BuildSetup implements Build {
         this.container = application.container;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Application application() {
+        return application.adaptor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Component component() {
+        return container.adaptor();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ComponentStream components() {
+        return container.adaptor().stream();
+    }
+
     @Override
     public boolean isDone() {
         throw new UnsupportedOperationException();
@@ -102,16 +121,5 @@ public final class BuildSetup implements Build {
             return BuildTarget.IMAGE;
         }
         return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.ANALYSIS : BuildTarget.INSTANCE;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentStream components() {
-        return container.adaptor().stream();
-    }
-
-    @Override
-    public Component component() {
-        return container.adaptor();
     }
 }

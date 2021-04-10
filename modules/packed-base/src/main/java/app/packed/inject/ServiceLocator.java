@@ -220,7 +220,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return the new image
      * @see #driver()
      */
-    static ApplicationImage<ServiceLocator> buildImage(Assembly<?> assembly, Wirelet... wirelets) {
+    static ApplicationImage<ServiceLocator> newImage(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().newImage(assembly, wirelets);
     }
 
@@ -228,7 +228,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * Returns an application driver that can be used to create standalone service locator instances.
      * 
      * @return an application driver
-     * @see #buildImage(Assembly, Wirelet...)
+     * @see #newImage(Assembly, Wirelet...)
      * @see #of(Consumer)
      * @see #of(Assembly, Wirelet...)
      */

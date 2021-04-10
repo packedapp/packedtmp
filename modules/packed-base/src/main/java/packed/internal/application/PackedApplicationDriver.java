@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
-import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
@@ -33,10 +32,10 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
+import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.RunState;
-import app.packed.validate.Validation;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
@@ -145,7 +144,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     
     /** {@inheritDoc} */
     @Override
-    public <C extends Composer<?>> A compose(C composer, Consumer<? super C> consumer, Wirelet... wirelets) {
+    public <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
@@ -212,26 +211,18 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public Validation validate(Assembly<?> assembly, Wirelet... wirelets) {
-        // Denne metoder siger ikke noget om at alle kontrakter er fullfilled.
-        // Det er fuldt ud "Lovligt" ikke at specificere alt muligt...
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public ApplicationDriver<A> with(Wirelet... wirelets) {
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
         return new PackedApplicationDriver<>(this, w);
     }
-
-    /** {@inheritDoc} */
-    @Override
-    public ApplicationDriver<A> with(Wirelet wirelet) {
-        requireNonNull(wirelet, "wirelet is null");
-        Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
-        return new PackedApplicationDriver<>(this, w);
-    }
+//
+//    /** {@inheritDoc} */
+//    @Override
+//    public ApplicationDriver<A> with(Wirelet wirelet) {
+//        requireNonNull(wirelet, "wirelet is null");
+//        Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
+//        return new PackedApplicationDriver<>(this, w);
+//    }
 
     /** Single implementation of {@link ApplicationDriver.Builder}. */
     public static final class Builder implements ApplicationDriver.Builder {
@@ -256,7 +247,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** The modifiers of the application. We have a runtime modifier by default. */
         private int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
 
-        boolean useShellAsSource;
 
         private Wirelet wirelet;
 
@@ -309,13 +299,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         @Override
         public Builder stateless() {
             modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Builder useShellAsSource() {
-            useShellAsSource = true;
             return this;
         }
     }

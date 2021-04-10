@@ -15,6 +15,8 @@
  */
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -37,16 +39,24 @@ import app.packed.base.Key;
  */
 public interface ServiceSelection<S> extends ServiceLocator {
 
-    void forEachInstance(BiConsumer<? super Service, ? super S> action);
-
-    void forEachInstance(Consumer<? super S> action);
-
-    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
-
-    void forEachProvider(Consumer<? super Provider<S>> action);
+    default void forEachInstance(BiConsumer<? super Service, ? super S> action) {
+        requireNonNull(action, "action is null");
+        serviceInstances().forEach(e -> action.accept(e.getKey(), e.getValue()));
+    }
 
     /**
-     * Returns a stream all instances in the selection.
+     * Acquires a service instance for each service in this selection and performs the specified action.
+     * 
+     * @param action
+     *            the action to perform on each instance
+     */
+    default void forEachInstance(Consumer<? super S> action) {
+        requireNonNull(action, "action is null");
+        instances().forEach(action);
+    }
+
+    /**
+     * Acquires a service instance for each service in this selection and returns all the instances as a stream
      * 
      * @return a stream of all instances in the selection
      */
@@ -56,14 +66,13 @@ public interface ServiceSelection<S> extends ServiceLocator {
 
     Stream<Map.Entry<Service, S>> serviceInstances();
 
-    Stream<Map.Entry<Service, S>> serviceProviders();
+    Stream<Map.Entry<Service, Provider<S>>> serviceProviders();
 }
 
 //Metoder
 
 //forEach
 //Stream?
-
 
 //ToList/ToMap
 //Instance
@@ -74,7 +83,12 @@ public interface ServiceSelection<S> extends ServiceLocator {
 //Hmm hvordan haandtere vi Injector????
 //Vi bliver noedt til ogsaa at have den paa plads..
 
-interface Zandbox<S> extends ServiceSelection<S> {
+interface ServiceSelectionZandbox<S> extends ServiceSelection<S> {
+
+    // Ved ikke hvad jeg skal bruge dem til???
+    void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action);
+
+    void forEachProvider(Consumer<? super Provider<S>> action);
 
     // does not support regexp
     ServiceSelection<S> named(String name);
@@ -82,7 +96,7 @@ interface Zandbox<S> extends ServiceSelection<S> {
     // select(Foo.class).withName()
     // select().withName()
 
-
+    // rename to filter...
     ServiceSelection<S> qualifiedWith(Annotation qualifier);
 
     ServiceSelection<S> qualifiedWith(Class<? extends Annotation> qualifier);

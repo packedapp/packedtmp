@@ -117,15 +117,15 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     BaseComponentConfiguration installInstance(Object instance);
 
-    default boolean isConnected() {
-        // isInterConnected?
-        // isJoined (sounds very permanent)
-        throw new UnsupportedOperationException();
-    }
-
-    boolean isConnectedInSameApplication();
-
-    boolean isConnectedWithParent();
+//    default boolean isConnected() {
+//        // isInterConnected?
+//        // isJoined (sounds very permanent)
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    boolean isConnectedInSameApplication();
+//
+//    boolean isConnectedWithParent();
 
     /**
      * Returns whether or not the extension is part of an {@link ApplicationImage}.

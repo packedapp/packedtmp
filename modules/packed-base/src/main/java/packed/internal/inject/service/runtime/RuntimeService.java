@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.util.function.Function;
 
 import app.packed.base.Key;
-import app.packed.inject.ServiceMode;
 import packed.internal.inject.service.InternalService;
 
 /** Represents a service at runtime. */
@@ -32,11 +31,6 @@ public interface RuntimeService extends InternalService {
 
     // We need this to adapt to build time transformations
     public abstract MethodHandle dependencyAccessor();
-
-    @Override
-    default boolean isConstant() {
-        return mode() == ServiceMode.CONSTANT;
-    }
 
     /**
      * Returns an instance.
@@ -57,7 +51,7 @@ public interface RuntimeService extends InternalService {
     public static String toString(RuntimeService rs) {
         StringBuilder sb = new StringBuilder();
         sb.append(rs.key());
-        sb.append("[mode=").append(rs.mode()).append(']');
+        sb.append("[constant=").append(rs.isConstant()).append(']');
         return sb.toString();
     }
     

@@ -17,12 +17,12 @@ package packed.internal.inject.service.sandbox;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.Program;
 import app.packed.component.Assembly;
+import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.RunState;
@@ -153,7 +153,7 @@ public interface Injector extends ServiceLocator {
      *            wirelets
      * @return the new injector
      */
-    static Injector configure(Consumer<? super InjectorComposer> configurator, Wirelet... wirelets) {
+    static Injector configure(ComposerConfigurator<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return driver().compose(new InjectorComposer(), configurator, wirelets);
     }
 

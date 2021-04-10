@@ -20,7 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
-import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
@@ -116,14 +115,14 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings({ "unused", "unchecked" })
-    private void doCompose(C configuration, @SuppressWarnings("rawtypes") Consumer consumer) {
+    private void doCompose(C configuration, @SuppressWarnings("rawtypes") ComposerConfigurator consumer) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
                 onComposable();
 
                 // call the actual consumer
-                consumer.accept(this);
+                consumer.configure(this);
 
                 onCompletable();
             } finally {

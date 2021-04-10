@@ -79,28 +79,6 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action) {
-        requireNonNull(action, "action is null");
-        for (RuntimeService s : services.values()) {
-            @SuppressWarnings("unchecked")
-            Provider<S> provider = (Provider<S>) getProviderForLocator(s);
-            action.accept(s, provider);
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void forEachProvider(Consumer<? super Provider<S>> action) {
-        requireNonNull(action, "action is null");
-        for (RuntimeService s : services.values()) {
-            @SuppressWarnings("unchecked")
-            Provider<S> provider = (Provider<S>) getProviderForLocator(s);
-            action.accept(provider);
-        }
-    }
-
-    /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
     public Stream<S> instances() {
@@ -124,7 +102,7 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
     /** {@inheritDoc} */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    public Stream<Entry<Service, S>> serviceProviders() {
+    public Stream<Entry<Service, Provider<S>>> serviceProviders() {
         return (Stream) services.values().stream().map(r -> Map.entry(r, getProviderForLocator(r)));
     }
 
@@ -134,3 +112,25 @@ final class PackedServiceSelection<S> extends AbstractServiceLocator implements 
         return "No service with the specified key has been selected, key = " + key;
     }
 }
+//
+///** {@inheritDoc} */
+//@Override
+//public void forEachProvider(BiConsumer<? super Service, ? super Provider<S>> action) {
+//  requireNonNull(action, "action is null");
+//  for (RuntimeService s : services.values()) {
+//      @SuppressWarnings("unchecked")
+//      Provider<S> provider = (Provider<S>) getProviderForLocator(s);
+//      action.accept(s, provider);
+//  }
+//}
+//
+///** {@inheritDoc} */
+//@Override
+//public void forEachProvider(Consumer<? super Provider<S>> action) {
+//  requireNonNull(action, "action is null");
+//  for (RuntimeService s : services.values()) {
+//      @SuppressWarnings("unchecked")
+//      Provider<S> provider = (Provider<S>) getProviderForLocator(s);
+//      action.accept(provider);
+//  }
+//}
