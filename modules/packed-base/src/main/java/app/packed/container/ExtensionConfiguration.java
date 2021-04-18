@@ -31,7 +31,7 @@ import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletList;
+import app.packed.component.WireletSource;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 import packed.internal.container.ExtensionSetup;
@@ -233,7 +233,7 @@ public /* sealed */ interface ExtensionConfiguration {
      *            the type of wirelet to return a handle for
      * @return
      */
-    <T extends Wirelet> WireletList<T> wirelets(Class<T> wireletType);
+    <T extends Wirelet> WireletSource<T> wirelets(Class<T> wireletType);
 
     /**
      * Typically used, for example, for testing.

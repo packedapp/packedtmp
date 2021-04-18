@@ -18,6 +18,7 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Optional;
@@ -25,8 +26,10 @@ import java.util.Set;
 
 import app.packed.application.Application;
 import app.packed.base.Key;
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
+import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
@@ -39,10 +42,12 @@ import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentModifierSet;
+import packed.internal.component.PackedTreePath;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
+import packed.internal.util.CollectionUtil;
 
 /** Build-time configuration of a container. */
 public final class ContainerSetup extends WireableComponentSetup {
@@ -50,6 +55,8 @@ public final class ContainerSetup extends WireableComponentSetup {
     /** Child containers, lazy initialized. */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
+
+    public final int containerDepth;
 
     /** This container's parent (if non-root). */
     @Nullable
@@ -94,13 +101,16 @@ public final class ContainerSetup extends WireableComponentSetup {
                 c = containerParent.containerChildren = new ArrayList<>(5);
             }
             c.add(this);
+            this.containerDepth = containerParent.depth + 1;
+        } else {
+            this.containerDepth = 0;
         }
 
         // Set the name of the component if it was not set by a wirelet
         if (name == null) {
             // I think try and move some of this to ComponentNameWirelet
             String n = null;
-            
+
             Class<?> source = realm.realmType();
             if (Assembly.class.isAssignableFrom(source)) {
                 String nnn = source.getSimpleName();
@@ -298,6 +308,36 @@ public final class ContainerSetup extends WireableComponentSetup {
         @Override
         public String name() {
             return container.getName();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Component component() {
+            return container.adaptor();
+        }
+
+        @Override
+        public Collection<Container> children() {
+            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.containerAdaptor());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public int depth() {
+            return container.containerDepth;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Container> parent() {
+            ContainerSetup p = container.containerParent;
+            return p == null ? Optional.empty() : Optional.of(p.containerAdaptor());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public NamespacePath path() {
+            return PackedTreePath.of(container);
         }
     }
 }

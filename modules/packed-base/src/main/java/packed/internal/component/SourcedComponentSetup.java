@@ -17,7 +17,7 @@ public final class SourcedComponentSetup extends WireableComponentSetup {
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;
 
-    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, SourcedComponentDriver<?> driver,
+    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, ClassComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, driver, parent, wirelets);
         this.source = new ClassSourceSetup(this, driver.binding);

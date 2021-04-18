@@ -15,7 +15,7 @@
  */
 package packed.internal.hooks;
 
-import app.packed.hooks.MethodAccessor;
+import app.packed.hooks.accessors.MethodAccessor;
 
 /**
  *

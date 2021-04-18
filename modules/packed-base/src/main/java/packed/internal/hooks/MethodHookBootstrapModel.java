@@ -24,11 +24,11 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.InternalExtensionException;
-import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.MethodHook.Bootstrap;
-import app.packed.hooks.RealMethodSidecarBootstrap;
-import app.packed.inject.Provide;
+import app.packed.hooks.accessors.HookProvide;
+import app.packed.hooks.accessors.MethodAccessor;
+import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
@@ -113,7 +113,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
 
         @Override
         protected void onMethod(Method method) {
-            Provide ap = method.getAnnotation(Provide.class);
+            HookProvide ap = method.getAnnotation(HookProvide.class);
             if (ap != null) {
                 MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);

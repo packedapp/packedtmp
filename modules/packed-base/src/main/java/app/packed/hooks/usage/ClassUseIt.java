@@ -15,8 +15,8 @@
  */
 package app.packed.hooks.usage;
 
-import app.packed.hooks.MethodAccessor;
 import app.packed.hooks.MethodHook;
+import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.state.OnInitialize;
 
 /**

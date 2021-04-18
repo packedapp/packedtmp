@@ -133,7 +133,7 @@ public /* sealed */ interface ComponentConfigurationContext {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    default <T extends Wirelet> WireletList<T> wirelets(Class<T> wirelet) {
+    default <T extends Wirelet> WireletSource<T> wirelets(Class<T> wirelet) {
         throw new UnsupportedOperationException();
     }
 }

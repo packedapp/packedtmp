@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.hooks.accessors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.hooks.MethodHook;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.FactoryType;
 

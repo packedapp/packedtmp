@@ -16,7 +16,6 @@
 package app.packed.job;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ResultBearing;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 
@@ -30,6 +29,8 @@ import app.packed.component.Assembly;
 //What about shutdown... I don't think it is active...
 interface Job<R> {
 
+    R get();
+    
     static <R> ApplicationDriver<Job<?>> driver() {
         throw new UnsupportedOperationException();
     }

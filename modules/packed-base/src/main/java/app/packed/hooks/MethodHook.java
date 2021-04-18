@@ -139,7 +139,7 @@ public @interface MethodHook {
          *             if called after the methods declaring class has been bootstrapped or from the constructor of the
          *             bootstrap class.
          */
-        /* Todoprivate (RealTimeBootstrap) */ final UseSiteMethodHookModel.Builder builder() {
+        /* Todoprivate (RealTimeBootstrap) */ protected final UseSiteMethodHookModel.Builder builder() {
             UseSiteMethodHookModel.Builder b = builder;
             if (b == null) {
                 if (StackWalkerUtil.containsConstructorOf(getClass())) {
@@ -159,6 +159,7 @@ public @interface MethodHook {
         // Method (No) because then people would assume it was also present at runtime
         // Which would it must be present at build-time because we can exchange the runtime
         // object at build time
+        
         /**
          * Replaces this bootstrap with the specified instance at build-time (and run-time).
          * 
@@ -171,14 +172,8 @@ public @interface MethodHook {
          * 
          */
         // This should probably fail if not annotated with @BuildHook
-        public final void buildWithInstance(Object instance) {
+        public final void buildWith(Object instance) {
             builder().buildWith(instance);
-        }
-
-        // Can take this bootstrap instance...
-        public final void buildWithPrototype(Class<?> implementation) {
-            // IDK
-            throw new UnsupportedOperationException();
         }
 
         public final void buildWithPrototype(Class<?> implementation, Object buildData) {
@@ -254,6 +249,10 @@ public @interface MethodHook {
             return builder().manageBy(classBootstrap);
         }
 
+        public final <T extends BootstrapClassNest> T nestWith(Class<T> classBootstrap) {
+            // Must be in the same module as...
+            throw new UnsupportedOperationException();
+        }
         /**
          * Returns the matching method.
          * 
@@ -487,7 +486,6 @@ class SandboxBootstrap {
      * managed.
      * 
      * @return any
-     * @see ClassHook.Bootstrap#managedMethods()
      * @see ClassHook.Bootstrap#managedMethods(Class) // * @see Bootstrap#manageBy(Class) // * @see BuildContext#managedBy()
      */
     public final Optional<Class<? extends ClassHook.Bootstrap>> managedBy() {

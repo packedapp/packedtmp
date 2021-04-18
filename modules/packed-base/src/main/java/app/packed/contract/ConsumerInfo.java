@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.contract;
 
 import java.lang.reflect.Member;
 import java.util.Optional;
@@ -27,7 +27,7 @@ import app.packed.inject.ServiceLocator;
 /**
  * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
  * 
- * Whenever a A service requestions has two important parts. What exactly are being requested, is it optional is the
+ * Whenever a A service request has two important parts. What exactly are being requested, is it optional is the
  * service being requested.
  * 
  * An injection site extends the dependency interface with runtime information about which injector requested the

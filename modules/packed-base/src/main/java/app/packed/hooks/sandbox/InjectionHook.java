@@ -1,4 +1,4 @@
-package app.packed.hooks;
+package app.packed.hooks.sandbox;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

@@ -1,3 +1,3 @@
-package app.packed.application;
+package app.packed.job;
 
 public interface ResultBearing<T> {}

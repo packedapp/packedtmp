@@ -10,7 +10,10 @@ import app.packed.component.Wirelet;
 import app.packed.state.RunState;
 import app.packed.state.StateWirelets.ShutdownHookWirelet;
 
-// Er maaske lidt mere runtime wirelets... Eller Lifetime wirelets...
+/**
+ * Wirelets that can be specified when building or launching an application.
+ */
+//Er maaske lidt mere runtime wirelets... Eller Lifetime wirelets...
 public final class ApplicationWirelets {
     private ApplicationWirelets() {}
 
@@ -23,9 +26,12 @@ public final class ApplicationWirelets {
     /**
      * Returns
      * 
-     * @return
+     * @return the wirelet
      */
-    public static Wirelet enterToStop() {
+    // Must have an execution phase
+    // Hmm.... Hvad hvis man er et job... Saa er det jo mere cancel end det er shutdown...
+    // Er ikke sikker paa vi vil have den her..
+    static Wirelet enterToStop() {
         // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
 //        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
 //        try {
@@ -38,39 +44,45 @@ public final class ApplicationWirelets {
     }
 
     /**
-     * Create a new wirelet that will control the launch mode of the application overriding any default values.
-     * 
+     * Returns a wirelet that will override the default launch mode of an application.
      * <p>
-     * If more than one launch mode wirelet is applied the last applied wirelet is chosen.
+     * If multiple launch mode wirelets are specified, the last applied wirelet is chosen.
      * 
      * @param launchMode
      *            the launchMode of the application
-     * @return the new wirelet
+     * @return the launch mode wirelet
      */
+    // Hvad med ServiceLocator, vi skal vel skrive noget om at nogle launch modes ikke er supporteret
     public static Wirelet launchMode(RunState launchMode) {
         throw new UnsupportedOperationException();
     }
 
     /**
      * Returns a wirelet that will install a shutdown hook.
-     *
-     * <p>
      * <p>
      * As shutting down the root will automatically shutdown all of its child applications. Attempting to specify a shutdown
-     * hook wirelet when launching a non-root application will fail with {@link IllegalArgumentException}.
+     * hook wirelet when launching a non-root application will fail with an exception.
+     * <p>
      * 
      * @return a shutdown hook wirelet
      * @see #shutdownHook(Function, app.packed.application.ApplicationRuntime.StopOption...)
      * @see Runtime#addShutdownHook(Thread)
      */
+    // cannot specify it on ServiceLocator
+    // Ogsaa skrive noget om hvad der sker hvis vi stopper
+    // Skriv noget om der bliver lavet en traad, og man kan bruge den anden metode hvis man selv skal lave en
     public static Wirelet shutdownHook(ApplicationRuntime.StopOption... options) {
         // https://www.baeldung.com/spring-boot-shutdown
         return shutdownHook(r -> new Thread(r), options);
     }
 
     /**
+     * Installs a shutdown hook similar to {@link #shutdownHook(StopOption...)} but also
+     * 
      * @param threadFactory
+     *            a factory that is used to create
      * @param options
+     *            stop options
      * @return a shutdown hook wirelet
      * @see Runtime#addShutdownHook(Thread)
      */

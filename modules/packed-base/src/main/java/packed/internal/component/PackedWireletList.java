@@ -6,18 +6,18 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.component.Wirelet;
-import app.packed.component.WireletList;
+import app.packed.component.WireletSource;
 
 // Lige nu bliver den brugt 3 steder fra.
 // WireletHandle.of <- mainly for test
 // ComponentSetup
 // RuntimeSetup
 
-/** Implementation of {@link WireletList}. */
-public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implements WireletList<W> {
+/** Implementation of {@link WireletSource}. */
+public final /* primitive */ class PackedWireletList<W extends Wirelet> implements WireletSource<W> {
 
-    /** An empty handle used by {@link WireletList#of()}. */
-    public static final PackedWireletHandle<?> EMPTY = new PackedWireletHandle<>();
+    /** An empty handle used by {@link WireletSource#of()}. */
+    public static final PackedWireletList<?> EMPTY = new PackedWireletList<>();
 
     /** The type of wirelet's that will be handled. All other types are ignored */
     private final Class<? extends W> wireletClass;
@@ -27,12 +27,12 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     /** Creates a new empty list. */
     @SuppressWarnings("unchecked")
-    private PackedWireletHandle() {
+    private PackedWireletList() {
         this.wirelets = WireletWrapper.EMPTY;
         this.wireletClass = (Class<? extends W>) Wirelet.class;
     }
 
-    public PackedWireletHandle(WireletWrapper wirelets, Class<? extends W> wireletClass) {
+    public PackedWireletList(WireletWrapper wirelets, Class<? extends W> wireletClass) {
         this.wirelets = wirelets;
         // We should check all public wirelet types here
         if (Wirelet.class == wireletClass) {
@@ -43,7 +43,7 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
 
     /** {@inheritDoc} */
     @Override
-    public void consumeEach(Consumer<? super W> action) {
+    public void forEach(Consumer<? super W> action) {
         consumeEach(wirelets, wireletClass, action);
     }
 
@@ -125,9 +125,9 @@ public final /* primitive */ class PackedWireletHandle<W extends Wirelet> implem
         }
     }
 
-    public static <T extends Wirelet> WireletList<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
+    public static <T extends Wirelet> WireletSource<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
         WireletWrapper wp = new WireletWrapper(WireletArray.flatten(wirelets));
-        return new PackedWireletHandle<>(wp, wireletClass);
+        return new PackedWireletList<>(wp, wireletClass);
     }
 }

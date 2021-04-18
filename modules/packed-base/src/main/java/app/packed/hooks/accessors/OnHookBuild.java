@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.hooks;
+package app.packed.hooks.accessors;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -51,7 +51,7 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface BuildHook {}
+public @interface OnHookBuild {}
 
 // Had this attributes.. Men syntes vi skal finde en anden maade...
 //boolean runtimeAssembly() default false;

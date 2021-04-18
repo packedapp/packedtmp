@@ -28,7 +28,7 @@ import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.MethodHook;
-import app.packed.hooks.RealMethodSidecarBootstrap;
+import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
 /**
  *
@@ -80,7 +80,7 @@ class MethodBootstrap extends RealMethodSidecarBootstrap {
 
     @Override
     protected void bootstrap() {
-        System.out.println(manageByClassHook(ClassBootstrap.class));
+        System.out.println("Nesting with " + manageByClassHook(ClassBootstrap.class));
         // bindParameterToArguement(0, 0);
     }
 }

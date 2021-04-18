@@ -144,23 +144,6 @@ public @interface ClassHook {
             return type().isAnnotationPresent(annotationClass);
         }
 
-        /**
-         * Returns a list of all methods that are explicitly managed by this bootstrap instance.
-         * 
-         * @return a list of all methods that are explicitly managed by this bootstrap instance
-         * @see FieldHook.Bootstrap#manageBy(Class)
-         * @see MethodHook.Bootstrap#manageByClassHook(Class)
-         */
-        // Tror maaske det er godt at specificere type... dvs ikke denne metode...
-        // Fordi saa kan vi checke at det er samme extension
-        protected final List<MethodHook.Bootstrap> managedMethods() {
-            return managedMethods(MethodHook.Bootstrap.class);
-        }
-
-        protected final <T extends MethodHook.Bootstrap> List<T> managedMethods(Class<T> type) {
-            throw new UnsupportedOperationException();
-        }
-
         // b.setBuild();
         protected final List<MethodHook.Bootstrap> methods() {
             return methods(false, false, Object.class);
@@ -179,6 +162,8 @@ public @interface ClassHook {
         protected final List<MethodHook.Bootstrap> methods(boolean declaredMethodsOnly, boolean ignoreDefaultMethods, Class<?>... skipClasses) {
             return builder().methods(declaredMethodsOnly, skipClasses);
         }
+        
+        
 
         /**
          * Returns the class for which this bootstrap has been created.

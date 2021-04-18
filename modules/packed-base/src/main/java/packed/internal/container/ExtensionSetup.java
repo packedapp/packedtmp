@@ -15,7 +15,7 @@ import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletList;
+import app.packed.component.WireletSource;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -24,7 +24,7 @@ import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedWireletHandle;
+import packed.internal.component.PackedWireletList;
 import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -269,7 +269,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Wirelet> WireletList<T> wirelets(Class<T> wireletClass) {
+    public <T extends Wirelet> WireletSource<T> wirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
         // We only allow consummation of wirelets in the same module as the extension class
@@ -283,9 +283,9 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         // The extension does not store any wirelets itself, fetch them from the extension's container instead
         WireletWrapper wirelets = container.wirelets;
         if (wirelets == null || wirelets.unconsumed() == 0) {
-            return WireletList.of();
+            return WireletSource.of();
         }
-        return new PackedWireletHandle<>(wirelets, wireletClass);
+        return new PackedWireletList<>(wirelets, wireletClass);
     }
 
     public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {

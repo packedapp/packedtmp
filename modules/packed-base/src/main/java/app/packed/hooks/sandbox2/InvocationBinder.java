@@ -21,7 +21,7 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.hooks.Variable;
+import app.packed.hooks.accessors.Variable;
 import app.packed.inject.Factory;
 
 /**

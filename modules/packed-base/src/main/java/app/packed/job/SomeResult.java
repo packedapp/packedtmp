@@ -1,4 +1,4 @@
-package app.packed.application;
+package app.packed.job;
 
 //UnixResult
 final class SomeResult {

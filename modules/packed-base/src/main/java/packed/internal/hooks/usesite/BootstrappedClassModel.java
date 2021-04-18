@@ -45,7 +45,7 @@ import packed.internal.invoke.OpenClass;
 /** A model of a class that uses hooks. */
 public final class BootstrappedClassModel {
 
-    /** The class that this model was created from. */
+    /** The class of the model. */
     public final Class<?> clazz;
 
     /** Any extension this model is a part of. */

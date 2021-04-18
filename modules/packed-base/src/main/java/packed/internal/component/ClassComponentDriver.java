@@ -34,23 +34,25 @@ import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
 /**
- *
+ * Maybe
  */
-public class SourcedComponentDriver<C extends ComponentConfiguration> extends WireableComponentDriver<C> {
+// AnnotatedClassComponentDriver
+// CommonClassComponentDriver
+public class ClassComponentDriver<C extends ComponentConfiguration> extends WireableComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final ComponentDriver INSTALL_DRIVER = SourcedComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, true);
+    public static final ComponentDriver INSTALL_DRIVER = ClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, true);
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
-    public static final ComponentDriver STATELESS_DRIVER = SourcedComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
+    public static final ComponentDriver STATELESS_DRIVER = ClassComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
 
     @Nullable
     public final Object binding;
 
     final Inner inner;
 
-    SourcedComponentDriver(Inner meta, Object data) {
+    ClassComponentDriver(Inner meta, Object data) {
         super(null, PackedComponentModifierSet.intOf(meta.modifiersSet().toArray()));
         this.inner = requireNonNull(meta);
         this.binding = data;
@@ -76,7 +78,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Wi
                 // throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);
             }
         }
-        return new SourcedComponentDriver<>(inner, object);
+        return new ClassComponentDriver<>(inner, object);
     }
 
     public void checkBound() {
@@ -91,7 +93,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Wi
 
     public SourcedComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         requireNonNull(parent);
-        return new SourcedComponentSetup(application,  realm, this, parent, wirelets);
+        return new SourcedComponentSetup(application, realm, this, parent, wirelets);
     }
 
     public C toConfiguration(ComponentConfigurationContext cnc) {
@@ -134,21 +136,21 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Wi
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType) {
-        return new SourcedComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false), null);
+        return new ClassComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false), null);
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
         Inner meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
-        return new SourcedComponentDriver<>(meta, null);
+        return new ClassComponentDriver<>(meta, null);
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
         Inner meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
-        return new SourcedComponentDriver<>(meta, null);
+        return new ClassComponentDriver<>(meta, null);
     }
 
     record Inner(Type type, MethodHandle mh, int modifiers, PackedComponentModifierSet modifiersSet) {
@@ -157,7 +159,7 @@ public class SourcedComponentDriver<C extends ComponentConfiguration> extends Wi
             this(type, mh, modifiers, new PackedComponentModifierSet(modifiers));
         }
 
-        void checkBound(SourcedComponentDriver<?> driver) {
+        void checkBound(ClassComponentDriver<?> driver) {
 
         }
     }

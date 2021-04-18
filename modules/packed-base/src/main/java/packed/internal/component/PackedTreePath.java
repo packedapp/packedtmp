@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import packed.internal.container.ContainerSetup;
 
 /** The default implementation of {@link NamespacePath}. */
 public final class PackedTreePath implements NamespacePath {
@@ -174,6 +175,24 @@ public final class PackedTreePath implements NamespacePath {
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.parent;
+            }
+            return new PackedTreePath(paths);
+        }
+    }
+
+    public static NamespacePath of(ContainerSetup cc) {
+        int depth = cc.containerDepth;
+        switch (depth) {
+        case 0:
+            return ROOT;
+        case 1:
+            return new PackedTreePath(cc.name);
+        default:
+            String[] paths = new String[depth];
+            ContainerSetup acc = cc;
+            for (int i = depth - 1; i >= 0; i--) {
+                paths[i] = acc.name;
+                acc = acc.containerParent;
             }
             return new PackedTreePath(paths);
         }

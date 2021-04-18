@@ -49,6 +49,7 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
@@ -327,8 +328,7 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            LinkedHashMap<String, ComponentSetup> c = component.children;
-            return c == null ? List.of() : c.values().stream().map(e -> e.adaptor()).toList();
+            return CollectionUtil.unmodifiableView(component.children.values(), c -> c.adaptor());
         }
 
         /** {@inheritDoc} */

@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.hooks.MethodAccessor;
+import app.packed.hooks.accessors.MethodAccessor;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.MethodHandleUtil;
 

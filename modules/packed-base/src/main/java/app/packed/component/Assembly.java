@@ -183,7 +183,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         ((ComponentSetup) configuration().context).realm.checkOpen();
     }
 
-    final <T extends Wirelet> WireletList<T> wirelets(Class<T> wirelet) {
+    final <T extends Wirelet> WireletSource<T> wirelets(Class<T> wirelet) {
         // Jeg ved ikke hvor tid vi har brug for den her...
         throw new UnsupportedOperationException();
     }

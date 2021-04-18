@@ -6,7 +6,7 @@ import app.packed.component.Component;
 import app.packed.container.Container;
 
 /**
- * Represents an application
+ * Represents an application.
  */
 public interface Application {
 
@@ -21,17 +21,15 @@ public interface Application {
     /**
      * Returns whether or not this application is strongly wired to a parent application.
      * <p>
-     * An application with no parent will always return false. 
+     * A parent-less application will always return false.
      * 
-     * @return
+     * @return {@code true} if this application is strongly wired to a parent application, otherwise {@code false}
      */
     boolean isStronglyWired();
-    
+
     /** {@return the name of the application} */
     String name();
 
-    /** {@return the parent application of this application. Or empty if this component has no parent} */
-    default Optional<Application> parent() {
-        return Optional.empty();
-    }
+    /** {@return the parent application of this application. Or empty if this application has no parent} */
+    Optional<Application> parent();
 }

@@ -47,6 +47,10 @@ public /* sealed */ interface Component extends AttributedElement {
         return modifiers().contains(modifier);
     }
 
+    default Component in(ComponentScope boundary) {
+        throw new UnsupportedOperationException();
+    }
+
     boolean isInSame(ComponentScope scope, Component other);
 
     /**
@@ -124,10 +128,6 @@ public /* sealed */ interface Component extends AttributedElement {
         stream(Option.maxDepth(1)).forEach(action);
     }
 
-    default Optional<Component> tryResolve(CharSequence path) {
-        throw new UnsupportedOperationException();
-    }
-
 //    // The returned component is always a system component
 //    default Component viewAs(Object options) {
 //        // F.eks. tage et system. Og saa sige vi kun vil
@@ -142,7 +142,7 @@ public /* sealed */ interface Component extends AttributedElement {
 //        throw new UnsupportedOperationException();
 //    }
 
-    default Component in(ComponentScope boundary) {
+    default Optional<Component> tryResolve(CharSequence path) {
         throw new UnsupportedOperationException();
     }
 }

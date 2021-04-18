@@ -33,7 +33,7 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletList;
+import app.packed.component.WireletSource;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
@@ -334,7 +334,7 @@ public abstract class Extension {
         return configuration().userWire(driver, wirelets);
     }
 
-    protected final <T extends Wirelet> WireletList<T> wirelets(Class<T> wireletClass) {
+    protected final <T extends Wirelet> WireletSource<T> wirelets(Class<T> wireletClass) {
         return configuration().wirelets(wireletClass);
     }
 

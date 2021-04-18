@@ -24,7 +24,7 @@ import app.packed.base.Key;
 import app.packed.container.InternalExtensionException;
 import app.packed.hooks.FieldHook;
 import app.packed.hooks.FieldHook.Bootstrap;
-import app.packed.inject.Provide;
+import app.packed.hooks.accessors.HookProvide;
 import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
@@ -79,7 +79,7 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
 
         @Override
         protected void onMethod(Method method) {
-            Provide ap = method.getAnnotation(Provide.class);
+            HookProvide ap = method.getAnnotation(HookProvide.class);
             if (ap != null) {
                 MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);

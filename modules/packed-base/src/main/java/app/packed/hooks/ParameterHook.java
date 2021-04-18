@@ -1,4 +1,4 @@
-package app.packed.hooks.sandbox;
+package app.packed.hooks;
 
 public interface ParameterHook {
 

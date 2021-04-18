@@ -32,6 +32,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.inject.Factory;
 import packed.internal.hooks.usesite.UseSiteFieldHookModel;
 
@@ -143,6 +144,7 @@ public @interface FieldHook {
         }
 
         protected final Optional<Key<?>> key() {
+            // Maaske extract via Key.of(Field) 
             return null;
         }
 

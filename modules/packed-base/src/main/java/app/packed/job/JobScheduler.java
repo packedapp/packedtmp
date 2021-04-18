@@ -15,7 +15,6 @@
  */
 package app.packed.job;
 
-import app.packed.application.ResultBearing;
 import app.packed.component.Assembly;
 import app.packed.container.BaseAssembly;
 
@@ -33,7 +32,10 @@ class Test extends BaseAssembly implements ResultBearing<String> {
     protected void build() {}
 
     public static void foo(JobScheduler js) {
-        js.schedule(new Test());
+        Job<String> j = js.schedule(new Test());
+        
+        System.out.println(j);
+        
     }
 
 }

@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import app.packed.application.Application;
 import app.packed.application.ApplicationWirelets;
@@ -24,6 +25,8 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /** Build-time configuration of an application. */
 public final class ApplicationSetup {
 
+    public final BuildSetup build;
+
     /** The configuration of the main constant build. */
     public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
 
@@ -34,8 +37,6 @@ public final class ApplicationSetup {
     public final PackedApplicationDriver<?> driver;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
-
-    public final BuildSetup build;
     /**
      * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
      * build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
@@ -140,7 +141,7 @@ public final class ApplicationSetup {
     }
 
     /** An adaptor of {@link ApplicationSetup} exposed as {@link Application}. */
-    private record Adaptor(ApplicationSetup application) implements Application {
+    private /* primitive */ record Adaptor(ApplicationSetup application) implements Application {
 
         /** {@inheritDoc} */
         @Override
@@ -163,7 +164,13 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public boolean isStronglyWired() {
-            return false; // we do not support
+            return false;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Optional<Application> parent() {
+            return Optional.empty();
         }
     }
 }

@@ -17,6 +17,7 @@ package packed.internal.util;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,13 +37,17 @@ import java.util.stream.Stream;
  *
  */
 public class CollectionUtil {
-    
+
     public static <K, V, W> Map<K, W> copyOf(Map<? extends K, ? extends V> map, Function<? super V, ? extends W> transformer) {
         HashMap<K, W> tmp = new HashMap<>();
         for (Entry<? extends K, ? extends V> e : map.entrySet()) {
             tmp.put(e.getKey(), transformer.apply(e.getValue()));
         }
         return Map.copyOf(tmp);
+    }
+
+    public static <F, T> Collection<T> unmodifiableView(Collection<F> collection, Function<? super F, ? extends T> mapper) {
+        return new MappedCollection<>(collection, mapper);
     }
 
     /**
@@ -163,7 +168,7 @@ public class CollectionUtil {
         }
 
     }
-
+    
     public static final class ForwardingMap<K, V> implements Map<K, V> {
         final Map<K, V> delegate;
         final ForwardingStrategy strategy;
@@ -312,9 +317,49 @@ public class CollectionUtil {
 
         protected void checkUpdate(Object instance) {}
     }
-    
+
+    public static final class MappedCollection<F, T> extends AbstractCollection<T> implements Collection<T> {
+        private final Collection<F> collection;
+        private final Function<? super F, ? extends T> mapper;
+
+        public MappedCollection(Collection<F> collection, Function<? super F, ? extends T> mapper) {
+            this.collection = requireNonNull(collection);
+            this.mapper = requireNonNull(mapper);
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return collection.isEmpty();
+        }
+
+        @Override
+        public Iterator<T> iterator() {
+            record MappedUnmodifiableIterator<F, T>(Iterator<? extends F> iterator, Function<? super F, ? extends T> mapper)  implements Iterator<T> {
+
+                @Override
+                public final boolean hasNext() {
+                    return iterator.hasNext();
+                }
+
+                @Override
+                public final T next() {
+                    return mapper.apply(iterator.next());
+                }
+            }
+            
+            return new MappedUnmodifiableIterator<>(collection.iterator(), mapper);
+        }
+
+        @Override
+        public int size() {
+            return collection.size();
+        }
+
+
+    }
+
     public static final class SetView<E> implements Set<E> {
-        
+
         final Set<E> delegate;
 
         final ForwardingStrategy strategy;
@@ -451,7 +496,7 @@ public class CollectionUtil {
         }
     }
 
-/**
+    /**
     *
     */
     public static final class UnremovableIterator<E> implements Iterator<E> {
