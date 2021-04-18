@@ -15,7 +15,6 @@
  */
 package packed.internal.component;
 
-import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSource;
 
@@ -40,22 +39,15 @@ public final class WireletWrapper {
         this.unconsumed = wirelets.length;
     }
 
-    public int unconsumed() {
-        return unconsumed;
-    }
-    
-    // Hooks kan ogsaa faa i Wirelets...
-    public <T extends Wirelet> WireletSource<T> handleOf(Module module, Class<? extends T> wireletClass) {
+    public <T extends Wirelet> WireletSource<T> sourceOf(Module module, Class<? extends T> wireletClass) {
         // Maaske skal vi have en caller med ala "Must be in the same module as"
         if (module != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
         }
-        return new PackedWireletList<>(this, wireletClass);
+        return new PackedWireletSource<>(this, wireletClass);
     }
-
-    @Nullable
-    public static WireletWrapper forImageInstantiate(ComponentSetup component, Wirelet... wirelets) {
-        Wirelet[] ws = WireletArray.flatten(wirelets);
-        return new WireletWrapper(ws);
+    
+    public int unconsumed() {
+        return unconsumed;
     }
 }

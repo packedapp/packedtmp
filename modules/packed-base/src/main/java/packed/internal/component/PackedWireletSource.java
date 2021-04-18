@@ -14,10 +14,10 @@ import app.packed.component.WireletSource;
 // RuntimeSetup
 
 /** Implementation of {@link WireletSource}. */
-public final /* primitive */ class PackedWireletList<W extends Wirelet> implements WireletSource<W> {
+public final /* primitive */ class PackedWireletSource<W extends Wirelet> implements WireletSource<W> {
 
     /** An empty handle used by {@link WireletSource#of()}. */
-    public static final PackedWireletList<?> EMPTY = new PackedWireletList<>();
+    public static final PackedWireletSource<?> EMPTY = new PackedWireletSource<>();
 
     /** The type of wirelet's that will be handled. All other types are ignored */
     private final Class<? extends W> wireletClass;
@@ -27,12 +27,12 @@ public final /* primitive */ class PackedWireletList<W extends Wirelet> implemen
 
     /** Creates a new empty list. */
     @SuppressWarnings("unchecked")
-    private PackedWireletList() {
+    private PackedWireletSource() {
         this.wirelets = WireletWrapper.EMPTY;
         this.wireletClass = (Class<? extends W>) Wirelet.class;
     }
 
-    public PackedWireletList(WireletWrapper wirelets, Class<? extends W> wireletClass) {
+    public PackedWireletSource(WireletWrapper wirelets, Class<? extends W> wireletClass) {
         this.wirelets = wirelets;
         // We should check all public wirelet types here
         if (Wirelet.class == wireletClass) {
@@ -128,6 +128,6 @@ public final /* primitive */ class PackedWireletList<W extends Wirelet> implemen
     public static <T extends Wirelet> WireletSource<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
         WireletWrapper wp = new WireletWrapper(WireletArray.flatten(wirelets));
-        return new PackedWireletList<>(wp, wireletClass);
+        return new PackedWireletSource<>(wp, wireletClass);
     }
 }

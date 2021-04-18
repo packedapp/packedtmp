@@ -7,21 +7,8 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import packed.internal.component.PackedWireletList;
+import packed.internal.component.PackedWireletSource;
 
-// Hvorfor lige WireletList og ikke f.eks. List eller en annotering
-// Fordi der er en masse special metoder... Som kun kan bruges her
-
-// Vi dropper consume foran alt. Da det giver for lange navne.
-// Istedet consumer alle metoder paanaer dem der starter med peek
-
-// @DynamicInject
-
-// Okay... Saa kan entent tage 
-// ExtensionSetup
-// ComponentSetup
-// Component
-// WireletReceiver
 /**
  * A consumable ordered collection of wirelets.
  * 
@@ -32,28 +19,9 @@ import packed.internal.component.PackedWireletList;
  *           operation. As we expect the number of wirelets for a single component to be small in practice. This is
  *           unlikely to effect performance.
  */
-
-//WireletContainer/WireletHolder/WireletBag
-
-// Do we want to have partial consumes at all??? I cannot think of any usecase.
-// When it is not handled
-
-// TODO
-// Implement iterator
-// Must have matching peek versions of everything (not sure, maybe just a single peek )
-
-// ConsumeAll -> returns whether or not we have any match, useful for boolean is present wirelets
-// ConsumeAll -> returns latest
-// ConsumeAll -> Fails if more than 1.. (or is this in extension model... probably bad in extensions model.. We need to iterate though all every time then
-
-//WireletSource
 public /* sealed */ interface WireletSource<W extends Wirelet> {
 
-    /**
-     * Returns every unconsumed wirelet in this source as list, consuming each wirelet in the process.
-     * 
-     * @return
-     */
+    /** {@return every unconsumed wirelet in this source as a list, consuming each wirelet in the process} */
     default List<W> all() {
         throw new UnsupportedOperationException();
     }
@@ -63,20 +31,11 @@ public /* sealed */ interface WireletSource<W extends Wirelet> {
     /** {@return the number of unconsumed wirelets} */
 
     /**
-     * Returns whether or not this handle contains any unconsumed matching wirelets. Consuming each and every matching
-     * wirelet.
-     * <p>
-     * This operation will <strong>not</strong> consume any wirelets.
-     * 
-     * @return true if at least one matching wirelet, false otherwise
+     * {@return whether or not this source contains any unconsumed matching wirelets. Consuming each wirelet in the process}
      */
-    boolean isEmpty(); // hasMatch
+    boolean isEmpty();
 
-    // forEach
-    // will consume any matching wirelet and return the last one..
-    // maybe just consume... And fail if there are more than 1 present..
-    // consumeAllReturnLast()
-    Optional<W> last(); // one() maybe. Emphasize at man consumer en...
+    Optional<W> last();
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
     default <E> E lastOrElse(Function<? super W, ? extends E> mapper, E orElse) {
@@ -91,32 +50,56 @@ public /* sealed */ interface WireletSource<W extends Wirelet> {
 
     void peekEach(Consumer<? super W> action);
 
-    /**
-     * Returns the number of unconsumed wirelets in this list consuming each wirelet in the process.
-     * 
-     * @return the number of unconsumed wirelets
-     */
+    /** {@return the number of unconsumed wirelets in this source, consuming each wirelet in the process} */
     int size();
 
     /**
-     * Returns a wirelet handle with no wirelets to consume
+     * Returns a wirelet source with no wirelets to consume
      * 
      * @param <E>
-     *            the {@code WireletHandle}'s element type
-     * @return an empty wirelet handle
+     *            the {@code WireletSource}'s element type
+     * @return an empty wirelet source
      */
     @SuppressWarnings("unchecked")
     public static <W extends Wirelet> WireletSource<W> of() {
-        return (WireletSource<W>) PackedWireletList.EMPTY;
+        return (WireletSource<W>) PackedWireletSource.EMPTY;
     }
 
     // Hvad skal vi bruge den her til??? Testing primaert ville jeg mene...
     // Hvad med dem der ikke bliver consumet? skal vi have en WireletHandle.peekCount()???
     @SafeVarargs
     static <W extends Wirelet> WireletSource<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
-        return PackedWireletList.of(wireletClass, wirelets);
+        return PackedWireletSource.of(wireletClass, wirelets);
     }
 }
+
+//Hvorfor lige WireletList og ikke f.eks. List eller en annotering
+//Fordi der er en masse special metoder... Som kun kan bruges her
+
+//Vi dropper consume foran alt. Da det giver for lange navne.
+//Istedet consumer alle metoder paanaer dem der starter med peek
+
+//@DynamicInject
+
+//Okay... Saa kan entent tage 
+//ExtensionSetup
+//ComponentSetup
+//Component
+//WireletReceiver
+//WireletContainer/WireletHolder/WireletBag
+
+//Do we want to have partial consumes at all??? I cannot think of any usecase.
+//When it is not handled
+
+//TODO
+//Implement iterator
+//Must have matching peek versions of everything (not sure, maybe just a single peek )
+
+//ConsumeAll -> returns whether or not we have any match, useful for boolean is present wirelets
+//ConsumeAll -> returns latest
+//ConsumeAll -> Fails if more than 1.. (or is this in extension model... probably bad in extensions model.. We need to iterate though all every time then
+
+//WireletSource
 //Collect, Receive, Accept, Consume
 
 //Grunden til jeg ikke kan lide WireletInject er den kan puttes paa en parameter...

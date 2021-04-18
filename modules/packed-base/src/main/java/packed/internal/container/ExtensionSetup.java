@@ -24,7 +24,7 @@ import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedWireletList;
+import packed.internal.component.PackedWireletSource;
 import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -50,15 +50,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
-//    /**
-//     * If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean
-//     * no ancestors
-//     * <p>
-//     * An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.
-//     **/
-//    @Nullable
-//    final ExtensionSetup ancestor;
-
     /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
@@ -80,22 +71,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
         super(container, model);
         this.model = requireNonNull(model);
-
-        // Tror vi beregner ExtensionSetup on demand...
-        
-        // Dvs hvis man vil vide om man er connected saa tager man det ind i constructuren...
-        
-        
-//        ExtensionSetup anc;
-//        if (model.extensionLinkedDirectChildrenOnly) {
-//            if (container.containerParent != null) {
-//                ancestor = container.containerParent.extensions.get(extensionClass());
-//            } else {
-//                ancestor = null;
-//            }
-//        } else {
-//            ancestor = null;
-//        }
     }
 
     /** {@inheritDoc} */
@@ -174,18 +149,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     public BaseComponentConfiguration installInstance(Object instance) {
         return wire(ComponentDriver.driverInstallInstance(instance));
     }
-
-//    /** {@inheritDoc} */
-//    @Override
-//    public boolean isConnectedInSameApplication() {
-//        return ancestor != null && ancestor.application == application;
-//    }
-//
-//    /** {@inheritDoc} */
-//    @Override
-//    public boolean isConnectedWithParent() {
-//        return ancestor != null && ancestor.container == container.containerParent;
-//    }
 
     /** {@inheritDoc} */
     @Override
@@ -285,7 +248,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         if (wirelets == null || wirelets.unconsumed() == 0) {
             return WireletSource.of();
         }
-        return new PackedWireletList<>(wirelets, wireletClass);
+        return new PackedWireletSource<>(wirelets, wireletClass);
     }
 
     public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
@@ -351,3 +314,28 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return extension;
     }
 }
+
+///**
+//* If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean
+//* no ancestors
+//* <p>
+//* An ancestor is a direct parent if {@code ancestor.container == this.container.parent}.
+//**/
+//@Nullable
+//final ExtensionSetup ancestor;
+
+// Tror vi beregner ExtensionSetup on demand...
+
+// Dvs hvis man vil vide om man er connected saa tager man det ind i constructuren...
+
+
+//ExtensionSetup anc;
+//if (model.extensionLinkedDirectChildrenOnly) {
+//  if (container.containerParent != null) {
+//      ancestor = container.containerParent.extensions.get(extensionClass());
+//  } else {
+//      ancestor = null;
+//  }
+//} else {
+//  ancestor = null;
+//}
