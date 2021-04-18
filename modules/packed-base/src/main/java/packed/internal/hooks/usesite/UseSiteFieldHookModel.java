@@ -119,11 +119,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
         public void checkWritable() {}
 
         void invokeBootstrap() {
-            // We perform a compare and exchange with configuration. Guarding against
-            // concurrent usage of this assembly.
-            // Don't think it makes sense to register
             Object instance = hook.newInstance();
-
             VH_FIELD_HOOK_BUILDER.set(instance, this);
             try {
                 MH_FIELD_HOOK_BOOTSTRAP.invoke(instance); // Invokes FieldHook.Bootstrap#bootstrap()

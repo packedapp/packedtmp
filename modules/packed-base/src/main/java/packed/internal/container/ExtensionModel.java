@@ -404,7 +404,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
                 @Nullable
                 Builder b = (Builder) DATA.get(extensionClass);
                 if (b == null) {
-                    b = new ExtensionModel.Builder(extensionClass);
+                    b = new Builder(extensionClass);
                 }
 
                 model = b.build(this);

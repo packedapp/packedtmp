@@ -99,7 +99,7 @@ public final class BootstrappedClassModel {
 
         final Map<Class<? extends ClassHook.Bootstrap>, UseSiteClassHookModel.Builder> classes = new HashMap<>();
 
-        // In order to use @Provide, FooExtension must have ServiceExtension as a dependency.
+        /** Any extension this lovely fellow is a part of. */
         @Nullable
         final ExtensionModel extension;
 

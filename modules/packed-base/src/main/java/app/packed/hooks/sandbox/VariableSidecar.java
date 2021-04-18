@@ -42,6 +42,7 @@ public abstract class VariableSidecar {
 
     protected void configure() {}
 
+    // This one is nice... maybe it is $debug Or maybe its like packed.extension.devmode=true
     protected final void debug() {
         configuration().debug();
     }

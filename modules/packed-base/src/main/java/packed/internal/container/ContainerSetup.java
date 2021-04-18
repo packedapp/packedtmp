@@ -56,6 +56,7 @@ public final class ContainerSetup extends WireableComponentSetup {
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
+    /** The depth of this container in relation to other containers. */
     public final int containerDepth;
 
     /** This container's parent (if non-root). */
@@ -75,14 +76,12 @@ public final class ContainerSetup extends WireableComponentSetup {
     /**
      * Create a new container (component).
      * 
-     * @param build
-     *            the build this container is a part of
      * @param application
      *            the application this container is a part of
      * @param realm
      *            the realm this container is a part of
      * @param driver
-     *            the driver that was used to create the container
+     *            the driver that is used to create this container
      * @param parent
      *            any parent component
      * @param wirelets
@@ -92,21 +91,24 @@ public final class ContainerSetup extends WireableComponentSetup {
             Wirelet[] wirelets) {
         super(application, realm, driver, parent, wirelets);
 
-        // Various container tree management
-        this.containerParent = parent == null ? null : parent.container;
-        if (containerParent != null) {
-            containerParent.runPredContainerChildren();
+        // Various container tree-node management
+        if (parent == null) {
+            this.containerParent = null;
+            this.containerDepth = 0;
+        } else {
+            this.containerParent = parent.container;
+            this.containerDepth = containerParent.depth + 1;
+
+            // Add this container to the children of the parent
+            this.containerParent.runPredContainerChildren();
             ArrayList<ContainerSetup> c = containerParent.containerChildren;
             if (c == null) {
                 c = containerParent.containerChildren = new ArrayList<>(5);
             }
             c.add(this);
-            this.containerDepth = containerParent.depth + 1;
-        } else {
-            this.containerDepth = 0;
         }
 
-        // Set the name of the component if it was not set by a wirelet
+        // Set the name of the container if it was not set by a wirelet
         if (name == null) {
             // I think try and move some of this to ComponentNameWirelet
             String n = null;
@@ -175,11 +177,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         return new ContainerAdaptor(this);
     }
 
-    /**
-     * Returns an unmodifiable view of the extension registered with this container.
-     * 
-     * @return a unmodifiable view of the extension registered with this container
-     */
+    /** {@return a unmodifiable view of the extensions that are in use.} */
     public Set<Class<? extends Extension>> extensionView() {
         return Collections.unmodifiableSet(extensions.keySet());
     }

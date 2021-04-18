@@ -29,7 +29,8 @@ abstract class AbstractBootstrapBuilder {
 
     protected final AbstractHookModel<?> bootstrapModel;
 
-    protected boolean disabled;
+    /** Whether or not bootstrap has been invoked. */
+    public boolean disabled;
     
     protected AbstractBootstrapBuilder(BootstrappedClassModel.Builder source) {
         this.source = requireNonNull(source);

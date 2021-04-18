@@ -37,7 +37,7 @@ import packed.internal.inject.dependency.InjectionNode;
 /**
  *
  */
-public abstract class UseSiteMemberHookModel {
+public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
 
     /** Dependencies that needs to be resolved. */
     public final List<DependencyDescriptor> dependencies;
