@@ -65,19 +65,20 @@ public final class OpenClass {
         this.registerForNative = registerForNative;
     }
 
-    private <T extends RuntimeException> void checkPackageOpen(UncheckedThrowableFactory<T> tf) throws T {
-        String pckName = type.getPackageName();
-        if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
-            String otherModule = type.getModule().getName();
-            String m = APP_PACKED_BASE_MODULE.getName();
-            throw new InaccessibleMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule + "' must be open to '" + m
-                    + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
-        }
-    }
-
     private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {
         if (!member.getDeclaringClass().isAssignableFrom(type)) {
             throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + type);
+        }
+
+        // If we already have made a private lookup object, lets just use it. Even if we might need less access
+        MethodHandles.Lookup p = privateLookup;
+        if (p != null) {
+            return p;
+        }
+
+        // See if we need private access, otherwise just return ordinary lookup.
+        if (!needsPrivateLookup(member)) {
+            return lookup;
         }
 
         if (!privateLookupInitialized) {
@@ -93,17 +94,6 @@ public final class OpenClass {
                 APP_PACKED_BASE_MODULE.addReads(type.getModule());
             }
             privateLookupInitialized = true;
-        }
-
-        // If we already have made a private lookup object, lets just use it. Even if we might need less access
-        MethodHandles.Lookup p = privateLookup;
-        if (p != null) {
-            return p;
-        }
-
-        // See if we need private access, otherwise just return ordinary lookup.
-        if (!needsPrivateLookup(member)) {
-            return lookup;
         }
 
         // Create and cache a private lookup.
