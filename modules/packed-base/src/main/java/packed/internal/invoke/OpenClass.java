@@ -30,7 +30,6 @@ import java.lang.reflect.Modifier;
 import app.packed.base.InaccessibleMemberException;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.NativeImage;
-import packed.internal.util.StringFormatter;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -65,7 +64,7 @@ public final class OpenClass {
         this.registerForNative = registerForNative;
     }
 
-    private Lookup lookup(Member member, UncheckedThrowableFactory<?> tf) {
+    private Lookup lookup(Member member) {
         if (!member.getDeclaringClass().isAssignableFrom(type)) {
             throw new IllegalArgumentException("Was " + member.getDeclaringClass() + " expecting " + type);
         }
@@ -79,21 +78,6 @@ public final class OpenClass {
         // See if we need private access, otherwise just return ordinary lookup.
         if (!needsPrivateLookup(member)) {
             return lookup;
-        }
-
-        if (!privateLookupInitialized) {
-            String pckName = type.getPackageName();
-            if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
-                String otherModule = type.getModule().getName();
-                String m = APP_PACKED_BASE_MODULE.getName();
-                throw new InaccessibleMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule + "' must be open to '" + m
-                        + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
-            }
-            // Should we use lookup.getdeclaringClass???
-            if (!APP_PACKED_BASE_MODULE.canRead(type.getModule())) {
-                APP_PACKED_BASE_MODULE.addReads(type.getModule());
-            }
-            privateLookupInitialized = true;
         }
 
         // Create and cache a private lookup.
@@ -124,7 +108,7 @@ public final class OpenClass {
      * @return a method handle for the unreflected method
      */
     public MethodHandle unreflect(Method method, UncheckedThrowableFactory<?> tf) {
-        Lookup lookup = lookup(method, tf);
+        Lookup lookup = lookup(method);
 
         MethodHandle mh;
         try {
@@ -143,7 +127,7 @@ public final class OpenClass {
         return unreflectConstructor(constructor, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
     }
     public MethodHandle unreflectConstructor(Constructor<?> constructor, UncheckedThrowableFactory<?> tf) {
-        Lookup lookup = lookup(constructor, tf);
+        Lookup lookup = lookup(constructor);
 
         MethodHandle mh;
         try {
@@ -162,7 +146,7 @@ public final class OpenClass {
     }
 
     public MethodHandle unreflectGetter(Field field, UncheckedThrowableFactory<?> tf) {
-        Lookup lookup = lookup(field, tf);
+        Lookup lookup = lookup(field);
 
         MethodHandle mh;
         try {
@@ -181,7 +165,7 @@ public final class OpenClass {
     }
 
     public MethodHandle unreflectSetter(Field field, UncheckedThrowableFactory<?> tf) {
-        Lookup lookup = lookup(field, tf);
+        Lookup lookup = lookup(field);
 
         MethodHandle mh;
         try {
@@ -200,7 +184,7 @@ public final class OpenClass {
     }
 
     public <T extends RuntimeException> VarHandle unreflectVarHandle(Field field, UncheckedThrowableFactory<T> tf) {
-        Lookup lookup = lookup(field, tf);
+        Lookup lookup = lookup(field);
 
         VarHandle vh;
         try {
