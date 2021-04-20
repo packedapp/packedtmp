@@ -107,11 +107,11 @@ public @interface ClassHook {
         // Det er altsammen separat fra bootstrap...
 
         // Must use buildWith, or manageByClassBootstrap();
-        protected final List<FieldHook.Bootstrap> fields() {
+        protected final List<OldFieldHook.Bootstrap> fields() {
             return fields(false, Object.class);
         }
 
-        protected final List<FieldHook.Bootstrap> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+        protected final List<OldFieldHook.Bootstrap> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
             return builder().fields(declaredFieldsOnly, skipClasses);
         }
 

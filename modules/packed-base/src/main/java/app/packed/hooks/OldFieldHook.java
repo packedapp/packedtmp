@@ -42,11 +42,11 @@ import packed.internal.hooks.usesite.UseSiteFieldHookModel;
 @Target(ElementType.ANNOTATION_TYPE)
 @Retention(RUNTIME)
 @Documented
-public @interface FieldHook {
+public @interface OldFieldHook {
 
     /** Whether or not the sidecar is allow to get the contents of a field. */
     boolean allowGet() default false;
-    
+
     /** Whether or not the sidecar is allow to set the contents of a field. */
     boolean allowSet() default false;
 
@@ -56,7 +56,7 @@ public @interface FieldHook {
     Class<? extends Annotation>[] annotation() default {};
 
     /** The hook's {@link Bootstrap} class. */
-    Class<? extends FieldHook.Bootstrap> bootstrap();
+    Class<? extends OldFieldHook.Bootstrap> bootstrap();
 
     abstract class Bootstrap {
 
@@ -144,7 +144,7 @@ public @interface FieldHook {
         }
 
         protected final Optional<Key<?>> key() {
-            // Maaske extract via Key.of(Field) 
+            // Maaske extract via Key.of(Field)
             return null;
         }
 
@@ -204,7 +204,7 @@ public @interface FieldHook {
          * @param argument
          *            the argument to set
          * @throws UnsupportedOperationException
-         *             if {@link FieldHook#allowSet()} is false
+         *             if {@link OldFieldHook#allowSet()} is false
          * @throws ClassCastException
          *             if the specified argument is not assignable to the field
          */
@@ -218,8 +218,8 @@ public @interface FieldHook {
         /**
          * @return the variable
          * @see Lookup#unreflectVarHandle(Field)
-         * @see FieldHook#allowGet()
-         * @see FieldHook#allowSet()
+         * @see OldFieldHook#allowGet()
+         * @see OldFieldHook#allowSet()
          * @throws UnsupportedOperationException
          *             if the extension field has not both get and set access
          */

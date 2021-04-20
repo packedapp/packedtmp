@@ -20,7 +20,6 @@ import java.lang.reflect.Method;
 
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.hooks.bootstrap.AbstractFieldOrInjectableVariableHook;
 
 /**
  *
@@ -86,8 +85,8 @@ public final class ClassHookModel extends AbstractHookModel<ClassHook.Bootstrap>
             throw new UnsupportedOperationException();
         }
 
-        public AbstractFieldOrInjectableVariableHook forField(Class<? extends Annotation> fieldAnnotation) {
-            throw new UnsupportedOperationException();
-        }
+//        public AnnotatedFieldHookModel forField(Class<? extends Annotation> fieldAnnotation) {
+//            throw new UnsupportedOperationException();
+//        }
     }
 }

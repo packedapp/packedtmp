@@ -20,7 +20,7 @@ public abstract class BootstrapClassNest {
      * Returns a list of methods in this nest.
      * 
      * @return a list of all methods in this nest
-     * @see FieldHook.Bootstrap#manageBy(Class)
+     * @see OldFieldHook.Bootstrap#manageBy(Class)
      * @see MethodHook.Bootstrap#nestWith(Class)
      */
     public final List<MethodHook.Bootstrap> methods() {

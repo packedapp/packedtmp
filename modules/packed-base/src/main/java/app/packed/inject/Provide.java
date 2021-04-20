@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
-import app.packed.hooks.FieldHook;
+import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
@@ -75,7 +75,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@FieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
+@OldFieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 @MethodHook(matchesAnnotation = Provide.class, extension = ServiceExtension.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
 // @Provide(Constant) , @Provide(Lazy), @Provide(EVERYTIME) -> Constant early, Lazy (volatile storage) <-- kan jo godt skrive laese volatile i et object array 
 public @interface Provide {
@@ -121,7 +121,7 @@ public @interface Provide {
 }
 
 /** A field sidecar for {@link Provide}. */
-final class ProvideFieldBootstrap extends FieldHook.Bootstrap {
+final class ProvideFieldBootstrap extends OldFieldHook.Bootstrap {
 
     /** {@inheritDoc} */
     @Override

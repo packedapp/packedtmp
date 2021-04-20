@@ -26,7 +26,7 @@ import java.util.List;
 
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.ClassHook.Bootstrap;
-import app.packed.hooks.FieldHook;
+import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;
@@ -41,7 +41,7 @@ public final class UseSiteClassHookModel {
     private static final MethodHandle MH_CLASS_HOOK_BOOTSTRAP_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
             "bootstrap", void.class);
 
-    /** A handle for accessing {@link MethodHook.Bootstrap#builder}. */
+    /** A handle for accessing {@link MethodHook.Bootstrap#processor}. */
     private static final VarHandle VH_CLASS_HOOK_BOOTSTRAP_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ClassHook.Bootstrap.class,
             "builder", UseSiteClassHookModel.Builder.class);
 
@@ -82,11 +82,11 @@ public final class UseSiteClassHookModel {
             throw new UnsupportedOperationException();
         }
 
-        public List<FieldHook.Bootstrap> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
-            ArrayList<FieldHook.Bootstrap> list = new ArrayList<>();
+        public List<OldFieldHook.Bootstrap> fields(boolean declaredFieldsOnly, Class<?>... skipClasses) {
+            ArrayList<OldFieldHook.Bootstrap> list = new ArrayList<>();
             for (Field f : source.type().getDeclaredFields()) {
                 UseSiteFieldHookModel.Builder b = new UseSiteFieldHookModel.Builder(this, ExposedFieldBootstrap.MODEL, f);
-                list.add((FieldHook.Bootstrap) b.initialize());
+                list.add((OldFieldHook.Bootstrap) b.initialize());
             }
             return List.copyOf(list);
         }
@@ -104,7 +104,7 @@ public final class UseSiteClassHookModel {
             throw new UnsupportedOperationException();
         }
 
-        static class ExposedFieldBootstrap extends FieldHook.Bootstrap {
+        static class ExposedFieldBootstrap extends OldFieldHook.Bootstrap {
             static final FieldHookModel MODEL = FieldHookModel.getModelForFake(ExposedFieldBootstrap.class);
         }
 

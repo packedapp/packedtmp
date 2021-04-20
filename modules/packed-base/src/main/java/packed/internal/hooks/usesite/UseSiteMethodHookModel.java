@@ -41,11 +41,11 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
+    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#model}. */
     private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "bootstrap", void.class);
 
-    /** A VarHandle that can access {@link MethodHook.Bootstrap#builder}. */
+    /** A VarHandle that can access {@link MethodHook.Bootstrap#processor}. */
     private static final VarHandle VH_METHOD_SIDECAR_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "builder", UseSiteMethodHookModel.Builder.class);
 

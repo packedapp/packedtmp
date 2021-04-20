@@ -70,7 +70,7 @@ public final class OpenClass {
         if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
             String otherModule = type.getModule().getName();
             String m = APP_PACKED_BASE_MODULE.getName();
-            throw tf.newThrowable("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule + "' must be open to '" + m
+            throw new InaccessibleMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule + "' must be open to '" + m
                     + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
         }
     }
@@ -108,17 +108,6 @@ public final class OpenClass {
             throw new InaccessibleMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }
     }
-//
-//    public OpenClass spawn(Class<?> clazz) {
-//        // Used for classes in the same nest
-//        // So maybe check that they are nest mates
-//        // We need it because private lookup is attached to one particular class.
-//        // So need a private lookup object for every class in the same nest.
-//        if (clazz.getModule() != this.type.getModule()) {
-//            throw new IllegalArgumentException();
-//        }
-//        return new OpenClass(lookup, clazz, registerForNative);
-//    }
 
     /**
      * Returns the class that is processed.
@@ -127,6 +116,10 @@ public final class OpenClass {
      */
     public Class<?> type() {
         return type;
+    }
+
+    public MethodHandle unreflect(Method method) {
+        return unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
     }
 
     /**
@@ -165,6 +158,9 @@ public final class OpenClass {
         }
         return mh;
     }
+    public MethodHandle unreflectGetter(Field field) {
+        return unreflectGetter(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+    }
 
     public MethodHandle unreflectGetter(Field field, UncheckedThrowableFactory<?> tf) {
         Lookup lookup = lookup(field, tf);
@@ -180,6 +176,9 @@ public final class OpenClass {
             NativeImage.registerField(field);
         }
         return mh;
+    }
+    public MethodHandle unreflectSetter(Field field) {
+        return unreflectSetter(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
     }
 
     public MethodHandle unreflectSetter(Field field, UncheckedThrowableFactory<?> tf) {
@@ -197,8 +196,11 @@ public final class OpenClass {
         }
         return mh;
     }
+    public VarHandle unreflectVarHandle(Field field) {
+        return unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+    }
 
-    public <T extends RuntimeException> VarHandle unreflectVarHandle(Field field, UncheckedThrowableFactory<T> tf) throws T {
+    public <T extends RuntimeException> VarHandle unreflectVarHandle(Field field, UncheckedThrowableFactory<T> tf) {
         Lookup lookup = lookup(field, tf);
 
         VarHandle vh;

@@ -22,14 +22,14 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.container.InternalExtensionException;
-import app.packed.hooks.FieldHook;
-import app.packed.hooks.FieldHook.Bootstrap;
+import app.packed.hooks.OldFieldHook;
+import app.packed.hooks.OldFieldHook.Bootstrap;
 import app.packed.hooks.accessors.HookProvide;
 import app.packed.state.OnInitialize;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
-public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap> {
+public final class FieldHookModel extends AbstractHookModel<OldFieldHook.Bootstrap> {
 
     public final Map<Key<?>, HookedMethodProvide> keys;
 
@@ -51,29 +51,29 @@ public final class FieldHookModel extends AbstractHookModel<FieldHook.Bootstrap>
     }
 
 
-    public static FieldHookModel getModelForFake(Class<? extends FieldHook.Bootstrap> c) {
+    public static FieldHookModel getModelForFake(Class<? extends OldFieldHook.Bootstrap> c) {
         return new Builder(c).build();
     }
 
     /** A builder for for a {@link FieldHookModel}. */
-    public final static class Builder extends AbstractHookModel.Builder<FieldHook.Bootstrap> {
+    public final static class Builder extends AbstractHookModel.Builder<OldFieldHook.Bootstrap> {
 
         private MethodHandle onInitialize;
 
         private final HashMap<Key<?>, HookedMethodProvide.Builder> providing = new HashMap<>();
 
-        private Builder(Class<? extends FieldHook.Bootstrap> c) {
+        private Builder(Class<? extends OldFieldHook.Bootstrap> c) {
             super(c);
         }
 
-        public Builder(FieldHook afs) {
+        public Builder(OldFieldHook afs) {
             super(afs.bootstrap());
         }
 
         /** {@inheritDoc} */
         @Override
         public FieldHookModel build() {
-            scan(false, FieldHook.Bootstrap.class);
+            scan(false, OldFieldHook.Bootstrap.class);
             return new FieldHookModel(this);
         }
 

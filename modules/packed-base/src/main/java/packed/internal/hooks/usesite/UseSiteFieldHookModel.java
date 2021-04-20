@@ -26,7 +26,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Key;
-import app.packed.hooks.FieldHook;
+import app.packed.hooks.OldFieldHook;
 import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.HookedMethodProvide;
@@ -39,12 +39,12 @@ import packed.internal.util.ThrowableUtil;
 /** Represents the use site of a field hook. */
 public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link FieldHook.Bootstrap#bootstrap}. */
-    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class, "bootstrap",
+    /** A MethodHandle that can invoke {@link OldFieldHook.Bootstrap#model}. */
+    private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldFieldHook.Bootstrap.class, "bootstrap",
             void.class);
 
-    /** A VarHandle that can access {@link FieldHook.Bootstrap#builder}. */
-    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), FieldHook.Bootstrap.class, "builder",
+    /** A VarHandle that can access {@link OldFieldHook.Bootstrap#processor}. */
+    private static final VarHandle VH_FIELD_HOOK_BUILDER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), OldFieldHook.Bootstrap.class, "builder",
             UseSiteFieldHookModel.Builder.class);
 
     /** A direct method handle to the field. */
@@ -94,7 +94,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
     }
 
     /**
-     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link FieldHook#bootstrap()}.
+     * A builder for {@link UseSiteFieldHookModel}. Instances of this class are avilable via {@link OldFieldHook#bootstrap()}.
      */
     public static final class Builder extends UseSiteMemberHookModel.Builder {
 

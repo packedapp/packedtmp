@@ -1,4 +1,4 @@
-package packed.internal.hooks.bootstrap;
+package packed.internal.hooks2;
 
 import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantLock;

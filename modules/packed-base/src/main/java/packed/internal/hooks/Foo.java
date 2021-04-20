@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hooks.old;
+package packed.internal.hooks;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -26,7 +26,7 @@ import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
-import app.packed.hooks.FieldHook;
+import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
@@ -49,7 +49,7 @@ public class Foo extends BaseAssembly {
 
     @Target({ ElementType.METHOD, ElementType.FIELD })
     @Retention(RUNTIME)
-    @FieldHook(bootstrap = FieldBootstrap.class)
+    @OldFieldHook(bootstrap = FieldBootstrap.class)
     @MethodHook(bootstrap = MethodBootstrap.class, extension = Extension.class)
     public @interface Hej {}
 
@@ -85,7 +85,7 @@ class MethodBootstrap extends RealMethodSidecarBootstrap {
     }
 }
 
-class FieldBootstrap extends FieldHook.Bootstrap {
+class FieldBootstrap extends OldFieldHook.Bootstrap {
 
     static final AtomicLong al = new AtomicLong();
 
@@ -103,7 +103,7 @@ class ClassBootstrap extends ClassHook.Bootstrap {
     protected void bootstrap() {
         System.out.println("CONF");
         System.out.println("----- Fields ------");
-        for (FieldHook.Bootstrap b : fields()) {
+        for (OldFieldHook.Bootstrap b : fields()) {
             System.out.println(b.field());
         }
         System.out.println("----- Methods ------");

@@ -328,7 +328,8 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Collection<Component> children() {
-            return CollectionUtil.unmodifiableView(component.children.values(), c -> c.adaptor());
+            LinkedHashMap<String, ComponentSetup> m = component.children;
+            return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.adaptor());
         }
 
         /** {@inheritDoc} */
@@ -358,8 +359,8 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Optional<Component> parent() {
-            ComponentSetup cc = component.parent;
-            return cc == null ? Optional.empty() : Optional.of(cc.adaptor());
+            ComponentSetup parent = component.parent;
+            return parent == null ? Optional.empty() : Optional.of(parent.adaptor());
         }
 
         /** {@inheritDoc} */
@@ -378,9 +379,9 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Component resolve(CharSequence path) {
-            LinkedHashMap<String, ComponentSetup> c = component.children;
-            if (c != null) {
-                ComponentSetup cs = c.get(path.toString());
+            LinkedHashMap<String, ComponentSetup> map = component.children;
+            if (map != null) {
+                ComponentSetup cs = map.get(path.toString());
                 if (cs != null) {
                     return cs.adaptor();
                 }
@@ -397,7 +398,7 @@ public abstract class ComponentSetup {
         private Stream<Component> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
             @SuppressWarnings({ "unchecked", "rawtypes" })
-            List<ComponentAdaptor> c = (List) children();
+            Collection<ComponentAdaptor> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
                 if (option.processThisDeeper(origin, component)) {
                     Stream<Component> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
