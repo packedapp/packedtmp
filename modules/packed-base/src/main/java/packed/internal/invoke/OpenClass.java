@@ -143,6 +143,9 @@ public final class OpenClass {
         return mh;
     }
 
+    public MethodHandle unreflectConstructor(Constructor<?> constructor) {
+        return unreflectConstructor(constructor, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+    }
     public MethodHandle unreflectConstructor(Constructor<?> constructor, UncheckedThrowableFactory<?> tf) {
         Lookup lookup = lookup(constructor, tf);
 

@@ -26,7 +26,6 @@ import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.OldFieldHook.Bootstrap;
 import app.packed.hooks.accessors.HookProvide;
 import app.packed.state.OnInitialize;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
 public final class FieldHookModel extends AbstractHookModel<OldFieldHook.Bootstrap> {
@@ -81,7 +80,7 @@ public final class FieldHookModel extends AbstractHookModel<OldFieldHook.Bootstr
         protected void onMethod(Method method) {
             HookProvide ap = method.getAnnotation(HookProvide.class);
             if (ap != null) {
-                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
                 if (providing.putIfAbsent(b.key, b) != null) {
                     throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
@@ -93,7 +92,7 @@ public final class FieldHookModel extends AbstractHookModel<OldFieldHook.Bootstr
                 if (onInitialize != null) {
                     throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                 }
-                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method);
                 onInitialize = mh;
             }
         }

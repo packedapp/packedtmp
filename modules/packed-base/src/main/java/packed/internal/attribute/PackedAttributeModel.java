@@ -25,9 +25,8 @@ import java.util.Map.Entry;
 
 import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Nullable;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
-import packed.internal.invoke.OpenClass;
 import packed.internal.invoke.MemberScanner;
+import packed.internal.invoke.OpenClass;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -71,7 +70,7 @@ public class PackedAttributeModel {
             if (ap != null) {
                 PackedAttribute<?> pa = ClassAttributes.find(ap);
                 requireNonNull(pa, "Unknown Attribute " + ap + " on " + classToScan);
-                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method);
                 types.put(pa, new Attt(mh, method.isAnnotationPresent(Nullable.class)));
             }
         }

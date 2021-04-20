@@ -33,7 +33,6 @@ import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ClassSourceSetup;
 import packed.internal.container.ExtensionModel;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.HookedMethodProvide;
@@ -164,7 +163,7 @@ public final class BootstrappedClassModel {
                 if (hook != null) {
                     // We can have more than 1 sidecar attached to a method
                     if (varHandle == null) {
-                        varHandle = oc.unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                        varHandle = oc.unreflectVarHandle(field);
                     }
 
                     UseSiteFieldHookModel.Builder builder = new UseSiteFieldHookModel.Builder(this, hook, field);

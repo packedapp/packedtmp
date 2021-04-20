@@ -27,7 +27,6 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.hooks.OldFieldHook;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -184,7 +183,7 @@ public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
         VarHandle direct() {
             if (varHandle == null) {
-                varHandle = builder.oc.unreflectVarHandle(fieldUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                varHandle = builder.oc.unreflectVarHandle(fieldUnsafe);
             }
             return varHandle;
         }

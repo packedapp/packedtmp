@@ -35,7 +35,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.Service;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.util.MethodHandleUtil;
@@ -73,10 +72,10 @@ class MethodHandleBuilderHelper {
 
         // Setup MethodHandle for constructor or method
         if (e instanceof Constructor<?> con) {
-            executable = oc.unreflectConstructor(con, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            executable = oc.unreflectConstructor(con);
         } else {
             Method m = (Method) e;
-            executable = oc.unreflect(m, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+            executable = oc.unreflect(m);
             isInstanceMethod = !Modifier.isStatic(m.getModifiers());
 
             // If Instance method callsite type must always have the receiver at index 0

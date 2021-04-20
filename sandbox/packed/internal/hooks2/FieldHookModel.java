@@ -33,12 +33,14 @@ public class FieldHookModel implements AnnotatedFieldHookModel {
     @Override
     public void bootstrapAnnotatedField(FieldProcessor builder, Annotation activatingAnnotation) {
         Bootstrap b = new Bootstrap(builder);
-
+        System.out.println(b);
         // invoke runner
     }
 
     public static FieldHookModel of(HookUseType hut, Class<? extends Annotation> annotation, AccessibleFieldHook fh) {
         Class<? extends AccessibleFieldHook.Bootstrap> bootstrapClass = fh.bootstrap();
+        
+        System.out.println(bootstrapClass);
         throw new UnsupportedOperationException();
     }
 

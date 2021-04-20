@@ -30,7 +30,6 @@ import app.packed.hooks.accessors.HookProvide;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.state.OnInitialize;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -115,7 +114,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
         protected void onMethod(Method method) {
             HookProvide ap = method.getAnnotation(HookProvide.class);
             if (ap != null) {
-                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method);
                 HookedMethodProvide.Builder b = new HookedMethodProvide.Builder(method, mh);
                 if (providing.putIfAbsent(b.key, b) != null) {
                     throw new InternalExtensionException("Multiple methods on " + classToScan + " that provide " + b.key);
@@ -127,7 +126,7 @@ public final class MethodHookBootstrapModel extends AbstractHookModel<RealMethod
                 if (onInitialize != null) {
                     throw new IllegalStateException(classToScan + " defines more than one method annotated with " + OnInitialize.class.getSimpleName());
                 }
-                MethodHandle mh = oc.unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                MethodHandle mh = oc.unreflect(method);
                 onInitialize = mh;
             }
         }

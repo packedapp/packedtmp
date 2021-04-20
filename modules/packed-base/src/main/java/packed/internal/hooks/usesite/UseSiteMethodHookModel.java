@@ -28,7 +28,6 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.ComponentSetup;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.hooks.MethodHookBootstrapModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -227,7 +226,7 @@ public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
         MethodHandle direct() {
             if (directMethodHandle == null) {
-                directMethodHandle = source.oc.unreflect(methodUnsafe, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
+                directMethodHandle = source.oc.unreflect(methodUnsafe);
             }
             return directMethodHandle;
         }
