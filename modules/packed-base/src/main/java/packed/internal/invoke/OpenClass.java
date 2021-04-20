@@ -28,8 +28,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
-import packed.internal.errorhandling.UncheckedThrowableFactory;
 import packed.internal.util.NativeImage;
+import packed.internal.util.StringFormatter;
 
 /**
  * An open class is a thin wrapper for a single class and a {@link Lookup} object.
@@ -80,10 +80,26 @@ public final class OpenClass {
             return lookup;
         }
 
+        if (!privateLookupInitialized) {
+            String pckName = type.getPackageName();
+            if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
+                String otherModule = type.getModule().getName();
+                String m = APP_PACKED_BASE_MODULE.getName();
+                throw new InaccessibleMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule
+                        + "' must be open to '" + m + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m
+                        + ";' to the module-info.java file of " + otherModule);
+            }
+            // Should we use lookup.getdeclaringClass???
+            if (!APP_PACKED_BASE_MODULE.canRead(type.getModule())) {
+                APP_PACKED_BASE_MODULE.addReads(type.getModule());
+            }
+            privateLookupInitialized = true;
+        }
+
         // Create and cache a private lookup.
         try {
             // Fjernede lookup... Skal vitterligt have samlet det i en klasse
-            return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /*lookup */);
+            return privateLookup = MethodHandles.privateLookupIn(type, MethodHandles.lookup() /* lookup */);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create private lookup [type=" + type + ", Member = " + member + "]", e);
         }
@@ -98,16 +114,17 @@ public final class OpenClass {
         return type;
     }
 
-    public MethodHandle unreflect(Method method) {
-        return unreflect(method, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-    }
-
     /**
+     * Unreflects the specified method.
+     * 
      * @param method
      *            the method to unreflect
      * @return a method handle for the unreflected method
+     * @throws InaccessibleMemberException
+     *             if the method could not be unreflected
+     * @see Lookup#unreflect(Method)
      */
-    public MethodHandle unreflect(Method method, UncheckedThrowableFactory<?> tf) {
+    public MethodHandle unreflect(Method method) {
         Lookup lookup = lookup(method);
 
         MethodHandle mh;
@@ -124,9 +141,6 @@ public final class OpenClass {
     }
 
     public MethodHandle unreflectConstructor(Constructor<?> constructor) {
-        return unreflectConstructor(constructor, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-    }
-    public MethodHandle unreflectConstructor(Constructor<?> constructor, UncheckedThrowableFactory<?> tf) {
         Lookup lookup = lookup(constructor);
 
         MethodHandle mh;
@@ -141,11 +155,8 @@ public final class OpenClass {
         }
         return mh;
     }
-    public MethodHandle unreflectGetter(Field field) {
-        return unreflectGetter(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-    }
 
-    public MethodHandle unreflectGetter(Field field, UncheckedThrowableFactory<?> tf) {
+    public MethodHandle unreflectGetter(Field field) {
         Lookup lookup = lookup(field);
 
         MethodHandle mh;
@@ -160,11 +171,8 @@ public final class OpenClass {
         }
         return mh;
     }
-    public MethodHandle unreflectSetter(Field field) {
-        return unreflectSetter(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-    }
 
-    public MethodHandle unreflectSetter(Field field, UncheckedThrowableFactory<?> tf) {
+    public MethodHandle unreflectSetter(Field field) {
         Lookup lookup = lookup(field);
 
         MethodHandle mh;
@@ -179,11 +187,8 @@ public final class OpenClass {
         }
         return mh;
     }
-    public VarHandle unreflectVarHandle(Field field) {
-        return unreflectVarHandle(field, UncheckedThrowableFactory.INTERNAL_EXTENSION_EXCEPTION_FACTORY);
-    }
 
-    public <T extends RuntimeException> VarHandle unreflectVarHandle(Field field, UncheckedThrowableFactory<T> tf) {
+    public VarHandle unreflectVarHandle(Field field) {
         Lookup lookup = lookup(field);
 
         VarHandle vh;
@@ -201,8 +206,11 @@ public final class OpenClass {
 
     private static boolean needsPrivateLookup(Member m) {
         // Needs private lookup, unless class is public or protected and member is public
-        int decMod = m.getDeclaringClass().getModifiers();
-        return !((Modifier.isPublic(decMod) || Modifier.isProtected(decMod)) && Modifier.isPublic(m.getModifiers()));
+        // We are comparing against the members declaring class..
+        // We could store boolean isPublicOrProcected in a field.
+        // But do not know how it would work with abstract super classes in other modules...
+        int classModifiers = m.getDeclaringClass().getModifiers();
+        return !((Modifier.isPublic(classModifiers) || Modifier.isProtected(classModifiers)) && Modifier.isPublic(m.getModifiers()));
     }
 
     public static OpenClass of(MethodHandles.Lookup lookup, Class<?> clazz) {
