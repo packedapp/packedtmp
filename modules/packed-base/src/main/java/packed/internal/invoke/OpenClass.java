@@ -81,7 +81,13 @@ public final class OpenClass {
         }
 
         if (!privateLookupInitialized) {
-            checkPackageOpen(tf);
+            String pckName = type.getPackageName();
+            if (!type.getModule().isOpen(pckName, APP_PACKED_BASE_MODULE)) {
+                String otherModule = type.getModule().getName();
+                String m = APP_PACKED_BASE_MODULE.getName();
+                throw new InaccessibleMemberException("In order to access '" + StringFormatter.format(type) + "', the module '" + otherModule + "' must be open to '" + m
+                        + "'. This can be done, for example, by adding 'opens " + pckName + " to " + m + ";' to the module-info.java file of " + otherModule);
+            }
             // Should we use lookup.getdeclaringClass???
             if (!APP_PACKED_BASE_MODULE.canRead(type.getModule())) {
                 APP_PACKED_BASE_MODULE.addReads(type.getModule());
