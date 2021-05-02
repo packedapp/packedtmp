@@ -1,12 +1,16 @@
 package app.packed.component;
 
+/**
+ *
+ */
 @FunctionalInterface
 public interface ComposerConfigurator<T extends Composer<?>> {
 
     /**
-     * Performs this operation on the given argument.
+     * Configures the given composer.
      *
-     * @param t the input argument
+     * @param t
+     *            the composer that is to be configured
      */
     void configure(T t);
 }

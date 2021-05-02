@@ -38,7 +38,7 @@ import packed.internal.util.ThrowableUtil;
 /** Represents the use site of a field hook. */
 public final class UseSiteFieldHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link OldFieldHook.Bootstrap#model}. */
+    /** A MethodHandle that can invoke {@link OldFieldHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldFieldHook.Bootstrap.class, "bootstrap",
             void.class);
 

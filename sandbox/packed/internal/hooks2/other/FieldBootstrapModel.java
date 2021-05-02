@@ -1,4 +1,4 @@
-package packed.internal.hooks2;
+package packed.internal.hooks2.other;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -20,7 +20,7 @@ public record FieldBootstrapModel(MethodHandle constructor) {
     /** A lock used for making sure that we only load one extension (and its dependencies) at a time. */
     private static final ReentrantLock GLOBAL_LOCK = new ReentrantLock();
 
-    /** A MethodHandle that can invoke {@link OldFieldHook.Bootstrap#model}. */
+    /** A MethodHandle that can invoke {@link OldFieldHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_FIELD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), OldFieldHook.Bootstrap.class, "bootstrap",
             void.class);
 

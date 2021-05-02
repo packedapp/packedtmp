@@ -28,7 +28,7 @@ import packed.internal.util.MethodHandleUtil;
 public final /* primitive */ class ConstantPool {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    private static final MethodHandle MH_CONSTANT_POOL_READ = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
+    private static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
     private final Object[] objects;
 
@@ -64,8 +64,15 @@ public final /* primitive */ class ConstantPool {
         return "ConstantPool [size = " + objects.length + "]";
     }
 
-    public static MethodHandle indexedReader(int index, Class<?> as) {
-        MethodHandle mh = MethodHandleUtil.bind(MH_CONSTANT_POOL_READ, 1, index);
-        return MethodHandleUtil.castReturnType(mh, as);
+    /**
+     * @param index
+     *            the index of the object to read
+     * @param getAs
+     *            the type of object to read
+     * @return a method handle that will an object of the specified type for the specified index
+     */
+    public static MethodHandle indexedReader(int index, Class<?> getAs) {
+        MethodHandle mh = MethodHandleUtil.bind(MH_CONSTANT_POOL_READER, 1, index);
+        return MethodHandleUtil.castReturnType(mh, getAs);
     }
 }

@@ -74,7 +74,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private PackedApplicationDriver(Builder builder) {
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.modifiers = builder.modifiers;
-        this.launchMode = requireNonNull(builder.launchMode);
+        this.launchMode = builder.launchMode == null ? RunState.INITIALIZED : builder.launchMode;
         this.wirelet = builder.wirelet;
     }
 
@@ -108,7 +108,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public Class<?> artifactRawType() {
         return mhConstructor.type().returnType();
     }
-    
+
     /**
      * @param assembly
      *            the root assembly
@@ -141,7 +141,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         return realm.build;
     }
-    
+
     /** {@inheritDoc} */
     @Override
     public <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> consumer, Wirelet... wirelets) {
@@ -168,6 +168,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         // Launch the application
         return ApplicationLaunchContext.launch(this, realm.build.application, null);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isRunnable() {
+        return (modifiers & PackedComponentModifierSet.I_RUNTIME) != 0;
     }
 
     /** {@inheritDoc} */
@@ -209,6 +215,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return new PackedApplicationImage<>(this, build.application);
     }
 
+    @Override
+    public Class<?> type() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public ApplicationDriver<A> with(Wirelet... wirelets) {
@@ -247,7 +258,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         /** The modifiers of the application. We have a runtime modifier by default. */
         private int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
 
-
         private Wirelet wirelet;
 
         /** {@inheritDoc} */
@@ -259,7 +269,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
-            if ((modifiers & PackedComponentModifierSet.I_RUNTIME) != 0) { // Conditional add ApplicationRuntime
+            if (isRunnable()) { // Conditional add ApplicationRuntime
                 builder.provide(ApplicationRuntime.class).invokeExact(MH_RUNTIME, 0);
             }
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
@@ -277,11 +287,17 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
+        boolean isRunnable() {
+            return (modifiers & PackedComponentModifierSet.I_RUNTIME) != 0;
+        }
+
         /** {@inheritDoc} */
         @Override
         public Builder launchMode(RunState launchMode) {
             requireNonNull(launchMode, "launchMode is null");
-            if (launchMode == RunState.INITIALIZING) {
+            if (!isRunnable()) {
+                throw new IllegalStateException("A launch mode can only be set for runnable applications");
+            } else if (launchMode == RunState.INITIALIZING) {
                 throw new IllegalArgumentException("Cannot specify '" + RunState.INITIALIZING + "'");
             }
             this.launchMode = launchMode;
@@ -290,16 +306,19 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            return new PackedApplicationDriver<>(this);
+        public Builder nonRunnable() {
+            if (launchMode != null) {
+                throw new IllegalStateException("This method cannot be called when a launch mode has been set");
+            }
+            modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
+            return this;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Builder stateless() {
-            modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
-            return this;
+        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+            return new PackedApplicationDriver<>(this);
         }
     }
 

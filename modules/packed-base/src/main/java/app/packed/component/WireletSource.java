@@ -21,20 +21,26 @@ import packed.internal.component.PackedWireletSource;
  */
 public /* sealed */ interface WireletSource<W extends Wirelet> {
 
-    /** {@return every unconsumed wirelet in this source as a list, consuming each wirelet in the process} */
+    /** {@return every wirelet in this source as a list, consuming each wirelet in the process.} */
     default List<W> all() {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Performs the given action for each wirelet in the source, consuming each wirelet in the process.
+     * 
+     * @param action
+     *            the action to perform
+     * @see Iterable#forEach(Consumer)
+     * 
+     * @see #peekEach(Consumer)
+     */
     void forEach(Consumer<? super W> action);
 
-    /** {@return the number of unconsumed wirelets} */
-
-    /**
-     * {@return whether or not this source contains any unconsumed matching wirelets. Consuming each wirelet in the process}
-     */
+    /** {@return whether or not this source contains any unconsumed wirelets. Consuming each wirelet in the process} */
     boolean isEmpty();
 
+    /** {@return the last wirelet in the source (if any). Consuming each wirelet in the process} */
     Optional<W> last();
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
@@ -54,10 +60,10 @@ public /* sealed */ interface WireletSource<W extends Wirelet> {
     int size();
 
     /**
-     * Returns a wirelet source with no wirelets to consume
+     * Returns an immutable wirelet source containing no wirelets.
      * 
      * @param <E>
-     *            the {@code WireletSource}'s element type
+     *            the {@code WireletSource}'s wirelet type
      * @return an empty wirelet source
      */
     @SuppressWarnings("unchecked")

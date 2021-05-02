@@ -86,8 +86,8 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver, ComposerConfigurator<? /* extends Composer<?> */> composer,
-            Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver,
+            ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, 0, wirelets);
         this.root = build.container;

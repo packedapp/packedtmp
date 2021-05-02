@@ -91,6 +91,17 @@ public final class ApplicationWirelets {
     }
 
     // excludes start?? IDK
+    /**
+     * <p>
+     * This wirelet can only be used with runnable applications. Attempts to use it with a non-runnable application will
+     * fail with {@link ApplicationNotRunnableException}.
+     * 
+     * @param duration
+     *            the duration
+     * @param options
+     * @return
+     * 
+     */
     public static Wirelet timeToRun(Duration duration, ApplicationRuntime.StopOption... options) {
         // can make a timeToLive() <-- which includes start
         throw new UnsupportedOperationException();

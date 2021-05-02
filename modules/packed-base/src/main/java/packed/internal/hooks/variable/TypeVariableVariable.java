@@ -39,14 +39,12 @@ public final class TypeVariableVariable extends AbstractVariable {
 
     /** {@inheritDoc} */
     @Override
+    public Class<?> getType() {
+        return p.getGenericDeclaration().getClass();
+    }
+    
     public Optional<String> name() {
         return Optional.of(p.getName());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Class<?> rawType() {
-        return p.getGenericDeclaration().getClass();
     }
 
     /** {@inheritDoc} */

@@ -53,8 +53,8 @@ abstract class RealmAccessor {
     };
 
     private Lookup lookup() {
-        if (this instanceof ModuleLookupAccessor mla) {
-            return mla.lookup;
+        if (this instanceof ModuleLookupAccessor lookupAccessor) {
+            return lookupAccessor.lookup;
         } else {
             return ((ModuleOpenedAccessor) this).lookup();
         }

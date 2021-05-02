@@ -357,6 +357,15 @@ public abstract class Extension {
 
     protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
+    /**
+     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension, network extension
+     * <p>
+     * If only certain cirkus stances use checkRunnableApplication()
+     */
+    protected static void $requiresRunnableApplication() {
+        //
+    }
+
     protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
         throw new Error();
     }

@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import app.packed.base.InaccessibleMemberException;
-import packed.internal.util.NativeImage;
 import packed.internal.util.StringFormatter;
 
 /**
@@ -52,16 +51,12 @@ public final class OpenClass {
     /** Whether or not the private lookup has been initialized. */
     private boolean privateLookupInitialized;
 
-    /** Whether or not every unreflected action results in the member being registered for native image generation. */
-    private final boolean registerForNative;
-
     /** The class that is wrapped. */
     private final Class<?> type;
 
-    private OpenClass(MethodHandles.Lookup lookup, Class<?> clazz, boolean registerForNative) {
+    private OpenClass(MethodHandles.Lookup lookup, Class<?> clazz) {
         this.lookup = requireNonNull(lookup);
         this.type = requireNonNull(clazz);
-        this.registerForNative = registerForNative;
     }
 
     private Lookup lookup(Member member) {
@@ -127,81 +122,51 @@ public final class OpenClass {
     public MethodHandle unreflect(Method method) {
         Lookup lookup = lookup(method);
 
-        MethodHandle mh;
         try {
-            mh = lookup.unreflect(method);
+            return lookup.unreflect(method);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("stuff", e);
         }
-
-        if (registerForNative) {
-            NativeImage.register(method);
-        }
-        return mh;
     }
 
     public MethodHandle unreflectConstructor(Constructor<?> constructor) {
         Lookup lookup = lookup(constructor);
 
-        MethodHandle mh;
         try {
-            mh = lookup.unreflectConstructor(constructor);
+            return lookup.unreflectConstructor(constructor);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
-
-        if (registerForNative) {
-            NativeImage.register(constructor);
-        }
-        return mh;
     }
 
     public MethodHandle unreflectGetter(Field field) {
         Lookup lookup = lookup(field);
 
-        MethodHandle mh;
         try {
-            mh = lookup.unreflectGetter(field);
+            return lookup.unreflectGetter(field);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
-
-        if (registerForNative) {
-            NativeImage.registerField(field);
-        }
-        return mh;
     }
 
     public MethodHandle unreflectSetter(Field field) {
         Lookup lookup = lookup(field);
 
-        MethodHandle mh;
         try {
-            mh = lookup.unreflectSetter(field);
+            return lookup.unreflectSetter(field);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create a MethodHandle", e);
         }
-
-        if (registerForNative) {
-            NativeImage.registerField(field);
-        }
-        return mh;
     }
 
     public VarHandle unreflectVarHandle(Field field) {
         Lookup lookup = lookup(field);
 
-        VarHandle vh;
         try {
-            vh = lookup.unreflectVarHandle(field);
+            return lookup.unreflectVarHandle(field);
         } catch (IllegalAccessException e) {
             throw new InaccessibleMemberException("Could not create a VarHandle", e);
         }
-
-        if (registerForNative) {
-            NativeImage.registerField(field);
-        }
-        return vh;
     }
 
     private static boolean needsPrivateLookup(Member m) {
@@ -214,7 +179,7 @@ public final class OpenClass {
     }
 
     public static OpenClass of(MethodHandles.Lookup lookup, Class<?> clazz) {
-        return new OpenClass(lookup, clazz, true);
+        return new OpenClass(lookup, clazz);
     }
 }
 

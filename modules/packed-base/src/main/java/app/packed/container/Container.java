@@ -8,7 +8,8 @@ import app.packed.base.NamespacePath;
 import app.packed.component.Component;
 
 /**
- * A container is cool
+ * Represents
+ * Containers are the main unit of modularity in Packed.
  */
 public interface Container {
 
@@ -34,6 +35,6 @@ public interface Container {
     /** {@return the parent container of this container. Or empty if this container has no parent} */
     Optional<Container> parent();
 
-    /** {@return the path of this container} */
+    /** {@return the path of this container in relation to other containers} */
     NamespacePath path();
 }

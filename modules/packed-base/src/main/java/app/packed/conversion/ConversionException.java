@@ -16,6 +16,7 @@
 package app.packed.conversion;
 
 /** An exception indicating the failure of an object conversion. */
+
 public class ConversionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
@@ -47,3 +48,6 @@ public class ConversionException extends RuntimeException {
         super(message, cause);
     }
 }
+//https://github.com/eclipse/ConfigJSR/blob/master/spec/src/main/asciidoc/converters.asciidoc
+//https://github.com/eclipse-ee4j/jaxrs-api/blob/master/jaxrs-spec/src/main/asciidoc/chapters/resources/_resource_field.adoc#fields-and-bean-properties
+//https://github.com/eclipse-ee4j/jaxrs-api/issues/879

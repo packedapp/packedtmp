@@ -78,6 +78,33 @@ public final class TypeUtil {
         }
     }
 
+    public static boolean isFreeFromWildcarVariables(Type type) {
+        requireNonNull(type, "type is null");
+        if (type instanceof Class<?>) {
+            return true;
+        } else if (type instanceof ParameterizedType pt) {
+            if (pt.getOwnerType() != null && !isFreeFromWildcarVariables(pt.getOwnerType())) {
+                return false;
+            }
+            for (Type t : pt.getActualTypeArguments()) {
+                if (!isFreeFromWildcarVariables(t)) {
+                    return false;
+                }
+            }
+            // To be safe we check the raw type as well, I expect it should always be a class, but the method signature says
+            // something else
+            return isFreeFromWildcarVariables(pt.getRawType());
+        } else if (type instanceof GenericArrayType gat) {
+            return isFreeFromTypeVariables(gat.getGenericComponentType());
+        } else if (type instanceof TypeVariable) {
+            throw new UnsupportedOperationException();
+        } else if (type instanceof WildcardType wt) {
+            return false;
+        } else {
+            throw new IllegalArgumentException("Unknown type: " + type);
+        }
+    }
+
     /**
      * Finds the raw class type for the specified type
      *
@@ -116,7 +143,6 @@ public final class TypeUtil {
         typeVariableNamesOf0(addTo, type);
         return addTo;
     }
-
 
     /**
      * Helper method for {@link #typeVariableNamesOf(Type)}.

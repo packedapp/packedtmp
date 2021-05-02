@@ -37,6 +37,7 @@ public final class ApplicationSetup {
     public final PackedApplicationDriver<?> driver;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+
     /**
      * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
      * build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
@@ -64,7 +65,8 @@ public final class ApplicationSetup {
         this.launchMode = requireNonNull(driver.launchMode());
         this.container = containerDriver.newComponent(this, realm, null, wirelets);
         this.modifiers = modifiers;
-        // Setup Runtime
+
+        // Setup Runtime if needed
         if (container.modifiers().hasRuntime()) {
             runtimePoolIndex = constantPool.reserveObject(); // reserve a slot to an instance of PackedApplicationRuntime
         } else {
@@ -74,7 +76,7 @@ public final class ApplicationSetup {
 
     /** {@return an application adaptor that can be exposed to end-users} */
     public Application adaptor() {
-        return new Adaptor(this);
+        return new ApplicationAdaptor(this);
     }
 
     public boolean hasMain() {
@@ -118,12 +120,14 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         protected void onBuild(ComponentSetup component) {
-            checkIsApplication(component).launchMode = launchMode;
+            // TODO we probably need to check that it is launchable
+            checkIsApplication(component).launchMode = launchMode; // override any existing launch mode
         }
 
         /** {@inheritDoc} */
         @Override
         public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext launch) {
+            // TODO we probably need to check that it is launchable
             launch.launchMode = launchMode;
         }
     }
@@ -141,7 +145,7 @@ public final class ApplicationSetup {
     }
 
     /** An adaptor of {@link ApplicationSetup} exposed as {@link Application}. */
-    private /* primitive */ record Adaptor(ApplicationSetup application) implements Application {
+    private /* primitive */ record ApplicationAdaptor(ApplicationSetup application) implements Application {
 
         /** {@inheritDoc} */
         @Override
@@ -171,6 +175,12 @@ public final class ApplicationSetup {
         @Override
         public Optional<Application> parent() {
             return Optional.empty();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean isRunnable() {
+            return application.driver.isRunnable();
         }
     }
 }

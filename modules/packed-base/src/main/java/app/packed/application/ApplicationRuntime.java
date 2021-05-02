@@ -29,6 +29,8 @@ import app.packed.state.RunStateInfo;
 // It is not 100 % clean because of restarting... IDK about that
 
 /**
+ * An application runtime is available for all runnable applications.
+ * 
  * A component instance.
  */
 // Restarting a guest actually means terminated an existing guest instance. And starting a new one.

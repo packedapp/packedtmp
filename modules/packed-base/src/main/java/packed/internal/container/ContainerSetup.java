@@ -293,7 +293,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         return (T) useExtension(extensionClass, null).extensionInstance();
     }
 
-    /** A Container adaptor. */
+    /** An adaptor for the Container interface. */
     record ContainerAdaptor(ContainerSetup container) implements Container {
 
         /** {@inheritDoc} */
@@ -314,6 +314,7 @@ public final class ContainerSetup extends WireableComponentSetup {
             return container.adaptor();
         }
 
+        /** {@inheritDoc} */
         @Override
         public Collection<Container> children() {
             return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.containerAdaptor());

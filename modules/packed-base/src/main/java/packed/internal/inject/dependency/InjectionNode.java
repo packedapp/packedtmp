@@ -162,6 +162,7 @@ public final class InjectionNode implements PoolWriteable {
         // guarantee that all dependencies have already been visited
         if (poolIndex() > -1) {
             pool.addOrdered(this);
+            pool.postProcessing.add(() -> buildMethodHandle());
         }
         needsPostProcessing = false;
 
@@ -202,6 +203,7 @@ public final class InjectionNode implements PoolWriteable {
     }
 
     public void resolve(ServiceManagerSetup sbm) {
+        boolean buildMH = true;
         for (int i = 0; i < dependencies.size(); i++) {
             int providerIndex = i + providerDelta;
             if (providers[providerIndex] == null) {
@@ -222,7 +224,15 @@ public final class InjectionNode implements PoolWriteable {
                     sbm.dependencies().recordResolvedDependency(this, i, sd, e, false);
                 }
                 providers[providerIndex] = e;
+
+                if (e == null) {
+                    buildMH = false;
+                }
             }
+        }
+        // Den er lidt her midlertidigt...
+        if (buildMH) {
+            buildMethodHandle();
         }
     }
 

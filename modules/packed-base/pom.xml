@@ -26,8 +26,29 @@
       <artifactId>assertj-core</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy</artifactId>
+      <version>1.11.0</version>
+    <scope>test</scope>
+</dependency>
   </dependencies>
-  
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>app.packed.cli.HelloWorld</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+     
  <profiles>
  <!-- https://stackoverflow.com/questions/44910155/maven-invoker-plugin-not-detecting-failed-test --> 
    <profile>

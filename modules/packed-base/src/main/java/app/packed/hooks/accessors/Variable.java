@@ -17,7 +17,6 @@ package app.packed.hooks.accessors;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -30,6 +29,8 @@ import packed.internal.hooks.variable.FieldVariable;
 import packed.internal.hooks.variable.ParameterVariable;
 
 /**
+ * In Packed a variable (this interface) represents an annotated type of some kind This interface represents a variable of some kind, for example, a {@link Field}, Pa 
+ * 
  * {@code AnnotatedVariable} represents a type and an annotated element. A variable is simple wrapper around a
  * {@link TypeToken} and an {@link AnnotatedElement}. A variable is typically constructed from a {@link Field},
  * {@link Parameter}, {@link TypeVariable} or the return type of a {@link Method}. But it can also be synthetically
@@ -46,61 +47,32 @@ import packed.internal.hooks.variable.ParameterVariable;
 
 // tror vi bliver noedt til at have specielle metoder for repeatable annotations
 
+// Syntes vi navngiver den som .
+
+/**
+ *
+ * @apiNote this interface retains the naming where possible from {@link Field}, {@link Parameter} and
+ *          {@link TypeVariable}
+ */
 public interface Variable extends AnnotatedElement {
-
-    // Variable addNullable(); intoOptional()
-    // lots of little transformations
-
-    /**
-     * Returns the name of the variable if available.
-     * <p>
-     * This method should mainly be used for informational or debug purposes.
-     * 
-     * @return the name of the variable, or empty if the variable does not have a name
-     * @see #withName(String)
-     * @see #withoutName()
-     */
-    Optional<String> name();
 
     /**
      * Returns the raw type (Class) of the variable.
      * 
      * @return the raw type of the variable
+     * 
+     * @see Field#getType()
+     * @see Parameter#getType()
+     * @see TypeVariable#get
      */
-    Class<?> rawType();
-
-    default Optional<?> source() {
-        // I'm not sure that we want that
-        // Parameter, Field, Method (return type), Type Variable
-        return Optional.empty();
-    }
+    Class<?> getType();
 
     TypeToken<?> typeToken();
 
-    default Variable withName(String name) {
-        return this;
-    }
-
-    // How do we handle repeatable annotations?
-    default Variable withAnnotation(Annotation annotation) {
-        return this;
-    }
-
-    default Variable withoutAnnotation(Annotation annotation) {
-        return this;
-    }
-
-    /**
-     * Returns a variable without a name
-     * 
-     * @return the nameless variable
-     */
-    default Variable withoutName() {
-        return this;
-    }
 
     /**
      * Returns a variable from the specified field.
+     * <p>
      * 
      * @param field
      *            the field to return a variable from
@@ -143,6 +115,54 @@ public interface Variable extends AnnotatedElement {
     }
 }
 
+
+interface VariableRejected {
+
+    // Nope via InjectionSite
+    default Optional<?> source() {
+        // I'm not sure that we want that
+        // Parameter, Field, Method (return type), Type Variable
+        return Optional.empty();
+    }
+
+}
+
+//// Variable addNullable(); intoOptional()
+//// lots of little transformations
+//
+///**
+// * Returns the name of the variable if available.
+// * <p>
+// * This method should mainly be used for informational or debug purposes.
+// * 
+// * @return the name of the variable, or empty if the variable does not have a name
+// * 
+// * @see Field#getName()
+// * @see Parameter#getName()
+// */
+//Optional<String> name();
+
+//default Variable withName(String name) {
+//  return this;
+//}
+//
+//// How do we handle repeatable annotations?
+//default Variable withAnnotation(Annotation annotation) {
+//  return this;
+//}
+//
+//default Variable withoutAnnotation(Annotation annotation) {
+//  return this;
+//}
+//
+///**
+//* Returns a variable without a name
+//* 
+//* @return the nameless variable
+//*/
+//default Variable withoutName() {
+//  return this;
+//}
 ///**
 // * Returns whether or not a {@link Nullable} annotation is present on the variable.
 // * 

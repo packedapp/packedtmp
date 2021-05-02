@@ -27,6 +27,16 @@ public class InfuserTester {
     }
 
     public static void main(String[] args) throws Throwable {
+            ClassValue<String> cv = new ClassValue<String>() {
+
+                @Override
+                protected String computeValue(Class<?> type) {
+                    // TODO Auto-generated method stub
+                    return null;
+                }
+            };
+            System.out.println(cv.get(String.class));
+        
         Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), InfuserTester.class, String.class, Secret.class);
         builder.provide(IntStream.class).invokeExact(MH_INT_STREAM_CHARS, 0);
         builder.provideHidden(Secret.class).adaptArgument(1);

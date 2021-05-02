@@ -39,15 +39,13 @@ public final class ParameterVariable extends AbstractVariable {
         this.p = requireNonNull(e);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Optional<String> name() {
         return Optional.of(p.getName());
     }
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> rawType() {
+    public Class<?> getType() {
         return p.getType();
     }
 

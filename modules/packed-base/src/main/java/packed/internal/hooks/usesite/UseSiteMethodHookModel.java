@@ -40,7 +40,7 @@ import packed.internal.util.ThrowableUtil;
  */
 public final class UseSiteMethodHookModel extends UseSiteMemberHookModel {
 
-    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#model}. */
+    /** A MethodHandle that can invoke {@link MethodHook.Bootstrap#bootstrap}. */
     private static final MethodHandle MH_METHOD_HOOK_BOOTSTRAP = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), MethodHook.Bootstrap.class,
             "bootstrap", void.class);
 

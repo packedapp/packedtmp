@@ -39,18 +39,21 @@ import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
 
 /**
- * Application drivers are responsible for analyzing and controlling the various lifecycle phases an application goes
- * through.
+ * Application drivers are responsible for building and instantiating applications.
  * <p>
- * Packed comes with a number of predefined application drivers If these are not sufficient, your best bet is to look at
- * the source code of them to create your own.
+ * Packed comes with a number of predefined application drivers:
  * 
+ * 
+ * <p>
+ * If these are not sufficient, it is very easy to build your own.
+ * 
+ * Which is probably your best bet is to look at the source code of them to create your own.
  * <p>
  * This class can be used to create custom artifact types if the built-in artifact types such as {@link Program} and
  * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link Program} and
  * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
- * Normally, you would never create more than a single instance of an application driver.
+ * Normally, you will never need create more than a single instance of an application driver.
  * 
  * @param <A>
  *            the type of application interface this driver creates.
@@ -63,7 +66,7 @@ import packed.internal.application.PackedApplicationDriver;
 public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */ {
 
     /**
-     * Builds the applications and returns an object that can be used for further analysis.
+     * Builds an application(s) and returns a build object that can be used for further analysis.
      * 
      * @param assembly
      *            the main assembly of the application
@@ -74,39 +77,38 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     Build analyze(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
-     * Create an application using the specified consumer and configurator.
+     * Create a new application instance by using the specified consumer and configurator.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
      * {@link ServiceLocator#of(Consumer)}.
      * 
      * @param <C>
-     *            the type of composer that is exposed to the user
+     *            the type of composer that is exposed to the end-user
      * @param composer
      *            the composer
      * @param configurator
-     *            the consumer specified by the end user for configuration
+     *            the configurator specified by the end-user for configuring the composer
      * @param wirelets
      *            optional wirelets
-     * @return the launched application instance
+     * @return the new application instance
      * 
      * @see Composer
      * @see ServiceComposer
      * @see ServiceLocator#of(Consumer)
      */
-    // Create a configurator class???
     <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> configurator, Wirelet... wirelets);
 
-    default Class<?> instanceClass() {
-        throw new UnsupportedOperationException();
-    }
-
-    default TypeToken<? super A> instanceTypeToken() {
-        // What if Job<?>
-        throw new UnsupportedOperationException();
-    }
+    /**
+     * Returns whether or not the applications produced by this driver are runnable.
+     * <p>
+     * Applications that are not runnable will always be launched in the Initial state.
+     * 
+     * @return whether or not the applications produced by this driver are runnable
+     */
+    boolean isRunnable();
 
     /**
-     * Launches a new application using the specified assembly and optional wirelets.
+     * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
      * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
@@ -126,12 +128,14 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * @see App#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */
-    A launch(Assembly<?> assembly, Wirelet... wirelets);
+    A launch(Assembly<?> assembly, Wirelet... wirelets); // newInstance
 
     /**
      * Returns the launch mode of applications's created by this driver.
      * <p>
      * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(RunState)}.
+     * <p>
+     * Applications that are not runnable will always return {@link RunState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
@@ -168,7 +172,26 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
         });
     }
 
+    /** {@return the type (class or interface) of the application (instance).} */
+    Class<?> type();
+
     /**
+     * Augment the application driver with the specified wirelets, that will be processed when building or instantiating new
+     * applications.
+     * <p>
+     * For example, to : <pre> {@code
+     * ApplicationDriver<App> driver = App.driver();
+     * driver = driver.with(ApplicationWirelets.timeToRun(2, TimeUnit.MINUTES));
+     * }</pre>
+     * 
+     * ApplicationW
+     * <p>
+     * This method will make no attempt of validating the specified wirelets.
+     * 
+     * <p>
+     * Wirelets that were specified when creating the driver, or through previous invocation of this method. Will be
+     * processed before the specified wirelets.
+     * 
      * @param wirelets
      *            the wirelets to add
      * @return the new application driver
@@ -178,7 +201,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     /**
      * Returns a new {@code ApplicationDriver} builder.
      *
-     * @return a application driver builder
+     * @return the new builder
      */
     public static Builder builder() {
         return new PackedApplicationDriver.Builder();
@@ -211,7 +234,18 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
 
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
 
+        /**
+         * @param launchMode
+         * @return
+         */
         Builder launchMode(RunState launchMode);
+
+        /**
+         * Indicates that the any application create by this driver is not runnable.
+         * 
+         * @return this builder
+         */
+        Builder nonRunnable(); // or notRunnable() (it was this originally)
 
         <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets);
         // Maybe just look for matching method/field hooks???
@@ -222,13 +256,6 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
         default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
             throw new UnsupportedOperationException();
         }
-
-        /**
-         * Indicates that the applications the driver produces are stateless. Stateless applications will not have a runtime
-         * 
-         * @return this builder
-         */
-        Builder stateless();
 
 //        /**
 //         * Will look for annotations
@@ -327,6 +354,11 @@ interface ApplicationDriverSandbox<A> {
         throw new UnsupportedOperationException();
     }
 
+    default TypeToken<? super A> instanceTypeToken() {
+        // What if Job<?>
+        throw new UnsupportedOperationException();
+    }
+
     default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
         throw new UnsupportedOperationException();
     }
@@ -339,10 +371,6 @@ interface ApplicationDriverSandbox<A> {
 
         // Her er ihvertfald noget der skal kunne konfigureres
         throw new UnsupportedOperationException();
-    }
-
-    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
-
     }
 
     // Structure record(Application, Component, Strea
@@ -362,6 +390,10 @@ interface ApplicationDriverSandbox<A> {
     // Ideen er at man kan smide checked exceptions...
     // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
 
+    default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
+
+    }
+
     Validation validate(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
@@ -374,8 +406,17 @@ interface ApplicationDriverSandbox<A> {
      *            the wirelet to append
      * @return the new application driver
      */
+    // Altsaa den her metoder bliver bare ikke brugt ofte nok, til at vi behoever have begge
     ApplicationDriver<A> with(Wirelet wirelet);
 
+    // Will fail if non-runnable
+    /**
+     * @param launchMode
+     * @return
+     * @throws UnsupportedOperationException
+     *             if the driver produces non-runnable applications.
+     */
+    ApplicationDriver<A> withLaunchMode(RunState launchMode);
 }
 
 /**

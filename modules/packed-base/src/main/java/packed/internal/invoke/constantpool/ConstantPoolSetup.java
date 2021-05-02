@@ -31,11 +31,14 @@ public final class ConstantPoolSetup {
     /** The size of the pool. */
     private int size;
 
+    public final ArrayList<Runnable> postProcessing = new ArrayList<>();
+
     public void addConstant(PoolWriteable s) {
         entries.add(s);
     }
 
     public void addOrdered(PoolWriteable c) {
+        // new Exception().printStackTrace();
         // We just keep both these 2 method that does the same for now
         entries.add(c);
     }

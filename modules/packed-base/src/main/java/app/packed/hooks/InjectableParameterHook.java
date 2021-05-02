@@ -23,7 +23,7 @@ public @interface InjectableParameterHook {
         }
         
         public final Type parameterizedType() {
-            throw new UnsupportedOperationException();
+            return getParameter().getParameterizedType();
         }
 
         protected static final void $supportVarArgs() {

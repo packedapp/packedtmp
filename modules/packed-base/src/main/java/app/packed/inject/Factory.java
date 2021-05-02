@@ -479,6 +479,9 @@ public abstract class Factory<T> {
     // Vi skal have en hel section omkring method handlers.
     // Lookup object paa et factory. Kan bruges til alle metoder....Ikke kun dem med inject
     // Giver ikke mening andet...
+
+    // open(Lookup)
+    // openResult(Lookup) <---- maaske er den baa en 
     public final Factory<T> withLookup(MethodHandles.Lookup lookup) {
         requireNonNull(lookup, "lookup is null");
         if (this instanceof ExecutableFactory || this instanceof FieldFactory) {

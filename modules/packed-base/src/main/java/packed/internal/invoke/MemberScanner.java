@@ -120,6 +120,11 @@ public abstract class MemberScanner {
      *            invoked with an error message if something goes wrong
      * @return the constructor
      */
+    // Taenker vi skal have en exception der specifikt naevner noget med constructor
+    // NoConstructorExtension
+    // InjectableConstructorMissingException
+    // MissingInjectableConstructorException
+    // ConstructorInjectionException (lyder mere som noget vi ville smide naar vi instantiere det
     public static Constructor<?> getConstructor(Class<?> clazz, boolean allowInjectAnnotation, Function<String, RuntimeException> errorMaker) {
         if (clazz.isAnnotation()) { // must be checked before isInterface
             String errorMsg = format(clazz) + " is an annotation and cannot be instantiated";

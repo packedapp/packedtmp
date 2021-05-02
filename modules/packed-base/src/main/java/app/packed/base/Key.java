@@ -198,11 +198,7 @@ public abstract class Key<T> {
         return false;
     }
 
-    /**
-     * Returns whether or not this key has any qualifiers.
-     * 
-     * @return whether or not this key has any qualifiers
-     */
+    /** {@return whether or not this key has any qualifiers.} */
     public final boolean hasQualifiers() {
         return qualifiers != null;
     }
@@ -219,42 +215,16 @@ public abstract class Key<T> {
         return qualifiers == null && typeToken.type() == c;
     }
 
-    // Tror vi dropper det her concept...
-    // Vi brugte den i forbindelse med ServiceSelection.
-    // Men nu bruger vi bare type token...
-    final boolean isSuperKeyOf(Key<?> key) {
-        requireNonNull(key, "key is null");
-        if (!typeToken.equals(key.typeToken)) {
-            return false;
-        }
-        if (qualifiers != null) {
-            for (Annotation a : qualifiers) {
-                if (!key.hasQualifier(a)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Returns a set of any qualifiers that are present on the key.
-     * 
-     * @return a set of any qualifiers that are present on the key
-     */
+    /** {@return an immutable set of any qualifiers that are part of this key.} */
     public final Set<Annotation> qualifiers() {
         return qualifiers == null ? Set.of() : Set.of(qualifiers);
     }
 
-    /**
-     * Returns the raw type of the key.
-     * 
-     * @return the raw type of the key
-     */
+    /** {@return the raw type of the key} */
     public final Class<?> rawType() {
         return typeToken.rawType();
     }
-    
+
     public boolean isAccessibleBy(Module module) {
         // All type List<Foo> Foo must also be accessible by the target
         throw new UnsupportedOperationException();
@@ -284,11 +254,7 @@ public abstract class Key<T> {
         return formatSimple(qualifiers[0]) + " " + typeToken.toStringSimple();
     }
 
-    /**
-     * Returns the generic type of this key.
-     * 
-     * @return the generic type of this key
-     */
+    /** {@return the generic type of this key.} */
     public final TypeToken<T> typeToken() {
         return typeToken;
     }
@@ -416,7 +382,7 @@ public abstract class Key<T> {
         Annotation[] annotation = QualifierUtil.findQualifier(field.getAnnotations());
         return convertTypeLiteralNullableAnnotation(field, tl, annotation);
     }
-    
+
     public static Key<?> convertParameter(Parameter parameter) {
         throw new UnsupportedOperationException();
     }
@@ -527,7 +493,7 @@ public abstract class Key<T> {
      *            the type to construct a key of
      * @param key
      *            the class key to return a key from
-     * @return a key matching the specified type with no qualifiers
+     * @return a key matching the specified class with no qualifiers
      */
     @SuppressWarnings("unchecked")
     public static <T> Key<T> of(Class<T> key) {
@@ -566,3 +532,21 @@ public abstract class Key<T> {
         }
     }
 }
+//
+//// Tror vi dropper det her concept...
+//// Vi brugte den i forbindelse med ServiceSelection.
+//// Men nu bruger vi bare type token...
+//final boolean isSuperKeyOf(Key<?> key) {
+//  requireNonNull(key, "key is null");
+//  if (!typeToken.equals(key.typeToken)) {
+//      return false;
+//  }
+//  if (qualifiers != null) {
+//      for (Annotation a : qualifiers) {
+//          if (!key.hasQualifier(a)) {
+//              return false;
+//          }
+//      }
+//  }
+//  return true;
+//}

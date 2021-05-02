@@ -45,13 +45,31 @@ public final class NativeImage {
     }
 
     public static void registerField(Field field) {
-        NativeImage0.register(field);
+       // NativeImage0.register(field);
     }
 
     public static void register(Executable m) {
-        NativeImage0.register(m);
+       // NativeImage0.register(m);
+    }
+    // from
+    // https://github.com/oracle/graal/blob/master/sdk/src/org.graalvm.nativeimage/src/org/graalvm/nativeimage/ImageInfo.java
+    static final String PROPERTY_IMAGE_CODE_KEY = "org.graalvm.nativeimage.imagecode";
+
+    static final String PROPERTY_IMAGE_CODE_VALUE_BUILDTIME = "buildtime";
+
+    static final String PROPERTY_IMAGE_CODE_VALUE_RUNTIME = "runtime";
+
+    public static boolean inImageCode() {
+        return System.getProperty(PROPERTY_IMAGE_CODE_KEY) != null;
     }
 
+    public static boolean inImageRuntimeCode() {
+        return PROPERTY_IMAGE_CODE_VALUE_RUNTIME.equals(System.getProperty(PROPERTY_IMAGE_CODE_KEY));
+    }
+
+    public static boolean inImageBuildtimeCode() {
+        return PROPERTY_IMAGE_CODE_VALUE_BUILDTIME.equals(System.getProperty(PROPERTY_IMAGE_CODE_KEY));
+    }
     // Problemet er lidt. Hvordan kan vi lave de statements
     // der kalder Buildint_NATIVE som noops naar man er native?
     // public static void support(AnyAssembly b) {

@@ -38,14 +38,13 @@ public final class FieldVariable extends AbstractVariable {
     }
 
     /** {@inheritDoc} */
-    @Override
     public Optional<String> name() {
         return Optional.of(field.getName());
     }
 
     /** {@inheritDoc} */
     @Override
-    public Class<?> rawType() {
+    public Class<?> getType() {
         return field.getType();
     }
 
