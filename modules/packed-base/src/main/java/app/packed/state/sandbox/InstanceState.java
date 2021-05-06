@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.state.sandbox;
 
 import app.packed.application.ApplicationRuntime;
 
@@ -42,9 +42,10 @@ import app.packed.application.ApplicationRuntime;
 // TODO jeg tror vi meget bedre kan beskrive det her naar vi har fundet ud af det med state machines
 // Fx, hvad vil det sige at stoppe?? Det vil sige at terminere alle state machines der koere ind i den.
 // Managed Resource
-
-// Status vs State...
-public enum RunState {
+// Status vs State..
+// Was RunState
+ 
+public enum InstanceState {
 
     /**
      * The initial state of a guest. This state is typically used for reading and validating the configuration of the guest.
@@ -94,8 +95,8 @@ public enum RunState {
      *            the states to test against
      * @return true if the guest is in any of the specified states, otherwise false
      */
-    public boolean isAnyOf(RunState... states) {
-        for (RunState s : states) {
+    public boolean isAnyOf(InstanceState... states) {
+        for (InstanceState s : states) {
             if (s == this) {
                 return true;
             }

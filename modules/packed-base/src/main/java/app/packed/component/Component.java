@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.attribute.AttributedElement;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentStream.Option;
@@ -31,7 +31,7 @@ import app.packed.component.ComponentStream.Option;
 public /* sealed */ interface Component extends AttributedElement {
 
     /** { @return the application this component is a part of} */
-    Application application();
+    ApplicationDescriptor application();
 
     /** {@return an unmodifiable view of all of this component's children} */
     Collection<Component> children();

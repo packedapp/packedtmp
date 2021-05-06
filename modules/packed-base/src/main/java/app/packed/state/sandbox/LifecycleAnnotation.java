@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
-
-import java.lang.invoke.MethodHandles;
+package app.packed.state.sandbox;
 
 /**
  *
  */
-final class ApplicationRuntimeHelper {
-    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), Void.class);
+// TransitionAction...
+public @interface LifecycleAnnotation {
+
 }

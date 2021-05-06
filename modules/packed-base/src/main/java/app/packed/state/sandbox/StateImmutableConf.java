@@ -13,12 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.state.sandbox;
 
 /**
  *
  */
-// TransitionAction...
-public @interface LifecycleAnnotation {
+public class StateImmutableConf {
 
 }
+
+
+// A statemachine has a final amount of states...
+// Less then 64 I think is fine....
+
+// StateMachines relations
+
+// https://docs.spring.io/spring-statemachine/docs/1.1.x/reference/html/state-machine-concepts.html
+
+// https://docs.spring.io/spring-statemachine/docs/3.0.0.M2/reference/

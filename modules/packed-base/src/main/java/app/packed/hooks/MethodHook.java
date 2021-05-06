@@ -42,7 +42,7 @@ import app.packed.container.Extension;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.inject.Provide;
-import app.packed.state.OnInitialize;
+import app.packed.state.sandbox.OnInitialize;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
 
@@ -316,6 +316,10 @@ public @interface MethodHook {
          */
         protected static final void $failOnStaticMethods() {}
 
+        protected static final void $requireRunnableApplication() {}
+
+
+        
         /**
          * Ignore default methods. No bootstrap instance will be created for default methods.
          * 

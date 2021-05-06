@@ -20,7 +20,7 @@ import java.util.Collection;
 import app.packed.attribute.AttributedElement;
 import app.packed.base.NamespacePath;
 import app.packed.component.Component;
-import app.packed.state.RunState;
+import app.packed.state.sandbox.InstanceState;
 
 /**
  *
@@ -96,7 +96,7 @@ interface ZInstance {
     // Not sure we should capture state like that
     // Also, fx syntes maaske ikke det giver mening at en
     // function har en state...
-    RunState runState();
+    InstanceState runState();
 
     Object sourceInstances();
 }

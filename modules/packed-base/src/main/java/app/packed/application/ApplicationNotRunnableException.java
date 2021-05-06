@@ -4,14 +4,14 @@ package app.packed.application;
  * An exception that is typically thrown when attempting to perform an operation that requires an application to be
  * runnable, but application was not.
  * 
- * @see ApplicationDriver#isRunnable()
+ * @see ApplicationDriver#hasRuntime()
  */
+// NoRuntimeEnvironmentException
 public class ApplicationNotRunnableException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
 
-    
     /**
      * Creates a new exception.
      * 

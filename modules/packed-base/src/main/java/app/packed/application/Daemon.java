@@ -35,7 +35,7 @@ public interface Daemon extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    ApplicationRuntime host(); // giver ikke mening 
+    ApplicationRuntime host(); // giver ikke mening
 
     void stop();
 
@@ -51,7 +51,7 @@ public interface Daemon extends AutoCloseable {
 
     // Starts async... Builds/initializes sync
     static Daemon runAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-       return run(assembly, CliWirelets.args(args).andThen(wirelets));
+        return run(assembly, CliWirelets.args(args).andThen(wirelets));
     }
 
     static Daemon runAsync(Assembly<?> assembly, Wirelet... wirelets) {
@@ -72,5 +72,27 @@ public interface Daemon extends AutoCloseable {
 
     static Daemon startAsync(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
+    }
+
+    static Launcher launcher() {
+        throw new UnsupportedOperationException();
+    }
+
+    interface Launcher {
+        Launcher neverRestart();
+
+        Launcher restartPolicy(Object somePolicy);
+
+        default Launcher args(String... args) {
+            return this;
+        }
+
+        DaemonImage newImage(Assembly<?> assembly);
+
+        DaemonImage newImage(Assembly<?> assembly, Wirelet... wirelets);
+
+        Daemon start(Assembly<?> assembly);
+
+        Daemon start(Assembly<?> assembly, Wirelet... wirelets);
     }
 }

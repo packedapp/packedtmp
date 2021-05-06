@@ -10,7 +10,7 @@ module app.packed.base {
     exports app.packed.inject;
     exports app.packed.inject.sandbox;
     exports app.packed.hooks;
-    exports app.packed.state;
+    exports app.packed.state.sandbox;
     exports app.packed.validate;
     exports app.packed.request;
 }

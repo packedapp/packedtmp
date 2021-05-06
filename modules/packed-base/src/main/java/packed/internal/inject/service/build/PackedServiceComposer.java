@@ -28,6 +28,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.ComposerConfigurator;
 import app.packed.inject.Factory;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceComposer;
@@ -159,7 +160,7 @@ public final class PackedServiceComposer extends ServiceComposer {
         add(factory, true, false, true);
     }
 
-    public static ServiceLocator of(Consumer<? super ServiceComposer> action) {
+    public static ServiceLocator of(ComposerConfigurator<? super ServiceComposer> action) {
         return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
    
     }
@@ -168,10 +169,10 @@ public final class PackedServiceComposer extends ServiceComposer {
      * 
      * @return the new service locator
      */
-    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends InternalService> services, Consumer<? super ServiceComposer> transformation) {
+    public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends InternalService> services, ComposerConfigurator<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         PackedServiceComposer psm = new PackedServiceComposer(services);
-        transformation.accept(psm);
+        transformation.configure(psm);
 
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext();
@@ -181,7 +182,7 @@ public final class PackedServiceComposer extends ServiceComposer {
         return new PackedInjector(runtimeEntries);
     }
 
-    public static ServiceLocator transform(Consumer<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
+    public static ServiceLocator transform(ComposerConfigurator<? super ServiceComposer> transformation, Collection<RuntimeService> services) {
         requireNonNull(transformation, "transformation is null");
         HashMap<Key<?>, ServiceSetup> m = new HashMap<>();
         for (RuntimeService s : services) {

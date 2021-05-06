@@ -28,7 +28,7 @@ import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.inject.sandbox.ServiceAttributes;
-import app.packed.state.OnStart;
+import app.packed.state.sandbox.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.inject.service.ServiceManagerSetup;

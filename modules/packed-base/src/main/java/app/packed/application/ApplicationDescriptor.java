@@ -8,7 +8,7 @@ import app.packed.container.Container;
 /**
  * Represents an application.
  */
-public interface Application {
+public interface ApplicationDescriptor {
 
     /** {@return the root component in the application}. */
     Component component();
@@ -18,7 +18,7 @@ public interface Application {
 
     /**
      * Returns whether or the application is runnable. The value is always determined by
-     * {@link ApplicationDriver#isRunnable()}.
+     * {@link ApplicationDriver#hasRuntime()}.
      * 
      * @return whether or the application is runnable
      */
@@ -39,5 +39,5 @@ public interface Application {
     String name();
 
     /** {@return the parent application of this application. Or empty if this application has no parent} */
-    Optional<Application> parent();
+    Optional<ApplicationDescriptor> parent();
 }

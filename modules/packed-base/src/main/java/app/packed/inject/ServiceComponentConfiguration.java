@@ -105,8 +105,8 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public ServiceComponentConfiguration<T> setName(String name) {
-        context.setName(name);
+    public ServiceComponentConfiguration<T> named(String name) {
+        context.named(name);
         return this;
     }
 

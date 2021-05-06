@@ -24,14 +24,10 @@ import app.packed.host.ApplicationHost;
  */
 class Tester extends InterceptingExtensionMethodSetup {
 
-    public void intercept(MethodHandle m) {
-
-    }
+    public void intercept(MethodHandle m) {}
 
     public static void main(String[] args) {
-        ApplicationHost.platform().forEach(e -> {
-            System.out.println(e.name());
-        });
+        ApplicationHost.platformHost().forEach(e -> System.out.println(e.name()));
     }
 
 //    /** {@inheritDoc} */

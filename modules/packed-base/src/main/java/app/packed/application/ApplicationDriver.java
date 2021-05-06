@@ -33,8 +33,8 @@ import app.packed.exceptionhandling.BuildException;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.InitializationException;
-import app.packed.state.RunState;
+import app.packed.state.sandbox.InitializationException;
+import app.packed.state.sandbox.InstanceState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
 
@@ -105,7 +105,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
-    boolean isRunnable();
+    boolean hasRuntime();
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -133,16 +133,16 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     /**
      * Returns the launch mode of applications's created by this driver.
      * <p>
-     * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(RunState)}.
+     * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(InstanceState)}.
      * <p>
-     * Applications that are not runnable will always return {@link RunState#INITIALIZED}.
+     * Applications that are not runnable will always return {@link InstanceState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
      * @see #compose(ComponentDriver, Function, Consumer, Wirelet...)
      * @see #newImage(Assembly, Wirelet...)
      */
-    RunState launchMode();
+    InstanceState launchMode();
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -234,64 +234,52 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
 
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
 
+        // cannot be instantiated, typically used if you just want to analyze
+        /**
+         * Creates a new application driver that does not support instantiation of applications. These type of drivers are
+         * typically used if you only need to use {@link ApplicationDriver#analyze(Assembly, Wirelet...)} but do not
+         * need to create actual application instances.
+         * 
+         * @param <A>
+         *            the application type
+         * @param applicationType
+         *            the type returned by {@link ApplicationDriver#type()}
+         * @return the new driver
+         */
+        default <A> ApplicationDriver<A> buildInstanceless(Class<A> applicationType) {
+            // Cannot be used for instantiating...
+            // Typically used if void
+            throw new UnsupportedOperationException();
+        }
+
+        <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
+
         /**
          * @param launchMode
          * @return
          */
-        Builder launchMode(RunState launchMode);
+        Builder launchMode(InstanceState launchMode);
 
         /**
          * Indicates that the any application create by this driver is not runnable.
          * 
          * @return this builder
          */
-        Builder nonRunnable(); // or notRunnable() (it was this originally)
+        // https://en.wikipedia.org/wiki/Runtime_system
+        // noRuntimeEnvironment
+        Builder noRuntime(); // or notRunnable() (it was this originally)
 
-        <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets);
-        // Maybe just look for matching method/field hooks???
-        // So always scan...
-
-        // Throws ISE paa runtime? Validation? ASsertionError, Custom...
-        @SuppressWarnings("unchecked")
-        default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
+        /**
+         * 
+         * @param applicationType
+         * @return
+         * 
+         * @see ApplicationDriver#type()
+         */
+        default Builder type(Class<?> applicationType) {
             throw new UnsupportedOperationException();
         }
-
-//        /**
-//         * Will look for annotations
-//         * <p>
-//         * If you want to support your own annotations. You can do by registering your hooks
-//         * 
-//         * @return this builder
-//         */
-//        // Jeg vil mene vi goer det her automatisk...
-//        // Hvad hvis vi returnere forskellige typer???
-//        Builder useShellAsSource();
-
-//        // Stuff on the container always belongs to the other side...
-//        // Cannot use Factory...
-//       
-//
-//        // ApplicationDriver.of(.., Wirelet... wirelets)
-//        // ApplicationDriver.ofRuntime(.., Wirelet... wirelets)
-//
-//
-//        // kunne jo altsaa bare tage det som parametere...
-//        Builder addWirelet(Wirelet... wirelets) {
-//            return this;
-//        }
-//        // see laenger nede i ZApplicationDriverBuilders
-//
-//        <A> ApplicationDriver<A> build(Class<A> clazz) {
-//            throw new UnsupportedOperationException();
-//        }
-//        
-//        <A> ApplicationDriver<A> build(Factory<A> factory) {
-//            // if use source fail...
-//            throw new UnsupportedOperationException();
-//        }
     }
-
 }
 
 interface ApplicationDriverSandbox<A> {
@@ -416,7 +404,7 @@ interface ApplicationDriverSandbox<A> {
      * @throws UnsupportedOperationException
      *             if the driver produces non-runnable applications.
      */
-    ApplicationDriver<A> withLaunchMode(RunState launchMode);
+    ApplicationDriver<A> withLaunchMode(InstanceState launchMode);
 }
 
 /**
@@ -424,6 +412,10 @@ interface ApplicationDriverSandbox<A> {
  */
 interface ZApplicationDriverWithBuilder {
 
+    // Vi dropper det lookup object?
+    // eller ogsaa har vi maaske 2 metoder
+    // Man kan lave en builder 
+    
     static Builder<Void> builder(MethodHandles.Lookup lookup) {
         throw new UnsupportedOperationException();
     }
@@ -442,5 +434,47 @@ interface ZApplicationDriverWithBuilder {
         default <A> ApplicationDriver<A> build(Class<A> artifactType) {
             throw new UnsupportedOperationException();
         }
+
+        // Throws ISE paa runtime? Validation? ASsertionError, Custom...
+        @SuppressWarnings("unchecked")
+        default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
+            throw new UnsupportedOperationException();
+        }
+        
+
+//      /**
+//       * Will look for annotations
+//       * <p>
+//       * If you want to support your own annotations. You can do by registering your hooks
+//       * 
+//       * @return this builder
+//       */
+//      // Jeg vil mene vi goer det her automatisk...
+//      // Hvad hvis vi returnere forskellige typer???
+//      Builder useShellAsSource();
+
+//      // Stuff on the container always belongs to the other side...
+//      // Cannot use Factory...
+//     
+//
+//      // ApplicationDriver.of(.., Wirelet... wirelets)
+//      // ApplicationDriver.ofRuntime(.., Wirelet... wirelets)
+//
+//
+//      // kunne jo altsaa bare tage det som parametere...
+//      Builder addWirelet(Wirelet... wirelets) { 
+//          return this;
+//      }
+//      // see laenger nede i ZApplicationDriverBuilders
+//
+//      <A> ApplicationDriver<A> build(Class<A> clazz) {
+//          throw new UnsupportedOperationException();
+//      }
+//      
+//      <A> ApplicationDriver<A> build(Factory<A> factory) {
+//          // if use source fail...
+//          throw new UnsupportedOperationException();
+//      }
+
     }
 }

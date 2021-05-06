@@ -67,7 +67,7 @@ public class AppManyChildrenMicro {
 
         @Override
         protected void build() {
-            setName(name);
+            named(name);
         }
     }
 }

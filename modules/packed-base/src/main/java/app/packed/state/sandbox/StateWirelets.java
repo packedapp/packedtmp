@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.state.sandbox;
 
 import app.packed.application.Program;
 import app.packed.component.Assembly;
@@ -97,7 +97,7 @@ public interface StateWirelets {
 
     // Runnig on the initializaiob/starting/stopping thread
 
-    static Wirelet runOn(RunState state, Runnable task) {
+    static Wirelet runOn(InstanceState state, Runnable task) {
         throw new UnsupportedOperationException();
     }
 

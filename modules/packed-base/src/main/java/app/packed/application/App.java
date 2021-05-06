@@ -23,8 +23,8 @@ import app.packed.cli.CliWirelets;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
-import app.packed.state.RunState;
-import app.packed.state.StateWirelets;
+import app.packed.state.sandbox.InstanceState;
+import app.packed.state.sandbox.StateWirelets;
 import packed.internal.application.ApplicationLaunchContext;
 
 /**
@@ -49,8 +49,8 @@ public final class App {
     // PanicException hvad jeg syntes vi skal
 
     /** A daemon driver. */
-    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder().launchMode(RunState.RUNNING)
-            .old(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
+    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder().launchMode(InstanceState.RUNNING)
+            .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** Not today Satan, not today. */
     private App() {}
@@ -82,7 +82,7 @@ public final class App {
 
     /**
      * This method will create and start an {@link Program application} from the specified source. Blocking until the run
-     * state of the application is {@link RunState#TERMINATED}.
+     * state of the application is {@link InstanceState#TERMINATED}.
      * <p>
      * Entry point or run to termination
      * <p>

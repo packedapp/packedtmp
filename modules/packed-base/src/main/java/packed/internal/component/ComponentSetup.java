@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
@@ -74,7 +74,7 @@ public abstract class ComponentSetup {
     /** The name of this component. */
     protected String name;
 
-    /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by setName(). */
+    /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by named(String). */
     boolean nameInitializedWithWirelet;
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
@@ -419,7 +419,7 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Application application() {
+        public ApplicationDescriptor application() {
             return component.application.adaptor();
         }
 

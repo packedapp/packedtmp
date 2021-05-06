@@ -15,7 +15,7 @@
  */
 package packed.internal.application;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.application.Build;
 import app.packed.application.BuildTarget;
 import app.packed.component.Component;
@@ -73,7 +73,7 @@ public final class BuildSetup implements Build {
 
     /** {@inheritDoc} */
     @Override
-    public Application application() {
+    public ApplicationDescriptor application() {
         return application.adaptor();
     }
 

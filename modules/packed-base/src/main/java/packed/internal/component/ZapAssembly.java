@@ -7,7 +7,7 @@ public class ZapAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
-        setName("asdasd");
+        named("asdasd");
         link(new LinkMe());
     }
 

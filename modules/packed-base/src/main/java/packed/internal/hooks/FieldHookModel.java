@@ -25,7 +25,7 @@ import app.packed.container.InternalExtensionException;
 import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.OldFieldHook.Bootstrap;
 import app.packed.hooks.accessors.HookProvide;
-import app.packed.state.OnInitialize;
+import app.packed.state.sandbox.OnInitialize;
 
 /** A model of a {@link Bootstrap field bootstrap} implementation. */
 public final class FieldHookModel extends AbstractHookModel<OldFieldHook.Bootstrap> {

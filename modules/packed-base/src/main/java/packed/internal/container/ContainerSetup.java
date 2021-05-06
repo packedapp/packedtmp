@@ -24,7 +24,7 @@ import java.util.IdentityHashMap;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -298,7 +298,7 @@ public final class ContainerSetup extends WireableComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Application application() {
+        public ApplicationDescriptor application() {
             return container.application.adaptor();
         }
 

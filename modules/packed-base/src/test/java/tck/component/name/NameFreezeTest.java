@@ -41,14 +41,14 @@ import testutil.util.ContainerConfigurationTester;
 public class NameFreezeTest extends AbstractApplicationTest {
 
     /**
-     * Tests that we cannot call {@link ServiceComponentConfiguration#setName(String)}. After {@link ServiceComponentConfiguration#getName()}.
+     * Tests that we cannot call {@link ServiceComponentConfiguration#named(String)}. After {@link ServiceComponentConfiguration#getName()}.
      */
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {
             BaseComponentConfiguration ci = c.installInstance(1);
-            ci.getName();
-            ci.setName("foo");
+//            ci.getName();
+            ci.named("foo");
         }, "Cannot call #setName(String) after the name has been initialized via calls to #getName()");
     }
 
@@ -58,7 +58,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
         checkThrowsISE(c -> {
             BaseComponentConfiguration ci = c.installInstance(1);
             c.installInstance(1L);
-            ci.setName("foo");
+            ci.named("foo");
         }, "Cannot call this method after having installed components or used extensions");
 
         // TODO we should actually have, more or less all the different kind of installs we have in
@@ -71,7 +71,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
         checkThrowsISE(c -> {
             BaseComponentConfiguration ci = c.installInstance(1);
             c.link(emptyAssembly());
-            ci.setName("foo");
+            ci.named("foo");
         }, "Cannot call this method after #link() has been invoked");
     }
 
@@ -80,7 +80,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
         checkThrowsISE(c -> {
             BaseComponentConfiguration ci = c.installInstance(1);
             ci.path();
-            ci.setName("foo");
+            ci.named("foo");
         }, "Cannot call #setName(String) after name has been initialized via calls to #path()");
     }
 
@@ -88,13 +88,13 @@ public class NameFreezeTest extends AbstractApplicationTest {
     public void component_setName_cannotBeCalledAfter_setName() {
         checkThrowsISE(c -> {
             BaseComponentConfiguration ci = c.installInstance(1);
-            ci.setName("foo");
-            ci.setName("foo");
+            ci.named("foo");
+            ci.named("foo");
         }, "#setName(String) can only be called once");
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having observed the name via
+     * Test that we cannot call {@link ContainerConfiguration#named(String)} after having observed the name via
      * {@link ContainerConfiguration#getName()}.
      */
     @Test
@@ -104,7 +104,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having installed a component in the
+     * Test that we cannot call {@link ContainerConfiguration#named(String)} after having installed a component in the
      * container.
      * <p>
      * We could actually allow this as long as any new components does not observe their path in any way. However, for
@@ -116,13 +116,13 @@ public class NameFreezeTest extends AbstractApplicationTest {
     // Og det er maaske lidt skjult naar man bruger f.eks. Assembly...
     // Saa lad os lige gennemtaenke det igen...
     public void container_setName_cannotBeCalledAfter_install() {
-        checkThrowsISE(c -> c.installInstance("Foo").setName("Bar"), "Cannot call this method after having installed components");
+        checkThrowsISE(c -> c.installInstance("Foo").named("Bar"), "Cannot call this method after having installed components");
         // TODO we should actually have, more or less all the different kind of installs we have in
         // ComponentExtension
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having linked another container via
+     * Test that we cannot call {@link ContainerConfiguration#named(String)} after having linked another container via
      * {@link ContainerConfiguration#link(app.packed.component.Assembly, Wirelet...)}.
      * <p>
      * We could actually allow this as long as the assembly we link did not observe the path of its components in any way.
@@ -136,7 +136,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     }
 
     /**
-     * Test that we cannot call {@link ContainerConfiguration#setName(String)} after having observed the name via
+     * Test that we cannot call {@link ContainerConfiguration#named(String)} after having observed the name via
      * {@link ContainerConfiguration#path()}.
      */
     @Test
@@ -144,7 +144,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
         checkThrowsISE(c -> c.pathIs("/").setName("Bar"), "Cannot call #setName(String) after name has been initialized via calls to #path()");
     }
 
-    /** Test that we can only call {@link ContainerConfiguration#setName(String)} once. */
+    /** Test that we can only call {@link ContainerConfiguration#named(String)} once. */
     @Test
     public void container_setName_cannotBeCalledAfter_setName() {
         // TODO should we drop this, I actually can't see any problems with this.

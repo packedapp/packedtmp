@@ -72,6 +72,7 @@ public abstract class WireableComponentDriver<C extends ComponentConfiguration> 
     }
 
     /** A special component driver that create containers. */
+    // Leger med tanken om at lave en specifik container driver
     public static abstract class ContainerComponentDriver extends WireableComponentDriver<ContainerConfiguration> {
 
         /** A component modifier set shared by every container. */

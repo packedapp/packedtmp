@@ -69,7 +69,7 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
     }
     
     /** {@inheritDoc} */
-    public final void setName(String name) {
+    public final void named(String name) {
         checkComponentName(name); // Check if the name is valid
         checkIsWiring();
 

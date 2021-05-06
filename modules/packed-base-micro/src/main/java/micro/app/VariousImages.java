@@ -51,11 +51,11 @@ public class VariousImages {
 
             @Override
             public void build() {
-                installInstance("foo").setName("1");
-                installInstance("foo").setName("2");
-                installInstance("foo").setName("3");
-                installInstance("foo").setName("4");
-                installInstance("foo").setName("5");
+                installInstance("foo").named("1");
+                installInstance("foo").named("2");
+                installInstance("foo").named("3");
+                installInstance("foo").named("4");
+                installInstance("foo").named("5");
             }
         };
     }

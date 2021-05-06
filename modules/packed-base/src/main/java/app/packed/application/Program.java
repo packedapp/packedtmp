@@ -15,6 +15,7 @@
  */
 package app.packed.application;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -23,8 +24,8 @@ import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.RunState;
-import app.packed.state.StateWirelets;
+import app.packed.state.sandbox.InstanceState;
+import app.packed.state.sandbox.StateWirelets;
 
 /**
  * An App (application) is a type of artifact provided by Packed.
@@ -112,7 +113,7 @@ public interface Program extends AutoCloseable {
      * Creates a new app image from the specified assembly.
      * <p>
      * The state of the applications returned by {@link ApplicationImage#launch(Wirelet...)} will be
-     * {@link RunState#RUNNING}. unless GuestWirelet.delayStart
+     * {@link InstanceState#RUNNING}. unless GuestWirelet.delayStart
      * 
      * @param assembly
      *            the assembly to use for creating the image
@@ -128,13 +129,13 @@ public interface Program extends AutoCloseable {
 
     /**
      * Build and start a new application using the specified assembly. The state of the returned application is
-     * {@link RunState#RUNNING}.
+     * {@link InstanceState#RUNNING}.
      * <p>
      * Should be used with try-with-resources
      * <p>
      * Applications that are created using this method is always automatically started. If you wish to delay the start
      * process you can use {@link StateWirelets#lazyStart()}. Which will return an application in the
-     * {@link RunState#INITIALIZED} phase instead.
+     * {@link InstanceState#INITIALIZED} phase instead.
      * 
      * @param assembly
      *            the assembly to use for creating the application
@@ -179,6 +180,20 @@ interface Zapp extends Program {
         return Program.driver().newImage(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
+
+/** The default implementation of {@link Program}. */
+record ProgramImplementation(String name, ServiceLocator services, ApplicationRuntime runtime) implements Program {
+
+    /** An driver for creating App instances. */
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().launchMode(InstanceState.RUNNING).build(MethodHandles.lookup(), ProgramImplementation.class);
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return "App[name = " + name() +", state = " + runtime.state() + "] ";
+    }
+}
+
 ///**
 //* Returns the path of this application. Unless the app is installed as a guest, this method always returns
 //* <code>"{@literal /}"</code>.

@@ -35,7 +35,7 @@ import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.RunState;
+import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireableComponentDriver;
@@ -52,8 +52,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
             WireableComponentDriver.class);
 
-    /** The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(RunState)}. */
-    private final RunState launchMode;
+    /** The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}. */
+    private final InstanceState launchMode;
 
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
@@ -74,7 +74,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private PackedApplicationDriver(Builder builder) {
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.modifiers = builder.modifiers;
-        this.launchMode = builder.launchMode == null ? RunState.INITIALIZED : builder.launchMode;
+        this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
         this.wirelet = builder.wirelet;
     }
 
@@ -172,7 +172,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isRunnable() {
+    public boolean hasRuntime() {
         return (modifiers & PackedComponentModifierSet.I_RUNTIME) != 0;
     }
 
@@ -185,7 +185,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public RunState launchMode() {
+    public InstanceState launchMode() {
         return launchMode;
     }
 
@@ -251,7 +251,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
                 ServiceLocator.class);
 
         /** The default launch mode of the application. */
-        private RunState launchMode;
+        private InstanceState launchMode;
 
         MethodHandle mhConstructor;
 
@@ -293,12 +293,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder launchMode(RunState launchMode) {
+        public Builder launchMode(InstanceState launchMode) {
             requireNonNull(launchMode, "launchMode is null");
             if (!isRunnable()) {
                 throw new IllegalStateException("A launch mode can only be set for runnable applications");
-            } else if (launchMode == RunState.INITIALIZING) {
-                throw new IllegalArgumentException("Cannot specify '" + RunState.INITIALIZING + "'");
+            } else if (launchMode == InstanceState.INITIALIZING) {
+                throw new IllegalArgumentException("Cannot specify '" + InstanceState.INITIALIZING + "'");
             }
             this.launchMode = launchMode;
             return this;
@@ -306,7 +306,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder nonRunnable() {
+        public Builder noRuntime() {
             if (launchMode != null) {
                 throw new IllegalStateException("This method cannot be called when a launch mode has been set");
             }
@@ -316,7 +316,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> old(MethodHandle mhNewShell, Wirelet... wirelets) {
+        public <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
             mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             return new PackedApplicationDriver<>(this);
         }
@@ -343,7 +343,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public RunState launchMode() {
+        public InstanceState launchMode() {
             return application.launchMode;
         }
     }

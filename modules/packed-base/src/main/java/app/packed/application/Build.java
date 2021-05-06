@@ -50,7 +50,7 @@ import app.packed.component.ComponentStream;
 public interface Build {
 
     /** {@return the root component of the build}. */
-    Application application();
+    ApplicationDescriptor application();
 
     /** {@return the root component of the build}. */
     Component component();

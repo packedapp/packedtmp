@@ -1,5 +1,7 @@
 package app.packed.cli;
 
+import java.lang.invoke.MethodType;
+
 import app.packed.application.AppImage;
 import app.packed.container.BaseAssembly;
 
@@ -13,6 +15,8 @@ public class HelloWorld extends BaseAssembly {
     }
 
     public static void main(String[] args) {
+        MethodType mt = MethodType.genericMethodType(12);
+        System.out.println(mt.returnType());
         MAIN.use(args);
     }
 

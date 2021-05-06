@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.state.sandbox;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link RunState#STOPPING} state.
+ * {@link InstanceState#STOPPING} state.
  * <p>
  * Static methods annotated with OnStop are ignore.
  *

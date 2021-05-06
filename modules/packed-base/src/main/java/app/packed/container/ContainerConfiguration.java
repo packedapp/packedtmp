@@ -113,8 +113,8 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerConfiguration setName(String name) {
-        context.setName(name);
+    public ContainerConfiguration named(String name) {
+        context.named(name);
         return this;
     }
 

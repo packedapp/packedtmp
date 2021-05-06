@@ -6,13 +6,13 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.Component;
 import app.packed.component.Wirelet;
 import app.packed.container.Container;
-import app.packed.state.RunState;
+import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedComponentModifierSet;
@@ -39,10 +39,10 @@ public final class ApplicationSetup {
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
-     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(RunState)} at
+     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(InstanceState)} at
      * build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
-    RunState launchMode;
+    InstanceState launchMode;
 
     // sync entrypoint
     @Nullable
@@ -75,7 +75,7 @@ public final class ApplicationSetup {
     }
 
     /** {@return an application adaptor that can be exposed to end-users} */
-    public Application adaptor() {
+    public ApplicationDescriptor adaptor() {
         return new ApplicationAdaptor(this);
     }
 
@@ -97,12 +97,12 @@ public final class ApplicationSetup {
     }
 
     /**
-     * A wirelet that will set the launch mode of the application. Used by {@link ApplicationWirelets#launchMode(RunState)}.
+     * A wirelet that will set the launch mode of the application. Used by {@link ApplicationWirelets#launchMode(InstanceState)}.
      */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
         /** The (validated) name to override with. */
-        private final RunState launchMode;
+        private final InstanceState launchMode;
 
         /**
          * Creates a new name wirelet
@@ -110,10 +110,10 @@ public final class ApplicationSetup {
          * @param launchMode
          *            the new launch mode of the application
          */
-        public ApplicationLaunchModeWirelet(RunState launchMode) {
+        public ApplicationLaunchModeWirelet(InstanceState launchMode) {
             this.launchMode = requireNonNull(launchMode, "launchMode is null");
-            if (launchMode == RunState.INITIALIZING) {
-                throw new IllegalArgumentException(RunState.INITIALIZING + " is not a valid launch mode");
+            if (launchMode == InstanceState.INITIALIZING) {
+                throw new IllegalArgumentException(InstanceState.INITIALIZING + " is not a valid launch mode");
             }
         }
 
@@ -144,8 +144,8 @@ public final class ApplicationSetup {
         }
     }
 
-    /** An adaptor of {@link ApplicationSetup} exposed as {@link Application}. */
-    private /* primitive */ record ApplicationAdaptor(ApplicationSetup application) implements Application {
+    /** An adaptor of {@link ApplicationSetup} exposed as {@link ApplicationDescriptor}. */
+    private /* primitive */ record ApplicationAdaptor(ApplicationSetup application) implements ApplicationDescriptor {
 
         /** {@inheritDoc} */
         @Override
@@ -173,14 +173,14 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Application> parent() {
+        public Optional<ApplicationDescriptor> parent() {
             return Optional.empty();
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean isRunnable() {
-            return application.driver.isRunnable();
+            return application.driver.hasRuntime();
         }
     }
 }

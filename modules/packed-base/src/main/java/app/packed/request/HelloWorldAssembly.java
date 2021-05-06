@@ -43,6 +43,7 @@ public class HelloWorldAssembly extends BaseAssembly {
         App.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {
             System.out.println(c.path() + " wired");
         }));
+        
         System.out.println("BYE");
 
     }

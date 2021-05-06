@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
@@ -296,7 +296,7 @@ public final class PackedComponentInstance implements Component {
     }
 
     @Override
-    public Application application() {
+    public ApplicationDescriptor application() {
         throw new UnsupportedOperationException();
     }
 }

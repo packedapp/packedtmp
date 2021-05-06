@@ -3,7 +3,7 @@ package app.packed.container;
 import java.util.Collection;
 import java.util.Optional;
 
-import app.packed.application.Application;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.component.Component;
 
@@ -14,7 +14,7 @@ import app.packed.component.Component;
 public interface Container {
 
     /** {@return the application this container is a part of} */
-    Application application();
+    ApplicationDescriptor application();
 
     /** {@return an unmodifiable view of all of this container's children} */
     Collection<Container> children();

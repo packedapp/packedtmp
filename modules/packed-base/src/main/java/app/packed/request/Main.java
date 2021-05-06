@@ -35,7 +35,7 @@ import packed.internal.component.SourcedComponentSetup;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 
 /**
- * Trying to build a container with more than a single method annotated with this annotation will fail with
+ * Trying to build an application with more than a single method annotated with this annotation will fail with
  * {@link BuildException}.
  * <p>
  * If the container fails to start, the method will never be invoked.
@@ -68,6 +68,10 @@ public @interface Main {
 
 class MySidecar extends RealMethodSidecarBootstrap {
 
+    static {
+        $requireRunnableApplication();
+    }
+
     /** {@inheritDoc} */
     @Override
     protected void bootstrap() {
@@ -80,11 +84,10 @@ class MySidecar extends RealMethodSidecarBootstrap {
             c.container.useExtension(ServiceExtension.class);
             MainThreadOfControl mc = c.application.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
-            mc.cs =  (SourcedComponentSetup) c;
+            mc.cs = (SourcedComponentSetup) c;
             mc.methodHandle = mh;
         });
     }
-
     protected void onInit(ApplicationSetup application, Runnable r) {
         // application.setup...
     }

@@ -24,13 +24,13 @@ public enum BuildTarget {
     // MultiImage????
     IMAGE,
     
-    MULTI_IMAGE,
-
     /**
      * An application instance.
      * 
      * @see ApplicationDriver#compose(app.packed.component.Composer, java.util.function.Consumer, Wirelet...)
      * @see ApplicationDriver#launch(Assembly, Wirelet...)
      */
-    INSTANCE;
+    INSTANCE,
+
+    MULTI_IMAGE;
 }

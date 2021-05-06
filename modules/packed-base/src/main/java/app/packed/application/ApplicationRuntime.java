@@ -15,6 +15,7 @@
  */
 package app.packed.application;
 
+import java.lang.invoke.MethodHandles;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -22,8 +23,8 @@ import java.util.function.Supplier;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import app.packed.state.RunState;
-import app.packed.state.RunStateInfo;
+import app.packed.state.sandbox.InstanceState;
+import app.packed.state.sandbox.RunStateInfo;
 
 // This is basically something thats wraps a state that is 100 Linear
 // It is not 100 % clean because of restarting... IDK about that
@@ -43,6 +44,8 @@ import app.packed.state.RunStateInfo;
 // Host... everything with state are called Guests...
 // AutoClosable???
 // Maybe just Runtime? Saa kan vi bruge den andre steder end fra application...
+
+//RuntimeEnvironment
 public interface ApplicationRuntime {
 
     // Optional<Throwable> getFailure();
@@ -52,24 +55,24 @@ public interface ApplicationRuntime {
      * whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link RunState#RUNNING} state and the component has already been successfully terminated.
+     * attempting to wait on the {@link InstanceState#RUNNING} state and the component has already been successfully terminated.
      * This method will return immediately.
      *
      * @param state
      *            the state to wait on
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(RunState, long, TimeUnit)
+     * @see #await(InstanceState, long, TimeUnit)
      * @see #state()
      */
-    void await(RunState state) throws InterruptedException;
+    void await(InstanceState state) throws InterruptedException;
 
     /**
      * Blocks until the component has reached the requested state, or the timeout occurs, or the current thread is
      * interrupted, whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link RunState#RUNNING} state and the object has already been stopped. This method will
+     * if attempting to wait on the {@link InstanceState#RUNNING} state and the object has already been stopped. This method will
      * return immediately with true.
      *
      * @param state
@@ -82,10 +85,10 @@ public interface ApplicationRuntime {
      *         timeout elapsed before reaching the state
      * @throws InterruptedException
      *             if interrupted while waiting
-     * @see #await(RunState)
+     * @see #await(InstanceState)
      * @see #state()
      */
-    boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException;
+    boolean await(InstanceState state, long timeout, TimeUnit unit) throws InterruptedException;
 
     /**
      * Returns an immutable snapshot of the component's current status.
@@ -118,7 +121,7 @@ public interface ApplicationRuntime {
      * 
      * @return the current state of the component
      */
-    RunState state();
+    InstanceState state();
 
     /**
      * Stops the component.
@@ -154,12 +157,12 @@ public interface ApplicationRuntime {
     // Tror main er bl.a. propper det ind som et system image...
 
     static void execute(Assembly<?> assembly, Wirelet... wirelets) {
-        ApplicationRuntimeHelper.DRIVER.launch(assembly, wirelets);
+        ApplicationRuntimeImplementation.DRIVER.launch(assembly, wirelets);
     }
 
     // TODO return Image<Host>?
     static ApplicationImage<?> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationRuntimeHelper.DRIVER.newImage(assembly, wirelets);
+        return ApplicationRuntimeImplementation.DRIVER.newImage(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
 //        return new ExecutingImage(build);
@@ -273,6 +276,13 @@ public interface ApplicationRuntime {
     // Scheduled (Altsaa er det ikke folks eget ansvar???)
     // Kun fordi vi supporter noget af det med wirelets
     // shutdown in 10 minutes and then restart... (altsaa kan man ikke s)
+}
+
+/**
+*
+*/
+final class ApplicationRuntimeImplementation {
+    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), Void.class);
 }
 
 //10 seconds is from start.. Otherwise people must use an exact deadline

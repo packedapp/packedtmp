@@ -26,6 +26,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
+import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.hooks.sandbox2.OldAutoService;
 import packed.internal.inject.service.build.PackedServiceComposer;
@@ -154,7 +155,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transmutation action
      * @return the new service locator
      */
-    ServiceLocator spawn(Consumer<ServiceComposer> transmuter);
+    ServiceLocator spawn(ComposerConfigurator<ServiceComposer> transmuter);
 
     /**
      * Returns a service with the specified key. Or throws a {@link NoSuchElementException} if no such service is available.
@@ -263,7 +264,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a new service locator
      * @see #driver()
      */
-    static ServiceLocator of(Consumer<? super ServiceComposer> action) {
+    static ServiceLocator of(ComposerConfigurator<? super ServiceComposer> action) {
         return PackedServiceComposer.of(action);
     }
 }

@@ -23,8 +23,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.application.ApplicationRuntime;
-import app.packed.state.RunState;
-import app.packed.state.RunStateInfo;
+import app.packed.state.sandbox.InstanceState;
+import app.packed.state.sandbox.RunStateInfo;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
@@ -41,7 +41,7 @@ import packed.internal.util.ThrowableUtil;
 public class PackedApplicationRuntime implements ApplicationRuntime {
 
     // Sagtens encode det i sync ogsaa
-    RunState desiredState = RunState.INITIALIZING;
+    InstanceState desiredState = InstanceState.INITIALIZING;
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -49,10 +49,10 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
      */
     final ReentrantLock lock = new ReentrantLock();
 
-    /** A condition used for waiting on state changes from {@link #await(RunState, long, TimeUnit)}. */
+    /** A condition used for waiting on state changes from {@link #await(InstanceState, long, TimeUnit)}. */
     final Condition lockAwaitState = lock.newCondition();
 
-    volatile RunState state = RunState.INITIALIZING;
+    volatile InstanceState state = InstanceState.INITIALIZING;
 
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
@@ -64,7 +64,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
 //    final PackedContainer parent;
     /** {@inheritDoc} */
     @Override
-    public void await(RunState state) throws InterruptedException {
+    public void await(InstanceState state) throws InterruptedException {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
@@ -81,7 +81,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
 
     /** {@inheritDoc} */
     @Override
-    public boolean await(RunState state, long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean await(InstanceState state, long timeout, TimeUnit unit) throws InterruptedException {
         long nanos = unit.toNanos(timeout);
         final ReentrantLock lock = this.lock;
         lock.lock();
@@ -113,12 +113,12 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
         lock.lock();
         try {
             if (!start) {
-                this.state = RunState.INITIALIZED;
-                this.desiredState = RunState.INITIALIZED;
+                this.state = InstanceState.INITIALIZED;
+                this.desiredState = InstanceState.INITIALIZED;
                 return;
             } else {
-                this.state = RunState.STARTING;
-                this.desiredState = RunState.RUNNING;
+                this.state = InstanceState.STARTING;
+                this.desiredState = InstanceState.RUNNING;
             }
         } finally {
             lock.unlock();
@@ -128,8 +128,8 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
 
         lock.lock();
         try {
-            this.state = RunState.RUNNING;
-            this.desiredState = RunState.RUNNING;
+            this.state = InstanceState.RUNNING;
+            this.desiredState = InstanceState.RUNNING;
             if (!isMain) {
                 return;
             }
@@ -167,7 +167,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            if (state == RunState.INITIALIZING) {
+            if (state == InstanceState.INITIALIZING) {
                 throw new IllegalStateException("Cannot call this method now");
             }
             throw new UnsupportedOperationException();
@@ -187,7 +187,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
 
     /** {@inheritDoc} */
     @Override
-    public RunState state() {
+    public InstanceState state() {
         return state;
     }
 
@@ -202,7 +202,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     }
 
     // Tag T istedet for container...
-    public <T> CompletionStage<T> whenAt(RunState state, T object) {
+    public <T> CompletionStage<T> whenAt(InstanceState state, T object) {
         if (state().ordinal() >= state.ordinal()) {
             return CompletableFuture.completedFuture(object);
         }

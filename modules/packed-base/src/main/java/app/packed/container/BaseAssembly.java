@@ -26,7 +26,7 @@ import app.packed.inject.ServiceComponentConfiguration;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.state.OnStart;
+import app.packed.state.sandbox.OnStart;
 import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**

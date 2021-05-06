@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.state;
+package app.packed.state.sandbox;
 
 import java.util.Optional;
 
@@ -29,14 +29,14 @@ public interface RunStateInfo {
      * 
      * @return the actual state
      */
-    RunState actual();
+    InstanceState actual();
 
     /**
      * Returns the desired state of the container.
      * 
      * @return the desired state
      */
-    RunState desired();
+    InstanceState desired();
 
     boolean hasPanicked();
 

@@ -24,7 +24,7 @@ import app.packed.application.ApplicationWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.RunState;
+import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.WireletWrapper;
@@ -42,9 +42,9 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     public final ApplicationSetup application;
 
     /**
-     * The launch mode of the application. May be overridden via {@link ApplicationWirelets#launchMode(RunState)} if image.
+     * The launch mode of the application. May be overridden via {@link ApplicationWirelets#launchMode(InstanceState)} if image.
      */
-    RunState launchMode;
+    InstanceState launchMode;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;

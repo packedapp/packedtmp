@@ -7,8 +7,8 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.component.Wirelet;
-import app.packed.state.RunState;
-import app.packed.state.StateWirelets.ShutdownHookWirelet;
+import app.packed.state.sandbox.InstanceState;
+import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
 
 /**
  * Wirelets that can be specified when building or launching an application.
@@ -53,7 +53,7 @@ public final class ApplicationWirelets {
      * @return the launch mode wirelet
      */
     // Hvad med ServiceLocator, vi skal vel skrive noget om at nogle launch modes ikke er supporteret
-    public static Wirelet launchMode(RunState launchMode) {
+    public static Wirelet launchMode(InstanceState launchMode) {
         throw new UnsupportedOperationException();
     }
 
@@ -108,7 +108,7 @@ public final class ApplicationWirelets {
     }
 
     /**
-     * As measured from once the application reaches the {@link RunState#RUNNING} phase.
+     * As measured from once the application reaches the {@link InstanceState#RUNNING} phase.
      * 
      * @param timeout
      * @param unit

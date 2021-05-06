@@ -34,7 +34,7 @@ public abstract class Contract {
 
     /** A daemon driver. */
     private static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder()
-            .old(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
+            .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** {@inheritDoc} */
     @Override
