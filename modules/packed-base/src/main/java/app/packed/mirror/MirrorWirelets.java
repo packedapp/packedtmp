@@ -5,7 +5,8 @@ import app.packed.component.Wirelet;
 // Wirelet retainModelsAtRuntime();
 // Wirelet allDetails();
 
-// Kan ogsaa vaere den bare skal paa BuildWirelets...
+// Naar vi har defineres dem der er relevante, kan jeg sagtens forstille mig de ryger paa BuildWirelets...
+
 // Vi kan jo ikke ligesom specificere det paa runtime. Eftersom
 // det jo er en del af injection modellen...
 // Taenker vi

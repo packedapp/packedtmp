@@ -21,12 +21,14 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceExtensionMirror;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.PackedWireletSource;
@@ -69,15 +71,15 @@ public final class ServiceManagerSetup {
     /** All explicit added build entries. */
     private final ArrayList<ServiceSetup> localServices = new ArrayList<>();
 
+    /** Any parent this composer might have. */
+    @Nullable
+    private final ServiceManagerSetup parent;
+
     /** All injectors added via {@link ServiceExtension#provideAll(ServiceLocator)}. */
     private ArrayList<ProvideAllFromServiceLocator> provideAll;
 
     /** A node map with all nodes, populated with build nodes at configuration time, and runtime nodes at run time. */
     public final LinkedHashMap<Key<?>, ServiceDelegate> resolvedServices = new LinkedHashMap<>();
-
-    /** Any parent this composer might have. */
-    @Nullable
-    private final ServiceManagerSetup parent;
 
     /** The tree this service manager is a part of. */
     private final ApplicationInjectorSetup tree;
@@ -91,12 +93,6 @@ public final class ServiceManagerSetup {
         this.tree = parent == null ? new ApplicationInjectorSetup() : parent.tree;
     }
 
-    public void close(ContainerSetup container, ConstantPoolSetup pool) {
-        if (parent == null) {
-            tree.finish(pool, container);
-        }
-    }
-
     public void addAssembly(ServiceSetup a) {
         requireNonNull(a);
         localServices.add(a);
@@ -105,6 +101,12 @@ public final class ServiceManagerSetup {
     public void checkExportConfigurable() {
         // when processing wirelets
         // We should make sure some stuff is no longer configurable...
+    }
+
+    public void close(ContainerSetup container, ConstantPoolSetup pool) {
+        if (parent == null) {
+            tree.finish(pool, container);
+        }
     }
 
     /**
@@ -140,6 +142,10 @@ public final class ServiceManagerSetup {
      */
     public ServiceManagerExportSetup exports() {
         return exports;
+    }
+
+    public ServiceExtensionMirror mirror() {
+        return new ServiceExtensionMirrorAdaptor(this);
     }
 
     /**
@@ -187,23 +193,6 @@ public final class ServiceManagerSetup {
         } else {
             return new ExportedServiceLocator(runtimeEntries);
         }
-    }
-
-    public void provideAll(AbstractServiceLocator locator) {
-        // We add this immediately to resolved services, as their keys are immutable.
-
-        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, locator);
-        ArrayList<ProvideAllFromServiceLocator> p = provideAll;
-        if (provideAll == null) {
-            p = provideAll = new ArrayList<>(1);
-        }
-        p.add(pi);
-    }
-
-    public <T> ServiceSetup provideSource(SourcedComponentSetup component, Key<T> key) {
-        ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
-        localServices.add(e);
-        return e;
     }
 
     public void prepareDependants(ContainerSetup container) {
@@ -297,6 +286,23 @@ public final class ServiceManagerSetup {
         }
     }
 
+    public void provideAll(AbstractServiceLocator locator) {
+        // We add this immediately to resolved services, as their keys are immutable.
+
+        ProvideAllFromServiceLocator pi = new ProvideAllFromServiceLocator(this, locator);
+        ArrayList<ProvideAllFromServiceLocator> p = provideAll;
+        if (provideAll == null) {
+            p = provideAll = new ArrayList<>(1);
+        }
+        p.add(pi);
+    }
+
+    public <T> ServiceSetup provideSource(SourcedComponentSetup component, Key<T> key) {
+        ServiceSetup e = new SourceInstanceServiceSetup(this, component, key);
+        localServices.add(e);
+        return e;
+    }
+    
     /** A service locator wrapping all exported services. */
     private static final class ExportedServiceLocator extends AbstractServiceLocator {
 
@@ -305,6 +311,14 @@ public final class ServiceManagerSetup {
 
         private ExportedServiceLocator(Map<Key<?>, ? extends Service> services) {
             this.services = requireNonNull(services);
+        }
+
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @Override
+        public Map<Key<?>, Service> asMap() {
+            // as() + addAttribute on all services is disabled before we start the
+            // export process. So ServiceBuild can be considered as effectively final
+            return (Map) services;
         }
 
         @Override
@@ -317,13 +331,13 @@ public final class ServiceManagerSetup {
             // container.realm().realmType();
             return "A service with the specified key, key = " + key;
         }
+    }
+    
+    private record ServiceExtensionMirrorAdaptor(ServiceManagerSetup services) implements ServiceExtensionMirror {
 
-        @SuppressWarnings({ "rawtypes", "unchecked" })
         @Override
-        public Map<Key<?>, Service> asMap() {
-            // as() + addAttribute on all services is disabled before we start the
-            // export process. So ServiceBuild can be considered as effectively final
-            return (Map) services;
+        public Set<Key<?>> exportedKeys() {
+            return services.newServiceContract().provides();
         }
     }
 }

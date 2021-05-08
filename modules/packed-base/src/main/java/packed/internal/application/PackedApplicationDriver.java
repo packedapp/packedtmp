@@ -25,11 +25,10 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationWirelets;
+import app.packed.application.BaseMirror;
 import app.packed.application.Build;
-import app.packed.application.BuildMirror;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -49,6 +48,10 @@ import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
+
+    /** A daemon driver. */
+    public static final ApplicationDriver<?> MIRROR_DRIVER = ApplicationDriver.builder()
+            .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** A handle that can access Composer#driver. */
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
@@ -95,11 +98,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.modifiers = existing.modifiers;
         this.launchMode = existing.launchMode;
         this.wirelet = requireNonNull(wirelet);
-    }
-
-    @Override
-    public ApplicationMirror applicationMirror(Assembly<?> assembly, Wirelet... wirelets) {
-        return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror().application();
     }
 
     /**
@@ -199,7 +197,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     @Override
-    public BuildMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+    public BaseMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
         return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror();
     }
 

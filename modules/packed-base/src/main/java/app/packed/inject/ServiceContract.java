@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.BuildMirror;
+import app.packed.application.BaseMirror;
 import app.packed.base.Key;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
@@ -251,7 +251,7 @@ public final class ServiceContract extends Contract {
     }
 
     static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
-        BuildMirror application = driver.mirror(assembly);
+        BaseMirror application = driver.mirror(assembly);
         ComponentMirror component = application.component();
         if (!component.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + component);
@@ -278,8 +278,10 @@ public final class ServiceContract extends Contract {
 
     // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
     // Vil mene kontrakter primaert er en composition/build ting
+    
+    // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
     public static ServiceContract of(Assembly<?> assembly) {
-        return of(defaultAnalyzer(), assembly);
+        return of(BaseMirror.defaultDriver(), assembly);
     }
 
     /**
@@ -335,7 +337,7 @@ public final class ServiceContract extends Contract {
                     tmpRequires.add(k);
                 }
             });
-            return new ServiceContract(Set.copyOf(tmpOptional), Set.copyOf(tmpProvides), Set.copyOf(tmpRequires));
+            return new ServiceContract(Set.copyOf(tmpRequires), Set.copyOf(tmpOptional), Set.copyOf(tmpProvides));
         }
 
         private Builder compute(Type type, Key<?>... keys) {

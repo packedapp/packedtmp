@@ -34,7 +34,12 @@ public interface ApplicationMirror extends Mirror {
     // ellers maa man bruge container.resolve("....")
     ContainerMirror container(CharSequence path);
 
+    /** {@return a walker containing all the containers in this application} */
     TreeModelWalker<ComponentMirror> containers();
+
+    default TaskListMirror initialization() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns whether or the application is runnable. The value is always determined by
@@ -56,8 +61,8 @@ public interface ApplicationMirror extends Mirror {
     boolean isStronglyWired();
 
     /**
-     * @return the module that the application belongs to, this is typically the module of the assembly that defined the
-     *         root container.
+     * {@return the module that the application belongs to. This is typically the module of the assembly that defined the
+     * root container.}
      */
     Module module();
 

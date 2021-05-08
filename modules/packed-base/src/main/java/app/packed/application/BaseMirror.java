@@ -2,6 +2,7 @@ package app.packed.application;
 
 import java.util.stream.Stream;
 
+import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
@@ -9,11 +10,12 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.container.ContainerMirror;
 import app.packed.inject.ServiceExtension;
 import app.packed.mirror.Mirror;
+import packed.internal.application.PackedApplicationDriver;
 
 /**
  * A model of a (successful) build.
  */
-public interface BuildMirror extends Mirror {
+public interface BaseMirror extends Mirror {
 
     /** {@return the root application of the build}. */
     ApplicationMirror application();
@@ -39,6 +41,10 @@ public interface BuildMirror extends Mirror {
     /** {@return a component stream that includes every component in this build}. */
     Stream<ContainerMirror> containers();
 
+    default TaskListMirror initialization() {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns the set of modifiers used for this assembling.
      * <p>
@@ -50,8 +56,23 @@ public interface BuildMirror extends Mirror {
         return component().modifiers();
     }
 
+    /** { @return the name of the root application.} */
+    default String name() {
+        return application().name();
+    }
+
     /** {@return the build target.} */
     BuildTarget target();
+    
+
+    // reflector
+    public static ApplicationDriver<?> defaultDriver() {
+        return PackedApplicationDriver.MIRROR_DRIVER;
+    }
+    
+    static BaseMirror reflect(Assembly<?> assembly) {
+        return defaultDriver().mirror(assembly);
+    }
 }
 
 // isClosedWorld -> No Deploy hosts models
@@ -61,7 +82,7 @@ public interface BuildMirror extends Mirror {
 
 class Doo {
 
-    void Foo(BuildMirror m) {
+    void Foo(BaseMirror m) {
         System.out.println("Number of applications in build" + m.applications().count());
         System.out.println("Number of components in build" + m.components().count());
         if (m.container("wef/123").hasExtension(ServiceExtension.class)) {

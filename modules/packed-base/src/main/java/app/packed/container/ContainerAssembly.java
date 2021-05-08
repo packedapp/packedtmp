@@ -123,7 +123,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
-     * @return a model of the component that was linked
+     * @return a mirror of the component that was linked
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
     protected final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {

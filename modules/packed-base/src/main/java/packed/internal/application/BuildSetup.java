@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.Build;
-import app.packed.application.BuildMirror;
+import app.packed.application.BaseMirror;
 import app.packed.application.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
@@ -93,7 +93,7 @@ public final class BuildSetup implements Build {
         return container.mirror().stream();
     }
 
-    public BuildMirror mirror() {
+    public BaseMirror mirror() {
         return new BuildMirrorAdaptor(this);
     }
 
@@ -131,7 +131,7 @@ public final class BuildSetup implements Build {
         return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.MIRROR : BuildTarget.INSTANCE;
     }
 
-    private record BuildMirrorAdaptor(BuildSetup build) implements BuildMirror {
+    private record BuildMirrorAdaptor(BuildSetup build) implements BaseMirror {
 
         /** {@inheritDoc} */
         @Override

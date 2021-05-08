@@ -150,19 +150,9 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      */
     InstanceState launchMode();
 
-    /**
-     * @param assembly
-     *            the assembly
-     * @param wirelets
-     *            optional wirelets
-     * @return an application mirror
-     */
-    // Maybe buildMirror, when do ever not want a build mirror??
-    @Deprecated
-    ApplicationMirror applicationMirror(Assembly<?> assembly, Wirelet... wirelets);
-
     // introspect??? reflect???
-    BuildMirror mirror(Assembly<?> assembly, Wirelet... wirelets);
+    // reflectDefaults <---
+    BaseMirror mirror(Assembly<?> assembly, Wirelet... wirelets);
     
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -181,7 +171,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildMirror b = mirror(assembly, wirelets);
+        BaseMirror b = mirror(assembly, wirelets);
         b.components().forEach(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append(" ").append(cc.modifiers());
