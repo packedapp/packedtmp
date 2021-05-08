@@ -74,7 +74,13 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      *            optional wirelets
      * @return a build object
      */
-    Build analyze(Assembly<?> assembly, Wirelet... wirelets);
+    // Vi mangler noget omkring at fejle...
+    // Altsaa taenker kun at det er specielle vaerktoejer der ikke vil fejle...
+    // saa Maaske skal vi have 2 metoder
+    // analyze -> ApplicationModel, build-> BuildModel???
+
+    // buildForInstantiation(), buildImage
+    Build build(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Create a new application instance by using the specified consumer and configurator.
@@ -145,6 +151,20 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     InstanceState launchMode();
 
     /**
+     * @param assembly
+     *            the assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return an application mirror
+     */
+    // Maybe buildMirror, when do ever not want a build mirror??
+    @Deprecated
+    ApplicationMirror applicationMirror(Assembly<?> assembly, Wirelet... wirelets);
+
+    // introspect??? reflect???
+    BuildMirror mirror(Assembly<?> assembly, Wirelet... wirelets);
+    
+    /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
      * @param assembly
@@ -157,10 +177,11 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * @see Program#newImage(Assembly, Wirelet...)
      * @see ServiceLocator#newImage(Assembly, Wirelet...)
      */
+    // why newImage but mirror?
     ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
-        Build b = analyze(assembly, wirelets);
+        BuildMirror b = mirror(assembly, wirelets);
         b.components().forEach(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append(" ").append(cc.modifiers());
@@ -237,8 +258,8 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
         // cannot be instantiated, typically used if you just want to analyze
         /**
          * Creates a new application driver that does not support instantiation of applications. These type of drivers are
-         * typically used if you only need to use {@link ApplicationDriver#analyze(Assembly, Wirelet...)} but do not
-         * need to create actual application instances.
+         * typically used if you only need to use {@link ApplicationDriver#build(Assembly, Wirelet...)} but do not need to
+         * create actual application instances.
          * 
          * @param <A>
          *            the application type
@@ -414,8 +435,8 @@ interface ZApplicationDriverWithBuilder {
 
     // Vi dropper det lookup object?
     // eller ogsaa har vi maaske 2 metoder
-    // Man kan lave en builder 
-    
+    // Man kan lave en builder
+
     static Builder<Void> builder(MethodHandles.Lookup lookup) {
         throw new UnsupportedOperationException();
     }
@@ -437,10 +458,9 @@ interface ZApplicationDriverWithBuilder {
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
         @SuppressWarnings("unchecked")
-        default Builder restrictExtensions(Class<? extends Extension>... extensionClasses) {
+        default Builder<T> restrictExtensions(Class<? extends Extension>... extensionClasses) {
             throw new UnsupportedOperationException();
         }
-        
 
 //      /**
 //       * Will look for annotations

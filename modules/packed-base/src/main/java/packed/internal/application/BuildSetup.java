@@ -15,14 +15,18 @@
  */
 package packed.internal.application;
 
-import app.packed.application.ApplicationDescriptor;
+import java.util.stream.Stream;
+
+import app.packed.application.ApplicationMirror;
 import app.packed.application.Build;
+import app.packed.application.BuildMirror;
 import app.packed.application.BuildTarget;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentStream;
 import app.packed.component.Wirelet;
+import app.packed.container.ContainerMirror;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
@@ -65,7 +69,7 @@ public final class BuildSetup implements Build {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
         }
         ContainerComponentDriver containerDriver = (ContainerComponentDriver) componentDriver;
-        
+
         this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + containerDriver.modifiers + modifiers;
         this.application = new ApplicationSetup(this, applicationDriver, realm, containerDriver, modifiers, wirelets);
         this.container = application.container;
@@ -73,20 +77,24 @@ public final class BuildSetup implements Build {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationDescriptor application() {
-        return application.adaptor();
+    public ApplicationMirror application() {
+        return application.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
-    public Component component() {
-        return container.adaptor();
+    public ComponentMirror component() {
+        return container.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream components() {
-        return container.adaptor().stream();
+    public ComponentMirrorStream components() {
+        return container.mirror().stream();
+    }
+
+    public BuildMirror mirror() {
+        return new BuildMirrorAdaptor(this);
     }
 
     @Override
@@ -120,6 +128,62 @@ public final class BuildSetup implements Build {
         if (PackedComponentModifierSet.isImage(modifiers)) {
             return BuildTarget.IMAGE;
         }
-        return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.ANALYSIS : BuildTarget.INSTANCE;
+        return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.MIRROR : BuildTarget.INSTANCE;
+    }
+
+    private record BuildMirrorAdaptor(BuildSetup build) implements BuildMirror {
+
+        /** {@inheritDoc} */
+        @Override
+        public ApplicationMirror application() {
+            return build.application.mirror();
+        }
+
+        @Override
+        public ApplicationMirror application(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Stream<ApplicationMirror> applications() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ComponentMirror component() {
+            return build.application.mirror().component();
+        }
+
+        @Override
+        public ApplicationMirror component(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ComponentMirrorStream components() {
+            return component().stream();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContainerMirror container() {
+            return build.container.containerMirror();
+        }
+
+        @Override
+        public ContainerMirror container(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Stream<ContainerMirror> containers() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public BuildTarget target() {
+            return build.target();
+        }
+
     }
 }

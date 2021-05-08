@@ -28,6 +28,7 @@ import packed.internal.container.ExtensionModel;
  * This class describes an extension and defines various methods to obtain information about the extension. An instance
  * of this interface is normally acquired by calling {@link #of(Class)}.
  */
+// Altsaa den er ret anderledes i forhold til ComponentDescriptor..
 public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
     /**

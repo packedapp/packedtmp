@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
 
@@ -50,7 +50,7 @@ import app.packed.component.ComponentScope;
 
     /** {@inheritDoc} */
     @Override
-    public Component source() {
+    public ComponentMirror source() {
         return from;
     }
 
@@ -62,13 +62,13 @@ import app.packed.component.ComponentScope;
 
     /** {@inheritDoc} */
     @Override
-    public Iterator<Component> iterator() {
+    public Iterator<ComponentMirror> iterator() {
         if (distance == 0) {
-            return List.of((Component) from).iterator();
+            return List.of((ComponentMirror) from).iterator();
         } else if (distance == 1) {
-            return List.of((Component) from, (Component) to).iterator();
+            return List.of((ComponentMirror) from, (ComponentMirror) to).iterator();
         } else {
-            Component[] components = new Component[distance];
+            ComponentMirror[] components = new ComponentMirror[distance];
 
             int i = 0;
             PackedComponentInstance pc = from;
@@ -89,13 +89,13 @@ import app.packed.component.ComponentScope;
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> findLowestCommonAncestor() {
+    public Optional<ComponentMirror> findLowestCommonAncestor() {
         return Optional.ofNullable(lcd);
     }
 
     /** {@inheritDoc} */
     @Override
-    public Component target() {
+    public ComponentMirror target() {
         return to;
     }
 

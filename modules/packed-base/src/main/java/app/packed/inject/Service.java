@@ -7,6 +7,12 @@ import app.packed.base.Key;
  * A description of a service.
  */
 // isLazy.. Kan vi sige noget om det.. Det vil jeg ikke mene
+
+// Er det en model???
+
+// ServiceModel...
+//// Maaske har vi en ServiceModel et sted...
+//// SM.getUsages() ->
 public /* sealed */ interface Service extends AttributedElement {
 
     /**
@@ -36,7 +42,6 @@ public /* sealed */ interface Service extends AttributedElement {
      */
     Key<?> key();
 }
-
 
 // Deleted
 // Vi kan ikke sige noget om den type service der bliver provided.

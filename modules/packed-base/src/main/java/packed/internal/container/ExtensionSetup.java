@@ -10,10 +10,10 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSource;
 import app.packed.container.Extension;
@@ -58,7 +58,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     private boolean isConfigured;
 
     /** This extension's model. */
-    private final ExtensionModel model;
+    final ExtensionModel model;
 
     /**
      * Creates a new extension setup.
@@ -170,11 +170,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the extension's model} */
-    public ExtensionModel model() {
-        return model;
-    }
-
     /**
      * The extension is completed once the realm the container is part of is closed. Will invoke
      * {@link Extension#onComplete()}.
@@ -251,7 +246,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         return new PackedWireletSource<>(wirelets, wireletClass);
     }
 
-    public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, Component containerComponent) {
+    public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, ComponentMirror containerComponent) {
         requireNonNull(lookup, "containerComponent is null");
 
         // We only allow to call in directly on the container itself

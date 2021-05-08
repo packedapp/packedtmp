@@ -20,12 +20,12 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.component.Component;
-import app.packed.component.ComponentStream;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorStream;
 import packed.internal.util.PackedAttributeHolderStream;
 
-/** Implementation of {@link ComponentStream}. */
-final class PackedComponentStream extends PackedAttributeHolderStream<Component> implements ComponentStream {
+/** Implementation of {@link ComponentMirrorStream}. */
+final class PackedComponentStream extends PackedAttributeHolderStream<ComponentMirror> implements ComponentMirrorStream {
 
     /**
      * Creates a new component stream.
@@ -33,7 +33,7 @@ final class PackedComponentStream extends PackedAttributeHolderStream<Component>
      * @param stream
      *            the stream that we wrap.
      */
-    PackedComponentStream(Stream<Component> stream) {
+    PackedComponentStream(Stream<ComponentMirror> stream) {
         super(stream);
     }
 
@@ -45,13 +45,13 @@ final class PackedComponentStream extends PackedAttributeHolderStream<Component>
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentStream dropWhile(Predicate<? super Component> predicate) {
+    public PackedComponentStream dropWhile(Predicate<? super ComponentMirror> predicate) {
         return with(stream.dropWhile(predicate));
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentStream filter(Predicate<? super Component> predicate) {
+    public PackedComponentStream filter(Predicate<? super ComponentMirror> predicate) {
         return with(stream.filter(predicate));
     }
 
@@ -63,7 +63,7 @@ final class PackedComponentStream extends PackedAttributeHolderStream<Component>
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentStream peek(Consumer<? super Component> action) {
+    public PackedComponentStream peek(Consumer<? super ComponentMirror> action) {
         return with(stream.peek(action));
     }
 
@@ -81,19 +81,19 @@ final class PackedComponentStream extends PackedAttributeHolderStream<Component>
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentStream sorted(Comparator<? super Component> comparator) {
+    public PackedComponentStream sorted(Comparator<? super ComponentMirror> comparator) {
         return with(stream.sorted(comparator));
     }
 
     /** {@inheritDoc} */
     @Override
-    public PackedComponentStream takeWhile(Predicate<? super Component> predicate) {
+    public PackedComponentStream takeWhile(Predicate<? super ComponentMirror> predicate) {
         return with(stream.takeWhile(predicate));
     }
 
     /** {@inheritDoc} */
     @Override
-    protected PackedComponentStream with(Stream<Component> s) {
+    protected PackedComponentStream with(Stream<ComponentMirror> s) {
         return new PackedComponentStream(s);
     }
 }

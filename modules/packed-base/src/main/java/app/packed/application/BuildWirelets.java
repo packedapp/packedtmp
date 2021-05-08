@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
 import packed.internal.component.InternalWirelet;
@@ -41,11 +41,11 @@ public final class BuildWirelets {
      *            the action to perform
      * @return the wirelet
      */
-    public static Wirelet onWire(Consumer<? super Component> action) {
+    public static Wirelet onWire(Consumer<? super ComponentMirror> action) {
         return new InternalWirelet.OnWireActionWirelet(action, null);
     }
 
-    public static Wirelet onWire(Consumer<? super Component> action, ComponentScope scope) {
+    public static Wirelet onWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
         requireNonNull(scope, "scope is null");
         return new InternalWirelet.OnWireActionWirelet(action, scope);
     }

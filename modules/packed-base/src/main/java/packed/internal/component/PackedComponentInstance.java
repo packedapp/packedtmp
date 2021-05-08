@@ -25,22 +25,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationMirror;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
-import app.packed.component.ComponentStream;
+import app.packed.component.ComponentMirrorStream;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
-public final class PackedComponentInstance implements Component {
+public final class PackedComponentInstance implements ComponentMirror {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
@@ -137,7 +137,7 @@ public final class PackedComponentInstance implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Collection<Component> children() {
+    public Collection<ComponentMirror> children() {
         Map<String, PackedComponentInstance> c = children;
         if (c == null) {
             return Collections.emptySet();
@@ -152,7 +152,7 @@ public final class PackedComponentInstance implements Component {
         return model.depth;
     }
 
-    public Component findComponent(CharSequence path) {
+    public ComponentMirror findComponent(CharSequence path) {
         return findComponent(path.toString());
     }
 
@@ -227,7 +227,7 @@ public final class PackedComponentInstance implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> parent() {
+    public Optional<ComponentMirror> parent() {
         return Optional.ofNullable(parent);
     }
 
@@ -239,7 +239,7 @@ public final class PackedComponentInstance implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentRelation relationTo(Component other) {
+    public ComponentRelation relationTo(ComponentMirror other) {
         requireNonNull(other, "other is null");
         return PackedComponentInstanceRelation.relation(this, (PackedComponentInstance) other);
     }
@@ -248,8 +248,8 @@ public final class PackedComponentInstance implements Component {
      * @param path
      */
     @Override
-    public Component resolve(CharSequence path) {
-        Component c = findComponent(path);
+    public ComponentMirror resolve(CharSequence path) {
+        ComponentMirror c = findComponent(path);
         if (c == null) {
             // Maybe try an match with some fuzzy logic, if children is a resonable size)
             List<?> list = stream().map(e -> e.path()).toList();
@@ -260,7 +260,7 @@ public final class PackedComponentInstance implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public Component root() {
+    public ComponentMirror root() {
         PackedComponentInstance c = this;
         PackedComponentInstance p = parent;
         while (p != null) {
@@ -272,16 +272,16 @@ public final class PackedComponentInstance implements Component {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentStream stream(ComponentStream.Option... options) {
+    public ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
         return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
 
-    private Stream<Component> stream0(PackedComponentInstance origin, boolean isRoot, PackedComponentStreamOption option) {
+    private Stream<ComponentMirror> stream0(PackedComponentInstance origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
         Map<String, PackedComponentInstance> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, this)) {
-                Stream<Component> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
+                Stream<ComponentMirror> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));
                 return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
             }
             return Stream.empty();
@@ -291,12 +291,12 @@ public final class PackedComponentInstance implements Component {
     }
 
     @Override
-    public boolean isInSame(ComponentScope scope, Component other) {
+    public boolean isInSame(ComponentScope scope, ComponentMirror other) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ApplicationDescriptor application() {
+    public ApplicationMirror application() {
         throw new UnsupportedOperationException();
     }
 }

@@ -167,7 +167,7 @@ public enum ComponentModifier {
     // Altsa kan man faa den information paa andre maader f.eks. via BuildInfo????
     // Jeg er ikke sikker paa jeg syntes den skal vaere her...
     // Altsaa man kan faa den via BuildInfo. IDK, leave it in
-    ANALYSIS,
+    MIRROR,
     
     /**
      * Indicates that the components wraps a single abstract method (SAM).

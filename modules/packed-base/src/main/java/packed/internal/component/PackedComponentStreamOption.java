@@ -23,14 +23,14 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentStream;
+import app.packed.component.ComponentMirrorStream;
 import app.packed.container.Extension;
 
 /**
  *
  */
 // Kopiere lidt paenere kode fra jdk.nashorn.internal.runtime.regexp.joni.Option
-public final class PackedComponentStreamOption implements ComponentStream.Option {
+public final class PackedComponentStreamOption implements ComponentMirrorStream.Option {
 
     private static final int EXCLUDE_ORIGIN = 1;
 
@@ -74,7 +74,7 @@ public final class PackedComponentStreamOption implements ComponentStream.Option
         return sj.toString();
     }
 
-    public static PackedComponentStreamOption of(ComponentStream.Option... options) {
+    public static PackedComponentStreamOption of(ComponentMirrorStream.Option... options) {
         requireNonNull(options, "options is null");
         if (options.length == 0) {
             return DEFAULT_OPTION;

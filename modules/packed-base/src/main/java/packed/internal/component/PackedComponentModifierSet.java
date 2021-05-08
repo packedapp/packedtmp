@@ -30,7 +30,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
 
     // Er det snare en property på build info????
-    public static final int I_ANALYSIS = intOf(ComponentModifier.ANALYSIS);
+    public static final int I_MIRROR = intOf(ComponentModifier.MIRROR);
     public static final int I_BUILD = intOf(ComponentModifier.BUILD);
     
     public static final int I_RUNTIME = intOf(ComponentModifier.RUNTIME);
@@ -60,7 +60,7 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     }
 
     public static boolean isAnalysis(int modifiers) {
-        return isSet(modifiers, ComponentModifier.ANALYSIS);
+        return isSet(modifiers, ComponentModifier.MIRROR);
     }
     
     

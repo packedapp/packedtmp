@@ -27,9 +27,9 @@ import app.packed.application.Build;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSource;
 import app.packed.container.Extension.Subtension;
@@ -171,11 +171,12 @@ public /* sealed */ interface ExtensionConfiguration {
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
+     * @return a model of the component that was linked
      * @throws InternalExtensionException
      *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
      * @see Extension#onComplete()
      */
-    Component link(Assembly<?> assembly, Wirelet... wirelets);
+    ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Returns the path of the extension. The path of the extension's container, can be obtained by calling
@@ -263,7 +264,7 @@ public /* sealed */ interface ExtensionConfiguration {
     // But now I think we will extract the information from component attributes
     @SuppressWarnings("unused")
     private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
-            Component containerComponent) {
+            ComponentMirror containerComponent) {
         requireNonNull(caller, "caller is null");
         return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
     }
@@ -282,7 +283,7 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     // We current dont use then
     @SuppressWarnings({ "unchecked", "unused" })
-    private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, Component containerComponent) {
+    private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, ComponentMirror containerComponent) {
         requireNonNull(caller, "caller is null");
         requireNonNull(extensionClass, "extensionClass is null");
         if (caller.lookupClass() != extensionClass) {

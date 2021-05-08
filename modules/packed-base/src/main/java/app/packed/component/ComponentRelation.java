@@ -19,9 +19,9 @@ import java.util.Optional;
 
 /**
  * A component relation is an unchangeable representation of a directional relationship between two components. It is
- * typically created via {@link Component#relationTo(Component)}.
+ * typically created via {@link ComponentMirror#relationTo(ComponentMirror)}.
  */
-public /* sealed */ interface ComponentRelation extends Iterable<Component> {
+public /* sealed */ interface ComponentRelation extends Iterable<ComponentMirror> {
 
     /**
      * -1 if {@link #source()} and {@link #target()} are not in the same system. 0 if source and target are identical.
@@ -36,7 +36,7 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
      * 
      * @return lowest common ancestor for the two components. Or empty if not in the same system
      */
-    Optional<Component> findLowestCommonAncestor();
+    Optional<ComponentMirror> findLowestCommonAncestor();
 
     /**
      * Returns whether or not the two components are in the same application.
@@ -56,10 +56,10 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
 
     /**
      * Returns whether or not the two components are in the same system. Two components are in the same system, iff they
-     * have the same {@link Component#root() system component}.
+     * have the same {@link ComponentMirror#root() system component}.
      * 
      * @return whether or not the two components are in the same system
-     * @see Component#root()
+     * @see ComponentMirror#root()
      */
     default boolean isInSameNamespace() {
         return isInSame(ComponentScope.NAMESPACE);
@@ -80,14 +80,14 @@ public /* sealed */ interface ComponentRelation extends Iterable<Component> {
      * 
      * @return the source of the relation
      */
-    Component source();
+    ComponentMirror source();
 
     /**
      * The target of the relation.
      * 
      * @return the target of the relation
      */
-    Component target();
+    ComponentMirror target();
 }
 
 //Taenker den er immutable...

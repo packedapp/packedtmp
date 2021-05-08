@@ -21,8 +21,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.attribute.AttributedElement;
-import app.packed.component.ComponentStream;
-import app.packed.component.ComponentStream.Option;
+import app.packed.component.ComponentMirrorStream;
+import app.packed.component.ComponentMirrorStream.Option;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
@@ -101,7 +101,7 @@ public interface NamespaceElement extends AttributedElement {
      * 
      * @return a component stream consisting of this component and all of its descendants in any order
      */
-    Stream<? extends NamespaceElement> stream(ComponentStream.Option... options);
+    Stream<? extends NamespaceElement> stream(ComponentMirrorStream.Option... options);
 
     /**
      * Returns the root component of the namespace this component is located in.

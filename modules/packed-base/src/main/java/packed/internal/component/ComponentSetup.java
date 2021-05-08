@@ -25,13 +25,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationMirror;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -39,7 +39,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
-import app.packed.component.ComponentStream;
+import app.packed.component.ComponentMirrorStream;
 import app.packed.component.Wirelet;
 import app.packed.container.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
@@ -79,7 +79,7 @@ public abstract class ComponentSetup {
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
     @Nullable
-    protected Consumer<? super Component> onWire;
+    protected Consumer<? super ComponentMirror> onWire;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
@@ -143,15 +143,6 @@ public abstract class ComponentSetup {
         this.onWire = container.onWire;
         // Cannot use wirelets with extensions. So the name is final
         initializeNameWithPrefix(model.nameComponent);
-    }
-
-    /**
-     * Returns a {@link Component} adaptor of this node.
-     * 
-     * @return a component adaptor
-     */
-    public final Component adaptor() {
-        return new ComponentAdaptor(this);
     }
 
     final AttributeMap attributes() {
@@ -231,7 +222,7 @@ public abstract class ComponentSetup {
      * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
      * @see ExtensionConfiguration#link(Assembly, Wirelet...)
      */
-    public final Component link(Assembly<?> assembly, Wirelet... wirelets) {
+    public final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
 
@@ -255,7 +246,16 @@ public abstract class ComponentSetup {
         // Close the new realm again after the assembly has been successfully linked
         newRealm.close();
 
-        return newRealm.root.adaptor();
+        return newRealm.root.mirror();
+    }
+
+    /**
+     * Returns a {@link ComponentMirror} adaptor of this node.
+     * 
+     * @return a component adaptor
+     */
+    public final ComponentMirror mirror() {
+        return new ComponentMirrorAdaptor(this);
     }
 
     public final PackedComponentModifierSet modifiers() {
@@ -264,7 +264,7 @@ public abstract class ComponentSetup {
 
     protected final void onWired() {
         if (onWire != null) {
-            onWire.accept(adaptor());
+            onWire.accept(mirror());
         }
     }
 
@@ -309,15 +309,15 @@ public abstract class ComponentSetup {
 
     // This should only be called by special methods
     // We just take the lookup to make sure caller think twice before calling this method.
-    public static ComponentSetup unadapt(Lookup caller, Component component) {
-        if (component instanceof ComponentAdaptor ca) {
+    public static ComponentSetup unadapt(Lookup caller, ComponentMirror component) {
+        if (component instanceof ComponentMirrorAdaptor ca) {
             return ca.component;
         }
         throw new IllegalStateException("This method must be called before a component is instantiated");
     }
 
-    /** An adaptor of the {@link Component} interface for a {@link ComponentSetup}. */
-    private record ComponentAdaptor(ComponentSetup component) implements Component {
+    /** An adaptor of the {@link ComponentMirror} interface for a {@link ComponentSetup}. */
+    private record ComponentMirrorAdaptor(ComponentSetup component) implements ComponentMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -327,9 +327,9 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Collection<Component> children() {
+        public Collection<ComponentMirror> children() {
             LinkedHashMap<String, ComponentSetup> m = component.children;
-            return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.adaptor());
+            return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
         }
 
         /** {@inheritDoc} */
@@ -358,9 +358,9 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Component> parent() {
+        public Optional<ComponentMirror> parent() {
             ComponentSetup parent = component.parent;
-            return parent == null ? Optional.empty() : Optional.of(parent.adaptor());
+            return parent == null ? Optional.empty() : Optional.of(parent.mirror());
         }
 
         /** {@inheritDoc} */
@@ -371,19 +371,19 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentRelation relationTo(Component other) {
+        public ComponentRelation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(component, ((ComponentAdaptor) other).component);
+            return ComponentSetupRelation.of(component, ((ComponentMirrorAdaptor) other).component);
         }
 
         /** {@inheritDoc} */
         @Override
-        public Component resolve(CharSequence path) {
+        public ComponentMirror resolve(CharSequence path) {
             LinkedHashMap<String, ComponentSetup> map = component.children;
             if (map != null) {
                 ComponentSetup cs = map.get(path.toString());
                 if (cs != null) {
-                    return cs.adaptor();
+                    return cs.mirror();
                 }
             }
             throw new UnsupportedOperationException();
@@ -391,17 +391,17 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentStream stream(ComponentStream.Option... options) {
+        public ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
             return new PackedComponentStream(stream0(component, true, PackedComponentStreamOption.of(options)));
         }
 
-        private Stream<Component> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
+        private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
             @SuppressWarnings({ "unchecked", "rawtypes" })
-            Collection<ComponentAdaptor> c = (Collection) children();
+            Collection<ComponentMirrorAdaptor> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
                 if (option.processThisDeeper(origin, component)) {
-                    Stream<Component> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
+                    Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
                     return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
                 }
                 return Stream.empty();
@@ -412,25 +412,25 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean isInSame(ComponentScope scope, Component other) {
+        public boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return component.isInSame(scope, ((ComponentAdaptor) other).component);
+            return component.isInSame(scope, ((ComponentMirrorAdaptor) other).component);
         }
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationDescriptor application() {
-            return component.application.adaptor();
+        public ApplicationMirror application() {
+            return component.application.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
-        public Component root() {
+        public ComponentMirror root() {
             ComponentSetup c = component;
             while (c.parent != null) {
                 c = c.parent;
             }
-            return c == component ? this : c.adaptor();
+            return c == component ? this : c.mirror();
         }
     }
 }

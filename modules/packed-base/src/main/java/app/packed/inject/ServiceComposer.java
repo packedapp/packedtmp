@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 
@@ -525,7 +525,7 @@ abstract class YIdeas {
     // Component2Be
     // Vi er ihvertfald interesset i navn, Container osv.
     // ComponentDesc
-    public abstract Component target();
+    public abstract ComponentMirror target();
     // the target (container) of the transformation
 
     // Vi kan ikke rigtig have source... Idet vi jo er ved at opbygge den container...

@@ -20,6 +20,7 @@ import app.packed.base.Key;
 import app.packed.base.Tag;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.ServiceContract;
+import app.packed.inject.ServiceExtensionMirror;
 import app.packed.inject.ServiceWirelets;
 
 /**
@@ -58,6 +59,9 @@ public class FooBar extends BaseAssembly {
 
     public static void main(String[] args) {
         System.out.println(ServiceContract.of(new Child()));
+
+        System.out.println("Exported keys : " + ServiceExtensionMirror.of(new Child()).exportedKeys());
+
         Program a = Program.start(new FooBar());
         a.use(Runnable.class).run();
     }

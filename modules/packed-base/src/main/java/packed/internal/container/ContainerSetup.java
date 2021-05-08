@@ -24,16 +24,16 @@ import java.util.IdentityHashMap;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.Component;
 import app.packed.component.ComponentAttributes;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
-import app.packed.container.Container;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -135,6 +135,11 @@ public final class ContainerSetup extends WireableComponentSetup {
         assert name != null;
     }
 
+    /** {@return a container adaptor that can be exposed to end-users} */
+    public ContainerMirror containerMirror() {
+        return new ContainerMirrorAdaptor(this);
+    }
+
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
         // kan ogsaa test om container.application = application.container?
@@ -162,7 +167,7 @@ public final class ContainerSetup extends WireableComponentSetup {
         // Vil faktisk mene det skal vaere den modsatte order...
         // Tror vi skal have vendt comparatoren
         ArrayList<ExtensionSetup> extensionsOrdered = new ArrayList<>(extensions.values());
-        Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model().compareTo(c2.model()));
+        Collections.sort(extensionsOrdered, (c1, c2) -> -c1.model.compareTo(c2.model));
 
         // Close every extension
         for (ExtensionSetup extension : extensionsOrdered) {
@@ -170,11 +175,6 @@ public final class ContainerSetup extends WireableComponentSetup {
         }
 
         injection.resolve();
-    }
-
-    /** {@return a container adaptor that can be exposed to end-users} */
-    public Container containerAdaptor() {
-        return new ContainerAdaptor(this);
     }
 
     /** {@return a unmodifiable view of the extensions that are in use.} */
@@ -294,12 +294,12 @@ public final class ContainerSetup extends WireableComponentSetup {
     }
 
     /** An adaptor for the Container interface. */
-    record ContainerAdaptor(ContainerSetup container) implements Container {
+    private record ContainerMirrorAdaptor(ContainerSetup container) implements ContainerMirror {
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationDescriptor application() {
-            return container.application.adaptor();
+        public ApplicationMirror application() {
+            return container.application.mirror();
         }
 
         /** {@inheritDoc} */
@@ -310,14 +310,14 @@ public final class ContainerSetup extends WireableComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Component component() {
-            return container.adaptor();
+        public ComponentMirror component() {
+            return container.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
-        public Collection<Container> children() {
-            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.containerAdaptor());
+        public Collection<ContainerMirror> children() {
+            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.containerMirror());
         }
 
         /** {@inheritDoc} */
@@ -328,15 +328,28 @@ public final class ContainerSetup extends WireableComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Container> parent() {
+        public Optional<ContainerMirror> parent() {
             ContainerSetup p = container.containerParent;
-            return p == null ? Optional.empty() : Optional.of(p.containerAdaptor());
+            return p == null ? Optional.empty() : Optional.of(p.containerMirror());
         }
 
         /** {@inheritDoc} */
         @Override
         public NamespacePath path() {
             return PackedTreePath.of(container);
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<Class<? extends Extension>> extensions() {
+            return container.extensionView();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasExtension(Class<? extends Extension> extensionType) {
+            requireNonNull(extensionType, "extensionType is null");
+            return container.extensions.containsKey(extensionType);
         }
     }
 }

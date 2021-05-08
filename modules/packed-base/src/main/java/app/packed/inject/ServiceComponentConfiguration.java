@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
@@ -30,8 +29,6 @@ import packed.internal.component.ClassComponentDriver;
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
  * calling one of the install methods on, for example, {@link BaseAssembly}.
- * <p>
- * It it also possible to install components at runtime via {@link Component}.
  */
 //ProvidableComponentConfiguration
 // Serviceable

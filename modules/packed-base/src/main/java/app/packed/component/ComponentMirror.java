@@ -19,22 +19,22 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.application.ApplicationDescriptor;
-import app.packed.attribute.AttributedElement;
+import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
-import app.packed.component.ComponentStream.Option;
+import app.packed.component.ComponentMirrorStream.Option;
+import app.packed.mirror.Mirror;
 
 /**
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public /* sealed */ interface Component extends AttributedElement {
+public /* sealed */ interface ComponentMirror extends Mirror {
 
     /** { @return the application this component is a part of} */
-    ApplicationDescriptor application();
+    ApplicationMirror application();
 
     /** {@return an unmodifiable view of all of this component's children} */
-    Collection<Component> children();
+    Collection<ComponentMirror> children();
 
     /**
      * Returns the distance to the root component. The root component having depth 0.
@@ -47,11 +47,11 @@ public /* sealed */ interface Component extends AttributedElement {
         return modifiers().contains(modifier);
     }
 
-    default Component in(ComponentScope boundary) {
+    default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
     }
 
-    boolean isInSame(ComponentScope scope, Component other);
+    boolean isInSame(ComponentScope scope, ComponentMirror other);
 
     /**
      * Returns the modifiers of this component.
@@ -73,7 +73,7 @@ public /* sealed */ interface Component extends AttributedElement {
     String name();
 
     /** {@return the parent component of this component. Or empty if this component has no parent} */
-    Optional<Component> parent();
+    Optional<ComponentMirror> parent();
 
     /** {@return the path of this component} */
     NamespacePath path();
@@ -90,15 +90,15 @@ public /* sealed */ interface Component extends AttributedElement {
      *            the other component
      * @return the relation to the other component
      */
-    ComponentRelation relationTo(Component other);
+    ComponentRelation relationTo(ComponentMirror other);
 
     // Now that we have parents...
     // add Optional<Component> tryResolve(CharSequence path);
     // Syntes ikke vi skal have baade tryResolve or resolve...
-    Component resolve(CharSequence path);
+    ComponentMirror resolve(CharSequence path);
 
     /** {@return the root component, returns this is this is the root component} */
-    Component root();
+    ComponentMirror root();
 
     /**
      * Returns a stream consisting of this component and all of its descendants in any order.
@@ -108,7 +108,7 @@ public /* sealed */ interface Component extends AttributedElement {
      * 
      * @return a component stream consisting of this component and all of its descendants in any order
      */
-    ComponentStream stream(ComponentStream.Option... options);
+    ComponentMirrorStream stream(ComponentMirrorStream.Option... options);
 
     /**
      * 
@@ -124,7 +124,7 @@ public /* sealed */ interface Component extends AttributedElement {
     // Well it is more or less the same options....
     // Tror vi laver options om til en klasse. Og saa har to metoder.
     // Og dropper varargs..
-    default void traverse(Consumer<? super Component> action) {
+    default void traverse(Consumer<? super ComponentMirror> action) {
         stream(Option.maxDepth(1)).forEach(action);
     }
 
@@ -142,7 +142,7 @@ public /* sealed */ interface Component extends AttributedElement {
 //        throw new UnsupportedOperationException();
 //    }
 
-    default Optional<Component> tryResolve(CharSequence path) {
+    default Optional<ComponentMirror> tryResolve(CharSequence path) {
         throw new UnsupportedOperationException();
     }
 }

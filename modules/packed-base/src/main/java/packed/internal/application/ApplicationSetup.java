@@ -6,12 +6,14 @@ import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationWirelets;
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
-import app.packed.container.Container;
+import app.packed.container.ContainerMirror;
+import app.packed.mirror.TreeModelWalker;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
@@ -74,11 +76,6 @@ public final class ApplicationSetup {
         }
     }
 
-    /** {@return an application adaptor that can be exposed to end-users} */
-    public ApplicationDescriptor adaptor() {
-        return new ApplicationAdaptor(this);
-    }
-
     public boolean hasMain() {
         return mainThread != null;
     }
@@ -94,6 +91,11 @@ public final class ApplicationSetup {
             m = mainThread = new MainThreadOfControl();
         }
         return m;
+    }
+
+    /** {@return an application adaptor that can be exposed to end-users} */
+    public ApplicationMirror mirror() {
+        return new ApplicationMirrorAdaptor(this);
     }
 
     /**
@@ -144,19 +146,19 @@ public final class ApplicationSetup {
         }
     }
 
-    /** An adaptor of {@link ApplicationSetup} exposed as {@link ApplicationDescriptor}. */
-    private /* primitive */ record ApplicationAdaptor(ApplicationSetup application) implements ApplicationDescriptor {
+    /** An adaptor of {@link ApplicationSetup} exposed as {@link ApplicationMirror}. */
+    private /* primitive */ record ApplicationMirrorAdaptor(ApplicationSetup application) implements ApplicationMirror {
 
         /** {@inheritDoc} */
         @Override
-        public Component component() {
-            return application.container.adaptor();
+        public ComponentMirror component() {
+            return application.container.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
-        public Container container() {
-            return application.container.containerAdaptor();
+        public ContainerMirror container() {
+            return application.container.containerMirror();
         }
 
         /** {@inheritDoc} */
@@ -173,7 +175,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<ApplicationDescriptor> parent() {
+        public Optional<ApplicationMirror> parent() {
             return Optional.empty();
         }
 
@@ -181,6 +183,42 @@ public final class ApplicationSetup {
         @Override
         public boolean isRunnable() {
             return application.driver.hasRuntime();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ComponentMirror component(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public TreeModelWalker<ComponentMirror> components() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public ContainerMirror container(CharSequence path) {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public TreeModelWalker<ComponentMirror> containers() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public NamespacePath path() {
+            throw new UnsupportedOperationException();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Module module() {
+            return application.container.realm.realmType().getModule();
         }
     }
 }

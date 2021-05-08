@@ -29,8 +29,8 @@ import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**
- * A specialization of the {@link Stream} interface that deals with streams of {@link Component components}. An instance
- * of this class is normally acquired by {@link Program#stream(Option...)}.
+ * A specialization of the {@link Stream} interface that deals with streams of {@link ComponentMirror components}. An
+ * instance of this class is normally acquired by {@link Program#stream(Option...)}.
  *
  * <pre>
  * App app  = ...
@@ -66,7 +66,12 @@ import packed.internal.component.PackedComponentStreamOption;
 
 // we should remove AttributedElementStream...
 // But keep an abstract version internally
-public interface ComponentStream extends AttributedElementStream<Component> {
+
+//  Drop Stream.. og have
+// stream() metode istedet for...
+// ModelWalker<Component
+
+public interface ComponentMirrorStream extends AttributedElementStream<ComponentMirror> {
 
 //    /**
 //     * Returns a stream that only contains containers.
@@ -77,14 +82,11 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //        return filterOnType(ComponentDescriptor.CONTAINER);
 //    }
 
-    default ComponentStream hasModifier(ComponentModifier modifier) {
-        requireNonNull(modifier, "modifier is null");
-        return filter(c -> c.hasModifier(modifier));
+    /** {@inheritDoc} */
+    @Override
+    default ComponentMirrorStream distinct() {
+        return this; // All components are distinct by default
     }
-//
-//    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
-//        throw new UnsupportedOperationException();
-//    }
 
     // @SuppressWarnings("unchecked")
     // default <A> void forEachFeature(FeatureKey<A> feature, BiConsumer<Component, ? super A> action) {
@@ -138,7 +140,6 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //        return this;
 //    }
 
-
     // Er det components med sidecars der provider mindst en feature instans???
     // Forstaaet paa den maade at vi bliver noedt til at kalde en metode paa sidecaren..
     // Og se om der faktisk er nogen elementer i den liste der kommer tilbage...
@@ -147,49 +148,50 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 //        throw new UnsupportedOperationException();
 //    }
 
-
-
     /********** Overridden to provide ComponentStream as a return value. **********/
 
     /** {@inheritDoc} */
     @Override
-    default ComponentStream distinct() {
-        return this; // All components are distinct by default
+    ComponentMirrorStream dropWhile(Predicate<? super ComponentMirror> predicate);
+
+    /** {@inheritDoc} */
+    @Override
+    ComponentMirrorStream filter(Predicate<? super ComponentMirror> predicate);
+
+    default ComponentMirrorStream hasModifier(ComponentModifier modifier) {
+        requireNonNull(modifier, "modifier is null");
+        return filter(c -> c.hasModifier(modifier));
     }
+//
+//    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
+//        throw new UnsupportedOperationException();
+//    }
 
     /** {@inheritDoc} */
     @Override
-    ComponentStream dropWhile(Predicate<? super Component> predicate);
+    ComponentMirrorStream limit(long maxSize);
 
     /** {@inheritDoc} */
     @Override
-    ComponentStream filter(Predicate<? super Component> predicate);
+    ComponentMirrorStream peek(Consumer<? super ComponentMirror> action);
 
     /** {@inheritDoc} */
     @Override
-    ComponentStream limit(long maxSize);
+    ComponentMirrorStream skip(long n);
 
-    /** {@inheritDoc} */
+    /** Returns a new component stream where components are sorted by their {@link ComponentMirror#path()}. */
     @Override
-    ComponentStream peek(Consumer<? super Component> action);
-
-    /** {@inheritDoc} */
-    @Override
-    ComponentStream skip(long n);
-
-    /** Returns a new component stream where components are sorted by their {@link Component#path()}. */
-    @Override
-    default ComponentStream sorted() {
+    default ComponentMirrorStream sorted() {
         return sorted((a, b) -> a.path().compareTo(b.path()));
     }
 
     /** {@inheritDoc} */
     @Override
-    ComponentStream sorted(Comparator<? super Component> comparator);
+    ComponentMirrorStream sorted(Comparator<? super ComponentMirror> comparator);
 
     /** {@inheritDoc} */
     @Override
-    ComponentStream takeWhile(Predicate<? super Component> predicate);
+    ComponentMirrorStream takeWhile(Predicate<? super ComponentMirror> predicate);
 
     /**
      * Skal kun indeholde ting vi ikke kan have i streamen.
@@ -214,7 +216,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
      * 
      * The order in which children should be processed
      * 
-     * @see Component#stream(Option...)
+     * @see ComponentMirror#stream(Option...)
      * @see Program#stream(Option...)
      */
     // I virkeligheden er det system view options.
@@ -231,29 +233,12 @@ public interface ComponentStream extends AttributedElementStream<Component> {
 
         // FollowUnitialized guests...
 
-        // Fail if not??
-        public static ComponentStream.Option partOfSame(ComponentScope boundaryType) {
-            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
-        }
-
         /**
          * Include components that belongs to an extension .
          * 
          * @return an option that includes all components that are part of an extension
          */
-        public static ComponentStream.Option includeExtensions() {
-            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
-        }
-
-        /**
-         * @param depth
-         *            the maximum depth of any component relative to the origin's depth
-         * @return an option
-         * @throws IllegalArgumentException
-         *             if the specified depth is negative
-         */
-        // maxRelativeDepth?
-        public static ComponentStream.Option maxDepth(int depth) {
+        public static ComponentMirrorStream.Option includeExtensions() {
             return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 
@@ -266,7 +251,7 @@ public interface ComponentStream extends AttributedElementStream<Component> {
          * @return an option that includes all components that belongs to any of the specified extension types
          */
         @SafeVarargs
-        public static ComponentStream.Option includeExtensions(Class<? extends Extension>... extensionClass) {
+        public static ComponentMirrorStream.Option includeExtensions(Class<? extends Extension>... extensionClass) {
             throw new UnsupportedOperationException();
         }
 
@@ -277,8 +262,30 @@ public interface ComponentStream extends AttributedElementStream<Component> {
          * 
          * @return an option that selects only the components that are in the same container as the stream origin.
          */
-        public static ComponentStream.Option inOriginContainer() {
+        public static ComponentMirrorStream.Option inOriginContainer() {
             return PackedComponentStreamOption.IN_ORIGIN_CONTAINER_OPTION;
+        }
+
+        /**
+         * @param depth
+         *            the maximum depth of any component relative to the origin's depth
+         * @return an option
+         * @throws IllegalArgumentException
+         *             if the specified depth is negative
+         */
+        // maxRelativeDepth?
+        public static ComponentMirrorStream.Option maxDepth(int depth) {
+            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
+        }
+
+        // Not sure we are ready for this...
+        static ComponentMirrorStream.Option parallel() {
+            throw new UnsupportedOperationException();
+        }
+
+        // Fail if not??
+        public static ComponentMirrorStream.Option partOfSame(ComponentScope boundaryType) {
+            return PackedComponentStreamOption.INCLUDE_EXTENSION_OPTION;
         }
 
         /**
@@ -287,13 +294,8 @@ public interface ComponentStream extends AttributedElementStream<Component> {
          * 
          * @return an option that excludes the component from where the stream is originated
          */
-        static ComponentStream.Option skipOrigin() {
+        static ComponentMirrorStream.Option skipOrigin() {
             return PackedComponentStreamOption.EXCLUDE_ORIGIN_OPTION;
-        }
-
-        // Not sure we are ready for this...
-        static ComponentStream.Option parallel() {
-            throw new UnsupportedOperationException();
         }
 
         // maxDepth, maxRelativeDepth

@@ -20,10 +20,10 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.application.ApplicationSetup;
@@ -105,9 +105,9 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
-     * @return the component that was linked
+     * @return a model of the component that was linked
      */
-    public Component link(Assembly<?> assembly, Wirelet... wirelets) {
+    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return context.link(assembly, wirelets);
     }
 

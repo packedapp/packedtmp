@@ -115,6 +115,7 @@ public abstract class Extension {
     // Det jeg ikke kan lide ved den er fx information om image... som jo kan vaereforskellige
     // for extension'en selv...
     // Hmm Assembly() <- you need to override build
+    /// Maaske returnere Container istedet for???? IDK
     protected final Build build() {
         return configuration().build();
     }

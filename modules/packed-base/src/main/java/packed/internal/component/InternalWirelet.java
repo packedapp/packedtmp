@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
@@ -68,13 +68,13 @@ public abstract class InternalWirelet extends Wirelet {
     public static final class OnWireActionWirelet extends InternalWirelet {
 
         /** The action to perform on each in-scope component after it has been fully wired. */
-        private final Consumer<? super Component> action;
+        private final Consumer<? super ComponentMirror> action;
 
         /** The scope of the wirelet */
         @Nullable
         final ComponentScope scope;
 
-        public OnWireActionWirelet(Consumer<? super Component> action, ComponentScope scope) {
+        public OnWireActionWirelet(Consumer<? super ComponentMirror> action, ComponentScope scope) {
             this.action = requireNonNull(action, "action is null");
             this.scope = scope;
         }
@@ -84,7 +84,7 @@ public abstract class InternalWirelet extends Wirelet {
         @Override
         protected void onBuild(ComponentSetup component) {
             // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
-            Consumer<? super Component> existing = component.onWire;
+            Consumer<? super ComponentMirror> existing = component.onWire;
             if (existing == null) {
                 component.onWire = action;
             } else {

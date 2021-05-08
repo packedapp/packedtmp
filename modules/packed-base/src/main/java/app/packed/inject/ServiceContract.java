@@ -25,10 +25,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.Build;
+import app.packed.application.BuildMirror;
 import app.packed.base.Key;
 import app.packed.component.Assembly;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 import packed.internal.component.ComponentSetup;
@@ -250,13 +250,13 @@ public final class ServiceContract extends Contract {
         return new ServiceContract.Builder(null);
     }
 
-    public static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
-        Build b = driver.analyze(assembly);
-        Component c= b.component();
-        if (!c.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + c);
+    static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
+        BuildMirror application = driver.mirror(assembly);
+        ComponentMirror component = application.component();
+        if (!component.modifiers().isContainer()) {
+            throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + component);
         }
-        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(null, c);
+        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(null, component);
         ServiceManagerSetup sm = container.injection.getServiceManager();
         return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
     }

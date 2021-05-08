@@ -35,6 +35,26 @@ public class BaseComponentConfiguration extends ComponentConfiguration {
     }
 
     /**
+     * Sets the {@link ComponentMirror#name() name} of the component. The name must consists only of alphanumeric characters and
+     * '_', '-' or '.'. The name is case sensitive.
+     * <p>
+     * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
+     * such a way that it will have a unique name other sibling components.
+     *
+     * @param name
+     *            the name of the component
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     * @see ComponentMirror#name()
+     */
+    public BaseComponentConfiguration named(String name) {
+        context.named(name);
+        return this;
+    }
+
+    /**
      * Returns the full path of the component.
      * <p>
      * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
@@ -49,27 +69,6 @@ public class BaseComponentConfiguration extends ComponentConfiguration {
      */
     public NamespacePath path() {
         return context.path();
-    }
-
-    /**
-     * Sets the {@link Component#name() name} of the component. The name must consists only of alphanumeric characters and
-     * '_', '-' or '.'. The name is case sensitive.
-     * <p>
-     * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
-     * such a way that it will have a unique name other sibling components.
-     *
-     * @param name
-     *            the name of the component
-     * @return this configuration
-     * @throws IllegalArgumentException
-     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-     *             characters and '_', '-' or '.'
-     * @see #getName()
-     * @see Component#name()
-     */
-    public BaseComponentConfiguration named(String name) {
-        context.named(name);
-        return this;
     }
 
     /** {@inheritDoc} */

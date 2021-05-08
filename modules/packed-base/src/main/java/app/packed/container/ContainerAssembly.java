@@ -21,9 +21,9 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.Component;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.inject.ServiceComponentConfiguration;
@@ -123,20 +123,11 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
-     * @return the linked component
+     * @return a model of the component that was linked
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
-    protected final Component link(Assembly<?> assembly, Wirelet... wirelets) {
+    protected final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);
-    }
-
-    /**
-     * {@return the path of the container}
-     * 
-     * @see ContainerConfiguration#path()
-     */
-    protected final NamespacePath path() {
-        return configuration().path();
     }
 
     /**
@@ -150,7 +141,6 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      *
      * @param name
      *            the name of the container
-     * @see #getName()
      * @see ContainerConfiguration#named(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
@@ -160,6 +150,15 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      */
     protected final void named(String name) {
         configuration().named(name);
+    }
+
+    /**
+     * {@return the path of the container}
+     * 
+     * @see ContainerConfiguration#path()
+     */
+    protected final NamespacePath path() {
+        return configuration().path();
     }
 
     protected final BaseComponentConfiguration stateless(Class<?> implementation) {

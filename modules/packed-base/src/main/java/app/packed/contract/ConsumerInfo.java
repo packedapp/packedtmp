@@ -19,7 +19,7 @@ import java.lang.reflect.Member;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.container.Extension;
 import app.packed.inject.Provide;
 import app.packed.inject.ServiceLocator;
@@ -114,7 +114,7 @@ public interface ConsumerInfo {
      * 
      * @return the component that is requesting the component, or an empty optional if not a component.
      */
-    Optional<Component> targetComponent(); // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
+    Optional<ComponentMirror> targetComponent(); // ComponentPath???, syntes ikke man skal kunne iterere over dens boern...
 
     /**
      * If the requester party is part of an {@link Extension} and not a constant. Returns the type of extension that is

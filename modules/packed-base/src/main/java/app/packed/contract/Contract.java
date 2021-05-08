@@ -66,6 +66,7 @@ public abstract class Contract {
     // maybe just analyzer
     // I think it should fail if used to create images/instantiate anything
     // contractAnalyzer paa Con
+    // defaultIntrospector
     protected static ApplicationDriver<?> defaultAnalyzer() {
         return DAEMON;
     }

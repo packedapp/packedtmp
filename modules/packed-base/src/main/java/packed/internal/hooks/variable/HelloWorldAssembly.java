@@ -32,7 +32,7 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     public static void main(String[] args) {
         App.run(new HelloWorldAssembly());
-        App.driver().analyze(new HelloWorldAssembly()).components().forEach(c -> System.out.println(c.path()));
+        App.driver().build(new HelloWorldAssembly()).components().forEach(c -> System.out.println(c.path()));
         System.out.println();
         App.driver().print(new HelloWorldAssembly());
     }

@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import app.packed.attribute.AttributedElement;
 import app.packed.base.NamespacePath;
-import app.packed.component.Component;
 import app.packed.state.sandbox.InstanceState;
 
 /**
@@ -47,12 +46,12 @@ public interface Instance extends AttributedElement {
      */
     Collection<Instance> children();
 
-    /**
-     * Returns the definition of this component instance.
-     * 
-     * @return the definition of this component instance
-     */
-    Component component();
+//    /**
+//     * Returns the definition of this component instance.
+//     * 
+//     * @return the definition of this component instance
+//     */
+//    ComponentModel component(); /// nah.. vi retain
 
     /**
      * Returns the distance to the root component. The root component having depth 0.

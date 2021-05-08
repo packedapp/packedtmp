@@ -17,7 +17,7 @@ package app.packed.hooks.sandbox2;
 
 import java.util.function.BiPredicate;
 
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 
 /**
  *
@@ -39,7 +39,7 @@ public final class ComponentSelector {
 
     private ComponentSelector() {}
 
-    public void processIf(BiPredicate<? super Component, ? super Component> originActualPredicate) {
+    public void processIf(BiPredicate<? super ComponentMirror, ? super ComponentMirror> originActualPredicate) {
 
     }
 

@@ -25,9 +25,11 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationWirelets;
 import app.packed.application.Build;
+import app.packed.application.BuildMirror;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -52,7 +54,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
             WireableComponentDriver.class);
 
-    /** The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}. */
+    /**
+     * The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}.
+     */
     private final InstanceState launchMode;
 
     /** The method handle used for creating new application instances. */
@@ -93,10 +97,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.wirelet = requireNonNull(wirelet);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Build analyze(Assembly<?> assembly, Wirelet... wirelets) {
-        return build(assembly, wirelets, PackedComponentModifierSet.I_ANALYSIS);
+    public ApplicationMirror applicationMirror(Assembly<?> assembly, Wirelet... wirelets) {
+        return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror().application();
     }
 
     /**
@@ -107,6 +110,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     // Virker ikke rigtig pga mhConstructors signature... vi maa gemme den andet steds
     public Class<?> artifactRawType() {
         return mhConstructor.type().returnType();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Build build(Assembly<?> assembly, Wirelet... wirelets) {
+        return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR);
     }
 
     /**
@@ -187,6 +196,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public InstanceState launchMode() {
         return launchMode;
+    }
+
+    @Override
+    public BuildMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+        return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror();
     }
 
     /**
@@ -287,6 +301,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+            return new PackedApplicationDriver<>(this);
+        }
+
         boolean isRunnable() {
             return (modifiers & PackedComponentModifierSet.I_RUNTIME) != 0;
         }
@@ -312,13 +333,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             }
             modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
             return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            return new PackedApplicationDriver<>(this);
         }
     }
 

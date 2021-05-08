@@ -59,7 +59,7 @@ public enum ComponentScope {
      * Hovedgrunden til vi ikke har den med, er at extensions ikke har runtime services som boern... Saa den er lidt
      * ubrugelig
      */
-    public boolean in(Component c1, Component c2) {
+    public boolean in(ComponentMirror c1, ComponentMirror c2) {
         return c1.isInSame(this, c2);
     }
 }
@@ -115,7 +115,7 @@ class XComp2 {
 
     }
 
-    public static void main(Component c1, Component c2) {
+    public static void main(ComponentMirror c1, ComponentMirror c2) {
         if (ComponentScope.NAMESPACE.in(c1, c2)) {
 
         }

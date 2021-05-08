@@ -1,9 +1,7 @@
 package packed.internal.component;
 
-import app.packed.application.Build;
-
 /**
- * Represents a single namespace. An instance of this class maintained across different {@link Build builds} that are in
+ * Represents a single namespace. An instance of this class maintained across different builds that are in
  * the same namespace.
  * <p>
  * It is main

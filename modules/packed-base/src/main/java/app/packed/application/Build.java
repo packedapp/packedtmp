@@ -15,10 +15,10 @@
  */
 package app.packed.application;
 
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentStream;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -47,16 +47,20 @@ import app.packed.component.ComponentStream;
 
 // BuildTree / BuildSystem / 
 // @ActiveService(phase=Building)
+
+// Ideen er at du ikke fejler...
+
 public interface Build {
+    
+    // Maaske laver vi den til Optional...
+    /** {@return the root component of the build}. */
+    ApplicationMirror application();
 
     /** {@return the root component of the build}. */
-    ApplicationDescriptor application();
-
-    /** {@return the root component of the build}. */
-    Component component();
+    ComponentMirror component();
 
     /** {@return a component stream that includes every component in this build}. */
-    ComponentStream components();
+    ComponentMirrorStream components();
 
     // Whether or not we are building????
     boolean isDone();

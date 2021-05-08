@@ -15,7 +15,6 @@
  */
 package app.packed.hooks.sandbox2;
 
-import app.packed.application.Build;
 import app.packed.component.ComponentModifierSet;
 
 /**
@@ -33,7 +32,7 @@ public interface InitializationContext {
      * @return the assembly context
      */
     // assembly.modifiers().isImage()... to see if we are created from an image...
-    Build build();
+    //BuildModel build();
 
     // path
 

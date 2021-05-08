@@ -9,13 +9,6 @@ import app.packed.component.Wirelet;
 public enum BuildTarget {
 
     /**
-     * Analysis.
-     * 
-     * @see ApplicationDriver#analyze(Assembly, Wirelet...)
-     */
-    ANALYSIS,
-
-    /**
      * An application image.
      * 
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
@@ -23,7 +16,7 @@ public enum BuildTarget {
     // Skal det bruges en gang, eller flere??? Er nok mere relevant end om det er et image...
     // MultiImage????
     IMAGE,
-    
+
     /**
      * An application instance.
      * 
@@ -31,6 +24,13 @@ public enum BuildTarget {
      * @see ApplicationDriver#launch(Assembly, Wirelet...)
      */
     INSTANCE,
+    
+    /**
+     * Builds a {@link BuildMirror mirror}. 
+     * 
+     * @see ApplicationDriver#mirror(Assembly, Wirelet...)
+     */
+    MIRROR,
 
     MULTI_IMAGE;
 }

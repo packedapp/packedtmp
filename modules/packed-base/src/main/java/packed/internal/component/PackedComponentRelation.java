@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.Component;
+import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
 
@@ -35,26 +35,26 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
 
     /** {@inheritDoc} */
     @Override
-    public Iterator<Component> iterator() {
+    public Iterator<ComponentMirror> iterator() {
         if (distance == 0) {
-            return List.of((Component) from).iterator();
+            return List.of((ComponentMirror) from).iterator();
         } else if (distance == 1) {
-            return List.of((Component) from, (Component) to).iterator();
+            return List.of((ComponentMirror) from, (ComponentMirror) to).iterator();
         } else {
-            Component[] components = new Component[distance];
+            ComponentMirror[] components = new ComponentMirror[distance];
 
             int i = 0;
             ComponentSetup pc = from;
             while (pc != lcd) {
-                components[i++] = pc.adaptor();
+                components[i++] = pc.mirror();
             }
 
-            components[i++] = lcd.adaptor();
+            components[i++] = lcd.mirror();
 
             i = components.length - 1;
             pc = to;
             while (pc != lcd) {
-                components[i++] = pc.adaptor();
+                components[i++] = pc.mirror();
             }
             return List.of(components).iterator();
         }
@@ -62,14 +62,14 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
 
     /** {@inheritDoc} */
     @Override
-    public Optional<Component> findLowestCommonAncestor() {
-        return lcd == null ? Optional.empty() : Optional.of(lcd.adaptor());
+    public Optional<ComponentMirror> findLowestCommonAncestor() {
+        return lcd == null ? Optional.empty() : Optional.of(lcd.mirror());
     }
 
     /** {@inheritDoc} */
     @Override
-    public Component target() {
-        return to.adaptor();
+    public ComponentMirror target() {
+        return to.mirror();
     }
 
     @Override
@@ -84,8 +84,8 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
 
     /** {@inheritDoc} */
     @Override
-    public Component source() {
-        return from.adaptor();
+    public ComponentMirror source() {
+        return from.mirror();
     }
 
     static ComponentRelation of(ComponentSetup from, ComponentSetup to) {
