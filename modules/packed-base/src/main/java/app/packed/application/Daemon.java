@@ -41,6 +41,8 @@ public interface Daemon extends AutoCloseable {
 
     void stopAsync();
 
+    // When do want to run a daemon???
+    // Isn't it main...
     static Daemon run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
         return run(assembly, CliWirelets.args(args).andThen(wirelets));
     }

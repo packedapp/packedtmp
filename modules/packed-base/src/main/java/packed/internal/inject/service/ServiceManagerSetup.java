@@ -339,5 +339,10 @@ public final class ServiceManagerSetup {
         public Set<Key<?>> exportedKeys() {
             return services.newServiceContract().provides();
         }
+
+        @Override
+        public ServiceContract contract() {
+            return services.newServiceContract();
+        }
     }
 }

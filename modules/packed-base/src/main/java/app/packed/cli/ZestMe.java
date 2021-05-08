@@ -29,7 +29,7 @@ public class ZestMe extends BaseAssembly {
     @Override
     protected void build() {
         install(Foo.class);
-      //  use(MyExt.class);
+        //use(MyExt.class);
     }
 
     public static void main(String[] args) {
@@ -39,7 +39,7 @@ public class ZestMe extends BaseAssembly {
         // System.out.println(ed.dependencies());
         System.out.println(System.currentTimeMillis() - start);
 
-        //System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
+        // System.out.println(ExtensionDescriptor.of(MyExt.class).dependencies());
     }
 
     public static class Foo {

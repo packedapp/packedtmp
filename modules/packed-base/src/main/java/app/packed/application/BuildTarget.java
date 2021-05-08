@@ -23,12 +23,13 @@ public enum BuildTarget {
      * @see ApplicationDriver#compose(app.packed.component.Composer, java.util.function.Consumer, Wirelet...)
      * @see ApplicationDriver#launch(Assembly, Wirelet...)
      */
-    INSTANCE,
-    
+    INSTANCE, // LAUNCH
+
     /**
-     * Builds a {@link BuildMirror mirror}. 
+     * Builds a {@link BaseMirror mirror}.
      * 
-     * @see ApplicationDriver#mirror(Assembly, Wirelet...)
+     * @see ApplicationDriver#reflect(Assembly, Wirelet...)
+     * @see BaseMirror#reflect(Assembly)
      */
     MIRROR,
 

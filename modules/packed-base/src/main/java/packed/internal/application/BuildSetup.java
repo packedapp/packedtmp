@@ -18,7 +18,7 @@ package packed.internal.application;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.Build;
+import app.packed.application.BuildMirror;
 import app.packed.application.BaseMirror;
 import app.packed.application.BuildTarget;
 import app.packed.component.ComponentMirror;
@@ -35,7 +35,7 @@ import packed.internal.component.WireableComponentDriver.ContainerComponentDrive
 import packed.internal.container.ContainerSetup;
 
 /** The configuration of a build. */
-public final class BuildSetup implements Build {
+public final class BuildSetup implements BuildMirror {
 
     /** The application we are building. */
     public final ApplicationSetup application;

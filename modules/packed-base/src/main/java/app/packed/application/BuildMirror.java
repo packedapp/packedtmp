@@ -15,10 +15,14 @@
  */
 package app.packed.application;
 
+import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.Wirelet;
+import packed.internal.application.PackedApplicationDriver;
+import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -50,8 +54,10 @@ import app.packed.component.ComponentModifierSet;
 
 // Ideen er at du ikke fejler...
 
-public interface Build {
-    
+// Altsaa vi kalder det lidt et mirror...
+// Fordi
+public interface BuildMirror {
+
     // Maaske laver vi den til Optional...
     /** {@return the root component of the build}. */
     ApplicationMirror application();
@@ -96,6 +102,28 @@ public interface Build {
 //    enum State {
 //        IN_PROCESS, FAILED, SUCCES;
 //    }
+    
+
+    /**
+     * Builds an application(s) and returns a build object that can be used for further analysis.
+     * 
+     * @param assembly
+     *            the main assembly of the application
+     * @param wirelets
+     *            optional wirelets
+     * @return a build object
+     */
+    // Vi mangler noget omkring at fejle...
+    // Altsaa taenker kun at det er specielle vaerktoejer der ikke vil fejle...
+    // saa Maaske skal vi have 2 metoder
+    // analyze -> ApplicationModel, build-> BuildModel???
+
+    // buildForInstantiation(), buildImage
+    // buildMirror?
+    static BuildMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR);
+    }
+
 }
 
 //

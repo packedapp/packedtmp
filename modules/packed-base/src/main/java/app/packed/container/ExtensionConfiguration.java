@@ -23,7 +23,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.Build;
+import app.packed.application.BuildMirror;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
@@ -62,7 +62,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * 
      * @return information about the build this extension is a part of
      */
-    Build build(); // I don't know if it should die...
+    BuildMirror build(); // I don't know if it should die...
 
     /**
      * Checks that child containers has been aded

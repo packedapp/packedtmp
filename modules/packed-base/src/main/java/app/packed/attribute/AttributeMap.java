@@ -47,7 +47,7 @@ import packed.internal.attribute.EmptyAttributeMap;
 // Syntes navngivningen skal gaa igen i Config...
 
 //attributes.ifPresent(ServiceExtension.CONTAINS, e->sysout("number of foo " + e);
-public interface AttributeMap {
+public /* sealed... And then we know, nobody fucks with implementation... And it can always be trusted. */ interface AttributeMap {
 
     default Map<Attribute<?>, Object> asMap() {
         Map<Attribute<?>, Object> m = new HashMap<>();

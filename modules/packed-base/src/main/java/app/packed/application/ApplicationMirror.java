@@ -6,7 +6,7 @@ import app.packed.base.NamespacePath;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.mirror.Mirror;
-import app.packed.mirror.TreeModelWalker;
+import app.packed.mirror.TreeMirrorWalker;
 
 /**
  * A mirror of an application.
@@ -25,7 +25,7 @@ public interface ApplicationMirror extends Mirror {
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
-    TreeModelWalker<ComponentMirror> components();
+    TreeMirrorWalker<ComponentMirror> components();
 
     /** {@return the root container in the application}. */
     ContainerMirror container();
@@ -35,7 +35,7 @@ public interface ApplicationMirror extends Mirror {
     ContainerMirror container(CharSequence path);
 
     /** {@return a walker containing all the containers in this application} */
-    TreeModelWalker<ComponentMirror> containers();
+    TreeMirrorWalker<ComponentMirror> containers();
 
     default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
@@ -75,7 +75,7 @@ public interface ApplicationMirror extends Mirror {
     NamespacePath path();
     // Optional<ApplicationRelation> parentRelation();
 
-    default TreeModelWalker<ApplicationMirror> walker() {
+    default TreeMirrorWalker<ApplicationMirror> walker() {
         throw new UnsupportedOperationException();
         // app.components() <-- all component in the application
         // app.component().walker() <--- all components application or not...

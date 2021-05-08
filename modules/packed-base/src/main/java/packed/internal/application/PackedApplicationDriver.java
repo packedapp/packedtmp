@@ -27,8 +27,6 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationWirelets;
-import app.packed.application.BaseMirror;
-import app.packed.application.Build;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -50,7 +48,7 @@ import packed.internal.util.ThrowableUtil;
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** A daemon driver. */
-    public static final ApplicationDriver<?> MIRROR_DRIVER = ApplicationDriver.builder()
+    public static final PackedApplicationDriver<?> MIRROR_DRIVER = new Builder()
             .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** A handle that can access Composer#driver. */
@@ -110,12 +108,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return mhConstructor.type().returnType();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Build build(Assembly<?> assembly, Wirelet... wirelets) {
-        return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR);
-    }
-
     /**
      * @param assembly
      *            the root assembly
@@ -127,7 +119,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            is it an image
      * @return a build setup
      */
-    private BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
+    public BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
         // Extract the component driver from the assembly
         WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(assembly);
 
@@ -196,10 +188,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return launchMode;
     }
 
-    @Override
-    public BaseMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
-        return build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror();
-    }
 
     /**
      * Create a new application using the specified initialization context.
@@ -301,7 +289,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
+        public <A> PackedApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
             mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
             return new PackedApplicationDriver<>(this);
         }

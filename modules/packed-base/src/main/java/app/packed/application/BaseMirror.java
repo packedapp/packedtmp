@@ -1,5 +1,6 @@
 package app.packed.application;
 
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.component.Assembly;
@@ -7,10 +8,12 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.inject.ServiceExtension;
 import app.packed.mirror.Mirror;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * A model of a (successful) build.
@@ -41,6 +44,10 @@ public interface BaseMirror extends Mirror {
     /** {@return a component stream that includes every component in this build}. */
     Stream<ContainerMirror> containers();
 
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        components().forEach(action);
+    }
+    
     default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
     }
@@ -70,8 +77,8 @@ public interface BaseMirror extends Mirror {
         return PackedApplicationDriver.MIRROR_DRIVER;
     }
     
-    static BaseMirror reflect(Assembly<?> assembly) {
-        return defaultDriver().mirror(assembly);
+    static BaseMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror();
     }
 }
 

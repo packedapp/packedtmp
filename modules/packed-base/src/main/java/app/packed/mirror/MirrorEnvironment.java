@@ -5,5 +5,5 @@ package app.packed.mirror;
 // reflect = build time, introspect = runtime.. IDK
 // Der er jo saadan set ikke noget i vejen for at supportere det runtume
 enum MirrorEnvironment {
-    BUILD, RUNTIME;
+    BUILD_TIME, RUNTIME;
 }

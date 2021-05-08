@@ -5,8 +5,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BaseMirror;
 import app.packed.base.NamespacePath;
+import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
+import app.packed.component.Wirelet;
 import app.packed.mirror.Mirror;
 
 /**
@@ -52,4 +55,9 @@ public interface ContainerMirror extends Mirror {
 
     /** {@return the path of this container in relation to other containers} */
     NamespacePath path();
+    
+    
+    public static ContainerMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+        return BaseMirror.of(assembly, wirelets).container();
+    }
 }

@@ -1,4 +1,4 @@
-module app.packed.base {
+module app.packed {
     exports app.packed.application;
     exports app.packed.attribute;
     exports app.packed.base;

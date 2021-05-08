@@ -251,7 +251,7 @@ public final class ServiceContract extends Contract {
     }
 
     static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
-        BaseMirror application = driver.mirror(assembly);
+        BaseMirror application = BaseMirror.of(assembly);
         ComponentMirror component = application.component();
         if (!component.modifiers().isContainer()) {
             throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + component);

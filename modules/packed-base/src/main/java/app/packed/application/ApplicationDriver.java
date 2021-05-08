@@ -66,23 +66,6 @@ import packed.internal.application.PackedApplicationDriver;
 public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */ {
 
     /**
-     * Builds an application(s) and returns a build object that can be used for further analysis.
-     * 
-     * @param assembly
-     *            the main assembly of the application
-     * @param wirelets
-     *            optional wirelets
-     * @return a build object
-     */
-    // Vi mangler noget omkring at fejle...
-    // Altsaa taenker kun at det er specielle vaerktoejer der ikke vil fejle...
-    // saa Maaske skal vi have 2 metoder
-    // analyze -> ApplicationModel, build-> BuildModel???
-
-    // buildForInstantiation(), buildImage
-    Build build(Assembly<?> assembly, Wirelet... wirelets);
-
-    /**
      * Create a new application instance by using the specified consumer and configurator.
      * <p>
      * This method is is rarely called directly by end-users. But indirectly through methods such as
@@ -150,10 +133,6 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      */
     InstanceState launchMode();
 
-    // introspect??? reflect???
-    // reflectDefaults <---
-    BaseMirror mirror(Assembly<?> assembly, Wirelet... wirelets);
-    
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
@@ -167,12 +146,11 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * @see Program#newImage(Assembly, Wirelet...)
      * @see ServiceLocator#newImage(Assembly, Wirelet...)
      */
-    // why newImage but mirror?
     ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
-        BaseMirror b = mirror(assembly, wirelets);
-        b.components().forEach(cc -> {
+        BaseMirror b = BaseMirror.of(assembly, wirelets);
+        b.forEachComponent(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append(" ").append(cc.modifiers());
             if (cc.modifiers().contains(ComponentModifier.SOURCED)) {

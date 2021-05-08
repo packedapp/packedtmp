@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.Build;
+import app.packed.application.BuildMirror;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
@@ -116,7 +116,7 @@ public abstract class Extension {
     // for extension'en selv...
     // Hmm Assembly() <- you need to override build
     /// Maaske returnere Container istedet for???? IDK
-    protected final Build build() {
+    protected final BuildMirror build() {
         return configuration().build();
     }
 

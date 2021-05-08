@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 // https://stackoverflow.com/questions/28459498/why-are-java-streams-once-off#:~:text=Unlike%20C%23's%20IEnumerable,away%20a%20lot%20of%20power.
 
 // I mean 
-public interface TreeModelWalker<T extends Mirror> {
+public interface TreeMirrorWalker<T extends Mirror> {
 
     // s.s.s.assertEmpty vs
     // assert s.s.s.isEmpty();
