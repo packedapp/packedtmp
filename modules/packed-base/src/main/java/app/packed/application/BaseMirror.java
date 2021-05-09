@@ -1,5 +1,6 @@
 package app.packed.application;
 
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -10,6 +11,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
 import app.packed.inject.ServiceExtension;
 import app.packed.mirror.Mirror;
 import packed.internal.application.PackedApplicationDriver;
@@ -63,6 +65,10 @@ public interface BaseMirror extends Mirror {
         return component().modifiers();
     }
 
+    default Set<Class<? extends Extension>> extensions() {
+        throw new UnsupportedOperationException();
+    }
+    
     /** { @return the name of the root application.} */
     default String name() {
         return application().name();
@@ -92,11 +98,11 @@ class Doo {
     void Foo(BaseMirror m) {
         System.out.println("Number of applications in build" + m.applications().count());
         System.out.println("Number of components in build" + m.components().count());
-        if (m.container("wef/123").hasExtension(ServiceExtension.class)) {
+        if (m.container("wef/123").isUsed(ServiceExtension.class)) {
 
         }
 
-        m.containers().filter(c -> c.hasExtension(ServiceExtension.class)).forEach(c -> System.out.println(c));
+        m.containers().filter(c -> c.isUsed(ServiceExtension.class)).forEach(c -> System.out.println(c));
 
     }
 }

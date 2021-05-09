@@ -13,7 +13,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
-import app.packed.mirror.TreeMirrorWalker;
+import app.packed.mirror.TreeWalker;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
@@ -194,7 +194,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public TreeMirrorWalker<ComponentMirror> components() {
+        public TreeWalker<ComponentMirror> components() {
             throw new UnsupportedOperationException();
         }
 
@@ -206,7 +206,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public TreeMirrorWalker<ComponentMirror> containers() {
+        public TreeWalker<ContainerMirror> containers() {
             throw new UnsupportedOperationException();
         }
 

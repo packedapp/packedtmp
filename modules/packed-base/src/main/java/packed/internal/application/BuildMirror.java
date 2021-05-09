@@ -23,6 +23,8 @@ import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
+import app.packed.container.UsedExtensionMirror;
+import app.packed.mirror.MirrorSet;
 import packed.internal.component.PackedComponentModifierSet;
 
 /**
@@ -99,6 +101,10 @@ public interface BuildMirror {
 
     BuildTarget target();
 
+    default MirrorSet<UsedExtensionMirror> extensions() {
+        throw new UnsupportedOperationException();
+    }
+    
     // It can be on error path...
 //    enum State {
 //        IN_PROCESS, FAILED, SUCCES;

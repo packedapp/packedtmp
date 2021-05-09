@@ -58,9 +58,10 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * 
      * @see #use(Class)
      * @see ContainerAssembly#extensions()
+     * @see ContainerMirror#extensions()
      */
     public Set<Class<? extends Extension>> extensions() {
-        return ((ContainerSetup) context).extensionView();
+        return ((ContainerSetup) context).extensions();
     }
 
     /**

@@ -1,7 +1,9 @@
 package app.packed.application;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -10,9 +12,10 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
 import app.packed.mirror.Mirror;
 import app.packed.mirror.MirrorSet;
-import app.packed.mirror.TreeMirrorWalker;
+import app.packed.mirror.TreeWalker;
 
 /**
  * A mirror of an application.
@@ -21,6 +24,29 @@ import app.packed.mirror.TreeMirrorWalker;
 public interface ApplicationMirror extends Mirror {
 
     /** {@return all child applications of this application.} */
+
+    /** {@return the root component in the application}. */
+    ComponentMirror component();
+
+    /** {@return the component in the application}. */
+    ComponentMirror component(CharSequence path);
+
+    TreeWalker<ComponentMirror> components();
+
+    /** {@return the root container in the application}. */
+    ContainerMirror container();
+
+    // Er det kun componenter i den application??? Ja ville jeg mene...
+    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
+    // app.rootContainer.children() <-- does this only include children in the same
+    // application?? or any children...
+
+    // teanker det kun er containere i samme application...
+    // ellers maa man bruge container.resolve("....")
+    ContainerMirror container(CharSequence path);
+
+    /** {@return a walker containing all the containers in this application} */
+    TreeWalker<ContainerMirror> containers();
 
     // Det her har "store" implikationer for versions drevet applicationer...
     // Det betyder nemlig at vi totalt flatliner applikationer...
@@ -37,28 +63,13 @@ public interface ApplicationMirror extends Mirror {
         return hosts().stream().mapMulti(bc).toList();
     }
 
-    /** {@return the root component in the application}. */
-    ComponentMirror component();
-
-    /** {@return the component in the application}. */
-    ComponentMirror component(CharSequence path);
-
-    // Er det kun componenter i den application??? Ja ville jeg mene...
-    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
-    // app.rootContainer.children() <-- does this only include children in the same
-    // application?? or any children...
-
-    TreeMirrorWalker<ComponentMirror> components();
-
-    /** {@return the root container in the application}. */
-    ContainerMirror container();
-
-    // teanker det kun er containere i samme application...
-    // ellers maa man bruge container.resolve("....")
-    ContainerMirror container(CharSequence path);
-
-    /** {@return a walker containing all the containers in this application} */
-    TreeMirrorWalker<ComponentMirror> containers();
+    /** { @return a set of all extensions that have been used by the application.} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    default Set<Class<? super Extension>> extensions() {
+        Set<Class<? super Extension>> result = new HashSet<>();
+        containers().forEach(c -> result.addAll((Set) c.extensions()));
+        return Set.copyOf(result);
+    }
 
     /** {@return all the application hosts defined in this application.} */
     default MirrorSet<ApplicationHostMirror> hosts() {
@@ -103,16 +114,16 @@ public interface ApplicationMirror extends Mirror {
     NamespacePath path();
     // Optional<ApplicationRelation> parentRelation();
 
-    public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return BaseMirror.of(assembly, wirelets).application();
-    }
-
-    default TreeMirrorWalker<ApplicationMirror> walker() {
+    default TreeWalker<ApplicationMirror> walker() {
         throw new UnsupportedOperationException();
         // app.components() <-- all component in the application
         // app.component().walker() <--- all components application or not...
 
         // someComponent.walker().filter(c->c.application == SomeApp)...
+    }
+
+    public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+        return BaseMirror.of(assembly, wirelets).application();
     }
 
     // Relations between to different applications

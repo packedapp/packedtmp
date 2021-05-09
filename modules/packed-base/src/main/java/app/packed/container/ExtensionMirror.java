@@ -1,13 +1,7 @@
 package app.packed.container;
 
-// used by, uses...
-public interface ExtensionMirror {
+import app.packed.mirror.Mirror;
 
-    /** {@return a descriptor for the extension that is being modeled.} */
-    default ExtensionDescriptor descriptor() {
-        return ExtensionDescriptor.of(type());
-    }
+public interface ExtensionMirror extends Mirror {
 
-    /** {@return the type of extension being modeled.} */
-    Class<? extends Extension> type();
 }

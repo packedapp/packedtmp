@@ -8,14 +8,14 @@ import app.packed.base.Key;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
-import app.packed.container.SpecificExtensionMirror;
+import app.packed.container.ExtensionMirror;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 
 /**
  * A mirror for a {@link ServiceExtension}.
  */
-public interface ServiceExtensionMirror extends SpecificExtensionMirror {
+public interface ServiceExtensionMirror extends ExtensionMirror {
 
     ServiceContract contract();
 

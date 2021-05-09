@@ -17,14 +17,15 @@ import app.packed.mirror.Mirror;
 /**
  * A mirror of a container.
  * <p>
- * An instance of this class is typically opta
+ * An instance of this class is typically opb
  */
-public interface ContainerMirror extends Mirror {
+public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMirror> */ {
 
     /** {@return the application this container is a part of} */
     ApplicationMirror application();
 
-    /** {@return an unmodifiable view of all of this container's children} */
+    /** {@return an unmodifiable view of all of this container's children.} */
+    // Giver det mening at det er paa kryds af apps?? Ja ville jeg mene
     Collection<ContainerMirror> children();
 
     /** {@return the root container component in the container} */
@@ -41,7 +42,7 @@ public interface ContainerMirror extends Mirror {
      */
     int depth();
 
-    /** { @return an unchangeable set of all extensions that are in use.} */
+    /** { @return a set of all extensions that have been used by the container.} */
     Set<Class<? extends Extension>> extensions();
 
     default void forEachComponent(Consumer<? super ComponentMirror> action) {
@@ -49,15 +50,15 @@ public interface ContainerMirror extends Mirror {
     }
 
     /**
-     * Returns whether or not the container contains an extension of the specified type.
+     * Returns whether or not the container uses an extension of the specified type.
      * 
      * @param extensionType
      *            the type of extension to test
-     * @return {@code true} if this container contains an extension of the specified type
+     * @return {@code true} if this container uses an extension of the specified type
      */
-    boolean hasExtension(Class<? extends Extension> extensionType);
+    boolean isUsed(Class<? extends Extension> extensionType);
 
-    /** {@return the name of the container} */
+    /** {@return the name of the container.} */
     String name();
 
     /** {@return the parent container of this container. Or empty if this container has no parent} */
@@ -66,14 +67,14 @@ public interface ContainerMirror extends Mirror {
     /** {@return the path of this container in relation to other containers} */
     NamespacePath path();
 
-    default <T extends SpecificExtensionMirror> T use(Class<T> extensionMirrorType) {
+    default <T extends ExtensionMirror> Optional<T> tryUse(Class<T> extensionMirrorType) {
         throw new UnsupportedOperationException();
     }
-    
-    default <T extends SpecificExtensionMirror> Optional<T> find(Class<T> extensionMirrorType) {
-        throw new UnsupportedOperationException();
+
+    default <T extends ExtensionMirror> T use(Class<T> extensionMirrorType) {
+        return tryUse(extensionMirrorType).orElseThrow();
     }
-    
+
     public static ContainerMirror of(Assembly<?> assembly, Wirelet... wirelets) {
         return BaseMirror.of(assembly, wirelets).container();
     }

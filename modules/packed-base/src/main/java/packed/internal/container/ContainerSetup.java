@@ -135,11 +135,6 @@ public final class ContainerSetup extends WireableComponentSetup {
         assert name != null;
     }
 
-    /** {@return a container adaptor that can be exposed to end-users} */
-    public ContainerMirror containerMirror() {
-        return new ContainerMirrorAdaptor(this);
-    }
-
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
         // kan ogsaa test om container.application = application.container?
@@ -177,21 +172,26 @@ public final class ContainerSetup extends WireableComponentSetup {
         injection.resolve();
     }
 
-    /** {@return a unmodifiable view of the extensions that are in use.} */
-    public Set<Class<? extends Extension>> extensionView() {
+    /** {@return a container adaptor that can be exposed to end-users} */
+    public ContainerMirror containerMirror() {
+        return new ContainerMirrorAdaptor(this);
+    }
+
+    /** {@return a unmodifiable view of the extensions that are used.} */
+    public Set<Class<? extends Extension>> extensions() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
     /**
-     * Returns whether or not the specified extension is in use.
+     * Returns whether or not the specified extension type is used.
      * 
-     * @param extensionClass
+     * @param extensionType
      *            the extension to test
-     * @return true if the specified extension is in use, otherwise false
+     * @return true if the specified extension type is used, otherwise false
      */
-    public boolean isUsed(Class<? extends Extension> extensionClass) {
-        requireNonNull(extensionClass, "extensionClass is null");
-        return extensions.containsKey(extensionClass);
+    public boolean isUsed(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
+        return extensions.containsKey(extensionType);
     }
 
     private void runPredContainerChildren() {
@@ -342,14 +342,13 @@ public final class ContainerSetup extends WireableComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension>> extensions() {
-            return container.extensionView();
+            return container.extensions();
         }
 
         /** {@inheritDoc} */
         @Override
-        public boolean hasExtension(Class<? extends Extension> extensionType) {
-            requireNonNull(extensionType, "extensionType is null");
-            return container.extensions.containsKey(extensionType);
+        public boolean isUsed(Class<? extends Extension> extensionType) {
+            return container.isUsed(extensionType);
         }
     }
 }

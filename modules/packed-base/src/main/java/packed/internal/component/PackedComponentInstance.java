@@ -35,7 +35,6 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentScope;
 import packed.internal.application.ApplicationLaunchContext;
-import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
@@ -88,10 +87,8 @@ public final class PackedComponentInstance implements ComponentMirror {
 
             for (ComponentSetup cc : component.children.values()) {
                 // We never carry over extensions into the runtime
-                if (!(cc instanceof ExtensionSetup)) {
                     PackedComponentInstance ac = new PackedComponentInstance(this, cc, launch);
                     result.put(ac.name(), ac);
-                }
             }
 
             children = Map.copyOf(result);

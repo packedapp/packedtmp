@@ -1,5 +1,6 @@
 package app.packed.mirror;
 
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 // Only stream a walker can be used multiple times...
@@ -7,13 +8,18 @@ import java.util.stream.Stream;
 // https://stackoverflow.com/questions/28459498/why-are-java-streams-once-off#:~:text=Unlike%20C%23's%20IEnumerable,away%20a%20lot%20of%20power.
 
 // I mean 
-public interface TreeMirrorWalker<T extends Mirror> {
+// Altsaa er det istedet for en slags cursor ting...
+// TreeCursor
+public interface TreeWalker<T> {
 
     // s.s.s.assertEmpty vs
     // assert s.s.s.isEmpty();
     // IDK tror ikke jeg har det med...
     void assertEmpty();
     void assertNotEmpty();
+    
+    void forEach(Consumer<T> action);
+    T toList();
     
     T any();
     
@@ -27,3 +33,6 @@ public interface TreeMirrorWalker<T extends Mirror> {
 }
 
 // StreamModel.allOf(C)
+
+
+// StatisticalModelAssembly {}
