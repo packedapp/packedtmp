@@ -36,37 +36,24 @@ public final class ComponentAttributes {
 
     // Save this on TypeLiteral??
     static final TypeToken<Class<?>> _CLASS = new TypeToken<Class<?>>() {};
-    static final TypeToken<Class<? extends Extension>> _EXTENSION_CLASS = new TypeToken<Class<? extends Extension>>() {};
+    static final TypeToken<Class<? extends Extension>> _EXTENSION_TYPE = new TypeToken<Class<? extends Extension>>() {};
     static final TypeToken<TypeToken<?>> _TYPE_LITERAL = new TypeToken<TypeToken<?>>() {};
-
-    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
-    public static final Attribute<Class<?>> SOURCE_CLASS = Attribute.of(MethodHandles.lookup(), "source-class", _CLASS);
-
-    /** An attribute that accompanies any component that is part of an an extension, including the extension itself. */
-    // Altsaa maaske skal vi have to typer??? maaske hedder den bare E
-    public static final Attribute<Class<? extends Extension>> EXTENSION_CLASS = Attribute.of(MethodHandles.lookup(), "extension-class", _EXTENSION_CLASS);
 
     /** An attribute that accompanies any component that has the {@link ComponentModifier#APPLICATION} modifier. */
     public static final Attribute<Class<?>> APPLICATION_CLASS = Attribute.of(MethodHandles.lookup(), "application-class", _CLASS);
-
-    ////////////////////// Think about these for a bit //////////////////////////
-
-    // HMM ER DET IKKE BARE SOURCE_TYPE???? Nej, fordi hvis man laver en singleton fra en assembly type har den begge.
 
     // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
     /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
     static final Attribute<Class<? extends Assembly<?>>> CONTAINER_TYPE = Attribute.of(MethodHandles.lookup(), "container",
             new TypeToken<Class<? extends Assembly<?>>>() {});
 
-//    /** An attribute that is available on any component with the {@link ComponentModifier#BUILD} modifier. */
-//    // Ved ikke praecis
-//    public static final Attribute<BuildModel> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", BuildModel.class);
+    /** An attribute that accompanies any component that is part of an an extension. */
+    // Altsaa maaske skal vi have to typer??? maaske hedder den bare E
+    public static final Attribute<Class<? extends Extension>> EXTENSION_TYPE = Attribute.of(MethodHandles.lookup(), "extension-type", _EXTENSION_TYPE);
 
-    /**
-     * 
-     * @see ComponentModifier#FUNCTION
-     */
-    public static final Attribute<TypeToken<?>> SOURCE_FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", _TYPE_LITERAL);
+    ////////////////////// Think about these for a bit //////////////////////////
+
+    // HMM ER DET IKKE BARE SOURCE_TYPE???? Nej, fordi hvis man laver en singleton fra en assembly type har den begge.
 
     //// Component Instance taenker jeg...dd
     // When something is created from an image, it will have the image path set
@@ -74,4 +61,17 @@ public final class ComponentAttributes {
     // A root image will have "/" or /.system.image if restartable...
     // Maybe on GuestImage instead???
     public static final Attribute<NamespacePath> IMAGE_PATH = Attribute.of(MethodHandles.lookup(), "image-path", NamespacePath.class);
+
+//    /** An attribute that is available on any component with the {@link ComponentModifier#BUILD} modifier. */
+//    // Ved ikke praecis
+//    public static final Attribute<BuildModel> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", BuildModel.class);
+
+    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
+    public static final Attribute<Class<?>> SOURCE_CLASS = Attribute.of(MethodHandles.lookup(), "source-class", _CLASS);
+
+    /**
+     * 
+     * @see ComponentModifier#FUNCTION
+     */
+    public static final Attribute<TypeToken<?>> SOURCE_FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", _TYPE_LITERAL);
 }

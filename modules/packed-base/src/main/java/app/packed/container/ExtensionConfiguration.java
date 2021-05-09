@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationImage;
-import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
@@ -60,7 +59,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * Checks that child containers has been aded
      */
     // checkContainerFree, checkNoChildContainers
-    void checkExtendable();
+    void checkExtendable(); //antonym to isRestricted, isConfined
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -169,14 +168,6 @@ public /* sealed */ interface ExtensionConfiguration {
      * @see Extension#onComplete()
      */
     ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets);
-
-    /**
-     * Returns the path of the extension. The path of the extension's container, can be obtained by calling
-     * <code>path().parent().get()</code>.
-     * 
-     * @return the path of the extension
-     */
-    NamespacePath path();
 
     /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's

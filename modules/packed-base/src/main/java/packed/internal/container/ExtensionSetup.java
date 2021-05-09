@@ -30,6 +30,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
+// Lige nu beholder vi den som component...
 public final class ExtensionSetup extends ComponentSetup implements ExtensionConfiguration {
 
     /** A handle for invoking {@link Extension#onComplete()}. */
@@ -49,6 +50,9 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** A handle for setting the field Extension#configuration, used by {@link #newInstance(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
+
+    /** The container this extension is part of. */
+    public final ContainerSetup container;
 
     /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
@@ -70,13 +74,14 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
      */
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
         super(container, model);
+        this.container = requireNonNull(container);
         this.model = requireNonNull(model);
     }
 
     /** {@inheritDoc} */
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
-        dam.addValue(ComponentAttributes.EXTENSION_CLASS, extensionClass());
+        dam.addValue(ComponentAttributes.EXTENSION_TYPE, extensionClass());
         PackedAttributeModel pam = model.attributes;
         if (pam != null) {
             pam.set(dam, instance);
@@ -205,8 +210,8 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         if (!model.dependencies().contains(subExtensionClass)) {
             // Special message if you try to use your own subtension
             if (extensionClass() == subExtensionClass) {
-                throw new InternalExtensionException(extensionClass().getSimpleName() + " cannot use its own subtension "
-                        + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
+                throw new InternalExtensionException(extensionClass().getSimpleName() + " cannot use its own subtension " + subExtensionClass.getSimpleName()
+                        + "." + subtensionClass.getSimpleName());
             }
             throw new InternalExtensionException(extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass())
                     + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
@@ -295,7 +300,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         container.extensions.put(extensionClass, extension);
 
         // The extension has been now been fully wired, run any notifications
-        extension.onWired();
+      //  extension.onWired();
 
         //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
 
@@ -322,7 +327,6 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
 // Tror vi beregner ExtensionSetup on demand...
 
 // Dvs hvis man vil vide om man er connected saa tager man det ind i constructuren...
-
 
 //ExtensionSetup anc;
 //if (model.extensionLinkedDirectChildrenOnly) {
