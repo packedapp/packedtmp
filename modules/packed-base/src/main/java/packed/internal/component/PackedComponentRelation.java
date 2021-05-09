@@ -21,11 +21,11 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentRelation;
+import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
 
-/** Implementation of {@link ComponentRelation}. */
-record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements ComponentRelation {
+/** Implementation of {@link Relation}. */
+record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distance, @Nullable ComponentSetup lcd) implements Relation {
 
     /** {@inheritDoc} */
     @Override
@@ -88,7 +88,7 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
         return from.mirror();
     }
 
-    static ComponentRelation of(ComponentSetup from, ComponentSetup to) {
+    static Relation of(ComponentSetup from, ComponentSetup to) {
         int fd = from.depth;
         int td = to.depth;
         if (from.pool == to.pool) {

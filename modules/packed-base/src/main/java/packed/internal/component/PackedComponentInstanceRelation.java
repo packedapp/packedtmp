@@ -20,12 +20,12 @@ import java.util.List;
 import java.util.Optional;
 
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentRelation;
+import app.packed.component.ComponentMirror.Relation;
 import app.packed.component.ComponentScope;
 
-/** Implementation of {@link ComponentRelation}. */
+/** Implementation of {@link Relation}. */
 // source + target vs from + to
-/* primitive */ final class PackedComponentInstanceRelation implements ComponentRelation {
+/* primitive */ final class PackedComponentInstanceRelation implements Relation {
 
     private final int distance;
 
@@ -99,7 +99,7 @@ import app.packed.component.ComponentScope;
         return to;
     }
 
-    static ComponentRelation relation(PackedComponentInstance from, PackedComponentInstance to) {
+    static Relation relation(PackedComponentInstance from, PackedComponentInstance to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.pool == to.pool) {

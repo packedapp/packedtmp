@@ -31,15 +31,14 @@ import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
+import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
-import app.packed.component.ComponentMirrorStream;
 import app.packed.component.Wirelet;
 import app.packed.container.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
@@ -74,7 +73,9 @@ public abstract class ComponentSetup {
     /** The name of this component. */
     protected String name;
 
-    /** Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by named(String). */
+    /**
+     * Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by named(String).
+     */
     boolean nameInitializedWithWirelet;
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
@@ -141,8 +142,10 @@ public abstract class ComponentSetup {
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.pool = container.pool;
         this.onWire = container.onWire;
+
         // Cannot use wirelets with extensions. So the name is final
-        initializeNameWithPrefix(model.nameComponent);
+        // It's dead jim
+        // initializeNameWithPrefix(model.nameComponent);
     }
 
     final AttributeMap attributes() {
@@ -371,7 +374,7 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentRelation relationTo(ComponentMirror other) {
+        public Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetupRelation.of(component, ((ComponentMirrorAdaptor) other).component);
         }

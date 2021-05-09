@@ -131,7 +131,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * @see #compose(ComponentDriver, Function, Consumer, Wirelet...)
      * @see #newImage(Assembly, Wirelet...)
      */
-    InstanceState launchMode();
+    InstanceState launchMode(); // runTo().. Den der fucking terminated kills me
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.

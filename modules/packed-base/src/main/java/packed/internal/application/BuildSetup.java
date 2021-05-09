@@ -18,7 +18,6 @@ package packed.internal.application;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildMirror;
 import app.packed.application.BaseMirror;
 import app.packed.application.BuildTarget;
 import app.packed.component.ComponentMirror;

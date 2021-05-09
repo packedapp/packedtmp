@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package packed.internal.application;
 
+import app.packed.application.ApplicationMirror;
+import app.packed.application.BuildTarget;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
-import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.PackedComponentModifierSet;
 
 /**

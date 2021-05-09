@@ -8,13 +8,14 @@ import app.packed.base.Key;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
+import app.packed.container.SpecificExtensionMirror;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 
 /**
  * A mirror for a {@link ServiceExtension}.
  */
-public interface ServiceExtensionMirror {
+public interface ServiceExtensionMirror extends SpecificExtensionMirror {
 
     ServiceContract contract();
 
@@ -41,3 +42,9 @@ public interface ServiceExtensionMirror {
         return find(container).orElseThrow(NoSuchElementException::new);
     }
 }
+
+
+// Vi vil gerne have ContainerMirror.use(ServiceExtensionMirror.class).contract
+// Must have a static XMirror of(
+
+// Altsaa hvis vi siger den kun skal vaere til raadighed paa

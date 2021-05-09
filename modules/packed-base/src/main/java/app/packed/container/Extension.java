@@ -24,7 +24,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.BuildMirror;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
@@ -104,21 +103,6 @@ public abstract class Extension {
 
     /** Create a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
-
-    /**
-     * Returns the assembly context the extension is a part of.
-     * 
-     * @return the assembly context
-     * @throws IllegalStateException
-     *             if invoked from the constructor of the extension
-     */
-    // Det jeg ikke kan lide ved den er fx information om image... som jo kan vaereforskellige
-    // for extension'en selv...
-    // Hmm Assembly() <- you need to override build
-    /// Maaske returnere Container istedet for???? IDK
-    protected final BuildMirror build() {
-        return configuration().build();
-    }
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

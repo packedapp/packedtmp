@@ -41,8 +41,8 @@ public final class ApplicationSetup {
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
-     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(InstanceState)} at
-     * build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
+     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(InstanceState)}
+     * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
     InstanceState launchMode;
 
@@ -99,7 +99,8 @@ public final class ApplicationSetup {
     }
 
     /**
-     * A wirelet that will set the launch mode of the application. Used by {@link ApplicationWirelets#launchMode(InstanceState)}.
+     * A wirelet that will set the launch mode of the application. Used by
+     * {@link ApplicationWirelets#launchMode(InstanceState)}.
      */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 

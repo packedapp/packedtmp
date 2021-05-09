@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.BuildMirror;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
@@ -56,13 +55,6 @@ import packed.internal.container.ExtensionSetup;
 // Does not extend CC as install/installinstance used parent as target
 // Det er jo ikke rigtig tilfaeldet mere... efter vi har lavet om...
 public /* sealed */ interface ExtensionConfiguration {
-
-    /**
-     * Returns information about the build this extension is a part of.
-     * 
-     * @return information about the build this extension is a part of
-     */
-    BuildMirror build(); // I don't know if it should die...
 
     /**
      * Checks that child containers has been aded

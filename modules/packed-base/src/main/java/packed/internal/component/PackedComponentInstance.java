@@ -30,11 +30,10 @@ import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
-import app.packed.component.ComponentRelation;
 import app.packed.component.ComponentScope;
-import app.packed.component.ComponentMirrorStream;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
@@ -239,7 +238,7 @@ public final class PackedComponentInstance implements ComponentMirror {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentRelation relationTo(ComponentMirror other) {
+    public Relation relationTo(ComponentMirror other) {
         requireNonNull(other, "other is null");
         return PackedComponentInstanceRelation.relation(this, (PackedComponentInstance) other);
     }
