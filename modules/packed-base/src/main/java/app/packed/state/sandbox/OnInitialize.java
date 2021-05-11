@@ -25,7 +25,7 @@ import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link InstanceState#INITIALIZING} state.
+ * {@link InstanceState#UNINITIALIZED} state.
  * 
  * <p>
  * This annotation can, for example, be used on a method on a component instance:
@@ -56,7 +56,7 @@ import app.packed.inject.InjectionContext;
  * </pre>
  * <p>
  * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
- * fail, and the state of the entity change from {@link InstanceState#INITIALIZING} to {@link InstanceState#TERMINATED}.
+ * fail, and the state of the entity change from {@link InstanceState#UNINITIALIZED} to {@link InstanceState#TERMINATED}.
  * <p>
  * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
  * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's

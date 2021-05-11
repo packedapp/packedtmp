@@ -12,14 +12,16 @@ public class Tester extends BaseAssembly {
 
     public static void main(String[] args) {
 
-        for (ApplicationMirror am : ApplicationMirror.of(new Tester()).hosts().one().deployments()) {
+        for (ApplicationMirror am : ApplicationMirror.of(new Tester()).hosts().one().installations()) {
             System.out.println(am);
         }
 
         ContainerMirror cm = ContainerMirror.of(new Tester());
 
         cm.use(ServiceExtensionMirror.class).contract();
-        ServiceExtensionMirror.of(cm).contract();
+        // SEM.first(Assembly).
+
+        cm.use(ServiceExtensionMirror.class).contract();
 
         System.out.println("Exported keys: " + ServiceExtensionMirror.of(new Tester()).exportedKeys());
 
@@ -41,7 +43,6 @@ public class Tester extends BaseAssembly {
 
         host.lazy(new Tester());
         host.lazy(new Tester());
-        
-        
+
     }
 }

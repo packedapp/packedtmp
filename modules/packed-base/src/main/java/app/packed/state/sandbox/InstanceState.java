@@ -22,7 +22,7 @@ import app.packed.application.ApplicationRuntime;
  *
  * There are 3 <b>steady</b> states: {@link #INITIALIZED}, {@link #RUNNING} and {@link #TERMINATED}.
  *
- * There are 3 <b>intermediate</b> states: {@link #INITIALIZING}, {@link #STARTING} and {@link #STOPPING}.
+ * There are 3 <b>intermediate</b> states: {@link #UNINITIALIZED}, {@link #STARTING} and {@link #STOPPING}.
  *
  * Steady states normally requires external stimuli to transition to a new state. For example, that the user invokes a
  * {@code start} function of some kind on the object. Which results in the object transitioning from
@@ -44,23 +44,23 @@ import app.packed.application.ApplicationRuntime;
 // Managed Resource
 // Status vs State..
 // Was RunState
- 
+
 public enum InstanceState {
 
     /**
-     * The initial state of a guest. This state is typically used for reading and validating the configuration of the guest.
+     * The initial state of a instance. This state is typically used for reading and validating the configuration of the guest.
      * Throwing an exception or error if some invariant is broken.
      * <p>
      * If the guest is successfully finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it
      * fails, it will move to the {@link #TERMINATED} state.
      */
-    INITIALIZING,
+    UNINITIALIZED,
 
     /**
      * This state indicates that the guest has completed the {@link #INITIALIZING} phase successfully.
      * <p>
-     * The guest will remain in this state until it is started. For example, by the user calling {@link Host#start()}.
-     * After which the guest will transition to the {@link #STARTING} state.
+     * The instance will remain in this state until it is started. For example, by the user calling {@link Host#start()}.
+     * After which the instance will transition to the {@link #STARTING} state.
      */
     INITIALIZED,
 
@@ -74,8 +74,7 @@ public enum InstanceState {
 
     /**
      * The guest is running normally. The guest will remain in this state until it is shutdown, for example, by the user
-     * calling {@link Host#stop(Host.StopOption...)}. After which it will transition to the {@link #STOPPING}
-     * state.
+     * calling {@link Host#stop(Host.StopOption...)}. After which it will transition to the {@link #STOPPING} state.
      */
     RUNNING,
 

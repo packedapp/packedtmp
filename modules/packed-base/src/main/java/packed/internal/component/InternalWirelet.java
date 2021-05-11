@@ -25,6 +25,7 @@ import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.application.PackedApplicationDriver;
 
 /** A type of wirelet where its logic is directly embedded in the wirelet. */
 public abstract class InternalWirelet extends Wirelet {
@@ -47,6 +48,10 @@ public abstract class InternalWirelet extends Wirelet {
         return component.application;
     }
 
+    protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
+        return driver;
+    }
+    
     /**
      * Invoked by the runtime when the component is initially wired at build-time.
      * 

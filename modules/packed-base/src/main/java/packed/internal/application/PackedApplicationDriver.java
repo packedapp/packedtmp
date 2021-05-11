@@ -304,8 +304,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             requireNonNull(launchMode, "launchMode is null");
             if (!isRunnable()) {
                 throw new IllegalStateException("A launch mode can only be set for runnable applications");
-            } else if (launchMode == InstanceState.INITIALIZING) {
-                throw new IllegalArgumentException("Cannot specify '" + InstanceState.INITIALIZING + "'");
+            } else if (launchMode == InstanceState.UNINITIALIZED) {
+                throw new IllegalArgumentException("Cannot specify '" + InstanceState.UNINITIALIZED + "'");
             }
             this.launchMode = launchMode;
             return this;

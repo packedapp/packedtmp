@@ -86,7 +86,6 @@ public class ServiceExtension extends Extension {
         this.services = setup.container.injection.newServiceManagerFromServiceExtension();
     }
 
-
     // Validates the outward facing contract
     public void checkContract(Validator<? super ServiceContract> validator) {
         // Hmm maaske man ville lave et unit test istedet for...
@@ -194,6 +193,11 @@ public class ServiceExtension extends Extension {
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
         checkConfigurable();
         services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
+    }
+
+    /** { @return a mirror for this extension.} */
+    ServiceExtensionMirror mirror() {
+        return services.mirror();
     }
 
     /**
@@ -424,8 +428,7 @@ public class ServiceExtension extends Extension {
 
 class ServiceExtensionBadIdeas {
     // Syntes anchorAll paa selve extensionen er en daarlig ide...
-    
-    
+
 //  /**
 //   * 
 //   * This method is typically used if you work with plugin structures. Where you do not now ahead of time what kind of
@@ -452,7 +455,7 @@ class ServiceExtensionBadIdeas {
 //      Predicate<? super Service> a = services.anchorFilter;
 //      services.anchorFilter = a == null ? filter : ((Predicate) a).or(filter);
 //  }
-    
+
     //
 //  // Hmm hvis vi gerne vil smide attributer paa...
 //  // Maaske har vi en for each der giver en ServiceConfiguration som man kan kalde export paa...
@@ -467,6 +470,7 @@ class ServiceExtensionBadIdeas {
 //  }
 
 }
+
 class ZExtraFunc {
 
     protected void addAlias(Class<?> existing, Class<?> newKey) {}

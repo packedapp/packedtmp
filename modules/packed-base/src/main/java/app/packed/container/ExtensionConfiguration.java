@@ -59,7 +59,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * Checks that child containers has been aded
      */
     // checkContainerFree, checkNoChildContainers
-    void checkExtendable(); //antonym to isRestricted, isConfined
+    void checkExtendable(); // antonym to isRestricted, isConfined
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -72,20 +72,13 @@ public /* sealed */ interface ExtensionConfiguration {
     void checkIsBuilding();
 
     /**
-     * Returns the extension class.
-     * 
-     * @return the extension class
-     */
-    Class<? extends Extension> extensionClass();
-
-    /**
      * Returns the extension instance.
      * 
      * @return the extension instance
      * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
      */
-    Extension extensionInstance();
+    Extension extensionInstance(); // rename to instance...
 
     // Will install the class in the specified Container
 
@@ -125,16 +118,20 @@ public /* sealed */ interface ExtensionConfiguration {
      * 
      * @return whether or not the extension is part of an image
      */
+    // Problemet her med build target... er at en sub application kan definere et image...
     boolean isPartOfImage(); // BoundaryTypes
 
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
+     * <p>
+     * Packed does not track which extensions use other extensions.
      * 
      * @param extensionClass
      *            the extension to test
      * @return true if the extension is currently in use, otherwise false
      * @see Extension#isInUse(Class)
      */
+    // rename extension isInUse -> inUsed
     boolean isUsed(Class<? extends Extension> extensionClass);
 
     default <E extends Subtension> void lazyUse(Class<E> extensionClass, Consumer<E> action) {
@@ -211,11 +208,13 @@ public /* sealed */ interface ExtensionConfiguration {
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
     /**
+     * Re
+     * 
      * @param <T>
-     *            the type of wirelet to return a handle for
+     *            the type of wirelet to handle
      * @param wireletType
      *            the type of wirelet to return a handle for
-     * @return
+     * @return a wirelet source
      */
     <T extends Wirelet> WireletSource<T> wirelets(Class<T> wireletType);
 
@@ -266,6 +265,8 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     // We current dont use then
     @SuppressWarnings({ "unchecked", "unused" })
+    // Maaske kan vi goere noget smart fra mirrors...
+    // Bare checke at de er samme module..
     private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, ComponentMirror containerComponent) {
         requireNonNull(caller, "caller is null");
         requireNonNull(extensionClass, "extensionClass is null");

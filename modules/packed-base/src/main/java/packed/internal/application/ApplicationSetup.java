@@ -104,6 +104,14 @@ public final class ApplicationSetup {
      */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
+        @Override
+        protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
+            if (driver.launchMode() == launchMode) {
+                return driver;
+            }
+            return super.onApplicationDriver(driver);
+        }
+
         /** The (validated) name to override with. */
         private final InstanceState launchMode;
 
@@ -115,8 +123,8 @@ public final class ApplicationSetup {
          */
         public ApplicationLaunchModeWirelet(InstanceState launchMode) {
             this.launchMode = requireNonNull(launchMode, "launchMode is null");
-            if (launchMode == InstanceState.INITIALIZING) {
-                throw new IllegalArgumentException(InstanceState.INITIALIZING + " is not a valid launch mode");
+            if (launchMode == InstanceState.UNINITIALIZED) {
+                throw new IllegalArgumentException(InstanceState.UNINITIALIZED + " is not a valid launch mode");
             }
         }
 

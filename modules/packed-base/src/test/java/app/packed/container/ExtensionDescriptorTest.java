@@ -33,14 +33,14 @@ public class ExtensionDescriptorTest {
     public void empty() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(EmptyExtension.class);
         assertThat(ed.dependencies()).isEmpty();
-        assertThat(ed.extensionClass()).isSameAs(EmptyExtension.class);
+        assertThat(ed.type()).isSameAs(EmptyExtension.class);
     }
 
     @Test
     public void various() {
         ExtensionDescriptor ed = ExtensionDescriptor.of(VariousExtension.class);
         assertThat(ed.dependencies()).containsExactly(EmptyExtension.class);
-        assertThat(ed.extensionClass()).isSameAs(VariousExtension.class);
+        assertThat(ed.type()).isSameAs(VariousExtension.class);
     }
 
     static class VariousExtension extends Extension {

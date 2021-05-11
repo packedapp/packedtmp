@@ -17,15 +17,21 @@ package app.packed.application;
 
 // Delayed App = Altsaa det er lidt pause... 
 
-public enum LaunchMode {
+// Altsaa 
+
+public enum ApplicationLaunchMode {
+
+    UNINITIALIZED, // Only child apps???
     
-    /** Instantiates the application, but does not start it. */
-    INSTANTIATE,
+    /** Instantiates the application, but will not attempt to start it. */
+    INITIALIZED,
     
+    /** Instantiates the application and asynchronously starts the application. */
     STARTING,
-    
+
+    /** Instantiates the application and synchronously starts the application. */
     RUNNING,
     
-    /** Runs the application to completion (Shutdown or Termianted???) */
+    /** Runs the application to completion (Terminated) */
     COMPLETED;
 }

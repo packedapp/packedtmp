@@ -6,6 +6,9 @@ import app.packed.component.Wirelet;
 /**
  * The type of builds
  */
+// Maaske ikke en enum, men en klasse
+// Og saa rename til BuildMode
+// Kunne vaere rart ogsaa at eksponere, isClosedWorld().
 public enum BuildTarget {
 
     /**

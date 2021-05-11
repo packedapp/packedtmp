@@ -71,7 +71,7 @@ public final class BootstrappedClassModel {
         this.clazz = builder.oc.type();
         this.models = List.copyOf(builder.models);
         this.sourceServices = Map.copyOf(builder.sourceContexts);
-        this.extensionClass = builder.extension == null ? null : builder.extension.extensionClass();
+        this.extensionClass = builder.extension == null ? null : builder.extension.type();
     }
 
     public void onWire(ClassSourceSetup css) {

@@ -172,7 +172,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Class<? extends Extension> extensionClass() {
+    public Class<? extends Extension> type() {
         return extensionClass;
     }
 

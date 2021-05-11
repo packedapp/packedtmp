@@ -24,7 +24,7 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.UsedExtensionMirror;
-import app.packed.mirror.MirrorSet;
+import app.packed.mirror.SetView;
 import packed.internal.component.PackedComponentModifierSet;
 
 /**
@@ -59,6 +59,9 @@ import packed.internal.component.PackedComponentModifierSet;
 
 // Altsaa vi kalder det lidt et mirror...
 // Fordi
+// Tror vi har en generics Validations Klasse istedet for denne...
+// Validation<BaseMirror>
+// validate().assertOk();
 public interface BuildMirror {
 
     // Maaske laver vi den til Optional...
@@ -101,7 +104,7 @@ public interface BuildMirror {
 
     BuildTarget target();
 
-    default MirrorSet<UsedExtensionMirror> extensions() {
+    default SetView<UsedExtensionMirror> extensions() {
         throw new UnsupportedOperationException();
     }
     
@@ -130,7 +133,6 @@ public interface BuildMirror {
     static BuildMirror of(Assembly<?> assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR);
     }
-
 }
 
 //

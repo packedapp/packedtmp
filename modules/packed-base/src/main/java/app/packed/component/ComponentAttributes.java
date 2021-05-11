@@ -36,7 +36,9 @@ public final class ComponentAttributes {
 
     // Save this on TypeLiteral??
     static final TypeToken<Class<?>> _CLASS = new TypeToken<Class<?>>() {};
-    static final TypeToken<Class<? extends Extension>> _EXTENSION_TYPE = new TypeToken<Class<? extends Extension>>() {};
+    
+    // Kommer vi til at bruge den andre steder???
+    //static final TypeToken<Class<? extends Extension>> _EXTENSION_TYPE = new TypeToken<Class<? extends Extension>>() {};
     static final TypeToken<TypeToken<?>> _TYPE_LITERAL = new TypeToken<TypeToken<?>>() {};
 
     /** An attribute that accompanies any component that has the {@link ComponentModifier#APPLICATION} modifier. */
@@ -49,7 +51,9 @@ public final class ComponentAttributes {
 
     /** An attribute that accompanies any component that is part of an an extension. */
     // Altsaa maaske skal vi have to typer??? maaske hedder den bare E
-    public static final Attribute<Class<? extends Extension>> EXTENSION_TYPE = Attribute.of(MethodHandles.lookup(), "extension-type", _EXTENSION_TYPE);
+    // app.packed/extension-type
+    // extension-type@app.packed
+    public static final Attribute<Class<? extends Extension>> EXTENSION_TYPE = Attribute.of(MethodHandles.lookup(), "extension-type", new TypeToken<Class<? extends Extension>>() {});
 
     ////////////////////// Think about these for a bit //////////////////////////
 

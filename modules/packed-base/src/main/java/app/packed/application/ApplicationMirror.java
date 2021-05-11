@@ -14,7 +14,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.mirror.Mirror;
-import app.packed.mirror.MirrorSet;
+import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
 
 /**
@@ -23,9 +23,7 @@ import app.packed.mirror.TreeWalker;
  */
 public interface ApplicationMirror extends Mirror {
 
-    /** {@return all child applications of this application.} */
-
-    /** {@return the root component in the application}. */
+    /** {@return the root (container) component in the application}. */
     ComponentMirror component();
 
     /** {@return the component in the application}. */
@@ -48,6 +46,7 @@ public interface ApplicationMirror extends Mirror {
     /** {@return a walker containing all the containers in this application} */
     TreeWalker<ContainerMirror> containers();
 
+    /** {@return all child applications of this application.} */
     // Det her har "store" implikationer for versions drevet applicationer...
     // Det betyder nemlig at vi totalt flatliner applikationer...
     // Det er bare applikation... Hvordan brugeren ser det er helt anderledes i forhold
@@ -59,7 +58,7 @@ public interface ApplicationMirror extends Mirror {
      */
     // IDK or children();
     default Collection<ApplicationMirror> deployments() {
-        BiConsumer<ApplicationHostMirror, Consumer<ApplicationMirror>> bc = (m, c) -> m.deployments().forEach(p -> c.accept(p));
+        BiConsumer<ApplicationHostMirror, Consumer<ApplicationMirror>> bc = (m, c) -> m.installations().forEach(p -> c.accept(p));
         return hosts().stream().mapMulti(bc).toList();
     }
 
@@ -70,14 +69,22 @@ public interface ApplicationMirror extends Mirror {
         containers().forEach(c -> result.addAll((Set) c.extensions()));
         return Set.copyOf(result);
     }
-
+    
+    default Optional<ApplicationHostMirror> host() {
+        throw new UnsupportedOperationException();
+    }
+    
     /** {@return all the application hosts defined in this application.} */
-    default MirrorSet<ApplicationHostMirror> hosts() {
+    default SetView<ApplicationHostMirror> hosts() {
+        throw new UnsupportedOperationException();
+    }
+    
+    default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
     }
 
-    default TaskListMirror initialization() {
-        throw new UnsupportedOperationException();
+    default boolean isHosted() {
+        return !parent().isEmpty();
     }
 
     /**
@@ -99,6 +106,13 @@ public interface ApplicationMirror extends Mirror {
      */
     boolean isStronglyWired();
 
+    default boolean isUninstallable() {
+        // If not-hosted???
+        // true -> All root applications are trivially uninstallable
+        // false -> All root applications have no uninstallation function
+        return false;
+    }
+
     /**
      * {@return the module that the application belongs to. This is typically the module of the assembly that defined the
      * root container.}
@@ -113,6 +127,16 @@ public interface ApplicationMirror extends Mirror {
 
     NamespacePath path();
     // Optional<ApplicationRelation> parentRelation();
+
+    /**
+     * <p>
+     * A root application always returns empty
+     * 
+     * @return whether or not this application is a part of a versionable application
+     */
+    default Optional<VersionableApplicationMirror> versionable() {
+        throw new UnsupportedOperationException();
+    }
 
     default TreeWalker<ApplicationMirror> walker() {
         throw new UnsupportedOperationException();
@@ -132,6 +156,7 @@ public interface ApplicationMirror extends Mirror {
     /// Maaske flyt til ApplicationMirror.relation...
     /// Der er ingen der kommer til at lave dem selv...
 
+    // extends Relation???
     interface ParentRelation {
 
         ApplicationMirror child();

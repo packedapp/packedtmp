@@ -32,6 +32,10 @@ public final class ApplicationWirelets {
     // Hmm.... Hvad hvis man er et job... Saa er det jo mere cancel end det er shutdown...
     // Er ikke sikker paa vi vil have den her..
     static Wirelet enterToStop() {
+
+        // Den fungere kun med Terminate eller Stop mode...
+        // Og kun in MainThreadOfControl
+        
         // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
 //        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
 //        try {

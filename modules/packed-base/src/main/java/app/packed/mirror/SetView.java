@@ -7,7 +7,8 @@ import java.util.stream.Stream;
 // Ideen er lidt at have en saet type der er optimeret for immutability
 // Og for at skrive tests
 // dodod.anyMatch();
-public interface MirrorSet<T extends Mirror> extends Iterable<T> {
+// SetView...
+public interface SetView<T> extends Iterable<T> {
 
     default boolean allMatch(Predicate<? super T> predicate) {
         return stream().allMatch(predicate);

@@ -80,7 +80,7 @@ public final class RealmSetup {
      * @parem extension the extension setup
      */
     private RealmSetup(ExtensionModel model, ComponentSetup extension) {
-        this.realmType = model.extensionClass();
+        this.realmType = model.type();
         this.build = extension.application.build;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);

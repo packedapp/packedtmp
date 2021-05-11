@@ -41,7 +41,7 @@ import packed.internal.util.ThrowableUtil;
 public class PackedApplicationRuntime implements ApplicationRuntime {
 
     // Sagtens encode det i sync ogsaa
-    InstanceState desiredState = InstanceState.INITIALIZING;
+    InstanceState desiredState = InstanceState.UNINITIALIZED;
 
     /**
      * A lock used for lifecycle control of the component. If components are arranged in a hierarchy and multiple components
@@ -52,7 +52,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
     /** A condition used for waiting on state changes from {@link #await(InstanceState, long, TimeUnit)}. */
     final Condition lockAwaitState = lock.newCondition();
 
-    volatile InstanceState state = InstanceState.INITIALIZING;
+    volatile InstanceState state = InstanceState.UNINITIALIZED;
 
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
@@ -167,7 +167,7 @@ public class PackedApplicationRuntime implements ApplicationRuntime {
         final ReentrantLock lock = this.lock;
         lock.lock();
         try {
-            if (state == InstanceState.INITIALIZING) {
+            if (state == InstanceState.UNINITIALIZED) {
                 throw new IllegalStateException("Cannot call this method now");
             }
             throw new UnsupportedOperationException();

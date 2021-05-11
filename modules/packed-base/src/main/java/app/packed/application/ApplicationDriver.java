@@ -124,7 +124,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * <p>
      * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(InstanceState)}.
      * <p>
-     * Applications that are not runnable will always return {@link InstanceState#INITIALIZED}.
+     * Drivers for applications without a runnable will always return {@link InstanceState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
@@ -419,10 +419,6 @@ interface ZApplicationDriverWithBuilder {
     }
 
     interface Builder<T> {
-        // Hmm har vi brug for klassen foerend til allersidst???
-        default <A> ApplicationDriver<A> build(Class<A> artifactType) {
-            throw new UnsupportedOperationException();
-        }
 
         // Throws ISE paa runtime? Validation? ASsertionError, Custom...
         @SuppressWarnings("unchecked")

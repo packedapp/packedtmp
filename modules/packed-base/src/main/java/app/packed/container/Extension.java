@@ -69,6 +69,12 @@ import packed.internal.util.ThrowableUtil;
  * @see ExtensionDescriptor
  */
 
+// Maaske har vi Extension.state()
+// Hvor vi pakker alle de der isX ned i
+// Har ikke lige kigget paa dem nogle uger
+// Og jeg er allerede i tvivl om hvad checkExtendable
+// checkUnconnected o.s.v. er
+
 // Static initializers
 //// Dependencies
 //// Attributes
@@ -200,6 +206,7 @@ public abstract class Extension {
 
     protected final void isLeafContainer() {
         // Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
+        // Maaske vi skal tage info'en med der istedet for
         throw new UnsupportedOperationException();
     }
 

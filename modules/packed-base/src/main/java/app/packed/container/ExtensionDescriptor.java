@@ -28,7 +28,6 @@ import packed.internal.container.ExtensionModel;
  * This class describes an extension and defines various methods to obtain information about the extension. An instance
  * of this interface is normally acquired by calling {@link #of(Class)}.
  */
-// Altsaa den er ret anderledes i forhold til ComponentDescriptor..
 public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
     /**
@@ -53,18 +52,14 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     @Override
     int compareTo(ExtensionDescriptor descriptor);
 
-    /**
-     * Returns an immutable set of every direct dependency of this extension in any order.
-     * 
-     * @return an immutable set of every direct dependency of this extension in any order
-     */
+    /** {@return an immutable unordered set of every (direct) dependency of this extension.} */
     Set<Class<? extends Extension>> dependencies();
 
     /**
-     * Returns the depth of the extension in the global extension dependency graph.
+     * Returns the depth of the extension in a global extension dependency graph.
      * <p>
-     * Extensions that have no dependencies have depth 0. Otherwise the depth of an extension it is the maximum depth of any
-     * of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
+     * Extensions without any dependencies always have depth 0. Otherwise the depth of an extension it is the maximum depth
+     * of any of its direct dependencies plus 1. This has the nice property, that any dependencies (including transitive
      * dependencies) of an extension will always have a depth that is less than the depth of the extension itself.
      * 
      * @return the depth of the extension
@@ -72,16 +67,9 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     int depth();
 
     /**
-     * Returns the type of extension this descriptor describes.
-     * 
-     * @return the type of extension this descriptor describes
-     */
-    Class<? extends Extension> extensionClass();
-
-    /**
      * Returns the full name of the extension.
      * <p>
-     * The full name is defined as the canonical name of the {@link #extensionClass()} as returned by
+     * The full name is defined as the canonical name of the {@link #type()} as returned by
      * {@link Class#getCanonicalName()}.
      * 
      * @return the full name of the extension
@@ -92,13 +80,13 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     /**
      * Returns the module the extension is part of.
      * <p>
-     * This module of an extension is always the module that the {@link #extensionClass() extension class} is located in.
+     * This module of an extension is always the module that the {@link #type() extension type} is located in.
      * 
      * @return the module the extension is part of
      * @see Class#getModule()
      */
     default Module module() {
-        return extensionClass().getModule();
+        return type().getModule();
     }
 
     /**
@@ -134,26 +122,29 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     /**
      * Returns the name of the extension.
      * <p>
-     * The name is defined as the simple name of the {@link #extensionClass()} as returned by {@link Class#getSimpleName()}.
+     * The name is defined as the simple name of the {@link #type()} as returned by {@link Class#getSimpleName()}.
      * 
      * @return the name of the extension.
      * @see #fullName()
      */
     String name();
 
+    /** {@return the type of extension this descriptor describes.} */
+    Class<? extends Extension> type();
+
     /**
-     * Returns a descriptor for the specified extension class.
+     * Returns a descriptor for the specified extension type.
      * 
-     * @param extensionClass
-     *            the extension to return a descriptor for
-     * @return a descriptor for the specified extension
+     * @param extensionType
+     *            the type of extension to return a descriptor for
+     * @return a descriptor for the specified extension type
      */
-    static ExtensionDescriptor of(Class<? extends Extension> extensionClass) {
-        return ExtensionModel.of(extensionClass);
+    static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
+        return ExtensionModel.of(extensionType);
     }
 }
 
-interface ExtensionDescriptor2 {
+interface SandboxExtensionDescriptor {
 
     /**
      * An extension might have an attached library.

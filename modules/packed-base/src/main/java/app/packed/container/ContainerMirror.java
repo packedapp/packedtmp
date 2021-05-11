@@ -67,11 +67,12 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
     /** {@return the path of this container in relation to other containers} */
     NamespacePath path();
 
-    default <T extends ExtensionMirror> Optional<T> tryUse(Class<T> extensionMirrorType) {
+    default <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType) {
         throw new UnsupportedOperationException();
     }
 
-    default <T extends ExtensionMirror> T use(Class<T> extensionMirrorType) {
+    // must be a concrete class taking the Extension as parameter
+    default <T extends ExtensionMirror<?>> T use(Class<T> extensionMirrorType) {
         return tryUse(extensionMirrorType).orElseThrow();
     }
 

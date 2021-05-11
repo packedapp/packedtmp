@@ -86,7 +86,7 @@ final /* primitive */ class ExtensionDependencySet extends AbstractSet<Class<? e
      */
     @SuppressWarnings("unchecked")
     public static ExtensionDependencySet of(Collection<Class<? extends Extension>> extensions) {
-        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.extensionClass()).toList();
+        List<?> l = extensions.stream().map(c -> ExtensionModel.of(c)).sorted().map(m -> m.type()).toList();
         return new ExtensionDependencySet((List<Class<? extends Extension>>) l);
     }
 }

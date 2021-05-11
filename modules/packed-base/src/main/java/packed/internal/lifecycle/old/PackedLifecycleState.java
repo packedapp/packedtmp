@@ -24,7 +24,7 @@ import app.packed.state.sandbox.InstanceState;
  */
 public abstract class PackedLifecycleState {
 
-    public static final PackedLifecycleState CONSTRUCT_INITALIZING = new ConstructLifecycleState(InstanceState.INITIALIZING);
+    public static final PackedLifecycleState CONSTRUCT_INITALIZING = new ConstructLifecycleState(InstanceState.UNINITIALIZED);
 
     public static final PackedLifecycleState CONSTRUCT_INITIALIZED = new ConstructLifecycleState(InstanceState.INITIALIZED);
 

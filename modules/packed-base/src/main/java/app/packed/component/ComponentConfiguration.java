@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
  */
 public abstract class ComponentConfiguration {
 
-    /** The component's configuration context. */
+    /** The configuration context of the component. */
     protected final ComponentConfigurationContext context;
 
     /**
@@ -46,5 +46,8 @@ public abstract class ComponentConfiguration {
     protected void onConfigured() {}
 }
 // I don't expect this class to have any $ methods
-// This should most likely be located in the driver instead
+// They should most likely be located in the driver instead
 // A component configuration is just a thin wrapper
+
+// Nice man kan faktisk lave en Assembly tager en component configuration med package private metoder
+// Man saa kan expose... Men uden at expose nogle metoder paa selve configurations objektet...

@@ -106,10 +106,9 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         }
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Class<? extends Extension> extensionClass() {
-        return model.extensionClass();
+    /** {@return the extension class.} */
+    private Class<? extends Extension> extensionClass() {
+        return model.type();
     }
 
     /** {@inheritDoc} */
@@ -300,7 +299,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         container.extensions.put(extensionClass, extension);
 
         // The extension has been now been fully wired, run any notifications
-      //  extension.onWired();
+        // extension.onWired();
 
         //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
 
