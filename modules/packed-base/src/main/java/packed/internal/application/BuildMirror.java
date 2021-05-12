@@ -20,8 +20,6 @@ import app.packed.application.BuildTarget;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.UsedExtensionMirror;
 import app.packed.mirror.SetView;
@@ -91,16 +89,6 @@ public interface BuildMirror {
     // Why would I add errors here???
     // Instead of lets say the extension?
     // void addError(ErrorMessage message);
-
-    /**
-     * Returns the set of modifiers used for this assembling.
-     * <p>
-     * The returned set will always contain the {@link ComponentModifier#BUILD} modifier.
-     * 
-     * @return a set of modifiers
-     */
-    // It is not nessesarily the system component. Just the top component of the assembling.
-    ComponentModifierSet modifiers();
 
     BuildTarget target();
 

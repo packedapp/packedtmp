@@ -31,7 +31,6 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
 
     // Er det snare en property på build info????
     public static final int I_MIRROR = intOf(ComponentModifier.MIRROR);
-    public static final int I_BUILD = intOf(ComponentModifier.BUILD);
     
     public static final int I_RUNTIME = intOf(ComponentModifier.RUNTIME);
     public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINER);

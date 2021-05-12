@@ -15,8 +15,6 @@
  */
 package app.packed.hooks.sandbox2;
 
-import app.packed.component.ComponentModifierSet;
-
 /**
  *
  */
@@ -37,7 +35,6 @@ public interface InitializationContext {
     // path
 
     // modifiers.isGuest()
-    ComponentModifierSet modifiers();
 }
 
 // Main Purpose

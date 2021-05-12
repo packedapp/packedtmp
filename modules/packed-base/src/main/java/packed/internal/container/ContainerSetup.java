@@ -48,12 +48,11 @@ import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedTreePath;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.util.CollectionUtil;
 
 /** Build-time configuration of a container. */
-public final class ContainerSetup extends WireableComponentSetup {
+public final class ContainerSetup extends ComponentSetup {
 
     /** Child containers, lazy initialized. */
     @Nullable

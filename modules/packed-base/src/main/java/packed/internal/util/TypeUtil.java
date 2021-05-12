@@ -98,7 +98,7 @@ public final class TypeUtil {
             return isFreeFromTypeVariables(gat.getGenericComponentType());
         } else if (type instanceof TypeVariable) {
             throw new UnsupportedOperationException();
-        } else if (type instanceof WildcardType wt) {
+        } else if (type instanceof WildcardType) {
             return false;
         } else {
             throw new IllegalArgumentException("Unknown type: " + type);

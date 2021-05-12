@@ -7,8 +7,6 @@ import java.util.stream.Stream;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
@@ -52,17 +50,6 @@ public interface BaseMirror extends Mirror {
     
     default TaskListMirror initialization() {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the set of modifiers used for this assembling.
-     * <p>
-     * The returned set will always contain the {@link ComponentModifier#BUILD} modifier.
-     * 
-     * @return a set of modifiers
-     */
-    default ComponentModifierSet modifiers() {
-        return component().modifiers();
     }
 
     default Set<Class<? extends Extension>> extensions() {

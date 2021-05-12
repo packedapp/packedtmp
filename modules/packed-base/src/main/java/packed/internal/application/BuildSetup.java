@@ -23,7 +23,6 @@ import app.packed.application.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.NamespaceSetup;
@@ -64,12 +63,11 @@ public final class BuildSetup implements BuildMirror {
      */
     public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, int modifiers,
             Wirelet[] wirelets) {
-        if (!componentDriver.modifiers().isContainer()) {
+        if (!(componentDriver instanceof ContainerComponentDriver containerDriver)) {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
         }
-        ContainerComponentDriver containerDriver = (ContainerComponentDriver) componentDriver;
 
-        this.modifiers = PackedComponentModifierSet.I_BUILD + applicationDriver.modifiers + containerDriver.modifiers + modifiers;
+        this.modifiers = applicationDriver.modifiers + containerDriver.modifiers + modifiers;
         this.application = new ApplicationSetup(this, applicationDriver, realm, containerDriver, modifiers, wirelets);
         this.container = application.container;
     }
@@ -114,12 +112,6 @@ public final class BuildSetup implements BuildMirror {
     @Override
     public boolean isSuccess() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(modifiers);
     }
 
     @Override

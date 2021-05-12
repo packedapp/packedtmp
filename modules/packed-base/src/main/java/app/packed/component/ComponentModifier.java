@@ -37,20 +37,7 @@ import packed.internal.component.PackedComponentModifierSet;
 // ComponentMode?? ComponentKind?
 
 // Problemet er lidt at nogle af dem giver mening
-// BUILD_ROOT, IMAGE_ROOT
 public enum ComponentModifier {
-
-    
-    /**
-     * Indicates that the component and all of its descendants are part of the same build. When such a system is
-     * initialized. A new system is created retained the structure of the assembled system but without this modifier.
-     * <p>
-     * A system that has the {@link #IMAGE_ROOT} modifier set is always in an assembled state.
-     * <p>
-     * The modifier set returned by {@link BuildInfo#modifiers()} will always contain this modifier. A components with this
-     * modifier will never have any descendants with this modifier.
-     **/
-    BUILD,
 
     /**
      * Indicates that a component represent the root component of an application. For example, an application created via
@@ -266,6 +253,17 @@ enum NamespaceType {
 
 enum Retired {
 
+    /**
+     * Indicates that the component and all of its descendants are part of the same build. When such a system is
+     * initialized. A new system is created retained the structure of the assembled system but without this modifier.
+     * <p>
+     * A system that has the {@link #IMAGE_ROOT} modifier set is always in an assembled state.
+     * <p>
+     * The modifier set returned by {@link BuildInfo#modifiers()} will always contain this modifier. A components with this
+     * modifier will never have any descendants with this modifier.
+     **/
+    BUILD,
+    
     /**
      * Indicates that the system is PASSIVE. Components with this property:
      * 

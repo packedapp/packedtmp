@@ -34,23 +34,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     boolean contains(ComponentModifier modifier);
 
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
-     * 
-     * @return true if this set contains the container modifier, otherwise false
-     */
-    default boolean isContainer() {
-        return contains(ComponentModifier.CONTAINER);
-    }
-
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#EXTENSION} modifier.
-     * 
-     * @return true if this set contains the extension modifier, otherwise false
-     */
-    default boolean isExtension() {
-        return contains(ComponentModifier.EXTENSION);
-    }
 
     // boolean containsAll(Collection<ComponentModifier> c);
     /**
@@ -60,15 +43,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     default boolean hasRuntime() {
         return contains(ComponentModifier.RUNTIME);
-    }
-
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#IMAGE} modifier.
-     * 
-     * @return true if this set contains the image modifier, otherwise false
-     */
-    default boolean isImage() {
-        return contains(ComponentModifier.IMAGE);
     }
 
     /**

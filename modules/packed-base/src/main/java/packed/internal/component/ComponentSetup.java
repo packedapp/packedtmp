@@ -45,18 +45,16 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionModel;
-import packed.internal.container.ExtensionSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Build-time configuration of a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
-public abstract class ComponentSetup {
-
+public abstract class ComponentSetup implements ComponentConfigurationContext {
+    
     /** The application this component is a part of. */
     public final ApplicationSetup application;
-
+    
     /** Children of this node (lazily initialized) in insertion order. */
     @Nullable
     LinkedHashMap<String, ComponentSetup> children;
@@ -92,6 +90,11 @@ public abstract class ComponentSetup {
     /** The realm this component is a part of. */
     public final RealmSetup realm;
 
+    /** Wirelets that was specified when creating the component. */
+    // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
+    @Nullable
+    public final WireletWrapper wirelets;
+
     /**
      * Create a new component.
      * 
@@ -104,7 +107,7 @@ public abstract class ComponentSetup {
      * @param parent
      *            any parent this component might have
      */
-    ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent) {
+    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
 
@@ -121,31 +124,46 @@ public abstract class ComponentSetup {
             this.pool = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.pool;
             this.onWire = parent.onWire;
         }
-    }
 
-    /**
-     * Create a new extension via {@link ExtensionSetup}.
-     * 
-     * @param container
-     *            the extension's container (parent)
-     * @param extensionModel
-     *            a model of the extension
-     */
-    protected ComponentSetup(ContainerSetup container, ExtensionModel model) {
-        this.parent = container;
-        this.depth = container.depth + 1;
+        requireNonNull(wirelets, "wirelets is null");
+        if (wirelets.length == 0) {
+            this.wirelets = null;
+        } else {
+            // If it is the root
+            Wirelet[] ws;
+            if (PackedComponentModifierSet.isApplication(modifiers)) {
+                if (application.driver.wirelet == null) {
+                    ws = WireletArray.flatten(wirelets);
+                } else {
+                    ws = WireletArray.flatten(application.driver.wirelet, Wirelet.combine(wirelets));
+                }
+            } else {
+                ws = WireletArray.flatten(wirelets);
+            }
 
-        this.application = container.application;
-        this.container = container;
-        this.realm = container.realm.newExtension(model, container);
+            this.wirelets = new WireletWrapper(ws);
 
-        this.modifiers = PackedComponentModifierSet.I_EXTENSION;
-        this.pool = container.pool;
-        this.onWire = container.onWire;
+            // May initialize the component's name, onWire, ect
+            // Do we need to consume internal wirelets???
+            // Maybe that is what they are...
+            int unconsumed = 0;
+            for (Wirelet w : ws) {
+                if (w instanceof InternalWirelet bw) {
+                    // Maaske er alle internal wirelets first passe
+                    bw.onBuild(this);
+                } else {
+                    unconsumed++;
+                }
+            }
+            if (unconsumed > 0) {
+                this.wirelets.unconsumed = unconsumed;
+            }
+            
+            if (nameInitializedWithWirelet && parent != null) {
 
-        // Cannot use wirelets with extensions. So the name is final
-        // It's dead jim
-        // initializeNameWithPrefix(model.nameComponent);
+                // addChild(child, name);
+            }
+        }
     }
 
     final AttributeMap attributes() {
@@ -175,6 +193,12 @@ public abstract class ComponentSetup {
         }
     }
 
+    /** {@inheritDoc} */
+    public final String getName() {
+        // Dette kunne ogsaa wire componenten?
+        return name;
+    }
+
     protected final void initializeNameWithPrefix(String name) {
         String n = name;
         if (parent != null) {
@@ -192,7 +216,6 @@ public abstract class ComponentSetup {
         }
         this.name = n;
     }
-
     /**
      * Tests that this component is in the same specified scope as another component.
      * 
@@ -213,22 +236,7 @@ public abstract class ComponentSetup {
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
         };
     }
-
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
-     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
-     */
-    public final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return link(assembly, realm, wirelets);
-    }
-
+    
     public final ComponentMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
@@ -251,6 +259,20 @@ public abstract class ComponentSetup {
 
         return newRealm.root.mirror();
     }
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
+     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
+     */
+    public final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        return link(assembly, realm, wirelets);
+    }
 
     /**
      * Returns a {@link ComponentMirror} adaptor of this node.
@@ -263,6 +285,29 @@ public abstract class ComponentSetup {
 
     public final PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
+    }
+
+    /** {@inheritDoc} */
+    public final void named(String name) {
+        checkComponentName(name); // Check if the name is valid
+        checkIsWiring();
+
+        // If a name has been set using a wirelet it cannot be overridden
+        if (nameInitializedWithWirelet) {
+            return;
+        } else if (name.equals(this.name)) {
+            return;
+        }
+
+        // maybe assume s==0
+
+        if (parent != null) {
+            parent.children.remove(this.name);
+            if (parent.children.putIfAbsent(name, this) != null) {
+                throw new IllegalArgumentException("A component with the specified name '" + name + "' already exists");
+            }
+        }
+        this.name = name;
     }
 
     protected final void onWired() {
@@ -282,18 +327,18 @@ public abstract class ComponentSetup {
         // check realm.open + attribute.write
     }
 
-    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return wire(driver, realm, wirelets);
-    }
-
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, RealmSetup realm, Wirelet... wirelets) {
         PackedComponentDriver<C> realDriver = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // Wire a new component
-        WireableComponentSetup component = realm.wire(realDriver, this, wirelets);
+        ComponentSetup component = realm.wire(realDriver, this, wirelets);
 
         // Return a component configuration to the user
         return realDriver.toConfiguration(component);
+    }
+
+    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return wire(driver, realm, wirelets);
     }
 
     /**

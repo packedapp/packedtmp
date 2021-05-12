@@ -63,7 +63,7 @@ public final class RealmSetup {
     private final Class<?> realmType;
 
     /** The root component of this realm. */
-    public final WireableComponentSetup root;
+    public final ComponentSetup root;
 
     /**
      * We keep track of all containers that are either the root container or have a parent that is not part of this realm.
@@ -184,18 +184,18 @@ public final class RealmSetup {
         this.accessor = accessor().withLookup(lookup);
     }
 
-    public WireableComponentSetup wire(PackedComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
+    public ComponentSetup wire(PackedComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
         // Prepare to wire the component (make sure the realm is still open)
         wirePrepare();
 
         // Create the new component
-        WireableComponentSetup component = driver.newComponent(build.application, this, wireTo, wirelets);
+        ComponentSetup component = driver.newComponent(build.application, this, wireTo, wirelets);
 
         wireCommit(component);
         return component;
     }
 
-    private void wireCommit(WireableComponentSetup component) {
+    private void wireCommit(ComponentSetup component) {
         current = component;
         if (component instanceof ContainerSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {

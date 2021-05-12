@@ -12,7 +12,7 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 
-public final class SourcedComponentSetup extends WireableComponentSetup {
+public final class SourcedComponentSetup extends ComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;

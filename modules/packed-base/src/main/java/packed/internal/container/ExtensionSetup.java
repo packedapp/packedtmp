@@ -24,7 +24,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
-import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedWireletSource;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
@@ -67,6 +66,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     final ExtensionModel model;
 
     final RealmSetup realm;
+
     /**
      * Creates a new extension setup.
      * 
@@ -252,33 +252,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return new PackedWireletSource<>(wirelets, wireletClass);
     }
 
-    public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, ComponentMirror containerComponent) {
-        requireNonNull(lookup, "containerComponent is null");
-
-        // We only allow to call in directly on the container itself
-        if (!containerComponent.modifiers().isContainer()) {
-            throw new IllegalArgumentException("The specified component '" + containerComponent.path() + "' must have the Container modifier, modifiers = "
-                    + containerComponent.modifiers());
-        }
-
-        // lookup.lookupClass() must point to the extension that should be extracted
-        if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
-            throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
-                    + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
-        }
-
-        @SuppressWarnings("unchecked")
-        Class<? extends Extension> extensionClass = (Class<? extends Extension>) lookup.lookupClass();
-        // Must have full access to the extension class
-        if (!lookup.hasFullPrivilegeAccess()) {
-            throw new IllegalArgumentException("The specified lookup object must have full privilege access to " + extensionClass
-                    + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
-        }
-
-        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
-        return container.extensions.get(extensionClass);
-    }
-
     /**
      * Create a new extension.
      * 
@@ -325,6 +298,35 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.wire(driver, realm, wirelets);
     }
 }
+
+// Previously used for extract an extension from a component mirror
+// Not needed anymore after mirrors
+//public static ExtensionSetup extractExtensionSetup(MethodHandles.Lookup lookup, ComponentMirror containerComponent) {
+//  requireNonNull(lookup, "containerComponent is null");
+//
+//  // We only allow to call in directly on the container itself
+//  if (!containerComponent.modifiers().isContainer()) {
+//      throw new IllegalArgumentException("The specified component '" + containerComponent.path() + "' must have the Container modifier, modifiers = "
+//              + containerComponent.modifiers());
+//  }
+//
+//  // lookup.lookupClass() must point to the extension that should be extracted
+//  if (lookup.lookupClass() == Extension.class || !Extension.class.isAssignableFrom(lookup.lookupClass())) {
+//      throw new IllegalArgumentException("The lookupClass() of the specified lookup object must be a proper subclass of "
+//              + Extension.class.getCanonicalName() + ", was " + lookup.lookupClass());
+//  }
+//
+//  @SuppressWarnings("unchecked")
+//  Class<? extends Extension> extensionClass = (Class<? extends Extension>) lookup.lookupClass();
+//  // Must have full access to the extension class
+//  if (!lookup.hasFullPrivilegeAccess()) {
+//      throw new IllegalArgumentException("The specified lookup object must have full privilege access to " + extensionClass
+//              + ", try creating a new lookup object using MethodHandles.privateLookupIn(lookup, " + extensionClass.getSimpleName() + ".class)");
+//  }
+//
+//  ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(lookup, containerComponent);
+//  return container.extensions.get(extensionClass);
+//}
 
 ///**
 //* If need 2 sentinel values we can use both null and this. For example, null can mean uninitialized and this can mean

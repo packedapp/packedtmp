@@ -37,7 +37,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     public void checkBound() {}
 
-    public abstract WireableComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
+    public abstract ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
             Wirelet[] wirelets);
 
     public abstract C toConfiguration(ComponentConfigurationContext context);

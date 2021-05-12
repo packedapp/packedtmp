@@ -35,9 +35,9 @@ import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.WireletArray;
 import packed.internal.component.WireletWrapper;
 import packed.internal.invoke.Infuser;
@@ -109,6 +109,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     }
 
     /**
+     * Builds an application from the specified assembly and optional wirelets.
+     * 
      * @param assembly
      *            the root assembly
      * @param wirelets
@@ -187,7 +189,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     public InstanceState launchMode() {
         return launchMode;
     }
-
 
     /**
      * Create a new application using the specified initialization context.

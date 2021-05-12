@@ -37,6 +37,13 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     /** {@return an unmodifiable view of all of this component's children} */
     Collection<ComponentMirror> children();
 
+    /**
+     * Returns the distance to the root component. The root component having depth 0.
+     * 
+     * @return the distance to the root component
+     */
+    int depth();
+
     // Old stuff, I think I may like this method anyway...
     //// Don't really like this... It strongly ties a container to a component.
     //// As extensions are children of containers always...
@@ -47,13 +54,6 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     default Optional<Class<? extends Extension>> extension() {
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Returns the distance to the root component. The root component having depth 0.
-     * 
-     * @return the distance to the root component
-     */
-    int depth();
 
     default boolean hasModifier(ComponentModifier modifier) {
         return modifiers().contains(modifier);

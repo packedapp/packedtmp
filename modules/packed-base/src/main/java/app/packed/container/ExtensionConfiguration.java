@@ -15,11 +15,6 @@
  */
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationImage;
@@ -32,7 +27,6 @@ import app.packed.component.Wirelet;
 import app.packed.component.WireletSource;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.container.ExtensionSetup;
 
 /**
  * A configuration object for an {@link Extension}.
@@ -217,65 +211,68 @@ public /* sealed */ interface ExtensionConfiguration {
      * @return a wirelet source
      */
     <T extends Wirelet> WireletSource<T> wirelets(Class<T> wireletType);
-
-    /**
-     * Typically used, for example, for testing.
-     * 
-     * The specified lookup must have the extension as its {@link Lookup#lookupClass()}. And
-     * {@link Lookup#hasPrivateAccess()} must return true.
-     * 
-     * <p>
-     * Calling this method after a container has been fully initialized will fail with {@link IllegalStateException}. As
-     * containers never retain extensions at runtime. I don't even know if you can call it doing initialization
-     * 
-     * @param caller
-     *            a lookup object for an extension class with {@link Lookup#hasFullPrivilegeAccess() full privilege access}
-     * @param containerComponent
-     *            the component to extract the configuration from.
-     * @return the configuration of the extension if it has been configured, otherwise empty
-     * @throws IllegalStateException
-     *             if calling this method at runtime
-     * @throws IllegalArgumentException
-     *             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
-     *             specified lookup object does not have full privileges
-     */
-    // Maybe take an extension class anyway. Then users to not need to teleport if called from outside of the extension
-    // We should probably check that is has module access?
-
-    // I don't know the exact extend we need these now. Previously, for example, ServiceContract made use of it
-    // But now I think we will extract the information from component attributes
-    @SuppressWarnings("unused")
-    private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
-            ComponentMirror containerComponent) {
-        requireNonNull(caller, "caller is null");
-        return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
-    }
-
-    /**
-     * @param <T>
-     *            the type of extension to return
-     * @param caller
-     *            a lookup object for the specified extension class with {@link Lookup#hasFullPrivilegeAccess() full
-     *            privilege access}
-     * @param extensionClass
-     *            the extension that we are trying to find
-     * @param containerComponent
-     *            the container component
-     * @return the extension, or empty if no extension of the specified type is registered in the container
-     */
-    // We current dont use then
-    @SuppressWarnings({ "unchecked", "unused" })
-    // Maaske kan vi goere noget smart fra mirrors...
-    // Bare checke at de er samme module..
-    private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, ComponentMirror containerComponent) {
-        requireNonNull(caller, "caller is null");
-        requireNonNull(extensionClass, "extensionClass is null");
-        if (caller.lookupClass() != extensionClass) {
-            throw new IllegalArgumentException(
-                    "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + caller.lookupClass());
-        }
-
-        ExtensionSetup eb = ExtensionSetup.extractExtensionSetup(caller, containerComponent);
-        return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
-    }
 }
+
+// Previously used for getting hold of an extension from a mirror..
+// I don't think we need this anymore after mirrors
+
+///**
+//* Typically used, for example, for testing.
+//* 
+//* The specified lookup must have the extension as its {@link Lookup#lookupClass()}. And
+//* {@link Lookup#hasPrivateAccess()} must return true.
+//* 
+//* <p>
+//* Calling this method after a container has been fully initialized will fail with {@link IllegalStateException}. As
+//* containers never retain extensions at runtime. I don't even know if you can call it doing initialization
+//* 
+//* @param caller
+//*            a lookup object for an extension class with {@link Lookup#hasFullPrivilegeAccess() full privilege access}
+//* @param containerComponent
+//*            the component to extract the configuration from.
+//* @return the configuration of the extension if it has been configured, otherwise empty
+//* @throws IllegalStateException
+//*             if calling this method at runtime
+//* @throws IllegalArgumentException
+//*             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
+//*             specified lookup object does not have full privileges
+//*/
+//// Maybe take an extension class anyway. Then users to not need to teleport if called from outside of the extension
+//// We should probably check that is has module access?
+//
+//// I don't know the exact extend we need these now. Previously, for example, ServiceContract made use of it
+//// But now I think we will extract the information from component attributes
+//@SuppressWarnings("unused")
+//private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
+//     ComponentMirror containerComponent) {
+// requireNonNull(caller, "caller is null");
+// return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
+//}
+//
+///**
+//* @param <T>
+//*            the type of extension to return
+//* @param caller
+//*            a lookup object for the specified extension class with {@link Lookup#hasFullPrivilegeAccess() full
+//*            privilege access}
+//* @param extensionClass
+//*            the extension that we are trying to find
+//* @param containerComponent
+//*            the container component
+//* @return the extension, or empty if no extension of the specified type is registered in the container
+//*/
+//// We current dont use then
+//@SuppressWarnings({ "unchecked", "unused" })
+//// Maaske kan vi goere noget smart fra mirrors...
+//// Bare checke at de er samme module..
+//private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, ComponentMirror containerComponent) {
+// requireNonNull(caller, "caller is null");
+// requireNonNull(extensionClass, "extensionClass is null");
+// if (caller.lookupClass() != extensionClass) {
+//     throw new IllegalArgumentException(
+//             "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + caller.lookupClass());
+// }
+//
+// ExtensionSetup eb = ExtensionSetup.extractExtensionSetup(caller, containerComponent);
+// return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
+//}
