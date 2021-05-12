@@ -79,9 +79,9 @@ public final class RealmSetup {
      *            the extension model to create a realm for
      * @parem extension the extension setup
      */
-    private RealmSetup(ExtensionModel model, ComponentSetup extension) {
+    private RealmSetup(ExtensionModel model, ContainerSetup container) {
         this.realmType = model.type();
-        this.build = extension.application.build;
+        this.build = container.application.build;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
@@ -152,8 +152,8 @@ public final class RealmSetup {
         return new RealmSetup(this, driver, linkTo, assembly, wirelets);
     }
 
-    public RealmSetup newExtension(ExtensionModel model, ComponentSetup extension) {
-        return new RealmSetup(model, extension);
+    public RealmSetup newExtension(ExtensionModel model, ContainerSetup container) {
+        return new RealmSetup(model, container);
     }
 
     public void newOperation() {

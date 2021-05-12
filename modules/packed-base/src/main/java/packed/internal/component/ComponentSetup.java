@@ -137,7 +137,7 @@ public abstract class ComponentSetup {
 
         this.application = container.application;
         this.container = container;
-        this.realm = container.realm.newExtension(model, this);
+        this.realm = container.realm.newExtension(model, container);
 
         this.modifiers = PackedComponentModifierSet.I_EXTENSION;
         this.pool = container.pool;
@@ -233,12 +233,8 @@ public abstract class ComponentSetup {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
-        // If this component is an extension, we link to the extension's container.
-        // As the extension itself is not present at runtime
-        ComponentSetup linkTo = this instanceof ExtensionSetup ? parent : this;
-
         // Create the new realm that should be used for linking
-        RealmSetup newRealm = realm.link(driver, linkTo, assembly, wirelets);
+        RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
 
         // Create the component configuration that is needed by the assembly
         ComponentConfiguration configuration = driver.toConfiguration(newRealm.root);

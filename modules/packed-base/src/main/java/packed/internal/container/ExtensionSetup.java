@@ -9,6 +9,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
+import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
@@ -25,13 +26,14 @@ import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedWireletSource;
+import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 // Lige nu beholder vi den som component...
-public final class ExtensionSetup extends ComponentSetup implements ExtensionConfiguration {
+public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A handle for invoking {@link Extension#onComplete()}. */
     private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
@@ -64,6 +66,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** This extension's model. */
     final ExtensionModel model;
 
+    final RealmSetup realm;
     /**
      * Creates a new extension setup.
      * 
@@ -73,13 +76,12 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
      *            the model of the extension
      */
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
-        super(container, model);
+        this.realm = container.realm.newExtension(model, container);
+
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
     }
 
-    /** {@inheritDoc} */
-    @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
         dam.addValue(ComponentAttributes.EXTENSION_TYPE, extensionClass());
         PackedAttributeModel pam = model.attributes;
@@ -157,7 +159,7 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return application.isImage();
+        return container.application.isImage();
     }
 
     /** {@inheritDoc} */
@@ -311,6 +313,16 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
         }
 
         return extension;
+    }
+
+    @Override
+    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        return container.link(assembly, realm, wirelets);
+    }
+
+    @Override
+    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return container.wire(driver, realm, wirelets);
     }
 }
 
