@@ -20,7 +20,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.state.sandbox.InstanceState;
@@ -112,7 +111,7 @@ public interface ApplicationRuntime {
         return startAsync(null);
     }
 
-    <@Nullable T> CompletableFuture<T> startAsync(T result);
+    <T> CompletableFuture<T> startAsync(T result);
 
     /**
      * Returns the current state of the component.
@@ -247,22 +246,22 @@ public interface ApplicationRuntime {
             throw new UnsupportedOperationException();
         }
 
-        // add Runtime.IsRestartable??
-        static StopOption restart(Wirelet... wirelets) {
-            // restart(Wirelet.rename("Restart at ....");
-            //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
-            throw new UnsupportedOperationException();
-        }
-
-        // Will override default settings.
-        // linger would be nice
-        // Or maybe somewhere to replace the guest with a tombstone of some kind.
-        // Summarizing everything in the guest...
-
-        // Hmmmmmm IDK
-        static StopOption undeploy() {
-            throw new UnsupportedOperationException();
-        }
+//        // add Runtime.IsRestartable??
+//        static StopOption restart(Wirelet... wirelets) {
+//            // restart(Wirelet.rename("Restart at ....");
+//            //// Men okay hvad hvis det ikke kan lade sige goere at omnavngive den...
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        // Will override default settings.
+//        // linger would be nice
+//        // Or maybe somewhere to replace the guest with a tombstone of some kind.
+//        // Summarizing everything in the guest...
+//
+//        // Hmmmmmm IDK
+//        static StopOption undeploy() {
+//            throw new UnsupportedOperationException();
+//        }
         // restart.. (Artifact must have been started with RestartWirelets.restartable();
     }
     // normal

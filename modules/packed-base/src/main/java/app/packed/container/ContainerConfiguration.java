@@ -17,7 +17,6 @@ package app.packed.container;
 
 import java.util.Set;
 
-import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
@@ -26,10 +25,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.application.ApplicationSetup;
-import packed.internal.component.ComponentSetup;
-import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.container.ContainerSetup;
 
 /**
@@ -39,7 +35,7 @@ import packed.internal.container.ContainerSetup;
 public class ContainerConfiguration extends BaseComponentConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<ContainerConfiguration> DRIVER = new PackedContainerComponentDriver(null);
+    private static final ComponentDriver<ContainerConfiguration> DRIVER = new ContainerComponentDriver(null);
 
     /**
      * Creates a new ContainerConfiguration, only used by {@link #DRIVER}.
@@ -47,7 +43,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @param context
      *            the component configuration context
      */
-    private ContainerConfiguration(ComponentConfigurationContext context) {
+    public ContainerConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
     
@@ -174,27 +170,5 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      */
     public static ComponentDriver<ContainerConfiguration> driver() {
         return DRIVER;
-    }
-
-    /** A component driver that create containers. */
-    private static class PackedContainerComponentDriver extends ContainerComponentDriver {
-
-        private PackedContainerComponentDriver(Wirelet wirelet) {
-            super(wirelet);
-        }
-
-        public ContainerSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            return new ContainerSetup(application, realm, this, parent, wirelets);
-        }
-
-        @Override
-        public ContainerConfiguration toConfiguration(ComponentConfigurationContext context) {
-            return new ContainerConfiguration(context);
-        }
-
-        @Override
-        protected PackedContainerComponentDriver withWirelet(Wirelet w) {
-            return new PackedContainerComponentDriver(w);
-        }
     }
 }

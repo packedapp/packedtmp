@@ -24,16 +24,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import app.packed.application.ApplicationDriver;
-import app.packed.application.BaseMirror;
 import app.packed.base.Key;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentMirror;
+import app.packed.component.Wirelet;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
-import packed.internal.component.ComponentSetup;
-import packed.internal.container.ContainerSetup;
-import packed.internal.inject.service.ServiceManagerSetup;
 
 /**
  * A service contract details of a contractee.
@@ -250,17 +245,6 @@ public final class ServiceContract extends Contract {
         return new ServiceContract.Builder(null);
     }
 
-    static ServiceContract of(ApplicationDriver<?> driver, Assembly<?> assembly) {
-        BaseMirror application = BaseMirror.of(assembly);
-        ComponentMirror component = application.component();
-        if (!component.modifiers().isContainer()) {
-            throw new IllegalArgumentException("Can only specify a assembly where the root component is a container, was " + component);
-        }
-        ContainerSetup container = (ContainerSetup) ComponentSetup.unadapt(null, component);
-        ServiceManagerSetup sm = container.injection.getServiceManager();
-        return sm == null ? ServiceContract.EMPTY : sm.newServiceContract();
-    }
-
     /**
      * Returns a service contract from the specified image. Or fails with {@link UnsupportedOperationException}. if the a
      * contract
@@ -278,10 +262,10 @@ public final class ServiceContract extends Contract {
 
     // Tog foerhen en ComponentSystem... Men altsaa skal ikke bruge den paa runtime...
     // Vil mene kontrakter primaert er en composition/build ting
-    
+
     // Syntes maaske vi kalde dem reflect alligevel... Saa man er klar over hvad det er man laver...
-    public static ServiceContract of(Assembly<?> assembly) {
-        return of(BaseMirror.defaultDriver(), assembly);
+    public static ServiceContract of(Assembly<?> assembly, Wirelet... wirelets) {
+        return ServiceExtensionMirror.find(assembly, wirelets).map(e -> e.contract()).orElse(ServiceContract.EMPTY);
     }
 
     /**

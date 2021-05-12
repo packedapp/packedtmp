@@ -1,0 +1,63 @@
+package app.packed.application;
+
+import app.packed.base.Completion;
+import app.packed.container.BaseAssembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.state.sandbox.InstanceState;
+import app.packed.state.sandbox.OnStart;
+
+public class UseCases {
+
+    public void lazy(ContainerConfiguration cc) {
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+        hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
+        hc.install(new BB());
+    }
+
+    public void singleInstanceAcquiring(ContainerConfiguration cc) {
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+
+        hc.install(new AA()).provideSingleLauncher();
+        hc.installLaunchable(new AA());
+        cc.install(AppLauncher.class);
+    }
+
+    public void singleInstanceWithGuest(ContainerConfiguration cc) {
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+
+        hc.install(new AA()).provideGuest();
+        hc.installLaunchable(new AA());
+        cc.install(AppLauncher.class);
+    }
+    
+    public interface Guest {
+        InstanceState state();
+
+        ApplicationRuntime runtime();
+        // await
+        // und so weither
+    }
+
+}
+
+class AppLauncher {
+
+    @OnStart
+    public void foo(Launcher<Daemon> l) throws InterruptedException {
+        Daemon d = l.launch();
+        Thread.sleep(10000);
+        d.stop();
+    }
+}
+
+class AA extends BaseAssembly {
+
+    @Override
+    protected void build() {}
+}
+
+class BB extends BaseAssembly {
+
+    @Override
+    protected void build() {}
+}

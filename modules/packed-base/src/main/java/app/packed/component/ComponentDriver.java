@@ -33,7 +33,7 @@ import packed.internal.component.ClassComponentDriver;
  *            the type of component configuration this driver create
  */
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
-    
+
     /**
      * Returns the set of modifiers that will be applied to the component.
      * <p>
@@ -49,7 +49,7 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
 
     // bindSource?
     ComponentDriver<C> bind(Object object);
-    
+
     /**
      * Returns a driver that can be used to create stateless components.
      * 
@@ -61,7 +61,7 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     private static ComponentDriver<BaseComponentConfiguration> driver() {
         return ClassComponentDriver.STATELESS_DRIVER;
     }
-    
+
     // Not sure we want this public or ma
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
@@ -81,9 +81,28 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
         return driver().bind(implementation);
     }
+
+    static <T> ComponentDriver<BaseComponentConfiguration> functional(Class<?> implementation) {
+        return driver().bind(implementation);
+    }
+
+    // Or FunctionalInterface? Nahhh Function
+    // forFunction(FunctionalInterface)
+    // forFunction(TypeToken)
+    interface ForFunction {
+        // Completely stateless
+        // Syntes maaske static component skal fungere paa samme maade
+    }
+    interface ForContainer {}
+    interface ForClass {}
     
+    interface ForHook {}
+    interface ForEmbedded {} //?
+    // We pack a user supplied object
+    interface ForClassEnvelope{}
+
     // IDK
     interface SourcedBuilder {
-        
+
     }
 }

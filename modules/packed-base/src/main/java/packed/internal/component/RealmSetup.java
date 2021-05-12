@@ -86,7 +86,7 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver,
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver,
             ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, 0, wirelets);
@@ -94,7 +94,7 @@ public final class RealmSetup {
         wireCommit(root);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, WireableComponentDriver<?> componentDriver, int modifiers, Assembly<?> assembly,
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, int modifiers, Assembly<?> assembly,
             Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, this, componentDriver, modifiers, wirelets);
@@ -108,7 +108,7 @@ public final class RealmSetup {
      * @param assembly
      *            the assembly to create a realm for
      */
-    private RealmSetup(RealmSetup existing, WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
+    private RealmSetup(RealmSetup existing, PackedComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.root = driver.newComponent(build.application, this, linkTo, wirelets);
@@ -145,7 +145,7 @@ public final class RealmSetup {
         return current;
     }
 
-    public RealmSetup link(WireableComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
+    public RealmSetup link(PackedComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
         // Check that the realm this component is a part of is still open
         wirePrepare();
         // Create the new realm that should be used for linking
@@ -184,7 +184,7 @@ public final class RealmSetup {
         this.accessor = accessor().withLookup(lookup);
     }
 
-    public WireableComponentSetup wire(WireableComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
+    public WireableComponentSetup wire(PackedComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
         // Prepare to wire the component (make sure the realm is still open)
         wirePrepare();
 

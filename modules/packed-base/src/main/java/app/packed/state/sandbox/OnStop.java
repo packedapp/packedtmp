@@ -21,6 +21,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.application.ManagedInstance;
+
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
  * {@link InstanceState#STOPPING} state.
@@ -34,7 +36,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface OnStop {
-    String[] before() default {};
+
+    boolean async() default false;
+
+    ManagedInstance.Mode[] mode() default {};
+
+    ManagedInstance.Mode[] notMode() default {};
+
+    boolean preOrder() default false;
 }
+
+// String[] before() default {};
+
 // The only guarantee we make is that if an entity has transitioned to the starting state.
 // OnStop will run...

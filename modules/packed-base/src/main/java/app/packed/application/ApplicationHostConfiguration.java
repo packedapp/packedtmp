@@ -20,16 +20,26 @@ import packed.internal.util.NativeImage;
 // Det er lidt efter vi maaske tilfoejer en installer som en component child til en host
 // Saa ligger den paa niveau med alle hostede applikationer...
 // Omvendt er det jo rart at kunne iterere over alle containere og fange alle exceptions...
+
+
+//Kan vi have en Host med forskellige Applications typer for en host????
+//Jeg har svaert ved at se det... Saa maa man lave forskellige hosts...
+//I 9/10 af tilfaeldene er de vel ogsaa void...
+
 public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration {
 
     ApplicationHostConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
 
-    public ApplicationInstaller install(Assembly<?> assembly, Wirelet... wirelets) {
+    public InstalledApplicationConfiguration<T> install(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
+    public ServiceConfiguration<Launcher<T>> installLaunchable(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+    
     // Can fail, what if never started
     // Maybe CompletaableFuture istedet for...
     public Supplier<T> lazy(Assembly<?> assembly, Wirelet... wirelets) {
@@ -56,7 +66,7 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
     }
 
     
-    ServiceConfiguration<ApplicationInstaller> provideInstaller() {
+    ServiceConfiguration<InstalledApplicationConfiguration<T>> provideInstaller() {
         if (NativeImage.inImageBuildtimeCode()) {
             throw new UnsupportedOperationException("Application installers are not supported for native images");
         }
@@ -92,6 +102,11 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
         throw new UnsupportedOperationException();
     }
 
+    // Hvis man har en context kan man goere hvad man vil
+    @SuppressWarnings("unused")
+    private static <T> ApplicationHostConfiguration<T> of(ComponentConfigurationContext context, ApplicationDriver<T> driver, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
     // Wirelets are for the host...
     public static <T> ApplicationHostConfiguration<T> of(ContainerConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
         // Den er sjov...
@@ -102,10 +117,6 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
 
         ComponentDriver<ApplicationHostConfiguration<T>> driv = null;
         return cc.wire(driv, wirelets);
-    }
-    
-    public interface ApplicationInstaller {
-        
     }
 }
 

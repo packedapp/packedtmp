@@ -16,10 +16,12 @@ public class Tester extends BaseAssembly {
             System.out.println(am);
         }
 
-        ContainerMirror cm = ContainerMirror.of(new Tester());
-
-        cm.use(ServiceExtensionMirror.class).contract();
+        ContainerMirror.of(new Tester()).use(ServiceExtensionMirror.class).contract();
+        ServiceExtensionMirror.of(new Tester()).contract();
+        
+        
         // SEM.first(Assembly).
+        ContainerMirror cm = ContainerMirror.of(new Tester());
 
         cm.use(ServiceExtensionMirror.class).contract();
 

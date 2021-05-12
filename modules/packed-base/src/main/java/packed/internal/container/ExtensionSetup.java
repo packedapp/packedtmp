@@ -139,19 +139,19 @@ public final class ExtensionSetup extends ComponentSetup implements ExtensionCon
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration install(Class<?> implementation) {
-        return wire(ComponentDriver.driverInstall(implementation));
+        return container.wire(ComponentDriver.driverInstall(implementation), realm);
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration install(Factory<?> factory) {
-        return wire(ComponentDriver.driverInstall(factory));
+        return container.wire(ComponentDriver.driverInstall(factory), realm);
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration installInstance(Object instance) {
-        return wire(ComponentDriver.driverInstallInstance(instance));
+        return container.wire(ComponentDriver.driverInstallInstance(instance), realm);
     }
 
     /** {@inheritDoc} */

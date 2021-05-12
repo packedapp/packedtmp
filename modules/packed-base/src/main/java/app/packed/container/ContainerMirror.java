@@ -1,6 +1,7 @@
 package app.packed.container;
 
 import java.util.Collection;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -50,7 +51,7 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
     }
 
     /**
-     * Returns whether or not the container uses an extension of the specified type.
+     * Returns whether or not the underlying container uses an extension of the specified type.
      * 
      * @param extensionType
      *            the type of extension to test
@@ -67,11 +68,21 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
     /** {@return the path of this container in relation to other containers} */
     NamespacePath path();
 
-    default <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType) {
-        throw new UnsupportedOperationException();
-    }
+    // Altsaa hvor brugbar er denne... Ved man 
+    <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType); // maybe just find? find
 
-    // must be a concrete class taking the Extension as parameter
+    /**
+     * Returns an mirror of the specified type, iff the mirror's extension type is in use by the underlying container.
+     * 
+     * @param <T>
+     *            the type of mirror
+     * @param extensionMirrorType
+     *            the type of mirror to return
+     * @return an extension mirror of the specified type
+     * @see ContainerConfiguration#use(Class)
+     * @throws NoSuchElementException
+     *             if the mirror's extension is not used by the container
+     */
     default <T extends ExtensionMirror<?>> T use(Class<T> extensionMirrorType) {
         return tryUse(extensionMirrorType).orElseThrow();
     }

@@ -37,7 +37,7 @@ import app.packed.inject.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.WireletArray;
 import packed.internal.component.WireletWrapper;
 import packed.internal.invoke.Infuser;
@@ -53,7 +53,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** A handle that can access Composer#driver. */
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
-            WireableComponentDriver.class);
+            PackedComponentDriver.class);
 
     /**
      * The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}.
@@ -121,7 +121,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     public BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
         // Extract the component driver from the assembly
-        WireableComponentDriver<?> componentDriver = WireableComponentDriver.getDriver(assembly);
+        PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Create a new root realm
         RealmSetup realm = new RealmSetup(this, componentDriver, modifiers, assembly, wirelets);
@@ -148,7 +148,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         requireNonNull(composer, "composer is null");
 
         // Extract the component driver from the composer
-        WireableComponentDriver<?> componentDriver = (WireableComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
+        PackedComponentDriver<?> componentDriver = (PackedComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
 
         // Create a new realm
         RealmSetup realm = new RealmSetup(this, componentDriver, consumer, wirelets);
@@ -304,8 +304,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             requireNonNull(launchMode, "launchMode is null");
             if (!isRunnable()) {
                 throw new IllegalStateException("A launch mode can only be set for runnable applications");
-            } else if (launchMode == InstanceState.UNINITIALIZED) {
-                throw new IllegalArgumentException("Cannot specify '" + InstanceState.UNINITIALIZED + "'");
+            } else if (launchMode == InstanceState.INITIALIZING) {
+                throw new IllegalArgumentException("'" + InstanceState.INITIALIZING + "' is not a valid launch mode");
             }
             this.launchMode = launchMode;
             return this;

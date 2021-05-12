@@ -26,7 +26,7 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -78,9 +78,9 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     /**
      * The component driver of this assembly.
      * <p>
-     * This field is read from {@link WireableComponentDriver#getDriver(Assembly)} via a varhandle.
+     * This field is read from {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
      */
-    private final WireableComponentDriver<? extends C> driver;
+    private final PackedComponentDriver<? extends C> driver;
 
     /**
      * Creates a new assembly using the specified driver.
@@ -89,7 +89,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      *            the component driver used to create the configuration objects this assembly wraps
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((WireableComponentDriver<? extends C>) driver, "driver is null");
+        this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
         this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
 

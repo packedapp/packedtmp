@@ -24,7 +24,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.WireableComponentDriver;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -60,9 +60,9 @@ public abstract class Composer<C extends ComponentConfiguration> {
     /**
      * The component driver of this assembly.
      * <p>
-     * This field is read from {@link WireableComponentDriver#getDriver(Assembly)} via a varhandle.
+     * This field is read from {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
      */
-    private final WireableComponentDriver<? extends C> driver;
+    private final PackedComponentDriver<? extends C> driver;
 
     /**
      * Create a new composer.
@@ -84,7 +84,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the component driver used to create the configuration objects this composer wraps
      */
     protected Composer(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((WireableComponentDriver<? extends C>) driver, "driver is null");
+        this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
         this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
 

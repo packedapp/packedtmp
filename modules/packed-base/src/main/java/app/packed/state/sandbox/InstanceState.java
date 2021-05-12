@@ -57,6 +57,15 @@ public enum InstanceState {
     UNINITIALIZED,
 
     /**
+     * The initial state of a instance. This state is typically used for reading and validating the configuration of the guest.
+     * Throwing an exception or error if some invariant is broken.
+     * <p>
+     * If the guest is successfully finishes the initialization phase, it will move to the {@link #INITIALIZED} state. If it
+     * fails, it will move to the {@link #TERMINATED} state.
+     */
+    INITIALIZING,
+    
+    /**
      * This state indicates that the guest has completed the {@link #INITIALIZING} phase successfully.
      * <p>
      * The instance will remain in this state until it is started. For example, by the user calling {@link Host#start()}.

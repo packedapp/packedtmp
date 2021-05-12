@@ -2,8 +2,10 @@ package app.packed.application;
 
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.state.sandbox.InstanceState;
 
-// Maaske ikke kun application???
+// Maaske ikke kun application??? IDK
+
 // Men JOb.bind... 
 // Og hvad med Small component stuff
 public interface Launcher<A> {
@@ -18,4 +20,10 @@ public interface Launcher<A> {
      * @see {@link ApplicationDriver#launch(Assembly, Wirelet...)}
      */
     A launch(Wirelet... wirelets);
+
+    InstanceState launchMode();
+
+    Launcher<A> with(Wirelet... wirelets);
 }
+// withWirelets(InstanceState launchMode);
+// withLaunchMode(InstanceState launchMode);

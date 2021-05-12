@@ -18,7 +18,10 @@ package app.packed.application;
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
+import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
@@ -49,6 +52,22 @@ public final class BuildWirelets {
         requireNonNull(scope, "scope is null");
         return new InternalWirelet.OnWireActionWirelet(action, scope);
     }
+
+    // Ideen er lidt at wireletten, ikke bliver processeret som en del af builded
+    static Wirelet delayToRuntime(Wirelet wirelet) {
+        throw new UnsupportedOperationException();
+    }
+
+    static Wirelet delayToRuntime(Supplier<Wirelet> wireletSupplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
+    static Wirelet delayToRuntime(Function<InstantiationContext, @Nullable Wirelet> wireletSupplier) {
+        throw new UnsupportedOperationException();
+    }
+
+    interface InstantiationContext {}
 }
 
 class SandboxBuild {

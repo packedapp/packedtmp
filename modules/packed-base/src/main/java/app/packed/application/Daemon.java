@@ -1,5 +1,6 @@
 package app.packed.application;
 
+import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.cli.CliWirelets;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
@@ -27,7 +28,7 @@ public interface Daemon extends AutoCloseable {
      **/
     @Override
     default void close() {
-        host().stop();
+        runtime().stop();
     }
 
     /**
@@ -35,11 +36,23 @@ public interface Daemon extends AutoCloseable {
      * 
      * @return this application's host.
      */
-    ApplicationRuntime host(); // giver ikke mening
+    ApplicationRuntime runtime(); // giver ikke mening
 
-    void stop();
+    default void stop(StopOption... options) {
+        runtime().stop(options);
+    }
 
-    void stopAsync();
+    default void stopAsync(StopOption... options) {
+        runtime().stop(options);
+    }
+
+    static ApplicationDriver<Daemon> driver() {
+        throw new UnsupportedOperationException();
+    }
+
+    static Launcher launcher() {
+        throw new UnsupportedOperationException();
+    }
 
     // When do want to run a daemon???
     // Isn't it main...
@@ -71,27 +84,23 @@ public interface Daemon extends AutoCloseable {
     static Daemon startAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
         return startAsync(assembly, CliWirelets.args(args).andThen(wirelets));
     }
-
+    
     static Daemon startAsync(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static Launcher launcher() {
-        throw new UnsupportedOperationException();
-    }
-
     interface Launcher {
-        Launcher neverRestart();
-
-        Launcher restartPolicy(Object somePolicy);
-
         default Launcher args(String... args) {
             return this;
         }
 
+        Launcher neverRestart();
+
         DaemonImage newImage(Assembly<?> assembly);
 
         DaemonImage newImage(Assembly<?> assembly, Wirelet... wirelets);
+
+        Launcher restartPolicy(Object somePolicy);
 
         Daemon start(Assembly<?> assembly);
 

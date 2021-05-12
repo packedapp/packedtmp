@@ -188,6 +188,15 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
+     * @param launchMode
+     * @return
+     * @throws UnsupportedOperationException
+     *             if the driver produces non-runnable applications.
+     */
+    default ApplicationDriver<A> withLaunchMode(InstanceState launchMode) {
+        throw new UnsupportedOperationException();
+    }
+    /**
      * Returns a new {@code ApplicationDriver} builder.
      *
      * @return the new builder
@@ -387,13 +396,7 @@ interface ApplicationDriverSandbox<A> {
     ApplicationDriver<A> with(Wirelet wirelet);
 
     // Will fail if non-runnable
-    /**
-     * @param launchMode
-     * @return
-     * @throws UnsupportedOperationException
-     *             if the driver produces non-runnable applications.
-     */
-    ApplicationDriver<A> withLaunchMode(InstanceState launchMode);
+
 }
 
 /**

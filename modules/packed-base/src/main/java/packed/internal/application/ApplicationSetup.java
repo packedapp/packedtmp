@@ -17,10 +17,10 @@ import app.packed.mirror.TreeWalker;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.SourcedComponentSetup;
-import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 

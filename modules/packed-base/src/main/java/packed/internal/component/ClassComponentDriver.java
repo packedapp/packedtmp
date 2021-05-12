@@ -38,7 +38,7 @@ import packed.internal.util.ThrowableUtil;
  */
 // AnnotatedClassComponentDriver
 // CommonClassComponentDriver
-public class ClassComponentDriver<C extends ComponentConfiguration> extends WireableComponentDriver<C> {
+public class ClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
     public static final ComponentDriver INSTALL_DRIVER = ClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, true);

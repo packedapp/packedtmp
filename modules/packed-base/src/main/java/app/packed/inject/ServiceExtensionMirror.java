@@ -13,6 +13,7 @@ import app.packed.container.ExtensionMirror;
 /**
  * A mirror of a {@link ServiceExtension}.
  */
+// Taenker naar vi 
 public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /**
@@ -68,8 +69,3 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
         return extension.mirror();
     }
 }
-
-// Vi vil gerne have ContainerMirror.use(ServiceExtensionMirror.class).contract
-// Must have a static XMirror of(
-
-// Altsaa hvis vi siger den kun skal vaere til raadighed paa

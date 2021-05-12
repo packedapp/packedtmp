@@ -20,6 +20,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import app.packed.application.ManagedInstance;
 import app.packed.application.Program;
 import app.packed.inject.InjectionContext;
 
@@ -77,10 +78,10 @@ import app.packed.inject.InjectionContext;
  * failing to start and moving to the shutdown phase.
  * <p>
  *
- * Normally services are not available from {@link Program#use(Class)} until all services have been successfully started.
- * However, by using this annotation. Services that not yet completed startup can be injected. It is up to the user to
- * make sure that invoking method on instances that injected this does not cause any problems. For example, calling a
- * method on another service that only works when the container is in the running phase.
+ * Normally services are not available from {@link Program#use(Class)} until all services have been successfully
+ * started. However, by using this annotation. Services that not yet completed startup can be injected. It is up to the
+ * user to make sure that invoking method on instances that injected this does not cause any problems. For example,
+ * calling a method on another service that only works when the container is in the running phase.
  *
  * @see OnInitialize
  * @see OnStop
@@ -92,8 +93,32 @@ import app.packed.inject.InjectionContext;
 
 // Kan bruge @When naar man har en lifecycle model, ellers ikke....
 public @interface OnStart {
-    String[] after() default {};
+
+    /**
+     * The default value is false.
+     * 
+     * @return {@code true} if
+     */
+    boolean async() default false;
+
+    /**
+     * Whether or not any thread will be interrupted if shutdown while starting
+     * 
+     * @return
+     */
+    boolean interruptOnStop() default false; // Maybe have an InterruptionPolicy {NEVER, DEFAULT, ALWAYS}
+
+    boolean preOrder() default true;
+    
+    ManagedInstance.Mode[] mode() default {};
+
+    ManagedInstance.Mode[] notMode() default {};
 }
+
+// order = "SomE:1"; (I forhold til andre der er bruger SomE
+// eller maaske = "->Foo"; (Jeg released Foo)
+// String[] after() default {};
+
 // Problemet med at have baade after og before er at det er forskellige modeller.
 // Hvis tilfoejer en before <- Saa virker den paa den maade at skal med en beforeX skal vaere faerdige inde vi kan
 // begyndede...

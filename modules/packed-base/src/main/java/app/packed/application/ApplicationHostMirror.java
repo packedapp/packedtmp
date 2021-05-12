@@ -6,16 +6,13 @@ import app.packed.mirror.SetView;
 
 /**
  * A mirror of an application host.
- * 
  */
-
-// Kan vi have en Host med forskellige Applications typer for en host????
-// Jeg har svaert ved at se det... Saa maa man lave forskellige hosts...
-// I 9/10 af tilfaeldene er de vel ogsaa void...
 public interface ApplicationHostMirror extends Mirror {
 
-    /** {@return the application the host is a part of.} */
-    ApplicationMirror application();
+    /** {@return the application the host is installed in. This is a shortcut for {@code component().application().} */
+    default ApplicationMirror application() {
+        return component().application();
+    }
 
     /**
      * Returns the component that represents the application host.
@@ -28,8 +25,8 @@ public interface ApplicationHostMirror extends Mirror {
 
     // Set<VersionableHost> multiHosts(); Eller hvad vi nu vil kalde dem...
 
-    /** @return {a collection of all applications that are current deployment on the host.} */
-    SetView<ApplicationMirror> installations();
+    /** @return {a collection of all applications that are installed on the host.} */
+    SetView<ApplicationMirror> installations(); // applications
 
     // All applications that are not versionable
     SetView<ApplicationMirror> nonVersionable();
@@ -38,4 +35,5 @@ public interface ApplicationHostMirror extends Mirror {
 }
 // Mirrors never now anything about instances...
 
-// Vi kunne have en DeployedApplicationMirror.. Med lidt ekstra metoder... But I think not
+// Vi kunne have en InstalledApplicationMirror.. Med lidt ekstra metoder... But I think not
+// Nej

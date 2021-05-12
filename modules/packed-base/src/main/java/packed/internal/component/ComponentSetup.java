@@ -104,7 +104,7 @@ public abstract class ComponentSetup {
      * @param parent
      *            any parent this component might have
      */
-    ComponentSetup(ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver, @Nullable ComponentSetup parent) {
+    ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
 
@@ -226,8 +226,12 @@ public abstract class ComponentSetup {
      * @see ExtensionConfiguration#link(Assembly, Wirelet...)
      */
     public final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        return link(assembly, realm, wirelets);
+    }
+
+    public final ComponentMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
-        WireableComponentDriver<?> driver = WireableComponentDriver.getDriver(assembly);
+        PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
 
         // If this component is an extension, we link to the extension's container.
         // As the extension itself is not present at runtime
@@ -283,13 +287,14 @@ public abstract class ComponentSetup {
     }
 
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        WireableComponentDriver<C> realDriver = (WireableComponentDriver<C>) requireNonNull(driver, "driver is null");
+        return wire(driver, realm, wirelets);
+    }
 
-        // If this component is an extension, we wire to the container the extension is a part of
-        ComponentSetup wireTo = this instanceof ExtensionSetup ? parent : this;
+    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, RealmSetup realm, Wirelet... wirelets) {
+        PackedComponentDriver<C> realDriver = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // Wire a new component
-        WireableComponentSetup component = realm.wire(realDriver, wireTo, wirelets);
+        WireableComponentSetup component = realm.wire(realDriver, this, wirelets);
 
         // Return a component configuration to the user
         return realDriver.toConfiguration(component);

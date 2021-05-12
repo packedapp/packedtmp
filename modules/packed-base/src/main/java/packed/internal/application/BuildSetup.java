@@ -27,10 +27,10 @@ import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.NamespaceSetup;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver;
-import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.container.ContainerSetup;
 
 /** The configuration of a build. */
@@ -62,7 +62,7 @@ public final class BuildSetup implements BuildMirror {
      * @param modifiers
      *            the output of the build process
      */
-    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, WireableComponentDriver<?> componentDriver, int modifiers,
+    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, int modifiers,
             Wirelet[] wirelets) {
         if (!componentDriver.modifiers().isContainer()) {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);

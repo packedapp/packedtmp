@@ -35,16 +35,19 @@ import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
+import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceExtensionMirror;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedTreePath;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireableComponentDriver.ContainerComponentDriver;
 import packed.internal.component.WireableComponentSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.util.CollectionUtil;
@@ -349,6 +352,21 @@ public final class ContainerSetup extends WireableComponentSetup {
         @Override
         public boolean isUsed(Class<? extends Extension> extensionType) {
             return container.isUsed(extensionType);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType) {
+            requireNonNull(extensionMirrorType, "extensionMirrorType is null");
+            if (extensionMirrorType == ServiceExtensionMirror.class) {
+                ExtensionSetup es = container.extensions.get(ServiceExtension.class);
+                if (es==null) {
+                    return Optional.empty();
+                } else {
+                    return (Optional<T>) Optional.of(ServiceExtensionMirror.of((ServiceExtension) es.extensionInstance()));
+                }
+            }
+            throw new UnsupportedOperationException();
         }
     }
 }

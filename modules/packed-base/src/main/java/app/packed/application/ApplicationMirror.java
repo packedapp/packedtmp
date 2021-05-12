@@ -21,6 +21,7 @@ import app.packed.mirror.TreeWalker;
  * A mirror of an application.
  * <p>
  */
+// Skal vi have en ApplicationModifier ogsaa?
 public interface ApplicationMirror extends Mirror {
 
     /** {@return the root (container) component in the application}. */
@@ -46,6 +47,27 @@ public interface ApplicationMirror extends Mirror {
     /** {@return a walker containing all the containers in this application} */
     TreeWalker<ContainerMirror> containers();
 
+    /** { @return a set view of all extensions that are in use by the application.} */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    default Set<Class<? super Extension>> extensions() {
+        Set<Class<? super Extension>> result = new HashSet<>();
+        containers().forEach(c -> result.addAll((Set) c.extensions()));
+        return Set.copyOf(result);
+    }
+
+    default Optional<ApplicationHostMirror> host() {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return all the application hosts defined in this application.} */
+    default SetView<ApplicationHostMirror> hosts() {
+        throw new UnsupportedOperationException();
+    }
+
+    default TaskListMirror initialization() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return all child applications of this application.} */
     // Det her har "store" implikationer for versions drevet applicationer...
     // Det betyder nemlig at vi totalt flatliner applikationer...
@@ -57,30 +79,9 @@ public interface ApplicationMirror extends Mirror {
      * @return
      */
     // IDK or children();
-    default Collection<ApplicationMirror> deployments() {
+    default Collection<ApplicationMirror> installations() {
         BiConsumer<ApplicationHostMirror, Consumer<ApplicationMirror>> bc = (m, c) -> m.installations().forEach(p -> c.accept(p));
         return hosts().stream().mapMulti(bc).toList();
-    }
-
-    /** { @return a set of all extensions that have been used by the application.} */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    default Set<Class<? super Extension>> extensions() {
-        Set<Class<? super Extension>> result = new HashSet<>();
-        containers().forEach(c -> result.addAll((Set) c.extensions()));
-        return Set.copyOf(result);
-    }
-    
-    default Optional<ApplicationHostMirror> host() {
-        throw new UnsupportedOperationException();
-    }
-    
-    /** {@return all the application hosts defined in this application.} */
-    default SetView<ApplicationHostMirror> hosts() {
-        throw new UnsupportedOperationException();
-    }
-    
-    default TaskListMirror initialization() {
-        throw new UnsupportedOperationException();
     }
 
     default boolean isHosted() {
@@ -121,6 +122,25 @@ public interface ApplicationMirror extends Mirror {
 
     /** {@return the name of the application.} */
     String name();
+
+    /**
+     * Returns the ordinal of this application (its position in its enum declaration, where the initial constant is assigned
+     * an ordinal of zero).
+     *
+     * Most programmers will have no use for this method. It is designed for use by sophisticated enum-based data
+     * structures, such as {@link java.util.EnumSet} and {@link java.util.EnumMap}.
+     *
+     * @return the ordinal of this application
+     */
+    // -1 for non-hosted? Nah 1
+    // For mini hosts, er det et problem at skulle have en AtomicInteger... nah Vi har formentligt et map der fylder endnu mere
+    default int ordinal() {
+        // Hmm, den er vel altid naermest bare 1...
+        // Ahh, hvis vi installere en fall back version... Saa har vi to
+        // Syntes hellere vi skal kalde den loebe nummer end version.
+        // Maaske er der nogen der gerne ville have deres eget versions begreb
+        return 1;
+    }
 
     /** {@return the parent application of this application. Or empty if this application has no parent} */
     Optional<ApplicationMirror> parent();

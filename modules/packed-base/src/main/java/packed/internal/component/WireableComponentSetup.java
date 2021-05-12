@@ -17,7 +17,7 @@ public abstract class WireableComponentSetup extends ComponentSetup implements C
     @Nullable
     public final WireletWrapper wirelets;
 
-    public WireableComponentSetup(ApplicationSetup application, RealmSetup realm, WireableComponentDriver<?> driver,
+    public WireableComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, driver, parent);
 

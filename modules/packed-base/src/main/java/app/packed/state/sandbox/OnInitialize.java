@@ -25,8 +25,7 @@ import app.packed.inject.InjectionContext;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the
- * {@link InstanceState#UNINITIALIZED} state.
- * 
+ * {@link InstanceState#INITIALIZING} state.
  * <p>
  * This annotation can, for example, be used on a method on a component instance:
  *
@@ -56,9 +55,9 @@ import app.packed.inject.InjectionContext;
  * </pre>
  * <p>
  * If a method annotated with {@code @OnInitialize} throws an exception. The initialization of the entity will normally
- * fail, and the state of the entity change from {@link InstanceState#UNINITIALIZED} to {@link InstanceState#TERMINATED}.
+ * fail, and the state of the entity change from {@link InstanceState#INITIALIZING} to {@link InstanceState#TERMINATED}.
  * <p>
- * You should never use the {@link Inject} annotation together with the {@link OnInitialize}, as this would mean the
+ * The {@link Inject} annotation should never be used together with the {@link OnInitialize}, as this would mean the
  * method would be invoked twice, once in the entity's <b>injection</b> phase and once in the entity's
  * <b>initialization</b> phase.
  * 
@@ -67,7 +66,6 @@ import app.packed.inject.InjectionContext;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-// TODO just make a check for the @Inject+@Initialize, and skip the paragraph
 public @interface OnInitialize {
 
     /**
@@ -80,5 +78,12 @@ public @interface OnInitialize {
      * 
      * @return whether or not to run before children
      */
-    boolean runBeforeChildren() default true;
+    // Meaning it will be visited before all dependencies...
+    // Maaske har vi 3 -> PreOrder AnyOrder PostOrder...
+    // Or PRE_DEPENDENCIES, ANY_TIME, POST_DEPENDENCIES;
+    // Og saa scheduler vi automatisk til Pre_Dependencies
+    // Ved ikke hvordan Async fungere fx med PRE_DEPENDENCIS
+    boolean preOrder() default true;
+
+    // Maaske har vi en ENUM PRE_DEPENDENCIES, ASYNC, POST_DEPENDENCIES
 }
