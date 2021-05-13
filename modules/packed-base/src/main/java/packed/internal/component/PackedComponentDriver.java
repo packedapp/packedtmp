@@ -2,6 +2,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
@@ -17,6 +18,7 @@ import app.packed.container.ContainerConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 public abstract class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
@@ -30,15 +32,14 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     @Nullable
     final Wirelet wirelet;
 
-    public PackedComponentDriver(Wirelet wirelet, int modifiers) {
+    public PackedComponentDriver(@Nullable Wirelet wirelet, int modifiers) {
         this.wirelet = wirelet;
         this.modifiers = modifiers;
     }
 
     public void checkBound() {}
 
-    public abstract ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
-            Wirelet[] wirelets);
+    public abstract ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
 
     public abstract C toConfiguration(ComponentConfigurationContext context);
 
@@ -75,12 +76,16 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     public static class BoundClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
-        int modifiers;
-        
         PackedComponentModifierSet modifiersSet;
-        
-        public BoundClassComponentDriver(Wirelet wirelet, int modifiers) {
-            super(wirelet, modifiers);
+
+        final MethodHandle mh;
+
+        public final Object binding;
+
+        public BoundClassComponentDriver(PackedClassComponentDriver<?, C> driver, Object binding) {
+            super(null, driver.modifiers());
+            this.mh = driver.constructor();
+            this.binding = requireNonNull(binding);
         }
 
         @Override
@@ -90,23 +95,27 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
         @Override
         public ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            // TODO Auto-generated method stub
-            return null;
+            requireNonNull(parent);
+            return new SourcedComponentSetup(application, realm, this, parent, wirelets);
         }
 
         @Override
         public C toConfiguration(ComponentConfigurationContext context) {
-            // TODO Auto-generated method stub
-            return null;
+            // Vil godt lave den om til CNC (Hvad det end betyder). Maaske at vi gerne vil bruge invokeExact
+            try {
+                return (C) mh.invoke(context);
+            } catch (Throwable e) {
+                throw ThrowableUtil.orUndeclared(e);
+            }
         }
 
+        /** {@inheritDoc} */
         @Override
         protected ComponentDriver<C> withWirelet(Wirelet w) {
-            return new BoundClassComponentDriver<>(w, modifiers);
+            throw new UnsupportedOperationException();
         }
-        
     }
-    
+
     /** A special component driver that create containers. */
     // Leger med tanken om at lave en specifik public interface container driver
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
@@ -129,10 +138,10 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
         }
 
         /** {@inheritDoc} */
-        public ContainerSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent,
-                Wirelet[] wirelets) {
+        public ContainerSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
             return new ContainerSetup(application, realm, this, parent, wirelets);
         }
+
         @Override
         public ContainerConfiguration toConfiguration(ComponentConfigurationContext context) {
             return new ContainerConfiguration(context);

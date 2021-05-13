@@ -31,7 +31,6 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
@@ -45,7 +44,6 @@ import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
-import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.PackedTreePath;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
@@ -140,7 +138,7 @@ public final class ContainerSetup extends ComponentSetup {
     @Override
     protected void attributesAdd(DefaultAttributeMap dam) {
         // kan ogsaa test om container.application = application.container?
-        if (PackedComponentModifierSet.isSet(modifiers, ComponentModifier.APPLICATION)) {
+        if (this == application.container) {
             PackedApplicationDriver<?> pac = application.driver;
             dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
         }

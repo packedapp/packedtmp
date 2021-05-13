@@ -284,7 +284,7 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
     public final PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
-
+    
     /** {@inheritDoc} */
     public final void named(String name) {
         checkComponentName(name); // Check if the name is valid

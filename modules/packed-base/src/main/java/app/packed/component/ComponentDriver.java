@@ -17,7 +17,7 @@ package app.packed.component;
 
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
-import packed.internal.component.PackedClassComponentDriver;
+import packed.internal.component.OldPackedClassComponentDriver;
 
 /**
  * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
@@ -60,23 +60,23 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
      */
     @SuppressWarnings("unchecked")
     private static ComponentDriver<BaseComponentConfiguration> driver() {
-        return PackedClassComponentDriver.STATELESS_DRIVER;
+        return OldPackedClassComponentDriver.STATELESS_DRIVER;
     }
 
     // Not sure we want this public or ma
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
-        return PackedClassComponentDriver.INSTALL_DRIVER.bind(implementation);
+        return OldPackedClassComponentDriver.INSTALL_DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstall(Factory<?> factory) {
-        return PackedClassComponentDriver.INSTALL_DRIVER.bind(factory);
+        return OldPackedClassComponentDriver.INSTALL_DRIVER.bind(factory);
     }
 
     @SuppressWarnings("unchecked")
     static ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
-        return PackedClassComponentDriver.INSTALL_DRIVER.bind(instance);
+        return OldPackedClassComponentDriver.INSTALL_DRIVER.bind(instance);
     }
 
     static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {

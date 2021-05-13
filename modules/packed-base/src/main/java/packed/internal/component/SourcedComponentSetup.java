@@ -11,13 +11,27 @@ import app.packed.component.Wirelet;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
+import packed.internal.component.PackedComponentDriver.BoundClassComponentDriver;
 
 public final class SourcedComponentSetup extends ComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;
 
-    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, PackedClassComponentDriver<?> driver,
+    
+    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, BoundClassComponentDriver<?> driver,
+            @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+        super(application, realm, driver, parent, wirelets);
+        this.source = new ClassSourceSetup(this, driver, driver.binding);
+
+        // Set the name of the component if it have not already been set using a wirelet
+        if (name == null) {
+            initializeNameWithPrefix(source.hooks.simpleName());
+        }
+    }
+
+    
+    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, OldPackedClassComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, driver, parent, wirelets);
         this.source = new ClassSourceSetup(this, driver, driver.binding);
