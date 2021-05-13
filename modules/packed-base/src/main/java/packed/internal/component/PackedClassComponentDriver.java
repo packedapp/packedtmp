@@ -38,21 +38,21 @@ import packed.internal.util.ThrowableUtil;
  */
 // AnnotatedClassComponentDriver
 // CommonClassComponentDriver
-public class ClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
+public final class PackedClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
     @SuppressWarnings("rawtypes")
-    public static final ComponentDriver INSTALL_DRIVER = ClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, true);
+    public static final ComponentDriver INSTALL_DRIVER = PackedClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class, true);
 
     /** A driver for this configuration. */
     @SuppressWarnings("rawtypes")
-    public static final ComponentDriver STATELESS_DRIVER = ClassComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
+    public static final ComponentDriver STATELESS_DRIVER = PackedClassComponentDriver.ofClass(MethodHandles.lookup(), BaseComponentConfiguration.class);
 
     @Nullable
     public final Object binding;
 
     final Inner inner;
 
-    ClassComponentDriver(Inner meta, Object data) {
+    PackedClassComponentDriver(Inner meta, Object data) {
         super(null, PackedComponentModifierSet.intOf(meta.modifiersSet().toArray()));
         this.inner = requireNonNull(meta);
         this.binding = data;
@@ -78,7 +78,7 @@ public class ClassComponentDriver<C extends ComponentConfiguration> extends Pack
                 // throw new IllegalArgumentException("Cannot bind a Factory instance, was " + object);
             }
         }
-        return new ClassComponentDriver<>(inner, object);
+        return new PackedClassComponentDriver<>(inner, object);
     }
 
     public void checkBound() {
@@ -136,21 +136,21 @@ public class ClassComponentDriver<C extends ComponentConfiguration> extends Pack
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> ofClass(MethodHandles.Lookup caller, Class<? extends C> driverType) {
-        return new ClassComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false), null);
+        return new PackedClassComponentDriver<>(newMeta(Type.CLASS, caller, driverType, false), null);
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
         Inner meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
-        return new ClassComponentDriver<>(meta, null);
+        return new PackedClassComponentDriver<>(meta, null);
     }
 
     public static <C extends ComponentConfiguration> ComponentDriver<C> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
         Inner meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
-        return new ClassComponentDriver<>(meta, null);
+        return new PackedClassComponentDriver<>(meta, null);
     }
 
     record Inner(Type type, MethodHandle mh, int modifiers, PackedComponentModifierSet modifiersSet) {
@@ -159,7 +159,7 @@ public class ClassComponentDriver<C extends ComponentConfiguration> extends Pack
             this(type, mh, modifiers, new PackedComponentModifierSet(modifiers));
         }
 
-        void checkBound(ClassComponentDriver<?> driver) {
+        void checkBound(PackedClassComponentDriver<?> driver) {
 
         }
     }

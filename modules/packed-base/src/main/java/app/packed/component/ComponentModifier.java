@@ -35,7 +35,6 @@ import packed.internal.component.PackedComponentModifierSet;
  *          members and types. The alternative would be
  */
 // ComponentMode?? ComponentKind?
-
 // Problemet er lidt at nogle af dem giver mening
 public enum ComponentModifier {
 

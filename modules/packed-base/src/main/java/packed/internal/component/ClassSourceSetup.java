@@ -68,11 +68,11 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
      * @param source
      *            the class, factory or instance source
      */
-    ClassSourceSetup(SourcedComponentSetup component, Object source) {
+    ClassSourceSetup(SourcedComponentSetup component, PackedClassComponentDriver<?> driver, Object source) {
         this.component = component;
 
         // Reserve a place in the constant pool if the source is a singleton
-        this.poolIndex = component.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
+        this.poolIndex = driver.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
 
         // A realm accessor that allows us to find all hooks a component source
         RealmAccessor accessor = component.realm.accessor();
@@ -80,7 +80,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
             this.constant = null;
-            this.factory = component.modifiers().isStaticClassSource() ? null : Factory.of(cl);
+            this.factory = driver.modifiers().isStaticClassSource() ? null : Factory.of(cl);
             this.hooks = accessor.modelOf(cl);
         } else if (source instanceof Factory<?> fac) {
             this.constant = null;

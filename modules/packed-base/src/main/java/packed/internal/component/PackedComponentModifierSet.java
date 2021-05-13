@@ -99,8 +99,6 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
         };
     }
 
-    /** {@inheritDoc} */
-    @Override
     public int size() {
         return Integer.bitCount(modifiers);
     }

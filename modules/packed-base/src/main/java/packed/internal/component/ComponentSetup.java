@@ -17,7 +17,6 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandles.Lookup;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,19 +41,18 @@ import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
 import app.packed.container.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** Build-time configuration of a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
+/** Abstract build-time setup of a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
 public abstract class ComponentSetup implements ComponentConfigurationContext {
-    
+
     /** The application this component is a part of. */
     public final ApplicationSetup application;
-    
+
     /** Children of this node (lazily initialized) in insertion order. */
     @Nullable
     LinkedHashMap<String, ComponentSetup> children;
@@ -72,7 +70,8 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
     protected String name;
 
     /**
-     * Whether or not the name has been initialized via a wirelet, in which case it cannot be overridden by named(String).
+     * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
+     * ignored.
      */
     boolean nameInitializedWithWirelet;
 
@@ -107,7 +106,8 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
      * @param parent
      *            any parent this component might have
      */
-    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
+            Wirelet[] wirelets) {
         this.parent = parent;
         this.depth = parent == null ? 0 : parent.depth + 1;
 
@@ -158,7 +158,7 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
             if (unconsumed > 0) {
                 this.wirelets.unconsumed = unconsumed;
             }
-            
+
             if (nameInitializedWithWirelet && parent != null) {
 
                 // addChild(child, name);
@@ -177,10 +177,6 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
 
     protected void attributesAdd(DefaultAttributeMap dam) {}
 
-    public final BuildSetup build() {
-        return application.build;
-    }
-
     public final void checkIsWiring() {
         if (realm.current() != this) {
             String errorMsg;
@@ -193,7 +189,7 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
         }
     }
 
-    /** {@inheritDoc} */
+    //
     public final String getName() {
         // Dette kunne ogsaa wire componenten?
         return name;
@@ -216,6 +212,7 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
         }
         this.name = n;
     }
+
     /**
      * Tests that this component is in the same specified scope as another component.
      * 
@@ -236,7 +233,20 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
         case NAMESPACE -> application.build.namespace == other.application.build.namespace;
         };
     }
-    
+
+    /**
+     * Links a new assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param realm
+     *            realm
+     * @param wirelets
+     *            optional wirelets
+     * @return the component that was linked
+     * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
+     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
+     */
     public final ComponentMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> driver = PackedComponentDriver.getDriver(assembly);
@@ -259,30 +269,18 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
 
         return newRealm.root.mirror();
     }
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
-     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
-     */
+
+    /** {@inheritDoc} */
     public final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return link(assembly, realm, wirelets);
     }
 
-    /**
-     * Returns a {@link ComponentMirror} adaptor of this node.
-     * 
-     * @return a component adaptor
-     */
+    /** {@inheritDoc} */
     public final ComponentMirror mirror() {
         return new ComponentMirrorAdaptor(this);
     }
 
+    /** {@inheritDoc} */
     public final PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
@@ -356,16 +354,7 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
         return name;
     }
 
-    // This should only be called by special methods
-    // We just take the lookup to make sure caller think twice before calling this method.
-    public static ComponentSetup unadapt(Lookup caller, ComponentMirror component) {
-        if (component instanceof ComponentMirrorAdaptor ca) {
-            return ca.component;
-        }
-        throw new IllegalStateException("This method must be called before a component is instantiated");
-    }
-
-    /** An adaptor of the {@link ComponentMirror} interface for a {@link ComponentSetup}. */
+    /** An mirror adaptor for {@link ComponentSetup}. */
     private record ComponentMirrorAdaptor(ComponentSetup component) implements ComponentMirror {
 
         /** {@inheritDoc} */

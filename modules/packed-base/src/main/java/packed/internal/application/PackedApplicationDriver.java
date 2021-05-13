@@ -224,6 +224,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationDriver<A> with(Wirelet... wirelets) {
+        // Skal vi checke noget med components
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
         return new PackedApplicationDriver<>(this, w);
     }

@@ -27,6 +27,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /** Build-time configuration of an application. */
 public final class ApplicationSetup {
 
+    /** The build the application is a part of. */
     public final BuildSetup build;
 
     /** The configuration of the main constant build. */
@@ -75,9 +76,13 @@ public final class ApplicationSetup {
             runtimePoolIndex = -1;
         }
     }
-
+    
     public boolean hasMain() {
         return mainThread != null;
+    }
+
+    public boolean hasRuntime() {
+        return driver.hasRuntime();
     }
 
     /** {@return whether or not the application is part of an image}. */
@@ -104,14 +109,6 @@ public final class ApplicationSetup {
      */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
-        @Override
-        protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
-            if (driver.launchMode() == launchMode) {
-                return driver;
-            }
-            return super.onApplicationDriver(driver);
-        }
-
         /** The (validated) name to override with. */
         private final InstanceState launchMode;
 
@@ -126,6 +123,14 @@ public final class ApplicationSetup {
             if (launchMode == InstanceState.UNINITIALIZED) {
                 throw new IllegalArgumentException(InstanceState.UNINITIALIZED + " is not a valid launch mode");
             }
+        }
+
+        @Override
+        protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
+            if (driver.launchMode() == launchMode) {
+                return driver;
+            }
+            return super.onApplicationDriver(driver);
         }
 
         /** {@inheritDoc} */

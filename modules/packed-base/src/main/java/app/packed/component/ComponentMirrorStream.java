@@ -71,6 +71,8 @@ import packed.internal.component.PackedComponentStreamOption;
 // stream() metode istedet for...
 // ModelWalker<Component
 
+// Svaert ved at se den overlever...
+
 public interface ComponentMirrorStream extends AttributedElementStream<ComponentMirror> {
 
 //    /**

@@ -196,4 +196,5 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return configuration().wire(driver, wirelets);
     }
+
 }

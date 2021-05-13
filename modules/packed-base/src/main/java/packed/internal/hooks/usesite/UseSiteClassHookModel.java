@@ -26,8 +26,8 @@ import java.util.List;
 
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.ClassHook.Bootstrap;
-import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.MethodHook;
+import app.packed.hooks.OldFieldHook;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;
 import packed.internal.hooks.MethodHookBootstrapModel;
@@ -94,6 +94,7 @@ public final class UseSiteClassHookModel {
         public List<MethodHook.Bootstrap> methods(boolean declaredFieldsOnly, Class<?>... skipClasses) {
             ArrayList<MethodHook.Bootstrap> list = new ArrayList<>();
             for (Method m : source.type().getDeclaredMethods()) {
+                // TODO I think we need to do some filtering on bridge and maybe synthetic methods
                 UseSiteMethodHookModel.Builder b = new UseSiteMethodHookModel.Builder(source, ExposedMethodBootstrap.MODEL, m);
                 list.add((MethodHook.Bootstrap) b.initialize());
             }

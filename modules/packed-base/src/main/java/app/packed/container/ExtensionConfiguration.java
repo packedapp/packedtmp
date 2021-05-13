@@ -23,10 +23,11 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
+import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
-import app.packed.component.WireletSource;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
+import packed.internal.container.ExtensionWirelet;
 
 /**
  * A configuration object for an {@link Extension}.
@@ -209,8 +210,11 @@ public /* sealed */ interface ExtensionConfiguration {
      * @param wireletType
      *            the type of wirelet to return a handle for
      * @return a wirelet source
+     * @throws IllegalArgumentException
+     *             if the specified wirelet type is not a subclass of {@link ExtensionWirelet} and this extension as the
+     *             type parameter
      */
-    <T extends Wirelet> WireletSource<T> wirelets(Class<T> wireletType);
+    <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wireletType);
 }
 
 // Previously used for getting hold of an extension from a mirror..

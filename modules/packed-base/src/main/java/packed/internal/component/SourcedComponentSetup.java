@@ -17,10 +17,10 @@ public final class SourcedComponentSetup extends ComponentSetup {
     /** The class source setup if this component has a class source, otherwise null. */
     public final ClassSourceSetup source;
 
-    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, ClassComponentDriver<?> driver,
+    public SourcedComponentSetup(ApplicationSetup application, RealmSetup realm, PackedClassComponentDriver<?> driver,
             @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, driver, parent, wirelets);
-        this.source = new ClassSourceSetup(this, driver.binding);
+        this.source = new ClassSourceSetup(this, driver, driver.binding);
 
         // Set the name of the component if it have not already been set using a wirelet
         if (name == null) {

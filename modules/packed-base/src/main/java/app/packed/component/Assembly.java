@@ -53,10 +53,10 @@ import packed.internal.util.LookupUtil;
  */
 public abstract class Assembly<C extends ComponentConfiguration> {
 
-    /** A marker object to indicate that the assembly has already been used. */
+    /** A marker object to indicate that an assembly has already been used to build something. */
     private static Object USED = Assembly.class;
 
-    /** A handle that can access #configuration. */
+    /** A handle that can access the #configuration field. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", Object.class);
 
     /**
@@ -76,17 +76,17 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     private Object configuration;
 
     /**
-     * The component driver of this assembly.
+     * This assembly's component driver.
      * <p>
-     * This field is read from {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
+     * This field is read by {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
      */
     private final PackedComponentDriver<? extends C> driver;
 
     /**
-     * Creates a new assembly using the specified driver.
+     * Creates a new assembly using the specified component driver.
      * 
      * @param driver
-     *            the component driver used to create the configuration objects this assembly wraps
+     *            the component driver
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
@@ -94,13 +94,12 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     }
 
     /**
-     * Compose the Implements the composition logic.
+     * Invoked by the runtime as part of the build process. Must be implemented with composition logic.
      * <p>
-     * Invoked by the runtime as part of the build process.
+     * This method will never be invoked more than once on a single assembly instance.
      * <p>
      * This method should never be invoked directly by the user.
      */
-    // rename to assemble? Og saa behold build til Build info
     protected abstract void build();
 
     /**
@@ -120,9 +119,13 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     // checkPreBuild()??
     protected final void checkPreBuild() {
         // Why not just test configuration == null????
-        
+
         // Det er vel det samme som at kalde configuration()??
-        ((ComponentSetup) configuration().context).realm.checkOpen();
+        component().realm.checkOpen();
+    }
+
+    private ComponentSetup component() {
+        return (ComponentSetup) configuration().context;
     }
 
     /**
@@ -180,11 +183,13 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        ((ComponentSetup) configuration().context).realm.setLookup(lookup);
+        component().realm.setLookup(lookup);
     }
 
-    final <T extends Wirelet> WireletSource<T> wirelets(Class<T> wirelet) {
-        // Jeg ved ikke hvor tid vi har brug for den her...
-        throw new UnsupportedOperationException();
+    // Kan ikke lige finde ud af om den skal vaere her, eller paa ContainerWirelet.
+    // Eller paa ContainerConfiguration?? Eller paa BaseComponentConfiguration???
+    protected final <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wireletType) {
+        return component().selectWirelets(wireletType);
     }
+
 }

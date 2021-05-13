@@ -45,6 +45,8 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     /** {@inheritDoc} */
     @Override
     public ComponentDriver<C> with(Wirelet... wirelets) {
+        // Vi kan faktisks godt lave nogle checks allerede her
+        // Application Wirelets kan f.eks. kun bindes til en ContainerComponentDriver.
         Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
         return withWirelet(w);
     }
@@ -71,6 +73,40 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
         return (PackedComponentDriver<?>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 
+    public static class BoundClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
+
+        int modifiers;
+        
+        PackedComponentModifierSet modifiersSet;
+        
+        public BoundClassComponentDriver(Wirelet wirelet, int modifiers) {
+            super(wirelet, modifiers);
+        }
+
+        @Override
+        public ComponentModifierSet modifiers() {
+            return modifiersSet;
+        }
+
+        @Override
+        public ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public C toConfiguration(ComponentConfigurationContext context) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        protected ComponentDriver<C> withWirelet(Wirelet w) {
+            return new BoundClassComponentDriver<>(w, modifiers);
+        }
+        
+    }
+    
     /** A special component driver that create containers. */
     // Leger med tanken om at lave en specifik public interface container driver
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {

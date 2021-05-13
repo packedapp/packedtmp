@@ -22,7 +22,6 @@ import packed.internal.component.PackedComponentModifierSet;
 /**
  * An immutable set of component modifiers.
  */
-// Skal vi ikke bare extende AbstractSet??? Nah.. saa meget fluff.. maybe just a toSet??
 public interface ComponentModifierSet extends Iterable<ComponentModifier> {
 
     /**
@@ -34,8 +33,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     boolean contains(ComponentModifier modifier);
 
-
-    // boolean containsAll(Collection<ComponentModifier> c);
     /**
      * Returns whether or not this set contains the {@link ComponentModifier#RUNTIME} modifier.
      * 
@@ -55,15 +52,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     }
 
     /**
-     * Returns whether or not this set contains the {@link ComponentModifier#SOURCED} modifier.
-     * 
-     * @return true if this set contains the source modifier, otherwise false
-     */
-    default boolean isSource() {
-        return contains(ComponentModifier.SOURCED);
-    }
-
-    /**
      * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
      * 
      * @return true if this set contains the container modifier, otherwise false
@@ -71,13 +59,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     default boolean isStaticClassSource() {
         return contains(ComponentModifier.STATEFUL);
     }
-
-    /**
-     * Returns the number of modifiers in this set.
-     * 
-     * @return the number of modifiers in this set
-     */
-    int size();
 
     /**
      * Returns a new array containing all of the modifiers in this set.
@@ -91,15 +72,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
     ComponentModifier[] toArray();
 
     /**
-     * Returns an empty component modifier set.
-     * 
-     * @return an empty component modifier set
-     */
-    static ComponentModifierSet of() {
-        return PackedComponentModifierSet.EMPTY;
-    }
-
-    /**
      * Returns an set containing the specified modifiers.
      * 
      * @param modifiers the modifiers to include in the set
@@ -111,9 +83,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     static ComponentModifierSet of(ComponentModifier... modifiers) {
         requireNonNull(modifiers, "modifiers is null");
-        if (modifiers.length == 0) {
-            return of();
-        }
         int b = 0;
         for (int i = 0; i < modifiers.length; i++) {
             b |= modifiers[i].bits();

@@ -16,7 +16,7 @@
 package packed.internal.component;
 
 import app.packed.component.Wirelet;
-import app.packed.component.WireletSource;
+import app.packed.component.SelectWirelets;
 
 /** A holder of wirelets. */
 // Vi har faktisk ogsaa for den her paa runtime...
@@ -39,12 +39,12 @@ public final class WireletWrapper {
         this.unconsumed = wirelets.length;
     }
 
-    public <T extends Wirelet> WireletSource<T> sourceOf(Module module, Class<? extends T> wireletClass) {
+    public <T extends Wirelet> SelectWirelets<T> sourceOf(Module module, Class<? extends T> wireletClass) {
         // Maaske skal vi have en caller med ala "Must be in the same module as"
         if (module != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
         }
-        return new PackedWireletSource<>(this, wireletClass);
+        return new PackedSelectWirelets<>(this, wireletClass);
     }
     
     public int unconsumed() {

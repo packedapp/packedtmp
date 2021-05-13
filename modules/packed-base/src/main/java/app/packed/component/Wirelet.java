@@ -17,7 +17,6 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.Extension;
 import packed.internal.component.InternalWirelet.OverrideNameWirelet;
 import packed.internal.component.WireletArray;
 import packed.internal.component.WireletModel;
@@ -52,10 +51,6 @@ import packed.internal.util.StackWalkerUtil;
  * specified wirelets are reusable.
  * 
  */
-// Maaske soerger containeren for at videre delegere extension wirelets...
-// Saa man skal stadig haves Extension??? IDK
-// Giver mere mening med at det skal vaere det intermediate element.
-
 // Hvis vi kraever at alle WireletHandle
 // kun kan tage final eller/* sealed */wirelets som parameter
 // Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret 
@@ -88,7 +83,6 @@ public abstract class Wirelet {
      * @see #beforeThis(Wirelet...)
      * @see #of(Wirelet...)
      */
-    // rename to wirelets...
     public final Wirelet andThen(Wirelet... wirelets) {
         return WireletArray.of(this, combine(wirelets));
     }
@@ -123,23 +117,12 @@ public abstract class Wirelet {
      * I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
      * bruge @Provide naar vi linker assemblies...
      */
+    // Den giver ogsaa meningen for brugere iff de kan faa fat i den fra en assembly
+    // selectWirelets(Ssss.class).
     protected static final void $buildtimeOnly() {
         WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).buildtimeOnly();
     }
 
-    // Ideen er man ikke kan angives paa rod niveau
-    //
-    protected static final void $needsRealm() {
-        // Wirelet.wireletRealm(Lookup); // <-- all subsequent wirelets
-        // Wirelet.wireletRealm(Lookup, Wirelet... wirelets);
-
-        // Tror det er vigtigt at der er forskel på REALM og BUILDTIME
-        // Tror faktisk
-
-        // f.x provide(Doo.class);
-        // Hvad hvis vi koere composer.lookup()...
-        // Saa laver vi jo saadan set en realm...
-    }
 
     /** Attempting to wire a non-container component with this wirelet will fail. */
     protected static final void $requireContainer() {}
@@ -152,12 +135,6 @@ public abstract class Wirelet {
 
     /** The wirelet can only be used on the root container in a namespace. */
     protected static final void $requireContainerRoot() {}
-
-    // ExtensionWirelet... tror jeg...
-    protected static final void $requireExtension(Class<? extends Extension> extensionClass) {
-        // Will fail at runtime and at buildtime if extension is not installed...
-        throw new UnsupportedOperationException();
-    }
 
     protected static final void $stackable() {}
 
@@ -196,16 +173,6 @@ public abstract class Wirelet {
     }
 }
 
-//
-//// cannot be consumed individually. Only as either
-//// List or Set....
-//// Must be a super type of this wirelet type
-//// Is inherited
-//// Can only be a part of one aggregate type...
-//// And can only be injected as an aggregate type
-//protected static final void $aggregateAs(Class<? extends Wirelet> wireletType) {
-//  WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).stackBy(wireletType);
-//}
 ///**
 //* This
 //* 

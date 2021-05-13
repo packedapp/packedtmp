@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.component.ClassComponentDriver;
+import packed.internal.component.PackedClassComponentDriver;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -35,11 +35,11 @@ import packed.internal.component.ClassComponentDriver;
 public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentDriver DRIVER = ClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+    private static final ComponentDriver DRIVER = PackedClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
             true);
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentDriver PROTOTYPE_DRIVER = ClassComponentDriver.ofFactory(MethodHandles.lookup(),
+    private static final ComponentDriver PROTOTYPE_DRIVER = PackedClassComponentDriver.ofFactory(MethodHandles.lookup(),
             ServiceComponentConfiguration.class, false);
 
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {

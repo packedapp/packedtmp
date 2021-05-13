@@ -62,13 +62,6 @@ public /* sealed */ interface ComponentConfigurationContext {
     ComponentMirror mirror();
 
     /**
-     * Returns an immutable set containing all the modifiers of this component.
-     * 
-     * @return a immutable set containing all the modifiers of this component
-     */
-    ComponentModifierSet modifiers();
-
-    /**
      * Sets the {@link ComponentMirror#name() name} of the component. The name must consists only of alphanumeric characters and
      * '_', '-' or '.'. The name is case sensitive.
      * <p>
@@ -122,7 +115,7 @@ public /* sealed */ interface ComponentConfigurationContext {
      */
     <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    default <T extends Wirelet> WireletSource<T> wirelets(Class<T> wirelet) {
+    default <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wirelet) {
         throw new UnsupportedOperationException();
     }
 }
