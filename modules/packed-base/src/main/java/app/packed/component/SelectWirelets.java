@@ -25,16 +25,19 @@ import packed.internal.component.PackedSelectWirelets;
  * <p>
  * The selecting class must be in the same module as the type of wirelet selected
  * <p>
- * There a couple of ways to select wirelets.
- * For extension space wirelets
+ * There a couple of ways to select wirelets. For extension space wirelets
  * 
- * at buildtime:. ExtensionConfiguration#selectWirelets, Extension#selectWirelets
- * Hook injection?? Could make sense for some class hooks
+ * at buildtime:. ExtensionConfiguration#selectWirelets, Extension#selectWirelets Hook injection?? Could make sense for
+ * some class hooks
  * 
  * at runtime: SelectWirelet<> on an extension Runtime class
  * 
- * For user space wirelets:
- * BaseAssembly..
+ * For user space wirelets: BaseAssembly..
+ * <p>
+ * Note: Invoking this method remove every wirelet from this selection. But will also make the wirelet as well as any
+ * other selections of the same container (or component) instance. Maaske det her skal staa i den gennerelle
+ * dokumentation. Build-wirelets bliver jo proceseret paa et andet tidspunkt. Saa der er vel 2 regler..
+ * 
  * 
  * <p>
  * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
@@ -51,14 +54,11 @@ import packed.internal.component.PackedSelectWirelets;
 public /* sealed */ interface SelectWirelets<W extends Wirelet> {
 
     /**
-     * Returns the last wirelet or empty {@code Optional}, if no wirelets are present in this selection.
+     * Returns the last wirelet in this selection or empty {@code Optional}, if no wirelets are present.
      * <p>
-     * Note: Invoking this method remove every wirelet from this selection. But will also make the wirelet as well as any
-     * other selections of the same container (or component) instance. Maaske det her skal staa i den gennerelle
-     * dokumentation. Build-wirelets bliver jo proceseret paa et andet tidspunkt. Saa der er vel 2 regler..
+     * This is a <a href="package-summary.html#StreamOps">consumable operation</a>.
      * 
-     * 
-     * @return the last wirelet or empty {@code Optional}, if no wirelets are present in this selection
+     * @return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present
      */
     Optional<W> findLast();
 
@@ -187,8 +187,6 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
 //@WireletLink...  Nah @WireletLink Optional<>
 
 //Den her doede fordi vi ikke kan lide UseWirelet..
-
-
 
 //// Det her var den helt gamle maade hvor vi angav paa wireletten  
 //

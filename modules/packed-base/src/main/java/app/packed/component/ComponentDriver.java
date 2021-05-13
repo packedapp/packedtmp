@@ -16,8 +16,6 @@
 package app.packed.component;
 
 import app.packed.container.BaseAssembly;
-import app.packed.inject.Factory;
-import packed.internal.component.OldPackedClassComponentDriver;
 
 /**
  * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
@@ -41,51 +39,14 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
      * 
      * @return the set of modifiers that will be applied to the component
      */
-    ComponentModifierSet modifiers();
+    default ComponentModifierSet modifiers() {
+        throw new UnsupportedOperationException();
+    }
 
     ComponentDriver<C> with(Wirelet wirelet);
 
     ComponentDriver<C> with(Wirelet... wirelet);
 
-    default ComponentDriver<C> bind(Object object) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns a driver that can be used to create stateless components.
-     * 
-     * @param <T>
-     *            the type
-     * @return a driver
-     */
-    @SuppressWarnings("unchecked")
-    private static ComponentDriver<BaseComponentConfiguration> driver() {
-        return OldPackedClassComponentDriver.STATELESS_DRIVER;
-    }
-
-    // Not sure we want this public or ma
-    @SuppressWarnings("unchecked")
-    static ComponentDriver<BaseComponentConfiguration> driverInstall(Class<?> implementation) {
-        return OldPackedClassComponentDriver.INSTALL_DRIVER.bind(implementation);
-    }
-
-    @SuppressWarnings("unchecked")
-    static ComponentDriver<BaseComponentConfiguration> driverInstall(Factory<?> factory) {
-        return OldPackedClassComponentDriver.INSTALL_DRIVER.bind(factory);
-    }
-
-    @SuppressWarnings("unchecked")
-    static ComponentDriver<BaseComponentConfiguration> driverInstallInstance(Object instance) {
-        return OldPackedClassComponentDriver.INSTALL_DRIVER.bind(instance);
-    }
-
-    static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
-        return driver().bind(implementation);
-    }
-
-    static <T> ComponentDriver<BaseComponentConfiguration> functional(Class<?> implementation) {
-        return driver().bind(implementation);
-    }
 
     // Or FunctionalInterface? Nahhh Function
     // forFunction(FunctionalInterface)
@@ -94,13 +55,17 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
         // Completely stateless
         // Syntes maaske static component skal fungere paa samme maade
     }
+
     interface ForContainer {}
+
     interface ForClass {}
-    
+
     interface ForHook {}
-    interface ForEmbedded {} //?
+
+    interface ForEmbedded {} // ?
     // We pack a user supplied object
-    interface ForClassEnvelope{}
+
+    interface ForClassEnvelope {}
 
     // IDK
     interface SourcedBuilder {

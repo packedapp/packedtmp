@@ -112,55 +112,6 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
 
         hooks.onWire(this);
     }
-    
-    /**
-     * Creates a new setup.
-     * 
-     * @param component
-     *            the component
-     * @param source
-     *            the class, factory or instance source
-     */
-    ClassSourceSetup(SourcedComponentSetup component, OldPackedClassComponentDriver<?> driver, Object source) {
-        this.component = component;
-
-        // Reserve a place in the constant pool if the source is a singleton
-        this.poolIndex = driver.modifiers().isSingleton() ? component.pool.reserveObject() : -1;
-
-        // A realm accessor that allows us to find all hooks a component source
-        RealmAccessor accessor = component.realm.accessor();
-
-        // The source is either a Class, a Factory, or a generic instance
-        if (source instanceof Class<?> cl) {
-            this.constant = null;
-            this.factory = driver.modifiers().isStaticClassSource() ? null : Factory.of(cl);
-            this.hooks = accessor.modelOf(cl);
-        } else if (source instanceof Factory<?> fac) {
-            this.constant = null;
-            this.factory = fac;
-            this.hooks = accessor.modelOf(factory.rawType());
-        } else {
-            this.constant = source;
-            this.factory = null;
-            this.hooks = accessor.modelOf(source.getClass());
-
-            // non-constants singlestons are added to the constant pool elsewhere
-            component.pool.addConstant(this); // writeToPool will be called later
-        }
-
-        if (factory == null) {
-            this.instantiator = null;
-        } else {
-            MethodHandle mh = accessor.toMethodHandle(factory);
-
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            List<DependencyDescriptor> dependencies = (List) factory.variables();
-            this.instantiator = new InjectionNode(this, dependencies, mh);
-            component.container.injection.addNode(instantiator);
-        }
-
-        hooks.onWire(this);
-    }
 
     /** {@inheritDoc} */
     @Override

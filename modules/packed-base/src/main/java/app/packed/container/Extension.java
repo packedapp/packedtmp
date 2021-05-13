@@ -27,12 +27,14 @@ import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
+import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ClassComponentBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Wirelet;
 import app.packed.component.SelectWirelets;
+import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
@@ -347,10 +349,18 @@ public abstract class Extension {
         // $ = Static Init (s + i = $)
     }
 
+    protected static void $requiresClassGenFullAccessToModule() {
+        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
+        // Det kan ogsaa bare vaere en dependency paa en extension...
+        // Det er faktisk maaske det lettes
+        // dependsOn(ClassGenExtension.class);
+    }
+    
     protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
     /**
-     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension, network extension
+     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
+     * network extension
      * <p>
      * If only certain cirkus stances use checkRunnableApplication()
      */
@@ -517,6 +527,19 @@ public abstract class Extension {
      * @see ExtensionConfiguration#use(Class)
      */
     public static abstract class Subtension {}
+
+    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
+        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
+        throw new UnsupportedOperationException();
+    }
+
+    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected interface ClassComponentDriverBuilder {
+        ClassComponentBinder<Object, BaseComponentConfiguration> build();
+    }
 }
 //* <p>
 //* The main reason for prohibiting most configuration from the constructor is. Is to avoid situations.. that users might then link

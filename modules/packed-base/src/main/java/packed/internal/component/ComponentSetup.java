@@ -121,7 +121,8 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
             this.pool = application.constantPool;
         } else {
             this.modifiers = driver.modifiers;
-            this.pool = driver.modifiers().hasRuntime() ? new ConstantPoolSetup() : parent.pool;
+            boolean hasRuntime = PackedComponentModifierSet.isSet(modifiers, ComponentModifier.RUNTIME);
+            this.pool = hasRuntime ? new ConstantPoolSetup() : parent.pool;
             this.onWire = parent.onWire;
         }
 
@@ -160,7 +161,7 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
             }
 
             if (nameInitializedWithWirelet && parent != null) {
-
+                initializeNameWithPrefix(name);
                 // addChild(child, name);
             }
         }

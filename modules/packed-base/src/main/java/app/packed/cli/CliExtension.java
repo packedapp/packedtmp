@@ -15,6 +15,8 @@
  */
 package app.packed.cli;
 
+import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ClassComponentBinder;
 import app.packed.container.Extension;
 
 /**
@@ -28,11 +30,16 @@ public final class CliExtension extends Extension {
     /** It's not you it's me. */
     private CliExtension() {}
 
+    static final ClassComponentBinder<Object, BaseComponentConfiguration> b = newClassComponentBinderBuilder().build();
+    
     // Taenker man kan styre hvordan den kommer ned til
 
     void setDefault(String... args) {
         // If MainArgs is not provided as a wirelet to the container
         // Use these sensible values
         // Maybe we will use [] as the default value
+        
+        
+        System.out.println(b);
     }
 }

@@ -252,6 +252,30 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
 
         <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
 
+        @SuppressWarnings("unchecked")
+        default void rejectExtensions(Class<? extends Extension>... extensionTypes) {
+            // fx disallow(BytecodeGenExtension.class);
+            // fx disallow(ThreadExtension.class);
+            // fx disallow(FileExtension.class);
+            // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
+            
+            // Maaske kan man have et form for accept filter...
+
+            
+            // Vi skal soerge for vi ikke klasse initialisere... Det er det
+            
+            // Bliver de arvet??? Vil mene ja...
+            // Naa men vi laver bare en host/app der saa kan goere det...
+            
+            // Kan ogsaa lave noget BiPredicate der tager
+            // <Requesting extension, extension that was requested>
+            
+            // Spies
+            
+            // Kan jo altsaa ogsaa vaere en Wirelet...
+            // WireletScope...
+            
+        }
         /**
          * @param launchMode
          * @return

@@ -19,6 +19,7 @@ import java.util.Set;
 
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ClassComponentBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
@@ -46,7 +47,11 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
     public ContainerConfiguration(ComponentConfigurationContext context) {
         super(context);
     }
-    
+
+    private ClassComponentBinder<Object, BaseComponentConfiguration> defaultClassComponentDriver() {
+        return ClassComponentBinder.DEFAULT;
+    }
+
     /**
      * Returns an unmodifiable view of the extensions that are currently used.
      * 
@@ -70,7 +75,13 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public BaseComponentConfiguration install(Class<?> implementation) {
-        return context.wire(ComponentDriver.driverInstall(implementation));
+        ComponentDriver<BaseComponentConfiguration> driver = defaultClassComponentDriver().bind(implementation);
+        return context.wire(driver);
+    }
+
+    public BaseComponentConfiguration install(Class<?> implementation, Wirelet... wirelets) {
+        ComponentDriver<BaseComponentConfiguration> driver = defaultClassComponentDriver().bind(implementation);
+        return context.wire(driver, wirelets);
     }
 
     /**
@@ -82,8 +93,15 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see ContainerAssembly#install(Factory)
      */
     public BaseComponentConfiguration install(Factory<?> factory) {
-        return context.wire(ComponentDriver.driverInstall(factory));
+        ComponentDriver<BaseComponentConfiguration> driver = defaultClassComponentDriver().bind(factory);
+        return context.wire(driver);
     }
+
+    public BaseComponentConfiguration install(Factory<?> factory, Wirelet... wirelets) {
+        ComponentDriver<BaseComponentConfiguration> driver = defaultClassComponentDriver().bind(factory);
+        return context.wire(driver, wirelets);
+    }
+    
 
     /**
      * @param instance
@@ -92,9 +110,16 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @see ContainerAssembly#installInstance(Object)
      */
     public BaseComponentConfiguration installInstance(Object instance) {
-        return context.wire(ComponentDriver.driverInstallInstance(instance));
+        ComponentDriver<BaseComponentConfiguration> driver = defaultClassComponentDriver().bindInstance(instance);
+        return context.wire(driver);
     }
 
+    public BaseComponentConfiguration installInstance(Object instance, Wirelet... wirelets) {
+        ComponentDriver<BaseComponentConfiguration> driver = defaultClassComponentDriver().bindInstance(instance);
+        return context.wire(driver, wirelets);
+    }
+    
+    
     /**
      * Links the specified assembly with this container as its parent.
      * 
@@ -126,7 +151,7 @@ public class ContainerConfiguration extends BaseComponentConfiguration {
      * @return the configuration of the component
      */
     public BaseComponentConfiguration stateless(Class<?> implementation) {
-        return context.wire(ComponentDriver.driverStateless(implementation));
+        return context.wire(ClassComponentBinder.driverStateless(implementation));
     }
 
     /**

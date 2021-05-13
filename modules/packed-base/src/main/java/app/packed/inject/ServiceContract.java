@@ -155,6 +155,7 @@ public final class ServiceContract extends Contract {
      * 
      * @return the new builder
      */
+    // transform(), change(), adapt
     public ServiceContract.Builder modify() {
         return new ServiceContract.Builder(this);
     }
@@ -279,7 +280,11 @@ public final class ServiceContract extends Contract {
      */
     public static final class Builder {
 
-        private final HashMap<Key<?>, Type> map = new HashMap<>();
+        private static final String OPTIONAL = "Optional";
+        private static final String PROVIDES = "Provides";
+        private static final String REQUIRES = "Requires";
+
+        private final HashMap<Key<?>, String> map = new HashMap<>();
 
         /**
          * Creates a new contract builder builder from an existing service contract.
@@ -289,9 +294,9 @@ public final class ServiceContract extends Contract {
          */
         private Builder(ServiceContract existing) {
             if (existing != null) {
-                existing.optional.forEach(k -> map.put(k, Type.OPTIONAL));
-                existing.provides.forEach(k -> map.put(k, Type.PROVIDES));
-                existing.requires.forEach(k -> map.put(k, Type.REQUIRES));
+                existing.optional.forEach(k -> map.put(k, OPTIONAL));
+                existing.provides.forEach(k -> map.put(k, PROVIDES));
+                existing.requires.forEach(k -> map.put(k, REQUIRES));
             }
         }
 
@@ -313,9 +318,9 @@ public final class ServiceContract extends Contract {
             HashSet<Key<?>> tmpRequires = new HashSet<>();
 
             map.forEach((k, v) -> {
-                if (v == Type.OPTIONAL) {
+                if (v == OPTIONAL) {
                     tmpOptional.add(k);
-                } else if (v == Type.PROVIDES) {
+                } else if (v == PROVIDES) {
                     tmpProvides.add(k);
                 } else {
                     tmpRequires.add(k);
@@ -324,7 +329,7 @@ public final class ServiceContract extends Contract {
             return new ServiceContract(Set.copyOf(tmpRequires), Set.copyOf(tmpOptional), Set.copyOf(tmpProvides));
         }
 
-        private Builder compute(Type type, Key<?>... keys) {
+        private Builder compute(String type, Key<?>... keys) {
             requireNonNull(keys, "keys is null");
             for (int i = 0; i < keys.length; i++) {
                 Key<?> key = keys[i];
@@ -332,14 +337,14 @@ public final class ServiceContract extends Contract {
                 map.merge(key, type, (oldValue, newValue) -> {
                     if (oldValue == newValue) {
                         return oldValue;
-                    } else if (oldValue == Type.PROVIDES) {
+                    } else if (oldValue == PROVIDES) {
                         throw new IllegalArgumentException();
                         // fail because new is optional or provides
-                    } else if (newValue == Type.PROVIDES) {
+                    } else if (newValue == PROVIDES) {
                         throw new IllegalArgumentException("Cannot provide a key, when it is already part of the requirements, key = " + key);
                         // fail because already optional or provides
                     }
-                    return Type.REQUIRES; // Includes "upgrade" from Optional->Requires
+                    return REQUIRES; // Includes "upgrade" from Optional->Requires
                 });
             }
             return this;
@@ -357,7 +362,7 @@ public final class ServiceContract extends Contract {
          * @return this builder
          */
         public ServiceContract.Builder optional(Key<?>... keys) {
-            return compute(Type.OPTIONAL, keys);
+            return compute(OPTIONAL, keys);
         }
 
         public ServiceContract.Builder provides(Class<?>... keys) {
@@ -374,7 +379,7 @@ public final class ServiceContract extends Contract {
          * @return this builder
          */
         public ServiceContract.Builder provides(Key<?>... keys) {
-            return compute(Type.PROVIDES, keys);
+            return compute(PROVIDES, keys);
         }
 
         public ServiceContract.Builder remove(Class<?>... keys) {
@@ -412,11 +417,14 @@ public final class ServiceContract extends Contract {
          * @return this builder
          */
         public ServiceContract.Builder requires(Key<?>... keys) {
-            return compute(Type.REQUIRES, keys);
-        }
-
-        enum Type {
-            OPTIONAL, PROVIDES, REQUIRES;
+            return compute(REQUIRES, keys);
         }
     }
 }
+// Potentiel new Features
+
+// Attributes... For example, maturity (Alpha, Beta, )
+// Eller ogsaa skal det vaere i Mirror API'en
+// Igen det er jo nok noget vi vil have paa tvaers af af alle features...
+// Dvs. brugeren er ligeglad om det er en alpha service eller en elpha @Get
+// annotering de bruger, bare det bliver flagget

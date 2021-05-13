@@ -11,8 +11,6 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import packed.internal.application.ApplicationSetup;
@@ -36,8 +34,6 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
         this.wirelet = wirelet;
         this.modifiers = modifiers;
     }
-
-    public void checkBound() {}
 
     public abstract ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
 
@@ -76,21 +72,14 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     public static class BoundClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
-        PackedComponentModifierSet modifiersSet;
-
         final MethodHandle mh;
 
         public final Object binding;
 
-        public BoundClassComponentDriver(PackedClassComponentDriver<?, C> driver, Object binding) {
+        public BoundClassComponentDriver(PackedClassComponentBinder<?, C> driver, Object binding) {
             super(null, driver.modifiers());
             this.mh = driver.constructor();
             this.binding = requireNonNull(binding);
-        }
-
-        @Override
-        public ComponentModifierSet modifiers() {
-            return modifiersSet;
         }
 
         @Override
@@ -120,21 +109,8 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     // Leger med tanken om at lave en specifik public interface container driver
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
 
-        /** A component modifier set shared by every container. */
-        private static final ComponentModifierSet CONTAINER_MODIFIERS = ComponentModifierSet.of(ComponentModifier.CONTAINER);
-
         public ContainerComponentDriver(Wirelet wirelet) {
             super(wirelet, PackedComponentModifierSet.I_CONTAINER);
-        }
-
-        @Override
-        public final ComponentDriver<ContainerConfiguration> bind(Object object) {
-            throw new UnsupportedOperationException("Cannot bind to a container component driver");
-        }
-
-        @Override
-        public final ComponentModifierSet modifiers() {
-            return CONTAINER_MODIFIERS;
         }
 
         /** {@inheritDoc} */

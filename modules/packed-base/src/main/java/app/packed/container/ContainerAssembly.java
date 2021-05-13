@@ -87,6 +87,10 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
         return configuration().install(implementation);
     }
 
+    protected final BaseComponentConfiguration install(Class<?> implementation, Wirelet... wirelets) {
+        return configuration().install(implementation, wirelets);
+    }
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -98,6 +102,10 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      */
     protected final BaseComponentConfiguration install(Factory<?> factory) {
         return configuration().install(factory);
+    }
+
+    protected final BaseComponentConfiguration install(Factory<?> factory, Wirelet... wirelets) {
+        return configuration().install(factory, wirelets);
     }
 
     /**
@@ -114,6 +122,10 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      */
     protected final BaseComponentConfiguration installInstance(Object instance) {
         return configuration().installInstance(instance);
+    }
+
+    protected final BaseComponentConfiguration installInstance(Object instance, Wirelet... wirelets) {
+        return configuration().installInstance(instance, wirelets);
     }
 
     /**

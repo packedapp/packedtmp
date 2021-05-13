@@ -24,7 +24,7 @@ import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.component.OldPackedClassComponentDriver;
+import packed.internal.component.PackedClassComponentBinder;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -35,11 +35,11 @@ import packed.internal.component.OldPackedClassComponentDriver;
 public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentDriver DRIVER = OldPackedClassComponentDriver.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+    private static final PackedClassComponentBinder DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
             true);
 
     @SuppressWarnings("rawtypes")
-    private static final ComponentDriver PROTOTYPE_DRIVER = OldPackedClassComponentDriver.ofFactory(MethodHandles.lookup(),
+    private static final PackedClassComponentBinder PROTOTYPE_DRIVER = PackedClassComponentBinder.ofFactory(MethodHandles.lookup(),
             ServiceComponentConfiguration.class, false);
 
     public ServiceComponentConfiguration(ComponentConfigurationContext context) {
@@ -119,7 +119,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
 
     @SuppressWarnings("unchecked")
     public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provideInstance(T instance) {
-        return DRIVER.bind(instance);
+        return DRIVER.bindInstance(instance);
     }
 
     @SuppressWarnings("unchecked")

@@ -62,6 +62,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * <p>
      * This field is read from {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
      */
+    @SuppressWarnings("unused")
     private final PackedComponentDriver<? extends C> driver;
 
     /**
@@ -85,7 +86,6 @@ public abstract class Composer<C extends ComponentConfiguration> {
      */
     protected Composer(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
-        this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
 
     /**

@@ -11,12 +11,13 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ClassComponentBinder;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
-import app.packed.component.Wirelet;
 import app.packed.component.SelectWirelets;
+import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
@@ -141,19 +142,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration install(Class<?> implementation) {
-        return container.wire(ComponentDriver.driverInstall(implementation), realm);
+        return container.wire(ClassComponentBinder.DEFAULT.bind(implementation), realm);
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration install(Factory<?> factory) {
-        return container.wire(ComponentDriver.driverInstall(factory), realm);
+        return container.wire(ClassComponentBinder.DEFAULT.bind(factory), realm);
     }
 
     /** {@inheritDoc} */
     @Override
     public BaseComponentConfiguration installInstance(Object instance) {
-        return container.wire(ComponentDriver.driverInstallInstance(instance), realm);
+        return container.wire(ClassComponentBinder.DEFAULT.bindInstance(instance), realm);
     }
 
     /** {@inheritDoc} */

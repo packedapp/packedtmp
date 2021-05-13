@@ -36,25 +36,8 @@ public final class BuildWirelets {
     /** Not for you my friend. */
     private BuildWirelets() {}
 
-    /**
-     * Returns a wirelet that will perform the specified action every time a component has been wired.
-     * <p>
-     * 
-     * @param action
-     *            the action to perform
-     * @return the wirelet
-     */
-    public static Wirelet onWire(Consumer<? super ComponentMirror> action) {
-        return new InternalWirelet.OnWireActionWirelet(action, null);
-    }
-
-    public static Wirelet onWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
-        requireNonNull(scope, "scope is null");
-        return new InternalWirelet.OnWireActionWirelet(action, scope);
-    }
-
-    // Ideen er lidt at wireletten, ikke bliver processeret som en del af builded
-    static Wirelet delayToRuntime(Wirelet wirelet) {
+    // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
+    static Wirelet delayToRuntime(Function<InstantiationContext, @Nullable Wirelet> wireletSupplier) {
         throw new UnsupportedOperationException();
     }
 
@@ -62,9 +45,26 @@ public final class BuildWirelets {
         throw new UnsupportedOperationException();
     }
 
-    // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
-    static Wirelet delayToRuntime(Function<InstantiationContext, @Nullable Wirelet> wireletSupplier) {
+    // Ideen er lidt at wireletten, ikke bliver processeret som en del af builded
+    static Wirelet delayToRuntime(Wirelet wirelet) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns a spying wirelet that will perform the specified action every time a component has been wired.
+     * 
+     * @param action
+     *            the action to perform
+     * @return the wirelet
+     */
+    // Tror faktisk maaske den default whole App for app, Container for container, Component for Component
+    public static Wirelet spyOnWire(Consumer<? super ComponentMirror> action) {
+        return new InternalWirelet.OnWireActionWirelet(action, null);
+    }
+
+    public static Wirelet spyOnWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
+        requireNonNull(scope, "scope is null");
+        return new InternalWirelet.OnWireActionWirelet(action, scope);
     }
 
     interface InstantiationContext {}

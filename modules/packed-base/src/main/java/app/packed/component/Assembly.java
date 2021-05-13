@@ -80,6 +80,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      * <p>
      * This field is read by {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
      */
+    @SuppressWarnings("unused")
     private final PackedComponentDriver<? extends C> driver;
 
     /**
@@ -90,7 +91,6 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      */
     protected Assembly(ComponentDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
-        this.driver.checkBound(); // Checks that the driver does not have unbound bindings
     }
 
     /**

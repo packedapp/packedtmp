@@ -40,7 +40,7 @@ public class HelloWorldAssembly extends BaseAssembly {
         ad.launch(new HelloWorldAssembly());
 
         // Job.compute()
-        App.run(new HelloWorldAssembly(), BuildWirelets.onWire(c -> {
+        App.run(new HelloWorldAssembly(), BuildWirelets.spyOnWire(c -> {
             System.out.println(c.path() + " wired");
         }));
         
