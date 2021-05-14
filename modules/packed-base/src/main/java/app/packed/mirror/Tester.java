@@ -12,7 +12,7 @@ public class Tester extends BaseAssembly {
 
     public static void main(String[] args) {
 
-        for (ApplicationMirror am : ApplicationMirror.of(new Tester()).hosts().one().installations()) {
+        for (ApplicationMirror am : ApplicationMirror.of(new Tester()).findAllinstallations(false)) {
             System.out.println(am);
         }
 

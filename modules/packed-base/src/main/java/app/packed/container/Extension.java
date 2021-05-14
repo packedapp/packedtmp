@@ -30,7 +30,7 @@ import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
@@ -538,7 +538,7 @@ public abstract class Extension {
     }
 
     protected interface ClassComponentDriverBuilder {
-        BeanBinder<Object, BeanConfiguration> build();
+        BeanConfigurationBinder<Object, BeanConfiguration> build();
     }
 }
 //* <p>

@@ -7,27 +7,23 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import app.packed.application.ApplicationMirror;
 import app.packed.application.BaseMirror;
-import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
-import app.packed.mirror.Mirror;
 
 /**
  * A mirror of a container.
  * <p>
  * An instance of this class is typically opb
  */
-public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMirror> */ {
-
-    /** {@return the application this container is a part of} */
-    ApplicationMirror application();
+// Kunne maaske godt taenke mig at extende ComponentMirror...
+// Det giver bare saa meget mening for BeanMirror
+public interface ContainerMirror extends ComponentMirror /* extends Iterable<ComponentMirror> */ {
 
     /** {@return an unmodifiable view of all of this container's children.} */
     // Giver det mening at det er paa kryds af apps?? Ja ville jeg mene
-    Collection<ContainerMirror> children();
+    Collection<ContainerMirror> containerChildren();
 
     /** {@return the root container component in the container} */
     ComponentMirror component();
@@ -41,7 +37,7 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
      * 
      * @return the distance to the root container
      */
-    int depth();
+    int containerDepth();
 
     /** { @return a set of all extensions that have been used by the container.} */
     Set<Class<? extends Extension>> extensions();
@@ -64,14 +60,8 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
      */
     boolean isUsed(Class<? extends Extension> extensionType);
 
-    /** {@return the name of the container.} */
-    String name();
-
     /** {@return the parent container of this container. Or empty if this container has no parent} */
-    Optional<ContainerMirror> parent();
-
-    /** {@return the path of this container in relation to other containers} */
-    NamespacePath path();
+    Optional<ContainerMirror> containerParent();
 
     // Altsaa hvor brugbar er denne... Ved man
     <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType); // maybe just find? find

@@ -16,7 +16,7 @@
 package app.packed.cli;
 
 import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.container.Extension;
 
 /**
@@ -30,7 +30,7 @@ public final class CliExtension extends Extension {
     /** It's not you it's me. */
     private CliExtension() {}
 
-    static final BeanBinder<Object, BeanConfiguration> b = newClassComponentBinderBuilder().build();
+    static final BeanConfigurationBinder<Object, BeanConfiguration> b = newClassComponentBinderBuilder().build();
     
     // Taenker man kan styre hvordan den kommer ned til
 

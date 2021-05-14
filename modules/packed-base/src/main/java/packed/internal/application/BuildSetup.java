@@ -142,7 +142,7 @@ public final class BuildSetup implements BuildMirror {
 
         @Override
         public ComponentMirror component() {
-            return build.application.mirror().component();
+            return build.application.mirror().applicationComponent();
         }
 
         @Override
@@ -158,7 +158,7 @@ public final class BuildSetup implements BuildMirror {
         /** {@inheritDoc} */
         @Override
         public ContainerMirror container() {
-            return build.container.containerMirror();
+            return build.container.mirror();
         }
 
         @Override

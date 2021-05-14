@@ -46,7 +46,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** Abstract build-time setup of a component.  */
+/** Abstract build-time setup of a component. */
 public abstract class ComponentSetup {
 
     /** The application this component is a part of. */
@@ -275,15 +275,13 @@ public abstract class ComponentSetup {
     }
 
     /** {@inheritDoc} */
-    public final ComponentMirror mirror() {
-        return new ComponentMirrorAdaptor(this);
-    }
+    public abstract ComponentMirror mirror();
 
     /** {@inheritDoc} */
     public final PackedComponentModifierSet modifiers() {
         return new PackedComponentModifierSet(modifiers);
     }
-    
+
     /** {@inheritDoc} */
     public final void named(String name) {
         checkComponentName(name); // Check if the name is valid
@@ -350,68 +348,74 @@ public abstract class ComponentSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    private record ComponentMirrorAdaptor(ComponentSetup component) implements ComponentMirror {
+    public abstract class ComponentMirrorAdaptor implements ComponentMirror {
+
+        private final ComponentSetup component;
+
+        protected ComponentMirrorAdaptor(ComponentSetup component) {
+            this.component = requireNonNull(component);
+        }
 
         /** {@inheritDoc} */
         @Override
-        public AttributeMap attributes() {
+        public final AttributeMap attributes() {
             return component.attributes();
         }
 
         /** {@inheritDoc} */
         @Override
-        public Collection<ComponentMirror> children() {
+        public final Collection<ComponentMirror> children() {
             LinkedHashMap<String, ComponentSetup> m = component.children;
             return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
-        public int depth() {
+        public final int depth() {
             return component.depth;
         }
 
         /** {@inheritDoc} */
         @Override
-        public boolean hasModifier(ComponentModifier modifier) {
+        public final boolean hasModifier(ComponentModifier modifier) {
             return PackedComponentModifierSet.isSet(component.modifiers, modifier);
         }
 
         /** {@inheritDoc} */
         @Override
-        public ComponentModifierSet modifiers() {
+        public final ComponentModifierSet modifiers() {
             return component.modifiers();
         }
 
         /** {@inheritDoc} */
         @Override
-        public String name() {
+        public final String name() {
             return component.name;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Optional<ComponentMirror> parent() {
+        public final Optional<ComponentMirror> parent() {
             ComponentSetup parent = component.parent;
             return parent == null ? Optional.empty() : Optional.of(parent.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
-        public NamespacePath path() {
+        public final NamespacePath path() {
             return component.path();
         }
 
         /** {@inheritDoc} */
         @Override
-        public Relation relationTo(ComponentMirror other) {
+        public final Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetupRelation.of(component, ((ComponentMirrorAdaptor) other).component);
         }
 
         /** {@inheritDoc} */
         @Override
-        public ComponentMirror resolve(CharSequence path) {
+        public final ComponentMirror resolve(CharSequence path) {
             LinkedHashMap<String, ComponentSetup> map = component.children;
             if (map != null) {
                 ComponentSetup cs = map.get(path.toString());
@@ -424,7 +428,7 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
+        public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
             return new PackedComponentStream(stream0(component, true, PackedComponentStreamOption.of(options)));
         }
 
@@ -445,20 +449,20 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean isInSame(ComponentScope scope, ComponentMirror other) {
+        public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
             return component.isInSame(scope, ((ComponentMirrorAdaptor) other).component);
         }
 
         /** {@inheritDoc} */
         @Override
-        public ApplicationMirror application() {
+        public final ApplicationMirror application() {
             return component.application.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
-        public ComponentMirror root() {
+        public final ComponentMirror root() {
             ComponentSetup c = component;
             while (c.parent != null) {
                 c = c.parent;

@@ -14,10 +14,10 @@ import packed.internal.component.PackedClassComponentBinder;
  * A binder that can be used to bind class, factory or component class instance to create a component driver.
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public interface BeanBinder<T, C extends ComponentConfiguration> {
+public interface BeanConfigurationBinder<T, C extends ComponentConfiguration> {
 
     // Container Lifetime, Eager singleton
-    static BeanBinder<Object, BeanConfiguration> DEFAULT = PackedClassComponentBinder.APPLET_DRIVER;
+    static BeanConfigurationBinder<Object, BeanConfiguration> DEFAULT = PackedClassComponentBinder.APPLET_DRIVER;
 
     /**
      * @param instance
@@ -47,7 +47,7 @@ public interface BeanBinder<T, C extends ComponentConfiguration> {
     /** {@return a set containing all modes this driver supports. } */
     Set<? extends BeanMode> supportedModes();
 
-    BeanBinder<T, C> with(Wirelet... wirelet);
+    BeanConfigurationBinder<T, C> with(Wirelet... wirelet);
 
     Optional<Class<? extends Extension>> extension();
 
@@ -80,6 +80,6 @@ public interface BeanBinder<T, C extends ComponentConfiguration> {
         Builder namePrefix(String prefix);
         Builder namePrefix(Function<Class<?>, String> computeIt);
         
-        <T, C extends ComponentConfiguration> BeanBinder<T, C> build();
+        <T, C extends ComponentConfiguration> BeanConfigurationBinder<T, C> build();
     }
 }

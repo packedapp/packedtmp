@@ -5,21 +5,10 @@ import java.util.Set;
 
 import app.packed.container.Extension;
 
-public interface BeanMirror {
+public interface BeanMirror extends ComponentMirror {
 
     /**
-     * Returns any extension the driver is part of. All drivers are either part of an extension. Or is a build in drive
-     * 
-     * @return any extension the driver is part of
-     */
-    Optional<Class<? extends Extension>> driverExtension();
-
-    boolean isSourceReflected(); // support Hooks...
-
-    BeanMode mode();
-
-    /**
-     * Returns the type (class) of the source.
+     * Returns the type (class) of the bean.
      * 
      * if instance it is .getClass()
      * 
@@ -29,7 +18,23 @@ public interface BeanMirror {
      * 
      * @return
      */
-    Class<?> sourceType();
+    Class<?> beanType();
+
+    /**
+     * Returns any extension the driver is part of. All drivers are either part of an extension. Or is a build in drive
+     * 
+     * @return any extension the driver is part of
+     */
+    Optional<Class<? extends Extension>> driverExtension();
+
+    boolean isReflected(); // support Hooks...
+
+    BeanMode mode();
+
+    /** {@return all hooks that have been applied on the bean.} */
+    Set<?> hooks();
+
+    <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
 }
 
 // Maaske er den bare fyldt med attributer istedet for et decideres mirror IDK

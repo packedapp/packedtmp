@@ -25,20 +25,24 @@ import app.packed.mirror.TreeWalker;
 public interface ApplicationMirror extends Mirror {
 
     /** {@return the root (container) component in the application}. */
-    ComponentMirror component();
+    ComponentMirror applicationComponent(); // 
+
+    default Optional<ApplicationHostMirror> applicationHost() {
+        throw new UnsupportedOperationException();
+    }
 
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
     TreeWalker<ComponentMirror> components();
 
-    /** {@return the root container in the application}. */
-    ContainerMirror container();
-
     // Er det kun componenter i den application??? Ja ville jeg mene...
     // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
     // app.rootContainer.children() <-- does this only include children in the same
     // application?? or any children...
+
+    /** {@return the root container in the application}. */
+    ContainerMirror container();
 
     // teanker det kun er containere i samme application...
     // ellers maa man bruge container.resolve("....")
@@ -49,22 +53,14 @@ public interface ApplicationMirror extends Mirror {
 
     /** { @return a set view of all extensions that are in use by the application.} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    default Set<Class<? super Extension>> extensions() {
+    default Set<Class<? super Extension>> findAllExtensions(boolean includeChildApplications) {
         Set<Class<? super Extension>> result = new HashSet<>();
         containers().forEach(c -> result.addAll((Set) c.extensions()));
         return Set.copyOf(result);
     }
 
-    default Optional<ApplicationHostMirror> host() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return all the application hosts defined in this application.} */
-    default SetView<ApplicationHostMirror> hosts() {
-        throw new UnsupportedOperationException();
-    }
-
-    default TaskListMirror initialization() {
+    default SetView<ApplicationHostMirror> findAllHosts(boolean includeChildApplications) {
         throw new UnsupportedOperationException();
     }
 
@@ -79,9 +75,13 @@ public interface ApplicationMirror extends Mirror {
      * @return
      */
     // IDK or children();
-    default Collection<ApplicationMirror> installations() {
+    default Collection<ApplicationMirror> findAllinstallations(boolean includeChildApplications) {
         BiConsumer<ApplicationHostMirror, Consumer<ApplicationMirror>> bc = (m, c) -> m.installations().forEach(p -> c.accept(p));
-        return hosts().stream().mapMulti(bc).toList();
+        return findAllHosts(includeChildApplications).stream().mapMulti(bc).toList();
+    }
+
+    default TaskListMirror initialization() {
+        throw new UnsupportedOperationException();
     }
 
     default boolean isHosted() {

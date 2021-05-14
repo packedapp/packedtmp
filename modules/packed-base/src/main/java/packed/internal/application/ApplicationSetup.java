@@ -15,12 +15,12 @@ import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.mirror.TreeWalker;
 import app.packed.state.sandbox.InstanceState;
+import packed.internal.component.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
@@ -165,14 +165,14 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentMirror component() {
+        public ComponentMirror applicationComponent() {
             return application.container.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
         public ContainerMirror container() {
-            return application.container.containerMirror();
+            return application.container.mirror();
         }
 
         /** {@inheritDoc} */

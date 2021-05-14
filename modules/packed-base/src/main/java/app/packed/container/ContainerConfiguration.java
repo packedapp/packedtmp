@@ -19,7 +19,7 @@ import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
-import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
@@ -101,7 +101,7 @@ public class ContainerConfiguration extends AbstractContainerConfiguration {
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration stateless(Class<?> implementation) {
-        return super.wire(BeanBinder.driverStateless(implementation));
+        return super.wire(BeanConfigurationBinder.driverStateless(implementation));
     }
 
     /** {@inheritDoc} */

@@ -34,7 +34,7 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     /** { @return the application this component is a part of} */
     ApplicationMirror application();
 
-    /** {@return an unmodifiable view of all of this component's children} */
+    /** {@return an unmodifiable view of all of the children of this component.} */
     Collection<ComponentMirror> children();
 
     /**

@@ -24,8 +24,6 @@ import java.util.IdentityHashMap;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.application.ApplicationMirror;
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentAttributes;
@@ -42,7 +40,6 @@ import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
-import packed.internal.component.PackedTreePath;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
 import packed.internal.util.CollectionUtil;
@@ -171,7 +168,8 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** {@return a container adaptor that can be exposed to end-users} */
-    public ContainerMirror containerMirror() {
+    @Override
+    public ContainerMirror mirror() {
         return new ContainerMirrorAdaptor(this);
     }
 
@@ -272,18 +270,12 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** An adaptor for the Container interface. */
-    private record ContainerMirrorAdaptor(ContainerSetup container) implements ContainerMirror {
+    private final class ContainerMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements ContainerMirror {
 
-        /** {@inheritDoc} */
-        @Override
-        public ApplicationMirror application() {
-            return container.application.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String name() {
-            return container.getName();
+        final ContainerSetup container;
+        ContainerMirrorAdaptor(ContainerSetup container) {
+            super(container);
+            this.container=container;
         }
 
         /** {@inheritDoc} */
@@ -294,27 +286,21 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Collection<ContainerMirror> children() {
-            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.containerMirror());
+        public Collection<ContainerMirror> containerChildren() {
+            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
-        public int depth() {
+        public int containerDepth() {
             return container.containerDepth;
         }
 
         /** {@inheritDoc} */
         @Override
-        public Optional<ContainerMirror> parent() {
+        public Optional<ContainerMirror> containerParent() {
             ContainerSetup p = container.containerParent;
-            return p == null ? Optional.empty() : Optional.of(p.containerMirror());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public NamespacePath path() {
-            return PackedTreePath.of(container);
+            return p == null ? Optional.empty() : Optional.of(p.mirror());
         }
 
         /** {@inheritDoc} */
@@ -343,5 +329,6 @@ public final class ContainerSetup extends ComponentSetup {
             }
             throw new UnsupportedOperationException();
         }
+
     }
 }

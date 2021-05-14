@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanMode;
 import app.packed.component.ComponentConfiguration;
@@ -20,7 +20,7 @@ import packed.internal.invoke.Infuser;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (PackedClassComponentBinder.Type type, MethodHandle constructor, int modifiers)
-        implements BeanBinder<T, ComponentConfiguration> {
+        implements BeanConfigurationBinder<T, ComponentConfiguration> {
 
     public static final PackedClassComponentBinder APPLET_DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, true);
@@ -69,7 +69,7 @@ public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (P
     }
 
     @Override
-    public BeanBinder<T, ComponentConfiguration> with(Wirelet... wirelet) {
+    public BeanConfigurationBinder<T, ComponentConfiguration> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
 

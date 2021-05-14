@@ -87,8 +87,8 @@ public final class PackedComponentInstance implements ComponentMirror {
 
             for (ComponentSetup cc : component.children.values()) {
                 // We never carry over extensions into the runtime
-                    PackedComponentInstance ac = new PackedComponentInstance(this, cc, launch);
-                    result.put(ac.name(), ac);
+                PackedComponentInstance ac = new PackedComponentInstance(this, cc, launch);
+                result.put(ac.name(), ac);
             }
 
             children = Map.copyOf(result);

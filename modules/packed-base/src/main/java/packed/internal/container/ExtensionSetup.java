@@ -10,7 +10,7 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
@@ -135,19 +135,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration install(Class<?> implementation) {
-        return container.wire(BeanBinder.DEFAULT.bind(implementation), realm);
+        return container.wire(BeanConfigurationBinder.DEFAULT.bind(implementation), realm);
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration install(Factory<?> factory) {
-        return container.wire(BeanBinder.DEFAULT.bind(factory), realm);
+        return container.wire(BeanConfigurationBinder.DEFAULT.bind(factory), realm);
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration installInstance(Object instance) {
-        return container.wire(BeanBinder.DEFAULT.bindInstance(instance), realm);
+        return container.wire(BeanConfigurationBinder.DEFAULT.bindInstance(instance), realm);
     }
 
     /** {@inheritDoc} */
