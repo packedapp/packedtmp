@@ -50,15 +50,14 @@ public /* sealed */ abstract class ComponentConfiguration {
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
      * 
      * @throws IllegalStateException
-     *             if invoked from the constructor of the extension. As an alternative dependency inject the configuration
-     *             object into the constructor
+     *             if invoked from the constructor of the configuration.
      * @return a configuration object for this extension
      */
     final ComponentSetup component() {
         ComponentSetup c = component;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
-                    + "initialization before the extension is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
+                    + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
         }
         return c;
     }
@@ -74,7 +73,7 @@ public /* sealed */ abstract class ComponentConfiguration {
      */
     protected ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         ComponentSetup component = component();
-        return component().link(assembly, component.realm, wirelets);
+        return component.link(assembly, component.realm, wirelets);
     }
 
     /**
@@ -139,7 +138,8 @@ public /* sealed */ abstract class ComponentConfiguration {
      * @return a configuration for the new child component
      */
     protected <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return component().wire(driver, component().realm, wirelets);
+        ComponentSetup component = component();
+        return component.wire(driver, component.realm, wirelets);
     }
 }
 // I don't expect this class to have any $ methods

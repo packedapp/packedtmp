@@ -125,10 +125,10 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
-        // Create a new root realm
+        // Create a new application realm
         RealmSetup realm = new RealmSetup(this, componentDriver, modifiers, assembly, wirelets);
 
-        // Create the component configuration that is needed by the assembly
+        // Create a new component configuration instance that the assembly needs
         ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
@@ -138,6 +138,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             throw ThrowableUtil.orUndeclared(e);
         }
 
+        // Close the realm if the application has been built successfully
         realm.close();
 
         return realm.build;
@@ -152,22 +153,23 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Extract the component driver from the composer
         PackedComponentDriver<?> componentDriver = (PackedComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
 
-        // Create a new realm
+        // Create a new application realm
         RealmSetup realm = new RealmSetup(this, componentDriver, consumer, wirelets);
 
-        // Create the component configuration that is needed by the assembly
+        // Create the component configuration that is needed by the composer
         ComponentConfiguration componentConfiguration = componentDriver.toConfiguration(realm.root);
 
-        // Invoke Consumer::doConsumer which in turn will invoke consumer.accept
+        // Invoke Composer#doCompose which in turn will invoke consumer.accept
         try {
             RealmSetup.MH_COMPOSER_DO_COMPOSE.invoke(composer, componentConfiguration, consumer);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
 
+        // Close the realm if the application has been built successfully
         realm.close();
 
-        // Launch the application
+        // Return the launched application
         return ApplicationLaunchContext.launch(this, realm.build.application, null);
     }
 

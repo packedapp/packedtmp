@@ -23,20 +23,20 @@ import packed.internal.util.ThrowableUtil;
 public abstract class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
     /** A handle that can access Assembly#driver. */
-    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            PackedComponentDriver.class);
-
-    /** A handle that can access Assembly#driver. */
-    private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
-            ComponentConfiguration.class, "component", ComponentSetup.class);
-
-    /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ABSTRACT_BEAN_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), AbstractBeanConfiguration.class,
             "bean", BeanSetup.class);
 
     /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ABSTRACT_CONTAINER_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
             AbstractContainerConfiguration.class, "container", ContainerSetup.class);
+
+    /** A handle that can access Assembly#driver. */
+    private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
+            PackedComponentDriver.class);
+
+    /** A handle that can access Assembly#driver. */
+    private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
+            ComponentConfiguration.class, "component", ComponentSetup.class);
 
     public final int modifiers;
 
@@ -76,9 +76,13 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
         return (PackedComponentDriver<?>) VH_ASSEMBLY_DRIVER.get(assembly);
     }
 
+    /**
+     * A driver for creating a bean.
+     */
     public static class BeanComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
-        public final Object binding;
+        /** The bean source. */
+        final Object binding;
 
         final MethodHandle mh;
 
@@ -90,7 +94,6 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
         @Override
         public ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-            requireNonNull(parent);
             return new BeanSetup(application, realm, this, parent, wirelets);
         }
 

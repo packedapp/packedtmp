@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.component.BeanMirror.BeanMode;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;

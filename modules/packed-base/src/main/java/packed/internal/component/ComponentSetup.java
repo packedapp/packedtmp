@@ -270,11 +270,6 @@ public abstract class ComponentSetup {
     }
 
     /** {@inheritDoc} */
-    public final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return link(assembly, realm, wirelets);
-    }
-
-    /** {@inheritDoc} */
     public abstract ComponentMirror mirror();
 
     /** {@inheritDoc} */

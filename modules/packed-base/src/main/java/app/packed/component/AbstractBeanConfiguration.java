@@ -8,6 +8,7 @@ import packed.internal.component.BeanSetup;
 
 public abstract /* non-sealed */ class AbstractBeanConfiguration extends ComponentConfiguration {
 
+    /** */
     private BeanSetup bean;
 
     protected <T> ExportedServiceConfiguration<T> sourceExport() {

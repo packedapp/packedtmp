@@ -1,4 +1,4 @@
-package app.packed.host;
+package app.packed.application.host;
 
 import java.util.Map;
 import java.util.Optional;

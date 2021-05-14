@@ -17,7 +17,7 @@ package app.packed.hooks.usage;
 
 import java.lang.invoke.MethodHandle;
 
-import app.packed.host.ApplicationHost;
+import app.packed.application.host.ApplicationHost;
 
 /**
  *

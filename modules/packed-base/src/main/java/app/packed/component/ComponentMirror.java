@@ -45,10 +45,11 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     int depth();
 
     /** {@return any extension this component might be part of} */
+    // extensionConfiguration.link(sdsd)
     default Optional<Class<? extends Extension>> extension() {
         throw new UnsupportedOperationException();
     }
-
+    
     default boolean hasModifier(ComponentModifier modifier) {
         return modifiers().contains(modifier);
     }
@@ -153,7 +154,8 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     }
 
     /**
-     * A component (mirror) relation is an unchangeable representation of a directional relationship between two components.
+     * A (component mirror) relation is an unchangeable representation of a directional relationship between two components.
+     * <p>
      * It is typically created via {@link ComponentMirror#relationTo(ComponentMirror)}.
      */
     public /* sealed */ interface Relation extends Iterable<ComponentMirror> {

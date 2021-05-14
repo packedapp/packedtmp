@@ -8,7 +8,6 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.BeanMirror;
-import app.packed.component.BeanMode;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
@@ -17,6 +16,7 @@ import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 
+/** An internal configuration of a bean.  */
 public final class BeanSetup extends ComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
@@ -64,7 +64,7 @@ public final class BeanSetup extends ComponentSetup {
         return source.service == null ? Optional.empty() : Optional.of(source.service.key());
     }
 
-    /** An adaptor for the Container interface. */
+    /** An adaptor for the {@link BeanMirror} interface. */
     private final static class BeanMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements BeanMirror {
 
         final BeanSetup bean;
@@ -81,11 +81,6 @@ public final class BeanSetup extends ComponentSetup {
 
         @Override
         public Optional<Class<? extends Extension>> driverExtension() {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean hasBeen() {
             throw new UnsupportedOperationException();
         }
 

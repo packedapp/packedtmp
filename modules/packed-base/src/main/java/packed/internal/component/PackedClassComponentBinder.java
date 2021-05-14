@@ -7,9 +7,9 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanMode;
+import app.packed.component.BeanConfigurationBinder;
+import app.packed.component.BeanMirror.BeanMode;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;

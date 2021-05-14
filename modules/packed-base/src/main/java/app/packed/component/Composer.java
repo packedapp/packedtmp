@@ -118,12 +118,12 @@ public abstract class Composer<C extends ComponentConfiguration> {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
-                onComposable();
+                onNew();
 
-                // call the actual consumer
+                // call the actual configurations
                 consumer.configure(this);
 
-                onCompletable();
+                onConfigured();
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
@@ -158,9 +158,17 @@ public abstract class Composer<C extends ComponentConfiguration> {
         configuration().component().realm.setLookup(lookup);
     }
 
-    protected void onCompletable() {}
+    /**
+     * Invoked by the runtime immediately after {@link ComposerConfigurator#configure(Composer)}.
+     * <p>
+     * This method will not be called if {@link ComposerConfigurator#configure(Composer)} throws an exception.
+     */
+    protected void onConfigured() {}
 
-    protected void onComposable() {}
+    /**
+     * Invoked by the runtime immediately before {@link ComposerConfigurator#configure(Composer)}.
+     */
+    protected void onNew() {}
 }
 
 // Er det ikke noget vi skal definere i vores ArtifactDriver...
