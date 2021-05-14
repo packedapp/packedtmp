@@ -328,7 +328,7 @@ public abstract class Extension {
         return configuration().userWire(driver, wirelets);
     }
 
-    protected final <T extends Wirelet> SelectWirelets<T> wirelets(Class<T> wireletClass) {
+    protected final <T extends ExtensionWirelet<?>> SelectWirelets<T> wirelets(Class<T> wireletClass) {
         return configuration().selectWirelets(wireletClass);
     }
 

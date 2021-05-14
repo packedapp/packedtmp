@@ -19,8 +19,8 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.container.ExtensionWirelet;
 import app.packed.inject.ServiceExtension;
-import packed.internal.container.ExtensionWirelet;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**

@@ -64,6 +64,7 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
     /**
+     * 
      * Typically for extract a value for a wirelet and using that if present
      * 
      * @param <E>
@@ -73,10 +74,20 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
      * @return
      */
     // shortcut for findLast().map(mapper).orElse(orElse)
-    default <E> E findLastOrElse(Function<? super W, ? extends E> mapper, E orElse) {
+
+    /**
+     * 
+     * @param <E>
+     * @param mapper
+     *            the mapper to apply (if non-empty) to the last wirelet before returning the result
+     * @param ifEmpty
+     *            the value to return if the selection is empty
+     * @return stuff
+     */
+    default <E> E findLastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty) {
         requireNonNull(mapper, "mapper is null");
         Optional<W> result = findLast();
-        return result.isEmpty() ? orElse : mapper.apply(result.get());
+        return result.isEmpty() ? ifEmpty : mapper.apply(result.get());
     }
 
     /**

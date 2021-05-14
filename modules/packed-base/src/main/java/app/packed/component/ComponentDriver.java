@@ -18,9 +18,10 @@ package app.packed.component;
 import app.packed.container.BaseAssembly;
 
 /**
- * Component drivers are responsible for configuring and creating new components. They are rarely created by end-users.
- * And it is possible to use Packed without every being directly exposed to component drivers. Instead users would
- * normally used some of the predifined used drivers such as ....
+ * Component drivers are responsible for configuring and creating new components.
+ * <p>
+ * They are rarely created by end-users. And it is possible to use Packed without every being directly exposed to
+ * component drivers. Instead users would normally used some of the predifined used drivers such as ....
  * <p>
  * 
  * Every time you, for example, call {@link BaseAssembly#install(Class)} it actually de
@@ -28,47 +29,9 @@ import app.packed.container.BaseAssembly;
  * install a
  * 
  * @param <C>
- *            the type of component configuration this driver create
+ *            the type of configuration that is returned when creating a new component
  */
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
 
-    /**
-     * Returns the set of modifiers that will be applied to the component.
-     * <p>
-     * Additional modifiers may be added once the component is wired.
-     * 
-     * @return the set of modifiers that will be applied to the component
-     */
-    default ComponentModifierSet modifiers() {
-        throw new UnsupportedOperationException();
-    }
-
-    ComponentDriver<C> with(Wirelet wirelet);
-
     ComponentDriver<C> with(Wirelet... wirelet);
-
-
-    // Or FunctionalInterface? Nahhh Function
-    // forFunction(FunctionalInterface)
-    // forFunction(TypeToken)
-    interface ForFunction {
-        // Completely stateless
-        // Syntes maaske static component skal fungere paa samme maade
-    }
-
-    interface ForContainer {}
-
-    interface ForClass {}
-
-    interface ForHook {}
-
-    interface ForEmbedded {} // ?
-    // We pack a user supplied object
-
-    interface ForClassEnvelope {}
-
-    // IDK
-    interface SourcedBuilder {
-
-    }
 }

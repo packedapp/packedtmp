@@ -28,8 +28,8 @@ import java.util.function.Predicate;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
-import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentMirror;
 import app.packed.component.Composer;
 
 /**

@@ -11,7 +11,7 @@ import app.packed.component.BaseComponentConfiguration;
 import app.packed.component.ClassComponentBinder;
 import app.packed.component.ClassComponentMode;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentConfiguration.ComponentConfigurationContext;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;

@@ -26,8 +26,8 @@ import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
-import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.MethodHook;
+import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
 /**

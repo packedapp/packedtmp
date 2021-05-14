@@ -15,8 +15,8 @@
  */
 package packed.internal.component;
 
-import app.packed.component.Wirelet;
 import app.packed.component.SelectWirelets;
+import app.packed.component.Wirelet;
 
 /** A holder of wirelets. */
 // Vi har faktisk ogsaa for den her paa runtime...

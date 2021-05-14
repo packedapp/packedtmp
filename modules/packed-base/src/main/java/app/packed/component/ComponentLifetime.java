@@ -7,5 +7,5 @@ public enum ComponentLifetime {
     
     /** Once instances are initialized, Packed maintains no reference to them  */
     UNMANAGED,
-    ;
+    
 }

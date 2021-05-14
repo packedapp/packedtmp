@@ -161,7 +161,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
         });
     }
 
-    /** {@return the type (class or interface) of the application (instance).} */
+    /** {@return the type (typically an interface) of the application instances created by this driver.} */
     Class<?> type();
 
     /**
@@ -183,7 +183,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * 
      * @param wirelets
      *            the wirelets to add
-     * @return the new application driver
+     * @return the augmented application driver
      */
     ApplicationDriver<A> with(Wirelet... wirelets);
 
@@ -252,6 +252,20 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
 
         <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
 
+        /**
+         * @param launchMode
+         * @return
+         */
+        Builder launchMode(InstanceState launchMode);
+        /**
+         * Indicates that the any application create by this driver is not runnable.
+         * 
+         * @return this builder
+         */
+        // https://en.wikipedia.org/wiki/Runtime_system
+        // noRuntimeEnvironment
+        Builder noRuntime(); // or notRunnable() (it was this originally)
+
         @SuppressWarnings("unchecked")
         default void rejectExtensions(Class<? extends Extension>... extensionTypes) {
             // fx disallow(BytecodeGenExtension.class);
@@ -276,20 +290,6 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
             // WireletScope...
             
         }
-        /**
-         * @param launchMode
-         * @return
-         */
-        Builder launchMode(InstanceState launchMode);
-
-        /**
-         * Indicates that the any application create by this driver is not runnable.
-         * 
-         * @return this builder
-         */
-        // https://en.wikipedia.org/wiki/Runtime_system
-        // noRuntimeEnvironment
-        Builder noRuntime(); // or notRunnable() (it was this originally)
 
         /**
          * 

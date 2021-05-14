@@ -15,8 +15,8 @@
  */
 package packed.internal.inject.service;
 
+import app.packed.container.ExtensionWirelet;
 import app.packed.inject.ServiceExtension;
-import packed.internal.container.ExtensionWirelet;
 
 /** A wirelet that is processed in a first pass. */
 public abstract class Service1stPassWirelet extends ExtensionWirelet<ServiceExtension> {

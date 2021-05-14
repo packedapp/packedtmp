@@ -188,7 +188,7 @@ public final class ServiceManagerSetup {
         runtimeEntries = Map.copyOf(runtimeEntries);
 
         // A hack to support Injector
-        if (Injector.class.isAssignableFrom(driver.artifactRawType())) {
+        if (Injector.class.isAssignableFrom(driver.applicationRawType())) {
             return new PackedInjector(runtimeEntries);
         } else {
             return new ExportedServiceLocator(runtimeEntries);

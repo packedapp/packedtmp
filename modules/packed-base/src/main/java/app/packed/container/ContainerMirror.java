@@ -50,6 +50,11 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
         components().forEach(action);
     }
 
+    /** {@return whether or not the container is root container in an application.} */
+    default boolean isApplicationContainer() {
+        return application().container().equals(this);
+    }
+
     /**
      * Returns whether or not the underlying container uses an extension of the specified type.
      * 
@@ -68,7 +73,7 @@ public interface ContainerMirror extends Mirror /* extends Iterable<ComponentMir
     /** {@return the path of this container in relation to other containers} */
     NamespacePath path();
 
-    // Altsaa hvor brugbar er denne... Ved man 
+    // Altsaa hvor brugbar er denne... Ved man
     <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType); // maybe just find? find
 
     /**

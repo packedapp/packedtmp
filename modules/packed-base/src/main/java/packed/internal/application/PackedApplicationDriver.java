@@ -104,7 +104,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return the raw type of the artifacts that this driver creates
      */
     // Virker ikke rigtig pga mhConstructors signature... vi maa gemme den andet steds
-    public Class<?> artifactRawType() {
+    public Class<?> applicationRawType() {
         return mhConstructor.type().returnType();
     }
 

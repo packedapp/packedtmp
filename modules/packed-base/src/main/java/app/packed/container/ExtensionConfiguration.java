@@ -27,7 +27,6 @@ import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
-import packed.internal.container.ExtensionWirelet;
 
 /**
  * A configuration object for an {@link Extension}.
@@ -68,12 +67,15 @@ public /* sealed */ interface ExtensionConfiguration {
 
     /**
      * Returns the extension instance.
+     * <p>
+     * 
      * 
      * @return the extension instance
      * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
      */
-    Extension extensionInstance(); // rename to instance...
+    // Lad os se om den kan bruges fra hooks... eller lignende
+    Extension instance();
 
     // Will install the class in the specified Container
 
@@ -214,7 +216,7 @@ public /* sealed */ interface ExtensionConfiguration {
      *             if the specified wirelet type is not a subclass of {@link ExtensionWirelet} and this extension as the
      *             type parameter
      */
-    <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wireletType);
+    <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletType);
 }
 
 // Previously used for getting hold of an extension from a mirror..

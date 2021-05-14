@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import app.packed.component.Assembly;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;

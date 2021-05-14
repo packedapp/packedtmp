@@ -21,6 +21,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -28,6 +29,7 @@ import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.component.PackedSelectWirelets;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -114,15 +116,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return model.type();
     }
 
-    /** {@inheritDoc} */
-    public Extension extensionInstance() {
-        Extension e = instance;
-        if (e == null) {
-            throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
-        }
-        return e;
-    }
-
     /**
      * Used by {@link #MH_INJECT_PARENT}.
      * 
@@ -158,6 +151,15 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@inheritDoc} */
+    public Extension instance() {
+        Extension e = instance;
+        if (e == null) {
+            throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
+        }
+        return e;
+    }
+
+    /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
         return container.application.isImage();
@@ -167,6 +169,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public boolean isUsed(Class<? extends Extension> extensionClass) {
         return container.isUsed(extensionClass);
+    }
+
+    @Override
+    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        return container.link(assembly, realm, wirelets);
     }
 
     /**
@@ -196,6 +203,30 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
+        requireNonNull(wireletClass, "wireletClass is null");
+
+        // Check that we are a proper subclass of ExtensionWirelet
+        ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass);
+        
+        // We only allow selection of wirelets in the same module as the extension itself
+        // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
+        Module m = extensionClass().getModule();
+        if (m != wireletClass.getModule()) {
+            throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
+                    + ", wireletClass.getModule() = " + wireletClass.getModule());
+        }
+
+        // Extension wirelets are always specified when wiring the container
+        WireletWrapper wirelets = container.wirelets;
+        if (wirelets == null || wirelets.unconsumed() == 0) {
+            return SelectWirelets.of();
+        }
+        return new PackedSelectWirelets<>(wirelets, wireletClass);
     }
 
     /** {@inheritDoc} */
@@ -232,25 +263,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.wire(driver, wirelets);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
-        requireNonNull(wireletClass, "wireletClass is null");
-
-        // We only allow consummation of wirelets in the same module as the extension class
-        // Otherwise people would be able to use something like wirelets(ServiceWirelet.provide(..).getClass()).consumeAll
-        Module m = extensionClass().getModule();
-        if (m != wireletClass.getModule()) {
-            throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
-                    + ", wireletClass.getModule() = " + wireletClass.getModule());
-        }
-
-        // The extension does not store any wirelets itself, fetch them from the extension's container instead
-        WireletWrapper wirelets = container.wirelets;
-        if (wirelets == null || wirelets.unconsumed() == 0) {
-            return SelectWirelets.of();
-        }
-        return new PackedSelectWirelets<>(wirelets, wireletClass);
+    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return container.wire(driver, realm, wirelets);
     }
 
     /**
@@ -287,16 +302,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
 
         return extension;
-    }
-
-    @Override
-    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return container.link(assembly, realm, wirelets);
-    }
-
-    @Override
-    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.wire(driver, realm, wirelets);
     }
 }
 

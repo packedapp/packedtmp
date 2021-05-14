@@ -2,6 +2,7 @@ package app.packed.component;
 
 import java.util.Set;
 
+// Den er cool, men ikke super brugbar...
 public enum ClassComponentMode {
     /** User provides a single instance. */
     INSTANCE,

@@ -9,7 +9,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentConfiguration.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
@@ -18,6 +18,7 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
+/** The abstract base class for component drivers */
 public abstract class PackedComponentDriver<C extends ComponentConfiguration> implements ComponentDriver<C> {
 
     /** A handle that can access Assembly#driver. */
@@ -48,14 +49,6 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
         return withWirelet(w);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentDriver<C> with(Wirelet wirelet) {
-        requireNonNull(wirelet, "wirelet is null");
-        Wirelet w = this.wirelet == null ? wirelet : wirelet.andThen(wirelet);
-        return withWirelet(w);
-    }
-
     protected abstract ComponentDriver<C> withWirelet(Wirelet w);
 
     /**
@@ -72,9 +65,9 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     public static class BoundClassComponentDriver<C extends ComponentConfiguration> extends PackedComponentDriver<C> {
 
-        final MethodHandle mh;
-
         public final Object binding;
+
+        final MethodHandle mh;
 
         public BoundClassComponentDriver(PackedClassComponentBinder<?, C> driver, Object binding) {
             super(null, driver.modifiers());

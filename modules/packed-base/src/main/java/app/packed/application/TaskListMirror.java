@@ -1,5 +1,7 @@
 package app.packed.application;
 
+import app.packed.job.TaskMirror;
+
 // Maaske vi har to
 // TaskListMirror <: SerialTaskListMirror ParallelTaskListMirror
 

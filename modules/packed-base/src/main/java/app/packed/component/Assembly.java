@@ -191,5 +191,4 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     protected final <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wireletType) {
         return component().selectWirelets(wireletType);
     }
-
 }

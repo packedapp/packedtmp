@@ -5,7 +5,7 @@ import java.util.Set;
 
 import app.packed.container.Extension;
 
-public interface ClassComponentMirror {
+public interface BeanMirror {
 
     /**
      * Returns any extension the driver is part of. All drivers are either part of an extension. Or is a build in drive

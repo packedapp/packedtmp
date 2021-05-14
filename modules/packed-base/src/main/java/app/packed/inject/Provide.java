@@ -23,8 +23,8 @@ import java.lang.annotation.Target;
 import java.lang.invoke.MethodHandles;
 
 import app.packed.base.AnnotationMaker;
-import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.MethodHook;
+import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
 /**

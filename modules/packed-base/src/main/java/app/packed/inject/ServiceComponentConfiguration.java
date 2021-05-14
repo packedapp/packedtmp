@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;

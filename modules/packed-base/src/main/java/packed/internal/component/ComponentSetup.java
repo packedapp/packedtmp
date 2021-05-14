@@ -31,7 +31,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentConfigurationContext;
+import app.packed.component.ComponentConfiguration.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;

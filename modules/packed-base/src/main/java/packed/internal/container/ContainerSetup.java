@@ -140,7 +140,7 @@ public final class ContainerSetup extends ComponentSetup {
         // kan ogsaa test om container.application = application.container?
         if (this == application.container) {
             PackedApplicationDriver<?> pac = application.driver;
-            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.artifactRawType());
+            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.applicationRawType());
         }
     }
 
@@ -290,7 +290,7 @@ public final class ContainerSetup extends ComponentSetup {
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
         realm.newOperation();
-        return (T) useExtension(extensionClass, null).extensionInstance();
+        return (T) useExtension(extensionClass, null).instance();
     }
 
     /** An adaptor for the Container interface. */
@@ -360,7 +360,7 @@ public final class ContainerSetup extends ComponentSetup {
                 if (es==null) {
                     return Optional.empty();
                 } else {
-                    return (Optional<T>) Optional.of(ServiceExtensionMirror.of((ServiceExtension) es.extensionInstance()));
+                    return (Optional<T>) Optional.of(ServiceExtensionMirror.of((ServiceExtension) es.instance()));
                 }
             }
             throw new UnsupportedOperationException();
