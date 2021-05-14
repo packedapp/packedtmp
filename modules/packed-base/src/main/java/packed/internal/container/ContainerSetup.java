@@ -27,7 +27,6 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentAttributes;
-import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
@@ -270,18 +269,12 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** An adaptor for the Container interface. */
-    private final class ContainerMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements ContainerMirror {
+    private final static class ContainerMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements ContainerMirror {
 
         final ContainerSetup container;
         ContainerMirrorAdaptor(ContainerSetup container) {
             super(container);
             this.container=container;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentMirror component() {
-            return container.mirror();
         }
 
         /** {@inheritDoc} */

@@ -13,7 +13,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 
 /**
- * A mirror of a container.
+ * A mirror of a container (component).
  * <p>
  * An instance of this class is typically opb
  */
@@ -21,16 +21,13 @@ import app.packed.component.Wirelet;
 // Det giver bare saa meget mening for BeanMirror
 public interface ContainerMirror extends ComponentMirror /* extends Iterable<ComponentMirror> */ {
 
-    /** {@return an unmodifiable view of all of this container's children.} */
-    // Giver det mening at det er paa kryds af apps?? Ja ville jeg mene
-    Collection<ContainerMirror> containerChildren();
-
-    /** {@return the root container component in the container} */
-    ComponentMirror component();
-
     default Stream<ComponentMirror> components() {
         throw new UnsupportedOperationException();
     }
+
+    /** {@return an unmodifiable view of all of this container's children.} */
+    // Giver det mening at det er paa kryds af apps?? Ja ville jeg mene
+    Collection<ContainerMirror> containerChildren();
 
     /**
      * Returns the distance to the root container. The root container having depth 0.
@@ -38,6 +35,9 @@ public interface ContainerMirror extends ComponentMirror /* extends Iterable<Com
      * @return the distance to the root container
      */
     int containerDepth();
+
+    /** {@return the parent container of this container. Or empty if this container has no parent} */
+    Optional<ContainerMirror> containerParent();
 
     /** { @return a set of all extensions that have been used by the container.} */
     Set<Class<? extends Extension>> extensions();
@@ -59,9 +59,6 @@ public interface ContainerMirror extends ComponentMirror /* extends Iterable<Com
      * @return {@code true} if this container uses an extension of the specified type
      */
     boolean isUsed(Class<? extends Extension> extensionType);
-
-    /** {@return the parent container of this container. Or empty if this container has no parent} */
-    Optional<ContainerMirror> containerParent();
 
     // Altsaa hvor brugbar er denne... Ved man
     <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType); // maybe just find? find

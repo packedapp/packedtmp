@@ -348,7 +348,7 @@ public abstract class ComponentSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    public abstract class ComponentMirrorAdaptor implements ComponentMirror {
+    public static abstract class ComponentMirrorAdaptor implements ComponentMirror {
 
         private final ComponentSetup component;
 

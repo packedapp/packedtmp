@@ -31,7 +31,7 @@ import app.packed.mirror.Mirror;
  */
 public /* sealed */ interface ComponentMirror extends Mirror {
 
-    /** { @return the application this component is a part of} */
+    /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
     /** {@return an unmodifiable view of all of the children of this component.} */
@@ -44,13 +44,7 @@ public /* sealed */ interface ComponentMirror extends Mirror {
      */
     int depth();
 
-    // Old stuff, I think I may like this method anyway...
-    //// Don't really like this... It strongly ties a container to a component.
-    //// As extensions are children of containers always...
-    //// But then again ComponentStream.Option contains stuff about containers ect.
-    //// Maybe model it as an attribute
     /** {@return any extension this component might be part of} */
-    // Maybe extensions are not components anyway...
     default Optional<Class<? extends Extension>> extension() {
         throw new UnsupportedOperationException();
     }

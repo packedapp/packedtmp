@@ -5,19 +5,12 @@ import java.util.Set;
 
 import app.packed.container.Extension;
 
+/**
+ * A mirror of a bean (component).
+ */
 public interface BeanMirror extends ComponentMirror {
 
-    /**
-     * Returns the type (class) of the bean.
-     * 
-     * if instance it is .getClass()
-     * 
-     * if class it is (surprise) the class
-     * 
-     * if factory it is the returning class
-     * 
-     * @return
-     */
+    /** {@return the type (class) of the bean.} */
     Class<?> beanType();
 
     /**
@@ -27,27 +20,27 @@ public interface BeanMirror extends ComponentMirror {
      */
     Optional<Class<? extends Extension>> driverExtension();
 
-    boolean isReflected(); // support Hooks...
-
-    BeanMode mode();
+    boolean hasBeen(); // support Hooks...
 
     /** {@return all hooks that have been applied on the bean.} */
     Set<?> hooks();
 
     <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
+
+    BeanMode mode();
 }
 
 // Maaske er den bare fyldt med attributer istedet for et decideres mirror IDK
-interface ClassZComponentDriverMirror {
+interface ZBeanDriverMirror {
 
     Optional<Class<? extends Extension>> extension();
 
-    Set<BeanMode> modes(); // Object.class, Class.class, Factory.class
+    /** {@return } */
+    boolean introspect();
 
     // FunctionClass, FunctionType
 
-    /** {@return } */
-    boolean reflectOnSource();
+    Set<BeanMode> modes(); // Object.class, Class.class, Factory.class
 }
 
 class ZlassComponentDriverBuilder {

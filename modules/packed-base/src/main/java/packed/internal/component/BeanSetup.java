@@ -22,7 +22,7 @@ public final class BeanSetup extends ComponentSetup {
     /** The class source setup if this component has a class source, otherwise null. */
     public final BeanSetupSupport source;
 
-    public BeanSetup(ApplicationSetup application, RealmSetup realm, BeanComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
+    BeanSetup(ApplicationSetup application, RealmSetup realm, BeanComponentDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, driver, parent, wirelets);
         this.source = new BeanSetupSupport(this, driver, driver.binding);
 
@@ -37,6 +37,7 @@ public final class BeanSetup extends ComponentSetup {
         dam.addValue(ComponentAttributes.SOURCE_CLASS, source.hooks.clazz);
     }
 
+    /** {@inheritDoc} */
     @Override
     public BeanMirror mirror() {
         return new BeanMirrorAdaptor(this);
@@ -64,7 +65,7 @@ public final class BeanSetup extends ComponentSetup {
     }
 
     /** An adaptor for the Container interface. */
-    private final class BeanMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements BeanMirror {
+    private final static class BeanMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements BeanMirror {
 
         final BeanSetup bean;
 
@@ -84,17 +85,17 @@ public final class BeanSetup extends ComponentSetup {
         }
 
         @Override
+        public boolean hasBeen() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public Set<?> hooks() {
             throw new UnsupportedOperationException();
         }
 
         @Override
         public <T> Set<?> hooks(Class<T> hookType) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isReflected() {
             throw new UnsupportedOperationException();
         }
 
