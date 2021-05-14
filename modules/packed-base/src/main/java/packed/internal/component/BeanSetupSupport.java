@@ -22,7 +22,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
-import packed.internal.component.PackedComponentDriver.BoundClassComponentDriver;
+import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
@@ -33,9 +33,9 @@ import packed.internal.invoke.constantpool.PoolWriteable;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */
-public final class ClassSourceSetup implements DependencyProducer, PoolWriteable {
+public final class BeanSetupSupport implements DependencyProducer, PoolWriteable {
 
-    public final SourcedComponentSetup component;
+    public final BeanSetup component;
 
     /** If the source represents a constant. */
     @Nullable
@@ -70,7 +70,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
      * @param source
      *            the class, factory or instance source
      */
-    ClassSourceSetup(SourcedComponentSetup component, BoundClassComponentDriver<?> driver, Object source) {
+    BeanSetupSupport(BeanSetup component, BeanComponentDriver<?> driver, Object source) {
         this.component = component;
 
         // Reserve a place in the constant pool if the source is a singleton
@@ -135,7 +135,7 @@ public final class ClassSourceSetup implements DependencyProducer, PoolWriteable
         }
     }
 
-    public ServiceSetup provide(SourcedComponentSetup component) {
+    public ServiceSetup provide(BeanSetup component) {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;
         if (s == null) {

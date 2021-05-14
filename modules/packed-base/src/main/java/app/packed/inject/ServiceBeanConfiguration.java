@@ -19,7 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -31,19 +31,15 @@ import packed.internal.component.PackedClassComponentBinder;
  */
 //ProvidableComponentConfiguration
 // Serviceable
-public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration {
+public class ServiceBeanConfiguration<T> extends BeanConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final PackedClassComponentBinder DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(), ServiceComponentConfiguration.class,
+    private static final PackedClassComponentBinder DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             true);
 
     @SuppressWarnings("rawtypes")
     private static final PackedClassComponentBinder PROTOTYPE_DRIVER = PackedClassComponentBinder.ofFactory(MethodHandles.lookup(),
-            ServiceComponentConfiguration.class, false);
-
-    public ServiceComponentConfiguration(ComponentConfigurationContext context) {
-        super(context);
-    }
+            ServiceBeanConfiguration.class, false);
 
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
@@ -54,7 +50,7 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
      * @return this configuration
      * @see #as(Key)
      */
-    public ServiceComponentConfiguration<T> as(Class<? super T> key) {
+    public ServiceBeanConfiguration<T> as(Class<? super T> key) {
         return as(Key.of(key));
     }
 
@@ -70,64 +66,64 @@ public class ServiceComponentConfiguration<T> extends BaseComponentConfiguration
      * @return this configuration
      * @see #as(Class)
      */
-    public ServiceComponentConfiguration<T> as(Key<? super T> key) {
-        context.sourceProvideAs(key);
+    public ServiceBeanConfiguration<T> as(Key<? super T> key) {
+        super.sourceProvideAs(key);
         return this;
     }
 
-    public ServiceComponentConfiguration<T> asNone() {
+    public ServiceBeanConfiguration<T> asNone() {
         // Ideen er vi f.eks. kan
         // asNone().exportAs(Doo.class);
-        context.sourceProvideAs(null);
+        super.sourceProvideAs(null);
         return this;
     }
     
     /** {@inheritDoc} */
     public ExportedServiceConfiguration<T> export() {
-        return context.sourceExport();
+        return super.sourceExport();
     }
 
     // The key unless asNone()
 
     // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
-        return context.sourceProvideAsKey();
+        return super.sourceProvideAsKey();
     }
 
-    public ServiceComponentConfiguration<T> provide() {
-        context.sourceProvide();
+    public ServiceBeanConfiguration<T> provide() {
+        super.sourceProvide();
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ServiceComponentConfiguration<T> named(String name) {
-        context.named(name);
+    public ServiceBeanConfiguration<T> named(String name) {
+        super.named(name);
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provide(Class<T> implementation) {
+    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> provide(Class<T> implementation) {
         return DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provide(Factory<T> factory) {
+    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> provide(Factory<T> factory) {
         return DRIVER.bind(factory);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> provideInstance(T instance) {
+    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> provideInstance(T instance) {
         return DRIVER.bindInstance(instance);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Class<T> implementation) {
+    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> providePrototype(Class<T> implementation) {
         return PROTOTYPE_DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceComponentConfiguration<T>> providePrototype(Factory<T> factory) {
+    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> providePrototype(Factory<T> factory) {
         return PROTOTYPE_DRIVER.bind(factory);
     }
 }

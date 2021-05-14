@@ -15,142 +15,131 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.Optional;
-
-import app.packed.attribute.Attribute;
-import app.packed.base.Key;
 import app.packed.base.NamespacePath;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import app.packed.base.Nullable;
+import packed.internal.component.ComponentSetup;
 
 /**
  * The base class for component configuration classes.
  * <p>
- * The class is basically a thin wrapper on top of {@link ComponentConfigurationContext}. All component configuration
- * classes must extend, directly or indirectly, from this class.
+ * All component configuration classes must extend, directly or indirectly, from this class.
  * <p>
- * Instead of extending this class directly, you typically want to extend {@link BaseComponentConfiguration} instead.
+ * This class cannot be extended directly.
+ * 
+ * Instead of extending this class directly, you typically want to extend {@link BeanConfiguration} instead.
  */
-public abstract class ComponentConfiguration {
+public /* sealed */ abstract class ComponentConfiguration {
 
-    /** The configuration context of the component. */
-    protected final ComponentConfigurationContext context;
+    // TODO check nullable similar t
+    @Nullable
+    private ComponentSetup component;
 
-    /**
-     * Create a new component configuration.
-     * 
-     * @param context
-     *            the configuration context
-     */
-    protected ComponentConfiguration(ComponentConfigurationContext context) {
-        this.context = requireNonNull(context, "context is null");
+    protected void checkIsWiring() {
+        component().checkIsWiring();
     }
 
-    protected void onInitialized() {}
-    
+    /**
+     * Returns an extension configuration object. This configuration object is typically used in situations where the
+     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
+     * visibility rules.
+     * <p>
+     * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
+     * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
+     * access to the configuration object.
+     * <p>
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
+     * 
+     * @throws IllegalStateException
+     *             if invoked from the constructor of the extension. As an alternative dependency inject the configuration
+     *             object into the constructor
+     * @return a configuration object for this extension
+     */
+    final ComponentSetup component() {
+        ComponentSetup c = component;
+        if (c == null) {
+            throw new IllegalStateException("This operation cannot be invoked from the constructor of the configuration. If you need to perform "
+                    + "initialization before the extension is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
+        }
+        return c;
+    }
+
+    /**
+     * Links the specified assembly with this container as its parent.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return a model of the component that was linked
+     */
+    protected ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        ComponentSetup component = component();
+        return component().link(assembly, component.realm, wirelets);
+    }
+
+    /**
+     * Sets the {@link ComponentMirror#name() name} of the component. The name must consists only of alphanumeric characters
+     * and '_', '-' or '.'. The name is case sensitive.
+     * <p>
+     * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
+     * such a way that it will have a unique name other sibling components.
+     *
+     * @param name
+     *            the name of the component
+     * @return this configuration
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     * @see ComponentMirror#name()
+     */
+    protected ComponentConfiguration named(String name) {
+        component().named(name);
+        return this;
+    }
+
     /**
      * Ivoked A callback method invoked by Packed immediatly before it is marked as no longer configurable
      */
     protected void onConfigured() {}
-    
+
+    protected void onNew() {}
+
     /**
-     * Component configuration context objects used component configuration classes.
+     * Returns the full path of the component.
      * <p>
-     * This class mainly exists to allow people to create their own configuration classes.
+     * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
+     * <p>
+     * If building an image, the path of the instantiated component might be prefixed with another path.
+     * 
+     * <p>
+     * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
+     * path returned does not maintain any reference to this configuration object.
+     * 
+     * @return the path of this configuration.
      */
+    protected NamespacePath path() {
+        return component().path();
+    }
 
-    // ComponentComposer
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+        return component().toString();
+    }
 
-    //Component component(); seeThrough???
-    //If we have that we can also navigate?? I guess thats okay
-
-    // Has a lot of options..
-    // prefixed with container() <--- throws UOE if no Container tag
-    // prefixed with source() <--- throws UOE if no source tag
-    // prefixed with guest() <--- throws UOE if no guest tag
-
-    // component Name();
-    // componentPath();
-
-    // sourceExport();
-    // sourceExportAs();
-    // sourceProvide();
-    // sourceProvideAs();
-    
-    public /* sealed */ interface ComponentConfigurationContext {
-
-        void checkIsWiring();
-
-        /**
-         * @param assembly
-         *            the assembly
-         * @param wirelets
-         *            optional wirelets
-         * @return a descriptor for the component that was linked
-         */
-        ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets);
-
-        /** { @return a model view for the underlying component} */
-        ComponentMirror mirror();
-
-        /**
-         * Sets the {@link ComponentMirror#name() name} of the component. The name must consists only of alphanumeric characters and
-         * '_', '-' or '.'. The name is case sensitive.
-         * <p>
-         * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
-         * such a way that it will have a unique name other sibling components.
-         *
-         * @param name
-         *            the name of the component
-         * @throws IllegalArgumentException
-         *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
-         *             characters and '_', '-' or '.'
-         * @see ComponentMirror#name()
-         */
-        void named(String name);
-
-        /**
-         * Returns the full path of the component.
-         * <p>
-         * Once this method has been invoked, the name of the component can no longer be changed via {@link #named(String)}.
-         * <p>
-         * If building an image, the path of the instantiated component might be prefixed with another path.
-         * 
-         * <p>
-         * Returns the path of this configuration. Invoking this method will initialize the name of the component. The component
-         * path returned does not maintain any reference to this configuration object.
-         * 
-         * @return the path of this configuration.
-         */
-        NamespacePath path();
-
-        <T> void setRuntimeAttribute(Attribute<T> attribute, T value);
-
-        <T> ExportedServiceConfiguration<T> sourceExport();
-
-        void sourceProvide();
-
-        void sourceProvideAs(Key<?> key);
-
-        Optional<Key<?>> sourceProvideAsKey();
-
-        /**
-         * Wires a new child component using the specified driver
-         * 
-         * @param <C>
-         *            the type of configuration returned by the driver
-         * @param driver
-         *            the driver to use for creating the component
-         * @param wirelets
-         *            any wirelets that should be used when creating the component
-         * @return a configuration for the component
-         */
-        <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
-
-        default <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wirelet) {
-            throw new UnsupportedOperationException();
-        }
+    /**
+     * Wires a new child component using the specified component driver and optional wirelets.
+     * 
+     * @param <C>
+     *            the type of configuration returned by the specified driver
+     * @param driver
+     *            the driver to use for creating the component
+     * @param wirelets
+     *            any wirelets that should be used when creating the component
+     * @return a configuration for the new child component
+     */
+    protected <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return component().wire(driver, component().realm, wirelets);
     }
 }
 // I don't expect this class to have any $ methods

@@ -3,7 +3,7 @@ package app.packed.component;
 // Maaske har man bare none som default...
 // Saa kan det vaere Optional..
 // Nah, nok bedre med switch at altid have en mode
-public enum ClassComponentInstantiationMode {
+public enum BeanInstantiationMode {
 
     // --------------- NONE ---------------
     NO_INSTANTIATION,

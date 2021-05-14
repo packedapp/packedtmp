@@ -25,7 +25,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.ClassSourceSetup;
+import packed.internal.component.BeanSetupSupport;
 import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
@@ -62,14 +62,14 @@ public final class InjectionNode implements PoolWriteable {
     public final DependencyProducer[] providers;
 
     /** The source (component) this dependent is or is a part of. */
-    public final ClassSourceSetup source;
+    public final BeanSetupSupport source;
 
     @Nullable
     private final UseSiteMemberHookModel sourceMember;
 
     public final int providerDelta;
 
-    public InjectionNode(ClassSourceSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public InjectionNode(BeanSetupSupport source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -81,7 +81,7 @@ public final class InjectionNode implements PoolWriteable {
         this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
     }
 
-    public InjectionNode(ClassSourceSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+    public InjectionNode(BeanSetupSupport source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 

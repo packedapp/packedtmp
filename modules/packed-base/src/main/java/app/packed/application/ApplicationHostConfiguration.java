@@ -3,7 +3,7 @@ package app.packed.application;
 import java.util.function.Supplier;
 
 import app.packed.component.Assembly;
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
@@ -20,16 +20,12 @@ import packed.internal.util.NativeImage;
 // Saa ligger den paa niveau med alle hostede applikationer...
 // Omvendt er det jo rart at kunne iterere over alle containere og fange alle exceptions...
 
-
 //Kan vi have en Host med forskellige Applications typer for en host????
 //Jeg har svaert ved at se det... Saa maa man lave forskellige hosts...
 //I 9/10 af tilfaeldene er de vel ogsaa void...
 
-public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration {
-
-    ApplicationHostConfiguration(ComponentConfigurationContext context) {
-        super(context);
-    }
+// Har vi en AbstractApplicationHostConfiguration???
+public class ApplicationHostConfiguration<T> extends ComponentConfiguration {
 
     public InstalledApplicationConfiguration<T> install(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
@@ -38,7 +34,7 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
     public ServiceConfiguration<Launcher<T>> installLaunchable(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-    
+
     // Can fail, what if never started
     // Maybe CompletaableFuture istedet for...
     public Supplier<T> lazy(Assembly<?> assembly, Wirelet... wirelets) {
@@ -64,7 +60,6 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
         // NICE
     }
 
-    
     ServiceConfiguration<InstalledApplicationConfiguration<T>> provideInstaller() {
         if (NativeImage.inImageBuildtimeCode()) {
             throw new UnsupportedOperationException("Application installers are not supported for native images");
@@ -96,17 +91,23 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
         throw new UnsupportedOperationException();
     }
 
-    // A new application that can be launched exactly once... It is a failure to 
+    // A new application that can be launched exactly once... It is a failure to
     public ServiceConfiguration<Launcher<T>> singleLauncher(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     // Hvis man har en context kan man goere hvad man vil
     @SuppressWarnings("unused")
-    private static <T> ApplicationHostConfiguration<T> of(ComponentConfigurationContext context, ApplicationDriver<T> driver, Wirelet... wirelets) {
+    private static <T> ApplicationHostConfiguration<T> of(/* ComponentConfigurationContext context, */ ApplicationDriver<T> driver, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-    // Wirelets are for the host...
+
+    // Det er jo en salgs binder...
+    public static <T> ComponentDriver<ApplicationHostConfiguration<T>> newDriver(ApplicationDriver<T> driver, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    // Tror vi maa flytten den til ComponentConfiguration...
     public static <T> ApplicationHostConfiguration<T> of(ContainerConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
         // Den er sjov...
         // Vi har ikke rigtig en klasse...
@@ -119,14 +120,9 @@ public class ApplicationHostConfiguration<T> extends BaseComponentConfiguration 
     }
 }
 
-
 interface InstanceManager {}
 
 class OldStuff<T> extends ApplicationHostConfiguration<T> {
-
-    OldStuff(ComponentConfigurationContext context) {
-        super(context);
-    }
 
     // Det er her hvor jeg maaske taenker vi skal have noget wirelet praeprocessering...
     // Vi vil gerne have launchmode i mirrors...

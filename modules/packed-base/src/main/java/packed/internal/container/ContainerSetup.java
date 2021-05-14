@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.base.Key;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
@@ -38,7 +37,6 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceExtensionMirror;
-import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -217,26 +215,6 @@ public final class ContainerSetup extends ComponentSetup {
                 ea.preContainerChildren();
             }
         }
-    }
-
-    @Override
-    public <T> ExportedServiceConfiguration<T> sourceExport() {
-        throw new UnsupportedOperationException("This operation is not supported for a container");
-    }
-
-    @Override
-    public void sourceProvide() {
-        throw new UnsupportedOperationException("This operation is not supported for a container");
-    }
-
-    @Override
-    public void sourceProvideAs(Key<?> key) {
-        throw new UnsupportedOperationException("This operation is not supported for a container");
-    }
-
-    @Override
-    public Optional<Key<?>> sourceProvideAsKey() {
-        throw new UnsupportedOperationException("This operation is not supported for a container");
     }
 
     /**

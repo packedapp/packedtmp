@@ -34,4 +34,11 @@ import app.packed.container.BaseAssembly;
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
 
     ComponentDriver<C> with(Wirelet... wirelet);
+    
+    // Bliver noedt til at have en type omkring hvad det er vi er ved at tilfoeje...
+    /// BeanComponentDriver??? ContainerComponentDriver
+    /// Taenker man kan lave nogle checks i wire()
+    // if (driver instanceof BeanComponentDriver bcd) {
+    // assert(bcd.class instanceof Foo);
+    // 
 }

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.ClassSourceSetup;
+import packed.internal.component.BeanSetupSupport;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
@@ -28,7 +28,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 /**
  * Something that
  * 
- * {@link ClassSourceSetup} for methods or fields that needs an instance of the component source
+ * {@link BeanSetupSupport} for methods or fields that needs an instance of the component source
  * 
  * {@link HookedMethodProvide} for methods annotated with {@link Provide}
  * 

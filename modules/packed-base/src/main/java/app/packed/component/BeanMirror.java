@@ -16,7 +16,7 @@ public interface BeanMirror {
 
     boolean isSourceReflected(); // support Hooks...
 
-    ClassComponentMode mode();
+    BeanMode mode();
 
     /**
      * Returns the type (class) of the source.
@@ -37,7 +37,7 @@ interface ClassZComponentDriverMirror {
 
     Optional<Class<? extends Extension>> extension();
 
-    Set<ClassComponentMode> modes(); // Object.class, Class.class, Factory.class
+    Set<BeanMode> modes(); // Object.class, Class.class, Factory.class
 
     // FunctionClass, FunctionType
 

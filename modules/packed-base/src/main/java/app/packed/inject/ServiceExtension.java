@@ -252,8 +252,8 @@ public class ServiceExtension extends Extension {
      * @return a service configuration for the service
      * @see InjectorComposer#provide(Class)
      */
-    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
-        return configuration().wire(ServiceComponentConfiguration.provide(implementation)).provide();
+    public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
+        return configuration().wire(ServiceBeanConfiguration.provide(implementation)).provide();
     }
 
     /**
@@ -267,8 +267,8 @@ public class ServiceExtension extends Extension {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
-        return configuration().wire(ServiceComponentConfiguration.provide(factory)).provide();
+    public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
+        return configuration().wire(ServiceBeanConfiguration.provide(factory)).provide();
     }
 
     /**
@@ -302,16 +302,16 @@ public class ServiceExtension extends Extension {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
-        return userWire(ServiceComponentConfiguration.provideInstance(instance)).provide();
+    public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
+        return userWire(ServiceBeanConfiguration.provideInstance(instance)).provide();
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
-        return userWire(ServiceComponentConfiguration.providePrototype(implementation));
+    public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
+        return userWire(ServiceBeanConfiguration.providePrototype(implementation));
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
-        return userWire(ServiceComponentConfiguration.providePrototype(factory));
+    public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
+        return userWire(ServiceBeanConfiguration.providePrototype(factory));
     }
 
     public ServiceRegistry services() {

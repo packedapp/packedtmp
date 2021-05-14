@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.ClassSourceSetup;
-import packed.internal.component.SourcedComponentSetup;
+import packed.internal.component.BeanSetupSupport;
+import packed.internal.component.BeanSetup;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
@@ -33,7 +33,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 public final class SourceInstanceServiceSetup extends ServiceSetup {
 
     /** The singleton source we are wrapping */
-    private final ClassSourceSetup source;
+    private final BeanSetupSupport source;
 
     /**
      * Creates a new node from an instance.
@@ -41,7 +41,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
      * @param component
      *            the component we provide for
      */
-    public SourceInstanceServiceSetup(ServiceManagerSetup im, SourcedComponentSetup component, Key<?> key) {
+    public SourceInstanceServiceSetup(ServiceManagerSetup im, BeanSetup component, Key<?> key) {
         super(key);
         this.source = requireNonNull(component.source);
     }

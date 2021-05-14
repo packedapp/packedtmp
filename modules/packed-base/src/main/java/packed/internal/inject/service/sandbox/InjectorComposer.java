@@ -25,7 +25,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceComponentConfiguration;
+import app.packed.inject.ServiceBeanConfiguration;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 
@@ -101,7 +101,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      *            the implementation to provide a singleton instance of
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+    public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         return extension().provide(implementation);
     }
 
@@ -117,7 +117,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      *            the factory to bind
      * @return a service configuration for the service
      */
-    public <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
+    public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
         return extension().provide(factory);
     }
 
@@ -179,15 +179,15 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     // All annotations will be processed like provide() except that constructors will not be processed
     // Ohh we need to analyze them differently, because we should ignore all constructors.
     // Should not fail if we fx have two public constructors of equal lenght
-    public <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
+    public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
         return extension().provideInstance(instance);
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
+    public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         return extension().providePrototype(implementation);
     }
 
-    public <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+    public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
 }

@@ -20,7 +20,7 @@ import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.SourcedComponentSetup;
+import packed.internal.component.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
 
@@ -149,7 +149,7 @@ public final class ApplicationSetup {
     }
 
     public class MainThreadOfControl {
-        public SourcedComponentSetup cs;
+        public BeanSetup cs;
 
         public boolean isStatic;
 

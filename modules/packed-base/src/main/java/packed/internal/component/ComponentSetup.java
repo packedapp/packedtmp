@@ -31,7 +31,6 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentConfiguration.ComponentConfigurationContext;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
@@ -47,8 +46,8 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** Abstract build-time setup of a component. Exposed to end-users as {@link ComponentConfigurationContext}. */
-public abstract class ComponentSetup implements ComponentConfigurationContext {
+/** Abstract build-time setup of a component.  */
+public abstract class ComponentSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -245,7 +244,6 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
      * @param wirelets
      *            optional wirelets
      * @return the component that was linked
-     * @see ComponentConfigurationContext#link(Assembly, Wirelet...)
      * @see ExtensionConfiguration#link(Assembly, Wirelet...)
      */
     public final ComponentMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
@@ -334,10 +332,6 @@ public abstract class ComponentSetup implements ComponentConfigurationContext {
 
         // Return a component configuration to the user
         return realDriver.toConfiguration(component);
-    }
-
-    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return wire(driver, realm, wirelets);
     }
 
     /**

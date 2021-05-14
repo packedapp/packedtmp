@@ -31,7 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
-import packed.internal.component.ClassSourceSetup;
+import packed.internal.component.BeanSetupSupport;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;
@@ -74,7 +74,7 @@ public final class BootstrappedClassModel {
         this.extensionClass = builder.extension == null ? null : builder.extension.type();
     }
 
-    public void onWire(ClassSourceSetup css) {
+    public void onWire(BeanSetupSupport css) {
         for (UseSiteMemberHookModel hook : models) {
             hook.onWire(css);
         }

@@ -125,7 +125,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     }
 
     private ComponentSetup component() {
-        return (ComponentSetup) configuration().context;
+        return configuration().component();
     }
 
     /**
@@ -186,9 +186,5 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         component().realm.setLookup(lookup);
     }
 
-    // Kan ikke lige finde ud af om den skal vaere her, eller paa ContainerWirelet.
-    // Eller paa ContainerConfiguration?? Eller paa BaseComponentConfiguration???
-    protected final <T extends Wirelet> SelectWirelets<T> selectWirelets(Class<T> wireletType) {
-        return component().selectWirelets(wireletType);
-    }
+
 }

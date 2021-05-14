@@ -10,8 +10,8 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ClassComponentBinder;
+import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentAttributes;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
@@ -134,20 +134,20 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public BaseComponentConfiguration install(Class<?> implementation) {
-        return container.wire(ClassComponentBinder.DEFAULT.bind(implementation), realm);
+    public BeanConfiguration install(Class<?> implementation) {
+        return container.wire(BeanBinder.DEFAULT.bind(implementation), realm);
     }
 
     /** {@inheritDoc} */
     @Override
-    public BaseComponentConfiguration install(Factory<?> factory) {
-        return container.wire(ClassComponentBinder.DEFAULT.bind(factory), realm);
+    public BeanConfiguration install(Factory<?> factory) {
+        return container.wire(BeanBinder.DEFAULT.bind(factory), realm);
     }
 
     /** {@inheritDoc} */
     @Override
-    public BaseComponentConfiguration installInstance(Object instance) {
-        return container.wire(ClassComponentBinder.DEFAULT.bindInstance(instance), realm);
+    public BeanConfiguration installInstance(Object instance) {
+        return container.wire(BeanBinder.DEFAULT.bindInstance(instance), realm);
     }
 
     /** {@inheritDoc} */
@@ -260,7 +260,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.wire(driver, wirelets);
+        return container.wire(driver, container.realm, wirelets);
     }
 
     @Override

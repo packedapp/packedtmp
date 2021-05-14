@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
-import packed.internal.component.ClassSourceSetup;
+import packed.internal.component.BeanSetupSupport;
 import packed.internal.component.ComponentSetup;
 import packed.internal.hooks.AbstractHookModel;
 import packed.internal.hooks.ClassHookModel;
@@ -61,7 +61,7 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
         this.processor = builder.processor;
     }
 
-    public void onWire(ClassSourceSetup css) {
+    public void onWire(BeanSetupSupport css) {
         // Register hooks, maybe move to component setup
         InjectionNode i = new InjectionNode(css, this, createProviders());
         css.component.container.injection.addNode(i);

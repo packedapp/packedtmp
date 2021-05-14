@@ -20,13 +20,13 @@ import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceComponentConfiguration;
+import app.packed.inject.ServiceBeanConfiguration;
 
 /**
  * A container assembly. Typically you
@@ -83,11 +83,11 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected final BaseComponentConfiguration install(Class<?> implementation) {
+    protected final BeanConfiguration install(Class<?> implementation) {
         return configuration().install(implementation);
     }
 
-    protected final BaseComponentConfiguration install(Class<?> implementation, Wirelet... wirelets) {
+    protected final BeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
         return configuration().install(implementation, wirelets);
     }
 
@@ -100,11 +100,11 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @return the configuration of the component
      * @see BaseAssembly#install(Factory)
      */
-    protected final BaseComponentConfiguration install(Factory<?> factory) {
+    protected final BeanConfiguration install(Factory<?> factory) {
         return configuration().install(factory);
     }
 
-    protected final BaseComponentConfiguration install(Factory<?> factory, Wirelet... wirelets) {
+    protected final BeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
         return configuration().install(factory, wirelets);
     }
 
@@ -114,17 +114,17 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * If this install operation is the first install operation of the container. The component will be installed as the
      * root component of the container. All subsequent install operations on this container will have have component as its
      * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ServiceComponentConfiguration} can be used to specify a specific parent.
+     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
      *
      * @param instance
      *            the component instance to install
      * @return this configuration
      */
-    protected final BaseComponentConfiguration installInstance(Object instance) {
+    protected final BeanConfiguration installInstance(Object instance) {
         return configuration().installInstance(instance);
     }
 
-    protected final BaseComponentConfiguration installInstance(Object instance, Wirelet... wirelets) {
+    protected final BeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
         return configuration().installInstance(instance, wirelets);
     }
 
@@ -173,7 +173,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
         return configuration().path();
     }
 
-    protected final BaseComponentConfiguration stateless(Class<?> implementation) {
+    protected final BeanConfiguration stateless(Class<?> implementation) {
         return configuration().stateless(implementation);
     }
 

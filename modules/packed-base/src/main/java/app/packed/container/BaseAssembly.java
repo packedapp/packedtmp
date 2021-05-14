@@ -22,7 +22,7 @@ import app.packed.base.Qualifier;
 import app.packed.component.ComponentDriver;
 import app.packed.inject.Factory;
 import app.packed.inject.Provide;
-import app.packed.inject.ServiceComponentConfiguration;
+import app.packed.inject.ServiceBeanConfiguration;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -196,7 +196,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @return a service configuration for the service
      * @see InjectorComposer#provide(Class)
      */
-    protected final <T> ServiceComponentConfiguration<T> provide(Class<T> implementation) {
+    protected final <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         return service().provide(implementation);
     }
 
@@ -211,7 +211,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
      */
-    protected final <T> ServiceComponentConfiguration<T> provide(Factory<T> factory) {
+    protected final <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
         return service().provide(factory);
     }
 
@@ -232,15 +232,15 @@ public abstract class BaseAssembly extends ContainerAssembly {
      *            the instance to bind
      * @return a service configuration for the service
      */
-    protected final <T> ServiceComponentConfiguration<T> provideInstance(T instance) {
+    protected final <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
         return service().provideInstance(instance);
     }
 
-    protected final <T> ServiceComponentConfiguration<T> providePrototype(Class<T> implementation) {
+    protected final <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         return service().providePrototype(implementation);
     }
 
-    protected final <T> ServiceComponentConfiguration<T> providePrototype(Factory<T> factory) {
+    protected final <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return service().providePrototype(factory);
     }
 

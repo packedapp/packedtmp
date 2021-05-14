@@ -3,7 +3,7 @@ package app.packed.component;
 import java.util.Set;
 
 // Den er cool, men ikke super brugbar...
-public enum ClassComponentMode {
+public enum BeanMode {
     /** User provides a single instance. */
     INSTANCE,
     /** */
@@ -36,19 +36,19 @@ public enum ClassComponentMode {
 
     // Maybe array we
 
-    static Set<ClassComponentMode> allInstances() {
+    static Set<BeanMode> allInstances() {
         throw new UnsupportedOperationException();
     }
 
-    static Set<ClassComponentMode> allOne() {
+    static Set<BeanMode> allOne() {
         throw new UnsupportedOperationException();
     }
 
-    static Set<ClassComponentMode> allClass() {
+    static Set<BeanMode> allClass() {
         return Set.of(CLASS_NONE, CLASS_ONE, CLASS_MANY);
     }
 
-    static Set<ClassComponentMode> allFactory() {
+    static Set<BeanMode> allFactory() {
         return Set.of(FACTORY_ONE, FACTORY_MANY);
     }
 }

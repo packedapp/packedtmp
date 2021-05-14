@@ -14,10 +14,10 @@ import packed.internal.component.PackedClassComponentBinder;
  * A binder that can be used to bind class, factory or component class instance to create a component driver.
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public interface ClassComponentBinder<T, C extends ComponentConfiguration> {
+public interface BeanBinder<T, C extends ComponentConfiguration> {
 
     // Container Lifetime, Eager singleton
-    static ClassComponentBinder<Object, BaseComponentConfiguration> DEFAULT = PackedClassComponentBinder.APPLET_DRIVER;
+    static BeanBinder<Object, BeanConfiguration> DEFAULT = PackedClassComponentBinder.APPLET_DRIVER;
 
     /**
      * @param instance
@@ -45,9 +45,9 @@ public interface ClassComponentBinder<T, C extends ComponentConfiguration> {
     ComponentDriver<C> bindInstance(T instance);
 
     /** {@return a set containing all modes this driver supports. } */
-    Set<? extends ClassComponentMode> supportedModes();
+    Set<? extends BeanMode> supportedModes();
 
-    ClassComponentBinder<T, C> with(Wirelet... wirelet);
+    BeanBinder<T, C> with(Wirelet... wirelet);
 
     Optional<Class<? extends Extension>> extension();
 
@@ -62,11 +62,11 @@ public interface ClassComponentBinder<T, C extends ComponentConfiguration> {
         return PackedClassComponentBinder.STATELESS_DRIVER;
     }
 
-    static ComponentDriver<BaseComponentConfiguration> driverStateless(Class<?> implementation) {
+    static ComponentDriver<BeanConfiguration> driverStateless(Class<?> implementation) {
         return driver().bind(implementation);
     }
 
-    static <T> ComponentDriver<BaseComponentConfiguration> functional(Class<?> implementation) {
+    static <T> ComponentDriver<BeanConfiguration> functional(Class<?> implementation) {
         return driver().bind(implementation);
     }
 
@@ -80,6 +80,6 @@ public interface ClassComponentBinder<T, C extends ComponentConfiguration> {
         Builder namePrefix(String prefix);
         Builder namePrefix(Function<Class<?>, String> computeIt);
         
-        <T, C extends ComponentConfiguration> ClassComponentBinder<T, C> build();
+        <T, C extends ComponentConfiguration> BeanBinder<T, C> build();
     }
 }

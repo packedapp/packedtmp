@@ -7,28 +7,27 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ClassComponentBinder;
-import app.packed.component.ClassComponentMode;
+import app.packed.component.BeanBinder;
+import app.packed.component.BeanConfiguration;
+import app.packed.component.BeanMode;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentConfiguration.ComponentConfigurationContext;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceComponentConfiguration;
-import packed.internal.component.PackedComponentDriver.BoundClassComponentDriver;
+import app.packed.inject.ServiceBeanConfiguration;
+import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 import packed.internal.invoke.Infuser;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (PackedClassComponentBinder.Type type, MethodHandle constructor, int modifiers)
-        implements ClassComponentBinder<T, ComponentConfiguration> {
+        implements BeanBinder<T, ComponentConfiguration> {
 
     public static final PackedClassComponentBinder APPLET_DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(),
-            ServiceComponentConfiguration.class, true);
+            ServiceBeanConfiguration.class, true);
 
     /** A driver for this configuration. */
     public static final PackedClassComponentBinder STATELESS_DRIVER = PackedClassComponentBinder.ofClass(MethodHandles.lookup(),
-            BaseComponentConfiguration.class);
+            BeanConfiguration.class);
 
     public enum Type {
         CLASS, FACTORY, INSTANCE;
@@ -36,41 +35,41 @@ public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (P
 
     /** {@inheritDoc} */
     @Override
-    public BoundClassComponentDriver<ComponentConfiguration> bind(Class<? extends T> implementation) {
+    public BeanComponentDriver<ComponentConfiguration> bind(Class<? extends T> implementation) {
         requireNonNull(implementation, "implementation is bull");
-        return new BoundClassComponentDriver(this, implementation);
+        return new BeanComponentDriver(this, implementation);
     }
 
     /** {@inheritDoc} */
     @Override
-    public BoundClassComponentDriver<ComponentConfiguration> bind(Factory<? extends T> factory) {
+    public BeanComponentDriver<ComponentConfiguration> bind(Factory<? extends T> factory) {
         requireNonNull(factory, "factory is bull");
 //      if (inner.type == Type.FACTORY) {
 //      if (Class.class.isInstance(object)) {
 //          // throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
 //      }
-        return new BoundClassComponentDriver(this, factory);
+        return new BeanComponentDriver(this, factory);
     }
 
     /** {@inheritDoc} */
     @Override
-    public BoundClassComponentDriver<ComponentConfiguration> bindInstance(T instance) {
+    public BeanComponentDriver<ComponentConfiguration> bindInstance(T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Class instance, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Factory instance, was " + instance);
         }
-        return new BoundClassComponentDriver(this, instance);
+        return new BeanComponentDriver(this, instance);
     }
 
     @Override
-    public Set<? extends ClassComponentMode> supportedModes() {
+    public Set<? extends BeanMode> supportedModes() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ClassComponentBinder<T, ComponentConfiguration> with(Wirelet... wirelet) {
+    public BeanBinder<T, ComponentConfiguration> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
 
@@ -94,7 +93,10 @@ public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (P
 
         // Create an infuser for making a method handle for the component configurations's constructor
         Infuser.Builder builder = Infuser.builder(caller, driverType, ComponentSetup.class);
-        builder.provide(ComponentConfigurationContext.class).adaptArgument(0);
+        
+        // TODO Tror godt vi vil injecte baade wirelets 
+        // SelectWirelets<?>?? og extension
+        
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
         return new PackedClassComponentBinder(type, constructor, modifiers);

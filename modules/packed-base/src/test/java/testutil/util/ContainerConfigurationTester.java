@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -57,14 +57,14 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public BaseComponentConfiguration stateless(Class<?> implementation) {
-        BaseComponentConfiguration conf = cc.stateless(implementation);
+    public BeanConfiguration stateless(Class<?> implementation) {
+        BeanConfiguration conf = cc.stateless(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }
 
-    public BaseComponentConfiguration installInstance(Object instance) {
-        BaseComponentConfiguration conf = cc.installInstance(instance);
+    public BeanConfiguration installInstance(Object instance) {
+        BeanConfiguration conf = cc.installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }

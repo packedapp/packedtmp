@@ -29,8 +29,8 @@ import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
-import app.packed.component.BaseComponentConfiguration;
-import app.packed.component.ClassComponentBinder;
+import app.packed.component.BeanConfiguration;
+import app.packed.component.BeanBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
@@ -170,11 +170,11 @@ public abstract class Extension {
         return c;
     }
 
-    protected final BaseComponentConfiguration install(Class<?> implementation) {
+    protected final BeanConfiguration install(Class<?> implementation) {
         return configuration().install(implementation);
     }
 
-    protected final BaseComponentConfiguration install(Factory<?> factory) {
+    protected final BeanConfiguration install(Factory<?> factory) {
         return configuration().install(factory);
     }
 
@@ -184,7 +184,7 @@ public abstract class Extension {
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    protected final BaseComponentConfiguration installInstance(Object instance) {
+    protected final BeanConfiguration installInstance(Object instance) {
         return configuration().installInstance(instance);
     }
 
@@ -538,7 +538,7 @@ public abstract class Extension {
     }
 
     protected interface ClassComponentDriverBuilder {
-        ClassComponentBinder<Object, BaseComponentConfiguration> build();
+        BeanBinder<Object, BeanConfiguration> build();
     }
 }
 //* <p>

@@ -23,7 +23,6 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
-import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
@@ -93,7 +92,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * 
      */
     protected final void checkPreBuild() {
-        ((ComponentSetup) configuration().context).realm.checkOpen();
+        configuration().component().realm.checkOpen();
     }
 
     @SuppressWarnings("unchecked")
@@ -156,7 +155,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        ((ComponentSetup) configuration().context).realm.setLookup(lookup);
+        configuration().component().realm.setLookup(lookup);
     }
 
     protected void onCompletable() {}

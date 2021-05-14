@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationImage;
 import app.packed.component.Assembly;
-import app.packed.component.BaseComponentConfiguration;
+import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
@@ -86,9 +86,9 @@ public /* sealed */ interface ExtensionConfiguration {
     // Vi skal vel altid have en eller anden specific component driver
     // BaseComponentConfiguration containerInstall(Class<?> factory);
 
-    BaseComponentConfiguration install(Class<?> factory);
+    BeanConfiguration install(Class<?> factory);
 
-    BaseComponentConfiguration install(Factory<?> factory);
+    BeanConfiguration install(Factory<?> factory);
 
     /**
      * @param instance
@@ -96,7 +96,7 @@ public /* sealed */ interface ExtensionConfiguration {
      * @return the configuration of the component
      * @see ContainerConfiguration#installInstance(Object)
      */
-    BaseComponentConfiguration installInstance(Object instance);
+    BeanConfiguration installInstance(Object instance);
 
 //    default boolean isConnected() {
 //        // isInterConnected?

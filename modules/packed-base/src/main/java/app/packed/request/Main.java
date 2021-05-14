@@ -31,7 +31,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 import app.packed.inject.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
-import packed.internal.component.SourcedComponentSetup;
+import packed.internal.component.BeanSetup;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 
 /**
@@ -84,7 +84,7 @@ class MySidecar extends RealMethodSidecarBootstrap {
             c.container.useExtension(ServiceExtension.class);
             MainThreadOfControl mc = c.application.mainThread();
             mc.isStatic = Modifier.isStatic(m.getModifiers());
-            mc.cs = (SourcedComponentSetup) c;
+            mc.cs = (BeanSetup) c;
             mc.methodHandle = mh;
         });
     }
