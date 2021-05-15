@@ -34,10 +34,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
+import app.packed.container.Extension;
 import app.packed.container.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -353,6 +352,12 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
+        public final ApplicationMirror application() {
+            return component.application.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public final AttributeMap attributes() {
             return component.attributes();
         }
@@ -372,14 +377,15 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final boolean hasModifier(ComponentModifier modifier) {
-            return PackedComponentModifierSet.isSet(component.modifiers, modifier);
+        public Optional<Class<? extends Extension>> extension() {
+            return Optional.ofNullable(component.realm.extensionType);
         }
 
         /** {@inheritDoc} */
         @Override
-        public final ComponentModifierSet modifiers() {
-            return component.modifiers();
+        public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
+            requireNonNull(other, "other is null");
+            return component.isInSame(scope, ((ComponentMirrorAdaptor) other).component);
         }
 
         /** {@inheritDoc} */
@@ -423,6 +429,16 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
+        public final ComponentMirror root() {
+            ComponentSetup c = component;
+            while (c.parent != null) {
+                c = c.parent;
+            }
+            return c == component ? this : c.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
             return new PackedComponentStream(stream0(component, true, PackedComponentStreamOption.of(options)));
         }
@@ -440,29 +456,6 @@ public abstract class ComponentSetup {
             } else {
                 return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
             }
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
-            requireNonNull(other, "other is null");
-            return component.isInSame(scope, ((ComponentMirrorAdaptor) other).component);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final ApplicationMirror application() {
-            return component.application.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final ComponentMirror root() {
-            ComponentSetup c = component;
-            while (c.parent != null) {
-                c = c.parent;
-            }
-            return c == component ? this : c.mirror();
         }
     }
 }

@@ -86,7 +86,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
         final MethodHandle mh;
 
-        public BeanComponentDriver(PackedClassComponentBinder<?, C> driver, Object binding) {
+        public BeanComponentDriver(PackedBeanConfigurationBinder<?, C> driver, Object binding) {
             super(null, driver.modifiers());
             this.mh = driver.constructor();
             this.binding = requireNonNull(binding);
@@ -125,7 +125,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     public static class ContainerComponentDriver extends PackedComponentDriver<ContainerConfiguration> {
 
         public ContainerComponentDriver(Wirelet wirelet) {
-            super(wirelet, PackedComponentModifierSet.I_CONTAINER);
+            super(wirelet, 0);
         }
 
         /** {@inheritDoc} */

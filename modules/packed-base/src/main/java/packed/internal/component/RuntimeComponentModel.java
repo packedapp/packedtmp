@@ -15,8 +15,6 @@
  */
 package packed.internal.component;
 
-import app.packed.component.ComponentModifier;
-
 /**
  * The different types of components that are supported in Packed.
  */

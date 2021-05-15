@@ -10,9 +10,8 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
-import app.packed.component.ComponentAttributes;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
@@ -68,7 +67,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** This extension's model. */
     final ExtensionModel model;
 
-    final RealmSetup realm;
+    /** The realm of this extension, lazily initialized */
+    @Nullable
+    private RealmSetup realm;
 
     /**
      * Creates a new extension setup.
@@ -79,14 +80,19 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      *            the model of the extension
      */
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
-        this.realm = container.realm.newExtension(model, container);
-
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
     }
 
+    private RealmSetup realm() {
+        RealmSetup r = realm;
+        if (r == null) {
+            r = realm = container.realm.newExtension(model, container);
+        }
+        return r;
+    }
+
     protected void attributesAdd(DefaultAttributeMap dam) {
-        dam.addValue(ComponentAttributes.EXTENSION_TYPE, extensionClass());
         PackedAttributeModel pam = model.attributes;
         if (pam != null) {
             pam.set(dam, instance);
@@ -135,22 +141,23 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration install(Class<?> implementation) {
-        return container.wire(BeanConfigurationBinder.DEFAULT.bind(implementation), realm);
+        return container.wire(BeanConfigurationBinder.DEFAULT.bind(implementation), realm());
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration install(Factory<?> factory) {
-        return container.wire(BeanConfigurationBinder.DEFAULT.bind(factory), realm);
+        return container.wire(BeanConfigurationBinder.DEFAULT.bind(factory), realm());
     }
 
     /** {@inheritDoc} */
     @Override
     public BeanConfiguration installInstance(Object instance) {
-        return container.wire(BeanConfigurationBinder.DEFAULT.bindInstance(instance), realm);
+        return container.wire(BeanConfigurationBinder.DEFAULT.bindInstance(instance), realm());
     }
 
     /** {@inheritDoc} */
+    @Override
     public Extension instance() {
         Extension e = instance;
         if (e == null) {
@@ -173,7 +180,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     @Override
     public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return container.link(assembly, realm, wirelets);
+        return container.link(assembly, realm(), wirelets);
     }
 
     /**
@@ -212,7 +219,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Check that we are a proper subclass of ExtensionWirelet
         ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass);
-        
+
         // We only allow selection of wirelets in the same module as the extension itself
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
         Module m = extensionClass().getModule();
@@ -265,7 +272,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.wire(driver, realm, wirelets);
+        return container.wire(driver, realm(), wirelets);
     }
 
     /**

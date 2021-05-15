@@ -20,7 +20,6 @@ import java.util.List;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentModifier;
 import app.packed.inject.Factory;
 import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
@@ -83,7 +82,7 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
         if (source instanceof Class<?> cl) {
             this.constant = null;
             boolean isStaticClassSource = PackedComponentModifierSet.isSet(driver.modifiers, ComponentModifier.STATEFUL);
-            // was driver.modifiers().isStaticClassSource() 
+            // was driver.modifiers().isStaticClassSource()
             this.factory = isStaticClassSource ? null : Factory.of(cl);
             this.hooks = accessor.modelOf(cl);
         } else if (source instanceof Factory<?> fac) {
@@ -150,6 +149,7 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
         return s;
     }
 
+    @Override
     public void writeToPool(ConstantPool pool) {
         assert poolIndex >= 0;
         assert constant != null;

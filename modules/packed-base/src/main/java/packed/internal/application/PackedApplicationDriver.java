@@ -27,6 +27,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationWirelets;
+import app.packed.application.BuildTarget;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -47,17 +48,17 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link ApplicationDriver}. */
 public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
-    /** A daemon driver. */
+    /** The driver used for creating mirrors daemon driver. */
+    // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
+    // vil sikre sig af en application goere x...
     public static final PackedApplicationDriver<?> MIRROR_DRIVER = new Builder()
             .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
-    /** A handle that can access Composer#driver. */
+    /** A handle that can access the component driver stored in Composer#driver. */
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
             PackedComponentDriver.class);
 
-    /**
-     * The applications default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}.
-     */
+    /** The default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}. */
     private final InstanceState launchMode;
 
     /** The method handle used for creating new application instances. */
@@ -66,7 +67,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** The modifiers of this application */
     final int modifiers;
 
-    /** Wirelet(s) that must be processed before any wirelets supplied by the user. */
+    /** Wirelet(s) that will be processed before any wirelets specified by the user. */
     @Nullable
     public final Wirelet wirelet;
 
@@ -110,6 +111,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /**
      * Builds an application from the specified assembly and optional wirelets.
+     * <p>
+     * This 
      * 
      * @param assembly
      *            the root assembly
@@ -121,17 +124,19 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            is it an image
      * @return a build setup
      */
-    public BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, int modifiers) {
+    public BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, BuildTarget buildTarget) {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Create a new application realm
-        RealmSetup realm = new RealmSetup(this, componentDriver, modifiers, assembly, wirelets);
+        RealmSetup realm = new RealmSetup(this, componentDriver, buildTarget, 0, assembly, wirelets);
 
         // Create a new component configuration instance that the assembly needs
         ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
+        // This will recursively call down through any sub-assemblies that may be linked
+        // doing the process
         try {
             RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {
@@ -182,7 +187,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, 0);
+        BuildSetup build = build(assembly, wirelets, BuildTarget.INSTANCE);
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
@@ -214,7 +219,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, PackedComponentModifierSet.I_IMAGE);
+        BuildSetup build = build(assembly, wirelets, BuildTarget.IMAGE);
         return new PackedApplicationImage<>(this, build.application);
     }
 
@@ -260,7 +265,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         MethodHandle mhConstructor;
 
         /** The modifiers of the application. We have a runtime modifier by default. */
-        private int modifiers = PackedComponentModifierSet.I_APPLICATION + PackedComponentModifierSet.I_RUNTIME;
+        private int modifiers = PackedComponentModifierSet.I_RUNTIME;
 
         private Wirelet wirelet;
 

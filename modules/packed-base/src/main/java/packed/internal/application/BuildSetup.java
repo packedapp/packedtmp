@@ -15,6 +15,8 @@
  */
 package packed.internal.application;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
@@ -22,13 +24,11 @@ import app.packed.application.BaseMirror;
 import app.packed.application.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.component.ComponentModifier;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
-import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
 
@@ -48,6 +48,8 @@ public final class BuildSetup implements BuildMirror {
     /** The namespace this build belongs to. */
     public final NamespaceSetup namespace = new NamespaceSetup();
 
+    public BuildTarget buildTarget;
+
     // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
     // ruleBroken = FFF
     // Man kan kun validere assemblies...
@@ -61,12 +63,12 @@ public final class BuildSetup implements BuildMirror {
      * @param modifiers
      *            the output of the build process
      */
-    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, int modifiers,
-            Wirelet[] wirelets) {
+    public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, BuildTarget buildTarget,
+            int modifiers, Wirelet[] wirelets) {
         if (!(componentDriver instanceof ContainerComponentDriver containerDriver)) {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
         }
-
+        this.buildTarget = requireNonNull(buildTarget);
         this.modifiers = applicationDriver.modifiers + containerDriver.modifiers + modifiers;
         this.application = new ApplicationSetup(this, applicationDriver, realm, containerDriver, modifiers, wirelets);
         this.container = application.container;
@@ -106,7 +108,7 @@ public final class BuildSetup implements BuildMirror {
 
     /** {@return whether or not we are creating the root application is part of an image}. */
     public boolean isImage() {
-        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.IMAGE);
+        return buildTarget == BuildTarget.IMAGE;
     }
 
     @Override
@@ -116,10 +118,7 @@ public final class BuildSetup implements BuildMirror {
 
     @Override
     public BuildTarget target() {
-        if (PackedComponentModifierSet.isImage(modifiers)) {
-            return BuildTarget.IMAGE;
-        }
-        return PackedComponentModifierSet.isAnalysis(modifiers) ? BuildTarget.MIRROR : BuildTarget.INSTANCE;
+        return buildTarget;
     }
 
     private record BuildMirrorAdaptor(BuildSetup build) implements BaseMirror {

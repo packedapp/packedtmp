@@ -22,9 +22,8 @@ import java.util.function.Function;
 
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentAttributes;
+import app.packed.component.BeanMirror;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentModifier;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
@@ -152,10 +151,9 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
         BaseMirror b = BaseMirror.of(assembly, wirelets);
         b.forEachComponent(cc -> {
             StringBuilder sb = new StringBuilder();
-            sb.append(cc.path()).append(" ").append(cc.modifiers());
-            if (cc.modifiers().contains(ComponentModifier.SOURCED)) {
-                Class<?> cl = cc.attribute(ComponentAttributes.SOURCE_CLASS);
-                sb.append(" [").append(cl.getName()).append("]");
+            sb.append(cc.path()).append("");
+            if (cc instanceof BeanMirror bm) {
+                sb.append(" [").append(bm.beanType().getName()).append("]");
             }
             System.out.println(sb.toString());
         });

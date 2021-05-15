@@ -20,9 +20,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Iterator;
 import java.util.List;
 
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
-
 /** Implementation of {@link ComponentModifierSet}. */
 public final class PackedComponentModifierSet implements ComponentModifierSet {
 
@@ -30,19 +27,16 @@ public final class PackedComponentModifierSet implements ComponentModifierSet {
     public static final PackedComponentModifierSet EMPTY = new PackedComponentModifierSet(0);
 
     // Er det snare en property på build info????
-    public static final int I_MIRROR = intOf(ComponentModifier.MIRROR);
+    //public static final int I_MIRROR = intOf(ComponentModifier.MIRROR);
     
     public static final int I_RUNTIME = intOf(ComponentModifier.RUNTIME);
-    public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINER);
+    //public static final int I_CONTAINER = intOf(ComponentModifier.CONTAINER);
     
-    public static final int I_IMAGE = intOf(ComponentModifier.IMAGE);
-    public static final int I_SOURCE = intOf(ComponentModifier.SOURCED);
+    //public static final int I_IMAGE = intOf(ComponentModifier.IMAGE);
+    //public static final int I_SOURCE = intOf(ComponentModifier.SOURCED);
 
-    public static final int I_EXTENSION = intOf(ComponentModifier.EXTENSION);
-    public static final int I_APPLICATION = intOf(ComponentModifier.APPLICATION);
     public static final int I_SINGLETON = intOf(ComponentModifier.CONSTANT);
     public static final int I_STATEFUL = intOf(ComponentModifier.STATEFUL);
-    public static final int I_UNSCOPED = intOf(ComponentModifier.UNSCOPED);
 
     /** An array containing all modifiers. */
     private final static ComponentModifier[] MODIFIERS = ComponentModifier.values();

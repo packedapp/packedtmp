@@ -15,7 +15,9 @@ public class ZapAssembly extends BaseAssembly {
 
     public static void main(String[] args) {
         App.driver().launch(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
-        //App.driver().print(new ZapAssembly());
+        
+        
+        App.driver().print(new ZapAssembly());
     }
 
     static class LinkMe extends BaseAssembly {

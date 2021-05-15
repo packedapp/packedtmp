@@ -23,7 +23,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.component.PackedClassComponentBinder;
+import packed.internal.component.PackedBeanConfigurationBinder;
 
 /**
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
@@ -34,11 +34,11 @@ import packed.internal.component.PackedClassComponentBinder;
 public class ServiceBeanConfiguration<T> extends BeanConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final PackedClassComponentBinder DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(), ServiceBeanConfiguration.class,
+    private static final PackedBeanConfigurationBinder DRIVER = PackedBeanConfigurationBinder.ofInstance(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             true);
 
     @SuppressWarnings("rawtypes")
-    private static final PackedClassComponentBinder PROTOTYPE_DRIVER = PackedClassComponentBinder.ofFactory(MethodHandles.lookup(),
+    private static final PackedBeanConfigurationBinder PROTOTYPE_DRIVER = PackedBeanConfigurationBinder.ofFactory(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, false);
 
     /**

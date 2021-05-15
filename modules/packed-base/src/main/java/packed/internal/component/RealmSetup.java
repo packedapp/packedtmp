@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
+import app.packed.application.BuildTarget;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
@@ -72,6 +73,9 @@ public final class RealmSetup {
     // Hmm burde kunne bruge traet istedet for
     private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
+    @Nullable
+    public final Class<? extends Extension> extensionType;
+
     /**
      * Creates a new realm for an extension.
      * 
@@ -83,22 +87,25 @@ public final class RealmSetup {
         this.realmType = model.type();
         this.build = container.application.build;
         this.root = null; // ??????
+        this.extensionType = model.type();
         // this.current = requireNonNull(extension);
     }
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver,
             ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, this, componentDriver, 0, wirelets);
+        this.build = new BuildSetup(applicationDriver, this, componentDriver, BuildTarget.INSTANCE, 0, wirelets);
         this.root = build.container;
+        this.extensionType = null;
         wireCommit(root);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, int modifiers, Assembly<?> assembly,
-            Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, BuildTarget buildTarget, int modifiers,
+            Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
-        this.build = new BuildSetup(applicationDriver, this, componentDriver, modifiers, wirelets);
+        this.build = new BuildSetup(applicationDriver, this, componentDriver, buildTarget, modifiers, wirelets);
         this.root = build.container;
+        this.extensionType = null;
         wireCommit(root);
     }
 
@@ -111,6 +118,7 @@ public final class RealmSetup {
     private RealmSetup(RealmSetup existing, PackedComponentDriver<?> driver, ComponentSetup linkTo, Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = existing.build;
+        this.extensionType = null;
         this.root = driver.newComponent(build.application, this, linkTo, wirelets);
     }
 

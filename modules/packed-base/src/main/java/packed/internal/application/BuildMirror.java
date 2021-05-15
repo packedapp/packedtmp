@@ -23,7 +23,6 @@ import app.packed.component.ComponentMirrorStream;
 import app.packed.component.Wirelet;
 import app.packed.container.UsedExtensionMirror;
 import app.packed.mirror.SetView;
-import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -119,7 +118,7 @@ public interface BuildMirror {
     // buildForInstantiation(), buildImage
     // buildMirror?
     static BuildMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR);
+        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, BuildTarget.MIRROR);
     }
 }
 

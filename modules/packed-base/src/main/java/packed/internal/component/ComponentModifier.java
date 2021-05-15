@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
 
 import java.lang.reflect.Modifier;
 
@@ -22,7 +22,6 @@ import app.packed.application.ApplicationDriver;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * A component typically has one or modifiers that indicates a permanent property of a component.

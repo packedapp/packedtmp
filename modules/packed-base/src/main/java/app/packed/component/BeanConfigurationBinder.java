@@ -8,7 +8,7 @@ import app.packed.component.BeanMirror.BeanMode;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import packed.internal.component.PackedClassComponentBinder;
+import packed.internal.component.PackedBeanConfigurationBinder;
 
 // A protected interface on Extension??? Hidden for ordinary users
 /**
@@ -18,7 +18,7 @@ import packed.internal.component.PackedClassComponentBinder;
 public interface BeanConfigurationBinder<T, C extends ComponentConfiguration> {
 
     // Container Lifetime, Eager singleton
-    static BeanConfigurationBinder<Object, BeanConfiguration> DEFAULT = PackedClassComponentBinder.APPLET_DRIVER;
+    static BeanConfigurationBinder<Object, BeanConfiguration> DEFAULT = PackedBeanConfigurationBinder.APPLET_DRIVER;
 
     /**
      * @param instance
@@ -59,8 +59,8 @@ public interface BeanConfigurationBinder<T, C extends ComponentConfiguration> {
      *            the type
      * @return a driver
      */
-    private static PackedClassComponentBinder driver() {
-        return PackedClassComponentBinder.STATELESS_DRIVER;
+    private static PackedBeanConfigurationBinder driver() {
+        return PackedBeanConfigurationBinder.STATELESS_DRIVER;
     }
 
     static ComponentDriver<BeanConfiguration> driverStateless(Class<?> implementation) {

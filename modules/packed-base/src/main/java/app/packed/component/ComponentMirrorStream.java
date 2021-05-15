@@ -16,8 +16,6 @@
  */
 package app.packed.component;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Comparator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -160,11 +158,6 @@ public interface ComponentMirrorStream extends AttributedElementStream<Component
     @Override
     ComponentMirrorStream filter(Predicate<? super ComponentMirror> predicate);
 
-    default ComponentMirrorStream hasModifier(ComponentModifier modifier) {
-        requireNonNull(modifier, "modifier is null");
-        return filter(c -> c.hasModifier(modifier));
-    }
-//
 //    default <T extends AFeature<?, ?>> Stream<T> feature(T feature) {
 //        throw new UnsupportedOperationException();
 //    }

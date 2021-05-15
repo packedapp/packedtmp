@@ -13,7 +13,6 @@ import app.packed.container.Extension;
 import app.packed.inject.ServiceExtension;
 import app.packed.mirror.Mirror;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * A model of a (successful) build.
@@ -63,15 +62,10 @@ public interface BaseMirror extends Mirror {
 
     /** {@return the build target.} */
     BuildTarget target();
-    
 
-    // reflector
-    public static ApplicationDriver<?> defaultDriver() {
-        return PackedApplicationDriver.MIRROR_DRIVER;
-    }
     
     static BaseMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, PackedComponentModifierSet.I_MIRROR).mirror();
+        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, BuildTarget.MIRROR).mirror();
     }
 }
 

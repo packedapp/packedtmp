@@ -8,12 +8,10 @@ import java.util.Set;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.component.BeanMirror;
-import app.packed.component.ComponentAttributes;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 
 /** An internal configuration of a bean.  */
@@ -30,11 +28,6 @@ public final class BeanSetup extends ComponentSetup {
         if (name == null) {
             initializeNameWithPrefix(source.hooks.simpleName());
         }
-    }
-
-    @Override
-    protected void attributesAdd(DefaultAttributeMap dam) {
-        dam.addValue(ComponentAttributes.SOURCE_CLASS, source.hooks.clazz);
     }
 
     /** {@inheritDoc} */
@@ -64,36 +57,41 @@ public final class BeanSetup extends ComponentSetup {
         return source.service == null ? Optional.empty() : Optional.of(source.service.key());
     }
 
-    /** An adaptor for the {@link BeanMirror} interface. */
+    /** An mirror adaptor. */
     private final static class BeanMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements BeanMirror {
 
-        final BeanSetup bean;
+        private final BeanSetup bean;
 
-        BeanMirrorAdaptor(BeanSetup container) {
+        private BeanMirrorAdaptor(BeanSetup container) {
             super(container);
             this.bean = container;
         }
 
+        /** {@inheritDoc} */
         @Override
         public Class<?> beanType() {
             return bean.source.hooks.clazz;
         }
 
+        /** {@inheritDoc} */
         @Override
         public Optional<Class<? extends Extension>> driverExtension() {
             throw new UnsupportedOperationException();
         }
 
+        /** {@inheritDoc} */
         @Override
         public Set<?> hooks() {
             throw new UnsupportedOperationException();
         }
 
+        /** {@inheritDoc} */
         @Override
         public <T> Set<?> hooks(Class<T> hookType) {
             throw new UnsupportedOperationException();
         }
 
+        /** {@inheritDoc} */
         @Override
         public BeanMode mode() {
             throw new UnsupportedOperationException();

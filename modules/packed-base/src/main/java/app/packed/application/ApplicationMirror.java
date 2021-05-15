@@ -16,6 +16,7 @@ import app.packed.container.Extension;
 import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
+import packed.internal.application.PackedApplicationDriver;
 
 /**
  * A mirror of an application.
@@ -25,7 +26,7 @@ import app.packed.mirror.TreeWalker;
 public interface ApplicationMirror extends Mirror {
 
     /** {@return the root (container) component in the application}. */
-    ComponentMirror applicationComponent(); // 
+    ComponentMirror applicationComponent(); //
 
     default Optional<ApplicationHostMirror> applicationHost() {
         throw new UnsupportedOperationException();
@@ -133,7 +134,8 @@ public interface ApplicationMirror extends Mirror {
      * @return the ordinal of this application
      */
     // -1 for non-hosted? Nah 1
-    // For mini hosts, er det et problem at skulle have en AtomicInteger... nah Vi har formentligt et map der fylder endnu mere
+    // For mini hosts, er det et problem at skulle have en AtomicInteger... nah Vi har formentligt et map der fylder endnu
+    // mere
     default int ordinal() {
         // Hmm, den er vel altid naermest bare 1...
         // Ahh, hvis vi installere en fall back version... Saa har vi to
@@ -164,6 +166,15 @@ public interface ApplicationMirror extends Mirror {
         // app.component().walker() <--- all components application or not...
 
         // someComponent.walker().filter(c->c.application == SomeApp)...
+    }
+
+    // reflector
+    /**
+     * {@return the default application driver that is used when creating mirrors without explicitly specifying an application
+     * driver.}
+     */
+    public static ApplicationDriver<?> defaultDriver() {
+        return PackedApplicationDriver.MIRROR_DRIVER;
     }
 
     public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {

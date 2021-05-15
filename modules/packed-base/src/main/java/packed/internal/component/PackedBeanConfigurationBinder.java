@@ -19,14 +19,14 @@ import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 import packed.internal.invoke.Infuser;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (PackedClassComponentBinder.Type type, MethodHandle constructor, int modifiers)
+public record PackedBeanConfigurationBinder<T, C extends ComponentConfiguration> (PackedBeanConfigurationBinder.Type type, MethodHandle constructor, int modifiers, boolean isConstant)
         implements BeanConfigurationBinder<T, ComponentConfiguration> {
 
-    public static final PackedClassComponentBinder APPLET_DRIVER = PackedClassComponentBinder.ofInstance(MethodHandles.lookup(),
+    public static final PackedBeanConfigurationBinder APPLET_DRIVER = PackedBeanConfigurationBinder.ofInstance(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, true);
 
     /** A driver for this configuration. */
-    public static final PackedClassComponentBinder STATELESS_DRIVER = PackedClassComponentBinder.ofClass(MethodHandles.lookup(),
+    public static final PackedBeanConfigurationBinder STATELESS_DRIVER = PackedBeanConfigurationBinder.ofClass(MethodHandles.lookup(),
             BeanConfiguration.class);
 
     public enum Type {
@@ -73,7 +73,7 @@ public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (P
         throw new UnsupportedOperationException();
     }
 
-    private static <T, C extends ComponentConfiguration> PackedClassComponentBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller,
+    private static <T, C extends ComponentConfiguration> PackedBeanConfigurationBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller,
             Class<? extends C> driverType, boolean isConstant) {
 
         // Parse all options
@@ -84,7 +84,6 @@ public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (P
             modifiers |= PackedComponentModifierSet.I_STATEFUL;
         }
 
-        modifiers |= PackedComponentModifierSet.I_SOURCE;
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
         // Or we fx support @AttributeProvide... This makes no sense..
@@ -99,24 +98,24 @@ public record PackedClassComponentBinder<T, C extends ComponentConfiguration> (P
         
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
-        return new PackedClassComponentBinder(type, constructor, modifiers);
+        return new PackedBeanConfigurationBinder(type, constructor, modifiers, isConstant);
     }
 
-    public static <T, C extends ComponentConfiguration> PackedClassComponentBinder<T, C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
+    public static <T, C extends ComponentConfiguration> PackedBeanConfigurationBinder<T, C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
-        PackedClassComponentBinder meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
+        PackedBeanConfigurationBinder meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
         return meta;
     }
 
-    public static <T, C extends ComponentConfiguration> PackedClassComponentBinder<T, C> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType,
+    public static <T, C extends ComponentConfiguration> PackedBeanConfigurationBinder<T, C> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType,
             boolean isConstant) {
 
-        PackedClassComponentBinder meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
+        PackedBeanConfigurationBinder meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
         return meta;
     }
 
-    public static <T, C extends ComponentConfiguration> PackedClassComponentBinder<T, C> ofClass(MethodHandles.Lookup caller,
+    public static <T, C extends ComponentConfiguration> PackedBeanConfigurationBinder<T, C> ofClass(MethodHandles.Lookup caller,
             Class<? extends C> configurationType) {
         return newMeta(Type.CLASS, caller, configurationType, false);
     }

@@ -44,30 +44,14 @@ public /* sealed */ interface ComponentMirror extends Mirror {
      */
     int depth();
 
-    /** {@return any extension this component might be part of} */
-    // extensionConfiguration.link(sdsd)
-    default Optional<Class<? extends Extension>> extension() {
-        throw new UnsupportedOperationException();
-    }
-    
-    default boolean hasModifier(ComponentModifier modifier) {
-        return modifiers().contains(modifier);
-    }
+    /** {@return empty if the component is installed by the user, otherwise the extension that owns it} */
+    Optional<Class<? extends Extension>> extension();
 
     default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
     }
 
     boolean isInSame(ComponentScope scope, ComponentMirror other);
-
-    /**
-     * Returns the modifiers of this component.
-     * 
-     * @return the modifiers of this component
-     * 
-     * @see #hasModifier(ComponentModifier)
-     */
-    ComponentModifierSet modifiers();
 
     /**
      * Returns the name of this component.

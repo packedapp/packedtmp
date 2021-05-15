@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
 
 import java.lang.invoke.MethodHandles;
 
 import app.packed.attribute.Attribute;
 import app.packed.base.NamespacePath;
 import app.packed.base.TypeToken;
-import app.packed.container.Extension;
 
 /**
  *
@@ -32,7 +31,7 @@ import app.packed.container.Extension;
 
 // Must be defined in a static field
 
-public final class ComponentAttributes {
+final class ComponentAttributes {
 
     // Save this on TypeLiteral??
     static final TypeToken<Class<?>> _CLASS = new TypeToken<Class<?>>() {};
@@ -41,19 +40,19 @@ public final class ComponentAttributes {
     //static final TypeToken<Class<? extends Extension>> _EXTENSION_TYPE = new TypeToken<Class<? extends Extension>>() {};
     static final TypeToken<TypeToken<?>> _TYPE_LITERAL = new TypeToken<TypeToken<?>>() {};
 
-    /** An attribute that accompanies any component that has the {@link ComponentModifier#APPLICATION} modifier. */
-    public static final Attribute<Class<?>> APPLICATION_CLASS = Attribute.of(MethodHandles.lookup(), "application-class", _CLASS);
-
-    // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
-    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
-    static final Attribute<Class<? extends Assembly<?>>> CONTAINER_TYPE = Attribute.of(MethodHandles.lookup(), "container",
-            new TypeToken<Class<? extends Assembly<?>>>() {});
+//    /** An attribute that accompanies any component that has the {@link ComponentModifier#APPLICATION} modifier. */
+//    public static final Attribute<Class<?>> APPLICATION_CLASS = Attribute.of(MethodHandles.lookup(), "application-class", _CLASS);
+//
+//    // Er det alle komponenter, ogsaa extensions??? eller kun root komponenten????
+//    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
+//    static final Attribute<Class<? extends Assembly<?>>> CONTAINER_TYPE = Attribute.of(MethodHandles.lookup(), "container",
+//            new TypeToken<Class<? extends Assembly<?>>>() {});
 
     /** An attribute that accompanies any component that is part of an an extension. */
     // Altsaa maaske skal vi have to typer??? maaske hedder den bare E
     // app.packed/extension-type
     // extension-type@app.packed
-    public static final Attribute<Class<? extends Extension>> EXTENSION_TYPE = Attribute.of(MethodHandles.lookup(), "extension-type", new TypeToken<Class<? extends Extension>>() {});
+    //public static final Attribute<Class<? extends Extension>> EXTENSION_TYPE = Attribute.of(MethodHandles.lookup(), "extension-type", new TypeToken<Class<? extends Extension>>() {});
 
     ////////////////////// Think about these for a bit //////////////////////////
 
@@ -70,12 +69,4 @@ public final class ComponentAttributes {
 //    // Ved ikke praecis
 //    public static final Attribute<BuildModel> BUILD_INFO = Attribute.of(MethodHandles.lookup(), "build-info", BuildModel.class);
 
-    /** An attribute that accompanies any component that has the {@link ComponentModifier#SOURCED} modifier. */
-    public static final Attribute<Class<?>> SOURCE_CLASS = Attribute.of(MethodHandles.lookup(), "source-class", _CLASS);
-
-    /**
-     * 
-     * @see ComponentModifier#FUNCTION
-     */
-    public static final Attribute<TypeToken<?>> SOURCE_FUNCTION_TYPE = Attribute.of(MethodHandles.lookup(), "function-type", _TYPE_LITERAL);
 }

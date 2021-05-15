@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
-
-import packed.internal.component.PackedComponentModifierSet;
 
 /**
  * An immutable set of component modifiers.
@@ -33,32 +31,6 @@ public interface ComponentModifierSet extends Iterable<ComponentModifier> {
      */
     boolean contains(ComponentModifier modifier);
 
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#RUNTIME} modifier.
-     * 
-     * @return true if this set contains the guest modifier, otherwise false
-     */
-    default boolean hasRuntime() {
-        return contains(ComponentModifier.RUNTIME);
-    }
-
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#RUNTIME} modifier.
-     * 
-     * @return true if this set contains the guest modifier, otherwise false
-     */
-    default boolean isSingleton() {
-        return contains(ComponentModifier.CONSTANT);
-    }
-
-    /**
-     * Returns whether or not this set contains the {@link ComponentModifier#CONTAINER} modifier.
-     * 
-     * @return true if this set contains the container modifier, otherwise false
-     */
-    default boolean isStaticClassSource() {
-        return contains(ComponentModifier.STATEFUL);
-    }
 
     /**
      * Returns a new array containing all of the modifiers in this set.

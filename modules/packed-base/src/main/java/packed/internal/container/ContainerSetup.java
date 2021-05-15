@@ -26,7 +26,6 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentAttributes;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
@@ -35,8 +34,6 @@ import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceExtensionMirror;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.PackedApplicationDriver;
-import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.RealmSetup;
@@ -127,15 +124,6 @@ public final class ContainerSetup extends ComponentSetup {
             initializeNameWithPrefix(n);
         }
         assert name != null;
-    }
-
-    @Override
-    protected void attributesAdd(DefaultAttributeMap dam) {
-        // kan ogsaa test om container.application = application.container?
-        if (this == application.container) {
-            PackedApplicationDriver<?> pac = application.driver;
-            dam.addValue(ComponentAttributes.APPLICATION_CLASS, pac.applicationRawType());
-        }
     }
 
     public void closeRealm() {

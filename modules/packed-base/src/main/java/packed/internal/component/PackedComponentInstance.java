@@ -31,9 +31,8 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.component.ComponentModifier;
-import app.packed.component.ComponentModifierSet;
 import app.packed.component.ComponentScope;
+import app.packed.container.Extension;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.invoke.constantpool.ConstantPool;
 
@@ -125,6 +124,11 @@ public final class PackedComponentInstance implements ComponentMirror {
         }
     }
 
+    @Override
+    public ApplicationMirror application() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public AttributeMap attributes() {
@@ -146,6 +150,12 @@ public final class PackedComponentInstance implements ComponentMirror {
     @Override
     public int depth() {
         return model.depth;
+    }
+
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public ComponentMirror findComponent(CharSequence path) {
@@ -187,10 +197,9 @@ public final class PackedComponentInstance implements ComponentMirror {
         return c;
     }
 
-    /** {@inheritDoc} */
     @Override
-    public boolean hasModifier(ComponentModifier modifier) {
-        return PackedComponentModifierSet.isSet(model.modifiers, modifier);
+    public boolean isInSame(ComponentScope scope, ComponentMirror other) {
+        throw new UnsupportedOperationException();
     }
 
     public boolean isInSameContainer(PackedComponentInstance other) {
@@ -207,12 +216,6 @@ public final class PackedComponentInstance implements ComponentMirror {
 
     public RuntimeComponentModel model() {
         return model;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(model.modifiers);
     }
 
     /** {@inheritDoc} */
@@ -284,15 +287,5 @@ public final class PackedComponentInstance implements ComponentMirror {
         } else {
             return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
         }
-    }
-
-    @Override
-    public boolean isInSame(ComponentScope scope, ComponentMirror other) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ApplicationMirror application() {
-        throw new UnsupportedOperationException();
     }
 }
