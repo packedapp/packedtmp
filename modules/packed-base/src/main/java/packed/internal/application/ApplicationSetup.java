@@ -19,7 +19,6 @@ import packed.internal.component.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
-import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
@@ -30,13 +29,13 @@ public final class ApplicationSetup {
     /** The build the application is a part of. */
     public final BuildSetup build;
 
-    /** The configuration of the main constant build. */
+    /** The application's constant pool. */
     public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
 
     /** The root container of the application. */
     public final ContainerSetup container;
 
-    /** The driver of the application. */
+    /** The driver used for creating the application. */
     public final PackedApplicationDriver<?> driver;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
@@ -51,8 +50,7 @@ public final class ApplicationSetup {
     @Nullable
     private MainThreadOfControl mainThread;
 
-    private final int modifiers;
-
+    /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
     final int runtimePoolIndex;
 
     /**
@@ -61,22 +59,19 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver containerDriver, int modifiers,
-            Wirelet[] wirelets) {
+    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver containerDriver, Wirelet[] wirelets) {
         this.build = requireNonNull(build);
         this.driver = requireNonNull(driver, "driver is null");
         this.launchMode = requireNonNull(driver.launchMode());
-        this.container = containerDriver.newComponent(this, realm, null, wirelets);
-        this.modifiers = modifiers;
 
-        // Setup Runtime if needed
-        if (driver.hasRuntime()) {
-            runtimePoolIndex = constantPool.reserveObject(); // reserve a slot to an instance of PackedApplicationRuntime
-        } else {
-            runtimePoolIndex = -1;
-        }
+        // Create the root container-component of the application
+        this.container = containerDriver.newComponent(this, realm, null, wirelets);
+
+        // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
+        // constant pool
+        this.runtimePoolIndex = driver.hasRuntime() ? constantPool.reserveObject() : -1;
     }
-    
+
     public boolean hasMain() {
         return mainThread != null;
     }
@@ -87,7 +82,8 @@ public final class ApplicationSetup {
 
     /** {@return whether or not the application is part of an image}. */
     public boolean isImage() {
-        return PackedComponentModifierSet.isImage(modifiers);
+        // TODO fix for multi-apps, We should probably take a @Nullable ApplicationHostSetup in the constructor
+        return build.isImage();
     }
 
     public MainThreadOfControl mainThread() {
@@ -160,7 +156,7 @@ public final class ApplicationSetup {
         }
     }
 
-    /** An adaptor of {@link ApplicationSetup} exposed as {@link ApplicationMirror}. */
+    /** An application mirror adaptor. */
     private /* primitive */ record ApplicationMirrorAdaptor(ApplicationSetup application) implements ApplicationMirror {
 
         /** {@inheritDoc} */

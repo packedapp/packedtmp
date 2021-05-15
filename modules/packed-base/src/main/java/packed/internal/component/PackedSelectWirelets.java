@@ -125,7 +125,7 @@ public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> imple
 
     public static <T extends Wirelet> SelectWirelets<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
-        WireletWrapper wp = new WireletWrapper(WireletArray.flatten(wirelets));
+        WireletWrapper wp = new WireletWrapper(CombinedWirelet.flattenAll(wirelets));
         return new PackedSelectWirelets<>(wp, wireletClass);
     }
 }

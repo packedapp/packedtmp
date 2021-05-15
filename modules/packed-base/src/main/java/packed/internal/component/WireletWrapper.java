@@ -24,7 +24,7 @@ import app.packed.component.Wirelet;
 public final class WireletWrapper {
 
     /** An empty wirelet wrapper. */
-    static final WireletWrapper EMPTY = new WireletWrapper(WireletArray.EMPTY);
+    static final WireletWrapper EMPTY = new WireletWrapper(CombinedWirelet.EMPTY);
 
     /** The number of unconsumed wirelets. */
     // Maaske tracker vi kun ikke interne wirelets

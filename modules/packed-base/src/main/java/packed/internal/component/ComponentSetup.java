@@ -115,7 +115,7 @@ public abstract class ComponentSetup {
 
         // Various
         if (/* is root container */ parent == null) {
-            this.modifiers = application.build.modifiers | driver.modifiers;
+            this.modifiers = driver.modifiers;
             this.pool = application.constantPool;
         } else {
             this.modifiers = driver.modifiers;
@@ -132,12 +132,12 @@ public abstract class ComponentSetup {
             Wirelet[] ws;
             if (PackedComponentModifierSet.isApplication(modifiers)) {
                 if (application.driver.wirelet == null) {
-                    ws = WireletArray.flatten(wirelets);
+                    ws = CombinedWirelet.flattenAll(wirelets);
                 } else {
-                    ws = WireletArray.flatten(application.driver.wirelet, Wirelet.combine(wirelets));
+                    ws = CombinedWirelet.flatten(application.driver.wirelet, Wirelet.combine(wirelets));
                 }
             } else {
-                ws = WireletArray.flatten(wirelets);
+                ws = CombinedWirelet.flattenAll(wirelets);
             }
 
             this.wirelets = new WireletWrapper(ws);

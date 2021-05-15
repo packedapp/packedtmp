@@ -30,7 +30,6 @@ import packed.internal.component.NamespaceSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.RealmSetup;
-import packed.internal.container.ContainerSetup;
 
 /** The configuration of a build. */
 public final class BuildSetup implements BuildMirror {
@@ -38,40 +37,35 @@ public final class BuildSetup implements BuildMirror {
     /** The application we are building. */
     public final ApplicationSetup application;
 
-    /** The root container in the application we are building. */
-    public final ContainerSetup container;
-
-    /** Modifiers of the build. */
-    // Hmm hvad er disse i forhold til component modifiers???
-    public final int modifiers;
+    public final BuildTarget buildTarget;
 
     /** The namespace this build belongs to. */
     public final NamespaceSetup namespace = new NamespaceSetup();
 
-    public BuildTarget buildTarget;
-
-    // Ideen er at vi validere per built... F.eks Foo bruger @Inject paa et field... // Assembly = sdd, Source = DDD,
-    // ruleBroken = FFF
-    // Man kan kun validere assemblies...
-    // Maaske er det exposed paa BuildInfo...
-    // Giver det mening at returnere en component hvis det er fejlet??? InjectionGraph er det eneste jeg kan taenke...
-    // Object validationErrors;
-
     /**
-     * Creates a new build setup.
+     * Creates a new build.
      * 
-     * @param modifiers
-     *            the output of the build process
+     * @param applicationDriver
+     *            the application driver of the root (and often only) application
+     * @param realm
+     *            the realm of the application, has been created form the assembly or composer that describes the
+     *            application
+     * @param componentDriver
+     *            the component driver that will create the component configuration that the assembly or composer will
+     *            expose
+     * @param buildTarget
+     *            the build target
+     * @param wirelets
+     *            wirelets specified by the user. May be augmented by wirelets from the application or component driver
      */
     public BuildSetup(PackedApplicationDriver<?> applicationDriver, RealmSetup realm, PackedComponentDriver<?> componentDriver, BuildTarget buildTarget,
-            int modifiers, Wirelet[] wirelets) {
+            Wirelet[] wirelets) {
         if (!(componentDriver instanceof ContainerComponentDriver containerDriver)) {
             throw new IllegalArgumentException("An application can only be created by a container component driver, driver = " + componentDriver);
         }
+        // Creates the root application of the build
+        this.application = new ApplicationSetup(this, applicationDriver, realm, containerDriver, wirelets);
         this.buildTarget = requireNonNull(buildTarget);
-        this.modifiers = applicationDriver.modifiers + containerDriver.modifiers + modifiers;
-        this.application = new ApplicationSetup(this, applicationDriver, realm, containerDriver, modifiers, wirelets);
-        this.container = application.container;
     }
 
     /** {@inheritDoc} */
@@ -83,17 +77,13 @@ public final class BuildSetup implements BuildMirror {
     /** {@inheritDoc} */
     @Override
     public ComponentMirror component() {
-        return container.mirror();
+        return application.container.mirror();
     }
 
     /** {@inheritDoc} */
     @Override
     public ComponentMirrorStream components() {
-        return container.mirror().stream();
-    }
-
-    public BaseMirror mirror() {
-        return new BuildMirrorAdaptor(this);
+        return application.container.mirror().stream();
     }
 
     @Override
@@ -114,6 +104,10 @@ public final class BuildSetup implements BuildMirror {
     @Override
     public boolean isSuccess() {
         throw new UnsupportedOperationException();
+    }
+
+    public BaseMirror mirror() {
+        return new BuildMirrorAdaptor(this);
     }
 
     @Override
@@ -157,7 +151,7 @@ public final class BuildSetup implements BuildMirror {
         /** {@inheritDoc} */
         @Override
         public ContainerMirror container() {
-            return build.container.mirror();
+            return build.application.container.mirror();
         }
 
         @Override

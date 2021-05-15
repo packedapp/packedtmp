@@ -25,6 +25,8 @@ import packed.internal.util.MethodHandleUtil;
  * All strongly connected components relate to the same pod.
  */
 // Long term, this might just be an Object[] array. But for now its a class, in case we need stuff that isn't stored in the array. 
+
+// ApplicationHeap???
 public final /* primitive */ class ConstantPool {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
@@ -60,6 +62,7 @@ public final /* primitive */ class ConstantPool {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "ConstantPool [size = " + objects.length + "]";
     }

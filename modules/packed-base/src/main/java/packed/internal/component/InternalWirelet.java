@@ -34,24 +34,24 @@ public abstract class InternalWirelet extends Wirelet {
      * Checks that the specified component is the root component (container) of an application.
      * 
      * @param component
-     *            the component that is being wired
+     *            the component to check
      * @throws IllegalArgumentException
      *             if the specified component is not the root component of an application
      * @return the application of the component (for method chaining)
      */
     protected ApplicationSetup checkIsApplication(ComponentSetup component) {
         ApplicationSetup application = component.application;
-        ComponentSetup parent = component.parent;
-        if (parent != null && application == parent.application) {
+        if (application.container != component) {
             throw new IllegalArgumentException("This wirelet can only be specified when wiring an application, wirelet = " + this);
         }
-        return component.application;
+        return application;
     }
 
     protected <T> PackedApplicationDriver<T> onApplicationDriver(PackedApplicationDriver<T> driver) {
+        // Ide'en er at vi kan lave en ny application driver.. Hvor vi apply'er settings..
         return driver;
     }
-    
+
     /**
      * Invoked by the runtime when the component is initially wired at build-time.
      * 
@@ -61,10 +61,12 @@ public abstract class InternalWirelet extends Wirelet {
     protected abstract void onBuild(ComponentSetup component);
 
     public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext context) {
-        throw new IllegalArgumentException("The wirelet {" + getClass().getSimpleName() + "} cannot be specified when instantiating an image");
+        throw new IllegalArgumentException(
+                "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when instantiating an image");
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return getClass().getSimpleName();
     }
@@ -77,9 +79,9 @@ public abstract class InternalWirelet extends Wirelet {
 
         /** The scope of the wirelet */
         @Nullable
-        final ComponentScope scope;
+        private final ComponentScope scope;
 
-        public OnWireActionWirelet(Consumer<? super ComponentMirror> action, ComponentScope scope) {
+        public OnWireActionWirelet(Consumer<? super ComponentMirror> action, @Nullable ComponentScope scope) {
             this.action = requireNonNull(action, "action is null");
             this.scope = scope;
         }
@@ -102,7 +104,7 @@ public abstract class InternalWirelet extends Wirelet {
     public static final class OverrideNameWirelet extends InternalWirelet {
 
         /** The (validated) name to override with. */
-        final String name;
+        private final String name;
 
         /**
          * Creates a new name wirelet

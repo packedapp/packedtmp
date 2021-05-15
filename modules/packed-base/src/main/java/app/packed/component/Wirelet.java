@@ -17,8 +17,8 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import packed.internal.component.CombinedWirelet;
 import packed.internal.component.InternalWirelet.OverrideNameWirelet;
-import packed.internal.component.WireletArray;
 import packed.internal.component.WireletModel;
 import packed.internal.util.StackWalkerUtil;
 
@@ -50,11 +50,21 @@ import packed.internal.util.StackWalkerUtil;
  * Wirelet implementations must be immutable and safe to access by multiple concurrent threads. Unless otherwise
  * specified wirelets are reusable.
  * 
+ * 
+ * <p>
+ * Wirelets are divided into 3 main types:
+ * 
+ * InternalWirelet: are wirelets that are defined by Packed itself
+ * 
+ * ExtensionWirelet: Wirelets that are defined by extensions and typically available via public static methods in a XWirelet class
+ * 
+ * UserWirelet: Wirelets that are defined by end-users
+ * 
  */
 // Hvis vi kraever at alle WireletHandle
 // kun kan tage final eller/* sealed */wirelets som parameter
 // Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret 
-public abstract class Wirelet {
+public abstract /* sealed */ class Wirelet {
 
     /**
      * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by the {@code after} wirelet.
@@ -68,7 +78,7 @@ public abstract class Wirelet {
      */
     public final Wirelet andThen(Wirelet after) {
         requireNonNull(after, "after is null");
-        return WireletArray.of(this, after);
+        return CombinedWirelet.of(this, after);
     }
 
     /**
@@ -84,7 +94,7 @@ public abstract class Wirelet {
      * @see #of(Wirelet...)
      */
     public final Wirelet andThen(Wirelet... wirelets) {
-        return WireletArray.of(this, combine(wirelets));
+        return CombinedWirelet.of(this, combine(wirelets));
     }
 
     /**
@@ -100,7 +110,7 @@ public abstract class Wirelet {
      * @see #of(Wirelet...)
      */
     public final Wirelet beforeThis(Wirelet... wirelets) {
-        return WireletArray.of(combine(wirelets), this);
+        return CombinedWirelet.of(combine(wirelets), this);
     }
 
     /**
@@ -144,7 +154,7 @@ public abstract class Wirelet {
     // Da det ikke er en statisk metode.
 
     /**
-     * Returns a combined wirelet that behaves, in sequence, as each of the specified wirelets.
+     * Combines multiple wirelets into a single wirelet that behaves, in sequence, as each of the specified wirelets.
      * 
      * @param wirelets
      *            the wirelets to combine
@@ -154,7 +164,7 @@ public abstract class Wirelet {
      * @see #beforeThis(Wirelet...)
      */
     public static Wirelet combine(Wirelet... wirelets) {
-        return WireletArray.of(wirelets);
+        return CombinedWirelet.of(wirelets);
     }
 
     /**

@@ -5,17 +5,20 @@ import static java.util.Objects.requireNonNull;
 import app.packed.component.Wirelet;
 
 /**
- * A wirelet that allows for combining multiple wirelets into a single wirelet.
- * <p>
+ * A wirelet that combines multiple wirelets into a single wirelet. Is exposed to end users via methods on
+ * {@link Wirelet}.
  * 
  * @see Wirelet
  */
-public final /* primitive */ class WireletArray extends Wirelet {
+public final /* primitive */ class CombinedWirelet extends Wirelet {
 
     /** An empty wirelet array. */
-    public static final Wirelet[] EMPTY = new Wirelet[0];
+    static final Wirelet[] EMPTY = new Wirelet[0];
 
-    /** The wirelets this wirelet wraps. Will never contain any WireletArray instances. */
+    /**
+     * The wirelets that have been combined. Does never contain other CombinedWirelet instances as these are flattened at
+     * creation time.
+     */
     final Wirelet[] wirelets;
 
     /**
@@ -24,7 +27,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
      * @param wirelets
      *            the wirelets to wrap
      */
-    private WireletArray(Wirelet[] wirelets) {
+    private CombinedWirelet(Wirelet[] wirelets) {
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
     }
 
@@ -61,9 +64,9 @@ public final /* primitive */ class WireletArray extends Wirelet {
 
     static Wirelet[] flatten(Wirelet w1, Wirelet w2) {
         Wirelet[] result;
-        if (w1 instanceof WireletArray wl1) {
+        if (w1 instanceof CombinedWirelet wl1) {
             Wirelet[] wirelets1 = wl1.wirelets;
-            if (w2 instanceof WireletArray wl2) {
+            if (w2 instanceof CombinedWirelet wl2) {
                 Wirelet[] wirelets2 = wl2.wirelets;
                 result = new Wirelet[wirelets1.length + wirelets2.length];
                 copyInto(wirelets2, result, wirelets1.length);
@@ -72,7 +75,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
                 result[wl1.wirelets.length] = w2;
             }
             return copyInto(wirelets1, result, 0);
-        } else if (w2 instanceof WireletArray wl2) {
+        } else if (w2 instanceof CombinedWirelet wl2) {
             Wirelet[] wirelets = wl2.wirelets;
             result = new Wirelet[1 + wirelets.length];
             result[0] = w1;
@@ -82,20 +85,20 @@ public final /* primitive */ class WireletArray extends Wirelet {
         }
     }
 
-    public static Wirelet[] flatten(Wirelet[] wirelets) {
+    public static Wirelet[] flattenAll(Wirelet[] wirelets) {
         requireNonNull(wirelets, "wirelets is null");
         return switch (wirelets.length) {
         case 0 -> EMPTY;
         case 1 -> {
             Wirelet w = w(wirelets, 0);
-            yield w instanceof WireletArray wl ? wl.wirelets : new Wirelet[] { w };
+            yield w instanceof CombinedWirelet wl ? wl.wirelets : new Wirelet[] { w };
         }
         case 2 -> flatten(w(wirelets, 0), w(wirelets, 1));
         default -> {
             int size = wirelets.length;
             for (int i = 0; i < wirelets.length; i++) {
                 Wirelet w = w(wirelets, i);
-                if (w instanceof WireletArray list) {
+                if (w instanceof CombinedWirelet list) {
                     size += list.wirelets.length - 1;
                 }
             }
@@ -105,7 +108,7 @@ public final /* primitive */ class WireletArray extends Wirelet {
             Wirelet[] tmp = new Wirelet[size];
             int i = 0;
             for (Wirelet w : wirelets) {
-                if (w instanceof WireletArray list) {
+                if (w instanceof CombinedWirelet list) {
                     copyInto(list.wirelets, tmp, i);
                 } else {
                     tmp[i++] = w;
@@ -116,12 +119,26 @@ public final /* primitive */ class WireletArray extends Wirelet {
         };
     }
 
-    public final static WireletArray of(Wirelet... wirelets) {
-        return new WireletArray(WireletArray.flatten(wirelets));
+    /**
+     * @param wirelets
+     *            the wirelets to combine
+     * @return the combined wirelet
+     * @see Wirelet#combine(Wirelet...)
+     */
+    public final static Wirelet of(Wirelet... wirelets) {
+        return new CombinedWirelet(CombinedWirelet.flattenAll(wirelets));
     }
 
-    public final static WireletArray of(Wirelet wirelet, Wirelet other) {
-        return new WireletArray(WireletArray.flatten(wirelet, other));
+    /**
+     * @param wirelet
+     * @param other
+     * @return the combined wirelet
+     * @see Wirelet#andThen(Wirelet)
+     * @see Wirelet#andThen(Wirelet...)
+     * @see Wirelet#beforeThis(Wirelet...)
+     */
+    public final static Wirelet of(Wirelet wirelet, Wirelet other) {
+        return new CombinedWirelet(CombinedWirelet.flatten(wirelet, other));
     }
 
     private static Wirelet w(Wirelet[] wirelets, int index) {

@@ -39,7 +39,7 @@ import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedComponentModifierSet;
 import packed.internal.component.RealmSetup;
-import packed.internal.component.WireletArray;
+import packed.internal.component.CombinedWirelet;
 import packed.internal.component.WireletWrapper;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.LookupUtil;
@@ -112,7 +112,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /**
      * Builds an application from the specified assembly and optional wirelets.
      * <p>
-     * This 
+     * This
      * 
      * @param assembly
      *            the root assembly
@@ -128,10 +128,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         // Extract the component driver from the assembly
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
-        // Create a new application realm
-        RealmSetup realm = new RealmSetup(this, componentDriver, buildTarget, 0, assembly, wirelets);
+        // Create the initial realm realm, typically we will have a realm per container
+        RealmSetup realm = new RealmSetup(this, componentDriver, buildTarget, assembly, wirelets);
 
-        // Create a new component configuration instance that the assembly needs
+        // Create a new component configuration instance which are passed along to assembly that
+        // then exposes the various methods on the configuration objects through
+        // protected final methods such as ContainerAssembly#use(Class)
         ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
@@ -343,7 +345,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // If launching an image, the user might have specified additional runtime wirelets
             WireletWrapper wrapper = null;
             if (wirelets.length > 0) {
-                Wirelet[] ws = WireletArray.flatten(wirelets);
+                Wirelet[] ws = CombinedWirelet.flattenAll(wirelets);
                 wrapper = new WireletWrapper(ws);
             }
 

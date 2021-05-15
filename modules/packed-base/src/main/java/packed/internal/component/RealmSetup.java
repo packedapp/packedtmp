@@ -94,17 +94,17 @@ public final class RealmSetup {
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver,
             ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, this, componentDriver, BuildTarget.INSTANCE, 0, wirelets);
-        this.root = build.container;
+        this.build = new BuildSetup(applicationDriver, this, componentDriver, BuildTarget.INSTANCE, wirelets);
+        this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, BuildTarget buildTarget, int modifiers,
-            Assembly<?> assembly, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, BuildTarget buildTarget, Assembly<?> assembly,
+            Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
-        this.build = new BuildSetup(applicationDriver, this, componentDriver, buildTarget, modifiers, wirelets);
-        this.root = build.container;
+        this.build = new BuildSetup(applicationDriver, this, componentDriver, buildTarget, wirelets);
+        this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
     }
