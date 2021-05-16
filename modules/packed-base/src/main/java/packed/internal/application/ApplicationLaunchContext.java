@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.application.ApplicationRuntime;
-import app.packed.application.ApplicationWirelets;
+import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
@@ -42,7 +42,7 @@ public final class ApplicationLaunchContext implements PoolWriteable {
     public final ApplicationSetup application;
 
     /**
-     * The launch mode of the application. May be overridden via {@link ApplicationWirelets#launchMode(InstanceState)} if image.
+     * The launch mode of the application. May be overridden via {@link ApplicationRuntimeWirelets#launchMode(InstanceState)} if image.
      */
     InstanceState launchMode;
 

@@ -1,5 +1,7 @@
 package packed.internal.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.lang.reflect.Modifier;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -11,6 +13,7 @@ public class ClassUtil {
 
     @SuppressWarnings("unchecked")
     public static <T> Class<T> checkProperSubclass(Class<T> clazz, Class<?> clazzToCheck) {
+        requireNonNull(clazzToCheck, "class is null");
         if (clazzToCheck == clazz) {
             throw new IllegalArgumentException(clazz.getSimpleName() + ".class is not a valid argument to this method.");
         } else if (!clazz.isAssignableFrom(clazzToCheck)) {

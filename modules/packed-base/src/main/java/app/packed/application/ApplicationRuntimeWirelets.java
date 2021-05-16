@@ -1,5 +1,6 @@
 package app.packed.application;
 
+import java.nio.channels.AcceptPendingException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
@@ -7,15 +8,20 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.component.Wirelet;
+import app.packed.container.ExtensionNotAvailableException;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
 
 /**
- * Wirelets that can be specified when building or launching an application.
+ * Application runtime wirelet that can be specified when building or launching an application that includes the
+ * {@link AcceptPendingException}. Attempt to use these wirelets
+ * <p>
+ * Attempting to use any of the wirelets on this class on an application that does not. Attempts to use it with a
+ * non-runnable application will fail with {@link ExtensionNotAvailableException}.
+ * 
  */
-//Er maaske lidt mere runtime wirelets... Eller Lifetime wirelets...
-public final class ApplicationWirelets {
-    private ApplicationWirelets() {}
+public final class ApplicationRuntimeWirelets {
+    private ApplicationRuntimeWirelets() {}
 
     // after which the guest will be shutdown normally
     static Wirelet deadline(Instant deadline, StopOption... options) {
@@ -35,7 +41,7 @@ public final class ApplicationWirelets {
 
         // Den fungere kun med Terminate eller Stop mode...
         // Og kun in MainThreadOfControl
-        
+
         // https://github.com/patriknw/akka-typed-blog/blob/master/src/main/java/blog/typed/javadsl/ImmutableRoundRobinApp.java
 //        ActorSystem<Void> system = ActorSystem.create(root, "RoundRobin");
 //        try {
@@ -96,15 +102,11 @@ public final class ApplicationWirelets {
 
     // excludes start?? IDK
     /**
-     * <p>
-     * This wirelet can only be used with runnable applications. Attempts to use it with a non-runnable application will
-     * fail with {@link ApplicationNotRunnableException}.
      * 
      * @param duration
      *            the duration
      * @param options
      * @return
-     * 
      */
     public static Wirelet timeToRun(Duration duration, ApplicationRuntime.StopOption... options) {
         // can make a timeToLive() <-- which includes start

@@ -25,25 +25,18 @@ import packed.internal.application.PackedApplicationDriver;
 // Skal vi have en ApplicationModifier ogsaa?
 public interface ApplicationMirror extends Mirror {
 
-    /** {@return the root (container) component in the application}. */
-    ComponentMirror applicationComponent(); //
-
-    default Optional<ApplicationHostMirror> applicationHost() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
     TreeWalker<ComponentMirror> components();
 
+    /** {@return the root container in the application}. */
+    ContainerMirror container();
+
     // Er det kun componenter i den application??? Ja ville jeg mene...
     // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
     // app.rootContainer.children() <-- does this only include children in the same
     // application?? or any children...
-
-    /** {@return the root container in the application}. */
-    ContainerMirror container();
 
     // teanker det kun er containere i samme application...
     // ellers maa man bruge container.resolve("....")
@@ -52,17 +45,25 @@ public interface ApplicationMirror extends Mirror {
     /** {@return a walker containing all the containers in this application} */
     TreeWalker<ContainerMirror> containers();
 
+    /**
+     * Returns an immutable set containing extensions that have been disabled.
+     * 
+     * @return an immutable set containing extensions that have been disabled
+     * 
+     * @see ApplicationDriver.Builder#disable(Class...)
+     */
+    Set<Class<? extends Extension>> disabledExtensions();
+
+    default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
+        throw new UnsupportedOperationException();
+    }
+
     /** { @return a set view of all extensions that are in use by the application.} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     default Set<Class<? super Extension>> findAllExtensions(boolean includeChildApplications) {
         Set<Class<? super Extension>> result = new HashSet<>();
         containers().forEach(c -> result.addAll((Set) c.extensions()));
         return Set.copyOf(result);
-    }
-
-    /** {@return all the application hosts defined in this application.} */
-    default SetView<ApplicationHostMirror> findAllHosts(boolean includeChildApplications) {
-        throw new UnsupportedOperationException();
     }
 
     /** {@return all child applications of this application.} */
@@ -78,15 +79,32 @@ public interface ApplicationMirror extends Mirror {
     // IDK or children();
     default Collection<ApplicationMirror> findAllinstallations(boolean includeChildApplications) {
         BiConsumer<ApplicationHostMirror, Consumer<ApplicationMirror>> bc = (m, c) -> m.installations().forEach(p -> c.accept(p));
-        return findAllHosts(includeChildApplications).stream().mapMulti(bc).toList();
+        return findAllInstalledHosts(includeChildApplications).stream().mapMulti(bc).toList();
     }
 
-    default TaskListMirror initialization() {
-        throw new UnsupportedOperationException();
+    /** {@return all the application hosts defined in this application.} */
+    default SetView<ApplicationHostMirror> findAllInstalledHosts(boolean includeChildApplications) {
+        return findAll(ApplicationHostMirror.class, includeChildApplications);
     }
 
-    default boolean isHosted() {
-        return !parent().isEmpty();
+    /**
+     * Returns the ordinal of this application (its position in its enum declaration, where the initial constant is assigned
+     * an ordinal of zero).
+     *
+     * Most programmers will have no use for this method. It is designed for use by sophisticated enum-based data
+     * structures, such as {@link java.util.EnumSet} and {@link java.util.EnumMap}.
+     *
+     * @return the ordinal of this application
+     */
+    // -1 for non-hosted? Nah 1
+    // For mini hosts, er det et problem at skulle have en AtomicInteger... nah Vi har formentligt et map der fylder endnu
+    // mere
+    default int guestId() {
+        // Hmm, den er vel altid naermest bare 1...
+        // Ahh, hvis vi installere en fall back version... Saa har vi to
+        // Syntes hellere vi skal kalde den loebe nummer end version.
+        // Maaske er der nogen der gerne ville have deres eget versions begreb
+        return 1;
     }
 
     /**
@@ -95,7 +113,28 @@ public interface ApplicationMirror extends Mirror {
      * 
      * @return whether or the application is runnable
      */
-    boolean isRunnable();
+    boolean hasRuntime();
+
+    /**
+     * @return the application host, if this application is hosted. Otherwise empty.
+     * 
+     * @see #isGuest()
+     */
+    Optional<ApplicationHostMirror> host();
+
+    default TaskListMirror initialization() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns whether or not this application is hosted on top of another application.
+     * 
+     * @return
+     * @see #host()
+     */
+    default boolean isGuest() {
+        return host().isEmpty();
+    }
 
     // Wired er parent component<->child component
     // connections er component til any component.
@@ -116,39 +155,24 @@ public interface ApplicationMirror extends Mirror {
     }
 
     /**
-     * {@return the module that the application belongs to. This is typically the module of the assembly that defined the
+     * {@return the module of the application. This is always the module of the Assembly or Composer class that defines the
      * root container.}
      */
     Module module();
 
-    /** {@return the name of the application.} */
-    String name();
-
     /**
-     * Returns the ordinal of this application (its position in its enum declaration, where the initial constant is assigned
-     * an ordinal of zero).
-     *
-     * Most programmers will have no use for this method. It is designed for use by sophisticated enum-based data
-     * structures, such as {@link java.util.EnumSet} and {@link java.util.EnumMap}.
-     *
-     * @return the ordinal of this application
+     * Returns the name of the application.
+     * 
+     * @return the name of the application
+     * @see Wirelet#named(String)
      */
-    // -1 for non-hosted? Nah 1
-    // For mini hosts, er det et problem at skulle have en AtomicInteger... nah Vi har formentligt et map der fylder endnu
-    // mere
-    default int ordinal() {
-        // Hmm, den er vel altid naermest bare 1...
-        // Ahh, hvis vi installere en fall back version... Saa har vi to
-        // Syntes hellere vi skal kalde den loebe nummer end version.
-        // Maaske er der nogen der gerne ville have deres eget versions begreb
-        return 1;
-    }
+    String name();
 
     /** {@return the parent application of this application. Or empty if this application has no parent} */
     Optional<ApplicationMirror> parent();
+    // Optional<ApplicationRelation> parentRelation();
 
     NamespacePath path();
-    // Optional<ApplicationRelation> parentRelation();
 
     /**
      * <p>
@@ -170,8 +194,8 @@ public interface ApplicationMirror extends Mirror {
 
     // reflector
     /**
-     * {@return the default application driver that is used when creating mirrors without explicitly specifying an application
-     * driver.}
+     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
+     * application driver.}
      */
     public static ApplicationDriver<?> defaultDriver() {
         return PackedApplicationDriver.MIRROR_DRIVER;
@@ -188,7 +212,7 @@ public interface ApplicationMirror extends Mirror {
     /// Der er ingen der kommer til at lave dem selv...
 
     // extends Relation???
-    interface ParentRelation {
+    interface HostGuestRelation {
 
         ApplicationMirror child();
 

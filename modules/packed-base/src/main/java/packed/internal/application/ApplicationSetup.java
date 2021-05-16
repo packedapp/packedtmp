@@ -5,14 +5,17 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
 
+import app.packed.application.ApplicationHostMirror;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationWirelets;
+import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Extension;
 import app.packed.mirror.TreeWalker;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.BeanSetup;
@@ -41,7 +44,7 @@ public final class ApplicationSetup {
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
-     * The launch mode of the application. May be updated via usage of {@link ApplicationWirelets#launchMode(InstanceState)}
+     * The launch mode of the application. May be updated via usage of {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}
      * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
     InstanceState launchMode;
@@ -101,7 +104,7 @@ public final class ApplicationSetup {
 
     /**
      * A wirelet that will set the launch mode of the application. Used by
-     * {@link ApplicationWirelets#launchMode(InstanceState)}.
+     * {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
      */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
@@ -161,12 +164,6 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public ComponentMirror applicationComponent() {
-            return application.container.mirror();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public ContainerMirror container() {
             return application.container.mirror();
         }
@@ -191,7 +188,7 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean isRunnable() {
+        public boolean hasRuntime() {
             return application.driver.hasRuntime();
         }
 
@@ -229,6 +226,18 @@ public final class ApplicationSetup {
         @Override
         public Module module() {
             return application.container.realm.realmType().getModule();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Set<Class<? extends Extension>> disabledExtensions() {
+            // TODO add additional dsiabled extensions
+            return application.driver.disabledExtensions();
+        }
+
+        @Override
+        public Optional<ApplicationHostMirror> host() {
+            throw new UnsupportedOperationException();
         }
     }
 }

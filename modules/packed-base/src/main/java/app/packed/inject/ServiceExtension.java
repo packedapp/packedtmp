@@ -253,7 +253,7 @@ public class ServiceExtension extends Extension {
      * @see InjectorComposer#provide(Class)
      */
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
-        return configuration().wire(ServiceBeanConfiguration.provide(implementation)).provide();
+        return configuration().userWire(ServiceBeanConfiguration.provide(implementation)).provide();
     }
 
     /**
@@ -268,7 +268,7 @@ public class ServiceExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
-        return configuration().wire(ServiceBeanConfiguration.provide(factory)).provide();
+        return configuration().userWire(ServiceBeanConfiguration.provide(factory)).provide();
     }
 
     /**

@@ -10,8 +10,6 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
@@ -20,6 +18,8 @@ import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionRuntime;
+import app.packed.container.ExtensionRuntimeConfiguration;
 import app.packed.container.ExtensionWirelet;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
@@ -33,7 +33,6 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
-// Lige nu beholder vi den som component...
 public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** A handle for invoking {@link Extension#onComplete()}. */
@@ -84,14 +83,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         this.model = requireNonNull(model);
     }
 
-    private RealmSetup realm() {
-        RealmSetup r = realm;
-        if (r == null) {
-            r = realm = container.realm.newExtension(model, container);
-        }
-        return r;
-    }
-
     protected void attributesAdd(DefaultAttributeMap dam) {
         PackedAttributeModel pam = model.attributes;
         if (pam != null) {
@@ -122,6 +113,29 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return model.type();
     }
 
+    @Override
+    public ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
+        // get RuntimeExtensionModel...
+        // Make sure it is the same extension
+        // keep a references to them in each extension..
+        // and a total count which are the taken out from the constant pool...
+        // I think we need a RuntimeExtensionMirror... paa container...
+        // Jeg syntes ikke det skal vaere almindelig beans???
+        // Og dog for de kan jo bruge og expose features...
+        // Vaere med i Task liste
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Used by {@link #MH_INJECT_PARENT}.
      * 
@@ -136,24 +150,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             }
         }
         return null;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanConfiguration install(Class<?> implementation) {
-        return container.wire(BeanConfigurationBinder.DEFAULT.bind(implementation), realm());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanConfiguration install(Factory<?> factory) {
-        return container.wire(BeanConfigurationBinder.DEFAULT.bind(factory), realm());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BeanConfiguration installInstance(Object instance) {
-        return container.wire(BeanConfigurationBinder.DEFAULT.bindInstance(instance), realm());
     }
 
     /** {@inheritDoc} */
@@ -212,6 +208,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
     }
 
+    private RealmSetup realm() {
+        RealmSetup r = realm;
+        if (r == null) {
+            r = realm = container.realm.newExtension(model, container);
+        }
+        return r;
+    }
+
     /** {@inheritDoc} */
     @Override
     public <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
@@ -268,11 +272,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     @Override
     public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return container.wire(driver, container.realm, wirelets);
-    }
-
-    @Override
-    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.wire(driver, realm(), wirelets);
     }
 
     /**

@@ -45,6 +45,10 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     int depth();
 
     /** {@return empty if the component is installed by the user, otherwise the extension that owns it} */
+    // Hmm ExtensionRuntime vil helst ikke rigtig returnere optional
+    // owning extension?
+    // installedByExtension, wiringExtension.. (med det kan jo ogsaa vaere driveren...)
+    /// Okay, vi har nogle forskellige extensions her
     Optional<Class<? extends Extension>> extension();
 
     default ComponentMirror in(ComponentScope boundary) {

@@ -17,6 +17,7 @@ package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -28,6 +29,7 @@ import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
+import app.packed.container.ExtensionNotAvailableException;
 import app.packed.exceptionhandling.BuildException;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
@@ -87,13 +89,26 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> configurator, Wirelet... wirelets);
 
     /**
-     * Returns whether or not the applications produced by this driver are runnable.
+     * Returns an immutable set containing any extensions that have been disabled.
+     * <p>
+     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
+     * unsupported extensions
+     * <p>
+     * 
+     * @return a set of disabled extensions
+     */
+    Set<Class<? extends Extension>> disabledExtensions();
+
+    /**
+     * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.
      * <p>
      * Applications that are not runnable will always be launched in the Initial state.
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
-    boolean hasRuntime();
+    default boolean hasRuntime() {
+        return !disabledExtensions().contains(ApplicationRuntimeExtension.class);
+    }
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -121,7 +136,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     /**
      * Returns the launch mode of applications's created by this driver.
      * <p>
-     * The launch mode can be overridden by using {@link ApplicationWirelets#launchMode(InstanceState)}.
+     * The launch mode can be overridden by using {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
      * <p>
      * Drivers for applications without a runnable will always return {@link InstanceState#INITIALIZED}.
      * 
@@ -185,6 +200,10 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      */
     ApplicationDriver<A> with(Wirelet... wirelets);
 
+    default ApplicationDriver<A> withDisabledExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param launchMode
      * @return
@@ -194,6 +213,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
     default ApplicationDriver<A> withLaunchMode(InstanceState launchMode) {
         throw new UnsupportedOperationException();
     }
+
     /**
      * Returns a new {@code ApplicationDriver} builder.
      *
@@ -251,10 +271,34 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
         <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
 
         /**
-         * @param launchMode
+         * Disables 1 or more extensions. Attempting to use a disabled extension will result in an
+         * {@link ExtensionNotAvailableException} being thrown
+         * 
+         * @param extensionTypes
+         *            the types of extension to disable
          * @return
          */
-        Builder launchMode(InstanceState launchMode);
+        Builder disable(Class<? extends Extension> extensionType);
+        // fx disallow(BytecodeGenExtension.class);
+        // fx disallow(ThreadExtension.class);
+        // fx disallow(FileExtension.class);
+        // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
+
+        // Maaske kan man have et form for accept filter...
+
+        // Vi skal soerge for vi ikke klasse initialisere... Det er det
+
+        // Bliver de arvet??? Vil mene ja...
+        // Naa men vi laver bare en host/app der saa kan goere det...
+
+        // Kan ogsaa lave noget BiPredicate der tager
+        // <Requesting extension, extension that was requested>
+
+        // Spies
+
+        // Kan jo altsaa ogsaa vaere en Wirelet...
+        // WireletScope...
+
         /**
          * Indicates that the any application create by this driver is not runnable.
          * 
@@ -262,32 +306,16 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
          */
         // https://en.wikipedia.org/wiki/Runtime_system
         // noRuntimeEnvironment
-        Builder noRuntime(); // or notRunnable() (it was this originally)
 
-        @SuppressWarnings("unchecked")
-        default void rejectExtensions(Class<? extends Extension>... extensionTypes) {
-            // fx disallow(BytecodeGenExtension.class);
-            // fx disallow(ThreadExtension.class);
-            // fx disallow(FileExtension.class);
-            // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
-            
-            // Maaske kan man have et form for accept filter...
+        // Add ApplicationRuntimeExtension to list of unsupported extensions
+        // noApplicationRuntime
+//        Builder disableApplicationRuntime(); // or notRunnable() (it was this originally)
 
-            
-            // Vi skal soerge for vi ikke klasse initialisere... Det er det
-            
-            // Bliver de arvet??? Vil mene ja...
-            // Naa men vi laver bare en host/app der saa kan goere det...
-            
-            // Kan ogsaa lave noget BiPredicate der tager
-            // <Requesting extension, extension that was requested>
-            
-            // Spies
-            
-            // Kan jo altsaa ogsaa vaere en Wirelet...
-            // WireletScope...
-            
-        }
+        /**
+         * @param launchMode
+         * @return
+         */
+        Builder launchMode(InstanceState launchMode);
 
         /**
          * 

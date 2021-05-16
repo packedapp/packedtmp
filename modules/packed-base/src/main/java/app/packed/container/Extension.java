@@ -23,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
@@ -97,14 +98,13 @@ import packed.internal.util.ThrowableUtil;
 public abstract class Extension {
 
     /**
-     * The configuration of this extension.
+     * The configuration of this extension. That all methods delegate to.
+     * <p>
+     * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle. The field is
+     * not nulled out after the configuration of the extension has completed. This allows for invoking methods such as
+     * {@link #checkConfigurable()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #configuration()}.
-     * <p>
-     * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle.
-     * <p>
-     * This field is not nulled out after the configuration of the extension has completed. This allows for invoking methods
-     * such as {@link #checkConfigurable()} at any time.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -170,24 +170,6 @@ public abstract class Extension {
         return c;
     }
 
-    protected final BeanConfiguration install(Class<?> implementation) {
-        return configuration().install(implementation);
-    }
-
-    protected final BeanConfiguration install(Factory<?> factory) {
-        return configuration().install(factory);
-    }
-
-    /**
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see ContainerConfiguration#installInstance(Object)
-     */
-    protected final BeanConfiguration installInstance(Object instance) {
-        return configuration().installInstance(instance);
-    }
-
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
      * 
@@ -201,11 +183,18 @@ public abstract class Extension {
         return configuration().isUsed(extensionClass);
     }
 
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
-
+    /**
+     * @param extension
+     * @return
+     * 
+     * @see ApplicationDriver.Builder#disable(Class...)
+     */
+    // Kan disable den paa application driver...
+    //
+    protected boolean isExtensionEnabled(Class<? extends Extension> extension) {
+        throw new UnsupportedOperationException();
+    }
+    
     protected final void isLeafContainer() {
         // Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
         // Maaske vi skal tage info'en med der istedet for
@@ -218,29 +207,10 @@ public abstract class Extension {
     }
 
     /**
-     * <p>
-     * If this assembly links a container this method must be called from {@link #onComplete()}.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @throws InternalExtensionException
-     *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
-     */
-    protected final void link(Assembly<?> assembly, Wirelet... wirelets) {
-        configuration().link(assembly, wirelets);
-    }
-//
-//    protected final void lookup(MethodHandles.Lookup lookup) {
-//        ((ExtensionSetup) configuration()).lookup(lookup);
-//    }
-
-    /**
      * Invoked by the runtime when the configuration of the container is completed.
      * <p>
      * This place is the only place where an extension is allowed to wire new containers, for example, by calling
-     * {@link #link(Assembly, Wirelet...)}.
+     * {@link #runtimeLink(Assembly, Wirelet...)}.
      * <p>
      * T method must not add new extensions. Be careful with the components accepted from users
      */
@@ -257,6 +227,11 @@ public abstract class Extension {
         // An extension cannot link a container as long as it (the container?) is extendable.
     }
 
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    // extensionPreambleDone
+
     /**
      * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned), but before the
      * new extension instance is returned to the end-user.
@@ -268,10 +243,6 @@ public abstract class Extension {
      * @see #onComplete()
      */
     protected void onNew() {}
-
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
 
     // onPreUserContainerWiring???
     /**
@@ -296,6 +267,41 @@ public abstract class Extension {
 
         // lazy operations should be idempotent
     }
+
+    protected final ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
+        return configuration().extensionInstall(implementation, wirelets);
+    }
+
+    protected final ExtensionRuntimeConfiguration runtimeInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
+        return configuration().extensionInstall(factory, wirelets);
+    }
+
+    protected final ExtensionRuntimeConfiguration runtimeInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
+        return configuration().extensionInstallInstance(instance, wirelets);
+    }
+
+    // Hvad hvis den selv tilfoejer komponenter med en child container???
+    // Problemet er hvis den bruger extensions som den ikke har defineret
+    // Det tror jeg maaske bare ikke den kan
+
+    /**
+     * <p>
+     * If this assembly links a container this method must be called from {@link #onComplete()}.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @throws InternalExtensionException
+     *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
+     */
+    protected final void runtimeLink(Assembly<?> assembly, Wirelet... wirelets) {
+        configuration().link(assembly, wirelets);
+    }
+//
+//    protected final void lookup(MethodHandles.Lookup lookup) {
+//        ((ExtensionSetup) configuration()).lookup(lookup);
+//    }
 
     /**
      * Used to lookup other extensions.
@@ -349,24 +355,7 @@ public abstract class Extension {
         // $ = Static Init (s + i = $)
     }
 
-    protected static void $requiresClassGenFullAccessToModule() {
-        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
-        // Det kan ogsaa bare vaere en dependency paa en extension...
-        // Det er faktisk maaske det lettes
-        // dependsOn(ClassGenExtension.class);
-    }
-    
     protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
-
-    /**
-     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
-     * network extension
-     * <p>
-     * If only certain cirkus stances use checkRunnableApplication()
-     */
-    protected static void $requiresRunnableApplication() {
-        //
-    }
 
     protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension) {
         throw new Error();
@@ -471,6 +460,32 @@ public abstract class Extension {
         // will extract verions
     }
 
+    protected static void $requiresClassGenFullAccessToModule() {
+        // Ideen er lidt at man skal markere hvis man skal have adgang til Classgen
+        // Det kan ogsaa bare vaere en dependency paa en extension...
+        // Det er faktisk maaske det lettes
+        // dependsOn(ClassGenExtension.class);
+    }
+
+    /**
+     * If you always knows that you need a runnable application. For example, schedule extension, concurrency extension,
+     * network extension
+     * <p>
+     * If only certain cirkus stances use checkRunnableApplication()
+     */
+    protected static void $requiresRunnableApplication() {
+        //
+    }
+
+    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
+        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
+        throw new UnsupportedOperationException();
+    }
+
+    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
+        throw new UnsupportedOperationException();
+    }
+
     static final void preFinalMethod() {
         // Lav versioner der tager 1,2,3 og vargs parametere...
 
@@ -487,6 +502,10 @@ public abstract class Extension {
         //// ....
         // }
         // Her vil man nok ikke vaelge at
+    }
+
+    protected interface ClassComponentDriverBuilder {
+        BeanConfigurationBinder<Object, BeanConfiguration> build();
     }
 
     /**
@@ -527,19 +546,6 @@ public abstract class Extension {
      * @see ExtensionConfiguration#use(Class)
      */
     public static abstract class Subtension {}
-
-    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
-        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
-        throw new UnsupportedOperationException();
-    }
-
-    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
-        throw new UnsupportedOperationException();
-    }
-
-    protected interface ClassComponentDriverBuilder {
-        BeanConfigurationBinder<Object, BeanConfiguration> build();
-    }
 }
 //* <p>
 //* The main reason for prohibiting most configuration from the constructor is. Is to avoid situations.. that users might then link

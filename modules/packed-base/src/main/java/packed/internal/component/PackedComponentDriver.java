@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.AbstractBeanConfiguration;
@@ -14,6 +15,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.AbstractContainerConfiguration;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
@@ -47,6 +49,11 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     public PackedComponentDriver(@Nullable Wirelet wirelet, int modifiers) {
         this.wirelet = wirelet;
         this.modifiers = modifiers;
+    }
+
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+       throw new UnsupportedOperationException();
     }
 
     public abstract ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);

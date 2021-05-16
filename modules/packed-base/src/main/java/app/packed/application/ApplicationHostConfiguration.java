@@ -129,7 +129,7 @@ class OldStuff<T> extends ApplicationHostConfiguration<T> {
     // Men det kan vi ikke naar det bare er en wirelet..
     // onBuild(), onInitialize()
     public void lazy2(Assembly<?> assembly, Wirelet... wirelets) {
-        install(assembly, ApplicationWirelets.launchMode(InstanceState.UNINITIALIZED).beforeThis(wirelets));
+        install(assembly, ApplicationRuntimeWirelets.launchMode(InstanceState.UNINITIALIZED).beforeThis(wirelets));
     }
 }
 

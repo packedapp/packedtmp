@@ -135,7 +135,7 @@ public final class BuildSetup implements BuildMirror {
 
         @Override
         public ComponentMirror component() {
-            return build.application.mirror().applicationComponent();
+            return build.application.mirror().container();
         }
 
         @Override

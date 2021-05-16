@@ -15,7 +15,10 @@
  */
 package app.packed.component;
 
+import java.util.Optional;
+
 import app.packed.container.BaseAssembly;
+import app.packed.container.Extension;
 
 /**
  * Component drivers are responsible for configuring and creating new components.
@@ -34,13 +37,16 @@ import app.packed.container.BaseAssembly;
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
 
     ComponentDriver<C> with(Wirelet... wirelet);
-    
+
+    // IDK
+    Optional<Class<? extends Extension>> extension();
+
     // ComponentType componentType();
-    
+
     // Bliver noedt til at have en type omkring hvad det er vi er ved at tilfoeje...
     /// BeanComponentDriver??? ContainerComponentDriver
     /// Taenker man kan lave nogle checks i wire()
     // if (driver instanceof BeanComponentDriver bcd) {
     // assert(bcd.class instanceof Foo);
-    // 
+    //
 }

@@ -22,11 +22,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
+import java.util.HashSet;
+import java.util.Set;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
-import app.packed.application.ApplicationWirelets;
+import app.packed.application.ApplicationRuntimeExtension;
+import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.application.BuildTarget;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
@@ -34,14 +37,15 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
+import app.packed.container.Extension;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
-import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.PackedComponentModifierSet;
-import packed.internal.component.RealmSetup;
 import packed.internal.component.CombinedWirelet;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.invoke.Infuser;
+import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -58,14 +62,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
             PackedComponentDriver.class);
 
-    /** The default launch mode, may be overridden via {@link ApplicationWirelets#launchMode(InstanceState)}. */
+    final Set<Class<? extends Extension>> disabledExtensions;
+
+    /** The default launch mode, may be overridden via {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}. */
     private final InstanceState launchMode;
 
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
-
-    /** The modifiers of this application */
-    final int modifiers;
 
     /** Wirelet(s) that will be processed before any wirelets specified by the user. */
     @Nullable
@@ -79,9 +82,14 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private PackedApplicationDriver(Builder builder) {
         this.mhConstructor = requireNonNull(builder.mhConstructor);
-        this.modifiers = builder.modifiers;
         this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
         this.wirelet = builder.wirelet;
+        this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
+
+        // Cannot disable ApplicationRuntimeExtension and then at the same time set a launch mode
+        if (disabledExtensions.contains(ApplicationRuntimeExtension.class) && builder.launchMode != null) {
+            throw new IllegalStateException("This method cannot be called when a launch mode has been set");
+        }
     }
 
     /**
@@ -94,8 +102,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet wirelet) {
         this.mhConstructor = existing.mhConstructor;
-        this.modifiers = existing.modifiers;
         this.launchMode = existing.launchMode;
+        this.disabledExtensions = existing.disabledExtensions;
         this.wirelet = requireNonNull(wirelet);
     }
 
@@ -182,8 +190,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasRuntime() {
-        return (modifiers & PackedComponentModifierSet.I_RUNTIME) != 0;
+    public Set<Class<? extends Extension>> disabledExtensions() {
+        return disabledExtensions;
     }
 
     /** {@inheritDoc} */
@@ -261,13 +269,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "services",
                 ServiceLocator.class);
 
+        private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
+
         /** The default launch mode of the application. */
         private InstanceState launchMode;
 
         MethodHandle mhConstructor;
-
-        /** The modifiers of the application. We have a runtime modifier by default. */
-        private int modifiers = PackedComponentModifierSet.I_RUNTIME;
 
         private Wirelet wirelet;
 
@@ -280,7 +287,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
-            if (isRunnable()) { // Conditional add ApplicationRuntime
+            if (!disabledExtensions.contains(ApplicationRuntimeExtension.class)) { // Conditional add ApplicationRuntime
                 builder.provide(ApplicationRuntime.class).invokeExact(MH_RUNTIME, 0);
             }
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
@@ -305,30 +312,32 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
-        boolean isRunnable() {
-            return (modifiers & PackedComponentModifierSet.I_RUNTIME) != 0;
+//        /** {@inheritDoc} */
+//        @Override
+//        public Builder disable(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+//            requireNonNull(extensionTypes, "extensionTypes is null");
+//            for (Class<? extends Extension> c : extensionTypes) {
+//                disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, c));
+//            }
+//            return this;
+//        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Builder disable(Class<? extends Extension> extensionType) {
+            requireNonNull(extensionType, "extensionType is null");
+            disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, extensionType));
+            return this;
         }
 
         /** {@inheritDoc} */
         @Override
         public Builder launchMode(InstanceState launchMode) {
             requireNonNull(launchMode, "launchMode is null");
-            if (!isRunnable()) {
-                throw new IllegalStateException("A launch mode can only be set for runnable applications");
-            } else if (launchMode == InstanceState.INITIALIZING) {
+            if (launchMode == InstanceState.INITIALIZING) {
                 throw new IllegalArgumentException("'" + InstanceState.INITIALIZING + "' is not a valid launch mode");
             }
             this.launchMode = launchMode;
-            return this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Builder noRuntime() {
-            if (launchMode != null) {
-                throw new IllegalStateException("This method cannot be called when a launch mode has been set");
-            }
-            modifiers &= ~PackedComponentModifierSet.I_RUNTIME;
             return this;
         }
     }

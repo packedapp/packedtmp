@@ -47,6 +47,11 @@ import app.packed.state.sandbox.InstanceState;
  * 
  * @see Program#newImage(Assembly, Wirelet...)
  */
+
+
+// Det er som default mange gange...
+//// Og saa har vi single shot!!!
+
 public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
 
     default boolean isLaunchable() {
@@ -71,7 +76,7 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
      * Returns the launch mode of this image. The launch mode is the runmode target
      * <p>
      * The launch mode can be overridden by specifying a launch mode wirelet using
-     * {@link ApplicationWirelets#launchMode(InstanceState)}.
+     * {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
      * 
      * @return the launch mode of the application
      * 

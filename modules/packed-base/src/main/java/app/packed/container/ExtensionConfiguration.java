@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationImage;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
@@ -65,6 +64,27 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     void checkIsBuilding();
 
+    ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets);
+
+    // Will install the class in the specified Container
+
+    // maybe userInstall
+    // or maybe we just have userWire()
+    // customWire
+    // For hvorfor skal brugen installere en alm component via denne extension???
+    // Vi skal vel altid have en eller anden specific component driver
+    // BaseComponentConfiguration containerInstall(Class<?> factory);
+
+    ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets);
+
+    /**
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see ContainerConfiguration#installInstance(Object)
+     */
+    ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets);
+
     /**
      * Returns the extension instance.
      * <p>
@@ -76,27 +96,6 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     // Lad os se om den kan bruges fra hooks... eller lignende
     Extension instance();
-
-    // Will install the class in the specified Container
-
-    // maybe userInstall
-    // or maybe we just have userWire()
-    // customWire
-    // For hvorfor skal brugen installere en alm component via denne extension???
-    // Vi skal vel altid have en eller anden specific component driver
-    // BaseComponentConfiguration containerInstall(Class<?> factory);
-
-    BeanConfiguration install(Class<?> factory);
-
-    BeanConfiguration install(Factory<?> factory);
-
-    /**
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see ContainerConfiguration#installInstance(Object)
-     */
-    BeanConfiguration installInstance(Object instance);
 
 //    default boolean isConnected() {
 //        // isInterConnected?
@@ -164,6 +163,20 @@ public /* sealed */ interface ExtensionConfiguration {
     ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
+     * Re
+     * 
+     * @param <T>
+     *            the type of wirelet to handle
+     * @param wireletType
+     *            the type of wirelet to return a handle for
+     * @return a wirelet source
+     * @throws IllegalArgumentException
+     *             if the specified wirelet type is not a subclass of {@link ExtensionWirelet} and this extension as the
+     *             type parameter
+     */
+    <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletType);
+
+    /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
      * dependencies as specified via.... Otherwise an {@link InternalExtensionException} is thrown.
      * <p>
@@ -187,36 +200,26 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
 
-    // Ideen er lidt at det er paa den her maade at extensionen
-    // registrere bruger objekter...
+    /**
+     * @param <C>
+     *            the type of component configuration that is being returned to the user
+     * @param driver
+     *            the component driver created by the extension
+     * @param wirelets
+     *            optional wirelets provided by the user (or the extension itself)
+     * @return a component configuration object that can be returned to the user
+     * @throws InternalExtensionException
+     *             if the specified driver is not created by the extension itself
+     */
     <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
 
-    /**
-     * Wires a new child component using the specified driver
-     * 
-     * @param <C>
-     *            the type of configuration returned by the driver
-     * @param driver
-     *            the driver to use for creating the component
-     * @param wirelets
-     *            any wirelets that should be used when creating the component
-     * @return a configuration for the component
-     */
-    <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
+    default <C extends ComponentConfiguration> C subWire(Class<? extends Extension> subtension, ComponentDriver<C> driver, Wirelet... wirelets) {
+        /// Maaske har vi alligevel brug for SubtensionConfiguration...
+        // Ellers kan vi jo impresonate alle extensions.
 
-    /**
-     * Re
-     * 
-     * @param <T>
-     *            the type of wirelet to handle
-     * @param wireletType
-     *            the type of wirelet to return a handle for
-     * @return a wirelet source
-     * @throws IllegalArgumentException
-     *             if the specified wirelet type is not a subclass of {@link ExtensionWirelet} and this extension as the
-     *             type parameter
-     */
-    <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletType);
+        // Hvis vi goer det... syntes jeg vi skal smide den ud i en seperat klasse..
+        throw new UnsupportedOperationException();
+    }
 }
 
 // Previously used for getting hold of an extension from a mirror..

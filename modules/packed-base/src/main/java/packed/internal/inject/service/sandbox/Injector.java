@@ -20,6 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.Program;
 import app.packed.component.Assembly;
 import app.packed.component.ComposerConfigurator;
@@ -179,7 +180,7 @@ final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);
 
-    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().noRuntime().build(MethodHandles.lookup(),
+    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().disable(ApplicationRuntimeExtension.class).build(MethodHandles.lookup(),
             Injector.class, CONV);
 
     static Injector convert(ApplicationLaunchContext container) {
