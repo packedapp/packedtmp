@@ -57,7 +57,7 @@ public final class BeanSetup extends ComponentSetup {
         return source.service == null ? Optional.empty() : Optional.of(source.service.key());
     }
 
-    /** A build-time bean mirror adaptor. */
+    /** A build-time bean mirror. */
     private final static class BuildTimeBeanMirror extends ComponentSetup.BuildTimeComponentMirror implements BeanMirror {
 
         private final BeanSetup bean;

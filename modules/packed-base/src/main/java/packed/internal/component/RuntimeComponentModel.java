@@ -40,13 +40,14 @@ public final class RuntimeComponentModel {
     RuntimeComponentModel(ComponentSetup compConf) {
         this.depth = compConf.depth;
         // this.extension = context.extension();
-        int p = compConf.modifiers;
-        p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
-        this.modifiers = p;
+        //int p = compConf.modifiers;
+        //p = PackedComponentModifierSet.removeIf(p, depth == 0, ComponentModifier.IMAGE);
+        this.modifiers = 123;
     }
 
     public boolean isContainer() {
-        return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.RUNTIME);
+        return false;
+        //return PackedComponentModifierSet.isSet(modifiers, ComponentModifier.RUNTIME);
     }
 
     static RuntimeComponentModel of(ComponentSetup context) {

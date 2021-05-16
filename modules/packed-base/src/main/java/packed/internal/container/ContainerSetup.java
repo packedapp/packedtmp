@@ -256,7 +256,7 @@ public final class ContainerSetup extends ComponentSetup {
         return (T) useExtension(extensionClass, null).instance();
     }
 
-    /** An adaptor for the Container interface. */
+    /** A build-time container mirror. */
     private final static class BuildTimeContainer extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
 
         private final ContainerSetup container;
