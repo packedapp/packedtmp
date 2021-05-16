@@ -1,5 +1,6 @@
 package app.packed.application;
 
+import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.base.Completion;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -10,6 +11,13 @@ public class UseCases {
 
     public void lazy(ContainerConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
+        hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
+        hc.install(new BB());
+    }
+
+    public void lazy2(ContainerConfiguration cc) {
+        ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc,
+                App.driver().with(ApplicationRuntimeWirelets.launchMode(InstanceState.UNINITIALIZED)));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
@@ -29,7 +37,7 @@ public class UseCases {
         hc.installLaunchable(new AA());
         cc.install(AppLauncher.class);
     }
-    
+
     public interface Guest {
         InstanceState state();
 

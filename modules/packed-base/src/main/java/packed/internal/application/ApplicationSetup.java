@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.application.ApplicationHostMirror;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntimeWirelets;
+import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;

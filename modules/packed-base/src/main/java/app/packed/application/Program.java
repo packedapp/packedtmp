@@ -120,7 +120,7 @@ public interface Program extends AutoCloseable {
      * @param wirelets
      *            optional wirelets
      * @return a new app image
-     * @see ImageWirelets
+     * @see ApplicationImageWirelets
      * @see ApplicationDriver#newImage(Assembly, Wirelet...)
      */
     static ApplicationImage<Program> newImage(Assembly<?> assembly, Wirelet... wirelets) {

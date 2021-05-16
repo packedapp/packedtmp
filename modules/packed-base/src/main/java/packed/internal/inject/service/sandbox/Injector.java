@@ -180,7 +180,7 @@ final class InjectorApplicationHelper {
 
     static final MethodHandle CONV = LookupUtil.lookupStatic(MethodHandles.lookup(), "convert", Injector.class, ApplicationLaunchContext.class);
 
-    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().disable(ApplicationRuntimeExtension.class).build(MethodHandles.lookup(),
+    static final ApplicationDriver<Injector> DRIVER = ApplicationDriver.builder().disableExtension(ApplicationRuntimeExtension.class).build(MethodHandles.lookup(),
             Injector.class, CONV);
 
     static Injector convert(ApplicationLaunchContext container) {

@@ -194,6 +194,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return disabledExtensions;
     }
 
+    public PackedApplicationDriver<A> withDisabledExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+        // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
+        throw new UnsupportedOperationException();
+    }
+
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
@@ -324,7 +329,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder disable(Class<? extends Extension> extensionType) {
+        public Builder disableExtension(Class<? extends Extension> extensionType) {
             requireNonNull(extensionType, "extensionType is null");
             disabledExtensions.add(ClassUtil.checkProperSubclass(Extension.class, extensionType));
             return this;

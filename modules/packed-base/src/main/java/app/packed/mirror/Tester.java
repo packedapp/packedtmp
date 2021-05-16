@@ -1,8 +1,8 @@
 package app.packed.mirror;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationHostConfiguration;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.inject.ServiceContract;

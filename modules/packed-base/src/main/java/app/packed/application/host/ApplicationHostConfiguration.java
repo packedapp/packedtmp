@@ -1,7 +1,11 @@
-package app.packed.application;
+package app.packed.application.host;
 
 import java.util.function.Supplier;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationRuntimeWirelets;
+import app.packed.application.InstalledApplicationConfiguration;
+import app.packed.application.Launcher;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;

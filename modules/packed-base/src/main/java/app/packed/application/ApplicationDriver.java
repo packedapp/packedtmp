@@ -138,12 +138,13 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * <p>
      * The launch mode can be overridden by using {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
      * <p>
-     * Drivers for applications without a runnable will always return {@link InstanceState#INITIALIZED}.
+     * Drivers for applications without a runtime will always return {@link InstanceState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
      * @see #compose(ComponentDriver, Function, Consumer, Wirelet...)
      * @see #newImage(Assembly, Wirelet...)
+     * @see ApplicationRuntimeWirelets#launchMode(InstanceState)
      */
     InstanceState launchMode(); // runTo().. Den der fucking terminated kills me
 
@@ -200,10 +201,6 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      */
     ApplicationDriver<A> with(Wirelet... wirelets);
 
-    default ApplicationDriver<A> withDisabledExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * @param launchMode
      * @return
@@ -211,7 +208,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      *             if the driver produces non-runnable applications.
      */
     default ApplicationDriver<A> withLaunchMode(InstanceState launchMode) {
-        throw new UnsupportedOperationException();
+        return with(ApplicationRuntimeWirelets.launchMode(launchMode));
     }
 
     /**
@@ -278,7 +275,7 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
          *            the types of extension to disable
          * @return
          */
-        Builder disable(Class<? extends Extension> extensionType);
+        Builder disableExtension(Class<? extends Extension> extensionType);
         // fx disallow(BytecodeGenExtension.class);
         // fx disallow(ThreadExtension.class);
         // fx disallow(FileExtension.class);
@@ -429,6 +426,16 @@ interface ApplicationDriverSandbox<A> {
     default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
 
     }
+//  /**
+//  * Will look for annotations
+//  * <p>
+//  * If you want to support your own annotations. You can do by registering your hooks
+//  * 
+//  * @return this builder
+//  */
+// // Jeg vil mene vi goer det her automatisk...
+// // Hvad hvis vi returnere forskellige typer???
+// Builder useShellAsSource();
 
     Validation validate(Assembly<?> assembly, Wirelet... wirelets);
 
@@ -449,69 +456,55 @@ interface ApplicationDriverSandbox<A> {
 
 }
 
-/**
- * Kigge paa at tilfoeje builders til den...
- */
-interface ZApplicationDriverWithBuilder {
-
-    // Vi dropper det lookup object?
-    // eller ogsaa har vi maaske 2 metoder
-    // Man kan lave en builder
-
-    static Builder<Void> builder(MethodHandles.Lookup lookup) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T> Builder<T> builder(MethodHandles.Lookup lookup, Class<T> type) {
-        throw new UnsupportedOperationException();
-    }
-
-    static <T> Builder<T> builder(MethodHandles.Lookup lookup, TypeToken<T> type) {
-        // T kan have type variables
-        throw new UnsupportedOperationException();
-    }
-
-    interface Builder<T> {
-
-        // Throws ISE paa runtime? Validation? ASsertionError, Custom...
-        @SuppressWarnings("unchecked")
-        default Builder<T> restrictExtensions(Class<? extends Extension>... extensionClasses) {
-            throw new UnsupportedOperationException();
-        }
-
-//      /**
-//       * Will look for annotations
-//       * <p>
-//       * If you want to support your own annotations. You can do by registering your hooks
-//       * 
-//       * @return this builder
-//       */
-//      // Jeg vil mene vi goer det her automatisk...
-//      // Hvad hvis vi returnere forskellige typer???
-//      Builder useShellAsSource();
-
-//      // Stuff on the container always belongs to the other side...
-//      // Cannot use Factory...
-//     
+// Old one
+///**
+// * Kigge paa at tilfoeje builders til den...
+// */
+//interface ZApplicationDriverWithBuilder {
 //
-//      // ApplicationDriver.of(.., Wirelet... wirelets)
-//      // ApplicationDriver.ofRuntime(.., Wirelet... wirelets)
+//    // Vi dropper det lookup object?
+//    // eller ogsaa har vi maaske 2 metoder
+//    // Man kan lave en builder
+//
+//    static Builder<Void> builder(MethodHandles.Lookup lookup) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    static <T> Builder<T> builder(MethodHandles.Lookup lookup, Class<T> type) {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    static <T> Builder<T> builder(MethodHandles.Lookup lookup, TypeToken<T> type) {
+//        // T kan have type variables
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    interface Builder<T> {
 //
 //
-//      // kunne jo altsaa bare tage det som parametere...
-//      Builder addWirelet(Wirelet... wirelets) { 
-//          return this;
-//      }
-//      // see laenger nede i ZApplicationDriverBuilders
 //
-//      <A> ApplicationDriver<A> build(Class<A> clazz) {
-//          throw new UnsupportedOperationException();
-//      }
-//      
-//      <A> ApplicationDriver<A> build(Factory<A> factory) {
-//          // if use source fail...
-//          throw new UnsupportedOperationException();
-//      }
-
-    }
-}
+////      // Stuff on the container always belongs to the other side...
+////      // Cannot use Factory...
+////     
+////
+////      // ApplicationDriver.of(.., Wirelet... wirelets)
+////      // ApplicationDriver.ofRuntime(.., Wirelet... wirelets)
+////
+////
+////      // kunne jo altsaa bare tage det som parametere...
+////      Builder addWirelet(Wirelet... wirelets) { 
+////          return this;
+////      }
+////      // see laenger nede i ZApplicationDriverBuilders
+////
+////      <A> ApplicationDriver<A> build(Class<A> clazz) {
+////          throw new UnsupportedOperationException();
+////      }
+////      
+////      <A> ApplicationDriver<A> build(Factory<A> factory) {
+////          // if use source fail...
+////          throw new UnsupportedOperationException();
+////      }
+//
+//    }
+//}

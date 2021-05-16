@@ -187,7 +187,7 @@ public abstract class Extension {
      * @param extension
      * @return
      * 
-     * @see ApplicationDriver.Builder#disable(Class...)
+     * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     // Kan disable den paa application driver...
     //

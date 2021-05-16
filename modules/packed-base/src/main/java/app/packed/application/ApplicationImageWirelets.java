@@ -26,7 +26,8 @@ import app.packed.component.Wirelet;
 
 // De virker dog kun paa en artifact rod...
 // Og kun paa build time
-class ImageWirelets {
+class ApplicationImageWirelets {
+    
     // Kun aktuelt for system images, ikke for sub-system images
     static Wirelet retainImage() {
         throw new UnsupportedOperationException();

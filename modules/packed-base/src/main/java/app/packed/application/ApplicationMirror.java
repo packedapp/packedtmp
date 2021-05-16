@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
@@ -50,7 +51,7 @@ public interface ApplicationMirror extends Mirror {
      * 
      * @return an immutable set containing extensions that have been disabled
      * 
-     * @see ApplicationDriver.Builder#disable(Class...)
+     * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     Set<Class<? extends Extension>> disabledExtensions();
 
