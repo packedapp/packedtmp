@@ -73,7 +73,7 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
         this.component = component;
 
         // Reserve a place in the constant pool if the source is a singleton
-        this.poolIndex = PackedComponentModifierSet.isSet(driver.modifiers, ComponentModifier.CONSTANT) ? component.pool.reserveObject() : -1;
+        this.poolIndex = driver.isConstant ? component.pool.reserveObject() : -1;
 
         // A realm accessor that allows us to find all hooks a component source
         RealmAccessor accessor = component.realm.accessor();
@@ -81,7 +81,8 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
             this.constant = null;
-            boolean isStaticClassSource = PackedComponentModifierSet.isSet(driver.modifiers, ComponentModifier.STATEFUL);
+            // TODO fix
+            boolean isStaticClassSource = false;// PackedComponentModifierSet.isSet(driver.modifiers, ComponentModifier.STATEFUL);
             // was driver.modifiers().isStaticClassSource()
             this.factory = isStaticClassSource ? null : Factory.of(cl);
             this.hooks = accessor.modelOf(cl);

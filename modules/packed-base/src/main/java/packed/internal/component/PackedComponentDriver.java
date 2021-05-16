@@ -53,7 +53,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     @Override
     public Optional<Class<? extends Extension>> extension() {
-       throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException();
     }
 
     public abstract ComponentSetup newComponent(ApplicationSetup application, RealmSetup realm, @Nullable ComponentSetup parent, Wirelet[] wirelets);
@@ -93,10 +93,13 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
         final MethodHandle mh;
 
+        final boolean isConstant;
+
         public BeanComponentDriver(PackedBeanConfigurationBinder<?, C> driver, Object binding) {
             super(null, driver.modifiers());
             this.mh = driver.constructor();
             this.binding = requireNonNull(binding);
+            this.isConstant = driver.isConstant();
         }
 
         @Override

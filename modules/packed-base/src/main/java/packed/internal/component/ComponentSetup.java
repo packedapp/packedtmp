@@ -61,9 +61,6 @@ public abstract class ComponentSetup {
     /** The depth of the component in the tree. */
     protected final int depth;
 
-    /** The modifiers of this component. */
-    protected final int modifiers;
-
     /** The name of this component. */
     protected String name;
 
@@ -115,11 +112,9 @@ public abstract class ComponentSetup {
 
         // Various
         if (/* is root container */ parent == null) {
-            this.modifiers = driver.modifiers;
             this.pool = application.constantPool;
         } else {
-            this.modifiers = driver.modifiers;
-            boolean hasRuntime = PackedComponentModifierSet.isSet(modifiers, ComponentModifier.RUNTIME);
+            boolean hasRuntime = false;
             this.pool = hasRuntime ? new ConstantPoolSetup() : parent.pool;
             this.onWire = parent.onWire;
         }
@@ -130,7 +125,7 @@ public abstract class ComponentSetup {
         } else {
             // If it is the root
             Wirelet[] ws;
-            if (PackedComponentModifierSet.isApplication(modifiers)) {
+            if (parent == null) {
                 if (application.driver.wirelet == null) {
                     ws = CombinedWirelet.flattenAll(wirelets);
                 } else {
@@ -270,11 +265,6 @@ public abstract class ComponentSetup {
 
     /** {@inheritDoc} */
     public abstract ComponentMirror mirror();
-
-    /** {@inheritDoc} */
-    public final PackedComponentModifierSet modifiers() {
-        return new PackedComponentModifierSet(modifiers);
-    }
 
     /** {@inheritDoc} */
     public final void named(String name) {

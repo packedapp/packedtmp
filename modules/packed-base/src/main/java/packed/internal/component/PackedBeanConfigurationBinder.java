@@ -76,13 +76,6 @@ public record PackedBeanConfigurationBinder<T, C extends ComponentConfiguration>
     private static <T, C extends ComponentConfiguration> PackedBeanConfigurationBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller,
             Class<? extends C> driverType, boolean isConstant) {
 
-        // Parse all options
-        int modifiers = 0;
-        if (isConstant) {
-            modifiers |= PackedComponentModifierSet.I_SINGLETON;
-        } else {
-            modifiers |= PackedComponentModifierSet.I_STATEFUL;
-        }
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
@@ -98,7 +91,7 @@ public record PackedBeanConfigurationBinder<T, C extends ComponentConfiguration>
         
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
-        return new PackedBeanConfigurationBinder(type, constructor, modifiers, isConstant);
+        return new PackedBeanConfigurationBinder(type, constructor, 0, isConstant);
     }
 
     public static <T, C extends ComponentConfiguration> PackedBeanConfigurationBinder<T, C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
