@@ -157,7 +157,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** {@return a container adaptor that can be exposed to end-users} */
     @Override
     public ContainerMirror mirror() {
-        return new ContainerMirrorAdaptor(this);
+        return new BuildTimeContainer(this);
     }
 
     /** {@return a unmodifiable view of the extensions that are used.} */
@@ -257,12 +257,13 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** An adaptor for the Container interface. */
-    private final static class ContainerMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements ContainerMirror {
+    private final static class BuildTimeContainer extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
 
-        final ContainerSetup container;
-        ContainerMirrorAdaptor(ContainerSetup container) {
+        private final ContainerSetup container;
+
+        BuildTimeContainer(ContainerSetup container) {
             super(container);
-            this.container=container;
+            this.container = container;
         }
 
         /** {@inheritDoc} */
@@ -302,7 +303,7 @@ public final class ContainerSetup extends ComponentSetup {
             requireNonNull(extensionMirrorType, "extensionMirrorType is null");
             if (extensionMirrorType == ServiceExtensionMirror.class) {
                 ExtensionSetup es = container.extensions.get(ServiceExtension.class);
-                if (es==null) {
+                if (es == null) {
                     return Optional.empty();
                 } else {
                     return (Optional<T>) Optional.of(ServiceExtensionMirror.of((ServiceExtension) es.instance()));

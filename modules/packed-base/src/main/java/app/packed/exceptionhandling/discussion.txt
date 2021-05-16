@@ -1,3 +1,7 @@
+# Rename package
+-> app.packed.failurehandling
+
+
 # Strictly Hirachical
 exception handling follows the namespace component hierarchy.
 

@@ -103,7 +103,7 @@ public final class PackedComponentStreamOption implements ComponentMirrorStream.
         return (s & EXCLUDE_ORIGIN) == 1;
     }
 
-    public boolean processThisDeeper(PackedComponentInstance origin, PackedComponentInstance actual) {
+    public boolean processThisDeeper(RuntimeComponentMirror origin, RuntimeComponentMirror actual) {
         // Class<? extends Extension> extensionClass = actual.model.extension().orElse(null);
         // if (s==0) return;
         // TODO just changed includeExtensions == null || !includeExtensions.contains(extensionClass))) to &&, dobbel check

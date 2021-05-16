@@ -342,11 +342,11 @@ public abstract class ComponentSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    public static abstract class ComponentMirrorAdaptor implements ComponentMirror {
+    public static abstract class BuildTimeComponentMirror implements ComponentMirror {
 
         private final ComponentSetup component;
 
-        protected ComponentMirrorAdaptor(ComponentSetup component) {
+        protected BuildTimeComponentMirror(ComponentSetup component) {
             this.component = requireNonNull(component);
         }
 
@@ -385,7 +385,7 @@ public abstract class ComponentSetup {
         @Override
         public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return component.isInSame(scope, ((ComponentMirrorAdaptor) other).component);
+            return component.isInSame(scope, ((BuildTimeComponentMirror) other).component);
         }
 
         /** {@inheritDoc} */
@@ -411,7 +411,7 @@ public abstract class ComponentSetup {
         @Override
         public final Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(component, ((ComponentMirrorAdaptor) other).component);
+            return ComponentSetupRelation.of(component, ((BuildTimeComponentMirror) other).component);
         }
 
         /** {@inheritDoc} */
@@ -446,7 +446,7 @@ public abstract class ComponentSetup {
         private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
             @SuppressWarnings({ "unchecked", "rawtypes" })
-            Collection<ComponentMirrorAdaptor> c = (Collection) children();
+            Collection<BuildTimeComponentMirror> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
                 if (option.processThisDeeper(origin, component)) {
                     Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false, option));

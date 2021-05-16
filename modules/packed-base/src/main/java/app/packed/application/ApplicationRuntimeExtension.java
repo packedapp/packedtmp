@@ -11,8 +11,12 @@ import app.packed.state.sandbox.InstanceState;
 // som afgoer om man kan bruge det...
 // Ligesom vi har reject(FileExtension, NetExtension, ApplicationRuntimeExtension)
 
-//
+
+// Har en extension noget scope??? Fx den her har helt klart extensionScope only...
+// Maaske vi bare checke det i constructeren... Altsaa hvis det er den eneste exception der har problemet.
 public class ApplicationRuntimeExtension extends Extension {
+
+    /** Create a new extension. */
     ApplicationRuntimeExtension() {}
 
     public void defaultLaunchMode(InstanceState is) {

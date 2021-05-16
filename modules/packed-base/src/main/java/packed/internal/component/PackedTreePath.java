@@ -144,7 +144,7 @@ public final class PackedTreePath implements NamespacePath {
 
     }
 
-    static NamespacePath of(PackedComponentInstance component) {
+    static NamespacePath of(RuntimeComponentMirror component) {
         int depth = component.depth();
         switch (depth) {
         case 0:
@@ -153,7 +153,7 @@ public final class PackedTreePath implements NamespacePath {
             return new PackedTreePath(component.name());
         default:
             String[] paths = new String[depth];
-            PackedComponentInstance acc = component;
+            RuntimeComponentMirror acc = component;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name();
                 acc = acc.parent;

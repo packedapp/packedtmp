@@ -107,7 +107,7 @@ public final class BuildSetup implements BuildMirror {
     }
 
     public BaseMirror mirror() {
-        return new BuildMirrorAdaptor(this);
+        return new BuildTimeBaseMirror(this);
     }
 
     @Override
@@ -115,7 +115,7 @@ public final class BuildSetup implements BuildMirror {
         return buildTarget;
     }
 
-    private record BuildMirrorAdaptor(BuildSetup build) implements BaseMirror {
+    private record BuildTimeBaseMirror(BuildSetup build) implements BaseMirror {
 
         /** {@inheritDoc} */
         @Override

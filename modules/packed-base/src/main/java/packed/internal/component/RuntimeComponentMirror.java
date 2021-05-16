@@ -37,11 +37,11 @@ import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.invoke.constantpool.ConstantPool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
-public final class PackedComponentInstance implements ComponentMirror {
+public final class RuntimeComponentMirror implements ComponentMirror {
 
     /** Any child components this component might have. Is null if we know the component will never have any children. */
     @Nullable
-    private final Map<String, PackedComponentInstance> children;
+    private final Map<String, RuntimeComponentMirror> children;
 
     /** The runtime model of the component. */
     final RuntimeComponentModel model;
@@ -51,7 +51,7 @@ public final class PackedComponentInstance implements ComponentMirror {
 
     /** The parent component, or null if root. */
     @Nullable
-    final PackedComponentInstance parent;
+    final RuntimeComponentMirror parent;
 
     /** The region this component is part of. */
     public final ConstantPool pool;
@@ -66,7 +66,7 @@ public final class PackedComponentInstance implements ComponentMirror {
      * @param launch
      *            initialization context
      */
-    public PackedComponentInstance(@Nullable PackedComponentInstance parent, ComponentSetup component, ApplicationLaunchContext launch) {
+    public RuntimeComponentMirror(@Nullable RuntimeComponentMirror parent, ComponentSetup component, ApplicationLaunchContext launch) {
         this.parent = parent;
         this.model = RuntimeComponentModel.of(component);
         if (parent == null) {
@@ -78,15 +78,15 @@ public final class PackedComponentInstance implements ComponentMirror {
         // Vi opbygger structuren foerst...
         // Og saa initialisere vi ting bagefter
         // Structuren bliver noedt til at vide hvor den skal spoerge efter ting...
-        Map<String, PackedComponentInstance> children = null;
+        Map<String, RuntimeComponentMirror> children = null;
         LinkedHashMap<String, ComponentSetup> childComponents = component.children;
         if (childComponents != null) {
             // Maybe ordered is the default...
-            LinkedHashMap<String, PackedComponentInstance> result = new LinkedHashMap<>(childComponents.size());
+            LinkedHashMap<String, RuntimeComponentMirror> result = new LinkedHashMap<>(childComponents.size());
 
             for (ComponentSetup cc : component.children.values()) {
                 // We never carry over extensions into the runtime
-                PackedComponentInstance ac = new PackedComponentInstance(this, cc, launch);
+                RuntimeComponentMirror ac = new RuntimeComponentMirror(this, cc, launch);
                 result.put(ac.name(), ac);
             }
 
@@ -138,7 +138,7 @@ public final class PackedComponentInstance implements ComponentMirror {
     /** {@inheritDoc} */
     @Override
     public Collection<ComponentMirror> children() {
-        Map<String, PackedComponentInstance> c = children;
+        Map<String, RuntimeComponentMirror> c = children;
         if (c == null) {
             return Collections.emptySet();
         }
@@ -162,7 +162,7 @@ public final class PackedComponentInstance implements ComponentMirror {
         return findComponent(path.toString());
     }
 
-    private PackedComponentInstance findComponent(String path) {
+    private RuntimeComponentMirror findComponent(String path) {
         if (path.length() == 0) {
             throw new IllegalArgumentException("Cannot specify an empty (\"\") path");
         }
@@ -174,17 +174,17 @@ public final class PackedComponentInstance implements ComponentMirror {
         // Vi smider IllegalArgumentException hvis man absolute path, og man ikke har samme prefix....
 
         // TODO fix for non-absolute paths....
-        PackedComponentInstance c = children.get(path);
+        RuntimeComponentMirror c = children.get(path);
         if (c == null) {
             String p = path.toString();
             String[] splits = p.split("/");
-            Map<String, PackedComponentInstance> chi = children;
+            Map<String, RuntimeComponentMirror> chi = children;
             for (int i = 1; i < splits.length; i++) {
                 if (chi == null) {
                     return null;
                 }
                 String ch = splits[i];
-                PackedComponentInstance ac = chi.get(ch);
+                RuntimeComponentMirror ac = chi.get(ch);
                 if (ac == null) {
                     return null;
                 }
@@ -202,12 +202,12 @@ public final class PackedComponentInstance implements ComponentMirror {
         throw new UnsupportedOperationException();
     }
 
-    public boolean isInSameContainer(PackedComponentInstance other) {
+    public boolean isInSameContainer(RuntimeComponentMirror other) {
         return isInSameContainer0() == other.isInSameContainer0();
     }
 
-    private PackedComponentInstance isInSameContainer0() {
-        PackedComponentInstance c = this;
+    private RuntimeComponentMirror isInSameContainer0() {
+        RuntimeComponentMirror c = this;
         while (!(c.model.isContainer())) {
             c = c.parent;
         }
@@ -240,7 +240,7 @@ public final class PackedComponentInstance implements ComponentMirror {
     @Override
     public Relation relationTo(ComponentMirror other) {
         requireNonNull(other, "other is null");
-        return PackedComponentInstanceRelation.relation(this, (PackedComponentInstance) other);
+        return PackedComponentInstanceRelation.relation(this, (RuntimeComponentMirror) other);
     }
 
     /**
@@ -260,8 +260,8 @@ public final class PackedComponentInstance implements ComponentMirror {
     /** {@inheritDoc} */
     @Override
     public ComponentMirror root() {
-        PackedComponentInstance c = this;
-        PackedComponentInstance p = parent;
+        RuntimeComponentMirror c = this;
+        RuntimeComponentMirror p = parent;
         while (p != null) {
             c = p;
             p = p.parent;
@@ -275,9 +275,9 @@ public final class PackedComponentInstance implements ComponentMirror {
         return new PackedComponentStream(stream0(this, true, PackedComponentStreamOption.of(options)));
     }
 
-    private Stream<ComponentMirror> stream0(PackedComponentInstance origin, boolean isRoot, PackedComponentStreamOption option) {
+    private Stream<ComponentMirror> stream0(RuntimeComponentMirror origin, boolean isRoot, PackedComponentStreamOption option) {
         // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
-        Map<String, PackedComponentInstance> c = children;
+        Map<String, RuntimeComponentMirror> c = children;
         if (c != null && !c.isEmpty()) {
             if (option.processThisDeeper(origin, this)) {
                 Stream<ComponentMirror> s = c.values().stream().flatMap(co -> co.stream0(origin, false, option));

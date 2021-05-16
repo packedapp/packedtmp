@@ -155,7 +155,8 @@ public interface ApplicationRuntime {
     // Vs main?????
     // Tror main er bl.a. propper det ind som et system image...
 
-    static void execute(Assembly<?> assembly, Wirelet... wirelets) {
+    // Den er cool men sgu ikke super smart for forstaelsen
+    static void run(Assembly<?> assembly, Wirelet... wirelets) {
         ApplicationRuntimeImplementation.DRIVER.launch(assembly, wirelets);
     }
 

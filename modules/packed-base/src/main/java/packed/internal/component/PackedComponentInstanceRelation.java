@@ -29,13 +29,13 @@ import app.packed.component.ComponentScope;
 
     private final int distance;
 
-    private final PackedComponentInstance from;
+    private final RuntimeComponentMirror from;
 
-    private final PackedComponentInstance lcd;
+    private final RuntimeComponentMirror lcd;
 
-    private final PackedComponentInstance to;
+    private final RuntimeComponentMirror to;
 
-    public PackedComponentInstanceRelation(PackedComponentInstance from, PackedComponentInstance to, int distance, PackedComponentInstance lcd) {
+    public PackedComponentInstanceRelation(RuntimeComponentMirror from, RuntimeComponentMirror to, int distance, RuntimeComponentMirror lcd) {
         this.from = from;
         this.to = to;
         this.distance = distance;
@@ -71,7 +71,7 @@ import app.packed.component.ComponentScope;
             ComponentMirror[] components = new ComponentMirror[distance];
 
             int i = 0;
-            PackedComponentInstance pc = from;
+            RuntimeComponentMirror pc = from;
             while (pc != lcd) {
                 components[i++] = pc;
             }
@@ -99,7 +99,7 @@ import app.packed.component.ComponentScope;
         return to;
     }
 
-    static Relation relation(PackedComponentInstance from, PackedComponentInstance to) {
+    static Relation relation(RuntimeComponentMirror from, RuntimeComponentMirror to) {
         int fd = from.depth();
         int td = to.depth();
         if (from.pool == to.pool) {
@@ -107,8 +107,8 @@ import app.packed.component.ComponentScope;
                 return new PackedComponentInstanceRelation(from, to, 0, from);
             }
 
-            PackedComponentInstance f = from;
-            PackedComponentInstance t = to;
+            RuntimeComponentMirror f = from;
+            RuntimeComponentMirror t = to;
             int distance = 0;
 
             if (fd > td) {

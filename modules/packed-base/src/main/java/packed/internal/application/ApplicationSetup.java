@@ -16,7 +16,6 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.mirror.TreeWalker;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.BeanSetup;
 import packed.internal.component.ComponentSetup;
@@ -99,7 +98,7 @@ public final class ApplicationSetup {
 
     /** {@return an application adaptor that can be exposed to end-users} */
     public ApplicationMirror mirror() {
-        return new ApplicationMirrorAdaptor(this);
+        return new BuildTimeApplicationMirror(this);
     }
 
     /**
@@ -160,7 +159,7 @@ public final class ApplicationSetup {
     }
 
     /** An application mirror adaptor. */
-    private /* primitive */ record ApplicationMirrorAdaptor(ApplicationSetup application) implements ApplicationMirror {
+    private /* primitive */ record BuildTimeApplicationMirror(ApplicationSetup application) implements ApplicationMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -182,12 +181,6 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public Optional<ApplicationMirror> parent() {
-            return Optional.empty();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public boolean hasRuntime() {
             return application.driver.hasRuntime();
         }
@@ -195,24 +188,6 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public ComponentMirror component(CharSequence path) {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public TreeWalker<ComponentMirror> components() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ContainerMirror container(CharSequence path) {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public TreeWalker<ContainerMirror> containers() {
             throw new UnsupportedOperationException();
         }
 

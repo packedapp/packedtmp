@@ -33,7 +33,7 @@ public final class BeanSetup extends ComponentSetup {
     /** {@inheritDoc} */
     @Override
     public BeanMirror mirror() {
-        return new BeanMirrorAdaptor(this);
+        return new BuildTimeBeanMirror(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -57,14 +57,14 @@ public final class BeanSetup extends ComponentSetup {
         return source.service == null ? Optional.empty() : Optional.of(source.service.key());
     }
 
-    /** An mirror adaptor. */
-    private final static class BeanMirrorAdaptor extends ComponentSetup.ComponentMirrorAdaptor implements BeanMirror {
+    /** A build-time bean mirror adaptor. */
+    private final static class BuildTimeBeanMirror extends ComponentSetup.BuildTimeComponentMirror implements BeanMirror {
 
         private final BeanSetup bean;
 
-        private BeanMirrorAdaptor(BeanSetup container) {
-            super(container);
-            this.bean = container;
+        private BuildTimeBeanMirror(BeanSetup bean) {
+            super(bean);
+            this.bean = bean;
         }
 
         /** {@inheritDoc} */
