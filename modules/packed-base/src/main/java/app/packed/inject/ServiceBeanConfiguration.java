@@ -26,6 +26,9 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.PackedBeanConfigurationBinder;
 
 /**
+ * A bean whose type is registered as a service.
+ * <p>
+ * 
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
  * calling one of the install methods on, for example, {@link BaseAssembly}.
  */
@@ -54,9 +57,6 @@ public class ServiceBeanConfiguration<T> extends BeanConfiguration {
         return as(Key.of(key));
     }
 
-    // addQualififer();
-    // Nahh
-
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -77,7 +77,7 @@ public class ServiceBeanConfiguration<T> extends BeanConfiguration {
         super.sourceProvideAs(null);
         return this;
     }
-    
+
     /** {@inheritDoc} */
     public ExportedServiceConfiguration<T> export() {
         return super.sourceExport();
@@ -102,28 +102,31 @@ public class ServiceBeanConfiguration<T> extends BeanConfiguration {
         return this;
     }
 
+    // Hvordan giver folk med foldere mulighed for at expose dem her...
+    // Hvorfor ikke
+    // Det tror jeg maaske ikke vi goer
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> provide(Class<T> implementation) {
+    static <T> ComponentDriver<ServiceBeanConfiguration<T>> provide(Class<T> implementation) {
         return DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> provide(Factory<T> factory) {
+    static <T> ComponentDriver<ServiceBeanConfiguration<T>> provide(Factory<T> factory) {
         return DRIVER.bind(factory);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> provideInstance(T instance) {
+    static <T> ComponentDriver<ServiceBeanConfiguration<T>> provideInstance(T instance) {
         return DRIVER.bindInstance(instance);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> providePrototype(Class<T> implementation) {
+    static <T> ComponentDriver<ServiceBeanConfiguration<T>> providePrototype(Class<T> implementation) {
         return PROTOTYPE_DRIVER.bind(implementation);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> ComponentDriver<ServiceBeanConfiguration<T>> providePrototype(Factory<T> factory) {
+    static <T> ComponentDriver<ServiceBeanConfiguration<T>> providePrototype(Factory<T> factory) {
         return PROTOTYPE_DRIVER.bind(factory);
     }
 }

@@ -19,8 +19,8 @@ import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
@@ -29,8 +29,8 @@ import app.packed.inject.Factory;
 import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 
 /**
- * The configuration of a container. This class is rarely used directly. Instead containers are typically configured by
- * extending {@link ContainerAssembly} or {@link BaseAssembly}.
+ * The configuration of a container. This class is rarely referenced directly. Instead containers are typically
+ * configured by extending {@link ContainerAssembly} or {@link BaseAssembly}.
  */
 public class ContainerConfiguration extends AbstractContainerConfiguration {
 

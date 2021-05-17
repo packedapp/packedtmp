@@ -32,11 +32,10 @@ import app.packed.inject.Factory;
  * <p>
  * Normally all configuration of extensions are done through the various protected final methods available when
  * extending {@link Extension}. However, for complex extensions where the logic cannot easily fit into a single class.
- * An extension configuration can be passed around. Make the fff available
- * 
+ * An extension configuration can be passed around in order to invoke needed methods.
  * <p>
- * An instance of this interface is normally acquired via {@link Extension#configuration()} or via constructor injected
- * it into any subclass of {@link Extension} (or any of its minors).
+ * An instance of this interface is normally acquired via {@link Extension#configuration()}. But it can also be
+ * constructor injected into an {@link Extension} subclass.
  * <p>
  * Since the extension itself defines most methods in this interface via protected final methods. This interface is
  * typically used in order to provide these methods to code that is defined outside of the actual extension
@@ -44,8 +43,6 @@ import app.packed.inject.Factory;
  * <p>
  * <strong>Note:</strong> Instances of this class should never be exposed to end-users.
  */
-// Does not extend CC as install/installinstance used parent as target
-// Det er jo ikke rigtig tilfaeldet mere... efter vi har lavet om...
 public /* sealed */ interface ExtensionConfiguration {
 
     /**
@@ -85,17 +82,15 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets);
 
-    /**
-     * Returns the extension instance.
-     * <p>
-     * 
-     * 
-     * @return the extension instance
-     * @throws InternalExtensionException
-     *             if trying to call this method from the constructor of the extension
-     */
-    // Lad os se om den kan bruges fra hooks... eller lignende
-    Extension instance();
+//    /**
+//     * Returns the extension instance.
+//     * 
+//     * @return the extension instance
+//     * @throws InternalExtensionException
+//     *             if trying to call this method from the constructor of the extension
+//     */
+//    // Lad os se om den kan bruges fra hooks... eller lignende
+//    Extension instance();
 
 //    default boolean isConnected() {
 //        // isInterConnected?
@@ -178,7 +173,7 @@ public /* sealed */ interface ExtensionConfiguration {
 
     /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
-     * dependencies as specified via.... Otherwise an {@link InternalExtensionException} is thrown.
+     * dependencies as specified via.... 
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
      * can instead declare a dependency on {@link ExtensionConfiguration} and call
@@ -194,6 +189,8 @@ public /* sealed */ interface ExtensionConfiguration {
      * @throws IllegalStateException
      *             If invoked from the constructor of an extension. Or if the underlying container is no longer configurable
      *             and the subtensions underlying extension have not already been created
+     * @throws InternalExtensionException
+     *             if the specified subtension's extension is not a direct dependency of this extension
      * 
      * @see ContainerConfiguration#use(Class)
      * @see #isUsed(Class)

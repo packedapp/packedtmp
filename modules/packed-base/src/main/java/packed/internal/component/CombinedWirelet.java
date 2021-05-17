@@ -5,19 +5,20 @@ import static java.util.Objects.requireNonNull;
 import app.packed.component.Wirelet;
 
 /**
- * A wirelet that combines multiple wirelets into a single wirelet. Is exposed to end users via methods on
- * {@link Wirelet}.
+ * A wirelet that combines multiple wirelets into a single wirelet.
+ * <p>
+ * Is exposed to end users via various methods on {@link Wirelet}.
  * 
  * @see Wirelet
  */
-public final /* primitive */ class CombinedWirelet extends Wirelet {
+public final class CombinedWirelet extends Wirelet {
 
     /** An empty wirelet array. */
     static final Wirelet[] EMPTY = new Wirelet[0];
 
     /**
-     * The wirelets that have been combined. Does never contain other CombinedWirelet instances as these are flattened at
-     * creation time.
+     * The wirelets that have been combined. The array have been checked for null values. And every wirelet have been
+     * flattened (removal of recursive versions of CombinedWirelet) before storing in this field.
      */
     final Wirelet[] wirelets;
 
@@ -25,7 +26,7 @@ public final /* primitive */ class CombinedWirelet extends Wirelet {
      * Create a new wirelet array.
      * 
      * @param wirelets
-     *            the wirelets to wrap
+     *            the flattened wirelets to wrap
      */
     private CombinedWirelet(Wirelet[] wirelets) {
         this.wirelets = requireNonNull(wirelets, "wirelets is null");
@@ -47,6 +48,8 @@ public final /* primitive */ class CombinedWirelet extends Wirelet {
     }
 
     /**
+     * Copies multiple wirelets from one array to another array.
+     * 
      * @param source
      *            the source to copy from
      * @param dest
@@ -62,7 +65,11 @@ public final /* primitive */ class CombinedWirelet extends Wirelet {
         return dest;
     }
 
-    static Wirelet[] flatten(Wirelet w1, Wirelet w2) {
+    private static Wirelet[] flatten1(Wirelet w) {
+        return w instanceof CombinedWirelet wl ? wl.wirelets : new Wirelet[] { w };
+    }
+
+    static Wirelet[] flatten2(Wirelet w1, Wirelet w2) {
         Wirelet[] result;
         if (w1 instanceof CombinedWirelet wl1) {
             Wirelet[] wirelets1 = wl1.wirelets;
@@ -89,15 +96,12 @@ public final /* primitive */ class CombinedWirelet extends Wirelet {
         requireNonNull(wirelets, "wirelets is null");
         return switch (wirelets.length) {
         case 0 -> EMPTY;
-        case 1 -> {
-            Wirelet w = w(wirelets, 0);
-            yield w instanceof CombinedWirelet wl ? wl.wirelets : new Wirelet[] { w };
-        }
-        case 2 -> flatten(w(wirelets, 0), w(wirelets, 1));
+        case 1 -> flatten1(nullChecked(wirelets, 0));
+        case 2 -> flatten2(nullChecked(wirelets, 0), nullChecked(wirelets, 1));
         default -> {
             int size = wirelets.length;
             for (int i = 0; i < wirelets.length; i++) {
-                Wirelet w = w(wirelets, i);
+                Wirelet w = nullChecked(wirelets, i);
                 if (w instanceof CombinedWirelet list) {
                     size += list.wirelets.length - 1;
                 }
@@ -119,6 +123,14 @@ public final /* primitive */ class CombinedWirelet extends Wirelet {
         };
     }
 
+    private static Wirelet nullChecked(Wirelet[] wirelets, int index) {
+        Wirelet w = wirelets[index];
+        if (w == null) {
+            throw new NullPointerException("Wirelets is null at index " + 0);
+        }
+        return w;
+    }
+
     /**
      * @param wirelets
      *            the wirelets to combine
@@ -138,14 +150,6 @@ public final /* primitive */ class CombinedWirelet extends Wirelet {
      * @see Wirelet#beforeThis(Wirelet...)
      */
     public final static Wirelet of(Wirelet wirelet, Wirelet other) {
-        return new CombinedWirelet(CombinedWirelet.flatten(wirelet, other));
-    }
-
-    private static Wirelet w(Wirelet[] wirelets, int index) {
-        Wirelet w = wirelets[index];
-        if (w == null) {
-            throw new NullPointerException("Wirelets is null at index " + 0);
-        }
-        return w;
+        return new CombinedWirelet(CombinedWirelet.flatten2(wirelet, other));
     }
 }

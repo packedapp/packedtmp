@@ -3,10 +3,10 @@ package app.packed.container;
 import app.packed.component.Wirelet;
 
 /**
- * Extensions that define their own wirelets must do so by extending this class.
+ * Extensions that define their own wirelets must do so by extending this class (or a subclass hereof).
  * <p>
- * Extension wirelets must be defined in the same module as the extension. Failure to do so will result in an
- * {@link InternalExtensionException} being thrown.
+ * Extension wirelets must be defined in the same module as the extension itself. Failure to do so will result in an
+ * {@link InternalExtensionException} being thrown at runtime.
  */
 public abstract class ExtensionWirelet<E extends Extension> extends Wirelet {
 
@@ -16,13 +16,6 @@ public abstract class ExtensionWirelet<E extends Extension> extends Wirelet {
     // Skal invokeres efter extensionen er blevet initialiseret, men foer
     // onInitialize()
     protected void onBuild(E extension) {}
-
-    // Kommer an paa om vi skal have en intern model vi kan spoerge paa istedet for
-    public final Class<? extends Extension> extension() {
-        // Store it in a ClassValue
-        throw new UnsupportedOperationException();
-    }
-
 
     // Ideen er man ikke kan angives paa rod niveau
     // Tror faktisk kun den giver mening for extension, og ikke user wirelets
@@ -36,7 +29,7 @@ public abstract class ExtensionWirelet<E extends Extension> extends Wirelet {
         // f.x provide(Doo.class);
         // Hvad hvis vi koere composer.lookup()...
         // Saa laver vi jo saadan set en realm...
-    }  
+    }
     // Unless otherwise configured... An extension Wirelet
 
     // Metoden kan extendes med den
@@ -45,6 +38,6 @@ public abstract class ExtensionWirelet<E extends Extension> extends Wirelet {
     }
 }
 
-class LaunchableExtensionWirelet<E extends Extension, R extends ExtensionRuntime<E>> extends ExtensionWirelet<E> {
+class ExtensionRuntimeWirelet<E extends Extension, R extends ExtensionRuntime<E>> extends ExtensionWirelet<E> {
     protected void onInitialize(E extension) {} // maa det vaere
 }

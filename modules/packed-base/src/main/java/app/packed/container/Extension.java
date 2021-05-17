@@ -170,17 +170,8 @@ public abstract class Extension {
         return c;
     }
 
-    /**
-     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
-     * 
-     * @param extensionClass
-     *            the extension to test
-     * @return true if the extension is currently in use, otherwise false
-     * 
-     * @see ExtensionConfiguration#isUsed(Class)
-     */
-    protected final boolean isInUse(Class<? extends Extension> extensionClass) {
-        return configuration().isUsed(extensionClass);
+    protected final ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
+        return configuration().extensionInstall(implementation, wirelets);
     }
 
     /**
@@ -194,7 +185,20 @@ public abstract class Extension {
     protected boolean isExtensionEnabled(Class<? extends Extension> extension) {
         throw new UnsupportedOperationException();
     }
-    
+
+    /**
+     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
+     * 
+     * @param extensionClass
+     *            the extension to test
+     * @return true if the extension is currently in use, otherwise false
+     * 
+     * @see ExtensionConfiguration#isUsed(Class)
+     */
+    protected final boolean isInUse(Class<? extends Extension> extensionClass) {
+        return configuration().isUsed(extensionClass);
+    }
+
     protected final void isLeafContainer() {
         // Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
         // Maaske vi skal tage info'en med der istedet for
@@ -205,6 +209,11 @@ public abstract class Extension {
     protected final boolean isPartOfImage() {
         return configuration().isPartOfImage();
     }
+
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    // extensionPreambleDone
 
     /**
      * Invoked by the runtime when the configuration of the container is completed.
@@ -226,11 +235,6 @@ public abstract class Extension {
 
         // An extension cannot link a container as long as it (the container?) is extendable.
     }
-
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
 
     /**
      * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned), but before the
@@ -266,10 +270,6 @@ public abstract class Extension {
         // Container wiring must only be done from onComplete
 
         // lazy operations should be idempotent
-    }
-
-    protected final ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
-        return configuration().extensionInstall(implementation, wirelets);
     }
 
     protected final ExtensionRuntimeConfiguration runtimeInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
@@ -509,8 +509,8 @@ public abstract class Extension {
     }
 
     /**
-     * A Subtension is the main way one extension communicate with another extension. If you are an end-user you will most
-     * likely never have to deal with these type of classes.
+     * A Subtension is the main way for one extension to use another extension. If you are an end-user you will most likely
+     * never have to deal with these type of classes.
      * <p>
      * 
      * 
@@ -539,7 +539,7 @@ public abstract class Extension {
      * {@code Class<? extends Extension>} which is the
      * 
      * <p>
-     * New instances of this class is automatically created by the runtime when needed. The instances are never cached,
+     * A new instance of subclasses of this class is automatically instance created by the runtime when needed. The instances are never cached,
      * instead a fresh one is created every time it is requested.
      * 
      * @see Extension#use(Class)

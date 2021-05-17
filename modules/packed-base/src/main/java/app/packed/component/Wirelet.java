@@ -23,7 +23,7 @@ import packed.internal.component.WireletModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**
- * A wirelet is a small piece of "glue code" that can be specified when wiring a component.
+ * A wirelet is a small piece of "glue code" that can be specified when a component is wired.
  * <p>
  * Wirelets are typically used to debug foobar, sdsd.
  * 
@@ -54,11 +54,12 @@ import packed.internal.util.StackWalkerUtil;
  * <p>
  * Wirelets are divided into 3 main types:
  * 
- * InternalWirelet: are wirelets that are defined by Packed itself
+ * Packed Wirelet: These wirelets are defined by Packed itself can typically needs access to Packed's internal APIs.
  * 
- * ExtensionWirelet: Wirelets that are defined by extensions and typically available via public static methods in a XWirelet class
+ * Extension Wirelets: Wirelets that are defined by extensions and typically available via public static methods in a
+ * XWirelet class.
  * 
- * UserWirelet: Wirelets that are defined by end-users
+ * User Wirelets: Wirelets that are defined by end-users
  * 
  */
 // Hvis vi kraever at alle WireletHandle
@@ -132,7 +133,6 @@ public abstract /* sealed */ class Wirelet {
     protected static final void $buildtimeOnly() {
         WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).buildtimeOnly();
     }
-
 
     /** Attempting to wire a non-container component with this wirelet will fail. */
     protected static final void $requireContainer() {}

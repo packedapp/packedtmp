@@ -79,10 +79,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
     /** The default component name of the extension. */
     public final String nameComponent;
 
-    /** The canonical name of the extension. Used to deterministically sort extensions. */
+    /** The (canonical) full name of the extension. Used to deterministically sort extensions. */
     private final String nameFull;
 
-    /** The simple name of the extension as returned by {@link Class#getSimpleName()}. */
+    /** The (simple) name of the extension as returned by {@link Class#getSimpleName()}. */
     private final String nameSimple;
 
     /**
@@ -204,6 +204,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append(nameFull);
@@ -221,16 +222,16 @@ public final class ExtensionModel implements ExtensionDescriptor {
     }
 
     /**
-     * Returns an model for the specified extension class.
+     * Returns an model for the specified extension type.
      * 
-     * @param extensionClass
-     *            the extension class to return a model for
-     * @return an extension model for the specified extension class
+     * @param extensionType
+     *            the extension type to return a model for
+     * @return an extension model for the specified extension type
      * @throws InternalExtensionException
-     *             if a valid model does not exist
+     *             if a valid model for the extension could not be created
      */
-    public static ExtensionModel of(Class<? extends Extension> extensionClass) {
-        return MODELS.get(extensionClass);
+    public static ExtensionModel of(Class<? extends Extension> extensionType) {
+        return MODELS.get(extensionType);
     }
 
     /** A builder of {@link ExtensionModel}. Public to allow bootstrapping from {@link Extension}. */

@@ -20,11 +20,11 @@ import app.packed.base.Nullable;
 import packed.internal.component.ComponentSetup;
 
 /**
- * The base class for component configuration classes.
- * <p>
- * All component configuration classes must extend, directly or indirectly, from this class.
+ * The base class for all component configuration classes.
  * <p>
  * This class cannot be extended directly.
+ * <p>
+ * All component configuration classes must extend, directly or indirectly, from this class.
  * 
  * Instead of extending this class directly, you typically want to extend {@link BeanConfiguration} instead.
  */

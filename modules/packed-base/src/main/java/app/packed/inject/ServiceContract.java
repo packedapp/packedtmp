@@ -280,6 +280,7 @@ public final class ServiceContract extends Contract {
      */
     public static final class Builder {
 
+        /** An optional service token */
         private static final String OPTIONAL = "Optional";
         private static final String PROVIDES = "Provides";
         private static final String REQUIRES = "Requires";
@@ -424,7 +425,9 @@ public final class ServiceContract extends Contract {
 // Potentiel new Features
 
 // Attributes... For example, maturity (Alpha, Beta, )
-// Eller ogsaa skal det vaere i Mirror API'en
+// Eller ogsaa skal det vaere i Mirror API'en..
+// Det er i mirror API'en
+
 // Igen det er jo nok noget vi vil have paa tvaers af af alle features...
 // Dvs. brugeren er ligeglad om det er en alpha service eller en elpha @Get
 // annotering de bruger, bare det bliver flagget

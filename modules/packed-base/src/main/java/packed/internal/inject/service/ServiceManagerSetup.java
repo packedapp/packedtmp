@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
@@ -31,8 +30,8 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceExtensionMirror;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.PackedSelectWirelets;
 import packed.internal.component.BeanSetup;
+import packed.internal.component.PackedSelectWirelets;
 import packed.internal.component.WireletWrapper;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.dependency.ApplicationInjectorSetup;
@@ -144,26 +143,23 @@ public final class ServiceManagerSetup {
         return exports;
     }
 
+    /** {@return a service extension mirror.} */
     public ServiceExtensionMirror mirror() {
-        return new ServiceExtensionMirrorAdaptor(this);
+        return new BuildTimeServiceExtensionMirror(this);
     }
 
-    /**
-     * Creates a service contract for this manager.
-     * 
-     * @return a service contract for this manager
-     */
+    /** {@return a service contract for this manager.} */
     public ServiceContract newServiceContract() {
         ServiceContract.Builder builder = ServiceContract.builder();
 
-        // Any exports
+        // Add exports
         if (exports != null) {
             for (ServiceSetup n : exports) {
                 builder.provides(n.key());
             }
         }
 
-        // Any requirements
+        // Add requirements (mandatory or optional)
         if (dependencies != null && dependencies.requirements != null) {
             for (Requirement r : dependencies.requirements.values()) {
                 if (r.isOptional) {
@@ -302,7 +298,7 @@ public final class ServiceManagerSetup {
         localServices.add(e);
         return e;
     }
-    
+
     /** A service locator wrapping all exported services. */
     private static final class ExportedServiceLocator extends AbstractServiceLocator {
 
@@ -332,14 +328,11 @@ public final class ServiceManagerSetup {
             return "A service with the specified key, key = " + key;
         }
     }
-    
-    private record ServiceExtensionMirrorAdaptor(ServiceManagerSetup services) implements ServiceExtensionMirror {
 
-        @Override
-        public Set<Key<?>> exportedKeys() {
-            return services.newServiceContract().provides();
-        }
+    /** A build-time service extension mirror. */
+    private record BuildTimeServiceExtensionMirror(ServiceManagerSetup services) implements ServiceExtensionMirror {
 
+        /** {@inheritDoc} */
         @Override
         public ServiceContract contract() {
             return services.newServiceContract();

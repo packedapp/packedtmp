@@ -32,7 +32,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     /**
      * {@inheritDoc}
      * 
-     * @apiNote cannot create default methods for methods in java.lang.Object.
+     * @implNote we cannot create default methods for methods in java.lang.Object. So we put it here instead.
      */
     @Override
     public String toString() {
@@ -40,7 +40,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     /**
-     * Creates a new service registry by making an immutable copy of the specified service map.
+     * Creates a new service registry by making an immutable copy of the specified map of services.
      * 
      * @param map
      *            the map to make an immutable copy
@@ -53,7 +53,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     /** The registry implementation returned by {@link #copyOf(Map)}. */
     private static final class UnchangeableServiceRegistry extends AbstractServiceRegistry {
 
-        /** The services that we wrapped */
+        /** The services that the registry contains. */
         private final Map<Key<?>, Service> services;
 
         /**
@@ -69,7 +69,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
         /** {@inheritDoc} */
         @Override
         public Map<Key<?>, Service> asMap() {
-            return services; // services are immutable
+            return services; // the returned map is immutable
         }
     }
 }

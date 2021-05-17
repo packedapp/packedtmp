@@ -49,6 +49,13 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     // owning extension?
     // installedByExtension, wiringExtension.. (med det kan jo ogsaa vaere driveren...)
     /// Okay, vi har nogle forskellige extensions her
+    
+    // Faktisk er det vel kun runtime extensions
+    
+    // Der er 3 muligheder
+    // standard packed driver
+    // Driver fra Extension
+    // 
     Optional<Class<? extends Extension>> extension();
 
     default ComponentMirror in(ComponentScope boundary) {

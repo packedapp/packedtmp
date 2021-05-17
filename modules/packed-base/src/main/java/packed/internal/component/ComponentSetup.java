@@ -90,16 +90,18 @@ public abstract class ComponentSetup {
     public final WireletWrapper wirelets;
 
     /**
-     * Create a new component.
+     * Create a new component. This constructor is always invoked from one of subclasses of this class
      * 
      * @param application
      *            the application this component is a part of
      * @param realm
      *            the realm this component is part of
      * @param driver
-     *            the driver of the component
+     *            the component driver for this component
      * @param parent
-     *            any parent this component might have
+     *            any parent component this component might have
+     * @param wirelets
+     *            optional (unprocessed) wirelets specified by the user
      */
     protected ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
@@ -118,7 +120,10 @@ public abstract class ComponentSetup {
             this.pool = hasRuntime ? new ConstantPoolSetup() : parent.pool;
             this.onWire = parent.onWire;
         }
-
+        
+        // The rest of the constructor is just processing any wirelets that have been specified by
+        // the user or extension when wiring the component. The wirelet's have not been null checked.
+        // and may contained any number of CombinedWirelet instances.
         requireNonNull(wirelets, "wirelets is null");
         if (wirelets.length == 0) {
             this.wirelets = null;
@@ -129,7 +134,7 @@ public abstract class ComponentSetup {
                 if (application.driver.wirelet == null) {
                     ws = CombinedWirelet.flattenAll(wirelets);
                 } else {
-                    ws = CombinedWirelet.flatten(application.driver.wirelet, Wirelet.combine(wirelets));
+                    ws = CombinedWirelet.flatten2(application.driver.wirelet, Wirelet.combine(wirelets));
                 }
             } else {
                 ws = CombinedWirelet.flattenAll(wirelets);

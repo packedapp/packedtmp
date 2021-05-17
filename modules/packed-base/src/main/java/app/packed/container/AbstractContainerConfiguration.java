@@ -2,12 +2,10 @@ package app.packed.container;
 
 import java.util.Set;
 
-import app.packed.component.Assembly;
-import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.BeanConfiguration;
+import app.packed.component.BeanConfigurationBinder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.container.ContainerSetup;
@@ -21,9 +19,10 @@ import packed.internal.container.ContainerSetup;
  */
 public abstract /* non-sealed */ class AbstractContainerConfiguration extends ComponentConfiguration {
    
+    // TODO pack into container()...
     ContainerSetup container;
 
-    private BeanConfigurationBinder<Object, BeanConfiguration> defaultClassComponentDriver() {
+    private BeanConfigurationBinder<Object, BeanConfiguration> defaultBeanBinder() {
         return BeanConfigurationBinder.DEFAULT;
     }
     
@@ -50,14 +49,14 @@ public abstract /* non-sealed */ class AbstractContainerConfiguration extends Co
      * @return the configuration of the component
      */
     protected BeanConfiguration install(Class<?> implementation) {
-        ComponentDriver<BeanConfiguration> driver = defaultClassComponentDriver().bind(implementation);
+        ComponentDriver<BeanConfiguration> driver = defaultBeanBinder().bind(implementation);
         return wire(driver);
     }
     
     
 
     protected BeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BeanConfiguration> driver = defaultClassComponentDriver().bind(implementation);
+        ComponentDriver<BeanConfiguration> driver = defaultBeanBinder().bind(implementation);
         return wire(driver, wirelets);
     }
 
@@ -70,12 +69,12 @@ public abstract /* non-sealed */ class AbstractContainerConfiguration extends Co
      * @see ContainerAssembly#install(Factory)
      */
     protected BeanConfiguration install(Factory<?> factory) {
-        ComponentDriver<BeanConfiguration> driver = defaultClassComponentDriver().bind(factory);
+        ComponentDriver<BeanConfiguration> driver = defaultBeanBinder().bind(factory);
         return wire(driver);
     }
     
     protected BeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BeanConfiguration> driver = defaultClassComponentDriver().bind(factory);
+        ComponentDriver<BeanConfiguration> driver = defaultBeanBinder().bind(factory);
         return wire(driver, wirelets);
     }
 
@@ -86,27 +85,13 @@ public abstract /* non-sealed */ class AbstractContainerConfiguration extends Co
      * @see ContainerAssembly#installInstance(Object)
      */
     protected BeanConfiguration installInstance(Object instance) {
-        ComponentDriver<BeanConfiguration> driver = defaultClassComponentDriver().bindInstance(instance);
+        ComponentDriver<BeanConfiguration> driver = defaultBeanBinder().bindInstance(instance);
         return wire(driver);
     }
 
     protected BeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BeanConfiguration> driver = defaultClassComponentDriver().bindInstance(instance);
+        ComponentDriver<BeanConfiguration> driver = defaultBeanBinder().bindInstance(instance);
         return wire(driver, wirelets);
-    }
-
-    /**
-     * Links the specified assembly with this container as its parent.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @return a model of the component that was linked
-     */
-    @Override
-    protected ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return super.link(assembly, wirelets);
     }
 
     /**

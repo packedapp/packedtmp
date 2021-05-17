@@ -18,13 +18,12 @@ import app.packed.container.Extension;
 import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
-import packed.internal.application.PackedApplicationDriver;
 
 /**
  * A mirror of an application.
  * <p>
+ * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
  */
-// Skal vi have en ApplicationModifier ogsaa?
 public interface ApplicationMirror extends Mirror {
 
     /** {@return the component in the application}. */
@@ -35,7 +34,7 @@ public interface ApplicationMirror extends Mirror {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return the root container in the application}. */
+    /** {@return the root container of the application}. */
     ContainerMirror container();
 
     // Er det kun componenter i den application??? Ja ville jeg mene...
@@ -47,9 +46,9 @@ public interface ApplicationMirror extends Mirror {
     // ellers maa man bruge container.resolve("....")
 
     /**
-     * Returns an immutable set containing extensions that have been disabled.
+     * Returns an immutable set containing any extensions that have been disabled.
      * 
-     * @return an immutable set containing extensions that have been disabled
+     * @return an immutable set containing any extensions that have been disabled
      * 
      * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
@@ -171,17 +170,21 @@ public interface ApplicationMirror extends Mirror {
         // someComponent.walker().filter(c->c.application == SomeApp)...
     }
 
-    // reflector
-    /**
-     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
-     * application driver.}
-     */
-    public static ApplicationDriver<?> defaultDriver() {
-        return PackedApplicationDriver.MIRROR_DRIVER;
+    public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
+        return BaseMirror.of(assembly, wirelets).application();
     }
 
+    /**
+     * Create
+     * 
+     * @param assembly
+     *            the assembly containing the application to create a mirror for
+     * @param wirelets
+     *            optional wirelets
+     * @return an application mirror
+     */
     public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return BaseMirror.of(assembly, wirelets).application();
+        return of(ApplicationDriver.defaultMirrorDriver(), assembly, wirelets);
     }
 
     // Relations between to different applications

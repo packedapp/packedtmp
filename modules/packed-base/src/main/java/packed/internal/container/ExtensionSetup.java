@@ -126,11 +126,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
     public ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
@@ -152,8 +154,15 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return null;
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Returns the extension instance.
+     * 
+     * @return the extension instance
+     * @throws InternalExtensionException
+     *             if trying to call this method from the constructor of the extension
+     */
+    // This was previous a method on ExtensionConfiguration
+    // And might become again if we want to extract info
     public Extension instance() {
         Extension e = instance;
         if (e == null) {
@@ -188,8 +197,9 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /**
-     * The extension is completed once the realm the container is part of is closed. Will invoke
-     * {@link Extension#onComplete()}.
+     * Invokes {@link Extension#onComplete()}.
+     * <p>
+     * The extension is completed once the realm the container is part of is closed.
      */
     void onComplete() {
         try {

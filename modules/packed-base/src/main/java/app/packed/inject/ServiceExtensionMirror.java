@@ -39,7 +39,7 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
 
     // or contract.keys()
     default Set<Key<?>> exportedKeys() {
-        return exports().keySet();
+        return contract().provides();
     }
 
     // Map<K, V> resolved

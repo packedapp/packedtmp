@@ -196,7 +196,7 @@ public class ServiceExtension extends Extension {
     }
 
     /** { @return a mirror for this extension.} */
-    ServiceExtensionMirror mirror() {
+    /* public? */ ServiceExtensionMirror mirror() {
         return services.mirror();
     }
 

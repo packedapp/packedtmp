@@ -25,8 +25,11 @@ import packed.internal.container.ExtensionModel;
 /**
  * An extension descriptor.
  * <p>
- * This class describes an extension and defines various methods to obtain information about the extension. An instance
- * of this interface is normally acquired by calling {@link #of(Class)}.
+ * This class describes various static properties of an extension. An instance of this interface is normally acquired by
+ * calling {@link #of(Class)}.
+ * <p>
+ * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
+ * The information provided by this descriptor are static information about the extension itself.
  */
 public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
 
@@ -69,7 +72,7 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     /**
      * Returns the full name of the extension.
      * <p>
-     * The full name is defined as the canonical name of the {@link #type()} as returned by
+     * The full name is defined as the canonical name of the {@link #type() extension type} as returned by
      * {@link Class#getCanonicalName()}.
      * 
      * @return the full name of the extension
@@ -107,7 +110,7 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
      * <a href="https://medium.com/nipafx-news/jpms-support-for-module-versions-a-research-log-291c5826eebd">JPMS Support
      * For Module Versions — A Research Log</a>
      * <p>
-     * Packed itself has no support for versioning.
+     * Packed itself places no semantic meaning to module versions. And this method is purely for informational purposes.
      * 
      * @return the version of the extension's module if present
      * @see Module#getDescriptor()
@@ -122,7 +125,8 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
     /**
      * Returns the name of the extension.
      * <p>
-     * The name is defined as the simple name of the {@link #type()} as returned by {@link Class#getSimpleName()}.
+     * The name is defined as the simple name of the {@link #type() extension type} as returned by
+     * {@link Class#getSimpleName()}.
      * 
      * @return the name of the extension.
      * @see #fullName()
@@ -138,6 +142,9 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
      * @param extensionType
      *            the type of extension to return a descriptor for
      * @return a descriptor for the specified extension type
+     * @throws RuntimeException
+     *             if the definition of the extension was invalid. For example, if there are circles in the extension
+     *             dependency hierarchy.
      */
     static ExtensionDescriptor of(Class<? extends Extension> extensionType) {
         return ExtensionModel.of(extensionType);

@@ -2,6 +2,7 @@ package packed.internal.component;
 
 import app.packed.application.App;
 import app.packed.application.BuildWirelets;
+import app.packed.application.Daemon;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 
@@ -14,8 +15,14 @@ public class ZapAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.driver().launch(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
+        App.run(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
+
+        Daemon.driver().mirror(new ZapAssembly());
         
+        // Det gode ved mirror er at 
+        Daemon.introspect(new ZapAssembly());
+        Daemon.reflect(new ZapAssembly());
+        Daemon.mirror(new ZapAssembly());
         
         App.driver().print(new ZapAssembly());
     }

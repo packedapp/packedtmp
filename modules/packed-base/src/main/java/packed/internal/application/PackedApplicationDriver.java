@@ -359,8 +359,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // If launching an image, the user might have specified additional runtime wirelets
             WireletWrapper wrapper = null;
             if (wirelets.length > 0) {
-                Wirelet[] ws = CombinedWirelet.flattenAll(wirelets);
-                wrapper = new WireletWrapper(ws);
+                wrapper = new WireletWrapper(CombinedWirelet.flattenAll(wirelets));
             }
 
             return ApplicationLaunchContext.launch(driver, application, wrapper);

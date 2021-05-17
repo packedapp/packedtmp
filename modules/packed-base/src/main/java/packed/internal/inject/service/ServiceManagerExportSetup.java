@@ -264,7 +264,6 @@ public final class ServiceManagerExportSetup implements Iterable<ServiceSetup> {
 
         /** {@inheritDoc} */
         @Override
-        @Nullable
         public Key<?> key() {
             return service.key();
         }

@@ -46,6 +46,7 @@ public interface Daemon extends AutoCloseable {
         runtime().stop(options);
     }
 
+    /** { @return the default application driver for creating daemons} */
     static ApplicationDriver<Daemon> driver() {
         throw new UnsupportedOperationException();
     }
@@ -54,6 +55,27 @@ public interface Daemon extends AutoCloseable {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Creates a application mirror by building an application of the specified assembly and introspecting it.
+     * 
+     * @param assembly
+     *            the assembly containing the daemon definition
+     * @param wirelets
+     *            optional wirelets
+     * @return an application mirror for the daemon
+     */
+    static ApplicationMirror introspect(Assembly<?> assembly, Wirelet... wirelets) {
+        return ApplicationMirror.of(driver(), assembly, wirelets);
+    }
+
+    static ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+        return ApplicationMirror.of(driver(), assembly, wirelets);
+    }
+    
+    static ApplicationMirror reflect(Assembly<?> assembly, Wirelet... wirelets) {
+        return ApplicationMirror.of(driver(), assembly, wirelets);
+    }
+    
     // When do want to run a daemon???
     // Isn't it main...
     static Daemon run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
@@ -84,7 +106,7 @@ public interface Daemon extends AutoCloseable {
     static Daemon startAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
         return startAsync(assembly, CliWirelets.args(args).andThen(wirelets));
     }
-    
+
     static Daemon startAsync(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }

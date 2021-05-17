@@ -20,7 +20,7 @@ import app.packed.component.Wirelet;
 // Kunne maaske godt taenke mig at extende ComponentMirror...
 // Det giver bare saa meget mening for BeanMirror
 public interface ContainerMirror extends ComponentMirror /* extends Iterable<ComponentMirror> */ {
-
+    
     default Stream<ComponentMirror> components() {
         throw new UnsupportedOperationException();
     }

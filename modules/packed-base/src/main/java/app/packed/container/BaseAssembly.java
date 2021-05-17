@@ -27,10 +27,9 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.state.sandbox.OnStart;
-import packed.internal.inject.service.sandbox.InjectorComposer;
 
 /**
- * Extends {@link ContainerAssembly} with functionality from some of the commonly used extensions available.
+ * Extends {@link ContainerAssembly} with shortcuts for some of the commonly used extensions.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -145,7 +144,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
     protected final void main(Runnable runnable) {
         throw new UnsupportedOperationException();
     }
-    
+
     // Provides a result...
     protected final void main(Factory<?> factory) {
         throw new UnsupportedOperationException();
@@ -183,18 +182,22 @@ public abstract class BaseAssembly extends ContainerAssembly {
 //    }
 
     /**
-     * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
-     * constructor or method to instantiate the service instance once the injector is created.
+     * Provides a service by instantiating a single instance of the specified class.
+     * <p>
+     * This method is shortcut for ....
+     * <p>
+     * The runtime will use {@link Factory#of(Class)} to find a valid constructor or method to instantiate the service
+     * instance once the injector is created.
      * <p>
      * The default key for the service will be the specified {@code implementation}. If the {@code Class} is annotated with
      * a {@link Qualifier qualifier annotation}, the default key will have the qualifier annotation added.
      *
      * @param <T>
-     *            the type of service to bind
+     *            the type of the service
      * @param implementation
-     *            the implementation to bind
-     * @return a service configuration for the service
-     * @see InjectorComposer#provide(Class)
+     *            the bean implementation that should be instantiated and provided as a service
+     * @return a configuration object for the service bean
+     * @see ServiceExtension#provide(Class)
      */
     protected final <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         return service().provide(implementation);
@@ -206,7 +209,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * Factory raw type will be used for scanning for annotations such as {@link OnStart} and {@link Provide}.
      *
      * @param <T>
-     *            the type of component to install
+     *            the type of bean to provide as a service
      * @param factory
      *            the factory used for creating the component instance
      * @return the configuration of the component that was installed
@@ -244,12 +247,12 @@ public abstract class BaseAssembly extends ContainerAssembly {
         return service().providePrototype(factory);
     }
 
-    protected final void requireGuest() {
-        // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
-
-        // Vi skal have en eller anden maade at kunne specificere det her
-
-    }
+//    protected final void requireGuest() {
+//        // requirePassive <--- maaske er den her i virkeligheden meget mere interessant...
+//
+//        // Vi skal have en eller anden maade at kunne specificere det her
+//
+//    }
 //
 //    /**
 //     * Returns a {@link ScheduledJobExtension} instance.

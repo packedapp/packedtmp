@@ -101,6 +101,7 @@ public final class ApplicationRuntimeWirelets {
     }
 
     // excludes start?? IDK
+    // Altsaa det giver jo mening at faa en total tid taenker jeg
     /**
      * 
      * @param duration

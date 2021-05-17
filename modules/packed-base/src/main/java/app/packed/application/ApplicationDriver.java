@@ -54,17 +54,16 @@ import packed.internal.application.PackedApplicationDriver;
  * {@link ServiceLocator} are not sufficient. In fact, the default implementations of both {@link Program} and
  * {@link ServiceLocator} uses an artifact driver themselves.
  * <p>
- * Normally, you will never need create more than a single instance of an application driver.
+ * Normally, you never create more than a single instance of an application driver.
  * 
  * @param <A>
  *            the type of application interface this driver creates.
- * 
  * @see Program#driver()
  * @see App#driver()
  * @see ServiceLocator#driver()
  */
 // Environment + Shell + Result
-public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */ {
+public /* sealed */ interface ApplicationDriver<A> {
 
     /**
      * Create a new application instance by using the specified consumer and configurator.
@@ -146,8 +145,13 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      * @see #newImage(Assembly, Wirelet...)
      * @see ApplicationRuntimeWirelets#launchMode(InstanceState)
      */
-    InstanceState launchMode(); // runTo().. Den der fucking terminated kills me
+    // runTo().. Den der fucking terminated kills me (naah)
+    // Terminated -> Runs until the application has terminated
+    InstanceState launchMode();
 
+    default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+        return ApplicationMirror.of(this, assembly, wirelets);
+    }
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
@@ -218,6 +222,14 @@ public /* sealed */ interface ApplicationDriver<A> /* extends AttributeHolder */
      */
     public static Builder builder() {
         return new PackedApplicationDriver.Builder();
+    }
+
+    /**
+     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
+     * application driver.}
+     */
+    public static ApplicationDriver<?> defaultMirrorDriver() {
+        return PackedApplicationDriver.MIRROR_DRIVER;
     }
 
     /**

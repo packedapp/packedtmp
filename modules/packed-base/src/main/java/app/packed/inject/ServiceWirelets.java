@@ -32,7 +32,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
- * This class provide various wirelets that can be used to transform and filter services being pull and pushed into
+ * This class provide wirelets that can be used to transform and filter services being pull and pushed into
  * containers.
  * 
  * Service wirelets are processed in two stages.
