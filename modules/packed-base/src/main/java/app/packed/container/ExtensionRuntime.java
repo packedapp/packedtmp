@@ -21,6 +21,8 @@ package app.packed.container;
 // parent containers.
 
 // Extensions can install a runtime that will take care of the extensions runtime needs
+
+// This class is needed to identify objects that are injected into hooks at runtime.
 public abstract class ExtensionRuntime<E extends Extension> {
 
     static {

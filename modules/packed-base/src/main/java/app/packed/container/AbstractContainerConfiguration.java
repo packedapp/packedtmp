@@ -115,7 +115,7 @@ public abstract /* non-sealed */ class AbstractContainerConfiguration extends Co
      * 
      * @param <T>
      *            the type of extension to return
-     * @param extensionClass
+     * @param extensionType
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
@@ -123,7 +123,7 @@ public abstract /* non-sealed */ class AbstractContainerConfiguration extends Co
      *             been installed
      * @see #extensions()
      */
-    protected <T extends Extension> T use(Class<T> extensionClass) {
-        return container.useExtension(extensionClass);
+    protected <T extends Extension> T use(Class<T> extensionType) {
+        return container.useExtension(extensionType);
     }
 }

@@ -157,15 +157,15 @@ public abstract class BaseAssembly extends ContainerAssembly {
     /**
      * Returns whether or not the specified extension is in use.
      * 
-     * @param extensionClass
+     * @param extensionType
      *            the extension class to test
      * @return whether or not the specified extension is in use
      * @throws IllegalArgumentException
      *             if the specified extension type is {@link Extension}
      */
-    protected final boolean isInUse(Class<? extends Extension> extensionClass) {
-        requireNonNull(extensionClass, "extensionClass is null");
-        if (extensionClass == Extension.class) {
+    protected final boolean isInUse(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionClass is null");
+        if (extensionType == Extension.class) {
             throw new IllegalArgumentException("Cannot specify Extension.class");
         }
         throw new UnsupportedOperationException();

@@ -106,8 +106,8 @@ public class ContainerConfiguration extends AbstractContainerConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends Extension> T use(Class<T> extensionClass) {
-        return super.use(extensionClass);
+    public <T extends Extension> T use(Class<T> extensionType) {
+        return super.use(extensionType);
     }
 
     /** {@inheritDoc} */

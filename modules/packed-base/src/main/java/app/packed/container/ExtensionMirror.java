@@ -8,11 +8,8 @@ import app.packed.mirror.Mirror;
 // Kan bare sige der skal vaere en mirror() metode paa en Extension subclass
 // Hvis der er det knytter vi dem sammen
 
-
 // Vi vil gerne vaere serializable til gengaeld taenker jeg
 
 // Eller ogsaa bare FooExtension.mirrorOf() og
 // Mirror.of(FooExtension)
-public interface ExtensionMirror<T extends Extension> extends Mirror {
-
-}
+public interface ExtensionMirror<T extends Extension> extends Mirror {}

@@ -241,12 +241,12 @@ public interface ComponentMirrorStream extends AttributedElementStream<Component
          * Include components that belongs to any of the specified extension types is non-empty and contained in the specified
          * varargs).
          * 
-         * @param extensionClass
+         * @param extensionType
          *            extension classes that should be included in the stream
          * @return an option that includes all components that belongs to any of the specified extension types
          */
         @SafeVarargs
-        public static ComponentMirrorStream.Option includeExtensions(Class<? extends Extension>... extensionClass) {
+        public static ComponentMirrorStream.Option includeExtensions(Class<? extends Extension>... extensionType) {
             throw new UnsupportedOperationException();
         }
 

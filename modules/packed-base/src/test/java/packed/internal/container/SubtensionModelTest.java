@@ -25,8 +25,8 @@ public class SubtensionModelTest {
         SubtensionModel sm1 = SubtensionModel.of(TestExtension.Sub.class);
         SubtensionModel sm2 = SubtensionModel.of(TestExtension.SubStatic.class);
 
-        assertThat(sm1.extensionClass()).isSameAs(TestExtension.class);
-        assertThat(sm2.extensionClass()).isSameAs(TestExtension.class);
+        assertThat(sm1.extensionType()).isSameAs(TestExtension.class);
+        assertThat(sm2.extensionType()).isSameAs(TestExtension.class);
 
         Sub s = (Sub) sm1.newInstance(te, ServiceExtension.class);
         assertThat(s.getOuter()).isSameAs(te);

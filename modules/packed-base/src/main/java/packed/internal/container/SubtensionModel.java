@@ -28,7 +28,7 @@ import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 
 /** A model for a {@link Extension.Subtension}. Not used outside of this package. */
-record SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle mhConstructor) {
+record SubtensionModel(Class<? extends Extension> extensionType, MethodHandle mhConstructor) {
 
     /** Models of all subtensions. */
     private final static ClassValue<SubtensionModel> MODELS = new ClassValue<>() {
@@ -65,7 +65,7 @@ record SubtensionModel(Class<? extends Extension> extensionClass, MethodHandle m
 
     /** Create a new model. */
     SubtensionModel {
-        requireNonNull(extensionClass); // The declaring extension class.
+        requireNonNull(extensionType); // The declaring extension class.
         requireNonNull(mhConstructor); // The constructor of the subtension that we model (Extension,Class)Subtension
     }
 

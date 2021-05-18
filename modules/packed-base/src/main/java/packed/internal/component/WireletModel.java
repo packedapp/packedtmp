@@ -110,17 +110,17 @@ public final class WireletModel {
         }
 
         @Nullable
-        static Builder consume(Class<? extends Wirelet> extensionClass) {
+        static Builder consume(Class<? extends Wirelet> extensionType) {
             Lookup l = MethodHandles.lookup();
-            l.lookupClass().getModule().addReads(extensionClass.getModule());
+            l.lookupClass().getModule().addReads(extensionType.getModule());
             try {
-                l = MethodHandles.privateLookupIn(extensionClass, l);
-                l.ensureInitialized(extensionClass);
+                l = MethodHandles.privateLookupIn(extensionType, l);
+                l.ensureInitialized(extensionType);
             } catch (IllegalAccessException e) {
-                throw new InternalExtensionException("Oops " + extensionClass);
+                throw new InternalExtensionException("Oops " + extensionType);
             }
-            Builder existing = m(extensionClass);
-            HOLDERS.get(extensionClass).set(null);
+            Builder existing = m(extensionType);
+            HOLDERS.get(extensionType).set(null);
             return existing;
         }
 

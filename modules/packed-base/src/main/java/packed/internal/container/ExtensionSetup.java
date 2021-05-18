@@ -17,6 +17,7 @@ import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
+import app.packed.container.ExtensionAncestor;
 import app.packed.container.ExtensionConfiguration;
 import app.packed.container.ExtensionRuntime;
 import app.packed.container.ExtensionRuntimeConfiguration;
@@ -46,15 +47,14 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreembleComplete", void.class);
 
-    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
-    static final MethodHandle MH_INJECT_PARENT = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ExtensionSetup.class, "injectParent", Extension.class);
-
     /** A handle for setting the field Extension#configuration, used by {@link #newInstance(ContainerSetup, Class)}. */
     private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
 
     /** The container this extension is part of. */
     public final ContainerSetup container;
+
+    private final Class<? extends Extension> extensionType;
 
     /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
@@ -81,6 +81,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private ExtensionSetup(ContainerSetup container, ExtensionModel model) {
         this.container = requireNonNull(container);
         this.model = requireNonNull(model);
+        this.extensionType = model.type();
     }
 
     protected void attributesAdd(DefaultAttributeMap dam) {
@@ -108,11 +109,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         }
     }
 
-    /** {@return the extension class.} */
-    private Class<? extends Extension> extensionClass() {
-        return model.type();
-    }
-
     @Override
     public ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
         // get RuntimeExtensionModel...
@@ -138,20 +134,27 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * Used by {@link #MH_INJECT_PARENT}.
-     * 
-     * @return the parent extension instance
-     */
-    Extension injectParent() {
-        ContainerSetup parent = container.containerParent;
-        if (parent != null) {
-            ExtensionSetup extensionContext = parent.extensions.get(extensionClass());
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> ExtensionAncestor<T> findParent(Class<T> type) {
+        // First we need to check that the user does not specify some random extension
+        Object parent = null ;
+        ContainerSetup parentContainer = container.containerParent;
+        if (parentContainer != null) {
+            ExtensionSetup extensionContext = parentContainer.extensions.get(extensionType);
             if (extensionContext != null) {
-                return extensionContext.instance;
+                parent = extensionContext.instance;
             }
         }
-        return null;
+        
+        
+        if (parent == null) {
+            return ExtensionAncestor.empty();
+        }
+        if (!type.isInstance(parent)) {
+            throw new ClassCastException("A parent of type " + parent.getClass() + " was found, but it is not assignable to the specified type " + type);
+        }
+        return (ExtensionAncestor<T>) PackedExtensionAncestor.sameApplication(parent);
     }
 
     /**
@@ -161,8 +164,8 @@ public final class ExtensionSetup implements ExtensionConfiguration {
      * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
      */
-    // This was previous a method on ExtensionConfiguration
-    // And might become again if we want to extract info
+    // This was previous a method on ExtensionConfiguration, and might become again one again if we want to extract some
+    // tree info
     public Extension instance() {
         Extension e = instance;
         if (e == null) {
@@ -236,7 +239,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // We only allow selection of wirelets in the same module as the extension itself
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
-        Module m = extensionClass().getModule();
+        Module m = extensionType.getModule();
         if (m != wireletClass.getModule()) {
             throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
                     + ", wireletClass.getModule() = " + wireletClass.getModule());
@@ -258,24 +261,24 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Finds the subtension's model and its extension class
         SubtensionModel subModel = SubtensionModel.of(subtensionClass);
-        Class<? extends Extension> subExtensionClass = subModel.extensionClass();
+        Class<? extends Extension> subExtensionType = subModel.extensionType();
 
         // Check that the requested subtension's extension is a direct dependency of this extension
-        if (!model.dependencies().contains(subExtensionClass)) {
+        if (!model.dependencies().contains(subExtensionType)) {
             // Special message if you try to use your own subtension
-            if (extensionClass() == subExtensionClass) {
-                throw new InternalExtensionException(extensionClass().getSimpleName() + " cannot use its own subtension " + subExtensionClass.getSimpleName()
-                        + "." + subtensionClass.getSimpleName());
+            if (extensionType == subExtensionType) {
+                throw new InternalExtensionException(extensionType.getSimpleName() + " cannot use its own subtension " + subExtensionType.getSimpleName() + "."
+                        + subtensionClass.getSimpleName());
             }
-            throw new InternalExtensionException(extensionClass().getSimpleName() + " must declare " + format(subModel.extensionClass())
-                    + " as a dependency in order to use " + subExtensionClass.getSimpleName() + "." + subtensionClass.getSimpleName());
+            throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(subModel.extensionType())
+                    + " as a dependency in order to use " + subExtensionType.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
 
         // Get the extension instance (create it if needed) that the subtension needs
-        Extension instance = container.useExtension(subExtensionClass, this).instance;
+        Extension instance = container.useExtension(subExtensionType, this).instance;
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
-        return (E) subModel.newInstance(instance, extensionClass());
+        return (E) subModel.newInstance(instance, extensionType);
     }
 
     /** {@inheritDoc} */
@@ -366,7 +369,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 //ExtensionSetup anc;
 //if (model.extensionLinkedDirectChildrenOnly) {
 //  if (container.containerParent != null) {
-//      ancestor = container.containerParent.extensions.get(extensionClass());
+//      ancestor = container.containerParent.extensions.get(extensionType);
 //  } else {
 //      ancestor = null;
 //  }

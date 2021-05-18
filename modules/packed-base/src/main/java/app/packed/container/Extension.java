@@ -47,6 +47,7 @@ import packed.internal.util.ThrowableUtil;
 /**
  * Extensions are the primary way to extend Packed with new features. In fact most features provided by Packed itself is
  * using the same extension mechanism available to any user.
+ * <p>
  * 
  * For example, allows you to extend the basic functionality of containers.
  * <p>
@@ -147,18 +148,19 @@ public abstract class Extension {
 
     /**
      * Returns an extension configuration object. This configuration object is typically used in situations where the
-     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
+     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class due to
      * visibility rules.
      * <p>
      * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
      * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
      * access to the configuration object.
      * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension.
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. As an
+     * alternative, a extension configuration can be dependency inject into the constructor of the extension. Or
+     * {@link #onNew()} can be overridden to perform any needed post initialization.
      * 
      * @throws IllegalStateException
-     *             if invoked from the constructor of the extension. As an alternative dependency inject the configuration
-     *             object into the constructor
+     *             if invoked from the constructor of the extension.
      * @return a configuration object for this extension
      */
     protected final ExtensionConfiguration configuration() {
@@ -174,29 +176,24 @@ public abstract class Extension {
         return configuration().extensionInstall(implementation, wirelets);
     }
 
+    protected final ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
+        return configuration().extensionInstall(factory, wirelets);
+    }
+
+    protected final ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
+        return configuration().extensionInstallInstance(instance, wirelets);
+    }
+
     /**
-     * @param extension
+     * @param extensionType
      * @return
      * 
      * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     // Kan disable den paa application driver...
     //
-    protected boolean isExtensionEnabled(Class<? extends Extension> extension) {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
-     * 
-     * @param extensionClass
-     *            the extension to test
-     * @return true if the extension is currently in use, otherwise false
-     * 
-     * @see ExtensionConfiguration#isUsed(Class)
-     */
-    protected final boolean isInUse(Class<? extends Extension> extensionClass) {
-        return configuration().isUsed(extensionClass);
+    protected final boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
+        return configuration().isExtensionEnabled(extensionType);
     }
 
     protected final void isLeafContainer() {
@@ -205,15 +202,28 @@ public abstract class Extension {
         throw new UnsupportedOperationException();
     }
 
+    // Invoked before the first child container
+    // Invoke always, even if no child containers
+    // If you have configuration that
+    // extensionPreambleDone
+
     /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
     protected final boolean isPartOfImage() {
         return configuration().isPartOfImage();
     }
 
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
+    /**
+     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
+     * 
+     * @param extensionType
+     *            the extension type to test
+     * @return {@code true} if the extension is currently in use, otherwise {@code false}
+     * @see ExtensionConfiguration#isUsed(Class)
+     * @implNote Packed does not perform detailed tracking on extensions use other extensions.
+     */
+    protected final boolean isUsed(Class<? extends Extension> extensionType) {
+        return configuration().isUsed(extensionType);
+    }
 
     /**
      * Invoked by the runtime when the configuration of the container is completed.
@@ -241,7 +251,7 @@ public abstract class Extension {
      * new extension instance is returned to the end-user.
      * <p>
      * Since most methods on this class cannot be invoked from the constructor of an extension instance. This method can be
-     * used to perform post instantiation as needed.
+     * used to perform post instantiation of the extension as needed.
      * 
      * @see #onPreembleComplete()
      * @see #onComplete()
@@ -270,14 +280,6 @@ public abstract class Extension {
         // Container wiring must only be done from onComplete
 
         // lazy operations should be idempotent
-    }
-
-    protected final ExtensionRuntimeConfiguration runtimeInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
-        return configuration().extensionInstall(factory, wirelets);
-    }
-
-    protected final ExtensionRuntimeConfiguration runtimeInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
-        return configuration().extensionInstallInstance(instance, wirelets);
     }
 
     // Hvad hvis den selv tilfoejer komponenter med en child container???
@@ -492,6 +494,8 @@ public abstract class Extension {
         // Ideen er lidt at vi kan capture alle kald...
         // Ogsaa dem fra final metoder...
         // Hvor vi ikke kan dekore
+        
+        /// Are we complicating things to much???
 
         // Saa denne klasser bliver kun noedt til at blive kaldt af end-brugere hvis de har en abstract
         // extension klasse... Men har folk det?? I don't think so
@@ -539,8 +543,8 @@ public abstract class Extension {
      * {@code Class<? extends Extension>} which is the
      * 
      * <p>
-     * A new instance of subclasses of this class is automatically instance created by the runtime when needed. The instances are never cached,
-     * instead a fresh one is created every time it is requested.
+     * A new instance of subclasses of this class is automatically instance created by the runtime when needed. The
+     * instances are never cached, instead a fresh one is created every time it is requested.
      * 
      * @see Extension#use(Class)
      * @see ExtensionConfiguration#use(Class)

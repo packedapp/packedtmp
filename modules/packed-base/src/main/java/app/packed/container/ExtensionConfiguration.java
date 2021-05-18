@@ -32,16 +32,19 @@ import app.packed.inject.Factory;
  * <p>
  * Normally all configuration of extensions are done through the various protected final methods available when
  * extending {@link Extension}. However, for complex extensions where the logic cannot easily fit into a single class.
- * An extension configuration can be passed around in order to invoke needed methods.
+ * An extension configuration can be passed around in order to invoke relevant methods.
  * <p>
- * An instance of this interface is normally acquired via {@link Extension#configuration()}. But it can also be
- * constructor injected into an {@link Extension} subclass.
+ * An instance of this interface is normally acquired via {@link Extension#configuration()} or by constructor injecting
+ * it into an {@link Extension} subclass.
  * <p>
  * Since the extension itself defines most methods in this interface via protected final methods. This interface is
  * typically used in order to provide these methods to code that is defined outside of the actual extension
  * implementation, for example, code that is placed in another package.
  * <p>
  * <strong>Note:</strong> Instances of this class should never be exposed to end-users.
+ */
+/**
+ *
  */
 public /* sealed */ interface ExtensionConfiguration {
 
@@ -82,6 +85,27 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets);
 
+    /**
+     * @param <E>
+     * @param ancestorType
+     * @return
+     * @throws ClassCastException
+     *             if a parent was found but it was not of the specified type
+     */
+    default <E> ExtensionAncestor<E> findParent(Class<E> ancestorType) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param <E>
+     * @param ancestorType
+     * @return
+     * @throws ClassCastException
+     *             if an ancestor was found but it was not of the specified type
+     */
+    default <E> ExtensionAncestor<E> findAncestor(Class<E> ancestorType) {
+        throw new UnsupportedOperationException();
+    }
 //    /**
 //     * Returns the extension instance.
 //     * 
@@ -114,18 +138,20 @@ public /* sealed */ interface ExtensionConfiguration {
 
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
-     * <p>
-     * Packed does not track which extensions use other extensions.
      * 
-     * @param extensionClass
-     *            the extension to test
-     * @return true if the extension is currently in use, otherwise false
-     * @see Extension#isInUse(Class)
+     * @param extensionType
+     *            the extension type to test
+     * @return {@code true} if the extension is currently in use, otherwise {@code false}
+     * @see Extension#isUsed(Class)
+     * @implNote Packed does not perform detailed tracking on extensions use other extensions.
      */
-    // rename extension isInUse -> inUsed
-    boolean isUsed(Class<? extends Extension> extensionClass);
+    boolean isUsed(Class<? extends Extension> extensionType);
 
-    default <E extends Subtension> void lazyUse(Class<E> extensionClass, Consumer<E> action) {
+    default boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
+        throw new UnsupportedOperationException();
+    }
+
+    default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
         // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
 
@@ -171,9 +197,17 @@ public /* sealed */ interface ExtensionConfiguration {
      */
     <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletType);
 
+    default <C extends ComponentConfiguration> C subWire(Class<? extends Extension> subtension, ComponentDriver<C> driver, Wirelet... wirelets) {
+        /// Maaske har vi alligevel brug for SubtensionConfiguration...
+        // Ellers kan vi jo impresonate alle extensions.
+
+        // Hvis vi goer det... syntes jeg vi skal smide den ud i en seperat klasse..
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
-     * dependencies as specified via.... 
+     * dependencies as specified via....
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
      * can instead declare a dependency on {@link ExtensionConfiguration} and call
@@ -209,14 +243,6 @@ public /* sealed */ interface ExtensionConfiguration {
      *             if the specified driver is not created by the extension itself
      */
     <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
-
-    default <C extends ComponentConfiguration> C subWire(Class<? extends Extension> subtension, ComponentDriver<C> driver, Wirelet... wirelets) {
-        /// Maaske har vi alligevel brug for SubtensionConfiguration...
-        // Ellers kan vi jo impresonate alle extensions.
-
-        // Hvis vi goer det... syntes jeg vi skal smide den ud i en seperat klasse..
-        throw new UnsupportedOperationException();
-    }
 }
 
 // Previously used for getting hold of an extension from a mirror..

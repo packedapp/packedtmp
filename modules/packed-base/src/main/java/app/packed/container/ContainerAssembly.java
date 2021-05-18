@@ -185,15 +185,15 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * 
      * @param <T>
      *            the type of extension to return
-     * @param extensionClass
+     * @param extensionType
      *            the extension class to return an instance of
      * @return an instance of the specified extension class
      * @throws IllegalStateException
      *             if called from outside {@link #build()}
      * @see ContainerConfiguration#use(Class)
      */
-    protected final <T extends Extension> T use(Class<T> extensionClass) {
-        return configuration().use(extensionClass);
+    protected final <T extends Extension> T use(Class<T> extensionType) {
+        return configuration().use(extensionType);
     }
 
     /**
