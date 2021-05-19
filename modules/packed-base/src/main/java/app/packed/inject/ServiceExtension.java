@@ -20,14 +20,11 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import app.packed.attribute.ExposeAttribute;
 import app.packed.base.Key;
-import app.packed.base.Nullable;
 import app.packed.base.Qualifier;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.inject.sandbox.ServiceAttributes;
 import app.packed.state.sandbox.OnStart;
 import app.packed.validate.Validator;
 import packed.internal.container.ExtensionSetup;
@@ -196,46 +193,9 @@ public class ServiceExtension extends Extension {
     }
 
     /** { @return a mirror for this extension.} */
-    /* public? */ ServiceExtensionMirror mirror() {
+    @Override
+    protected ServiceExtensionMirror mirror() {
         return services.mirror();
-    }
-
-    /**
-     * Expose a service contract as an attribute.
-     * 
-     * @return a service contract for this extension
-     */
-    @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "contract")
-    /* package-private */ ServiceContract exposeContract() {
-        return services.newServiceContract();
-    }
-
-    /**
-     * Exposes an immutable service registry of all exported services. Or null if there are no exports.
-     * 
-     * @return any exported services. Or null if there are no exports
-     */
-    @ExposeAttribute(declaredBy = ServiceAttributes.class, name = "exported-services", optional = false)
-    @Nullable
-    /* package-private */ ServiceRegistry exposeExportedServices() {
-
-        // Kan specificere det paa attributen???
-        // Giv mig en ServiceExtension... og saa skal jeg vise dig...
-        // Det kraever jo vi force loader den...
-
-//        $addAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
-//        $addOptionalAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().hasExports());
-//
-//        $attribute(ServiceExtension.class, a -> {
-//            a.add(EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
-//            a.optional(EXPORTED_SERVICES, p -> p.services.exports().hasExports(), s -> s.services.exports().exportsAsServiceRegistry());
-//        });
-//
-//        AttributeMaker<ServiceExtension> a = $attribute(ServiceExtension.class);
-//        a.add(EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
-//        a.optional(EXPORTED_SERVICES, p -> p.services.exports().hasExports(), s -> s.services.exports().exportsAsServiceRegistry());
-
-        return services.exports().exportsAsServiceRegistry();
     }
 
     /**
@@ -392,7 +352,7 @@ public class ServiceExtension extends Extension {
 
     /**
      * A subtension that can be used by other extensions via {@link Extension#use(Class)} or
-     * {@link ExtensionConfiguration#use(Class)}.
+     * {@link ExtensionContext#use(Class)}.
      * <p>
      * This class does not provide any support for exporting services. The end-user is always in full control of exactly
      * what is being exported out from the container.
@@ -470,7 +430,43 @@ class ServiceExtensionBadIdeas {
 //  }
 
 }
-
+///**
+//* Expose a service contract as an attribute.
+//* 
+//* @return a service contract for this extension
+//*/
+//@ExposeAttribute(declaredBy = ServiceAttributes.class, name = "contract")
+///* package-private */ ServiceContract exposeContract() {
+// return services.newServiceContract();
+//}
+//
+///**
+//* Exposes an immutable service registry of all exported services. Or null if there are no exports.
+//* 
+//* @return any exported services. Or null if there are no exports
+//*/
+//@ExposeAttribute(declaredBy = ServiceAttributes.class, name = "exported-services", optional = false)
+//@Nullable
+///* package-private */ ServiceRegistry exposeExportedServices() {
+//
+// // Kan specificere det paa attributen???
+// // Giv mig en ServiceExtension... og saa skal jeg vise dig...
+// // Det kraever jo vi force loader den...
+//
+//// $addAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
+//// $addOptionalAttribute(ServiceExtension.class, ServiceAttributes.EXPORTED_SERVICES, s -> s.services.exports().hasExports());
+////
+//// $attribute(ServiceExtension.class, a -> {
+////     a.add(EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
+////     a.optional(EXPORTED_SERVICES, p -> p.services.exports().hasExports(), s -> s.services.exports().exportsAsServiceRegistry());
+//// });
+////
+//// AttributeMaker<ServiceExtension> a = $attribute(ServiceExtension.class);
+//// a.add(EXPORTED_SERVICES, s -> s.services.exports().exportsAsServiceRegistry());
+//// a.optional(EXPORTED_SERVICES, p -> p.services.exports().hasExports(), s -> s.services.exports().exportsAsServiceRegistry());
+//
+// return services.exports().exportsAsServiceRegistry();
+//}
 class ZExtraFunc {
 
     protected void addAlias(Class<?> existing, Class<?> newKey) {}

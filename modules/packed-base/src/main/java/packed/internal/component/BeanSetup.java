@@ -14,7 +14,7 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.component.PackedComponentDriver.BeanComponentDriver;
 
-/** An internal configuration of a bean.  */
+/** The internal configuration of a bean.  */
 public final class BeanSetup extends ComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
@@ -33,7 +33,7 @@ public final class BeanSetup extends ComponentSetup {
     /** {@inheritDoc} */
     @Override
     public BeanMirror mirror() {
-        return new BuildTimeBeanMirror(this);
+        return new BuildTimeBeanMirror();
     }
 
     @SuppressWarnings("unchecked")
@@ -44,13 +44,13 @@ public final class BeanSetup extends ComponentSetup {
 
     public void sourceProvide() {
         realm.checkOpen();
-        source.provide(this);
+        source.provide();
     }
 
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
         realm.checkOpen();
-        source.provide(this).as(key);
+        source.provide().as(key);
     }
 
     public Optional<Key<?>> sourceProvideAsKey() {
@@ -58,19 +58,12 @@ public final class BeanSetup extends ComponentSetup {
     }
 
     /** A build-time bean mirror. */
-    private final static class BuildTimeBeanMirror extends ComponentSetup.BuildTimeComponentMirror implements BeanMirror {
-
-        private final BeanSetup bean;
-
-        private BuildTimeBeanMirror(BeanSetup bean) {
-            super(bean);
-            this.bean = bean;
-        }
+    private final class BuildTimeBeanMirror extends ComponentSetup.BuildTimeComponentMirror implements BeanMirror {
 
         /** {@inheritDoc} */
         @Override
         public Class<?> beanType() {
-            return bean.source.hooks.clazz;
+            return source.hooks.clazz;
         }
 
         /** {@inheritDoc} */

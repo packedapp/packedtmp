@@ -26,18 +26,18 @@ import packed.internal.application.ApplicationLaunchContext;
 public final class ConstantPoolSetup {
 
     /** All constants that should be stored in the constant pool. */
-    private final ArrayList<PoolWriteable> entries = new ArrayList<>();
+    private final ArrayList<ConstantPoolWriteable> entries = new ArrayList<>();
 
     /** The size of the pool. */
     private int size;
 
     public final ArrayList<Runnable> postProcessing = new ArrayList<>();
 
-    public void addConstant(PoolWriteable s) {
+    public void addConstant(ConstantPoolWriteable s) {
         entries.add(s);
     }
 
-    public void addOrdered(PoolWriteable c) {
+    public void addOrdered(ConstantPoolWriteable c) {
         // new Exception().printStackTrace();
         // We just keep both these 2 method that does the same for now
         entries.add(c);
@@ -48,7 +48,7 @@ public final class ConstantPoolSetup {
 
         launchContext.writeToPool(pool);
 
-        for (PoolWriteable e : entries) {
+        for (ConstantPoolWriteable e : entries) {
             e.writeToPool(pool);
         }
         return pool;

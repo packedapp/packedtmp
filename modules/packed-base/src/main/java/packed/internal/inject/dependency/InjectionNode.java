@@ -37,13 +37,13 @@ import packed.internal.inject.service.build.SourceMemberServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
 import packed.internal.invoke.constantpool.ConstantPoolMethodAccessor;
 import packed.internal.invoke.constantpool.ConstantPoolSetup;
-import packed.internal.invoke.constantpool.PoolWriteable;
+import packed.internal.invoke.constantpool.ConstantPoolWriteable;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
-public final class InjectionNode implements PoolWriteable {
+public final class InjectionNode implements ConstantPoolWriteable {
 
     @Nullable
     private final SourceMemberServiceSetup service;

@@ -18,6 +18,7 @@ package app.packed.component;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedComponentDriver;
 
 /**
  * The base class for all component configuration classes.
@@ -30,7 +31,7 @@ import packed.internal.component.ComponentSetup;
  */
 public /* sealed */ abstract class ComponentConfiguration {
 
-    // TODO check nullable similar t
+    /** The component setup we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
     @Nullable
     private ComponentSetup component;
 
@@ -77,11 +78,11 @@ public /* sealed */ abstract class ComponentConfiguration {
     }
 
     /**
-     * Sets the {@link ComponentMirror#name() name} of the component. The name must consists only of alphanumeric characters
-     * and '_', '-' or '.'. The name is case sensitive.
+     * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
+     * is case sensitive.
      * <p>
-     * If no name is set using this method. A name will be assigned to the component when the component is initialized, in
-     * such a way that it will have a unique name other sibling components.
+     * If no name is explicitly set for a component. A name will be assigned to the component in such a way that it will
+     * have a unique name among other sibling components.
      *
      * @param name
      *            the name of the component
@@ -90,6 +91,7 @@ public /* sealed */ abstract class ComponentConfiguration {
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
      * @see ComponentMirror#name()
+     * @see Wirelet#named(String)
      */
     protected ComponentConfiguration named(String name) {
         component().named(name);
@@ -101,6 +103,9 @@ public /* sealed */ abstract class ComponentConfiguration {
      */
     protected void onConfigured() {}
 
+    /**
+     * A method that can be overridden
+     */
     protected void onNew() {}
 
     /**
@@ -132,7 +137,7 @@ public /* sealed */ abstract class ComponentConfiguration {
      * @param <C>
      *            the type of configuration returned by the specified driver
      * @param driver
-     *            the driver to use for creating the component
+     *            the driver to use for new the component
      * @param wirelets
      *            any wirelets that should be used when creating the component
      * @return a configuration for the new child component

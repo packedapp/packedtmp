@@ -46,7 +46,7 @@ import app.packed.inject.Factory;
 /**
  *
  */
-public /* sealed */ interface ExtensionConfiguration {
+public /* sealed */ interface ExtensionContext {
 
     /**
      * Checks that child containers has been aded
@@ -210,8 +210,8 @@ public /* sealed */ interface ExtensionConfiguration {
      * dependencies as specified via....
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionConfiguration} and call
-     * {@link ExtensionConfiguration#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionContext} and call
+     * {@link ExtensionContext#use(Class)}.
      * <p>
      * This method works similar to {@link ContainerConfiguration#use(Class)}.
      * 

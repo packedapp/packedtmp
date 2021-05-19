@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import packed.internal.container.PackedExtensionAncestor;
+
 // Extension <same app-parent> Extension
 // Extension <same build-parent> Extension
 // Extension <same build-ancestor> Extension
@@ -39,7 +41,7 @@ public interface ExtensionAncestor<E> {
     void onUninstall(Runnable r);// Ved ikke om det er det rigtige sted...
 
     static <T> ExtensionAncestor<T> empty() {
-        throw new UnsupportedOperationException();
+        return PackedExtensionAncestor.missing();
     }
 }
 /// Hvordan klare vi f.eks. at specificere at en host kun exportere Foo og Bar...

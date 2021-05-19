@@ -15,10 +15,12 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
+import app.packed.container.AbstractExtensionMirror;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionAncestor;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionMirror;
 import app.packed.container.ExtensionRuntime;
 import app.packed.container.ExtensionRuntimeConfiguration;
 import app.packed.container.ExtensionWirelet;
@@ -33,8 +35,8 @@ import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
-public final class ExtensionSetup implements ExtensionConfiguration {
+/** The internal configuration of an extension. Exposed to end-users as {@link ExtensionContext}. */
+public final class ExtensionSetup implements ExtensionContext {
 
     /** A handle for invoking {@link Extension#onComplete()}. */
     private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
@@ -47,9 +49,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
             "onPreembleComplete", void.class);
 
-    /** A handle for setting the field Extension#configuration, used by {@link #newInstance(ContainerSetup, Class)}. */
-    private static final VarHandle VH_EXTENSION_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
-            ExtensionConfiguration.class);
+    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
+    private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
+            ExtensionMirror.class);
+
+    /** A handle for setting the field Extension#context, used by {@link #newInstance(ContainerSetup, Class)}. */
+    private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "context",
+            ExtensionContext.class);
 
     /** The container this extension is part of. */
     public final ContainerSetup container;
@@ -134,27 +140,33 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    @SuppressWarnings("unchecked")
+    /** {@inheritDoc} */
+    @Override
+    public <T> ExtensionAncestor<T> findAncestor(Class<T> type) {
+        requireNonNull(type, "type is null");
+        ContainerSetup parent = container.containerParent;
+        while (parent != null) {
+            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
+            if (extensionContext != null) {
+                return PackedExtensionAncestor.sameApplication(type, extensionContext.instance);
+            }
+            // if (parentOnly) break;
+            parent = parent.containerParent;
+        }
+        return ExtensionAncestor.empty();
+    }
+
     @Override
     public <T> ExtensionAncestor<T> findParent(Class<T> type) {
-        // First we need to check that the user does not specify some random extension
-        Object parent = null ;
-        ContainerSetup parentContainer = container.containerParent;
-        if (parentContainer != null) {
-            ExtensionSetup extensionContext = parentContainer.extensions.get(extensionType);
+        requireNonNull(type, "type is null");
+        ContainerSetup parent = container.containerParent;
+        if (parent != null) {
+            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
             if (extensionContext != null) {
-                parent = extensionContext.instance;
+                return PackedExtensionAncestor.sameApplication(type, extensionContext.instance);
             }
         }
-        
-        
-        if (parent == null) {
-            return ExtensionAncestor.empty();
-        }
-        if (!type.isInstance(parent)) {
-            throw new ClassCastException("A parent of type " + parent.getClass() + " was found, but it is not assignable to the specified type " + type);
-        }
-        return (ExtensionAncestor<T>) PackedExtensionAncestor.sameApplication(parent);
+        return ExtensionAncestor.empty();
     }
 
     /**
@@ -197,6 +209,34 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     // Do we actually want to support this??? IDK
     public void lookup(Lookup lookup) {
         throw new UnsupportedOperationException();
+    }
+
+    /** {@return a mirror for the extension.} */
+    public ExtensionMirror<?> mirror() {
+        ExtensionMirror<?> m = null;
+        try {
+            m = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
+        if (m == null) {
+            throw new InternalExtensionException("Extension " + model.fullName() + " returned a null from " + model.name() + ".mirror");
+        }
+        if (m instanceof AbstractExtensionMirror<?> mi) {
+            mi.context = new AbstractExtensionMirrorContext() {
+
+                @Override
+                public Class<? extends Extension> type() {
+                    return extensionType;
+                }
+
+                @Override
+                public boolean equalsTo(Object other) {
+                    return false;
+                }
+            };
+        }
+        return m;
     }
 
     /**
@@ -303,7 +343,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Creates a new extension instance, and set Extension.configuration = ExtensionSetup
         Extension instance = extension.instance = model.newInstance(extension);
-        VH_EXTENSION_CONFIGURATION.set(instance, extension);
+        VH_EXTENSION_CONTEXT.set(instance, extension);
 
         // Add the extension to the container's extension map
         container.extensions.put(extensionClass, extension);

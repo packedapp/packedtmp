@@ -1,6 +1,6 @@
 package packed.internal.invoke.constantpool;
 
-public interface PoolWriteable {
-    
+// TODO vi burde jo gemme
+public interface ConstantPoolWriteable {
     void writeToPool(ConstantPool pool);
 }

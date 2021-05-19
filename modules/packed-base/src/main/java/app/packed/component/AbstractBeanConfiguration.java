@@ -11,15 +11,16 @@ public abstract /* non-sealed */ class AbstractBeanConfiguration extends Compone
     /** */
     private BeanSetup bean;
 
-    protected <T> ExportedServiceConfiguration<T> sourceExport() {
+    // Her kan en extension faktisk exporte ting...
+    protected <T> ExportedServiceConfiguration<T> exportAsService() {
         return bean.sourceExport();
     }
 
-    protected void sourceProvide() {
+    protected void provideAsService() {
         bean.sourceProvide();
     }
 
-    protected void sourceProvideAs(Key<?> key) {
+    protected void provideAsService(Key<?> key) {
         bean.sourceProvideAs(key);
     }
 

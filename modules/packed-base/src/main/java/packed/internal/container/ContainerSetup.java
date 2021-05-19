@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -157,7 +158,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** {@return a container adaptor that can be exposed to end-users} */
     @Override
     public ContainerMirror mirror() {
-        return new BuildTimeContainer(this);
+        return new BuildTimeContainer();
     }
 
     /** {@return a unmodifiable view of the extensions that are used.} */
@@ -257,44 +258,41 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** A build-time container mirror. */
-    private final static class BuildTimeContainer extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
-
-        private final ContainerSetup container;
-
-        BuildTimeContainer(ContainerSetup container) {
-            super(container);
-            this.container = container;
-        }
+    private final class BuildTimeContainer extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
 
         /** {@inheritDoc} */
         @Override
         public Collection<ContainerMirror> containerChildren() {
-            return CollectionUtil.unmodifiableView(container.containerChildren, c -> c.mirror());
+            return CollectionUtil.unmodifiableView(containerChildren, c -> c.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
         public int containerDepth() {
-            return container.containerDepth;
+            return containerDepth;
         }
 
         /** {@inheritDoc} */
         @Override
         public Optional<ContainerMirror> containerParent() {
-            ContainerSetup p = container.containerParent;
+            ContainerSetup p = containerParent;
             return p == null ? Optional.empty() : Optional.of(p.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
-        public Set<Class<? extends Extension>> extensions() {
-            return container.extensions();
+        public Set<ExtensionMirror<?>> extensions() {
+            HashSet<ExtensionMirror<?>> result = new HashSet<>();
+            for (ExtensionSetup es : extensions.values()) {
+                result.add(es.mirror());
+            }
+            return Set.copyOf(result);
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean isUsed(Class<? extends Extension> extensionType) {
-            return container.isUsed(extensionType);
+            return ContainerSetup.this.isUsed(extensionType);
         }
 
         @SuppressWarnings("unchecked")
@@ -302,7 +300,7 @@ public final class ContainerSetup extends ComponentSetup {
         public <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType) {
             requireNonNull(extensionMirrorType, "extensionMirrorType is null");
             if (extensionMirrorType == ServiceExtensionMirror.class) {
-                ExtensionSetup es = container.extensions.get(ServiceExtension.class);
+                ExtensionSetup es = extensions.get(ServiceExtension.class);
                 if (es == null) {
                     return Optional.empty();
                 } else {

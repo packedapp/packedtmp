@@ -36,8 +36,9 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.container.ContainerSetup;
@@ -120,7 +121,7 @@ public abstract class ComponentSetup {
             this.pool = hasRuntime ? new ConstantPoolSetup() : parent.pool;
             this.onWire = parent.onWire;
         }
-        
+
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
         // and may contained any number of CombinedWirelet instances.
@@ -243,7 +244,7 @@ public abstract class ComponentSetup {
      * @param wirelets
      *            optional wirelets
      * @return the component that was linked
-     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
+     * @see ExtensionContext#link(Assembly, Wirelet...)
      */
     public final ComponentMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
@@ -337,82 +338,86 @@ public abstract class ComponentSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    public static abstract class BuildTimeComponentMirror implements ComponentMirror {
-
-        private final ComponentSetup component;
-
-        protected BuildTimeComponentMirror(ComponentSetup component) {
-            this.component = requireNonNull(component);
-        }
+    public abstract class BuildTimeComponentMirror implements ComponentMirror {
 
         /** {@inheritDoc} */
         @Override
         public final ApplicationMirror application() {
-            return component.application.mirror();
+            return application.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
         public final AttributeMap attributes() {
-            return component.attributes();
+            return attributes();
         }
 
         /** {@inheritDoc} */
         @Override
         public final Collection<ComponentMirror> children() {
-            LinkedHashMap<String, ComponentSetup> m = component.children;
+            LinkedHashMap<String, ComponentSetup> m = children;
             return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
-        public final int depth() {
-            return component.depth;
+        public final ContainerMirror container() {
+            return container.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Class<? extends Extension>> extension() {
-            return Optional.ofNullable(component.realm.extensionType);
+        public final int depth() {
+            return depth;
+        }
+        
+        /** {@inheritDoc} */
+        @Override
+        public final Optional<Class<? extends Extension>> owningExtension() {
+            return Optional.ofNullable(realm.extensionType);
         }
 
         /** {@inheritDoc} */
         @Override
         public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return component.isInSame(scope, ((BuildTimeComponentMirror) other).component);
+            return ComponentSetup.this.isInSame(scope, ((BuildTimeComponentMirror) other).outer());
         }
 
         /** {@inheritDoc} */
         @Override
         public final String name() {
-            return component.name;
+            return name;
+        }
+
+        private ComponentSetup outer() {
+            return ComponentSetup.this;
         }
 
         /** {@inheritDoc} */
         @Override
         public final Optional<ComponentMirror> parent() {
-            ComponentSetup parent = component.parent;
+            ComponentSetup parent = ComponentSetup.this.parent;
             return parent == null ? Optional.empty() : Optional.of(parent.mirror());
         }
 
         /** {@inheritDoc} */
         @Override
         public final NamespacePath path() {
-            return component.path();
+            return ComponentSetup.this.path();
         }
 
         /** {@inheritDoc} */
         @Override
         public final Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(component, ((BuildTimeComponentMirror) other).component);
+            return ComponentSetupRelation.of(ComponentSetup.this, ((BuildTimeComponentMirror) other).outer());
         }
 
         /** {@inheritDoc} */
         @Override
         public final ComponentMirror resolve(CharSequence path) {
-            LinkedHashMap<String, ComponentSetup> map = component.children;
+            LinkedHashMap<String, ComponentSetup> map = children;
             if (map != null) {
                 ComponentSetup cs = map.get(path.toString());
                 if (cs != null) {
@@ -425,17 +430,17 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public final ComponentMirror root() {
-            ComponentSetup c = component;
+            ComponentSetup c = ComponentSetup.this;
             while (c.parent != null) {
                 c = c.parent;
             }
-            return c == component ? this : c.mirror();
+            return c == ComponentSetup.this ? this : c.mirror();
         }
 
         /** {@inheritDoc} */
         @Override
         public final ComponentMirrorStream stream(ComponentMirrorStream.Option... options) {
-            return new PackedComponentStream(stream0(component, true, PackedComponentStreamOption.of(options)));
+            return new PackedComponentStream(stream0(ComponentSetup.this, true, PackedComponentStreamOption.of(options)));
         }
 
         private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
@@ -443,7 +448,7 @@ public abstract class ComponentSetup {
             @SuppressWarnings({ "unchecked", "rawtypes" })
             Collection<BuildTimeComponentMirror> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
-                if (option.processThisDeeper(origin, component)) {
+                if (option.processThisDeeper(origin, ComponentSetup.this)) {
                     Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false, option));
                     return isRoot && option.excludeOrigin() ? s : Stream.concat(Stream.of(this), s);
                 }

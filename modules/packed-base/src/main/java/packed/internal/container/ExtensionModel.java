@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionDescriptor;
 import app.packed.container.InternalExtensionException;
 import packed.internal.attribute.PackedAttributeModel;
@@ -279,7 +279,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             }
 
             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), extensionClass, ExtensionSetup.class);
-            builder.provide(ExtensionConfiguration.class).adaptArgument(0);
+            builder.provide(ExtensionContext.class).adaptArgument(0);
             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
             builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
             // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv

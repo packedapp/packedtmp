@@ -67,20 +67,20 @@ public class ServiceBeanConfiguration<T> extends BeanConfiguration {
      * @see #as(Class)
      */
     public ServiceBeanConfiguration<T> as(Key<? super T> key) {
-        super.sourceProvideAs(key);
+        super.provideAsService(key);
         return this;
     }
 
     public ServiceBeanConfiguration<T> asNone() {
         // Ideen er vi f.eks. kan
         // asNone().exportAs(Doo.class);
-        super.sourceProvideAs(null);
+        super.provideAsService(null);
         return this;
     }
 
     /** {@inheritDoc} */
     public ExportedServiceConfiguration<T> export() {
-        return super.sourceExport();
+        return super.exportAsService();
     }
 
     // The key unless asNone()
@@ -91,7 +91,7 @@ public class ServiceBeanConfiguration<T> extends BeanConfiguration {
     }
 
     public ServiceBeanConfiguration<T> provide() {
-        super.sourceProvide();
+        super.provideAsService();
         return this;
     }
 

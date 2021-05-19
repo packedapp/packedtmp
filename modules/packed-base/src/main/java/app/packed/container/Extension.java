@@ -37,6 +37,8 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import app.packed.inject.ServiceExtension;
+import app.packed.inject.ServiceExtensionMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
@@ -64,11 +66,10 @@ import packed.internal.util.ThrowableUtil;
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
- * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private
- * accessibility to make sure users do not try an manually instantiate it, but instead use
- * {@link ContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected that
- * future versions of Packed will supports some debug configuration that relies on extending extensions. And capturing
- * interactions with the extension.
+ * taking a single parameter of type {@link ExtensionContext}. The constructor should have package private accessibility
+ * to make sure users do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}.
+ * The extension subclass should not be declared final as it is expected that future versions of Packed will supports
+ * some debug configuration that relies on extending extensions. And capturing interactions with the extension.
  * 
  * @see ExtensionDescriptor
  */
@@ -99,7 +100,7 @@ import packed.internal.util.ThrowableUtil;
 public abstract class Extension {
 
     /**
-     * The configuration of this extension. That all methods delegate to.
+     * The context of this extension which most methods delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle. The field is
      * not nulled out after the configuration of the extension has completed. This allows for invoking methods such as
@@ -108,7 +109,7 @@ public abstract class Extension {
      * This field should never be read directly, but only accessed via {@link #configuration()}.
      */
     @Nullable
-    private ExtensionConfiguration configuration;
+    private ExtensionContext context;
 
     /** Create a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
@@ -116,7 +117,7 @@ public abstract class Extension {
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionConfiguration#checkIsBuilding()}.
+     * This method delegate all calls to {@link ExtensionContext#checkIsBuilding()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
@@ -163,8 +164,8 @@ public abstract class Extension {
      *             if invoked from the constructor of the extension.
      * @return a configuration object for this extension
      */
-    protected final ExtensionConfiguration configuration() {
-        ExtensionConfiguration c = configuration;
+    protected final ExtensionContext configuration() {
+        ExtensionContext c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override " + Extension.class.getSimpleName() + "#onNew()");
@@ -218,11 +219,25 @@ public abstract class Extension {
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
-     * @see ExtensionConfiguration#isUsed(Class)
-     * @implNote Packed does not perform detailed tracking on extensions use other extensions.
+     * @see ExtensionContext#isUsed(Class)
+     * @implNote Packed does not perform detailed tracking on what extensions use other extensions. So it cannot answer
+     *           questions about what exact extension is using another extension
      */
     protected final boolean isUsed(Class<? extends Extension> extensionType) {
         return configuration().isUsed(extensionType);
+    }
+
+    /**
+     * Returns a mirror for the extension. This method can be overridden to overridden to provide a specific extension
+     * mirror. For example, {@link ServiceExtension} returns an instance of {@link ServiceExtensionMirror} from this method.
+     * <p>
+     * Mirrors returned by this method should extend {@link AbstractExtensionMirror} in which case Packed will automatically
+     * populate xxxx
+     * 
+     * @return a mirror for the extension
+     */
+    protected ExtensionMirror<?> mirror() {
+        return new GenericExtensionMirror<>();
     }
 
     /**
@@ -282,10 +297,6 @@ public abstract class Extension {
         // lazy operations should be idempotent
     }
 
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
-
     /**
      * <p>
      * If this assembly links a container this method must be called from {@link #onComplete()}.
@@ -305,6 +316,10 @@ public abstract class Extension {
 //        ((ExtensionSetup) configuration()).lookup(lookup);
 //    }
 
+    // Hvad hvis den selv tilfoejer komponenter med en child container???
+    // Problemet er hvis den bruger extensions som den ikke har defineret
+    // Det tror jeg maaske bare ikke den kan
+
     /**
      * Used to lookup other extensions.
      * <p>
@@ -312,8 +327,7 @@ public abstract class Extension {
      * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionConfiguration} and call
-     * {@link ExtensionConfiguration#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionContext} and call {@link ExtensionContext#use(Class)}.
      * 
      * @param <E>
      *            the type of subtension to return
@@ -324,7 +338,7 @@ public abstract class Extension {
      *             If invoked from the constructor of the extension. Or if the underlying container is no longer
      *             configurable and an extension of the specified type has not already been installed. Or if the extension
      *             of the specified subtension class has not been registered as a dependency of this extension
-     * @see ExtensionConfiguration#use(Class)
+     * @see ExtensionContext#use(Class)
      * @see #$dependsOn(Class...)
      */
     protected final <E extends Subtension> E use(Class<E> subtensionClass) {
@@ -340,6 +354,8 @@ public abstract class Extension {
         return configuration().selectWirelets(wireletClass);
     }
 
+    protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
     // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
     // F.eks. hvis nogle aktivere onBuild().. Igen det er jo en hel chain vi saetter i gang
@@ -347,8 +363,6 @@ public abstract class Extension {
 
     // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
     // onFinish cannot add new extensions...
-
-    protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
 
     protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
             Consumer<? super T> action) {
@@ -494,7 +508,7 @@ public abstract class Extension {
         // Ideen er lidt at vi kan capture alle kald...
         // Ogsaa dem fra final metoder...
         // Hvor vi ikke kan dekore
-        
+
         /// Are we complicating things to much???
 
         // Saa denne klasser bliver kun noedt til at blive kaldt af end-brugere hvis de har en abstract
@@ -511,6 +525,12 @@ public abstract class Extension {
     protected interface ClassComponentDriverBuilder {
         BeanConfigurationBinder<Object, BeanConfiguration> build();
     }
+
+    /**
+     * A generic extension mirror that is used if extension developers does not override {@link Extension#mirror()} to
+     * provide a specific mirror implementation for their extension.
+     */
+    private static class GenericExtensionMirror<E extends Extension> extends AbstractExtensionMirror<E> {}
 
     /**
      * A Subtension is the main way for one extension to use another extension. If you are an end-user you will most likely
@@ -547,7 +567,7 @@ public abstract class Extension {
      * instances are never cached, instead a fresh one is created every time it is requested.
      * 
      * @see Extension#use(Class)
-     * @see ExtensionConfiguration#use(Class)
+     * @see ExtensionContext#use(Class)
      */
     public static abstract class Subtension {}
 }

@@ -138,6 +138,8 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @return a mirror of the component that was linked
      * @see ContainerConfiguration#link(Assembly, Wirelet...)
      */
+    // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
+    // Men maaske skulle Component
     protected final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);
     }

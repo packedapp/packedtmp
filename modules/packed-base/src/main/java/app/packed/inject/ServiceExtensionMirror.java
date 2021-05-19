@@ -50,11 +50,11 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
         throw new UnsupportedOperationException();
     }
 
-    public static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
+    static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).tryUse(ServiceExtensionMirror.class);
     }
 
-    public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+    static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).use(ServiceExtensionMirror.class);
     }
 

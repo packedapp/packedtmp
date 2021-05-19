@@ -20,7 +20,7 @@ import app.packed.component.Wirelet;
 // Kunne maaske godt taenke mig at extende ComponentMirror...
 // Det giver bare saa meget mening for BeanMirror
 public interface ContainerMirror extends ComponentMirror /* extends Iterable<ComponentMirror> */ {
-    
+
     default Stream<ComponentMirror> components() {
         throw new UnsupportedOperationException();
     }
@@ -39,24 +39,24 @@ public interface ContainerMirror extends ComponentMirror /* extends Iterable<Com
     /** {@return the parent container of this container. Or empty if this container has no parent} */
     Optional<ContainerMirror> containerParent();
 
-    /** { @return a set of all extensions that have been used by the container.} */
-    Set<Class<? extends Extension>> extensions();
+    /** {@return a set of all extensions that are used by the container.} */
+    Set<ExtensionMirror<?>> extensions();
 
     default void forEachComponent(Consumer<? super ComponentMirror> action) {
         components().forEach(action);
     }
 
-    /** {@return whether or not the container is root container in an application.} */
+    /** {@return whether or not the container is the root container in an application.} */
     default boolean isApplicationContainer() {
         return application().container().equals(this);
     }
 
     /**
-     * Returns whether or not the underlying container uses an extension of the specified type.
+     * Returns whether or not an extension of the specified type is used by the container.
      * 
      * @param extensionType
      *            the type of extension to test
-     * @return {@code true} if this container uses an extension of the specified type
+     * @return {@code true} if this container uses an extension of the specified type, otherwise {@code false}
      */
     boolean isUsed(Class<? extends Extension> extensionType);
 
@@ -64,19 +64,21 @@ public interface ContainerMirror extends ComponentMirror /* extends Iterable<Com
     <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType); // maybe just find? find
 
     /**
-     * Returns an mirror of the specified type, iff the mirror's extension type is in use by the underlying container.
+     * Returns an mirror for the specified extension type if it is in use. If the container does not use the specified
+     * extension type a {@link NoSuchElementException} is thrown.
      * 
      * @param <T>
      *            the type of mirror
-     * @param extensionMirrorType
-     *            the type of mirror to return
+     * @param mirrorType
+     *            the type of extension mirror to return
      * @return an extension mirror of the specified type
      * @see ContainerConfiguration#use(Class)
+     * @see #tryUse(Class)
      * @throws NoSuchElementException
      *             if the mirror's extension is not used by the container
      */
-    default <T extends ExtensionMirror<?>> T use(Class<T> extensionMirrorType) {
-        return tryUse(extensionMirrorType).orElseThrow();
+    default <T extends ExtensionMirror<?>> T use(Class<T> mirrorType) {
+        return tryUse(mirrorType).orElseThrow();
     }
 
     public static ContainerMirror of(Assembly<?> assembly, Wirelet... wirelets) {

@@ -21,8 +21,6 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.Wirelet;
-import app.packed.container.UsedExtensionMirror;
-import app.packed.mirror.SetView;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -91,9 +89,6 @@ public interface BuildMirror {
 
     BuildTarget target();
 
-    default SetView<UsedExtensionMirror> extensions() {
-        throw new UnsupportedOperationException();
-    }
     
     // It can be on error path...
 //    enum State {

@@ -30,13 +30,13 @@ import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.invoke.constantpool.PoolWriteable;
+import packed.internal.invoke.constantpool.ConstantPoolWriteable;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-public final class ApplicationLaunchContext implements PoolWriteable {
+public final class ApplicationLaunchContext implements ConstantPoolWriteable {
 
     /** The application we are launching */
     public final ApplicationSetup application;

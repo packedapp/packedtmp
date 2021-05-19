@@ -28,11 +28,11 @@ import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.invoke.constantpool.PoolWriteable;
+import packed.internal.invoke.constantpool.ConstantPoolWriteable;
 import packed.internal.util.MethodHandleUtil;
 
 /** A configuration object for a component class source. */
-public final class BeanSetupSupport implements DependencyProducer, PoolWriteable {
+public final class BeanSetupSupport implements DependencyProducer, ConstantPoolWriteable {
 
     public final BeanSetup component;
 
@@ -73,6 +73,9 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
         this.component = component;
 
         // Reserve a place in the constant pool if the source is a singleton
+
+        // If instance != null we kan vel pool.permstore()
+        // BuildStore
         this.poolIndex = driver.isConstant ? component.pool.reserveObject() : -1;
 
         // A realm accessor that allows us to find all hooks a component source
@@ -124,7 +127,6 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
     @Override
     public MethodHandle dependencyAccessor() {
         // Must return MethodHandle(ConstantPool)T
-
         if (constant != null) { // we have
             return MethodHandleUtil.insertFakeParameter(MethodHandleUtil.constant(constant), ConstantPool.class); // MethodHandle()T ->
                                                                                                                   // MethodHandle(ConstantPool)T
@@ -135,7 +137,7 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
         }
     }
 
-    public ServiceSetup provide(BeanSetup component) {
+    public ServiceSetup provide() {
         // Maybe we should throw an exception, if the user tries to provide an entry multiple times??
         ServiceSetup s = service;
         if (s == null) {
@@ -152,6 +154,7 @@ public final class BeanSetupSupport implements DependencyProducer, PoolWriteable
 
     @Override
     public void writeToPool(ConstantPool pool) {
+        // Altsaa vi burde jo bare gemme den her med det samme...
         assert poolIndex >= 0;
         assert constant != null;
         pool.storeObject(poolIndex, constant);

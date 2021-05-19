@@ -32,6 +32,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.invoke.constantpool.ConstantPool;
@@ -153,7 +154,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     @Override
-    public Optional<Class<? extends Extension>> extension() {
+    public Optional<Class<? extends Extension>> owningExtension() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -287,5 +288,11 @@ public final class RuntimeComponentMirror implements ComponentMirror {
         } else {
             return isRoot && option.excludeOrigin() ? Stream.empty() : Stream.of(this);
         }
+    }
+
+    @Override
+    public ContainerMirror container() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

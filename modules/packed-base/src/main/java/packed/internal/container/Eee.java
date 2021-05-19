@@ -4,8 +4,10 @@ import app.packed.application.App;
 import app.packed.component.ComponentMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.container.ExtensionConfiguration;
+import app.packed.container.ExtensionContext;
+import app.packed.container.ExtensionMirror;
 import app.packed.inject.InjectionContext;
+import app.packed.inject.ServiceExtension;
 
 public class Eee extends BaseAssembly {
 
@@ -13,6 +15,14 @@ public class Eee extends BaseAssembly {
     protected void build() {
         use(DDD.class);
         ComponentMirror m = link(new MyL());
+        
+        
+        for (ExtensionMirror<?> em : m.container().extensions()) {
+            System.out.println(em.type() + ": dependencies = " + em.descriptor().dependencies());
+            System.out.println(em.getClass());
+        }
+        System.out.println("Extensions: " + m.container().extensions());
+
         m.stream().forEach(e -> System.out.println(e.path()));
     }
 
@@ -21,7 +31,7 @@ public class Eee extends BaseAssembly {
     }
 
     static class DDD extends Extension {
-        DDD(ExtensionConfiguration ec, InjectionContext ic /* , Optional<DDD> parent */) {
+        DDD(ExtensionContext ec, InjectionContext ic /* , Optional<DDD> parent */) {
             System.out.println(ic.keys());
 
         }
@@ -32,8 +42,17 @@ public class Eee extends BaseAssembly {
         @Override
         protected void build() {
             installInstance("asdads");
-            new Exception().printStackTrace();
+            service();
+            use(MyExte.class);
+            // new Exception().printStackTrace();
         }
-
     }
+
+    static class MyExte extends Extension {
+
+        static {
+            $dependsOn(ServiceExtension.class);
+        }
+    }
+
 }

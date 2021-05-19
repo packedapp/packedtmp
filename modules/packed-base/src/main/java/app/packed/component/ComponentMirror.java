@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentMirrorStream.Option;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.mirror.Mirror;
 
@@ -37,26 +38,17 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     /** {@return an unmodifiable view of all of the children of this component.} */
     Collection<ComponentMirror> children();
 
+    /** {@return the application this component is a part of.} */
+    // Maaske flyt den ud til alle andre componenter end container
+    ContainerMirror container();
+
+    
     /**
      * Returns the distance to the root component. The root component having depth 0.
      * 
      * @return the distance to the root component
      */
     int depth();
-
-    /** {@return empty if the component is installed by the user, otherwise the extension that owns it} */
-    // Hmm ExtensionRuntime vil helst ikke rigtig returnere optional
-    // owning extension?
-    // installedByExtension, wiringExtension.. (med det kan jo ogsaa vaere driveren...)
-    /// Okay, vi har nogle forskellige extensions her
-    
-    // Faktisk er det vel kun runtime extensions
-    
-    // Der er 3 muligheder
-    // standard packed driver
-    // Driver fra Extension
-    // 
-    Optional<Class<? extends Extension>> extension();
 
     default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
@@ -73,6 +65,20 @@ public /* sealed */ interface ComponentMirror extends Mirror {
      * @return the name of this component
      */
     String name();
+
+    /** {@return empty if the component is installed by the user, otherwise the extension that owns it} */
+    // Hmm ExtensionRuntime vil helst ikke rigtig returnere optional
+    // owning extension?
+    // installedByExtension, wiringExtension.. (med det kan jo ogsaa vaere driveren...)
+    /// Okay, vi har nogle forskellige extensions her
+    
+    // Faktisk er det vel kun runtime extensions
+    
+    // Der er 3 muligheder
+    // standard packed driver
+    // Driver fra Extension
+    // 
+    Optional<Class<? extends Extension>> owningExtension();
 
     /** {@return the parent component of this component. Or empty if this component has no parent} */
     Optional<ComponentMirror> parent();
