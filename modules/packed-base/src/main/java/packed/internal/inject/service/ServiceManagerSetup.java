@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.AbstractExtensionMirror;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
@@ -331,8 +330,8 @@ public final class ServiceManagerSetup {
     }
 
     /** A build-time service extension mirror. */
-    private class BuildTimeServiceExtensionMirror extends AbstractExtensionMirror<ServiceExtension> implements ServiceExtensionMirror {
-        
+    private class BuildTimeServiceExtensionMirror extends ServiceExtensionMirror {
+
         /** {@inheritDoc} */
         @Override
         public ServiceContract contract() {

@@ -13,10 +13,6 @@ public final class ExtensionRuntimeConfiguration extends ComponentConfiguration 
     public NamespacePath path() {
         return super.path();
     }
-
-    
- // Nu skal de sgu nok hedde .ServiceExtension
-
- // Tror faktisk ikke man kan tilpasse den her...
-
+   
+  // Nu skal de sgu nok hedde .ServiceExtension alligevel paa runtime
 }

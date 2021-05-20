@@ -54,6 +54,9 @@ public /* sealed */ abstract class ComponentConfiguration {
      *             if invoked from the constructor of the configuration.
      * @return a configuration object for this extension
      */
+    // Altsaa maaske skal vi reintroducere component context...
+    // Det er isaer den der BeanConfiguration.provide jeg ikke har lyst til at hardcode i BeanConfiguration...
+    /// Men hvis vi saa har ServiceExtension.Sub.provide(BeanConfigurationContext bc)
     final ComponentSetup component() {
         ComponentSetup c = component;
         if (c == null) {
@@ -100,11 +103,16 @@ public /* sealed */ abstract class ComponentConfiguration {
 
     /**
      * Ivoked A callback method invoked by Packed immediatly before it is marked as no longer configurable
+     * <p>
+     * <strong>Note:</strong> This method should never be overridden with a public modifier.
      */
     protected void onConfigured() {}
 
     /**
      * A method that can be overridden
+     * 
+     * <p>
+     * <strong>Note:</strong> This method should never be overridden with a public modifier.
      */
     protected void onNew() {}
 

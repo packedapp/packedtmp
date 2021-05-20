@@ -3,29 +3,57 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.component.ComponentMirror;
-import app.packed.mirror.Mirror;
+import packed.internal.container.AbstractExtensionMirrorContext;
 
-// Altsaa skal det ikke vaere en abstract klasse???
-// Kan ikke forstille mig vi gemmer den her paa runtime.
+/**
+ * A mirror of an extension.
+ * <p>
+ * This class can be overridden by extension to provide more details about a particular extension.
+ */
+// 2 Design maader...
+// Enten en ExtensionMirror i constructeren.. return new BuildTimeServiceExtensionMirror(mirror());
+// eller en Extension.populate(ExtensionMirror em)
+public class ExtensionMirror<E extends Extension> {
 
-// Kan bare sige der skal vaere en mirror() metode paa en Extension subclass
-// Hvis der er det knytter vi dem sammen
+    @SuppressWarnings("exports")
+    public AbstractExtensionMirrorContext context;
 
-// Vi vil gerne vaere serializable til gengaeld taenker jeg
+    /** {@return the container this extension is used in.} */
+    public final ContainerMirror container() {
+        return context().container();
+    }
 
-// Eller ogsaa bare FooExtension.mirrorOf() og
-// Mirror.of(FooExtension)
-public /* sealed */ interface ExtensionMirror<T extends Extension> extends Mirror {
+    private AbstractExtensionMirrorContext context() {
+        return context;
+    }
 
     /** {@return a descriptor of the extension.} */
-    default ExtensionDescriptor descriptor() {
+    public final ExtensionDescriptor descriptor() {
         return ExtensionDescriptor.of(type());
     }
 
-    // Components from own realm (I think)
-    Set<ComponentMirror> installed();
+    @Override
+    public boolean equals(Object other) {
+        // I think we just compare extension instance
+        return context().equalsTo(other);
+    }
 
-    /** {@return the type of extension that is used.} */
-    Class<? extends Extension> type();
+    @Override
+    public int hashCode() {
+        return context().hashCode();
+    }
 
+    public final Set<ComponentMirror> installed() {
+        return context().installed();
+    }
+
+    @Override
+    public String toString() {
+        return type().getCanonicalName();
+    }
+
+    /** {@return the type of extension that is mirrored.} */
+    public final Class<? extends Extension> type() {
+        return context().type();
+    }
 }

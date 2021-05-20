@@ -133,6 +133,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      * @return a build setup
      */
     public BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, BuildTarget buildTarget) {
+        // TODO we need to check that the assembly is not in the process of being built..
+        // Both here and linking... We could call it from within build
+
         // Extract the component driver from the assembly
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 

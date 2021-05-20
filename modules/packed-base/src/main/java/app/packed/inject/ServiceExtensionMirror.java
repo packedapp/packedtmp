@@ -13,8 +13,7 @@ import app.packed.container.ExtensionMirror;
 /**
  * A mirror of a {@link ServiceExtension}.
  */
-// Taenker naar vi 
-public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+public abstract class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
 
     /**
      * Returns the service contract for the container.
@@ -26,9 +25,9 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
     // Den fungere ikke hvis vi ikke har resolvet alle services.
     // Fordi vi ved jo ikke om en required service fx bliver provided af et link af en container
     // senere hen
-    
+
     // Alternativet er kun at have
-    ServiceContract contract();
+    public abstract ServiceContract contract();
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...
     // Hvad skal vi returnere???
@@ -38,7 +37,7 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
     // MapView<Key<?>, ServiceMirror>
 
     // or contract.keys()
-    default Set<Key<?>> exportedKeys() {
+    public Set<Key<?>> exportedKeys() {
         return contract().provides();
     }
 
@@ -46,15 +45,15 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
     // Map<K, V> unresolvedOptional?();
 
     /** { @return a map view of all the services that are exported from the container.} */
-    default Map<Key<?>, ServiceMirror> exports() {
+    public Map<Key<?>, ServiceMirror> exports() {
         throw new UnsupportedOperationException();
     }
 
-    static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
+    public static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).tryUse(ServiceExtensionMirror.class);
     }
 
-    static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+    public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).use(ServiceExtensionMirror.class);
     }
 
@@ -65,7 +64,7 @@ public interface ServiceExtensionMirror extends ExtensionMirror<ServiceExtension
      *            the extension to return a mirror for
      * @return the mirror
      */
-    /* public??? */ static ServiceExtensionMirror of(ServiceExtension extension) {
+    /* public??? */ public static ServiceExtensionMirror of(ServiceExtension extension) {
         return extension.mirror();
     }
 }

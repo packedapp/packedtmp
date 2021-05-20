@@ -24,6 +24,8 @@ import app.packed.container.BaseAssembly;
 interface JobScheduler {
     <S, T extends Assembly<?> & ResultBearing<S>> Job<S> schedule(T assembly);
 
+    <T> Job<T> schedule(JobAssembly<T> assembly);
+
 }
 
 class Test extends BaseAssembly implements ResultBearing<String> {
@@ -33,9 +35,28 @@ class Test extends BaseAssembly implements ResultBearing<String> {
 
     public static void foo(JobScheduler js) {
         Job<String> j = js.schedule(new Test());
-        
+
         System.out.println(j);
+
+    }
+
+}
+
+class Test2 extends JobAssembly<String> {
+
+    @Override
+    protected void build() {
+        simpleComputable(() -> "Qwe");
         
+        // Ideen er man kan registrere jobbet som en service...
+        provideJobLauncher(new Test2());
+    }
+
+    public static void foo(JobScheduler js) {
+        Job<String> j = js.schedule(new Test2());
+
+        System.out.println(j);
+
     }
 
 }

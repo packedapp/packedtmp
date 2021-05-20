@@ -106,7 +106,7 @@ public abstract class Extension {
      * not nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkConfigurable()} at any time.
      * <p>
-     * This field should never be read directly, but only accessed via {@link #configuration()}.
+     * This field should never be read directly, but only accessed via {@link #context()}.
      */
     @Nullable
     private ExtensionContext context;
@@ -123,7 +123,7 @@ public abstract class Extension {
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkConfigurable() {
-        configuration().checkIsBuilding();
+        context().checkIsBuilding();
     }
 
     // checkExtendable...
@@ -136,7 +136,7 @@ public abstract class Extension {
     // af brugeren med mindre XYZ...
     // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
     protected final void checkExtendable() {
-        configuration().checkExtendable();
+        context().checkExtendable();
     }
 
     // checkInNoSubContainers
@@ -148,23 +148,22 @@ public abstract class Extension {
     }
 
     /**
-     * Returns an extension configuration object. This configuration object is typically used in situations where the
-     * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class due to
-     * visibility rules.
+     * Returns an extension context object. This context object is typically used in situations where the extension needs to
+     * delegate responsibility to classes that cannot invoke the protected methods on this class due to visibility rules.
      * <p>
-     * An instance of {@code ExtensionConfiguration} can also be dependency injected into the constructor of an extension
+     * An instance of {@code ExtensionContext} can also be dependency injected into the constructor of an extension
      * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
      * access to the configuration object.
      * <p>
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. As an
-     * alternative, a extension configuration can be dependency inject into the constructor of the extension. Or
+     * alternative, a extension context can be dependency injected into the constructor of the extension. Or
      * {@link #onNew()} can be overridden to perform any needed post initialization.
      * 
      * @throws IllegalStateException
      *             if invoked from the constructor of the extension.
-     * @return a configuration object for this extension
+     * @return a context object for this extension
      */
-    protected final ExtensionContext configuration() {
+    protected final ExtensionContext context() {
         ExtensionContext c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
@@ -174,15 +173,15 @@ public abstract class Extension {
     }
 
     protected final ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
-        return configuration().extensionInstall(implementation, wirelets);
+        return context().extensionInstall(implementation, wirelets);
     }
 
     protected final ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
-        return configuration().extensionInstall(factory, wirelets);
+        return context().extensionInstall(factory, wirelets);
     }
 
     protected final ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
-        return configuration().extensionInstallInstance(instance, wirelets);
+        return context().extensionInstallInstance(instance, wirelets);
     }
 
     /**
@@ -194,7 +193,7 @@ public abstract class Extension {
     // Kan disable den paa application driver...
     //
     protected final boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
-        return configuration().isExtensionEnabled(extensionType);
+        return context().isExtensionEnabled(extensionType);
     }
 
     protected final void isLeafContainer() {
@@ -210,7 +209,7 @@ public abstract class Extension {
 
     /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
     protected final boolean isPartOfImage() {
-        return configuration().isPartOfImage();
+        return context().isPartOfImage();
     }
 
     /**
@@ -224,20 +223,24 @@ public abstract class Extension {
      *           questions about what exact extension is using another extension
      */
     protected final boolean isUsed(Class<? extends Extension> extensionType) {
-        return configuration().isUsed(extensionType);
+        return context().isUsed(extensionType);
     }
 
     /**
      * Returns a mirror for the extension. This method can be overridden to overridden to provide a specific extension
      * mirror. For example, {@link ServiceExtension} returns an instance of {@link ServiceExtensionMirror} from this method.
      * <p>
-     * Mirrors returned by this method should extend {@link AbstractExtensionMirror} in which case Packed will automatically
+     * Mirrors returned by this method should extend {@link ExtensionMirror} in which case Packed will automatically
      * populate xxxx
+     * <p>
+     * {@code null} is not a valid value to return from an overridden method. It will result in an
+     * InternalExtensionException being thrown when attempting to create an extension mirror.
      * 
      * @return a mirror for the extension
      */
     protected ExtensionMirror<?> mirror() {
-        return new GenericExtensionMirror<>();
+        // Okay we need to populate it...
+        return new ExtensionMirror<>();
     }
 
     /**
@@ -309,7 +312,7 @@ public abstract class Extension {
      *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
      */
     protected final void runtimeLink(Assembly<?> assembly, Wirelet... wirelets) {
-        configuration().link(assembly, wirelets);
+        context().link(assembly, wirelets);
     }
 //
 //    protected final void lookup(MethodHandles.Lookup lookup) {
@@ -342,16 +345,16 @@ public abstract class Extension {
      * @see #$dependsOn(Class...)
      */
     protected final <E extends Subtension> E use(Class<E> subtensionClass) {
-        return configuration().use(subtensionClass);
+        return context().use(subtensionClass);
     }
 
     // cannot be called
     protected final <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return configuration().userWire(driver, wirelets);
+        return context().userWire(driver, wirelets);
     }
 
     protected final <T extends ExtensionWirelet<?>> SelectWirelets<T> wirelets(Class<T> wireletClass) {
-        return configuration().selectWirelets(wireletClass);
+        return context().selectWirelets(wireletClass);
     }
 
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
@@ -525,12 +528,6 @@ public abstract class Extension {
     protected interface ClassComponentDriverBuilder {
         BeanConfigurationBinder<Object, BeanConfiguration> build();
     }
-
-    /**
-     * A generic extension mirror that is used if extension developers does not override {@link Extension#mirror()} to
-     * provide a specific mirror implementation for their extension.
-     */
-    private static class GenericExtensionMirror<E extends Extension> extends AbstractExtensionMirror<E> {}
 
     /**
      * A Subtension is the main way for one extension to use another extension. If you are an end-user you will most likely

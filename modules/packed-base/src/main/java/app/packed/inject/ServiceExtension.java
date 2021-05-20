@@ -192,7 +192,7 @@ public class ServiceExtension extends Extension {
         services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
-    /** { @return a mirror for this extension.} */
+    /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror mirror() {
         return services.mirror();
@@ -213,7 +213,7 @@ public class ServiceExtension extends Extension {
      * @see InjectorComposer#provide(Class)
      */
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
-        return configuration().userWire(ServiceBeanConfiguration.provide(implementation)).provide();
+        return context().userWire(ServiceBeanConfiguration.provide(implementation)).provide();
     }
 
     /**
@@ -228,7 +228,7 @@ public class ServiceExtension extends Extension {
      * @return the configuration of the component that was installed
      */
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
-        return configuration().userWire(ServiceBeanConfiguration.provide(factory)).provide();
+        return context().userWire(ServiceBeanConfiguration.provide(factory)).provide();
     }
 
     /**

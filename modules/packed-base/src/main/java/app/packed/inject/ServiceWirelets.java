@@ -32,8 +32,7 @@ import packed.internal.inject.service.build.PackedServiceComposer;
 import packed.internal.inject.service.build.ServiceSetup;
 
 /**
- * This class provide wirelets that can be used to transform and filter services being pull and pushed into
- * containers.
+ * This class provide wirelets that can be used to transform and filter services being pull and pushed into containers.
  * 
  * Service wirelets are processed in two stages.
  * 
@@ -48,6 +47,17 @@ public final class ServiceWirelets {
     /** No instantiation. */
     private ServiceWirelets() {}
 
+    // Hmmm, den virker jo fint paa top niveau...
+    // Men nok daarlig midt i et trae.
+    // Fordi der laver jo bare filtrering paa de services vi ikke
+    // skal bruge
+    
+    // Omvendt vil vi godt have en loesning til config. Da vi ikke vil
+    // have elementer (som default) som vi ikke ved hvordan skal behandles
+    static Wirelet ignoreUnrequiredServices() {
+        throw new UnsupportedOperationException();
+    }
+
     public static Wirelet anchor(Class<?>/* ...?? why not */ key) {
         return anchor(Key.of(key));
     }
@@ -57,7 +67,7 @@ public final class ServiceWirelets {
     }
 
     // A service is accessible by a class or interface x. if the full key is Accessible
-    
+
     /**
      * Anchors every accessible service exported by the child container into the parent container.
      * <p>

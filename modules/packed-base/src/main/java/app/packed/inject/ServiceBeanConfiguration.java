@@ -26,9 +26,8 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.PackedBeanConfigurationBinder;
 
 /**
- * A bean whose type is registered as a service.
+ * A bean which provide an instance(s) of the bean type as a service.
  * <p>
- * 
  * This class represents the configuration of a component. Actual instances of this interface is usually obtained by
  * calling one of the install methods on, for example, {@link BaseAssembly}.
  */
@@ -90,15 +89,15 @@ public class ServiceBeanConfiguration<T> extends BeanConfiguration {
         return super.sourceProvideAsKey();
     }
 
-    public ServiceBeanConfiguration<T> provide() {
-        super.provideAsService();
-        return this;
-    }
-
     /** {@inheritDoc} */
     @Override
     public ServiceBeanConfiguration<T> named(String name) {
         super.named(name);
+        return this;
+    }
+
+    public ServiceBeanConfiguration<T> provide() {
+        super.provideAsService();
         return this;
     }
 

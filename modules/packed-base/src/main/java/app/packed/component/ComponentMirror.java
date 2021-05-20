@@ -41,7 +41,6 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     /** {@return the application this component is a part of.} */
     // Maaske flyt den ud til alle andre componenter end container
     ContainerMirror container();
-
     
     /**
      * Returns the distance to the root component. The root component having depth 0.

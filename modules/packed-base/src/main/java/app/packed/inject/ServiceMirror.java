@@ -6,7 +6,9 @@ import app.packed.base.Key;
 import app.packed.component.ComponentMirror;
 import app.packed.mirror.Mirror;
 
-// extends ComponentFeature???
+// extends ComponentFeatureMirror???
+
+/** A mirror of a service. */
 public interface ServiceMirror extends Mirror {
 
     /** {@return the component the service belongs to.} */
@@ -16,6 +18,9 @@ public interface ServiceMirror extends Mirror {
 
     Set<ServiceMirror> dependencies();
 
+    // export()
+    int id(); // Ideen var at kunne sammenligne services, der blot var exporteret...
+    
     /** {@return the key of the service.} */
     Key<?> key();
     
@@ -23,9 +28,6 @@ public interface ServiceMirror extends Mirror {
     Set<InjectionSiteMirror> usedBy();
     
     Set<ComponentMirror> usedByComponents();
-    
-    // export()
-    int id(); // Ideen var at kunne sammenligne services, der blot var exporteret...
 }
 // Skal vi have et id???
 

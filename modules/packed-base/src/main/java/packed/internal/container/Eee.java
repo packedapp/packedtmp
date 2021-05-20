@@ -22,7 +22,7 @@ public class Eee extends BaseAssembly {
             System.out.println(em.getClass());
         }
         System.out.println("Extensions: " + m.container().extensions());
-
+        
         m.stream().forEach(e -> System.out.println(e.path()));
     }
 

@@ -6,11 +6,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.packed.application.host.ApplicationHost;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
+import app.packed.component.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
@@ -54,6 +56,15 @@ public interface ApplicationMirror extends Mirror {
      */
     Set<Class<? extends Extension>> disabledExtensions();
 
+    default Stream<BeanMirror> selectBeans() {
+        return select(BeanMirror.class);
+    }
+    
+    default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
+        throw new UnsupportedOperationException();
+    }
+
+    
     default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
         throw new UnsupportedOperationException();
     }
@@ -140,6 +151,7 @@ public interface ApplicationMirror extends Mirror {
      * {@return the module of the application. This is always the module of the Assembly or Composer class that defines the
      * root container.}
      */
+    // Hmm, hvis applikation = Container specialization... Ved component
     Module module();
 
     /**

@@ -15,7 +15,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
-import app.packed.container.AbstractExtensionMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionAncestor;
@@ -38,28 +38,29 @@ import packed.internal.util.ThrowableUtil;
 /** The internal configuration of an extension. Exposed to end-users as {@link ExtensionContext}. */
 public final class ExtensionSetup implements ExtensionContext {
 
-    /** A handle for invoking {@link Extension#onComplete()}. */
-    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
-            void.class);
-
-    /** A handle for invoking {@link Extension#onNew()}, used by {@link #newInstance(ContainerSetup, Class)}. */
-    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
-
-    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
-    private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onPreembleComplete", void.class);
-
-    /** A handle for invoking {@link Extension#onContainerLinkage()}. */
+    /** A handle for invoking the protected method {@link Extension#mirror()}. */
     private static final MethodHandle MH_EXTENSION_MIRROR = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "mirror",
             ExtensionMirror.class);
 
-    /** A handle for setting the field Extension#context, used by {@link #newInstance(ContainerSetup, Class)}. */
+    /** A handle for invoking the protected method {@link Extension#onComplete()}. */
+    private static final MethodHandle MH_EXTENSION_ON_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onComplete",
+            void.class);
+
+    /** A handle for invoking the protected method {@link Extension#onNew()}. */
+    private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
+
+    /** A handle for invoking the protected method {@link Extension#onPreembleComplete()}. */
+    private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
+            "onPreembleComplete", void.class);
+
+    /** A handle for setting the private field Extension#context. */
     private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "context",
             ExtensionContext.class);
 
-    /** The container this extension is part of. */
+    /** The container this extension is used in. */
     public final ContainerSetup container;
 
+    /** The extension type. */
     private final Class<? extends Extension> extensionType;
 
     /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
@@ -69,10 +70,10 @@ public final class ExtensionSetup implements ExtensionContext {
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
-    /** This extension's model. */
+    /** The static model of this extension. */
     final ExtensionModel model;
 
-    /** The realm of this extension, lazily initialized */
+    /** The realm of this extension, lazily initialized when wiring a extension runtime. */
     @Nullable
     private RealmSetup realm;
 
@@ -176,7 +177,7 @@ public final class ExtensionSetup implements ExtensionContext {
      * @throws InternalExtensionException
      *             if trying to call this method from the constructor of the extension
      */
-    // This was previous a method on ExtensionConfiguration, and might become again one again if we want to extract some
+    // This was previously a method on ExtensionConfiguration, and might become again one again if we want to extract some
     // tree info
     public Extension instance() {
         Extension e = instance;
@@ -222,20 +223,25 @@ public final class ExtensionSetup implements ExtensionContext {
         if (m == null) {
             throw new InternalExtensionException("Extension " + model.fullName() + " returned a null from " + model.name() + ".mirror");
         }
-        if (m instanceof AbstractExtensionMirror<?> mi) {
-            mi.context = new AbstractExtensionMirrorContext() {
 
-                @Override
-                public Class<? extends Extension> type() {
-                    return extensionType;
-                }
+        m.context = new AbstractExtensionMirrorContext() {
 
-                @Override
-                public boolean equalsTo(Object other) {
-                    return false;
-                }
-            };
-        }
+            @Override
+            public boolean equalsTo(Object other) {
+                return false;
+            }
+
+            @Override
+            public Class<? extends Extension> type() {
+                return extensionType;
+            }
+
+            @Override
+            public ContainerMirror container() {
+                // TODO Auto-generated method stub
+                return container.mirror();
+            }
+        };
         return m;
     }
 
