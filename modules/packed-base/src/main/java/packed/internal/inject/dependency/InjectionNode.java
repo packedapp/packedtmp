@@ -34,10 +34,11 @@ import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceMemberServiceSetup;
+import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.LifetimePoolWriteable;
-import packed.internal.lifetime.LifetimePool;
+import packed.internal.lifetime.PoolAccessor;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -86,7 +87,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
         this.sourceMember = requireNonNull(smm);
 
         if (smm.provideAskey != null) {
-            if (!Modifier.isStatic(smm.getModifiers()) && source.poolIndex == -1) {
+            if (!Modifier.isStatic(smm.getModifiers()) && source.singletonAccessor == null) {
                 throw new BuildException("Not okay)");
             }
             ComponentSetup compConf = source.component;
@@ -135,16 +136,16 @@ public final class InjectionNode implements LifetimePoolWriteable {
         }
     }
 
-    private int poolIndex() {
+    private PoolAccessor poolAccessor() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead
         if (service != null) {
-            return service.regionIndex;
+            return service.accessor;
         } else if (sourceMember != null) {
             // AAhhhh vi bliver jo ogsaa noedt til at lave sidecars
-            return -1;
+            return null;
         }
-        return source.poolIndex;
+        return source.singletonAccessor;
     }
 
     // All dependencies have been successfully resolved
@@ -160,14 +161,14 @@ public final class InjectionNode implements LifetimePoolWriteable {
         // We do this here because the the cycle detection algorithm explorers the dependency BFS. So
         // we add each node on exit when all of its dependency have already been added. In this way
         // guarantee that all dependencies have already been visited
-        if (poolIndex() > -1) {
+        if (poolAccessor() != null) {
             pool.addOrdered(this);
             pool.postProcessing.add(() -> buildMethodHandle());
         }
         needsPostProcessing = false;
 
         if (sourceMember != null) {
-            if (source.poolIndex > -1) {
+            if (source.singletonAccessor != null) {
                 // Maybe shared with SourceAssembly
 //                if (sourceMember.runAt == RunAt.INITIALIZATION) {
 //
@@ -236,6 +237,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
         }
     }
 
+    @Override
     public void writeToPool(LifetimePool pool) {
         MethodHandle mh = buildMethodHandle();
 
@@ -250,7 +252,6 @@ public final class InjectionNode implements LifetimePoolWriteable {
             throw new NullPointerException(this + " returned null");
         }
 
-        int index = poolIndex();
-        pool.storeObject(index, instance);
+        poolAccessor().store(pool, instance);
     }
 }

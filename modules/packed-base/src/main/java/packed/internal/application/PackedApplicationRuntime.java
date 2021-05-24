@@ -28,6 +28,7 @@ import app.packed.container.Extensor;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.RunStateInfo;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
+import packed.internal.lifetime.PoolAccessor;
 import packed.internal.util.ThrowableUtil;
 
 /**
@@ -148,8 +149,9 @@ public final class PackedApplicationRuntime extends Extensor<ApplicationRuntimeE
             }
 
             try {
-                if (l.cs.source.poolIndex > -1 && !l.isStatic) {
-                    Object o = launchContext.pool().read(l.cs.source.poolIndex);
+                PoolAccessor sa = l.cs.support.singletonAccessor;
+                if (sa != null && !l.isStatic) {
+                    Object o = sa.read(launchContext.pool());
                     l.methodHandle.invoke(o);
                 } else {
                     l.methodHandle.invoke();

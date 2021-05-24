@@ -50,32 +50,14 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public BaseBeanConfiguration install(Class<?> implementation) {
-        return super.install(implementation);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
         return super.install(implementation, wirelets);
     }
 
     /** {@inheritDoc} */
     @Override
-    public BaseBeanConfiguration install(Factory<?> factory) {
-        return super.install(factory);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
         return super.install(factory, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseBeanConfiguration installInstance(Object instance) {
-        return super.installInstance(instance);
     }
 
     /** {@inheritDoc} */

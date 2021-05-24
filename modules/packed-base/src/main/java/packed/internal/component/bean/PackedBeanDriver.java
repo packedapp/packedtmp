@@ -9,6 +9,7 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.inject.Factory;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -22,15 +23,26 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
     /** The bean binder. Either a Class, Factory or instance. */
     final Object binding;
 
-    final MethodHandle mh;
-
     final boolean isConstant;
+
+    final MethodHandle mh;
 
     public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Object binding) {
         super(null);
         this.mh = binder.constructor();
         this.binding = requireNonNull(binding);
         this.isConstant = binder.isConstant();
+    }
+
+    @Override
+    public Class<?> beanType() {
+        if (binding instanceof Class<?> cl) {
+            return cl;
+        } else if (binding instanceof Factory<?> f) {
+            return f.rawType();
+        } else {
+            return binding.getClass();
+        }
     }
 
     /** {@inheritDoc} */
@@ -53,14 +65,14 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
         return c;
     }
 
-    /** {@inheritDoc} */
     @Override
-    protected ComponentDriver<C> withWirelet(Wirelet w) {
+    public PackedBeanDriver<C> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     @Override
-    public PackedBeanDriver<C> with(Wirelet... wirelet) {
+    protected ComponentDriver<C> withWirelet(Wirelet w) {
         throw new UnsupportedOperationException();
     }
 }

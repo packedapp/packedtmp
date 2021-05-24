@@ -20,12 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
+import app.packed.base.Nullable;
 import packed.internal.component.ComponentSetup;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
 import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
+import packed.internal.lifetime.PoolAccessor;
 
 /**
  *
@@ -35,12 +37,13 @@ public class SourceMemberServiceSetup extends ServiceSetup {
     private final InjectionNode dependant;
 
     /** If constant, the region index to store it in */
-    public final int regionIndex;
+    @Nullable
+    public final PoolAccessor accessor;
 
     public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, InjectionNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.dependant = requireNonNull(dependant);
-        this.regionIndex = isConst ? compConf.lifetime.pool.reserveObject() : -1;
+        this.accessor = isConst ? compConf.lifetime.pool.reserve() : null;
     }
 
     /** {@inheritDoc} */
@@ -58,14 +61,14 @@ public class SourceMemberServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return regionIndex > -1;
+        return accessor != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), context.pool.read(regionIndex));
+            return RuntimeService.constant(key(), accessor.read(context.pool));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

@@ -28,10 +28,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
-import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
@@ -104,7 +101,7 @@ public abstract class Extension {
      * The context of this extension which most methods delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle. The field is
-     * not nulled out after the configuration of the extension has completed. This allows for invoking methods such as
+     * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkConfigurable()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #context()}.
@@ -149,12 +146,13 @@ public abstract class Extension {
     }
 
     /**
-     * Returns an extension context object. This context object is typically used in situations where the extension needs to
-     * delegate responsibility to classes that cannot invoke the protected methods on this class due to visibility rules.
+     * Returns an extension context object. This context object can be used in situations where the extension needs to
+     * delegate responsibility to classes that cannot invoke the protected methods on this class due to class-member
+     * visibility rules.
      * <p>
      * An instance of {@code ExtensionContext} can also be dependency injected into the constructor of an extension
      * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
-     * access to the configuration object.
+     * access to the context object.
      * <p>
      * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. As an
      * alternative, a extension context can be dependency injected into the constructor of the extension. Or
@@ -177,12 +175,12 @@ public abstract class Extension {
         return context().installExtensor(implementation, wirelets);
     }
 
-    protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
-        return context().installExtensor(factory, wirelets);
-    }
-
     protected final ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets) {
         return context().installExtensor(instance, wirelets);
+    }
+
+    protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
+        return context().installExtensor(factory, wirelets);
     }
 
     /**
@@ -240,16 +238,11 @@ public abstract class Extension {
      * @return a mirror for the extension
      */
     protected ExtensionMirror<?> mirror() {
-        ExtensionMirror<?> em = new ExtensionMirror<>();
-        em.extension = (ExtensionSetup) context();
-        return em;
+        return new ExtensionMirror<>((ExtensionSetup) context());
     }
 
     protected final <M extends ExtensionMirror<?>> M mirrorPopulate(M mirror) {
-        if (mirror.extension != null) {
-            throw new IllegalStateException("The specified mirror has already been populated.");
-        }
-        mirror.extension = (ExtensionSetup) context();
+        mirror.populate((ExtensionSetup) context());
         return mirror;
     }
 
@@ -367,10 +360,14 @@ public abstract class Extension {
         return context().selectWirelets(wireletClass);
     }
 
-    // An instance of extensorType will automatically be installed whenever the extensor is used
-    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends Extensor<?>> extensorType) {}
-
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
+
+    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
+            Consumer<? super T> action) {
+        // Bliver kaldt hvis den specificeret
+        // Registeres ogsaa som dependeenc
+        // $ = Static Init (s + i = $)
+    }
 
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
     // Vi har jo ligesom lukket for this extension... Og saa bliver den allivel aktiveret!!
@@ -379,13 +376,6 @@ public abstract class Extension {
 
     // Kan have en finishLazy() <-- invoked repeatably every time a new extension is added
     // onFinish cannot add new extensions...
-
-    protected static <T extends Extension> void $addDependencyLazyInit(Class<? extends Extension> dependency, Class<T> thisExtension,
-            Consumer<? super T> action) {
-        // Bliver kaldt hvis den specificeret
-        // Registeres ogsaa som dependeenc
-        // $ = Static Init (s + i = $)
-    }
 
     protected static <T extends Extension, A> void $addOptionalAttribute(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
@@ -396,6 +386,9 @@ public abstract class Extension {
     protected static <T extends Extension> AttributeMaker<T> $attribute(Class<T> thisExtension, Consumer<AttributeMaker<T>> c) {
         throw new Error();
     }
+
+    // An instance of extensorType will automatically be installed whenever the extensor is used
+    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends Extensor<?>> extensorType) {}
 
     /**
      * Only parent extensions will be linked
@@ -508,15 +501,15 @@ public abstract class Extension {
     protected static void $requiresRunnableApplication() {
         //
     }
-
-    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
-        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
-        throw new UnsupportedOperationException();
-    }
-
-    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
-        throw new UnsupportedOperationException();
-    }
+//
+//    protected static ClassComponentDriverBuilder classBinderFunctional(String functionPrefix, TypeToken<?> token) {
+//        classBinderFunctional("fGet", new TypeToken<Consumer<String>>() {});
+//        throw new UnsupportedOperationException();
+//    }
+//
+//    protected static ClassComponentDriverBuilder newClassComponentBinderBuilder() {
+//        throw new UnsupportedOperationException();
+//    }
 
     static final void preFinalMethod() {
         // Lav versioner der tager 1,2,3 og vargs parametere...
@@ -537,10 +530,10 @@ public abstract class Extension {
         // }
         // Her vil man nok ikke vaelge at
     }
-
-    protected interface ClassComponentDriverBuilder {
-        BeanDriver.Binder<Object, BaseBeanConfiguration> build();
-    }
+//
+//    protected interface ClassComponentDriverBuilder {
+//        BeanDriver.Binder<Object, BaseBeanConfiguration> build();
+//    }
 
     /**
      * A Subtension is the main way for one extension to use another extension. If you are an end-user you will most likely

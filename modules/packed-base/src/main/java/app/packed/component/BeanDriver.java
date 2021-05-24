@@ -11,13 +11,17 @@ import app.packed.inject.Factory;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 
 /**
- * A driver for creating specialized bean components.
+ * A driver for creating bean components.
  */
 public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
 
+    /** {@return the type of bean this is a driver for.} */
+    Class<?> beanType();
+
+    /** {@inheritDoc} */
     @Override
     BeanDriver<C> with(Wirelet... wirelet);
-    
+
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
@@ -28,8 +32,9 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
         static Binder<Object, BaseBeanConfiguration> DEFAULT = (Binder) PackedBeanDriverBinder.APPLET_BINDER;
 
         /**
-         * @param instance
-         * @return
+         * @param implementation
+         *            the implementation to bind to
+         * @return a new (bound) bean driver
          * @throws UnsupportedOperationException
          *             if class binding is not supported
          */
@@ -52,12 +57,12 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
          */
         BeanDriver<C> bindInstance(T instance);
 
+        Optional<Class<? extends Extension>> extension();
+
         /** {@return a set containing all modes this driver supports. } */
         Set<? extends BeanMode> supportedModes();
 
         Binder<T, C> with(Wirelet... wirelet);
-
-        Optional<Class<? extends Extension>> extension();
 
         /**
          * Returns a driver that can be used to create stateless components.
@@ -77,19 +82,31 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
         static <T> ComponentDriver<BaseBeanConfiguration> functional(Class<?> implementation) {
             return driver().bind(implementation);
         }
+        
+        static Binder<Object, BaseBeanConfiguration> defaultBeanBinder() {
+            return Binder.DEFAULT;
+        }
     }
-    
+
     public interface Builder {
-        //BeanConfigurationBinder<BeanConfiguration> buildBinder();
-        Builder noReflection();
-        
-        Builder noInstances();
-        Builder oneInstance();
-        
+
+        // Specific super type
+
+        <T, C extends BeanConfiguration> Binder<T, C> build();
+
+        Builder namePrefix(Function<Class<?>, String> computeIt);
 
         Builder namePrefix(String prefix);
-        Builder namePrefix(Function<Class<?>, String> computeIt);
-        
-        <T, C extends BeanConfiguration> Binder<T, C> build();
+
+        Builder noInstances();
+
+        // BeanConfigurationBinder<BeanConfiguration> buildBinder();
+        Builder noReflection();
+
+        Builder oneInstance();
+
+        // Vi kan ikke rejecte extensions paa bean niveau...
+        //// Man kan altid lave en anden extension som bruger den extension jo
+        //// Saa det er kun paa container niveau vi kan forbyde extensions
     }
 }

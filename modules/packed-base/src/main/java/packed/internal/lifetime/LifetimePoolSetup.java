@@ -51,6 +51,8 @@ public final class LifetimePoolSetup {
         for (LifetimePoolWriteable e : entries) {
             e.writeToPool(pool);
         }
+        // pool.freeze();
+
         return pool;
     }
 
@@ -59,7 +61,12 @@ public final class LifetimePoolSetup {
      * 
      * @return the index to store the object in at runtime
      */
+    @Deprecated
     public int reserveObject() {
         return size++;
+    }
+    
+    public PoolAccessor reserve() {
+        return new PoolAccessor(reserveObject());
     }
 }

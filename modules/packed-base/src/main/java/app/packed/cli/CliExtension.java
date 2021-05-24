@@ -16,8 +16,6 @@
 package app.packed.cli;
 
 import app.packed.component.Assembly;
-import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanDriver;
 import app.packed.container.Extension;
 
 /**
@@ -34,7 +32,7 @@ public final class CliExtension extends Extension {
     /** It's not you it's me. */
     private CliExtension() {}
 
-    static final BeanDriver.Binder<Object, BaseBeanConfiguration> b = newClassComponentBinderBuilder().build();
+    //static final BeanDriver.Binder<Object, BaseBeanConfiguration> b = newClassComponentBinderBuilder().build();
 
     // Taenker man kan styre hvordan den kommer ned til
 
@@ -43,7 +41,7 @@ public final class CliExtension extends Extension {
         // Use these sensible values
         // Maybe we will use [] as the default value
 
-        System.out.println(b);
+      //  System.out.println(b);
     }
 
     // Vi mangler en slags Assembly + Driver (Launcher...)

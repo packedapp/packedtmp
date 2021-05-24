@@ -22,16 +22,6 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
    
     // TODO pack into container()...
     ContainerSetup container;
-
-    private Binder<Object, BaseBeanConfiguration> defaultBeanBinder() {
-        return Binder.DEFAULT;
-    }
-    
-    @Override
-    protected ContainerMirror mirror() {
-        throw new UnsupportedOperationException();
-    }
-
     
     /**
      * Returns an unmodifiable view of the extensions that are currently used.
@@ -45,9 +35,10 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
     protected Set<Class<? extends Extension>> extensions() {
         return container.extensions();
     }
+
     
     /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * Installs a bean that will use the specified {@link Factory} to instantiate the bean instance.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
@@ -55,18 +46,11 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    protected BaseBeanConfiguration install(Class<?> implementation) {
-        ComponentDriver<BaseBeanConfiguration> driver = defaultBeanBinder().bind(implementation);
-        return wire(driver);
-    }
-    
-    
-
     protected BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = defaultBeanBinder().bind(implementation);
+        ComponentDriver<BaseBeanConfiguration> driver = Binder.defaultBeanBinder().bind(implementation);
         return wire(driver, wirelets);
     }
-
+    
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * 
@@ -75,13 +59,8 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @return the configuration of the component
      * @see ContainerAssembly#install(Factory)
      */
-    protected BaseBeanConfiguration install(Factory<?> factory) {
-        ComponentDriver<BaseBeanConfiguration> driver = defaultBeanBinder().bind(factory);
-        return wire(driver);
-    }
-    
     protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = defaultBeanBinder().bind(factory);
+        ComponentDriver<BaseBeanConfiguration> driver = Binder.defaultBeanBinder().bind(factory);
         return wire(driver, wirelets);
     }
 
@@ -91,14 +70,15 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @return the configuration of the component
      * @see ContainerAssembly#installInstance(Object)
      */
-    protected BaseBeanConfiguration installInstance(Object instance) {
-        ComponentDriver<BaseBeanConfiguration> driver = defaultBeanBinder().bindInstance(instance);
-        return wire(driver);
+    protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
+        ComponentDriver<BaseBeanConfiguration> driver = Binder.defaultBeanBinder().bindInstance(instance);
+        return wire(driver, wirelets);
     }
 
-    protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = defaultBeanBinder().bindInstance(instance);
-        return wire(driver, wirelets);
+    /** {@inheritDoc} */
+    @Override
+    protected ContainerMirror mirror() {
+        return container.mirror();
     }
 
     /**

@@ -39,10 +39,6 @@ public /* sealed */ abstract class ComponentConfiguration {
         component().checkIsWiring();
     }
 
-    protected ComponentMirror mirror() { 
-        throw new UnsupportedOperationException();
-    }
-    
     /**
      * Returns an extension configuration object. This configuration object is typically used in situations where the
      * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to
@@ -82,6 +78,12 @@ public /* sealed */ abstract class ComponentConfiguration {
     protected ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         ComponentSetup component = component();
         return component.link(assembly, component.realm, wirelets);
+    }
+
+    /** {@return a mirror for the component/} */
+    // Er det et problem.. naar den ikke er fuldt wired endnu???
+    protected ComponentMirror mirror() {
+        throw new UnsupportedOperationException();
     }
 
     /**

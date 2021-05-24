@@ -22,12 +22,13 @@ import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.lifetime.LifetimeSetup;
+import packed.internal.lifetime.PoolAccessor;
 
 /** Build-time configuration of an application. */
 public final class ApplicationSetup extends ContainerSetup {
 
     public final PackedApplicationDriver<?> applicationDriver;
-    
+
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
@@ -42,7 +43,8 @@ public final class ApplicationSetup extends ContainerSetup {
     private MainThreadOfControl mainThread;
 
     /** The index of the application's runtime in the constant pool, or -1 if the application has no runtime, */
-    final int runtimePoolIndex;
+    @Nullable
+    final PoolAccessor runtimeAccessor;
 
     /**
      * Create a new application setup
@@ -57,7 +59,7 @@ public final class ApplicationSetup extends ContainerSetup {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimePoolIndex = driver.hasRuntime() ? lifetime.pool.reserveObject() : -1;
+        this.runtimeAccessor = driver.hasRuntime() ? lifetime.pool.reserve() : null;
     }
 
     public boolean hasMain() {
@@ -71,7 +73,7 @@ public final class ApplicationSetup extends ContainerSetup {
     /** {@return whether or not the application is part of an image}. */
     public boolean isImage() {
         // TODO fix for multi-apps, We should probably take a @Nullable ApplicationHostSetup in the constructor
-        return build.target==BuildTarget.IMAGE;
+        return build.target == BuildTarget.IMAGE;
     }
 
     public MainThreadOfControl mainThread() {

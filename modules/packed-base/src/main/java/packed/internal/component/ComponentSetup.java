@@ -318,13 +318,13 @@ public abstract class ComponentSetup {
     }
 
     public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, RealmSetup realm, Wirelet... wirelets) {
-        PackedComponentDriver<C> realDriver = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
+        PackedComponentDriver<C> drv = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
 
         // Wire a new component
-        ComponentSetup component = realm.wire(realDriver, this, wirelets);
+        ComponentSetup component = realm.wire(drv, this, wirelets);
 
         // Return a component configuration to the user
-        return realDriver.toConfiguration(component);
+        return drv.toConfiguration(component);
     }
 
     /**

@@ -1,5 +1,7 @@
 package app.packed.container;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Set;
 
 import app.packed.base.Nullable;
@@ -17,15 +19,24 @@ import packed.internal.container.ExtensionSetup;
  */
 public class ExtensionMirror<E extends Extension> {
 
-    /** The context all calls on this interface delegates to. */
+    /** The extension all calls on this interface delegates to. */
     @Nullable
-    ExtensionSetup extension;
+    private ExtensionSetup extension;
+
+    /**
+     * Create a new extension mirror. Subclasses should have a single package-protected constructor. That are only invoked
+     * via an overridden {@link Extension#mirror()}.
+     */
+    protected ExtensionMirror() {}
+
+    ExtensionMirror(ExtensionSetup extension) {
+        this.extension = requireNonNull(extension);
+    }
 
     /** {@return the container this extension is used in.} */
     public final ContainerMirror container() {
         return extension().container.mirror();
     }
-
     /** {@return a static extension descriptor.} */
     public final ExtensionDescriptor descriptor() {
         return ExtensionDescriptor.of(type());
@@ -34,7 +45,7 @@ public class ExtensionMirror<E extends Extension> {
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
-        return other instanceof ExtensionMirror<?> m && extension == m.extension;
+        return other instanceof ExtensionMirror<?> m && extension() == m.extension();
     }
 
     private ExtensionSetup extension() {
@@ -54,6 +65,14 @@ public class ExtensionMirror<E extends Extension> {
 
     public final Set<ComponentMirror> installed() {
         throw new UnsupportedOperationException();
+    }
+
+    void populate(ExtensionSetup es) {
+        if (this.extension != null) {
+            throw new IllegalStateException("The specified mirror has already been populated.");
+        }
+        this.extension = es;
+
     }
 
     /** {@inheritDoc} */

@@ -43,7 +43,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
      */
     public SourceInstanceServiceSetup(ServiceManagerSetup im, BeanSetup component, Key<?> key) {
         super(key);
-        this.source = requireNonNull(component.source);
+        this.source = requireNonNull(component.support);
     }
 
     /** {@inheritDoc} */
@@ -62,14 +62,14 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
     /** {@inheritDoc} */
     @Override
     public boolean isConstant() {
-        return source.poolIndex > -1;
+        return source.singletonAccessor != null;
     }
 
     /** {@inheritDoc} */
     @Override
     protected RuntimeService newRuntimeNode(ServiceInstantiationContext context) {
         if (isConstant()) {
-            return RuntimeService.constant(key(), context.pool.read(source.poolIndex));
+            return RuntimeService.constant(key(), source.singletonAccessor.read(context.pool));
         } else {
             return new PrototypeRuntimeService(this, context.pool, dependencyAccessor());
         }

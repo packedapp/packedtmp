@@ -10,7 +10,7 @@ import app.packed.component.Wirelet;
 // Vi kan jo ikke ligesom specificere det paa runtime. Eftersom
 // det jo er en del af injection modellen...
 // Taenker vi
-public class MirrorWirelets {
+class MirrorWirelets {
     
     // Taenker vi ikke noedvendigvis behoever specifire den ved build???
     // IDK.. Maaske. Jeg har svaert ved at se situation hvor det giver mening

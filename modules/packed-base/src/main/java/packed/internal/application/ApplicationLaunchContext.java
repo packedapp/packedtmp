@@ -64,7 +64,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.getName());
         this.launchMode = requireNonNull(application.launchMode);
-        this.runtime = application.runtimePoolIndex == -1 ? null : new PackedApplicationRuntime(this);
+        this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntime(this);
     }
 
     /** {@return the name of the application} */
@@ -97,7 +97,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
     @Override
     public void writeToPool(LifetimePool pool) {
         if (runtime != null) {
-            pool.storeObject(application.runtimePoolIndex, runtime);
+            application.runtimeAccessor.store(pool, runtime);
         }
     }
 

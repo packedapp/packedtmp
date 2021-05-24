@@ -20,16 +20,16 @@ import packed.internal.lifetime.LifetimeSetup;
 public final class BeanSetup extends ComponentSetup {
 
     /** The class source setup if this component has a class source, otherwise null. */
-    public final BeanSetupSupport source;
+    public final BeanSetupSupport support;
 
     BeanSetup(BuildSetup build, LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
         super(build, realm, lifetime, driver, parent, wirelets);
-        this.source = new BeanSetupSupport(this, driver, driver.binding);
+        this.support = new BeanSetupSupport(this, driver, driver.binding);
 
         // Set the name of the component if it have not already been set using a wirelet
         if (name == null) {
-            initializeNameWithPrefix(source.hooks.simpleName());
+            initializeNameWithPrefix(support.hooks.simpleName());
         }
     }
 
@@ -42,22 +42,22 @@ public final class BeanSetup extends ComponentSetup {
     @SuppressWarnings("unchecked")
     public <T> ExportedServiceConfiguration<T> sourceExport() {
         sourceProvide();
-        return (ExportedServiceConfiguration<T>) container.injection.getServiceManagerOrCreate().exports().export(source.service);
+        return (ExportedServiceConfiguration<T>) container.injection.getServiceManagerOrCreate().exports().export(support.service);
     }
 
     public void sourceProvide() {
         realm.checkOpen();
-        source.provide();
+        support.provide();
     }
 
     public void sourceProvideAs(Key<?> key) {
         requireNonNull(key, "key is null");
         realm.checkOpen();
-        source.provide().as(key);
+        support.provide().as(key);
     }
 
     public Optional<Key<?>> sourceProvideAsKey() {
-        return source.service == null ? Optional.empty() : Optional.of(source.service.key());
+        return support.service == null ? Optional.empty() : Optional.of(support.service.key());
     }
 
     /** A build-time bean mirror. */
@@ -66,7 +66,7 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Class<?> beanType() {
-            return source.hooks.clazz;
+            return support.hooks.clazz;
         }
 
         /** {@inheritDoc} */
