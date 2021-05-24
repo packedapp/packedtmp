@@ -10,7 +10,7 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BaseContainerConfiguration;
 import app.packed.inject.ServiceConfiguration;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.util.NativeImage;
@@ -112,7 +112,7 @@ public class ApplicationHostConfiguration<T> extends ComponentConfiguration {
     }
 
     // Tror vi maa flytten den til ComponentConfiguration...
-    public static <T> ApplicationHostConfiguration<T> of(ContainerConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
+    public static <T> ApplicationHostConfiguration<T> of(BaseContainerConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
         // Den er sjov...
         // Vi har ikke rigtig en klasse...
         // Men en holder, og saa er alle de ting hvor hvor vi propper (service configuration) managedInstall blot services

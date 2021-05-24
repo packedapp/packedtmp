@@ -27,17 +27,19 @@ public class ExtensionMirror<E extends Extension> {
         return context;
     }
 
-    /** {@return a descriptor of the extension.} */
+    /** {@return a static extension descriptor.} */
     public final ExtensionDescriptor descriptor() {
         return ExtensionDescriptor.of(type());
     }
 
+    /** {@inheritDoc} */
     @Override
     public boolean equals(Object other) {
         // I think we just compare extension instance
         return context().equalsTo(other);
     }
 
+    /** {@inheritDoc} */
     @Override
     public int hashCode() {
         return context().hashCode();
@@ -47,6 +49,7 @@ public class ExtensionMirror<E extends Extension> {
         return context().installed();
     }
 
+    /** {@inheritDoc} */
     @Override
     public String toString() {
         return type().getCanonicalName();

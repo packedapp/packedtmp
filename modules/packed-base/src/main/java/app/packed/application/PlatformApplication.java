@@ -13,6 +13,7 @@ import app.packed.state.sandbox.InstanceState;
 // Det er jo bare en wirelet der siger om vi er en platform application
 
 // ApplicationHostRegistry platformHost();
+
 public interface PlatformApplication {
 
     /**
@@ -42,4 +43,11 @@ public interface PlatformApplication {
 // Og se om der er nogle der er blevet read inde for de sidste 60 sekunder
 interface LastActive {
     void active();
+}
+
+interface PlatformEnvironment {
+  
+    static PlatformEnvironment instance() {
+        throw new UnsupportedOperationException();
+    }
 }

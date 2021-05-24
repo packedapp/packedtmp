@@ -21,9 +21,9 @@ import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionAncestor;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMirror;
-import app.packed.container.ExtensionRuntime;
-import app.packed.container.ExtensionRuntimeConfiguration;
 import app.packed.container.ExtensionWirelet;
+import app.packed.container.Extensor;
+import app.packed.container.ExtensorConfiguration;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -117,7 +117,7 @@ public final class ExtensionSetup implements ExtensionContext {
     }
 
     @Override
-    public ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
+    public ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets) {
         // get RuntimeExtensionModel...
         // Make sure it is the same extension
         // keep a references to them in each extension..
@@ -131,13 +131,13 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
+    public ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
+    public ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -270,7 +270,7 @@ public final class ExtensionSetup implements ExtensionContext {
     private RealmSetup realm() {
         RealmSetup r = realm;
         if (r == null) {
-            r = realm = container.realm.newExtension(model, container);
+            r = realm = new RealmSetup(model, container);
         }
         return r;
     }

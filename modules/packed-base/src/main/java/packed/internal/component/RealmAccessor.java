@@ -36,7 +36,7 @@ import packed.internal.util.ThrowableUtil;
  * a {@link Lookup} object, for example, via {@link Assembly#lookup(Lookup)}. And another where users use a module
  * descriptor to provide access.
  */
-abstract class RealmAccessor {
+public abstract class RealmAccessor {
 
     /** Calls package-private method Factory.toMethodHandle(Lookup). */
     private static final MethodHandle MH_FACTORY_TO_METHOD_HANDLE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Factory.class, "toMethodHandle",
@@ -60,7 +60,7 @@ abstract class RealmAccessor {
         }
     }
 
-    final BootstrappedClassModel modelOf(Class<?> componentType) {
+    public final BootstrappedClassModel modelOf(Class<?> componentType) {
         return components.get(componentType);
     }
 
@@ -71,7 +71,7 @@ abstract class RealmAccessor {
      *            the factory to extract a method handle for
      * @return the method handle
      */
-    final MethodHandle toMethodHandle(Factory<?> factory) {
+    public final MethodHandle toMethodHandle(Factory<?> factory) {
         try {
             return (MethodHandle) MH_FACTORY_TO_METHOD_HANDLE.invoke(factory, lookup());
         } catch (Throwable e) {
@@ -194,6 +194,7 @@ abstract class RealmAccessor {
          *            the lookup object
          * @return the new realm
          */
+        @Override
         RealmAccessor withLookup(Lookup lookup) {
             // Use default access (this) if we specify null lookup
 

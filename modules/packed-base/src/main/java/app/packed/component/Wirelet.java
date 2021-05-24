@@ -171,7 +171,7 @@ public abstract /* sealed */ class Wirelet {
      * Returns a wirelet that will set the name of the component to the specified name.
      * <p>
      * This wirelet override any name that might previously have been set, for example, via
-     * {@link BeanConfiguration#named(String)}.
+     * {@link BaseBeanConfiguration#named(String)}.
      * 
      * @param name
      *            the name of the component

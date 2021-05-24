@@ -24,17 +24,19 @@ import java.util.function.Function;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
 import app.packed.component.BeanMirror;
+import app.packed.component.BuildException;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerDriver;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionNotAvailableException;
-import app.packed.exceptionhandling.BuildException;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.inject.ServiceComposer;
 import app.packed.inject.ServiceLocator;
-import app.packed.state.sandbox.InitializationException;
+import app.packed.lifecycle.InitializationException;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.validate.Validation;
 import packed.internal.application.PackedApplicationDriver;
@@ -63,7 +65,7 @@ import packed.internal.application.PackedApplicationDriver;
  * @see ServiceLocator#driver()
  */
 // Environment + Shell + Result
-public /* sealed */ interface ApplicationDriver<A> {
+public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseContainerConfiguration> {
 
     /**
      * Create a new application instance by using the specified consumer and configurator.
@@ -152,6 +154,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
         return ApplicationMirror.of(this, assembly, wirelets);
     }
+
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
      * 
@@ -168,7 +171,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
-        BaseMirror b = BaseMirror.of(assembly, wirelets);
+        ApplicationMirror b = ApplicationMirror.of(assembly, wirelets);
         b.forEachComponent(cc -> {
             StringBuilder sb = new StringBuilder();
             sb.append(cc.path()).append("");
@@ -183,7 +186,7 @@ public /* sealed */ interface ApplicationDriver<A> {
     Class<?> type();
 
     /**
-     * Augment the application driver with the specified wirelets, that will be processed when building or instantiating new
+     * Augment the driver with the specified wirelets, that will be processed when building or instantiating new
      * applications.
      * <p>
      * For example, to : <pre> {@code
@@ -203,6 +206,7 @@ public /* sealed */ interface ApplicationDriver<A> {
      *            the wirelets to add
      * @return the augmented application driver
      */
+    @Override
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**

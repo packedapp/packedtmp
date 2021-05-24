@@ -16,11 +16,10 @@
 package packed.internal.hooks.variable;
 
 import app.packed.application.App;
-import app.packed.application.BaseMirror;
+import app.packed.application.ApplicationMirror;
+import app.packed.cli.Main;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
-import app.packed.request.Main;
-import packed.internal.application.BuildMirror;
 
 /**
  *
@@ -36,9 +35,9 @@ public class HelloWorldAssembly extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new HelloWorldAssembly());
 
-        BuildMirror.of(new HelloWorldAssembly()).components().forEach(c -> System.out.println(c.path()));
+        ApplicationMirror.of(new HelloWorldAssembly()).components().forEach(c -> System.out.println(c.path()));
         
-        BaseMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
+        ApplicationMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
 
         ContainerMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
 

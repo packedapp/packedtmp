@@ -30,9 +30,9 @@ import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceExtensionMirror;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.BeanSetup;
 import packed.internal.component.PackedSelectWirelets;
 import packed.internal.component.WireletWrapper;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.dependency.ApplicationInjectorSetup;
 import packed.internal.inject.service.ServiceManagerRequirementsSetup.Requirement;
@@ -45,8 +45,8 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
-import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.lifetime.LifetimePoolSetup;
+import packed.internal.lifetime.LifetimePool;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
@@ -102,7 +102,7 @@ public final class ServiceManagerSetup {
         // We should make sure some stuff is no longer configurable...
     }
 
-    public void close(ContainerSetup container, ConstantPoolSetup pool) {
+    public void close(ContainerSetup container, LifetimePoolSetup pool) {
         if (parent == null) {
             tree.finish(pool, container);
         }
@@ -173,7 +173,7 @@ public final class ServiceManagerSetup {
         return builder.build();
     }
 
-    public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, ConstantPool region) {
+    public ServiceLocator newServiceLocator(PackedApplicationDriver<?> driver, LifetimePool region) {
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext(region);
         for (ServiceSetup export : exports) {

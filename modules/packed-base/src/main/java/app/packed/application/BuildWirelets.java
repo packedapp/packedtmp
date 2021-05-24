@@ -31,6 +31,9 @@ import packed.internal.component.InternalWirelet;
  * Wirelets that can be specified at when building an application. Attempts to use them with
  * {@link ApplicationImage#launch(Wirelet...)} will fail with {@link IllegalArgumentException}.
  */
+// Jeg tror den doer og ryger over paa andre wirelets...
+// Saa vi udelukkende gruppere dem efter type...
+// IDK... Maaske beholder vi den alligevel...
 public final class BuildWirelets {
 
     /** Not for you my friend. */
@@ -51,18 +54,32 @@ public final class BuildWirelets {
     }
 
     /**
-     * Returns a spying wirelet that will perform the specified action every time a component has been wired.
+     * Returns a 'spying' wirelet that will perform the specified action every time a component has been wired.
+     * <p>
+     * If you only want to spy on specific types of components you can use {@link #spyOnWire(Class, Consumer)} instead.
      * 
      * @param action
      *            the action to perform
      * @return the wirelet
      */
-    // Tror faktisk maaske den default whole App for app, Container for container, Component for Component
     public static Wirelet spyOnWire(Consumer<? super ComponentMirror> action) {
         return new InternalWirelet.OnWireActionWirelet(action, null);
     }
 
-    public static Wirelet spyOnWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
+    public static <T extends ComponentMirror> Wirelet spyOnWire(Class<T> mirrorType, Consumer<? super T> action) {
+        requireNonNull(mirrorType, "mirrorType is null");
+        requireNonNull(action, "action is null");
+        return spyOnWire(m -> {
+            if (mirrorType.isInstance(m)) {
+                action.accept(mirrorType.cast(m));
+            }
+        });
+    }
+
+    // Ved ikke om scope er noedvendigt...
+    // Det er jo udelukkende for test scenarier... Saa kan ikke rigtig
+    // Hmmm, hvad med applikation hosts... Beholder vi den der???
+    static Wirelet spyOnWire(Consumer<? super ComponentMirror> action, ComponentScope scope) {
         requireNonNull(scope, "scope is null");
         return new InternalWirelet.OnWireActionWirelet(action, scope);
     }

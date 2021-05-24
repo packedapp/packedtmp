@@ -26,7 +26,7 @@ import app.packed.inject.ServiceBeanConfiguration;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import app.packed.state.sandbox.OnStart;
+import app.packed.lifecycle.OnStart;
 
 /**
  * Extends {@link ContainerAssembly} with shortcuts for some of the commonly used extensions.
@@ -69,7 +69,7 @@ import app.packed.state.sandbox.OnStart;
 // TODO tror vi sortere metoderne efter extension og saa efter navn
 public abstract class BaseAssembly extends ContainerAssembly {
 
-    /** Creates a new assembly using {@link ContainerConfiguration#driver()}. */
+    /** Creates a new assembly using {@link BaseContainerConfiguration#driver()}. */
     protected BaseAssembly() {}
 
     /**
@@ -78,7 +78,7 @@ public abstract class BaseAssembly extends ContainerAssembly {
      * @param driver
      *            the container driver to use
      */
-    protected BaseAssembly(ComponentDriver<ContainerConfiguration> driver) {
+    protected BaseAssembly(ComponentDriver<BaseContainerConfiguration> driver) {
         super(driver);
     }
 
@@ -141,14 +141,6 @@ public abstract class BaseAssembly extends ContainerAssembly {
         return service().export(key);
     }
 
-    protected final void main(Runnable runnable) {
-        throw new UnsupportedOperationException();
-    }
-
-    // Provides a result...
-    protected final void main(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
 
     protected final void exportAll() {
         service().exportAll();

@@ -22,6 +22,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import app.packed.application.ManagedInstance;
+import app.packed.lifecycle.OnInitialize;
+import app.packed.lifecycle.OnStart;
 
 /**
  * An annotation used to indicate that a particular method should be invoked whenever the declaring entity reaches the

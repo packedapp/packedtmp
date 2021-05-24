@@ -28,23 +28,20 @@ import app.packed.container.Extension.Subtension;
 import app.packed.inject.Factory;
 
 /**
- * A configuration object for an {@link Extension}.
+ * A context object for an {@link Extension}.
  * <p>
- * Normally all configuration of extensions are done through the various protected final methods available when
- * extending {@link Extension}. However, for complex extensions where the logic cannot easily fit into a single class.
- * An extension configuration can be passed around in order to invoke relevant methods.
- * <p>
- * An instance of this interface is normally acquired via {@link Extension#configuration()} or by constructor injecting
- * it into an {@link Extension} subclass.
+ * Normally all configuration of extensions are done via the protected final methods declared on {@link Extension}.
+ * However, for complex extensions where the logic cannot easily fit into a single class. An extension context instance
+ * can be passed around in order to invoke the needed methods.
  * <p>
  * Since the extension itself defines most methods in this interface via protected final methods. This interface is
  * typically used in order to provide these methods to code that is defined outside of the actual extension
  * implementation, for example, code that is placed in another package.
  * <p>
- * <strong>Note:</strong> Instances of this class should never be exposed to end-users.
- */
-/**
- *
+ * An instance of this interface is normally acquired via {@link Extension#configuration()} or by constructor injecting
+ * it into an {@link Extension} subclass.
+ * <p>
+ * <strong>Note:</strong> Instances of this interface should never be exposed to end-users.
  */
 public /* sealed */ interface ExtensionContext {
 
@@ -64,7 +61,20 @@ public /* sealed */ interface ExtensionContext {
      */
     void checkIsBuilding();
 
-    ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets);
+    /**
+     * @param <E>
+     *            the type of ancestor to find
+     * @param ancestorType
+     *            the type of ancestor to find
+     * @return 
+     * @throws ClassCastException
+     *             if an ancestor was found but it was not of the specified type
+     */
+    // Hvad hvis vi bare vil finde en extension...
+    // Maaske skal vi ikke fejle... Men bare ikke reportere noget...
+    default <E> ExtensionAncestor<E> findAncestor(Class<E> ancestorType) {
+        throw new UnsupportedOperationException();
+    }
 
     // Will install the class in the specified Container
 
@@ -74,16 +84,6 @@ public /* sealed */ interface ExtensionContext {
     // For hvorfor skal brugen installere en alm component via denne extension???
     // Vi skal vel altid have en eller anden specific component driver
     // BaseComponentConfiguration containerInstall(Class<?> factory);
-
-    ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets);
-
-    /**
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see ContainerConfiguration#installInstance(Object)
-     */
-    ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets);
 
     /**
      * @param <E>
@@ -96,35 +96,21 @@ public /* sealed */ interface ExtensionContext {
         throw new UnsupportedOperationException();
     }
 
+    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets);
+
     /**
-     * @param <E>
-     * @param ancestorType
-     * @return
-     * @throws ClassCastException
-     *             if an ancestor was found but it was not of the specified type
+     * @param instance
+     *            the instance to install
+     * @return the configuration of the component
+     * @see BaseContainerConfiguration#installInstance(Object)
      */
-    default <E> ExtensionAncestor<E> findAncestor(Class<E> ancestorType) {
+    ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets);
+
+    ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets);
+
+    default boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
-//    /**
-//     * Returns the extension instance.
-//     * 
-//     * @return the extension instance
-//     * @throws InternalExtensionException
-//     *             if trying to call this method from the constructor of the extension
-//     */
-//    // Lad os se om den kan bruges fra hooks... eller lignende
-//    Extension instance();
-
-//    default boolean isConnected() {
-//        // isInterConnected?
-//        // isJoined (sounds very permanent)
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    boolean isConnectedInSameApplication();
-//
-//    boolean isConnectedWithParent();
 
     /**
      * Returns whether or not the extension is part of an {@link ApplicationImage}.
@@ -137,19 +123,17 @@ public /* sealed */ interface ExtensionContext {
     boolean isPartOfImage(); // BoundaryTypes
 
     /**
-     * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
+     * Returns whether or not the specified extension is used by this extension, other extensions or user code in the same
+     * container as this extension.
      * 
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
      * @see Extension#isUsed(Class)
-     * @implNote Packed does not perform detailed tracking on extensions use other extensions.
+     * @implNote Packed does not perform detailed tracking on extensions use other extensions. And cannot give a more
+     *           detailed answer about who is using the extension
      */
     boolean isUsed(Class<? extends Extension> extensionType);
-
-    default boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
-        throw new UnsupportedOperationException();
-    }
 
     default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
@@ -210,10 +194,9 @@ public /* sealed */ interface ExtensionContext {
      * dependencies as specified via....
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionContext} and call
-     * {@link ExtensionContext#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionContext} and call {@link ExtensionContext#use(Class)}.
      * <p>
-     * This method works similar to {@link ContainerConfiguration#use(Class)}.
+     * This method works similar to {@link BaseContainerConfiguration#use(Class)}.
      * 
      * @param <E>
      *            the type of subtension to return
@@ -226,7 +209,7 @@ public /* sealed */ interface ExtensionContext {
      * @throws InternalExtensionException
      *             if the specified subtension's extension is not a direct dependency of this extension
      * 
-     * @see ContainerConfiguration#use(Class)
+     * @see BaseContainerConfiguration#use(Class)
      * @see #isUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
@@ -244,6 +227,25 @@ public /* sealed */ interface ExtensionContext {
      */
     <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
 }
+///**
+//* Returns the extension instance.
+//* 
+//* @return the extension instance
+//* @throws InternalExtensionException
+//*             if trying to call this method from the constructor of the extension
+//*/
+//// Lad os se om den kan bruges fra hooks... eller lignende
+//Extension instance();
+
+//default boolean isConnected() {
+//// isInterConnected?
+//// isJoined (sounds very permanent)
+//throw new UnsupportedOperationException();
+//}
+//
+//boolean isConnectedInSameApplication();
+//
+//boolean isConnectedWithParent();
 
 // Previously used for getting hold of an extension from a mirror..
 // I don't think we need this anymore after mirrors

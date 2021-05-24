@@ -1,39 +1,36 @@
-/*
- * Copyright (c) 2008 Kasper Nielsen.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package app.packed.component;
 
-import app.packed.base.NamespacePath;
+import java.util.Optional;
 
-/**
- * An base component configuration class that can serve as basis for actual component configuration types. 
- * <p>
- * Component configuration classes do not need to extend this class.
- */
-public class BeanConfiguration extends AbstractBeanConfiguration {
+import app.packed.base.Key;
+import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.component.bean.BeanSetup;
 
-    /** {@inheritDoc} */
-    @Override
-    public BeanConfiguration named(String name) {
-        super.named(name);
-        return this;
+public abstract /* non-sealed */ class BeanConfiguration extends ComponentConfiguration {
+
+    
+    BeanSetup bean() {
+        return (BeanSetup) component();
+    }
+    // Her kan en extension faktisk exporte ting...
+    protected <T> ExportedServiceConfiguration<T> exportAsService() {
+        return bean().sourceExport();
     }
 
-    /** {@inheritDoc} */
     @Override
-    public NamespacePath path() {
-        return super.path();
+    protected BeanMirror mirror() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected void provideAsService() {
+        bean().sourceProvide();
+    }
+
+    protected void provideAsService(Key<?> key) {
+        bean().sourceProvideAs(key);
+    }
+
+    protected Optional<Key<?>> sourceProvideAsKey() {
+        return bean().sourceProvideAsKey();
     }
 }

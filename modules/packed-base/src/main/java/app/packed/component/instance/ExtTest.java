@@ -3,7 +3,7 @@ package app.packed.component.instance;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionAncestor;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionRuntime;
+import app.packed.container.Extensor;
 
 public class ExtTest extends Extension implements ExtTestCommon {
 
@@ -20,7 +20,7 @@ public class ExtTest extends Extension implements ExtTestCommon {
         }
     }
 
-    static class ExtExtensionRuntime extends ExtensionRuntime<ExtTest> implements ExtTestCommon {
+    static class ExtExtensionRuntime extends Extensor<ExtTest> implements ExtTestCommon {
 
     }
 }

@@ -18,6 +18,7 @@ package app.packed.exceptionhandling;
 /**
  * An exception that is typically thrown by the Packed runtime if it encounters an exception that is cannot handle.
  */
+// Den skal vel vaere sammen med ApplicationRuntimeException
 public class PanicException extends RuntimeException {
 
     /** */

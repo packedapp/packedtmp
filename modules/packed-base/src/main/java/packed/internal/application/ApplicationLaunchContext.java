@@ -26,17 +26,16 @@ import app.packed.component.Wirelet;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.InternalWirelet;
-import packed.internal.component.PackedApplicationRuntime;
 import packed.internal.component.WireletWrapper;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.invoke.constantpool.ConstantPoolWriteable;
+import packed.internal.lifetime.LifetimePool;
+import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.util.ThrowableUtil;
 
 /**
  * A temporary context object that is created whenever we launch an application.
  */
-public final class ApplicationLaunchContext implements ConstantPoolWriteable {
+public final class ApplicationLaunchContext implements LifetimePoolWriteable {
 
     /** The application we are launching */
     public final ApplicationSetup application;
@@ -50,7 +49,7 @@ public final class ApplicationLaunchContext implements ConstantPoolWriteable {
     public String name;
 
     /** The runtime component node we are building. */
-    private ConstantPool pool;
+    private LifetimePool pool;
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
@@ -61,9 +60,9 @@ public final class ApplicationLaunchContext implements ConstantPoolWriteable {
     private final WireletWrapper wirelets;
 
     private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
-        this.application = requireNonNull(application);
+        this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.container.getName());
+        this.name = requireNonNull(application.getName());
         this.launchMode = requireNonNull(application.launchMode);
         this.runtime = application.runtimePoolIndex == -1 ? null : new PackedApplicationRuntime(this);
     }
@@ -73,7 +72,7 @@ public final class ApplicationLaunchContext implements ConstantPoolWriteable {
         return name;
     }
 
-    public ConstantPool pool() {
+    public LifetimePool pool() {
         return pool;
     }
 
@@ -91,12 +90,12 @@ public final class ApplicationLaunchContext implements ConstantPoolWriteable {
      * @return a service locator for the application
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = application.container.injection.getServiceManager();
-        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.driver, pool);
+        ServiceManagerSetup sm = application.injection.getServiceManager();
+        return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.applicationDriver, pool);
     }
 
     @Override
-    public void writeToPool(ConstantPool pool) {
+    public void writeToPool(LifetimePool pool) {
         if (runtime != null) {
             pool.storeObject(application.runtimePoolIndex, runtime);
         }
@@ -116,7 +115,7 @@ public final class ApplicationLaunchContext implements ConstantPoolWriteable {
      * @return the application instance
      */
     static <A> A launch(PackedApplicationDriver<A> driver, ApplicationSetup application, @Nullable WireletWrapper wirelets) {
-        assert driver == application.driver; // it is just here because of <A>
+        assert driver == application.applicationDriver; // it is just here because of <A>
 
         // Create a launch context
         ApplicationLaunchContext context = new ApplicationLaunchContext(application, wirelets);
@@ -130,7 +129,7 @@ public final class ApplicationLaunchContext implements ConstantPoolWriteable {
             }
         }
 
-        ConstantPool pool = context.pool = application.constantPool.newPool(context);
+        LifetimePool pool = context.pool = application.lifetime.pool.newPool(context);
 
         // Run all initializers
         for (MethodHandle mh : application.initializers) {

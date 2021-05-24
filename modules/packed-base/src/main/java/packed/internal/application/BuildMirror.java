@@ -17,10 +17,8 @@ package packed.internal.application;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.BuildTarget;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.component.Wirelet;
 
 /**
  * An assembly context is created every time an build context is create .
@@ -112,9 +110,6 @@ public interface BuildMirror {
 
     // buildForInstantiation(), buildImage
     // buildMirror?
-    static BuildMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, BuildTarget.MIRROR);
-    }
 }
 
 //

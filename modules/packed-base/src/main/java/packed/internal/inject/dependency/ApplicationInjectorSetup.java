@@ -20,10 +20,10 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
-import app.packed.exceptionhandling.BuildException;
+import app.packed.component.BuildException;
 import packed.internal.container.ContainerSetup;
 import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.lifetime.LifetimePoolSetup;
 
 /**
  * A service multi-composer is responsible for managing 1 or more {@link ServiceManagerSetup service composers} that are
@@ -34,7 +34,7 @@ import packed.internal.invoke.constantpool.ConstantPoolSetup;
  * Finds dependency circles either within the same container or across containers that are not in a parent-child
  * relationship.
  * 
- * Responsible for invoking the {@link InjectionNode#onAllDependenciesResolved(ConstantPoolSetup)} callback for
+ * Responsible for invoking the {@link InjectionNode#onAllDependenciesResolved(LifetimePoolSetup)} callback for
  * every {@link InjectionNode}. We do this here, because we guarantee that all dependants of a dependant are always
  * invoked before the dependant itself.
  */
@@ -54,21 +54,21 @@ public final class ApplicationInjectorSetup {
      *             if a dependency cycle was detected
      */
     // detect cycles for -> detect cycle or needs to be instantited at initialization time
-    public void finish(ConstantPoolSetup region, ContainerSetup container) {
+    public void finish(LifetimePoolSetup region, ContainerSetup container) {
         DependencyCycle c = dependencyCyclesFind(region, container);
         if (c != null) {
             throw new BuildException("Dependency cycle detected: " + c);
         }
     }
 
-    private DependencyCycle dependencyCyclesFind(ConstantPoolSetup region, ContainerSetup container) {
+    private DependencyCycle dependencyCyclesFind(LifetimePoolSetup region, ContainerSetup container) {
         ArrayDeque<InjectionNode> stack = new ArrayDeque<>();
         ArrayDeque<InjectionNode> dependencies = new ArrayDeque<>();
 
         return dependencyCyclesFind(stack, dependencies, region, container);
     }
 
-    private DependencyCycle dependencyCyclesFind(ArrayDeque<InjectionNode> stack, ArrayDeque<InjectionNode> dependencies, ConstantPoolSetup region,
+    private DependencyCycle dependencyCyclesFind(ArrayDeque<InjectionNode> stack, ArrayDeque<InjectionNode> dependencies, LifetimePoolSetup region,
             ContainerSetup container) {
         for (InjectionNode node : container.injection.nodes) {
             if (node.needsPostProcessing) { // only process those nodes that have not been visited yet
@@ -102,7 +102,7 @@ public final class ApplicationInjectorSetup {
      *             if there is a cycle in the graph
      */
     @Nullable
-    private DependencyCycle detectCycle(ConstantPoolSetup region, InjectionNode injectable, ArrayDeque<InjectionNode> stack,
+    private DependencyCycle detectCycle(LifetimePoolSetup region, InjectionNode injectable, ArrayDeque<InjectionNode> stack,
             ArrayDeque<InjectionNode> dependencies) {
         DependencyProducer[] deps = injectable.providers;
         if (deps.length > 0) {

@@ -1,8 +1,6 @@
 package app.packed.application;
 
-import app.packed.mirror.Mirror;
-
-public interface VersionableApplicationMirror extends Mirror {
+public interface VersionableApplicationMirror extends ApplicationMirror {
 
     // istedet for at kalde det version...
     // Skal vi nok hellere have et loebenummer

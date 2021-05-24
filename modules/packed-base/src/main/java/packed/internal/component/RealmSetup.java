@@ -36,7 +36,10 @@ import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;
 
-/** The setup of an realm */
+/**
+ * The internal configuration of realm.
+ * <p>
+ */
 public final class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
@@ -56,6 +59,9 @@ public final class RealmSetup {
     /** The current active component in the realm. */
     private ComponentSetup current;
 
+    @Nullable
+    public final Class<? extends Extension> extensionType;
+
     /** Whether or not this realm is closed. */
     private boolean isClosed;
 
@@ -73,9 +79,6 @@ public final class RealmSetup {
     // Hmm burde kunne bruge traet istedet for
     private ArrayList<ContainerSetup> rootContainers = new ArrayList<>(1);
 
-    @Nullable
-    public final Class<? extends Extension> extensionType;
-
     /**
      * Creates a new realm for an extension.
      * 
@@ -83,28 +86,26 @@ public final class RealmSetup {
      *            the extension model to create a realm for
      * @parem extension the extension setup
      */
-    private RealmSetup(ExtensionModel model, ContainerSetup container) {
+    public RealmSetup(ExtensionModel model, ContainerSetup container) {
         this.realmType = model.type();
-        this.build = container.application.build;
+        this.build = container.build;
         this.root = null; // ??????
         this.extensionType = model.type();
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver,
-            ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
-        this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, this, componentDriver, BuildTarget.INSTANCE, wirelets);
-        this.root = build.application.container;
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, BuildTarget buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
+        this.realmType = assembly.getClass();
+        this.build = new BuildSetup(applicationDriver, this, buildTarget, wirelets);
+        this.root = build.application;
         this.extensionType = null;
         wireCommit(root);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, PackedComponentDriver<?> componentDriver, BuildTarget buildTarget, Assembly<?> assembly,
-            Wirelet[] wirelets) {
-        this.realmType = assembly.getClass();
-        this.build = new BuildSetup(applicationDriver, this, componentDriver, buildTarget, wirelets);
-        this.root = build.application.container;
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
+        this.realmType = composer.getClass();
+        this.build = new BuildSetup(applicationDriver, this, BuildTarget.INSTANCE, wirelets);
+        this.root = build.application;
         this.extensionType = null;
         wireCommit(root);
     }
@@ -119,10 +120,10 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
-        this.root = driver.newComponent(build.application, this, linkTo, wirelets);
+        this.root = driver.newComponent(build, this, build.application.lifetime, linkTo, wirelets);
     }
 
-    RealmAccessor accessor() {
+    public RealmAccessor accessor() {
         RealmAccessor r = accessor;
         if (r == null) {
             this.accessor = r = RealmAccessor.defaultFor(realmType);
@@ -160,10 +161,6 @@ public final class RealmSetup {
         return new RealmSetup(this, driver, linkTo, assembly, wirelets);
     }
 
-    public RealmSetup newExtension(ExtensionModel model, ContainerSetup container) {
-        return new RealmSetup(model, container);
-    }
-
     public void newOperation() {
         if (current != null) {
             current.onWired();
@@ -197,7 +194,7 @@ public final class RealmSetup {
         wirePrepare();
 
         // Create the new component
-        ComponentSetup component = driver.newComponent(build.application, this, wireTo, wirelets);
+        ComponentSetup component = driver.newComponent(build, this, build.application.lifetime, wireTo, wirelets);
 
         wireCommit(component);
         return component;
@@ -205,6 +202,8 @@ public final class RealmSetup {
 
     private void wireCommit(ComponentSetup component) {
         current = component;
+        
+        // TODO: Move to class I think
         if (component instanceof ContainerSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {
                 rootContainers.add(container);

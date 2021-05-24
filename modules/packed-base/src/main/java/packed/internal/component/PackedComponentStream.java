@@ -22,10 +22,10 @@ import java.util.stream.Stream;
 
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import packed.internal.util.PackedAttributeHolderStream;
+import packed.internal.util.AbstractDelegatingStream;
 
 /** Implementation of {@link ComponentMirrorStream}. */
-final class PackedComponentStream extends PackedAttributeHolderStream<ComponentMirror> implements ComponentMirrorStream {
+final class PackedComponentStream extends AbstractDelegatingStream<ComponentMirror> implements ComponentMirrorStream {
 
     /**
      * Creates a new component stream.

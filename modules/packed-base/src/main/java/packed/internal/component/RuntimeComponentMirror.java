@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
@@ -35,7 +34,7 @@ import app.packed.component.ComponentScope;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import packed.internal.application.ApplicationLaunchContext;
-import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.lifetime.LifetimePool;
 
 /** An runtime more efficient representation of a component. We may use it again at a later time */
 public final class RuntimeComponentMirror implements ComponentMirror {
@@ -55,7 +54,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     final RuntimeComponentMirror parent;
 
     /** The region this component is part of. */
-    public final ConstantPool pool;
+    public final LifetimePool pool;
 
     /**
      * Creates a new component.
@@ -128,12 +127,6 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     @Override
     public ApplicationMirror application() {
         throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public AttributeMap attributes() {
-        return AttributeMap.of();
     }
 
     /** {@inheritDoc} */
@@ -292,6 +285,12 @@ public final class RuntimeComponentMirror implements ComponentMirror {
 
     @Override
     public ContainerMirror container() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Stream<ComponentMirror> components() {
         // TODO Auto-generated method stub
         return null;
     }

@@ -27,7 +27,7 @@ import packed.internal.component.PackedComponentDriver;
  * <p>
  * All component configuration classes must extend, directly or indirectly, from this class.
  * 
- * Instead of extending this class directly, you typically want to extend {@link BeanConfiguration} instead.
+ * Instead of extending this class directly, you typically want to extend {@link BaseBeanConfiguration} instead.
  */
 public /* sealed */ abstract class ComponentConfiguration {
 
@@ -39,6 +39,10 @@ public /* sealed */ abstract class ComponentConfiguration {
         component().checkIsWiring();
     }
 
+    protected ComponentMirror mirror() { 
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Returns an extension configuration object. This configuration object is typically used in situations where the
      * extension needs to delegate responsibility to classes that cannot invoke the protected methods on this class do to

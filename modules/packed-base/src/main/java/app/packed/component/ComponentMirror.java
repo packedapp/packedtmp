@@ -18,6 +18,7 @@ package app.packed.component;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
@@ -32,22 +33,26 @@ import app.packed.mirror.Mirror;
  */
 public /* sealed */ interface ComponentMirror extends Mirror {
 
+    // ComponentDriverMirror driver(); IDK hvad skal den sige, andet end hvilken extension
+    
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
     /** {@return an unmodifiable view of all of the children of this component.} */
     Collection<ComponentMirror> children();
 
-    /** {@return the application this component is a part of.} */
+    Stream<ComponentMirror> components();
+
+    /** {@return the container this component is a part of.} */
     // Maaske flyt den ud til alle andre componenter end container
     ContainerMirror container();
-    
-    /**
-     * Returns the distance to the root component. The root component having depth 0.
-     * 
-     * @return the distance to the root component
-     */
+
+    /** { @return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();
+
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        components().forEach(action);
+    }
 
     default ComponentMirror in(ComponentScope boundary) {
         throw new UnsupportedOperationException();
@@ -58,8 +63,8 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     /**
      * Returns the name of this component.
      * <p>
-     * If no name is explicitly set by the user when configuring the component. The runtime will automatically generate a
-     * name that is unique among other components with the same parent.
+     * If no name is explicitly set by the user when configuring a component. Packed will automatically assign a name that
+     * is unique among other components with the same parent.
      *
      * @return the name of this component
      */
@@ -70,16 +75,16 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     // owning extension?
     // installedByExtension, wiringExtension.. (med det kan jo ogsaa vaere driveren...)
     /// Okay, vi har nogle forskellige extensions her
-    
+
     // Faktisk er det vel kun runtime extensions
-    
+
     // Der er 3 muligheder
     // standard packed driver
     // Driver fra Extension
-    // 
+    //
     Optional<Class<? extends Extension>> owningExtension();
 
-    /** {@return the parent component of this component. Or empty if this component has no parent} */
+    /** {@return the parent component of this component. Or empty if a root component.} */
     Optional<ComponentMirror> parent();
 
     /** {@return the path of this component} */
@@ -104,7 +109,7 @@ public /* sealed */ interface ComponentMirror extends Mirror {
     // Syntes ikke vi skal have baade tryResolve or resolve...
     ComponentMirror resolve(CharSequence path);
 
-    /** {@return the root component, returns this is this is the root component} */
+    /** {@return the root component} */
     ComponentMirror root();
 
     /**

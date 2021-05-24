@@ -38,6 +38,6 @@ public abstract class ExtensionWirelet<E extends Extension> extends Wirelet {
     }
 }
 
-class ExtensionRuntimeWirelet<E extends Extension, R extends ExtensionRuntime<E>> extends ExtensionWirelet<E> {
+class ExtensionRuntimeWirelet<E extends Extension, R extends Extensor<E>> extends ExtensionWirelet<E> {
     protected void onInitialize(E extension) {} // maa det vaere
 }

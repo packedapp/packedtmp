@@ -20,7 +20,7 @@ import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
@@ -33,8 +33,8 @@ import app.packed.inject.ServiceBeanConfiguration;
  * 
  * 
  * Assemblies are the main source of system configuration. Basically a assembly is just a thin wrapper around
- * {@link ContainerConfiguration}. Delegating every invocation in the class to an instance of
- * {@link ContainerConfiguration} available via {@link #configuration()}.
+ * {@link BaseContainerConfiguration}. Delegating every invocation in the class to an instance of
+ * {@link BaseContainerConfiguration} available via {@link #configuration()}.
  * <p>
  * A assembly instance can be used ({@link #build()}) exactly once. Attempting to use it multiple times will fail with
  * an {@link IllegalStateException}.
@@ -44,11 +44,11 @@ import app.packed.inject.ServiceBeanConfiguration;
  * @see BaseAssembly
  */
 // Altsaa har vi brug for at lave container assemblies uden en masse metoder
-public abstract class ContainerAssembly extends Assembly<ContainerConfiguration> {
+public abstract class ContainerAssembly extends Assembly<BaseContainerConfiguration> {
 
-    /** Creates a new assembly using {@link ContainerConfiguration#driver()}. */
+    /** Creates a new assembly using {@link BaseContainerConfiguration#driver()}. */
     protected ContainerAssembly() {
-        super(ContainerConfiguration.driver());
+        super(BaseContainerConfiguration.driver());
     }
 
     /**
@@ -57,7 +57,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @param driver
      *            the container driver to use
      */
-    protected ContainerAssembly(ComponentDriver<? extends ContainerConfiguration> driver) {
+    protected ContainerAssembly(ComponentDriver<? extends BaseContainerConfiguration> driver) {
         super(driver);
     }
 
@@ -65,7 +65,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * Returns an unmodifiable view of every extension that is currently used.
      * 
      * @return an unmodifiable view of every extension that is currently used
-     * @see ContainerConfiguration#extensions()
+     * @see BaseContainerConfiguration#extensions()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensions() {
@@ -83,11 +83,11 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected final BeanConfiguration install(Class<?> implementation) {
+    protected final BaseBeanConfiguration install(Class<?> implementation) {
         return configuration().install(implementation);
     }
 
-    protected final BeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
+    protected final BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
         return configuration().install(implementation, wirelets);
     }
 
@@ -100,11 +100,11 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @return the configuration of the component
      * @see BaseAssembly#install(Factory)
      */
-    protected final BeanConfiguration install(Factory<?> factory) {
+    protected final BaseBeanConfiguration install(Factory<?> factory) {
         return configuration().install(factory);
     }
 
-    protected final BeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
+    protected final BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
         return configuration().install(factory, wirelets);
     }
 
@@ -120,11 +120,11 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      *            the component instance to install
      * @return this configuration
      */
-    protected final BeanConfiguration installInstance(Object instance) {
+    protected final BaseBeanConfiguration installInstance(Object instance) {
         return configuration().installInstance(instance);
     }
 
-    protected final BeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
+    protected final BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
         return configuration().installInstance(instance, wirelets);
     }
 
@@ -136,7 +136,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the component that was linked
-     * @see ContainerConfiguration#link(Assembly, Wirelet...)
+     * @see BaseContainerConfiguration#link(Assembly, Wirelet...)
      */
     // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
     // Men maaske skulle Component
@@ -155,7 +155,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      *
      * @param name
      *            the name of the container
-     * @see ContainerConfiguration#named(String)
+     * @see BaseContainerConfiguration#named(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -169,13 +169,13 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
     /**
      * {@return the path of the container}
      * 
-     * @see ContainerConfiguration#path()
+     * @see BaseContainerConfiguration#path()
      */
     protected final NamespacePath path() {
         return configuration().path();
     }
 
-    protected final BeanConfiguration stateless(Class<?> implementation) {
+    protected final BaseBeanConfiguration stateless(Class<?> implementation) {
         return configuration().stateless(implementation);
     }
 
@@ -192,7 +192,7 @@ public abstract class ContainerAssembly extends Assembly<ContainerConfiguration>
      * @return an instance of the specified extension class
      * @throws IllegalStateException
      *             if called from outside {@link #build()}
-     * @see ContainerConfiguration#use(Class)
+     * @see BaseContainerConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);

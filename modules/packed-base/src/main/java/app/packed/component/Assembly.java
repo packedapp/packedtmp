@@ -24,7 +24,7 @@ import java.lang.invoke.VarHandle;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerAssembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BaseContainerConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
@@ -105,18 +105,19 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     /**
      * Checks that the assembly has not already been used. This method is typically used
      * 
-     * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions
-     * does not try to configure the extension after it has been configured.
+     * {@link #build()} method has not already been invoked. This is typically used to make sure that users of extensions do
+     * not try to configure the extension after it has been configured.
      * 
      * <p>
-     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkPreBuild()}.
+     * This method is a simple wrapper that just invoked {@link BaseContainerConfiguration#checkPreBuild()}.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see ContainerConfiguration#checkPreBuild()
+     * @see BaseContainerConfiguration#checkPreBuild()
      */
     // Before build is started?? or do we allow to call these method
     // checkPreBuild()??
+    // checkConfigurable()
     protected final void checkPreBuild() {
         // Why not just test configuration == null????
 
@@ -185,6 +186,5 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         component().realm.setLookup(lookup);
     }
-
 
 }

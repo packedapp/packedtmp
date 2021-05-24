@@ -9,13 +9,13 @@ import packed.internal.component.InternalWirelet;
 public class CliWirelets {
 
     public static Wirelet args(String... args) {
-        return new MainArgsWirelet(MainArgs.of(args));
+        return new MainArgsWirelet(CliArgs.of(args));
     }
     
     static final class MainArgsWirelet extends InternalWirelet {
-        final MainArgs args;
+        final CliArgs args;
 
-        MainArgsWirelet(MainArgs args) {
+        MainArgsWirelet(CliArgs args) {
             this.args = requireNonNull(args);
         }
 

@@ -6,7 +6,7 @@ import java.util.function.Consumer;
 
 import app.packed.application.BuildWirelets;
 
-public class BeanWirelets {
+class BeanWirelets {
 
     // provide
 
@@ -21,12 +21,18 @@ public class BeanWirelets {
      * @return the wirelet
      */
     // Tror faktisk maaske den default whole App for app, Container for container, Component for Component
+    // Hvis vi har en der tager class BeanMirro syntes ikke vi behoever den her...
     public static Wirelet spyOnBeanWire(Consumer<? super BeanMirror> action) {
         requireNonNull(action, "action is null");
+        
+        BuildWirelets.spyOnWire(BeanMirror.class, e->e.beanType());
+        
         return BuildWirelets.spyOnWire(m -> {
             if (m instanceof BeanMirror bm) {
                 action.accept(bm);
             }
         });
+        
+        
     }
 }

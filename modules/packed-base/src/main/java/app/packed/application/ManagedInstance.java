@@ -7,8 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.application.ManagedInstance.Mode;
+import app.packed.lifecycle.OnStart;
 import app.packed.state.sandbox.InstanceState;
-import app.packed.state.sandbox.OnStart;
 import app.packed.state.sandbox.OnStop;
 
 // Atomic State + Failure
@@ -131,8 +131,7 @@ public interface ManagedInstance {
         PARENT, // HMMM, ideen er lidt at man kan se om det er en selv der har udloest det. Maaske kan man injecte en mere detaljeret grund 
         
         //
-        
-        FAILED,
+
         
         RESTARTING,
 
@@ -140,9 +139,7 @@ public interface ManagedInstance {
 
         PERSISTING, // PAUSING (on stop, RESUMING (on start),
 
-        TIMEOUT, // Something timed out
 
-        CANCELLED; // if failed.reason = CancellationException
     }
 }
 

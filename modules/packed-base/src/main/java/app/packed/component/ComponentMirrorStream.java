@@ -22,7 +22,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.application.Program;
-import app.packed.attribute.AttributedElementStream;
 import app.packed.container.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
@@ -71,7 +70,10 @@ import packed.internal.component.PackedComponentStreamOption;
 
 // Svaert ved at se den overlever...
 
-public interface ComponentMirrorStream extends AttributedElementStream<ComponentMirror> {
+// Altsaa Stream er sgu ikke et saerlig godt interface...
+// distinct(), sorted, max, min... hvad skal vi bruge dem til
+// skip giver ogsaa lidt mening..
+public interface ComponentMirrorStream extends Stream<ComponentMirror> {
 
 //    /**
 //     * Returns a stream that only contains containers.

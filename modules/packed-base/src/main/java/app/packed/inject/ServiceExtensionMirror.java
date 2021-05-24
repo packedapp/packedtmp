@@ -50,11 +50,11 @@ public abstract class ServiceExtensionMirror extends ExtensionMirror<ServiceExte
     }
 
     public static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).tryUse(ServiceExtensionMirror.class);
+        return ContainerMirror.of(assembly, wirelets).findExtension(ServiceExtensionMirror.class);
     }
 
     public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).use(ServiceExtensionMirror.class);
+        return ContainerMirror.of(assembly, wirelets).useExtension(ServiceExtensionMirror.class);
     }
 
     /**

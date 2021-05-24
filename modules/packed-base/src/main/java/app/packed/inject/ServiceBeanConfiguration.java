@@ -19,11 +19,11 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.component.PackedBeanConfigurationBinder;
+import packed.internal.component.bean.PackedBeanDriverBinder;
 
 /**
  * A bean which provide an instance(s) of the bean type as a service.
@@ -33,14 +33,14 @@ import packed.internal.component.PackedBeanConfigurationBinder;
  */
 //ProvidableComponentConfiguration
 // Serviceable
-public class ServiceBeanConfiguration<T> extends BeanConfiguration {
+public class ServiceBeanConfiguration<T> extends BaseBeanConfiguration {
 
     @SuppressWarnings("rawtypes")
-    private static final PackedBeanConfigurationBinder DRIVER = PackedBeanConfigurationBinder.ofInstance(MethodHandles.lookup(), ServiceBeanConfiguration.class,
+    private static final PackedBeanDriverBinder DRIVER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             true);
 
     @SuppressWarnings("rawtypes")
-    private static final PackedBeanConfigurationBinder PROTOTYPE_DRIVER = PackedBeanConfigurationBinder.ofFactory(MethodHandles.lookup(),
+    private static final PackedBeanDriverBinder PROTOTYPE_DRIVER = PackedBeanDriverBinder.ofFactory(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, false);
 
     /**

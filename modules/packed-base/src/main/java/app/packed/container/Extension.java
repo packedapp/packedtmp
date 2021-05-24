@@ -30,8 +30,8 @@ import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
 import app.packed.base.TypeToken;
 import app.packed.component.Assembly;
-import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanConfigurationBinder;
+import app.packed.component.BaseBeanConfiguration;
+import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
@@ -56,7 +56,7 @@ import packed.internal.util.ThrowableUtil;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
+ * example, {@link BaseAssembly#use(Class)} or {@link BaseContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Step1 // package private constructor // open to app.packed.base // exported to other users to use
@@ -67,7 +67,7 @@ import packed.internal.util.ThrowableUtil;
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
  * taking a single parameter of type {@link ExtensionContext}. The constructor should have package private accessibility
- * to make sure users do not try an manually instantiate it, but instead use {@link ContainerConfiguration#use(Class)}.
+ * to make sure users do not try an manually instantiate it, but instead use {@link BaseContainerConfiguration#use(Class)}.
  * The extension subclass should not be declared final as it is expected that future versions of Packed will supports
  * some debug configuration that relies on extending extensions. And capturing interactions with the extension.
  * 
@@ -172,16 +172,16 @@ public abstract class Extension {
         return c;
     }
 
-    protected final ExtensionRuntimeConfiguration extensionInstall(Class<? extends ExtensionRuntime<?>> implementation, Wirelet... wirelets) {
-        return context().extensionInstall(implementation, wirelets);
+    protected final ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets) {
+        return context().installExtensor(implementation, wirelets);
     }
 
-    protected final ExtensionRuntimeConfiguration extensionInstall(Factory<? extends ExtensionRuntime<?>> factory, Wirelet... wirelets) {
-        return context().extensionInstall(factory, wirelets);
+    protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
+        return context().installExtensor(factory, wirelets);
     }
 
-    protected final ExtensionRuntimeConfiguration extensionInstallInstance(ExtensionRuntime<?> instance, Wirelet... wirelets) {
-        return context().extensionInstallInstance(instance, wirelets);
+    protected final ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets) {
+        return context().installExtensor(instance, wirelets);
     }
 
     /**
@@ -357,6 +357,9 @@ public abstract class Extension {
         return context().selectWirelets(wireletClass);
     }
 
+    // An instance of extensorType will automatically be installed whenever the extensor is used
+    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends Extensor<?>> extensorType) {}
+    
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
 
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???
@@ -526,7 +529,7 @@ public abstract class Extension {
     }
 
     protected interface ClassComponentDriverBuilder {
-        BeanConfigurationBinder<Object, BeanConfiguration> build();
+        BeanDriver.Binder<Object, BaseBeanConfiguration> build();
     }
 
     /**

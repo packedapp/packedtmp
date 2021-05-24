@@ -44,13 +44,14 @@ import packed.internal.component.CombinedWirelet;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
+import packed.internal.container.ContainerComponentDriver;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
-public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
+public final class PackedApplicationDriver<A> extends ContainerComponentDriver implements ApplicationDriver<A> {
 
     /** The driver used for creating mirrors daemon driver. */
     // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
@@ -81,6 +82,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the used for construction
      */
     private PackedApplicationDriver(Builder builder) {
+        super(builder.wirelet);
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
         this.wirelet = builder.wirelet;
@@ -101,6 +103,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the new wirelet
      */
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet wirelet) {
+        super(wirelet);
         this.mhConstructor = existing.mhConstructor;
         this.launchMode = existing.launchMode;
         this.disabledExtensions = existing.disabledExtensions;
@@ -140,7 +143,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Create the initial realm realm, typically we will have a realm per container
-        RealmSetup realm = new RealmSetup(this, componentDriver, buildTarget, assembly, wirelets);
+        RealmSetup realm = new RealmSetup(this, buildTarget, assembly, wirelets);
 
         // Create a new component configuration instance which are passed along to assembly that
         // then exposes the various methods on the configuration objects through
@@ -172,7 +175,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         PackedComponentDriver<?> componentDriver = (PackedComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
 
         // Create a new application realm
-        RealmSetup realm = new RealmSetup(this, componentDriver, consumer, wirelets);
+        RealmSetup realm = new RealmSetup(this, consumer, wirelets);
 
         // Create the component configuration that is needed by the composer
         ComponentConfiguration componentConfiguration = componentDriver.toConfiguration(realm.root);

@@ -1,7 +1,5 @@
 package app.packed.mirror;
 
-import app.packed.attribute.AttributedElement;
-
 /**
  * Doing program analysis.
  * 
@@ -13,7 +11,7 @@ import app.packed.attribute.AttributedElement;
 // http://bracha.org/mirrors.pdf
 
 // It's fucking mirrors...
-public interface Mirror extends AttributedElement {
+public interface Mirror {
 
     // Giver det ikke mening at have module paa alt...
     // Application.module = Assembly (or composer)

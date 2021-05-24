@@ -21,8 +21,8 @@ import java.lang.invoke.MethodHandle;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import packed.internal.component.BeanSetupSupport;
-import packed.internal.component.BeanSetup;
+import packed.internal.component.bean.BeanSetup;
+import packed.internal.component.bean.BeanSetupSupport;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;

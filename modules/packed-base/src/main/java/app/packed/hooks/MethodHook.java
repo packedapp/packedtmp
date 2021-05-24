@@ -36,13 +36,13 @@ import java.util.Set;
 import app.packed.base.ComposedAnnotation;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
+import app.packed.component.BuildException;
 import app.packed.component.Composer;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.exceptionhandling.BuildException;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.inject.Provide;
-import app.packed.state.sandbox.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
 

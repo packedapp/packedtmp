@@ -40,7 +40,7 @@ public class SourceMemberServiceSetup extends ServiceSetup {
     public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, InjectionNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.dependant = requireNonNull(dependant);
-        this.regionIndex = isConst ? compConf.pool.reserveObject() : -1;
+        this.regionIndex = isConst ? compConf.lifetime.pool.reserveObject() : -1;
     }
 
     /** {@inheritDoc} */

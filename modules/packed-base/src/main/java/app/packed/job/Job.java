@@ -57,6 +57,11 @@ interface Job<R> {
         throw new UnsupportedOperationException();
     }
 
+
+    // Must have a compute function...
+    static <T> Job<T> run(JobAssembly<T> assembly) {
+        throw new UnsupportedOperationException();
+    }
     // Job<Void> of()
 }
 

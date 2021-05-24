@@ -40,9 +40,10 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import packed.internal.application.ApplicationSetup;
+import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.container.ContainerSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
@@ -51,6 +52,9 @@ public abstract class ComponentSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
+
+    /** The build this component is part of. */
+    public final BuildSetup build;
 
     /** Children of this node (lazily initialized) in insertion order. */
     @Nullable
@@ -61,6 +65,9 @@ public abstract class ComponentSetup {
 
     /** The depth of the component in the tree. */
     protected final int depth;
+
+    /** The lifetime of the component. */
+    public final LifetimeSetup lifetime;
 
     /** The name of this component. */
     protected String name;
@@ -79,9 +86,6 @@ public abstract class ComponentSetup {
     @Nullable
     protected final ComponentSetup parent;
 
-    /** This component's constant pool. */
-    public final ConstantPoolSetup pool;
-
     /** The realm this component is a part of. */
     public final RealmSetup realm;
 
@@ -93,10 +97,12 @@ public abstract class ComponentSetup {
     /**
      * Create a new component. This constructor is always invoked from one of subclasses of this class
      * 
-     * @param application
-     *            the application this component is a part of
+     * @param build
+     *            the build this component is a part of
      * @param realm
      *            the realm this component is part of
+     * @param lifetime
+     *            the lifetime this component is part of
      * @param driver
      *            the component driver for this component
      * @param parent
@@ -104,23 +110,22 @@ public abstract class ComponentSetup {
      * @param wirelets
      *            optional (unprocessed) wirelets specified by the user
      */
-    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
+    protected ComponentSetup(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
         this.parent = parent;
-        this.depth = parent == null ? 0 : parent.depth + 1;
-
-        this.application = requireNonNull(application);
-        this.realm = requireNonNull(realm);
-        this.container = this instanceof ContainerSetup container ? container : parent.container;
-
-        // Various
-        if (/* is root container */ parent == null) {
-            this.pool = application.constantPool;
+        if (parent == null) {
+            this.depth = 0;
         } else {
-            boolean hasRuntime = false;
-            this.pool = hasRuntime ? new ConstantPoolSetup() : parent.pool;
+            this.depth = parent.depth + 1;
             this.onWire = parent.onWire;
         }
+
+        this.build = requireNonNull(build);
+        this.realm = requireNonNull(realm);
+        this.lifetime = requireNonNull(lifetime);
+
+        this.application = this instanceof ApplicationSetup application ? application : parent.application;
+        this.container = this instanceof ContainerSetup container ? container : parent.container;
 
         // The rest of the constructor is just processing any wirelets that have been specified by
         // the user or extension when wiring the component. The wirelet's have not been null checked.
@@ -132,10 +137,10 @@ public abstract class ComponentSetup {
             // If it is the root
             Wirelet[] ws;
             if (parent == null) {
-                if (application.driver.wirelet == null) {
+                if (driver.wirelet == null) {
                     ws = CombinedWirelet.flattenAll(wirelets);
                 } else {
-                    ws = CombinedWirelet.flatten2(application.driver.wirelet, Wirelet.combine(wirelets));
+                    ws = CombinedWirelet.flatten2(driver.wirelet, Wirelet.combine(wirelets));
                 }
             } else {
                 ws = CombinedWirelet.flattenAll(wirelets);
@@ -295,7 +300,7 @@ public abstract class ComponentSetup {
         this.name = name;
     }
 
-    protected final void onWired() {
+    final void onWired() {
         if (onWire != null) {
             onWire.accept(mirror());
         }
@@ -348,12 +353,6 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final AttributeMap attributes() {
-            return attributes();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public final Collection<ComponentMirror> children() {
             LinkedHashMap<String, ComponentSetup> m = children;
             return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
@@ -365,16 +364,15 @@ public abstract class ComponentSetup {
             return container.mirror();
         }
 
+        @Override
+        public Stream<ComponentMirror> components() {
+            return stream();
+        }
+
         /** {@inheritDoc} */
         @Override
         public final int depth() {
             return depth;
-        }
-        
-        /** {@inheritDoc} */
-        @Override
-        public final Optional<Class<? extends Extension>> owningExtension() {
-            return Optional.ofNullable(realm.extensionType);
         }
 
         /** {@inheritDoc} */
@@ -392,6 +390,12 @@ public abstract class ComponentSetup {
 
         private ComponentSetup outer() {
             return ComponentSetup.this;
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public final Optional<Class<? extends Extension>> owningExtension() {
+            return Optional.ofNullable(realm.extensionType);
         }
 
         /** {@inheritDoc} */

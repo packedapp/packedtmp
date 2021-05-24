@@ -91,7 +91,7 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
     static Relation of(ComponentSetup from, ComponentSetup to) {
         int fd = from.depth;
         int td = to.depth;
-        if (from.pool == to.pool) {
+        if (from.lifetime.pool == to.lifetime.pool) {
             if (fd == td) {
                 return new ComponentSetupRelation(from, to, 0, from);
             }

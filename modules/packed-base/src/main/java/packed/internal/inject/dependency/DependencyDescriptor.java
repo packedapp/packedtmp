@@ -39,7 +39,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.base.OldVariable;
 import app.packed.base.TypeToken;
-import app.packed.exceptionhandling.BuildException;
+import app.packed.component.BuildException;
 import packed.internal.errorhandling.ErrorMessageBuilder;
 import packed.internal.invoke.typevariable.TypeVariableExtractor;
 import packed.internal.util.BasePackageAccess;

@@ -17,16 +17,16 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
-import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
+import packed.internal.application.PackedApplicationDriver;
 
 /**
  * A mirror of an application.
  * <p>
  * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
  */
-public interface ApplicationMirror extends Mirror {
+public interface ApplicationMirror extends ContainerMirror {
 
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
@@ -35,9 +35,6 @@ public interface ApplicationMirror extends Mirror {
     default <T extends ComponentMirror> SetView<T> components(Class<T> componentType) {
         throw new UnsupportedOperationException();
     }
-
-    /** {@return the root container of the application}. */
-    ContainerMirror container();
 
     // Er det kun componenter i den application??? Ja ville jeg mene...
     // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
@@ -152,6 +149,8 @@ public interface ApplicationMirror extends Mirror {
      * root container.}
      */
     // Hmm, hvis applikation = Container specialization... Ved component
+    // Tror maaske ikke vi vil have den her, IDK... HVad med bean? er det realm eller bean module
+    // Maaske vi skal have et realm mirror????
     Module module();
 
     /**
@@ -160,10 +159,13 @@ public interface ApplicationMirror extends Mirror {
      * @return the name of the application
      * @see Wirelet#named(String)
      */
+    @Override
     String name();
 
+    @Override
     NamespacePath path();
 
+    
     /**
      * <p>
      * A root application always returns empty
@@ -183,7 +185,7 @@ public interface ApplicationMirror extends Mirror {
     }
 
     public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
-        return BaseMirror.of(assembly, wirelets).application();
+        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, BuildTarget.MIRROR).application.mirror();
     }
 
     /**

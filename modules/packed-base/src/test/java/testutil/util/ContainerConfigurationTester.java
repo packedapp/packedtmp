@@ -22,10 +22,10 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.BeanConfiguration;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.Extension;
 
 /**
@@ -33,16 +33,16 @@ import app.packed.container.Extension;
  */
 public class ContainerConfigurationTester {
 
-    private final ContainerConfiguration cc;
+    private final BaseContainerConfiguration cc;
 
-    public ContainerConfigurationTester(ContainerConfiguration cc) {
+    public ContainerConfigurationTester(BaseContainerConfiguration cc) {
         this.cc = requireNonNull(cc);
     }
 
     /**
      * @return the cc
      */
-    public ContainerConfiguration configuration() {
+    public BaseContainerConfiguration configuration() {
         return cc;
     }
 
@@ -57,14 +57,14 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public BeanConfiguration stateless(Class<?> implementation) {
-        BeanConfiguration conf = cc.stateless(implementation);
+    public BaseBeanConfiguration stateless(Class<?> implementation) {
+        BaseBeanConfiguration conf = cc.stateless(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }
 
-    public BeanConfiguration installInstance(Object instance) {
-        BeanConfiguration conf = cc.installInstance(instance);
+    public BaseBeanConfiguration installInstance(Object instance) {
+        BaseBeanConfiguration conf = cc.installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }

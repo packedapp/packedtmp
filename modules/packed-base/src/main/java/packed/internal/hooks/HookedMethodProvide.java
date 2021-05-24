@@ -26,7 +26,7 @@ import app.packed.base.Nullable;
 import app.packed.hooks.accessors.HookProvide;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
-import packed.internal.invoke.constantpool.ConstantPool;
+import packed.internal.lifetime.LifetimePool;
 
 /**
  * Represents a method on a hook class annotated with {@link HookProvide}.
@@ -45,7 +45,7 @@ public final class HookedMethodProvide implements DependencyProducer {
     private HookedMethodProvide(AbstractHookModel<?> sidecarModel, Builder builder) {
         this.key = builder.key;
         this.hookModel = sidecarModel;
-        this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, ConstantPool.class);
+        this.methodHandle = MethodHandles.dropArguments(builder.methodHandle, 0, LifetimePool.class);
     }
 
     /** {@inheritDoc} */

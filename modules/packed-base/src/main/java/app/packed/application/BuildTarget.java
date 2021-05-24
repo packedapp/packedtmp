@@ -2,6 +2,7 @@ package app.packed.application;
 
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import packed.internal.application.BaseMirror;
 
 /**
  * The type of builds
@@ -36,5 +37,6 @@ public enum BuildTarget {
      */
     MIRROR,
 
+    // Jeg tror efterhånden at man specificere det i assemblien...
     MULTI_IMAGE;
 }

@@ -31,7 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.container.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
-import packed.internal.component.BeanSetupSupport;
+import packed.internal.component.bean.BeanSetupSupport;
 import packed.internal.container.ExtensionModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.hooks.FieldHookModel;

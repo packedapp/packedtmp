@@ -24,9 +24,9 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.exceptionhandling.BuildException;
-import packed.internal.component.BeanSetupSupport;
+import app.packed.component.BuildException;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.bean.BeanSetupSupport;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
@@ -34,16 +34,16 @@ import packed.internal.inject.service.ServiceDelegate;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.inject.service.build.SourceMemberServiceSetup;
-import packed.internal.invoke.constantpool.ConstantPool;
-import packed.internal.invoke.constantpool.ConstantPoolMethodAccessor;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
-import packed.internal.invoke.constantpool.ConstantPoolWriteable;
+import packed.internal.lifetime.LifetimePoolMethodAccessor;
+import packed.internal.lifetime.LifetimePoolSetup;
+import packed.internal.lifetime.LifetimePoolWriteable;
+import packed.internal.lifetime.LifetimePool;
 import packed.internal.util.ThrowableUtil;
 
 /**
  *
  */
-public final class InjectionNode implements ConstantPoolWriteable {
+public final class InjectionNode implements LifetimePoolWriteable {
 
     @Nullable
     private final SourceMemberServiceSetup service;
@@ -114,7 +114,7 @@ public final class InjectionNode implements ConstantPoolWriteable {
         }
 
         if (providers.length == 0) {
-            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, ConstantPool.class);
+            return buildMethodHandle = MethodHandles.dropArguments(directMethodHandle, 0, LifetimePool.class);
         } else if (providers.length == 1) {
             requireNonNull(providers[0]);
             // System.out.println(providers[0].getClass());
@@ -130,7 +130,7 @@ public final class InjectionNode implements ConstantPoolWriteable {
                 mh = MethodHandles.collectArguments(mh, i, dp.dependencyAccessor());
             }
             // reduce (RuntimeRegion, *)X -> (RuntimeRegion)X
-            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), ConstantPool.class);
+            MethodType mt = MethodType.methodType(directMethodHandle.type().returnType(), LifetimePool.class);
             return buildMethodHandle = MethodHandles.permuteArguments(mh, mt, new int[providers.length]);
         }
     }
@@ -153,7 +153,7 @@ public final class InjectionNode implements ConstantPoolWriteable {
      * 
      * @param pool
      */
-    public void onAllDependenciesResolved(ConstantPoolSetup pool) {
+    public void onAllDependenciesResolved(LifetimePoolSetup pool) {
         // If analysis we should not need to create method handles...
 
         // If the injectable is a constant we need should to store an instance of it in the runtime region.
@@ -182,7 +182,7 @@ public final class InjectionNode implements ConstantPoolWriteable {
                     if (sourceMember instanceof UseSiteMethodHookModel msm) {
                         if (msm.bootstrapModel.onInitialize != null) {
                             // System.out.println(msm.model.onInitialize);
-                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, ConstantPoolMethodAccessor.MH_INVOKER);
+                            MethodHandle mh2 = MethodHandles.collectArguments(msm.bootstrapModel.onInitialize, 0, LifetimePoolMethodAccessor.MH_INVOKER);
 
                             mh2 = mh2.bindTo(mh1);
 
@@ -236,7 +236,7 @@ public final class InjectionNode implements ConstantPoolWriteable {
         }
     }
 
-    public void writeToPool(ConstantPool pool) {
+    public void writeToPool(LifetimePool pool) {
         MethodHandle mh = buildMethodHandle();
 
         Object instance;

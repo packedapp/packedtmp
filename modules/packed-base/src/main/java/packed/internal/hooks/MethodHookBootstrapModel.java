@@ -29,7 +29,7 @@ import app.packed.hooks.MethodHook.Bootstrap;
 import app.packed.hooks.accessors.HookProvide;
 import app.packed.hooks.accessors.MethodAccessor;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
-import app.packed.state.sandbox.OnInitialize;
+import app.packed.lifecycle.OnInitialize;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;

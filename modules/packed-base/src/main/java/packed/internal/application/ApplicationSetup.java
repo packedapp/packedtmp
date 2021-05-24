@@ -9,42 +9,31 @@ import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntimeWirelets;
+import app.packed.application.BuildTarget;
 import app.packed.application.host.ApplicationHostMirror;
-import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.state.sandbox.InstanceState;
-import packed.internal.component.BeanSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
-import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.RealmSetup;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.lifetime.LifetimeSetup;
 
 /** Build-time configuration of an application. */
-public final class ApplicationSetup {
+public final class ApplicationSetup extends ContainerSetup {
 
-    /** The build the application is a part of. */
-    public final BuildSetup build;
-
-    /** The application's constant pool. */
-    public final ConstantPoolSetup constantPool = new ConstantPoolSetup();
-
-    /** The root container of the application. */
-    public final ContainerSetup container;
-
-    /** The driver used for creating the application. */
-    public final PackedApplicationDriver<?> driver;
-
+    public final PackedApplicationDriver<?> applicationDriver;
+    
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     /**
-     * The launch mode of the application. May be updated via usage of {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}
-     * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
+     * The launch mode of the application. May be updated via usage of
+     * {@link ApplicationRuntimeWirelets#launchMode(InstanceState)} at build-time. If used from an image
+     * {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
     InstanceState launchMode;
 
@@ -61,17 +50,14 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, PackedApplicationDriver<?> driver, RealmSetup realm, ContainerComponentDriver containerDriver, Wirelet[] wirelets) {
-        this.build = requireNonNull(build);
-        this.driver = requireNonNull(driver, "driver is null");
+    ApplicationSetup(BuildSetup build, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
+        super(build, realm, new LifetimeSetup(), driver, null, wirelets);
+        this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
-
-        // Create the root container-component of the application
-        this.container = containerDriver.newComponent(this, realm, null, wirelets);
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimePoolIndex = driver.hasRuntime() ? constantPool.reserveObject() : -1;
+        this.runtimePoolIndex = driver.hasRuntime() ? lifetime.pool.reserveObject() : -1;
     }
 
     public boolean hasMain() {
@@ -79,13 +65,13 @@ public final class ApplicationSetup {
     }
 
     public boolean hasRuntime() {
-        return driver.hasRuntime();
+        return applicationDriver.hasRuntime();
     }
 
     /** {@return whether or not the application is part of an image}. */
     public boolean isImage() {
         // TODO fix for multi-apps, We should probably take a @Nullable ApplicationHostSetup in the constructor
-        return build.isImage();
+        return build.target==BuildTarget.IMAGE;
     }
 
     public MainThreadOfControl mainThread() {
@@ -97,8 +83,9 @@ public final class ApplicationSetup {
     }
 
     /** {@return an application adaptor that can be exposed to end-users} */
+    @Override
     public ApplicationMirror mirror() {
-        return new BuildTimeApplicationMirror(this);
+        return new BuildTimeApplicationMirror();
     }
 
     /**
@@ -146,31 +133,31 @@ public final class ApplicationSetup {
         }
     }
 
-    public class MainThreadOfControl {
-        public BeanSetup cs;
-
-        public boolean isStatic;
-
-        public MethodHandle methodHandle;
-
-        public boolean hasExecutionBlock() {
-            return methodHandle != null;
-        }
-    }
-
     /** An application mirror adaptor. */
-    private /* primitive */ record BuildTimeApplicationMirror(ApplicationSetup application) implements ApplicationMirror {
+    private class BuildTimeApplicationMirror extends ContainerSetup.BuildTimeContainerMirror implements ApplicationMirror {
 
         /** {@inheritDoc} */
         @Override
-        public ContainerMirror container() {
-            return application.container.mirror();
+        public ComponentMirror component(CharSequence path) {
+            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */
         @Override
-        public String name() {
-            return application.container.getName();
+        public Set<Class<? extends Extension>> disabledExtensions() {
+            // TODO add additional dsiabled extensions
+            return ApplicationSetup.this.applicationDriver.disabledExtensions();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public boolean hasRuntime() {
+            return ApplicationSetup.this.applicationDriver.hasRuntime();
+        }
+
+        @Override
+        public Optional<ApplicationHostMirror> host() {
+            throw new UnsupportedOperationException();
         }
 
         /** {@inheritDoc} */
@@ -181,38 +168,21 @@ public final class ApplicationSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean hasRuntime() {
-            return application.driver.hasRuntime();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public ComponentMirror component(CharSequence path) {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public NamespacePath path() {
-            throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
         public Module module() {
-            return application.container.realm.realmType().getModule();
+            return ApplicationSetup.this.realm.realmType().getModule();
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Set<Class<? extends Extension>> disabledExtensions() {
-            // TODO add additional dsiabled extensions
-            return application.driver.disabledExtensions();
-        }
+    }
 
-        @Override
-        public Optional<ApplicationHostMirror> host() {
-            throw new UnsupportedOperationException();
+    public class MainThreadOfControl {
+        public BeanSetup cs;
+
+        public boolean isStatic;
+
+        public MethodHandle methodHandle;
+
+        public boolean hasExecutionBlock() {
+            return methodHandle != null;
         }
     }
 }

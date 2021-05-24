@@ -22,14 +22,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.ContainerConfiguration;
+import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.Extension;
 import testutil.util.AbstractApplicationTest;
 
-/** Tests {@link ContainerConfiguration#extensions()} and {@link ContainerConfiguration#use(Class)}. */
+/** Tests {@link BaseContainerConfiguration#extensions()} and {@link BaseContainerConfiguration#use(Class)}. */
 public class ContainerConfigurationExtensionTest extends AbstractApplicationTest {
 
-    /** Tests basic use of {@link ContainerConfiguration#use(Class)}. */
+    /** Tests basic use of {@link BaseContainerConfiguration#use(Class)}. */
     @Test
     public void use() {
         appOf(e -> e.use(TestExtension1.class, i -> {
@@ -41,7 +41,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
         }));
     }
 
-    /** Tests basic use of {@link ContainerConfiguration#extensions()}. */
+    /** Tests basic use of {@link BaseContainerConfiguration#extensions()}. */
     @Test
     public void extensions() {
         appOf(e -> {
@@ -57,14 +57,14 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
 
     /**
      * Tests what happens if people try to use any of the extension methods outside of the configure of the defining
-     * assembly. We allow invoking {@link ContainerConfiguration#extensions()} and allow
-     * {@link ContainerConfiguration#use(Class)} for extension that have already been installed. Calling
-     * {@link ContainerConfiguration#use(Class)} with an extension that have not previously been installed will throw an
+     * assembly. We allow invoking {@link BaseContainerConfiguration#extensions()} and allow
+     * {@link BaseContainerConfiguration#use(Class)} for extension that have already been installed. Calling
+     * {@link BaseContainerConfiguration#use(Class)} with an extension that have not previously been installed will throw an
      * {@link IllegalStateException}.
      */
     @Test
     public void unconfigurable() {
-        AtomicReference<ContainerConfiguration> r = new AtomicReference<>();
+        AtomicReference<BaseContainerConfiguration> r = new AtomicReference<>();
 
         // Test empty
         appOf(e -> r.set(e.configuration()));

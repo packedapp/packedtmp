@@ -56,7 +56,7 @@ public class ContainerInjectorSetup {
 
         if (sm != null) {
             sm.dependencies().checkForMissingDependencies(container);
-            sm.close(container, container.pool);
+            sm.close(container, container.lifetime.pool);
         }
         // TODO Check any contracts we might as well catch it early
     }

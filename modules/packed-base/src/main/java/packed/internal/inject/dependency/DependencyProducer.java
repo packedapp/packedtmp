@@ -20,10 +20,10 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.BeanSetupSupport;
+import packed.internal.component.bean.BeanSetupSupport;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.invoke.constantpool.ConstantPoolSetup;
+import packed.internal.lifetime.LifetimePoolSetup;
 
 /**
  * Something that
@@ -44,7 +44,7 @@ public interface DependencyProducer {
      * 
      * A constant that is created an initialization time
      * 
-     * The returned method handle takes a single argument of type {@link ConstantPoolSetup}. And returns an instance of the
+     * The returned method handle takes a single argument of type {@link LifetimePoolSetup}. And returns an instance of the
      * dependency.
      * <p>
      * If the instance is cached by the runtime. the returned method handle must uphold it

@@ -18,7 +18,6 @@ package packed.internal.container;
 import static java.util.Objects.requireNonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -34,15 +33,14 @@ import app.packed.container.ExtensionMirror;
 import app.packed.container.InternalExtensionException;
 import app.packed.inject.ServiceExtension;
 import app.packed.inject.ServiceExtensionMirror;
-import packed.internal.application.ApplicationSetup;
+import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver.ContainerComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
-import packed.internal.util.CollectionUtil;
+import packed.internal.lifetime.LifetimeSetup;
 
 /** Build-time configuration of a container. */
-public final class ContainerSetup extends ComponentSetup {
+public class ContainerSetup extends ComponentSetup {
 
     /** Child containers, lazy initialized. */
     @Nullable
@@ -79,9 +77,9 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, ContainerComponentDriver driver, @Nullable ComponentSetup parent,
+    public ContainerSetup(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, ContainerComponentDriver driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
-        super(application, realm, driver, parent, wirelets);
+        super(build, realm, lifetime, driver, parent, wirelets);
 
         // Various container tree-node management
         if (parent == null) {
@@ -158,7 +156,7 @@ public final class ContainerSetup extends ComponentSetup {
     /** {@return a container adaptor that can be exposed to end-users} */
     @Override
     public ContainerMirror mirror() {
-        return new BuildTimeContainer();
+        return new BuildTimeContainerMirror();
     }
 
     /** {@return a unmodifiable view of the extensions that are used.} */
@@ -258,25 +256,18 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     /** A build-time container mirror. */
-    private final class BuildTimeContainer extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
+    public class BuildTimeContainerMirror extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
 
-        /** {@inheritDoc} */
-        @Override
-        public Collection<ContainerMirror> containerChildren() {
-            return CollectionUtil.unmodifiableView(containerChildren, c -> c.mirror());
-        }
+//        /** {@inheritDoc} */
+//        @Override
+//        public Optional<ContainerMirror> containerParent() {
+//            ContainerSetup p = containerParent;
+//            return p == null ? Optional.empty() : Optional.of(p.mirror());
+//        }
 
-        /** {@inheritDoc} */
         @Override
-        public int containerDepth() {
-            return containerDepth;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Optional<ContainerMirror> containerParent() {
-            ContainerSetup p = containerParent;
-            return p == null ? Optional.empty() : Optional.of(p.mirror());
+        public String toString() {
+            return "ContainerMirror (" + path() + ")";
         }
 
         /** {@inheritDoc} */
@@ -291,13 +282,13 @@ public final class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public boolean isUsed(Class<? extends Extension> extensionType) {
+        public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
             return ContainerSetup.this.isUsed(extensionType);
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends ExtensionMirror<?>> Optional<T> tryUse(Class<T> extensionMirrorType) {
+        public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType) {
             requireNonNull(extensionMirrorType, "extensionMirrorType is null");
             if (extensionMirrorType == ServiceExtensionMirror.class) {
                 ExtensionSetup es = extensions.get(ServiceExtension.class);

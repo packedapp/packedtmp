@@ -5,7 +5,6 @@ import app.packed.component.ComponentMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionMirror;
 import app.packed.inject.InjectionContext;
 import app.packed.inject.ServiceExtension;
 
@@ -16,18 +15,22 @@ public class Eee extends BaseAssembly {
         use(DDD.class);
         ComponentMirror m = link(new MyL());
         
+        System.out.println(m);
+//        for (ExtensionMirror<?> em : m.container().extensions()) {
+//            System.out.println(em.type() + ": dependencies = " + em.descriptor().dependencies());
+//            System.out.println(em.getClass());
+//        }
+//        System.out.println("Extensions: " + m.container().extensions());
         
-        for (ExtensionMirror<?> em : m.container().extensions()) {
-            System.out.println(em.type() + ": dependencies = " + em.descriptor().dependencies());
-            System.out.println(em.getClass());
-        }
-        System.out.println("Extensions: " + m.container().extensions());
-        
-        m.stream().forEach(e -> System.out.println(e.path()));
+//        m.stream().forEach(e -> System.out.println(e.path()));
     }
 
     public static void main(String[] args) {
         App.run(new Eee());
+        System.out.println();
+        System.out.println("---------");
+        
+        App.driver().print(new Eee());
     }
 
     static class DDD extends Extension {
