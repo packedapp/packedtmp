@@ -27,7 +27,6 @@ import app.packed.base.Nullable;
 import app.packed.inject.Service;
 import app.packed.inject.ServiceContract;
 import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceExtensionMirror;
 import app.packed.inject.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.PackedSelectWirelets;
@@ -45,8 +44,8 @@ import packed.internal.inject.service.runtime.RuntimeService;
 import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 import packed.internal.inject.service.sandbox.Injector;
 import packed.internal.inject.service.sandbox.ProvideAllFromServiceLocator;
-import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.LifetimePool;
+import packed.internal.lifetime.LifetimePoolSetup;
 
 /**
  * A service manager is responsible for managing the services for a single container at build time.
@@ -141,11 +140,6 @@ public final class ServiceManagerSetup {
      */
     public ServiceManagerExportSetup exports() {
         return exports;
-    }
-
-    /** {@return a service extension mirror.} */
-    public ServiceExtensionMirror mirror() {
-        return new BuildTimeServiceExtensionMirror();
     }
 
     /** {@return a service contract for this manager.} */
@@ -326,16 +320,6 @@ public final class ServiceManagerSetup {
             // Is that breaking encapsulation
             // container.realm().realmType();
             return "A service with the specified key, key = " + key;
-        }
-    }
-
-    /** A build-time service extension mirror. */
-    private class BuildTimeServiceExtensionMirror extends ServiceExtensionMirror {
-
-        /** {@inheritDoc} */
-        @Override
-        public ServiceContract contract() {
-            return newServiceContract();
         }
     }
 }

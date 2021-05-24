@@ -19,20 +19,21 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedComponentDriver<C> implements BeanDriver<C> {
 
-    /** The bean source. */
+    /** The bean binder. Either a Class, Factory or instance. */
     final Object binding;
 
     final MethodHandle mh;
 
     final boolean isConstant;
 
-    public PackedBeanDriver(PackedBeanDriverBinder<?, C> driver, Object binding) {
+    public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Object binding) {
         super(null);
-        this.mh = driver.constructor();
+        this.mh = binder.constructor();
         this.binding = requireNonNull(binding);
-        this.isConstant = driver.isConstant();
+        this.isConstant = binder.isConstant();
     }
 
+    /** {@inheritDoc} */
     @Override
     public ComponentSetup newComponent(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         return new BeanSetup(build, lifetime, realm, this, parent, wirelets);
@@ -59,7 +60,7 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
     }
 
     @Override
-    public ComponentDriver<C> with(Wirelet... wirelet) {
+    public PackedBeanDriver<C> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
 }

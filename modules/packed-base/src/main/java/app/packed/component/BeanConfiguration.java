@@ -8,15 +8,21 @@ import packed.internal.component.bean.BeanSetup;
 
 public abstract /* non-sealed */ class BeanConfiguration extends ComponentConfiguration {
 
-    
+    /** {@return the bean setup.} */
     BeanSetup bean() {
         return (BeanSetup) component();
     }
+
     // Her kan en extension faktisk exporte ting...
     protected <T> ExportedServiceConfiguration<T> exportAsService() {
         return bean().sourceExport();
     }
 
+    /**
+     * This method can be overridden to return a subclass of bean mirror.
+     * 
+     * {@inheritDoc}
+     */
     @Override
     protected BeanMirror mirror() {
         throw new UnsupportedOperationException();

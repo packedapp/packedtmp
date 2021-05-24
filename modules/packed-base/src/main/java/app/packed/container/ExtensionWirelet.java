@@ -5,6 +5,7 @@ import app.packed.component.Wirelet;
 /**
  * Extensions that define their own wirelets must do so by extending this class (or a subclass hereof).
  * <p>
+ * <p>
  * Extension wirelets must be defined in the same module as the extension itself. Failure to do so will result in an
  * {@link InternalExtensionException} being thrown at runtime.
  */

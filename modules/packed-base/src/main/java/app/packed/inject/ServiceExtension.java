@@ -195,7 +195,7 @@ public class ServiceExtension extends Extension {
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror mirror() {
-        return services.mirror();
+        return mirrorPopulate(new ServiceExtensionMirror(services));
     }
 
     /**

@@ -13,7 +13,19 @@ import app.packed.component.ComponentConfiguration;
  * Extension.
  * 
  */
+// .ServiceExtension
+// .ServiceExtension
+// .ServiceExtension
+// .ServiceExtension
+
 public final class ExtensorConfiguration extends ComponentConfiguration {
+
+    /** {@inheritDoc} */
+    @Override
+    protected ExtensorConfiguration named(String name) {
+        super.named(name);
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -23,3 +35,10 @@ public final class ExtensorConfiguration extends ComponentConfiguration {
 
     // Nu skal de sgu nok hedde .ServiceExtension alligevel paa runtime
 }
+///// Application Level...
+/// Maaske er det bare en abstract klasse man extender
+/// Det eneste man kan bruge der er application level context
+/// Men den maa kunne faa parents injected...
+
+// Alternativ installere den via en static something...
+// Eneste problem er de der hooks

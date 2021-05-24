@@ -44,14 +44,14 @@ import packed.internal.component.CombinedWirelet;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
-import packed.internal.container.ContainerComponentDriver;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
-public final class PackedApplicationDriver<A> extends ContainerComponentDriver implements ApplicationDriver<A> {
+public final class PackedApplicationDriver<A> extends PackedContainerDriver implements ApplicationDriver<A> {
 
     /** The driver used for creating mirrors daemon driver. */
     // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
@@ -129,13 +129,11 @@ public final class PackedApplicationDriver<A> extends ContainerComponentDriver i
      *            the root assembly
      * @param wirelets
      *            optional wirelets
-     * @param isAnalysis
-     *            is it an analysis
-     * @param isImage
-     *            is it an image
+     * @param buildTarget
+     *            the build target
      * @return a build setup
      */
-    public BuildSetup build(Assembly<?> assembly, Wirelet[] wirelets, BuildTarget buildTarget) {
+    public BuildSetup build(BuildTarget buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
@@ -208,7 +206,7 @@ public final class PackedApplicationDriver<A> extends ContainerComponentDriver i
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, BuildTarget.INSTANCE);
+        BuildSetup build = build(BuildTarget.INSTANCE, assembly, wirelets);
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
@@ -240,7 +238,7 @@ public final class PackedApplicationDriver<A> extends ContainerComponentDriver i
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(assembly, wirelets, BuildTarget.IMAGE);
+        BuildSetup build = build(BuildTarget.IMAGE, assembly, wirelets);
         return new PackedApplicationImage<>(this, build.application);
     }
 

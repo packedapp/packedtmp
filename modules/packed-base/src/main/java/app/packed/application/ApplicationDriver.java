@@ -17,7 +17,6 @@ package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -88,17 +87,6 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
      * @see ServiceLocator#of(Consumer)
      */
     <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> configurator, Wirelet... wirelets);
-
-    /**
-     * Returns an immutable set containing any extensions that have been disabled.
-     * <p>
-     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
-     * unsupported extensions
-     * <p>
-     * 
-     * @return a set of disabled extensions
-     */
-    Set<Class<? extends Extension>> disabledExtensions();
 
     /**
      * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.

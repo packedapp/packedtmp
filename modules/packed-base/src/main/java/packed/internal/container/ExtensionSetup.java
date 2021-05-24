@@ -15,7 +15,6 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
 import app.packed.container.ExtensionAncestor;
@@ -61,7 +60,7 @@ public final class ExtensionSetup implements ExtensionContext {
     public final ContainerSetup container;
 
     /** The extension type. */
-    private final Class<? extends Extension> extensionType;
+    public final Class<? extends Extension> extensionType;
 
     /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
@@ -211,7 +210,7 @@ public final class ExtensionSetup implements ExtensionContext {
     public void lookup(Lookup lookup) {
         throw new UnsupportedOperationException();
     }
-
+    
     /** {@return a mirror for the extension.} */
     public ExtensionMirror<?> mirror() {
         ExtensionMirror<?> m = null;
@@ -221,27 +220,8 @@ public final class ExtensionSetup implements ExtensionContext {
             throw ThrowableUtil.orUndeclared(t);
         }
         if (m == null) {
-            throw new InternalExtensionException("Extension " + model.fullName() + " returned a null from " + model.name() + ".mirror");
+            throw new InternalExtensionException("Extension " + model.fullName() + " returned a null from " + model.name() + ".mirror()");
         }
-
-        m.context = new AbstractExtensionMirrorContext() {
-
-            @Override
-            public boolean equalsTo(Object other) {
-                return false;
-            }
-
-            @Override
-            public Class<? extends Extension> type() {
-                return extensionType;
-            }
-
-            @Override
-            public ContainerMirror container() {
-                // TODO Auto-generated method stub
-                return container.mirror();
-            }
-        };
         return m;
     }
 

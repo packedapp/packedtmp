@@ -32,21 +32,29 @@ import app.packed.container.Extension;
  * install a
  * 
  * @param <C>
- *            the type of configuration that is returned when creating a new component
+ *            the type of configuration that is returned to the user when using the driver to wire a new component
  */
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
 
-    ComponentDriver<C> with(Wirelet... wirelet);
-
-    // IDK
+    // IDK... Kan vi laver drivers uden extensions??? IDK
     Optional<Class<? extends Extension>> extension();
 
-    // ComponentType componentType();
+    /**
+     * 
+     * @param wirelets
+     *            the wirelets to apply
+     * @return a new driver
+     * @throws IllegalArgumentException
+     *             if a wirelet cannot be applied to the driver. For example, if applying a application wirelet to a bean
+     */
+    ComponentDriver<C> with(Wirelet... wirelets);
 
-    // Bliver noedt til at have en type omkring hvad det er vi er ved at tilfoeje...
-    /// BeanComponentDriver??? ContainerComponentDriver
-    /// Taenker man kan lave nogle checks i wire()
-    // if (driver instanceof BeanComponentDriver bcd) {
-    // assert(bcd.class instanceof Foo);
-    //
+    // ComponentType componentType();
 }
+
+// Bliver noedt til at have en type omkring hvad det er vi er ved at tilfoeje...
+/// BeanComponentDriver??? ContainerComponentDriver
+/// Taenker man kan lave nogle checks i wire()
+// if (driver instanceof BeanComponentDriver bcd) {
+// assert(bcd.class instanceof Foo);
+//

@@ -67,9 +67,10 @@ import packed.internal.util.ThrowableUtil;
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
  * taking a single parameter of type {@link ExtensionContext}. The constructor should have package private accessibility
- * to make sure users do not try an manually instantiate it, but instead use {@link BaseContainerConfiguration#use(Class)}.
- * The extension subclass should not be declared final as it is expected that future versions of Packed will supports
- * some debug configuration that relies on extending extensions. And capturing interactions with the extension.
+ * to make sure users do not try an manually instantiate it, but instead use
+ * {@link BaseContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected
+ * that future versions of Packed will supports some debug configuration that relies on extending extensions. And
+ * capturing interactions with the extension.
  * 
  * @see ExtensionDescriptor
  */
@@ -239,8 +240,17 @@ public abstract class Extension {
      * @return a mirror for the extension
      */
     protected ExtensionMirror<?> mirror() {
-        // Okay we need to populate it...
-        return new ExtensionMirror<>();
+        ExtensionMirror<?> em = new ExtensionMirror<>();
+        em.extension = (ExtensionSetup) context();
+        return em;
+    }
+
+    protected final <M extends ExtensionMirror<?>> M mirrorPopulate(M mirror) {
+        if (mirror.extension != null) {
+            throw new IllegalStateException("The specified mirror has already been populated.");
+        }
+        mirror.extension = (ExtensionSetup) context();
+        return mirror;
     }
 
     /**
@@ -359,7 +369,7 @@ public abstract class Extension {
 
     // An instance of extensorType will automatically be installed whenever the extensor is used
     protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends Extensor<?>> extensorType) {}
-    
+
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
 
     // Uhh hvad hvis der er andre dependencies der aktivere den last minute i onBuild()???

@@ -185,7 +185,7 @@ public interface ApplicationMirror extends ContainerMirror {
     }
 
     public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(assembly, wirelets, BuildTarget.MIRROR).application.mirror();
+        return PackedApplicationDriver.MIRROR_DRIVER.build(BuildTarget.MIRROR, assembly, wirelets).application.mirror();
     }
 
     /**

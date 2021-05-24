@@ -24,11 +24,11 @@ import packed.internal.invoke.Infuser;
 public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBeanDriverBinder.Type type, MethodHandle constructor, int modifiers,
         boolean isConstant) implements BeanDriver.Binder<T, C> {
 
-    public static final PackedBeanDriverBinder APPLET_DRIVER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(),
+    public static final PackedBeanDriverBinder<Object, ServiceBeanConfiguration> APPLET_BINDER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, true);
 
     /** A driver for this configuration. */
-    public static final PackedBeanDriverBinder STATELESS_DRIVER = PackedBeanDriverBinder.ofClass(MethodHandles.lookup(),
+    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATELESS_BINDER = PackedBeanDriverBinder.ofClass(MethodHandles.lookup(),
             BaseBeanConfiguration.class);
 
     public enum Type {

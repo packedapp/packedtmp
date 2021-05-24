@@ -26,7 +26,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import packed.internal.container.ContainerComponentDriver;
+import packed.internal.container.PackedContainerDriver;
 
 /**
  * The configuration of a container. This class is rarely referenced directly. Instead containers are typically
@@ -35,7 +35,7 @@ import packed.internal.container.ContainerComponentDriver;
 public class BaseContainerConfiguration extends ContainerConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<BaseContainerConfiguration> DRIVER = new ContainerComponentDriver(null);
+    private static final ComponentDriver<BaseContainerConfiguration> DRIVER = new PackedContainerDriver(null);
 
     /** {@inheritDoc} */
     @Override

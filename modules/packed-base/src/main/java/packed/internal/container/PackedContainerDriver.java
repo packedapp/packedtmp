@@ -17,13 +17,13 @@ import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
 // Leger med tanken om at lave en specifik public interface container driver
-public class ContainerComponentDriver extends PackedComponentDriver<BaseContainerConfiguration> {
+public class PackedContainerDriver extends PackedComponentDriver<BaseContainerConfiguration> {
 
     /** A handle that can access ContainerConfiguration#container. */
     private static final VarHandle VH_ABSTRACT_CONTAINER_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
             ContainerConfiguration.class, "container", ContainerSetup.class);
 
-    public ContainerComponentDriver(Wirelet wirelet) {
+    public PackedContainerDriver(Wirelet wirelet) {
         super(wirelet);
     }
 
@@ -42,8 +42,8 @@ public class ContainerComponentDriver extends PackedComponentDriver<BaseContaine
     }
 
     @Override
-    protected ContainerComponentDriver withWirelet(Wirelet w) {
-        return new ContainerComponentDriver(w);
+    protected PackedContainerDriver withWirelet(Wirelet w) {
+        return new PackedContainerDriver(w);
     }
 
     @Override

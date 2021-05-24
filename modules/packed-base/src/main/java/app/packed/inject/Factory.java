@@ -120,6 +120,7 @@ public abstract class Factory<T> {
     /** A type variable extractor. */
     private static final TypeVariableExtractor TYPE_LITERAL_TV_EXTRACTOR = TypeVariableExtractor.of(TypeToken.class);
 
+
     private final Key<T> key;
 
     /**

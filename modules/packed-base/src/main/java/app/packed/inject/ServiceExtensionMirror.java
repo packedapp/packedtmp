@@ -1,5 +1,7 @@
 package app.packed.inject;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -9,11 +11,22 @@ import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ExtensionMirror;
+import packed.internal.inject.service.ServiceManagerSetup;
 
 /**
- * A mirror of a {@link ServiceExtension}.
+ * A specialized extension mirror for {@link ServiceExtension}.
+ * 
+ * @see ContainerMirror#extensions()
+ * @see ContainerMirror#useExtension(Class)
  */
-public abstract class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtension> {
+
+    /** The service manager */
+    private final ServiceManagerSetup services;
+
+    ServiceExtensionMirror(ServiceManagerSetup services) {
+        this.services = requireNonNull(services);
+    }
 
     /**
      * Returns the service contract for the container.
@@ -27,7 +40,9 @@ public abstract class ServiceExtensionMirror extends ExtensionMirror<ServiceExte
     // senere hen
 
     // Alternativet er kun at have
-    public abstract ServiceContract contract();
+    public ServiceContract contract() {
+        return services.newServiceContract();
+    }
 
     // Detaljeret info, ogsaa med dependency graph som kan extractes...
     // Hvad skal vi returnere???
@@ -56,15 +71,17 @@ public abstract class ServiceExtensionMirror extends ExtensionMirror<ServiceExte
     public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).useExtension(ServiceExtensionMirror.class);
     }
-
-    /**
-     * Returns a mirror for the specified extension.
-     * 
-     * @param extension
-     *            the extension to return a mirror for
-     * @return the mirror
-     */
-    /* public??? */ public static ServiceExtensionMirror of(ServiceExtension extension) {
-        return extension.mirror();
-    }
 }
+
+///**
+// * Returns a mirror for the specified extension.
+// * 
+// * @param extension
+// *            the extension to return a mirror for
+// * @return the mirror
+// */
+//// Altsaa den her giver ingen mening...
+//// Kan lige saa godt putte mirror paa selve extensionen...
+///* public??? */ static ServiceExtensionMirror of(ServiceExtension extension) {
+//    return extension.mirror();
+//}

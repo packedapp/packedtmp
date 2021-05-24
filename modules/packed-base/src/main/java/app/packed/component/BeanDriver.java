@@ -15,6 +15,9 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
  */
 public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
 
+    @Override
+    BeanDriver<C> with(Wirelet... wirelet);
+    
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
@@ -22,7 +25,7 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
     public interface Binder<T, C extends BeanConfiguration> {
 
         // Container Lifetime, Eager singleton
-        static Binder<Object, BaseBeanConfiguration> DEFAULT = PackedBeanDriverBinder.APPLET_DRIVER;
+        static Binder<Object, BaseBeanConfiguration> DEFAULT = (Binder) PackedBeanDriverBinder.APPLET_BINDER;
 
         /**
          * @param instance
@@ -64,7 +67,7 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
          * @return a driver
          */
         private static PackedBeanDriverBinder driver() {
-            return PackedBeanDriverBinder.STATELESS_DRIVER;
+            return PackedBeanDriverBinder.STATELESS_BINDER;
         }
 
         static ComponentDriver<BaseBeanConfiguration> driverStateless(Class<?> implementation) {
@@ -74,22 +77,19 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
         static <T> ComponentDriver<BaseBeanConfiguration> functional(Class<?> implementation) {
             return driver().bind(implementation);
         }
-
-        interface Builder {
-            Builder noReflection();
-            
-            Builder noInstances();
-            Builder oneInstance();
-            
-
-            Builder namePrefix(String prefix);
-            Builder namePrefix(Function<Class<?>, String> computeIt);
-            
-            <T, C extends BeanConfiguration> Binder<T, C> build();
-        }
     }
     
     public interface Builder {
         //BeanConfigurationBinder<BeanConfiguration> buildBinder();
+        Builder noReflection();
+        
+        Builder noInstances();
+        Builder oneInstance();
+        
+
+        Builder namePrefix(String prefix);
+        Builder namePrefix(Function<Class<?>, String> computeIt);
+        
+        <T, C extends BeanConfiguration> Binder<T, C> build();
     }
 }

@@ -6,7 +6,7 @@ import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Extension;
 
-public interface AbstractExtensionMirrorContext {
+public interface InternalExtensionMirror {
 
     ContainerMirror container();
 
