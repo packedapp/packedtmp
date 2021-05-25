@@ -43,7 +43,8 @@ public class SourceMemberServiceSetup extends ServiceSetup {
     public SourceMemberServiceSetup(ServiceManagerSetup im, ComponentSetup compConf, InjectionNode dependant, Key<?> key, boolean isConst) {
         super(key);
         this.dependant = requireNonNull(dependant);
-        this.accessor = isConst ? compConf.lifetime.pool.reserve() : null;
+        // TODO fix Object
+        this.accessor = isConst ? compConf.lifetime.pool.reserve(Object.class) : null;
     }
 
     /** {@inheritDoc} */

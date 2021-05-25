@@ -134,6 +134,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
         }
     }
 
+    @Nullable
     private PoolAccessor poolAccessor() {
         // buildEntry is null if it this Injectable is created from a source and not @AtProvides
         // In which case we store the build entry (if available) in the source instead

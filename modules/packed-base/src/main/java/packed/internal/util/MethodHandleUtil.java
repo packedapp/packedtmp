@@ -45,17 +45,13 @@ public class MethodHandleUtil {
         return target;
     }
 
-    public static MethodHandle constant(Object constant) {
-        return MethodHandles.constant(constant.getClass(), constant);
-    }
-
-    public static MethodHandle insertFakeParameter(MethodHandle target, Class<?> type) {
-        return insertFakeParameter(target, 0, type);
-    }
-
-    public static MethodHandle insertFakeParameter(MethodHandle target, int position, Class<?> type) {
-        return MethodHandles.dropArguments(target, position, type);
-    }
+//    public static MethodHandle insertFakeParameter(MethodHandle target, Class<?> type) {
+//        return insertFakeParameter(target, 0, type);
+//    }
+//
+//    public static MethodHandle insertFakeParameter(MethodHandle target, int position, Class<?> type) {
+//        return MethodHandles.dropArguments(target, position, type);
+//    }
 
     public static MethodHandle replaceParameter(MethodHandle target, int position, MethodHandle replaceWith) {
         return MethodHandles.filterArguments(target, position, replaceWith);

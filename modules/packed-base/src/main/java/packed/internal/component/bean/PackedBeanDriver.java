@@ -2,8 +2,6 @@ package packed.internal.component.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
-
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
@@ -19,22 +17,20 @@ import packed.internal.util.ThrowableUtil;
 /** Implementation of {@link BeanDriver}. */
 public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedComponentDriver<C> implements BeanDriver<C> {
 
-    /** The bean binder. Either a Class, Factory or instance. */
-    final Object binding;
-
-    final boolean isConstant;
-
-    final MethodHandle configurationConstructor;
-
     /** The bean type. */
     private final Class<?> beanType;
 
-    public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
-        super(null);
-        this.configurationConstructor = binder.constructor();
-        this.binding = requireNonNull(binding);
+    /** The bean binder used for creating this driver. */
+    final PackedBeanDriverBinder<?, C> binder;
+
+    /** The actual binding. Either a Class, Factory or (generic) instance. */
+    final Object binding;
+
+    public PackedBeanDriver(@Nullable Wirelet wirelet, PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
+        super(wirelet);
+        this.binder = requireNonNull(binder);
         this.beanType = requireNonNull(beanType);
-        this.isConstant = binder.isConstant();
+        this.binding = requireNonNull(binding);
     }
 
     /** {@inheritDoc} */
@@ -51,11 +47,10 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
 
     @Override
     public C toConfiguration(ComponentSetup context) {
-        // Vil godt lave den om til CNC (Hvad det end betyder). Maaske at vi gerne vil bruge invokeExact
         C c;
         try {
             // TODO.. vi bruger ikke context'en lige nu. Men
-            c = (C) configurationConstructor.invoke(context);
+            c = (C) binder.constructor().invoke(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

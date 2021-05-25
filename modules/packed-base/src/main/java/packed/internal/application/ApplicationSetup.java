@@ -59,7 +59,7 @@ public final class ApplicationSetup extends ContainerSetup {
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.hasRuntime() ? lifetime.pool.reserve() : null;
+        this.runtimeAccessor = driver.hasRuntime() ? lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
     }
 
     public boolean hasMain() {

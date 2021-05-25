@@ -2,12 +2,15 @@ package packed.internal.container;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
+import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDriver;
+import app.packed.container.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -16,15 +19,19 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
-// Leger med tanken om at lave en specifik public interface container driver
-public class PackedContainerDriver extends PackedComponentDriver<BaseContainerConfiguration> {
+public class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
 
     /** A handle that can access ContainerConfiguration#container. */
-    private static final VarHandle VH_ABSTRACT_CONTAINER_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
-            ContainerConfiguration.class, "container", ContainerSetup.class);
+    private static final VarHandle VH_ABSTRACT_CONTAINER_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ContainerConfiguration.class,
+            "container", ContainerSetup.class);
 
-    public PackedContainerDriver(Wirelet wirelet) {
+    public PackedContainerDriver(@Nullable Wirelet wirelet) {
         super(wirelet);
+    }
+
+    @Override
+    public Set<Class<? extends Extension>> disabledExtensions() {
+        throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
@@ -33,21 +40,23 @@ public class PackedContainerDriver extends PackedComponentDriver<BaseContainerCo
         return new ContainerSetup(build, realm, lifetime, this, parent, wirelets);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public BaseContainerConfiguration toConfiguration(ComponentSetup context) {
+    public C toConfiguration(ComponentSetup context) {
         BaseContainerConfiguration cc = new BaseContainerConfiguration();
         VH_COMPONENT_CONFIGURATION_COMPONENT.set(cc, context);
         VH_ABSTRACT_CONTAINER_CONFIGURATION.set(cc, context);
-        return cc;
+        return (C) cc;
     }
 
     @Override
-    protected PackedContainerDriver withWirelet(Wirelet w) {
-        return new PackedContainerDriver(w);
-    }
-
-    @Override
-    public ComponentDriver<BaseContainerConfiguration> with(Wirelet... wirelet) {
+    public ContainerDriver<C> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    protected ComponentDriver<C> withWirelet(Wirelet w) {
+        throw new UnsupportedOperationException();
+    }
+
 }

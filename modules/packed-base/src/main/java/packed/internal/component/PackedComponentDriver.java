@@ -23,7 +23,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
             PackedComponentDriver.class);
 
-    /** A handle that can access Assembly#driver. */
+    /** A handle that can access ComponentConfiguration#component. */
     protected static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
             ComponentConfiguration.class, "component", ComponentSetup.class);
 

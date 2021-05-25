@@ -37,6 +37,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
@@ -51,7 +52,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
-public final class PackedApplicationDriver<A> extends PackedContainerDriver implements ApplicationDriver<A> {
+public final class PackedApplicationDriver<A> extends PackedContainerDriver<BaseContainerConfiguration> implements ApplicationDriver<A> {
 
     /** The driver used for creating mirrors daemon driver. */
     // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne

@@ -7,6 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.base.Nullable;
 import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
@@ -20,9 +21,10 @@ import app.packed.inject.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 
+/** Implementation of {@link BeanDriver.Binder}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBeanDriverBinder.Type type, MethodHandle constructor, int modifiers,
-        boolean isConstant) implements BeanDriver.Binder<T, C> {
+public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable Wirelet wirelet, PackedBeanDriverBinder.Type type, MethodHandle constructor, boolean isSingleton)
+        implements BeanDriver.Binder<T, C> {
 
     public static final PackedBeanDriverBinder<Object, ServiceBeanConfiguration> APPLET_BINDER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, true);
@@ -39,7 +41,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
     @Override
     public PackedBeanDriver<C> bind(Class<? extends T> implementation) {
         requireNonNull(implementation, "implementation is bull");
-        return new PackedBeanDriver(this, implementation, implementation);
+        return new PackedBeanDriver(wirelet, this, implementation, implementation);
     }
 
     /** {@inheritDoc} */
@@ -50,7 +52,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
 //      if (Class.class.isInstance(object)) {
 //          // throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
 //      }
-        return new PackedBeanDriver(this, factory.rawType(), factory);
+        return new PackedBeanDriver(wirelet, this, factory.rawType(), factory);
     }
 
     /** {@inheritDoc} */
@@ -62,7 +64,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Factory instance, was " + instance);
         }
-        return new PackedBeanDriver(this, instance.getClass(), instance);
+        return new PackedBeanDriver(wirelet, this, instance.getClass(), instance);
     }
 
     @Override
@@ -75,8 +77,8 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
         throw new UnsupportedOperationException();
     }
 
-    private static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller,
-            Class<? extends C> driverType, boolean isConstant) {
+    private static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller, Class<? extends C> driverType,
+            boolean isConstant) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
@@ -92,7 +94,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
 
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
-        return new PackedBeanDriverBinder(type, constructor, 0, isConstant);
+        return new PackedBeanDriverBinder(null, type, constructor, isConstant);
     }
 
     public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
@@ -109,8 +111,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
         return meta;
     }
 
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> ofClass(MethodHandles.Lookup caller,
-            Class<? extends C> configurationType) {
+    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> ofClass(MethodHandles.Lookup caller, Class<? extends C> configurationType) {
         return newMeta(Type.CLASS, caller, configurationType, false);
     }
 

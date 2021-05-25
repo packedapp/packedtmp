@@ -35,7 +35,7 @@ import packed.internal.container.PackedContainerDriver;
 public class BaseContainerConfiguration extends ContainerConfiguration {
 
     /** A driver for configuring containers. */
-    private static final ComponentDriver<BaseContainerConfiguration> DRIVER = new PackedContainerDriver(null);
+    private static final ComponentDriver<BaseContainerConfiguration> DRIVER = new PackedContainerDriver<>(null);
 
     /** {@inheritDoc} */
     @Override

@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
 import packed.internal.util.LookupUtil;
-import packed.internal.util.MethodHandleUtil;
 
 /**
  * All strongly connected components relate to the same pod.
@@ -30,7 +29,7 @@ import packed.internal.util.MethodHandleUtil;
 public final /* primitive */ class LifetimePool {
 
     /** A method handle for calling {@link #read(int)} at runtime. */
-    private static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
+    static final MethodHandle MH_CONSTANT_POOL_READER = LookupUtil.lookupVirtual(MethodHandles.lookup(), "read", Object.class, int.class);
 
     private final Object[] objects;
 
@@ -65,17 +64,5 @@ public final /* primitive */ class LifetimePool {
     @Override
     public String toString() {
         return "ConstantPool [size = " + objects.length + "]";
-    }
-
-    /**
-     * @param index
-     *            the index of the object to read
-     * @param getAs
-     *            the type of object to read
-     * @return a method handle that will an object of the specified type for the specified index
-     */
-    static MethodHandle indexedReader(int index, Class<?> getAs) {
-        MethodHandle mh = MethodHandleUtil.bind(MH_CONSTANT_POOL_READER, 1, index);
-        return MethodHandleUtil.castReturnType(mh, getAs); // insert a cast from Object to getAs
     }
 }

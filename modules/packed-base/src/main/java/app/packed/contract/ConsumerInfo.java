@@ -100,7 +100,7 @@ public interface ConsumerInfo {
 //    boolean isOptional();
 
     /**
-     * If the provisioning is part of an injection and not a {@link #isConstant() constant}. Returns the type of class that
+     * If the provisioning is part of an injection and not a {@link #isSingleton() constant}. Returns the type of class that
      * the provided instance is being injected into. If the provisioning is part of a lookup returns
      * {@link Optional#empty()}.
      * 

@@ -7,18 +7,18 @@ import app.packed.hooks.sandbox.ExtensionSupportClass;
 import app.packed.hooks.sandbox.ExtensionSupportClass.Scope;
 
 @SuppressWarnings("unused")
-public final class ExtensionSupportClassModel {
+public final class ExtensorModel {
 
-    private static final ClassValue<ExtensionSupportClassModel> MODELS = new ClassValue<>() {
+    private static final ClassValue<ExtensorModel> MODELS = new ClassValue<>() {
 
         @Override
-        protected ExtensionSupportClassModel computeValue(Class<?> type) {
+        protected ExtensorModel computeValue(Class<?> type) {
             ExtensionSupportClass esc = type.getAnnotation(ExtensionSupportClass.class);
             if (esc == null) {
                 return null;
             }
             // TODO Auto-generated method stub
-            return new ExtensionSupportClassModel(esc.extension(), esc.scope());
+            return new ExtensorModel(esc.extension(), esc.scope());
         }
     };
 
@@ -26,7 +26,7 @@ public final class ExtensionSupportClassModel {
 
     private final ExtensionSupportClass.Scope scope;
 
-    public ExtensionSupportClassModel(Class<? extends Extension> extensionClass, Scope scope) {
+    public ExtensorModel(Class<? extends Extension> extensionClass, Scope scope) {
         this.extensionClass = requireNonNull(extensionClass);
         this.scope = requireNonNull(scope);
     }
