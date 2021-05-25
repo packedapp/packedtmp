@@ -47,14 +47,14 @@ public final /* primitive */ class LifetimePool {
         System.out.println("--");
     }
 
-    public Object read(int index) {
+    Object read(int index) {
 //        Object value = store[index];
         // System.out.println("Reading index " + index + " value= " + value);
         // new Exception().printStackTrace();
         return objects[index];
     }
 
-    public void storeObject(int index, Object instance) {
+    void storeObject(int index, Object instance) {
         if (objects[index] != null) {
             throw new IllegalStateException();
         }
@@ -74,7 +74,7 @@ public final /* primitive */ class LifetimePool {
      *            the type of object to read
      * @return a method handle that will an object of the specified type for the specified index
      */
-    public static MethodHandle indexedReader(int index, Class<?> getAs) {
+    static MethodHandle indexedReader(int index, Class<?> getAs) {
         MethodHandle mh = MethodHandleUtil.bind(MH_CONSTANT_POOL_READER, 1, index);
         return MethodHandleUtil.castReturnType(mh, getAs); // insert a cast from Object to getAs
     }

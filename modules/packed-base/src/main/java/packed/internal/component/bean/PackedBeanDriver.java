@@ -9,7 +9,6 @@ import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.inject.Factory;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -25,24 +24,23 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
 
     final boolean isConstant;
 
-    final MethodHandle mh;
+    final MethodHandle configurationConstructor;
 
-    public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Object binding) {
+    /** The bean type. */
+    private final Class<?> beanType;
+
+    public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
         super(null);
-        this.mh = binder.constructor();
+        this.configurationConstructor = binder.constructor();
         this.binding = requireNonNull(binding);
+        this.beanType = requireNonNull(beanType);
         this.isConstant = binder.isConstant();
     }
 
+    /** {@inheritDoc} */
     @Override
     public Class<?> beanType() {
-        if (binding instanceof Class<?> cl) {
-            return cl;
-        } else if (binding instanceof Factory<?> f) {
-            return f.rawType();
-        } else {
-            return binding.getClass();
-        }
+        return beanType;
     }
 
     /** {@inheritDoc} */
@@ -57,7 +55,7 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
         C c;
         try {
             // TODO.. vi bruger ikke context'en lige nu. Men
-            c = (C) mh.invoke(context);
+            c = (C) configurationConstructor.invoke(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

@@ -2,7 +2,13 @@ package packed.internal.lifetime;
 
 import java.lang.invoke.MethodHandle;
 
-public record PoolAccessor(int index) {
+public final class PoolAccessor {
+
+    private final int index;
+
+    PoolAccessor(int index) {
+        this.index = index;
+    }
 
     public void store(LifetimePool pool, Object o) {
         pool.storeObject(index, o);

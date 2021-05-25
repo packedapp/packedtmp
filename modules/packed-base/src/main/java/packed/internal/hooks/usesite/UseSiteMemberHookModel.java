@@ -64,9 +64,9 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
     public void onWire(BeanSetupSupport css) {
         // Register hooks, maybe move to component setup
         InjectionNode i = new InjectionNode(css, this, createProviders());
-        css.component.container.injection.addNode(i);
+        css.bean.container.injection.addNode(i);
         if (processor != null) {
-            processor.accept(css.component);
+            processor.accept(css.bean);
         }
     }
 

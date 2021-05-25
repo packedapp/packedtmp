@@ -61,12 +61,7 @@ public final class LifetimePoolSetup {
      * 
      * @return the index to store the object in at runtime
      */
-    @Deprecated
-    public int reserveObject() {
-        return size++;
-    }
-    
     public PoolAccessor reserve() {
-        return new PoolAccessor(reserveObject());
+        return new PoolAccessor(size++);
     }
 }

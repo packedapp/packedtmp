@@ -90,7 +90,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
             if (!Modifier.isStatic(smm.getModifiers()) && source.singletonAccessor == null) {
                 throw new BuildException("Not okay)");
             }
-            ComponentSetup compConf = source.component;
+            ComponentSetup compConf = source.bean;
             ServiceManagerSetup sbm = compConf.container.injection.getServiceManagerOrCreate();
             ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
@@ -187,7 +187,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                             mh2 = mh2.bindTo(mh1);
 
-                            source.component.application.initializers.add(mh2);
+                            source.bean.application.initializers.add(mh2);
                         }
                     }
                 }
@@ -211,7 +211,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
                 DependencyDescriptor sd = dependencies.get(i);
                 DependencyProducer e = null;
                 if (source != null) {
-                    BootstrappedClassModel sm = source.hooks;
+                    BootstrappedClassModel sm = source.hookModel;
                     if (sm.sourceServices != null) {
                         e = sm.sourceServices.get(sd.key());
                     }

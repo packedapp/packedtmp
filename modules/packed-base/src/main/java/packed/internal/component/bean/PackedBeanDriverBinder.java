@@ -39,7 +39,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
     @Override
     public PackedBeanDriver<C> bind(Class<? extends T> implementation) {
         requireNonNull(implementation, "implementation is bull");
-        return new PackedBeanDriver(this, implementation);
+        return new PackedBeanDriver(this, implementation, implementation);
     }
 
     /** {@inheritDoc} */
@@ -50,7 +50,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
 //      if (Class.class.isInstance(object)) {
 //          // throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
 //      }
-        return new PackedBeanDriver(this, factory);
+        return new PackedBeanDriver(this, factory.rawType(), factory);
     }
 
     /** {@inheritDoc} */
@@ -62,7 +62,7 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (PackedBean
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Factory instance, was " + instance);
         }
-        return new PackedBeanDriver(this, instance);
+        return new PackedBeanDriver(this, instance.getClass(), instance);
     }
 
     @Override

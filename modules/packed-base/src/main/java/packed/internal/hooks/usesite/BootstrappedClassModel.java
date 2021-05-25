@@ -74,9 +74,9 @@ public final class BootstrappedClassModel {
         this.extensionClass = builder.extension == null ? null : builder.extension.type();
     }
 
-    public void onWire(BeanSetupSupport css) {
+    public void onWire(BeanSetupSupport bean) {
         for (UseSiteMemberHookModel hook : models) {
-            hook.onWire(css);
+            hook.onWire(bean);
         }
     }
 

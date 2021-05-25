@@ -30,17 +30,16 @@ import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePool;
-import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.lifetime.PoolAccessor;
 
 /** A configuration object for a component class source. */
-public final class BeanSetupSupport implements DependencyProducer, LifetimePoolWriteable {
+public final class BeanSetupSupport implements DependencyProducer {
+
+    public final BeanSetup bean;
 
     /** If the source represents a constant. */
     @Nullable
     private final Object boundToinstance;
-
-    public final BeanSetup component;
 
     /**
      * Factory that was specified. We only keep this around to find the key that it should be exposed as a service with. As
@@ -50,79 +49,77 @@ public final class BeanSetupSupport implements DependencyProducer, LifetimePoolW
     private final Factory<?> factory;
 
     /** A model of every hook on the source. */
-    public final BootstrappedClassModel hooks; // contains provided stuff
+    public final BootstrappedClassModel hookModel; // contains provided stuff
 
     /** An injection node, if instances of the source needs to be created at runtime (not a constant). */
     @Nullable
-    private final InjectionNode instantiator;
-
-    /** The index at which to store the runtime instance, or -1 if it should not be stored. */
-    public final PoolAccessor singletonAccessor;
+    private final InjectionNode injectionNode;
 
     /** A service object if the source is provided as a service. */
     @Nullable
     public ServiceSetup service;
 
+    /** A pool accessor if a single instance of this bean is created. null otherwise */
+    public final PoolAccessor singletonAccessor;
+
     /**
      * Creates a new setup.
      * 
-     * @param component
+     * @param bean
      *            the component
      * @param source
      *            the class, factory or instance source
      */
-    BeanSetupSupport(BeanSetup component, PackedBeanDriver<?> driver, Object source) {
-        this.component = component;
+    BeanSetupSupport(BeanSetup bean, PackedBeanDriver<?> driver, Object source) {
+        this.bean = bean;
 
         // Reserve a place in the constant pool if the source is a singleton
-
         // If instance != null we kan vel pool.permstore()
         // BuildStore
-        this.singletonAccessor = driver.isConstant ? component.lifetime.pool.reserve() : null;
+        this.singletonAccessor = driver.isConstant ? bean.lifetime.pool.reserve() : null;
 
         // A realm accessor that allows us to find all hooks a component source
-        RealmAccessor accessor = component.realm.accessor();
+        RealmAccessor accessor = bean.realm.accessor();
 
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
             this.boundToinstance = null;
             // TODO fix
-            boolean isStaticClassSource = false;// PackedComponentModifierSet.isSet(driver.modifiers, ComponentModifier.STATEFUL);
-            // was driver.modifiers().isStaticClassSource()
+            boolean isStaticClassSource = false;
             this.factory = isStaticClassSource ? null : Factory.of(cl);
-            this.hooks = accessor.modelOf(cl);
+
         } else if (source instanceof Factory<?> fac) {
             this.boundToinstance = null;
             this.factory = fac;
-            this.hooks = accessor.modelOf(factory.rawType());
         } else {
             this.boundToinstance = source;
             this.factory = null;
-            this.hooks = accessor.modelOf(source.getClass());
 
             // non-constants singlestons are added to the constant pool elsewhere
-            component.lifetime.pool.addConstant(this); // writeToPool will be called later
+            bean.lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, boundToinstance)); // writeToPool will be called later
         }
 
         if (factory == null) {
-            this.instantiator = null;
+            this.injectionNode = null;
         } else {
             MethodHandle mh = accessor.toMethodHandle(factory);
 
             @SuppressWarnings({ "rawtypes", "unchecked" })
             List<DependencyDescriptor> dependencies = (List) factory.variables();
-            this.instantiator = new InjectionNode(this, dependencies, mh);
-            component.container.injection.addNode(instantiator);
+            this.injectionNode = new InjectionNode(this, dependencies, mh);
+            bean.container.injection.addNode(injectionNode);
         }
 
-        hooks.onWire(this);
+        // Find a hook model for the bean type and wire it
+        this.hookModel = accessor.modelOf(driver.beanType());
+        hookModel.onWire(this);
     }
 
     /** {@inheritDoc} */
     @Override
     @Nullable
     public InjectionNode dependant() {
-        return instantiator;
+        return injectionNode;
     }
 
     /** {@inheritDoc} */
@@ -130,13 +127,14 @@ public final class BeanSetupSupport implements DependencyProducer, LifetimePoolW
     public MethodHandle dependencyAccessor() {
         // Must return MethodHandle(ConstantPool)T
         if (boundToinstance != null) {
+            // Jeg tror faktisk godt vi vil returnere den for array'et istedet for...
             MethodHandle mh = MethodHandles.constant(boundToinstance.getClass(), boundToinstance); // MethodHandle()T
             mh = MethodHandles.dropArguments(mh, 0, LifetimePool.class); // MethodHandle()T -> // MethodHandle(LifetimePool)T
             return mh;
         } else if (singletonAccessor != null) {
-            return singletonAccessor.indexedReader(hooks.clazz);
+            return singletonAccessor.indexedReader(hookModel.clazz);
         } else {
-            return instantiator.buildMethodHandle();
+            return injectionNode.buildMethodHandle();
         }
     }
 
@@ -145,20 +143,13 @@ public final class BeanSetupSupport implements DependencyProducer, LifetimePoolW
         ServiceSetup s = service;
         if (s == null) {
             Key<?> key;
-            if (boundToinstance != null) {
-                key = Key.of(hooks.clazz); // Move to model?? What if instance has Qualifier???
-            } else {
+            if (factory != null) {
                 key = factory.key();
+            } else {
+                key = Key.of(hookModel.clazz); // Move to model?? What if instance has Qualifier???
             }
-            s = service = component.container.injection.getServiceManagerOrCreate().provideSource(component, key);
+            s = service = bean.container.injection.getServiceManagerOrCreate().provideSource(bean, key);
         }
         return s;
-    }
-
-    @Override
-    public void writeToPool(LifetimePool pool) {
-        // Altsaa vi burde jo bare gemme den her med det samme...
-        assert boundToinstance != null;
-        singletonAccessor.store(pool, boundToinstance);
     }
 }

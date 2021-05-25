@@ -29,7 +29,7 @@ public final class BeanSetup extends ComponentSetup {
 
         // Set the name of the component if it have not already been set using a wirelet
         if (name == null) {
-            initializeNameWithPrefix(support.hooks.simpleName());
+            initializeNameWithPrefix(support.hookModel.simpleName());
         }
     }
 
@@ -66,7 +66,7 @@ public final class BeanSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public Class<?> beanType() {
-            return support.hooks.clazz;
+            return support.hookModel.clazz;
         }
 
         /** {@inheritDoc} */
