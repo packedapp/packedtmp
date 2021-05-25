@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandle;
 import app.packed.base.Key;
 import app.packed.base.Nullable;
 import packed.internal.component.bean.BeanSetup;
-import packed.internal.component.bean.BeanSetupSupport;
 import packed.internal.inject.dependency.InjectionNode;
 import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.inject.service.runtime.PrototypeRuntimeService;
@@ -33,7 +32,7 @@ import packed.internal.inject.service.runtime.ServiceInstantiationContext;
 public final class SourceInstanceServiceSetup extends ServiceSetup {
 
     /** The singleton source we are wrapping */
-    private final BeanSetupSupport source;
+    private final BeanSetup source;
 
     /**
      * Creates a new node from an instance.
@@ -43,7 +42,7 @@ public final class SourceInstanceServiceSetup extends ServiceSetup {
      */
     public SourceInstanceServiceSetup(ServiceManagerSetup im, BeanSetup component, Key<?> key) {
         super(key);
-        this.source = requireNonNull(component.support);
+        this.source = requireNonNull(component);
     }
 
     /** {@inheritDoc} */

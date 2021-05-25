@@ -149,7 +149,7 @@ public final class PackedApplicationRuntime extends Extensor<ApplicationRuntimeE
             }
 
             try {
-                PoolAccessor sa = l.cs.support.singletonAccessor;
+                PoolAccessor sa = l.cs.singletonAccessor;
                 if (sa != null && !l.isStatic) {
                     Object o = sa.read(launchContext.pool());
                     l.methodHandle.invoke(o);

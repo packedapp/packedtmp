@@ -25,8 +25,7 @@ import java.util.List;
 
 import app.packed.base.Nullable;
 import app.packed.component.BuildException;
-import packed.internal.component.ComponentSetup;
-import packed.internal.component.bean.BeanSetupSupport;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
@@ -63,14 +62,14 @@ public final class InjectionNode implements LifetimePoolWriteable {
     public final DependencyProducer[] providers;
 
     /** The source (component) this dependent is or is a part of. */
-    public final BeanSetupSupport source;
+    public final BeanSetup source;
 
     @Nullable
     private final UseSiteMemberHookModel sourceMember;
 
     public final int providerDelta;
 
-    public InjectionNode(BeanSetupSupport source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
+    public InjectionNode(BeanSetup source, List<DependencyDescriptor> dependencies, MethodHandle mh) {
         this.source = requireNonNull(source);
         this.sourceMember = null;
 
@@ -82,7 +81,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
         this.providers = new DependencyProducer[directMethodHandle.type().parameterCount()];
     }
 
-    public InjectionNode(BeanSetupSupport source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
+    public InjectionNode(BeanSetup source, UseSiteMemberHookModel smm, DependencyProducer[] dependencyProviders) {
         this.source = requireNonNull(source);
         this.sourceMember = requireNonNull(smm);
 
@@ -90,9 +89,8 @@ public final class InjectionNode implements LifetimePoolWriteable {
             if (!Modifier.isStatic(smm.getModifiers()) && source.singletonAccessor == null) {
                 throw new BuildException("Not okay)");
             }
-            ComponentSetup compConf = source.bean;
-            ServiceManagerSetup sbm = compConf.container.injection.getServiceManagerOrCreate();
-            ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, compConf, this, smm.provideAskey, smm.provideAsConstant);
+            ServiceManagerSetup sbm = source.container.injection.getServiceManagerOrCreate();
+            ServiceSetup sa = this.service = new SourceMemberServiceSetup(sbm, source, this, smm.provideAskey, smm.provideAsConstant);
             sbm.addAssembly(sa);
         } else {
             this.service = null;
@@ -187,7 +185,7 @@ public final class InjectionNode implements LifetimePoolWriteable {
 
                             mh2 = mh2.bindTo(mh1);
 
-                            source.bean.application.initializers.add(mh2);
+                            source.application.initializers.add(mh2);
                         }
                     }
                 }

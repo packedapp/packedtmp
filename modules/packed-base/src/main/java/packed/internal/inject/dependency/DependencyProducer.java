@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Nullable;
 import app.packed.inject.Provide;
-import packed.internal.component.bean.BeanSetupSupport;
 import packed.internal.hooks.HookedMethodProvide;
 import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimePoolSetup;

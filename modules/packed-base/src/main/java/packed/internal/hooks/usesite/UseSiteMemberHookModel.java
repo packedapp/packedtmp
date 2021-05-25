@@ -27,7 +27,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.ClassHook;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.bean.BeanSetupSupport;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.hooks.AbstractHookModel;
 import packed.internal.hooks.ClassHookModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
@@ -61,12 +61,12 @@ public abstract class UseSiteMemberHookModel extends JavaHookElementModel {
         this.processor = builder.processor;
     }
 
-    public void onWire(BeanSetupSupport css) {
+    public void onWire(BeanSetup css) {
         // Register hooks, maybe move to component setup
         InjectionNode i = new InjectionNode(css, this, createProviders());
-        css.bean.container.injection.addNode(i);
+        css.container.injection.addNode(i);
         if (processor != null) {
-            processor.accept(css.bean);
+            processor.accept(css);
         }
     }
 
