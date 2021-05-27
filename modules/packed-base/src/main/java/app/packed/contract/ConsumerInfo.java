@@ -21,11 +21,11 @@ import java.util.Optional;
 import app.packed.base.Key;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Extension;
-import app.packed.inject.Provide;
-import app.packed.inject.ServiceLocator;
+import app.packed.service.Provide;
+import app.packed.service.ServiceLocator;
 
 /**
- * An instance of this interface can be injected into methods that are annotated with {@link Provide}.
+ * An instance of this interface can be injected into methods that are annotated with .
  * 
  * Whenever a A service request has two important parts. What exactly are being requested, is it optional is the
  * service being requested.

@@ -1,10 +1,8 @@
 package app.packed.component;
 
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 
-import app.packed.component.BeanMirror.BeanMode;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
@@ -22,14 +20,29 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
     @Override
     BeanDriver<C> with(Wirelet... wirelet);
 
+    BeanKind kind();
+    
+    
+    static BeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
+        return PackedBeanDriverBinder.SINGLETON_BINDER.bind(implementation);
+    }
+
+    static BeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
+        return PackedBeanDriverBinder.SINGLETON_BINDER.bind(factory);
+    }
+
+    static BeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
+        return PackedBeanDriverBinder.SINGLETON_BINDER.bindInstance(instance);
+    }
+
+    static BeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
+        return PackedBeanDriverBinder.STATIC_BINDER.bind(implementation);
+    }
+
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public interface Binder<T, C extends BeanConfiguration> {
-
-        // Container Lifetime, Eager singleton
-        static Binder<Object, BaseBeanConfiguration> DEFAULT = (Binder) PackedBeanDriverBinder.APPLET_BINDER;
 
         /**
          * @param implementation
@@ -38,8 +51,10 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
          * @throws UnsupportedOperationException
          *             if class binding is not supported
          */
+
         BeanDriver<C> bind(Class<? extends T> implementation);
 
+        // Som regel er det C<T> vi returnere...
         BeanDriver<C> bind(Factory<? extends T> factory);
 
         /**
@@ -57,42 +72,21 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
          */
         BeanDriver<C> bindInstance(T instance);
 
+        default BeanKind kind() { 
+            throw new UnsupportedOperationException();
+        }
         Optional<Class<? extends Extension>> extension();
 
-        /** {@return a set containing all modes this driver supports. } */
-        Set<? extends BeanMode> supportedModes();
-
         Binder<T, C> with(Wirelet... wirelet);
-
-        /**
-         * Returns a driver that can be used to create stateless components.
-         * 
-         * @param <T>
-         *            the type
-         * @return a driver
-         */
-        private static PackedBeanDriverBinder driver() {
-            return PackedBeanDriverBinder.STATELESS_BINDER;
-        }
-
-        static ComponentDriver<BaseBeanConfiguration> driverStateless(Class<?> implementation) {
-            return driver().bind(implementation);
-        }
-
-        static <T> ComponentDriver<BaseBeanConfiguration> functional(Class<?> implementation) {
-            return driver().bind(implementation);
-        }
-        
-        static Binder<Object, BaseBeanConfiguration> defaultBeanBinder() {
-            return Binder.DEFAULT;
-        }
     }
 
     public interface Builder {
 
+        <T, C extends BeanConfiguration> Binder<T, C> build();
+
         // Specific super type
 
-        <T, C extends BeanConfiguration> Binder<T, C> build();
+        Builder kind(BeanKind kind);
 
         Builder namePrefix(Function<Class<?>, String> computeIt);
 

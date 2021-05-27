@@ -9,6 +9,7 @@ import app.packed.hooks.sandbox.ExtensionSupportClass.Scope;
 @SuppressWarnings("unused")
 public final class ExtensorModel {
 
+    // Den skal jo scannes ligesom beans
     private static final ClassValue<ExtensorModel> MODELS = new ClassValue<>() {
 
         @Override

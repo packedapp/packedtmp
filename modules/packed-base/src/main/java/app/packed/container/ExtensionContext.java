@@ -15,7 +15,9 @@
  */
 package app.packed.container;
 
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
 import app.packed.component.Assembly;
@@ -61,22 +63,51 @@ public /* sealed */ interface ExtensionContext {
      */
     void checkIsBuilding();
 
+    default <E> Stream<ExtensionAncestorRelation<E>> findAllAncestors(Class<E> ancestorType) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param <E>
      *            the type of ancestor to find
      * @param ancestorType
      *            the type of ancestor to find
-     * @return 
-     * @throws ClassCastException
-     *             if an ancestor was found but it was not of the specified type
+     * @return
      */
-    // Hvad hvis vi bare vil finde en extension...
-    // Maaske skal vi ikke fejle... Men bare ikke reportere noget...
-    default <E> ExtensionAncestor<E> findAncestor(Class<E> ancestorType) {
-        throw new UnsupportedOperationException();
-    }
+    <E> ExtensionAncestorRelation<E> findFirstAncestor(Class<E> ancestorType);
+
+    /**
+     * Attempts to find a parent of the specified type.
+     * 
+     * @param <E>
+     *            the type of parent to find
+     * @param parentType
+     * @return
+     * @throws ClassCastException
+     *             if a parent was found but it was not of the specified type
+     */
+    // Ahhh for helvede det virker jo kun med extensions... ikke med extensors...
+    // ExtensorContext???
+    <E> Optional<ExtensionAncestorRelation<E>> findParent(Class<E> parentType);
+
+    /**
+     * 
+     * Extensors installed via this method shou
+     * 
+     * @param instance
+     *            the extensor instance to install
+     * @return the configuration of the extensor
+     * @see #installExtensor(Class, Wirelet...)
+     * @see #installExtensor(Factory, Wirelet...)
+     */
+    ExtensorConfiguration installExtensorInstance(Extensor<?> instance, Wirelet... wirelets);
+
+    // A new instance. Ligesom install(bean)
+    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets);
 
     // Will install the class in the specified Container
+    // Hvad hvis vi bare vil finde en extension...
+    // Maaske skal vi ikke fejle... Men bare ikke reportere noget...
 
     // maybe userInstall
     // or maybe we just have userWire()
@@ -84,28 +115,6 @@ public /* sealed */ interface ExtensionContext {
     // For hvorfor skal brugen installere en alm component via denne extension???
     // Vi skal vel altid have en eller anden specific component driver
     // BaseComponentConfiguration containerInstall(Class<?> factory);
-
-    /**
-     * @param <E>
-     * @param ancestorType
-     * @return
-     * @throws ClassCastException
-     *             if a parent was found but it was not of the specified type
-     */
-    default <E> ExtensionAncestor<E> findParent(Class<E> ancestorType) {
-        throw new UnsupportedOperationException();
-    }
-
-    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets);
-
-    /**
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see BaseContainerConfiguration#installInstance(Object)
-     */
-    ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets);
-
     ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets);
 
     default boolean isExtensionEnabled(Class<? extends Extension> extensionType) {

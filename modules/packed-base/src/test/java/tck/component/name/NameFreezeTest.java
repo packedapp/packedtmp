@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
-import app.packed.inject.ServiceBeanConfiguration;
+import app.packed.service.ServiceBeanConfiguration;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 

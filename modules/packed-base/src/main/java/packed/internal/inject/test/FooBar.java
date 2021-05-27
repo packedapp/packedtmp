@@ -19,9 +19,9 @@ import app.packed.application.Program;
 import app.packed.base.Key;
 import app.packed.base.Tag;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceExtensionMirror;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceExtensionMirror;
+import app.packed.service.ServiceWirelets;
 
 /**
  *

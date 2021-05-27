@@ -87,8 +87,8 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public BaseBeanConfiguration stateless(Class<?> implementation) {
-        return super.wire(BeanDriver.Binder.driverStateless(implementation));
+    public BaseBeanConfiguration installStatic(Class<?> implementation) {
+        return super.wire(BeanDriver.ofStatic(implementation));
     }
 
     /** {@inheritDoc} */

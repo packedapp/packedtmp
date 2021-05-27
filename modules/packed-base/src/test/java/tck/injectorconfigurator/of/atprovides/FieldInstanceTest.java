@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import app.packed.base.TypeToken;
 import app.packed.component.BuildException;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
-import packed.internal.inject.service.sandbox.Injector;
-import packed.internal.inject.service.sandbox.InjectorComposer;
+import app.packed.service.Provide;
+import packed.internal.service.sandbox.Injector;
+import packed.internal.service.sandbox.InjectorComposer;
 
 /** Tests {@link Provide#constant()} on fields. */
 public class FieldInstanceTest {

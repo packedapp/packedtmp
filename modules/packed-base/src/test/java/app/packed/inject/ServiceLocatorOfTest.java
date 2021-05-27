@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.Key;
 import app.packed.base.Tag;
+import app.packed.service.ServiceLocator;
 
 /**
  *

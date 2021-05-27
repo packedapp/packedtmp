@@ -39,7 +39,7 @@ import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.Extension;
-import app.packed.inject.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.CombinedWirelet;
 import packed.internal.component.PackedComponentDriver;

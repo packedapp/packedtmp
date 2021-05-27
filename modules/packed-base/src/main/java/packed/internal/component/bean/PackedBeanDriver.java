@@ -5,6 +5,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Nullable;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
+import app.packed.component.BeanKind;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import packed.internal.application.BuildSetup;
@@ -37,6 +38,12 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
     @Override
     public Class<?> beanType() {
         return beanType;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public BeanKind kind() {
+        return binder.kind();
     }
 
     /** {@inheritDoc} */

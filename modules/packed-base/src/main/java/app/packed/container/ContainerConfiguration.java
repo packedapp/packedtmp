@@ -1,28 +1,36 @@
 package app.packed.container;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.BeanDriver;
-import app.packed.component.BeanDriver.Binder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
+import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * <p>
  * Currently only a single concrete implementation exists.
- *  
- * but users are free to create other implementations that restrict the functionality
- * of the default container configuration by overridding this class.
+ * 
+ * but users are free to create other implementations that restrict the functionality of the default container
+ * configuration by overridding this class.
  */
 public abstract /* non-sealed */ class ContainerConfiguration extends ComponentConfiguration {
-   
-    // TODO pack into container()...
-    ContainerSetup container;
-    
+
+    /** A handle that can access ComponentConfiguration#component(). */
+    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
+            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
+            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
+
+
     /**
      * Returns an unmodifiable view of the extensions that are currently used.
      * 
@@ -33,10 +41,17 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @see ContainerMirror#extensions()
      */
     protected Set<Class<? extends Extension>> extensions() {
-        return container.extensions();
+        return container().extensions();
     }
 
-    
+    ContainerSetup container() {
+        try {
+            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
     /**
      * Installs a bean that will use the specified {@link Factory} to instantiate the bean instance.
      * <p>
@@ -47,10 +62,10 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @return the configuration of the component
      */
     protected BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = Binder.defaultBeanBinder().bind(implementation);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
         return wire(driver, wirelets);
     }
-    
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * 
@@ -60,7 +75,7 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @see ContainerAssembly#install(Factory)
      */
     protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = Binder.defaultBeanBinder().bind(factory);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
         return wire(driver, wirelets);
     }
 
@@ -71,14 +86,14 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @see ContainerAssembly#installInstance(Object)
      */
     protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = Binder.defaultBeanBinder().bindInstance(instance);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
         return wire(driver, wirelets);
     }
 
     /** {@inheritDoc} */
     @Override
     protected ContainerMirror mirror() {
-        return container.mirror();
+        return container().mirror();
     }
 
     /**
@@ -91,8 +106,8 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
      */
-    protected BaseBeanConfiguration stateless(Class<?> implementation) {
-        return wire(BeanDriver.Binder.driverStateless(implementation));
+    protected BaseBeanConfiguration installStatic(Class<?> implementation) {
+        return wire(BeanDriver.ofStatic(implementation));
     }
 
     /**
@@ -111,6 +126,6 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @see #extensions()
      */
     protected <T extends Extension> T use(Class<T> extensionType) {
-        return container.useExtension(extensionType);
+        return container().useExtension(extensionType);
     }
 }

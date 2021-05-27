@@ -11,7 +11,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
-import app.packed.inject.ServiceConfiguration;
+import app.packed.service.ServiceConfiguration;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.util.NativeImage;
 

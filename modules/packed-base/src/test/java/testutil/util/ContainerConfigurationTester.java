@@ -58,7 +58,7 @@ public class ContainerConfigurationTester {
     }
 
     public BaseBeanConfiguration stateless(Class<?> implementation) {
-        BaseBeanConfiguration conf = cc.stateless(implementation);
+        BaseBeanConfiguration conf = cc.installStatic(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }

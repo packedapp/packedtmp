@@ -29,15 +29,15 @@ import packed.internal.component.bean.BeanSetup;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
-import packed.internal.inject.service.ServiceDelegate;
-import packed.internal.inject.service.ServiceManagerSetup;
-import packed.internal.inject.service.build.ServiceSetup;
-import packed.internal.inject.service.build.SourceMemberServiceSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolMethodAccessor;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.lifetime.PoolAccessor;
+import packed.internal.service.ServiceDelegate;
+import packed.internal.service.ServiceManagerSetup;
+import packed.internal.service.build.ServiceSetup;
+import packed.internal.service.build.SourceMemberServiceSetup;
 import packed.internal.util.ThrowableUtil;
 
 /**

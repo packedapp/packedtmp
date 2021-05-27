@@ -29,8 +29,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.container.BaseAssembly;
-import app.packed.inject.ServiceExtension;
-import packed.internal.inject.service.sandbox.Injector;
+import app.packed.service.ServiceExtension;
+import packed.internal.service.sandbox.Injector;
 
 /**
  *

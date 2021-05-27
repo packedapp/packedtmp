@@ -16,6 +16,7 @@
 package app.packed.inject;
 
 import app.packed.base.Key;
+import app.packed.service.ServiceRegistry;
 
 /**
  * An injection context object can be injected into any injection site (typically a method or constructor) to query

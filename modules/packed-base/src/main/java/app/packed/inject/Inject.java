@@ -43,5 +43,6 @@ import java.lang.annotation.Target;
 @Target({ ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-//@MethodHook(matchesAnnotation = Inject.class, extension = ServiceExtension.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+//@MethodHook(matchesAnnotation = Inject.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+// Den tilhoerer ikke ServiceExtension, men det kan godt vaere at man ender med at injecte en service
 public @interface Inject {}

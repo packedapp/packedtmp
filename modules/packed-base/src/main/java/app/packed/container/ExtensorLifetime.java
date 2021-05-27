@@ -5,7 +5,7 @@ package app.packed.container;
 
 // Hoved problemet er jo. Hvordan lukker man dem ned???
 // Skal vi tracke referencer?????
-public enum ExtensorLifetime {
+enum ExtensorLifetime {
     PLATFORM, 
     
     APP_TREE,

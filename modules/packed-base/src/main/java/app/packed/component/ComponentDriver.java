@@ -36,8 +36,8 @@ import app.packed.container.Extension;
  */
 public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> {
 
-    // IDK... Kan vi laver drivers uden extensions??? IDK
-    Optional<Class<? extends Extension>> extension();
+    /** {@return any extension this driver is a part of.} */
+    Optional<Class<? extends Extension>> extension(); //igen Packed, Extension, user, 
 
     /**
      * 

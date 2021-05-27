@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
+/** A {@link Field} var. */
 public record FieldVar(Field field) implements Var {
 
     @Override

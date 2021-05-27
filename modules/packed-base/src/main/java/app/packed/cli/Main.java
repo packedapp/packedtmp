@@ -28,7 +28,7 @@ import app.packed.component.BuildException;
 import app.packed.container.Extension;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
-import app.packed.inject.ServiceExtension;
+import app.packed.service.ServiceExtension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
 import packed.internal.component.bean.BeanSetup;

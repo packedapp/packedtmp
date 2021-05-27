@@ -21,7 +21,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.BuildWirelets;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.ServiceLocator;
+import app.packed.service.ServiceLocator;
 
 /**
  *

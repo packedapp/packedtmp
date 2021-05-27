@@ -5,34 +5,32 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.Optional;
-import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
 import app.packed.component.BeanDriver.Binder;
-import app.packed.component.BeanMirror.BeanMode;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceBeanConfiguration;
+import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 
 /** Implementation of {@link BeanDriver.Binder}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable Wirelet wirelet, PackedBeanDriverBinder.Type type, MethodHandle constructor, boolean isSingleton)
-        implements BeanDriver.Binder<T, C> {
+public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable Wirelet wirelet, PackedBeanDriverBinder.Type type, MethodHandle constructor,
+        boolean isSingleton) implements BeanDriver.Binder<T, C> {
 
-    public static final PackedBeanDriverBinder<Object, ServiceBeanConfiguration> APPLET_BINDER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(),
+    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> SINGLETON_BINDER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, true);
 
     /** A driver for this configuration. */
-    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATELESS_BINDER = PackedBeanDriverBinder.ofClass(MethodHandles.lookup(),
+    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATIC_BINDER = PackedBeanDriverBinder.ofClass(MethodHandles.lookup(),
             BaseBeanConfiguration.class);
-
+    
     public enum Type {
         CLASS, FACTORY, INSTANCE;
     }
@@ -65,11 +63,6 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable 
             throw new IllegalArgumentException("Cannot bind a Factory instance, was " + instance);
         }
         return new PackedBeanDriver(wirelet, this, instance.getClass(), instance);
-    }
-
-    @Override
-    public Set<? extends BeanMode> supportedModes() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

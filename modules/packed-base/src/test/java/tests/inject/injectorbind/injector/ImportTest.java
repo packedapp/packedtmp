@@ -25,7 +25,7 @@ import java.time.ZonedDateTime;
 import app.packed.base.Qualifier;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory1;
-import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.service.sandbox.Injector;
 
 /**
  *

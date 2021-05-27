@@ -3,9 +3,9 @@ package packed.internal.container;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Nullable;
-import app.packed.container.ExtensionAncestor;
+import app.packed.container.ExtensionAncestorRelation;
 
-public class PackedExtensionAncestor<E> implements ExtensionAncestor<E> {
+public class PackedExtensionAncestor<E> implements ExtensionAncestorRelation<E> {
 
     @Nullable
     final E instance;
@@ -15,7 +15,7 @@ public class PackedExtensionAncestor<E> implements ExtensionAncestor<E> {
     }
 
     @Override
-    public E get() {
+    public E instance() {
         if (instance == null) {
             throw new NoSuchElementException();
         }
@@ -29,12 +29,7 @@ public class PackedExtensionAncestor<E> implements ExtensionAncestor<E> {
     }
 
     @Override
-    public boolean isPresent() {
-        return instance != null;
-    }
-
-    @Override
-    public boolean isSameApplication() {
+    public boolean isInSameApplication() {
         // TODO Auto-generated method stub
         return false;
     }
@@ -50,14 +45,11 @@ public class PackedExtensionAncestor<E> implements ExtensionAncestor<E> {
     }
 
     @SuppressWarnings("unchecked")
-    public static <E> ExtensionAncestor<E> sameApplication(Class<E> type, Object instance) {
-        if (!type.isInstance(instance)) {
-            throw new ClassCastException("An ancestor of type " + instance.getClass() + " was found, but it is not assignable to the specified type " + type);
-        }
+    public static <E> ExtensionAncestorRelation<E> sameApplication(Object instance) {
         return new PackedExtensionAncestor<E>((E) instance);
     }
 
-    public static <E> ExtensionAncestor<E> missing() {
+    public static <E> ExtensionAncestorRelation<E> missing() {
         return new PackedExtensionAncestor<E>(null);
     }
 }

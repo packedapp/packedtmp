@@ -28,9 +28,9 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.base.TypeToken;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceBeanConfiguration;
+import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.config.ConfigSite;
-import packed.internal.inject.service.sandbox.Injector;
+import packed.internal.service.sandbox.Injector;
 import testutil.stubs.Letters.A;
 import testutil.stubs.Letters.B;
 import testutil.stubs.Letters.D;

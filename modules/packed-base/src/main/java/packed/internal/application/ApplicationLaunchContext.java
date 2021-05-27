@@ -23,13 +23,13 @@ import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
-import app.packed.inject.ServiceLocator;
+import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.InternalWirelet;
 import packed.internal.component.WireletWrapper;
-import packed.internal.inject.service.ServiceManagerSetup;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolWriteable;
+import packed.internal.service.ServiceManagerSetup;
 import packed.internal.util.ThrowableUtil;
 
 /**

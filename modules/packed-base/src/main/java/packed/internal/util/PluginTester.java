@@ -19,7 +19,7 @@ import java.util.ServiceLoader;
 
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
-import app.packed.inject.ServiceWirelets;
+import app.packed.service.ServiceWirelets;
 
 /**
  *

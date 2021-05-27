@@ -1,7 +1,5 @@
 package packed.internal.container;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.Nullable;
@@ -16,14 +14,9 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
-import packed.internal.util.LookupUtil;
 
 /** A special component driver that create containers. */
 public class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
-
-    /** A handle that can access ContainerConfiguration#container. */
-    private static final VarHandle VH_ABSTRACT_CONTAINER_CONFIGURATION = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), ContainerConfiguration.class,
-            "container", ContainerSetup.class);
 
     public PackedContainerDriver(@Nullable Wirelet wirelet) {
         super(wirelet);
@@ -45,7 +38,6 @@ public class PackedContainerDriver<C extends ContainerConfiguration> extends Pac
     public C toConfiguration(ComponentSetup context) {
         BaseContainerConfiguration cc = new BaseContainerConfiguration();
         VH_COMPONENT_CONFIGURATION_COMPONENT.set(cc, context);
-        VH_ABSTRACT_CONTAINER_CONFIGURATION.set(cc, context);
         return (C) cc;
     }
 

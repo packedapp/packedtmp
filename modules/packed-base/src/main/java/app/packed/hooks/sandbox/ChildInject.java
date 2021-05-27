@@ -4,7 +4,7 @@ import app.packed.application.App;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
-import app.packed.inject.ServiceExtension;
+import app.packed.service.ServiceExtension;
 
 public class ChildInject extends BaseAssembly {
 

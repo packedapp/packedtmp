@@ -41,8 +41,8 @@ import app.packed.component.Composer;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.hooks.sandbox.InstanceHandle;
-import app.packed.inject.Provide;
 import app.packed.lifecycle.OnInitialize;
+import app.packed.service.Provide;
 import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 import packed.internal.util.StackWalkerUtil;
 

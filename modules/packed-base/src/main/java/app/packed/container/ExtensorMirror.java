@@ -5,6 +5,7 @@ import app.packed.component.ComponentMirror;
 /**
  * A mirror of an {@link Extensor} (component).
  */
+// Hvis flere
 public interface ExtensorMirror extends ComponentMirror {
 
     /** {@return the extension that installed the extensor.} */

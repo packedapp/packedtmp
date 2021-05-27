@@ -5,8 +5,8 @@ import static packed.internal.util.StringFormatter.format;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
@@ -17,7 +17,7 @@ import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
 import app.packed.container.Extension.Subtension;
-import app.packed.container.ExtensionAncestor;
+import app.packed.container.ExtensionAncestorRelation;
 import app.packed.container.ExtensionContext;
 import app.packed.container.ExtensionMirror;
 import app.packed.container.ExtensionWirelet;
@@ -62,7 +62,7 @@ public final class ExtensionSetup implements ExtensionContext {
     /** The extension type. */
     public final Class<? extends Extension> extensionType;
 
-    /** The extension instance, instantiated in {@link #newExtension(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated and set from {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -72,7 +72,8 @@ public final class ExtensionSetup implements ExtensionContext {
     /** The static model of this extension. */
     final ExtensionModel model;
 
-    /** The realm of this extension, lazily initialized when wiring a extension runtime. */
+    /** The realm this extension belongs to, lazily initialized when wiring the first extensor. */
+    // Taenker ogsaa hooks maa tilhoere den...
     @Nullable
     private RealmSetup realm;
 
@@ -115,6 +116,45 @@ public final class ExtensionSetup implements ExtensionContext {
         }
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public <T> ExtensionAncestorRelation<T> findFirstAncestor(Class<T> type) {
+        requireNonNull(type, "type is null");
+        ContainerSetup parent = container.containerParent;
+        while (parent != null) {
+            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
+            if (extensionContext != null) {
+                return PackedExtensionAncestor.sameApplication(extensionContext.instance);
+            }
+            // if (parentOnly) break;
+            parent = parent.containerParent;
+        }
+        return ExtensionAncestorRelation.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public <T> Optional<ExtensionAncestorRelation<T>> findParent(Class<T> type) {
+        requireNonNull(type, "type is null");
+        ContainerSetup parent = container.containerParent;
+        if (parent != null) {
+            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
+            if (extensionContext != null) {
+                Extension instance = extensionContext.instance;
+                if (type.isInstance(instance)) {
+                    return Optional.of(PackedExtensionAncestor.sameApplication(instance));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ExtensorConfiguration installExtensorInstance(Extensor<?> instance, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets) {
         // get RuntimeExtensionModel...
@@ -134,41 +174,6 @@ public final class ExtensionSetup implements ExtensionContext {
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <T> ExtensionAncestor<T> findAncestor(Class<T> type) {
-        requireNonNull(type, "type is null");
-        ContainerSetup parent = container.containerParent;
-        while (parent != null) {
-            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
-            if (extensionContext != null) {
-                return PackedExtensionAncestor.sameApplication(type, extensionContext.instance);
-            }
-            // if (parentOnly) break;
-            parent = parent.containerParent;
-        }
-        return ExtensionAncestor.empty();
-    }
-
-    @Override
-    public <T> ExtensionAncestor<T> findParent(Class<T> type) {
-        requireNonNull(type, "type is null");
-        ContainerSetup parent = container.containerParent;
-        if (parent != null) {
-            ExtensionSetup extensionContext = parent.extensions.get(extensionType);
-            if (extensionContext != null) {
-                return PackedExtensionAncestor.sameApplication(type, extensionContext.instance);
-            }
-        }
-        return ExtensionAncestor.empty();
-    }
-
     /**
      * Returns the extension instance.
      * 
@@ -177,8 +182,10 @@ public final class ExtensionSetup implements ExtensionContext {
      *             if trying to call this method from the constructor of the extension
      */
     // This was previously a method on ExtensionConfiguration, and might become again one again if we want to extract some
-    // tree info
-    public Extension instance() {
+    // tree info, otherwise we should be able to ditch the method, as useExtension() always makes the extension instance
+    // has been properly initialized
+    // I'm not sure we want to ever expose it via ExtensionContext... Users would need to insert a cast
+    Extension instance() {
         Extension e = instance;
         if (e == null) {
             throw new InternalExtensionException("Cannot call this method from the constructor of an extension");
@@ -198,31 +205,24 @@ public final class ExtensionSetup implements ExtensionContext {
         return container.isUsed(extensionClass);
     }
 
+    /** {@inheritDoc} */
     @Override
     public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return container.link(assembly, realm(), wirelets);
     }
 
-    /**
-     * @param lookup
-     */
-    // Do we actually want to support this??? IDK
-    public void lookup(Lookup lookup) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /** {@return a mirror for the extension.} */
+    /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     public ExtensionMirror<?> mirror() {
-        ExtensionMirror<?> m = null;
+        ExtensionMirror<?> mirror = null;
         try {
-            m = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
+            mirror = (ExtensionMirror<?>) MH_EXTENSION_MIRROR.invokeExact(instance);
         } catch (Throwable t) {
             throw ThrowableUtil.orUndeclared(t);
         }
-        if (m == null) {
+        if (mirror == null) {
             throw new InternalExtensionException("Extension " + model.fullName() + " returned a null from " + model.name() + ".mirror()");
         }
-        return m;
+        return mirror;
     }
 
     /**
@@ -247,10 +247,11 @@ public final class ExtensionSetup implements ExtensionContext {
         }
     }
 
+    /** {@return the realm of the extension. This method will lazy initialize it.} */
     private RealmSetup realm() {
         RealmSetup r = realm;
         if (r == null) {
-            r = realm = new RealmSetup(model, container);
+            r = realm = new RealmSetup(this);
         }
         return r;
     }
@@ -336,10 +337,9 @@ public final class ExtensionSetup implements ExtensionContext {
 
         // The extension has been now been fully wired, run any notifications
         // extension.onWired();
-
         //// IDK if we have another technique... Vi har snakket lidt om at have de der dybe hooks...
 
-        // Finally, invoke Extension#onNew() before returning the new extension to the end-user
+        // Finally, invoke Extension#onNew() after which the new extension can be returned to the end-user
         try {
             MH_EXTENSION_ON_NEW.invokeExact(instance);
         } catch (Throwable t) {
@@ -349,6 +349,16 @@ public final class ExtensionSetup implements ExtensionContext {
         return extension;
     }
 }
+
+//// Extensions do not support lookup objects...
+//
+///**
+//* @param lookup
+//*/
+//// Do we actually want to support this??? IDK
+//public void lookup(Lookup lookup) {
+//  throw new UnsupportedOperationException();
+//}
 
 // Previously used for extract an extension from a component mirror
 // Not needed anymore after mirrors

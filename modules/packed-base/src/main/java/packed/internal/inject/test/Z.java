@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import app.packed.inject.ServiceLocator;
+import app.packed.service.ServiceLocator;
 
 /**
  *

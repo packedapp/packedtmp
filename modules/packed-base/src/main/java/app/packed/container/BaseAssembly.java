@@ -21,12 +21,12 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.component.ComponentDriver;
 import app.packed.inject.Factory;
-import app.packed.inject.Provide;
-import app.packed.inject.ServiceBeanConfiguration;
-import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceLocator;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
+import app.packed.service.Provide;
+import app.packed.service.ServiceBeanConfiguration;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceLocator;
 
 /**
  * Extends {@link ContainerAssembly} with shortcuts for some of the commonly used extensions.

@@ -21,9 +21,9 @@ import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.inject.dependency.DependencyDescriptor;
 import packed.internal.inject.dependency.DependencyProducer;
 import packed.internal.inject.dependency.InjectionNode;
-import packed.internal.inject.service.build.ServiceSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
+import packed.internal.service.build.ServiceSetup;
 
 /** The internal configuration of a bean. */
 public final class BeanSetup extends ComponentSetup implements DependencyProducer {
@@ -106,7 +106,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         // If we have a singleton accessor return a method handle that can read the single bean instance
         // Otherwise return a method handle that can instantiate a new bean
         if (singletonAccessor != null) {
-            return singletonAccessor.indexedReader(); // MethodHandle(ConstantPool)T
+            return singletonAccessor.poolReader(); // MethodHandle(ConstantPool)T
         } else {
             return injectionNode.buildMethodHandle(); // MethodHandle(ConstantPool)T
         }
@@ -183,7 +183,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public BeanMode mode() {
+        public BeanOldMode mode() {
             throw new UnsupportedOperationException();
         }
     }

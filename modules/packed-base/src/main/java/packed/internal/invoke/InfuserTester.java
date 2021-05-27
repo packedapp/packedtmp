@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 import app.packed.container.Extension;
 import app.packed.hooks.sandbox2.OldAutoService;
 import app.packed.inject.InjectionContext;
-import app.packed.inject.Provide;
+import app.packed.service.Provide;
 import packed.internal.util.LookupUtil;
 
 public class InfuserTester {

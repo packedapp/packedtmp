@@ -281,20 +281,18 @@ public final class DependencyDescriptor implements OldVariable {
      */
     public static List<DependencyDescriptor> fromExecutable(Executable executable) {
         Parameter[] parameters = executable.getParameters();
-        switch (parameters.length) {
-        case 0:
-            return List.of();
-        case 1:
-            return List.of(fromVariable(parameters[0], 0));
-        case 2:
-            return List.of(fromVariable(parameters[0], 0), fromVariable(parameters[1], 1));
-        default:
+        return switch (parameters.length) {
+        case 0 -> List.of();
+        case 1 -> List.of(fromVariable(parameters[0], 0));
+        case 2 -> List.of(fromVariable(parameters[0], 0), fromVariable(parameters[1], 1));
+        default -> {
             DependencyDescriptor[] sd = new DependencyDescriptor[parameters.length];
             for (int i = 0; i < sd.length; i++) {
                 sd[i] = fromVariable(parameters[i], i);
             }
-            return List.of(sd);
+            yield List.of(sd);
         }
+        };
     }
 
     public static <T> DependencyDescriptor fromTypeVariable(Class<? extends T> actualClass, Class<T> baseClass, int baseClassTypeVariableIndex) {
@@ -384,9 +382,8 @@ public final class DependencyDescriptor implements OldVariable {
         if (parameter.isAnnotationPresent(Nullable.class)) {
             if (optionallaity != null) {
                 // TODO fix name() to something more readable
-                throw new BuildException(
-                        ErrorMessageBuilder.of(parameter).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
-                                .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
+                throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
+                        .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
             }
             optionallaity = Optionality.OPTIONAL_NULLABLE;
         }

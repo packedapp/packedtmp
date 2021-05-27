@@ -26,7 +26,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceBeanConfiguration;
+import app.packed.service.ServiceBeanConfiguration;
 
 /**
  * A container assembly. Typically you
@@ -176,7 +176,7 @@ public abstract class ContainerAssembly extends Assembly<BaseContainerConfigurat
     }
 
     protected final BaseBeanConfiguration stateless(Class<?> implementation) {
-        return configuration().stateless(implementation);
+        return configuration().installStatic(implementation);
     }
 
     /**

@@ -5,8 +5,8 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
-import app.packed.inject.ServiceContract;
-import app.packed.inject.ServiceExtensionMirror;
+import app.packed.service.ServiceContract;
+import app.packed.service.ServiceExtensionMirror;
 
 public class Tester extends BaseAssembly {
 

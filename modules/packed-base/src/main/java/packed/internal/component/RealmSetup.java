@@ -33,7 +33,7 @@ import app.packed.container.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.ExtensionModel;
+import packed.internal.container.ExtensionSetup;
 import packed.internal.util.LookupUtil;
 
 /**
@@ -86,11 +86,10 @@ public final class RealmSetup {
      *            the extension model to create a realm for
      * @parem extension the extension setup
      */
-    public RealmSetup(ExtensionModel model, ContainerSetup container) {
-        this.realmType = model.type();
-        this.build = container.build;
+    public RealmSetup(ExtensionSetup extension) {
+        this.realmType = this.extensionType = extension.extensionType;
+        this.build = extension.container.build;
         this.root = null; // ??????
-        this.extensionType = model.type();
         // this.current = requireNonNull(extension);
     }
 

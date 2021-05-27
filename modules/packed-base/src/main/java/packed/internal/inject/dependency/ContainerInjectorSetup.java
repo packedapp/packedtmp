@@ -5,9 +5,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.inject.ServiceExtension;
+import app.packed.service.ServiceExtension;
 import packed.internal.container.ContainerSetup;
-import packed.internal.inject.service.ServiceManagerSetup;
+import packed.internal.service.ServiceManagerSetup;
 
 public class ContainerInjectorSetup {
 

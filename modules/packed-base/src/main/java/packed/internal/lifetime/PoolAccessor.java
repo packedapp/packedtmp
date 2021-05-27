@@ -17,7 +17,7 @@ public final class PoolAccessor {
         this.index = index;
     }
 
-    public MethodHandle indexedReader() {
+    public MethodHandle poolReader() {
         // (LifetimePool, int)Object -> (LifetimePool)Object
         MethodHandle mh = MethodHandles.insertArguments(LifetimePool.MH_CONSTANT_POOL_READER, 1, index);
         return MethodHandleUtil.castReturnType(mh, clazz); // (LifetimePool)Object -> (LifetimePool)clazz

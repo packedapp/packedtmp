@@ -6,8 +6,8 @@ import app.packed.container.BaseAssembly;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.InjectionContext;
-import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceExtensionMirror;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceExtensionMirror;
 
 public class Eee extends BaseAssembly {
 

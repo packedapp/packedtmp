@@ -146,56 +146,53 @@ public final class PackedTreePath implements NamespacePath {
 
     static NamespacePath of(RuntimeComponentMirror component) {
         int depth = component.depth();
-        switch (depth) {
-        case 0:
-            return ROOT;
-        case 1:
-            return new PackedTreePath(component.name());
-        default:
+        return switch (depth) {
+        case 0 -> ROOT;
+        case 1 -> new PackedTreePath(component.name());
+        default -> {
             String[] paths = new String[depth];
             RuntimeComponentMirror acc = component;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name();
                 acc = acc.parent;
             }
-            return new PackedTreePath(paths);
+            yield new PackedTreePath(paths);
         }
+        };
     }
 
     static NamespacePath of(ComponentSetup cc) {
         int depth = cc.depth;
-        switch (depth) {
-        case 0:
-            return ROOT;
-        case 1:
-            return new PackedTreePath(cc.name);
-        default:
+        return switch (depth) {
+        case 0 -> ROOT;
+        case 1 -> new PackedTreePath(cc.name);
+        default -> {
             String[] paths = new String[depth];
             ComponentSetup acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.parent;
             }
-            return new PackedTreePath(paths);
+            yield new PackedTreePath(paths);
         }
+        };
     }
 
     public static NamespacePath of(ContainerSetup cc) {
         int depth = cc.containerDepth;
-        switch (depth) {
-        case 0:
-            return ROOT;
-        case 1:
-            return new PackedTreePath(cc.name);
-        default:
+        return switch (depth) {
+        case 0 -> ROOT;
+        case 1 -> new PackedTreePath(cc.name);
+        default -> {
             String[] paths = new String[depth];
             ContainerSetup acc = cc;
             for (int i = depth - 1; i >= 0; i--) {
                 paths[i] = acc.name;
                 acc = acc.containerParent;
             }
-            return new PackedTreePath(paths);
+            yield new PackedTreePath(paths);
         }
+        };
     }
 
     /** {@inheritDoc} */

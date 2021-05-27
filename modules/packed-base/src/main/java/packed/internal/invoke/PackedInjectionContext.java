@@ -21,8 +21,8 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.inject.InjectionContext;
-import app.packed.inject.Service;
-import packed.internal.inject.service.AbstractServiceRegistry;
+import app.packed.service.Service;
+import packed.internal.service.AbstractServiceRegistry;
 
 /** Implementation of {@link InjectionContext}. */
 public final class PackedInjectionContext extends AbstractServiceRegistry implements InjectionContext {

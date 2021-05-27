@@ -34,8 +34,8 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
-import app.packed.inject.ServiceExtension;
-import app.packed.inject.ServiceExtensionMirror;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionModel;
 import packed.internal.container.ExtensionSetup;
@@ -171,12 +171,16 @@ public abstract class Extension {
         return c;
     }
 
+    protected final <E> Optional<ExtensionAncestorRelation<E>> findParent(Class<E> parentType) {
+        return context().findParent(parentType);
+    }
+
     protected final ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets) {
         return context().installExtensor(implementation, wirelets);
     }
 
     protected final ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets) {
-        return context().installExtensor(instance, wirelets);
+        return context().installExtensorInstance(instance, wirelets);
     }
 
     protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
@@ -326,6 +330,11 @@ public abstract class Extension {
     // Problemet er hvis den bruger extensions som den ikke har defineret
     // Det tror jeg maaske bare ikke den kan
 
+    // find/locate 
+    protected final <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
+        return context().selectWirelets(wireletClass);
+    }
+
     /**
      * Used to lookup other extensions.
      * <p>
@@ -354,10 +363,6 @@ public abstract class Extension {
     // cannot be called
     protected final <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return context().userWire(driver, wirelets);
-    }
-
-    protected final <T extends ExtensionWirelet<?>> SelectWirelets<T> wirelets(Class<T> wireletClass) {
-        return context().selectWirelets(wireletClass);
     }
 
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
