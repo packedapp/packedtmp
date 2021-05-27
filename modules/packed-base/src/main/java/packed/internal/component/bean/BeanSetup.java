@@ -9,6 +9,7 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
+import app.packed.component.BeanKind;
 import app.packed.component.BeanMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
@@ -56,7 +57,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
-        this.singletonAccessor = driver.binder.isSingleton() ? lifetime.pool.reserve(driver.beanType()) : null;
+        this.singletonAccessor = driver.binder.kind() ==BeanKind.SINGLETON ? lifetime.pool.reserve(driver.beanType()) : null;
 
         Object source = driver.binding;
         // The source is either a Class, a Factory, or a generic instance

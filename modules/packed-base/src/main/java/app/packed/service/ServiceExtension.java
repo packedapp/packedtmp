@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.component.BeanDriver;
+import app.packed.component.BeanKind;
 import app.packed.container.Extension;
 import app.packed.container.ExtensionContext;
 import app.packed.inject.Factory;
@@ -75,10 +76,10 @@ import packed.internal.service.sandbox.InjectorComposer;
 public class ServiceExtension extends Extension {
 
     @SuppressWarnings("rawtypes")
-    static final BeanDriver.Binder DRIVER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(), ServiceBeanConfiguration.class, true);
+    static final BeanDriver.Binder DRIVER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanKind.SINGLETON);
 
     @SuppressWarnings("rawtypes")
-    static final BeanDriver.Binder PROTOTYPE_DRIVER = PackedBeanDriverBinder.ofFactory(MethodHandles.lookup(), ServiceBeanConfiguration.class, false);
+    static final BeanDriver.Binder PROTOTYPE_DRIVER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanKind.PROTOTYPE_UNMANAGED);
 
     /** The service manager. */
     private final ServiceManagerSetup services;

@@ -11,6 +11,7 @@ import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
 import app.packed.component.BeanDriver.Binder;
+import app.packed.component.BeanKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.Extension;
@@ -21,18 +22,29 @@ import packed.internal.invoke.Infuser;
 
 /** Implementation of {@link BeanDriver.Binder}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable Wirelet wirelet, PackedBeanDriverBinder.Type type, MethodHandle constructor,
-        boolean isSingleton) implements BeanDriver.Binder<T, C> {
+public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implements BeanDriver.Binder<T, C> {
 
-    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> SINGLETON_BINDER = PackedBeanDriverBinder.ofInstance(MethodHandles.lookup(),
-            ServiceBeanConfiguration.class, true);
+    /** A {@link BeanKind#SINGLETON} bean binder. */
+    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
+            ServiceBeanConfiguration.class, BeanKind.SINGLETON);
 
-    /** A driver for this configuration. */
-    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATIC_BINDER = PackedBeanDriverBinder.ofClass(MethodHandles.lookup(),
-            BaseBeanConfiguration.class);
+    /** A {@link BeanKind#STATIC} bean binder. */
+    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
+            BaseBeanConfiguration.class, BeanKind.STATIC);
+
+    final MethodHandle constructor;
     
-    public enum Type {
-        CLASS, FACTORY, INSTANCE;
+    final BeanKind kind;
+
+    final PackedBeanDriverBinder.Type type;
+    @Nullable
+    final Wirelet wirelet;
+
+    public PackedBeanDriverBinder(@Nullable Wirelet wirelet, Type type, MethodHandle constructor, BeanKind kind) {
+        this.wirelet = wirelet;
+        this.type = type;
+        this.kind = requireNonNull(kind);
+        this.constructor = constructor;
     }
 
     /** {@inheritDoc} */
@@ -66,18 +78,31 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable 
     }
 
     @Override
+    public Optional<Class<? extends Extension>> extension() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public BeanKind kind() {
+        return kind;
+    }
+
+    @Override
     public Binder<T, C> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
 
     private static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller, Class<? extends C> driverType,
-            boolean isConstant) {
+            BeanKind kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)
         // Or we fx support @AttributeProvide... This makes no sense..
         // AttributeProvide could make sense... And then some way to say retain this info at runtime...
         // But maybe this is sidecars instead???
+
+        // Grunden til vi gerne vil have
 
         // Create an infuser for making a method handle for the component configurations's constructor
         Infuser.Builder builder = Infuser.builder(caller, driverType, ComponentSetup.class);
@@ -87,31 +112,18 @@ public record PackedBeanDriverBinder<T, C extends BeanConfiguration> (@Nullable 
 
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
-        return new PackedBeanDriverBinder(null, type, constructor, isConstant);
+        return new PackedBeanDriverBinder(null, type, constructor, kind);
     }
 
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> ofFactory(MethodHandles.Lookup caller, Class<? extends C> driverType,
-            boolean isConstant) {
 
-        PackedBeanDriverBinder meta = newMeta(Type.FACTORY, caller, driverType, isConstant);
-        return meta;
+    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> configurationType,
+            BeanKind kind) {
+        return newMeta(Type.CLASS, caller, configurationType, kind);
     }
 
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> ofInstance(MethodHandles.Lookup caller, Class<? extends C> driverType,
-            boolean isConstant) {
 
-        PackedBeanDriverBinder meta = newMeta(Type.INSTANCE, caller, driverType, isConstant);
-        return meta;
-    }
-
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> ofClass(MethodHandles.Lookup caller, Class<? extends C> configurationType) {
-        return newMeta(Type.CLASS, caller, configurationType, false);
-    }
-
-    @Override
-    public Optional<Class<? extends Extension>> extension() {
-        // TODO Auto-generated method stub
-        return null;
+    public enum Type {
+        CLASS, FACTORY, INSTANCE;
     }
 }
 //public interface Option {

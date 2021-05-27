@@ -16,27 +16,26 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
     /** {@return the type of bean this is a driver for.} */
     Class<?> beanType();
 
+    BeanKind kind();
+
     /** {@inheritDoc} */
     @Override
     BeanDriver<C> with(Wirelet... wirelet);
-
-    BeanKind kind();
-    
     
     static BeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
-        return PackedBeanDriverBinder.SINGLETON_BINDER.bind(implementation);
+        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
     }
 
     static BeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
-        return PackedBeanDriverBinder.SINGLETON_BINDER.bind(factory);
+        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(factory);
     }
 
     static BeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
-        return PackedBeanDriverBinder.SINGLETON_BINDER.bindInstance(instance);
+        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
     }
 
     static BeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
-        return PackedBeanDriverBinder.STATIC_BINDER.bind(implementation);
+        return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
     }
 
     /**
@@ -72,10 +71,8 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
          */
         BeanDriver<C> bindInstance(T instance);
 
-        default BeanKind kind() { 
-            throw new UnsupportedOperationException();
-        }
         Optional<Class<? extends Extension>> extension();
+        BeanKind kind();
 
         Binder<T, C> with(Wirelet... wirelet);
     }
