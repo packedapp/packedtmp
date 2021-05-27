@@ -242,9 +242,18 @@ public abstract class Extension {
      * @return a mirror for the extension
      */
     protected ExtensionMirror<?> mirror() {
-        return new ExtensionMirror<>((ExtensionSetup) context());
+        return mirrorPopulate(new ExtensionMirror<>());
     }
 
+    /**
+     * Populates
+     * 
+     * @param <M>
+     *            the type of mirror
+     * @param mirror
+     *            the mirror to populate
+     * @return the specified mirror, but now populated
+     */
     protected final <M extends ExtensionMirror<?>> M mirrorPopulate(M mirror) {
         mirror.populate((ExtensionSetup) context());
         return mirror;
@@ -330,7 +339,7 @@ public abstract class Extension {
     // Problemet er hvis den bruger extensions som den ikke har defineret
     // Det tror jeg maaske bare ikke den kan
 
-    // find/locate 
+    // find/locate
     protected final <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
         return context().selectWirelets(wireletClass);
     }

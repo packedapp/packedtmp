@@ -10,6 +10,8 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
 
 /**
  * A driver for creating bean components.
+ * <p>
+ * Except for the static methods on this interface. Bean drivers cannot be created directly. Instead binders are used
  */
 public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
 
@@ -54,6 +56,12 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
         BeanDriver<C> bind(Class<? extends T> implementation);
 
         // Som regel er det C<T> vi returnere...
+        /**
+         * @param factory
+         * @return
+         * @throws UnsupportedOperationException
+         *             if attempting to bind a factory to binder with static kind.
+         */
         BeanDriver<C> bind(Factory<? extends T> factory);
 
         /**

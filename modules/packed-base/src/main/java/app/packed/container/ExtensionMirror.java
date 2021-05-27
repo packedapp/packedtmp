@@ -1,7 +1,5 @@
 package app.packed.container;
 
-import static java.util.Objects.requireNonNull;
-
 import java.util.Set;
 
 import app.packed.base.Nullable;
@@ -13,7 +11,7 @@ import packed.internal.container.ExtensionSetup;
 /**
  * A generic mirror for an extension.
  * <p>
- * This class can be overridden by an extension to provide a specialized mirror. For example, {@link ServiceExtension}
+ * This class can be overridden to provide a specialized mirror for an extension . For example, {@link ServiceExtension}
  * provides the specialized mirror {@link ServiceExtensionMirror}. Extensions that provide a specialized mirror must
  * override {@link Extension#mirror()} to return an instance of the specialized mirror.
  */
@@ -29,14 +27,11 @@ public class ExtensionMirror<E extends Extension> {
      */
     protected ExtensionMirror() {}
 
-    ExtensionMirror(ExtensionSetup extension) {
-        this.extension = requireNonNull(extension);
-    }
-
     /** {@return the container this extension is used in.} */
     public final ContainerMirror container() {
         return extension().container.mirror();
     }
+
     /** {@return a static extension descriptor.} */
     public final ExtensionDescriptor descriptor() {
         return ExtensionDescriptor.of(type());

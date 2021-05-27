@@ -21,7 +21,6 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
@@ -197,18 +196,4 @@ public abstract class ContainerAssembly extends Assembly<BaseContainerConfigurat
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
-
-    /**
-     * @param <C>
-     *            the type of configuration returned by this method
-     * @param driver
-     *            the component driver
-     * @param wirelets
-     *            optional wirelets
-     * @return the configuration of the component
-     */
-    protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return configuration().wire(driver, wirelets);
-    }
-
 }

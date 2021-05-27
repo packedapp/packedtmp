@@ -39,7 +39,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     @Nullable
     final Wirelet wirelet;
 
-    public PackedBeanDriverBinder(@Nullable Wirelet wirelet,  MethodHandle constructor, BeanKind kind) {
+    public PackedBeanDriverBinder(@Nullable Wirelet wirelet, MethodHandle constructor, BeanKind kind) {
         this.wirelet = wirelet;
         this.kind = requireNonNull(kind);
         this.constructor = constructor;
@@ -92,8 +92,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         throw new UnsupportedOperationException();
     }
 
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType,
-            BeanKind kind) {
+    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanKind kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)

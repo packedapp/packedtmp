@@ -154,7 +154,7 @@ public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDe
 interface SandboxExtensionDescriptor {
 
     /**
-     * An extension might have an attached library.
+     * An extension might have an attached library (or more than 1?).
      * 
      * @return
      */
