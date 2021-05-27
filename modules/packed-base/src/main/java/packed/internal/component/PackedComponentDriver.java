@@ -24,12 +24,12 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
             PackedComponentDriver.class);
 
     /** A handle that can access ComponentConfiguration#component. */
-    protected static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
+    private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
             ComponentConfiguration.class, "component", ComponentSetup.class);
 
     /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
-    final Wirelet wirelet;
+    protected final Wirelet wirelet;
 
     protected PackedComponentDriver(@Nullable Wirelet wirelet) {
         this.wirelet = wirelet;
@@ -44,7 +44,13 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     protected abstract ComponentSetup newComponent(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent,
             Wirelet[] wirelets);
 
-    public abstract C toConfiguration(ComponentSetup context);
+    public final C toConfiguration(ComponentSetup cs) {
+        C c = toConfiguration0(cs);
+        VH_COMPONENT_CONFIGURATION_COMPONENT.set(c, cs);
+        return c;
+    }
+    
+    public abstract C toConfiguration0(ComponentSetup context);
 
 //    /** {@inheritDoc} */
 //    @Override

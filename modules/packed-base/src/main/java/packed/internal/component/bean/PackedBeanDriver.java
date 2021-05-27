@@ -53,16 +53,13 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
     }
 
     @Override
-    public C toConfiguration(ComponentSetup context) {
-        C c;
+    public C toConfiguration0(ComponentSetup context) {
         try {
             // TODO.. vi bruger ikke context'en lige nu. Men
-            c = (C) binder.constructor().invoke(context);
+            return (C) binder.constructor().invoke(context);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-        VH_COMPONENT_CONFIGURATION_COMPONENT.set(c, context);
-        return c;
     }
 
     @Override

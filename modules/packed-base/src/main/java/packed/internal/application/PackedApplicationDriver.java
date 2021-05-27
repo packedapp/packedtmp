@@ -31,7 +31,6 @@ import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.application.BuildTarget;
-import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
@@ -72,10 +71,6 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
-    /** Wirelet(s) that will be processed before any wirelets specified by the user. */
-    @Nullable
-    public final Wirelet wirelet;
-
     /**
      * Create a new application driver using the specified builder.
      * 
@@ -86,7 +81,6 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         super(builder.wirelet);
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
-        this.wirelet = builder.wirelet;
         this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
 
         // Cannot disable ApplicationRuntimeExtension and then at the same time set a launch mode
@@ -108,7 +102,6 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         this.mhConstructor = existing.mhConstructor;
         this.launchMode = existing.launchMode;
         this.disabledExtensions = existing.disabledExtensions;
-        this.wirelet = requireNonNull(wirelet);
     }
 
     /**

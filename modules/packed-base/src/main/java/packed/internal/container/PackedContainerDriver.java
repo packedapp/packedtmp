@@ -35,10 +35,8 @@ public class PackedContainerDriver<C extends ContainerConfiguration> extends Pac
 
     @SuppressWarnings("unchecked")
     @Override
-    public C toConfiguration(ComponentSetup context) {
-        BaseContainerConfiguration cc = new BaseContainerConfiguration();
-        VH_COMPONENT_CONFIGURATION_COMPONENT.set(cc, context);
-        return (C) cc;
+    public C toConfiguration0(ComponentSetup context) {
+        return (C) new BaseContainerConfiguration();
     }
 
     @Override
