@@ -11,7 +11,7 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
 /**
  * A driver for creating bean components.
  */
-public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
+public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
 
     /** {@return the type of bean this is a driver for.} */
     Class<?> beanType();
@@ -21,7 +21,7 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
     /** {@inheritDoc} */
     @Override
     BeanDriver<C> with(Wirelet... wirelet);
-    
+
     static BeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
     }
@@ -41,7 +41,7 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
-    public interface Binder<T, C extends BeanConfiguration> {
+    public /* sealed */ interface Binder<T, C extends BeanConfiguration> {
 
         /**
          * @param implementation
@@ -72,12 +72,13 @@ public interface BeanDriver<C extends BeanConfiguration> extends ComponentDriver
         BeanDriver<C> bindInstance(T instance);
 
         Optional<Class<? extends Extension>> extension();
+
         BeanKind kind();
 
         Binder<T, C> with(Wirelet... wirelet);
     }
 
-    public interface Builder {
+    public /* sealed */ interface Builder {
 
         <T, C extends BeanConfiguration> Binder<T, C> build();
 

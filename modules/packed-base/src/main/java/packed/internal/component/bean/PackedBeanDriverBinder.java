@@ -33,16 +33,14 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
             BaseBeanConfiguration.class, BeanKind.STATIC);
 
     final MethodHandle constructor;
-    
+
     final BeanKind kind;
 
-    final PackedBeanDriverBinder.Type type;
     @Nullable
     final Wirelet wirelet;
 
-    public PackedBeanDriverBinder(@Nullable Wirelet wirelet, Type type, MethodHandle constructor, BeanKind kind) {
+    public PackedBeanDriverBinder(@Nullable Wirelet wirelet,  MethodHandle constructor, BeanKind kind) {
         this.wirelet = wirelet;
-        this.type = type;
         this.kind = requireNonNull(kind);
         this.constructor = constructor;
     }
@@ -58,10 +56,9 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     @Override
     public PackedBeanDriver<C> bind(Factory<? extends T> factory) {
         requireNonNull(factory, "factory is bull");
-//      if (inner.type == Type.FACTORY) {
-//      if (Class.class.isInstance(object)) {
-//          // throw new IllegalArgumentException("Cannot bind a Class instance, was " + object);
-//      }
+        if (kind == BeanKind.STATIC) {
+            throw new UnsupportedOperationException("Cannot bind a factory to a static bean.");
+        }
         return new PackedBeanDriver(wirelet, this, factory.rawType(), factory);
     }
 
@@ -70,9 +67,11 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     public PackedBeanDriver<C> bindInstance(T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot bind a Class instance, was " + instance);
+            throw new IllegalArgumentException("Cannot bind a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
-            throw new IllegalArgumentException("Cannot bind a Factory instance, was " + instance);
+            throw new IllegalArgumentException("Cannot bind a Factory instance to this method, was " + instance);
+        } else if (kind != BeanKind.SINGLETON) {
+            throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
         }
         return new PackedBeanDriver(wirelet, this, instance.getClass(), instance);
     }
@@ -93,7 +92,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         throw new UnsupportedOperationException();
     }
 
-    private static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> newMeta(Type type, MethodHandles.Lookup caller, Class<? extends C> driverType,
+    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType,
             BeanKind kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
@@ -112,18 +111,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
 
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
-        return new PackedBeanDriverBinder(null, type, constructor, kind);
-    }
-
-
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> configurationType,
-            BeanKind kind) {
-        return newMeta(Type.CLASS, caller, configurationType, kind);
-    }
-
-
-    public enum Type {
-        CLASS, FACTORY, INSTANCE;
+        return new PackedBeanDriverBinder(null, constructor, kind);
     }
 }
 //public interface Option {
