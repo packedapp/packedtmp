@@ -51,6 +51,12 @@ import packed.internal.component.PackedSelectWirelets;
 // De skal ikke vaere i sw2... Eller hvad hvis man kalder sw2 foerst???
 // Jo maaske er det bare den der iterere foerst... Ja selvf. Hvis man ikke kalder metoder sker
 // der jo ikke noget alligevel, saa lav en test.
+
+// Maybe just WireletSelection...
+
+// Problemet med at have en onX on wireletten..
+// Er at vi ikke kan finalize noget i constructeren... fordi den vil tage en constructed Extensor i onExtensor()
+// Vi vil rigtig gerne have wireletten i constructoren paa extensoren...
 public /* sealed */ interface SelectWirelets<W extends Wirelet> {
 
     /**
@@ -60,6 +66,7 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
      * 
      * @return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present
      */
+    // consumeAllReturnLast
     Optional<W> findLast();
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);

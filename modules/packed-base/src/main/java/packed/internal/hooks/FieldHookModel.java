@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.packed.base.Key;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.InternalExtensionException;
 import app.packed.hooks.OldFieldHook;
 import app.packed.hooks.OldFieldHook.Bootstrap;
 import app.packed.hooks.accessors.HookProvide;

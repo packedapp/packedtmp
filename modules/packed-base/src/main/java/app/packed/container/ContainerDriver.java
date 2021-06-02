@@ -4,6 +4,7 @@ import java.util.Set;
 
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.extension.Extension;
 
 public interface ContainerDriver<C extends ContainerConfiguration> extends ComponentDriver<C> {
 

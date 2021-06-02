@@ -1,6 +1,7 @@
 package app.packed.container;
 
 import app.packed.component.Wirelet;
+import app.packed.extension.Extension;
 
 /**
  * Wirelets that can be specified when wiring a container.

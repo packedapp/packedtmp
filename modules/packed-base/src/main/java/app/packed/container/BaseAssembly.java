@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.component.ComponentDriver;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
@@ -29,7 +30,7 @@ import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 
 /**
- * Extends {@link ContainerAssembly} with shortcuts for some of the commonly used extensions.
+ * Extends {@link CommonContainerAssembly} with shortcuts for some of the commonly used extensions.
  * <p>
  * For example, instead of doing use(ServiceExtension.class).provide(Foo.class) you can just use
  * service().provide(Foo.class) or even just provide(Foo.class).
@@ -67,7 +68,7 @@ import app.packed.service.ServiceLocator;
 // Skal have en strategi for hvilke extension vi har med
 // og hvilke metoder fra disse extensions vi har med
 // TODO tror vi sortere metoderne efter extension og saa efter navn
-public abstract class BaseAssembly extends ContainerAssembly {
+public abstract class BaseAssembly extends CommonContainerAssembly {
 
     /** Creates a new assembly using {@link BaseContainerConfiguration#driver()}. */
     protected BaseAssembly() {}

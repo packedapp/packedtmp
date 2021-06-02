@@ -18,7 +18,7 @@ package app.packed.component;
 import java.util.Optional;
 
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  * Component drivers are responsible for configuring and creating new components.

@@ -25,12 +25,13 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerDriver;
 
 /**
  * The configuration of a container. This class is rarely referenced directly. Instead containers are typically
- * configured by extending {@link ContainerAssembly} or {@link BaseAssembly}.
+ * configured by extending {@link CommonContainerAssembly} or {@link BaseAssembly}.
  */
 public class BaseContainerConfiguration extends ContainerConfiguration {
 

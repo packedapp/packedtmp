@@ -29,7 +29,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.hooks.InjectableVariableHook;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel;
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;

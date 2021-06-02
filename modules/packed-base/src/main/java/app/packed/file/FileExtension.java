@@ -1,6 +1,6 @@
 package app.packed.file;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 class FileExtension extends Extension {
 

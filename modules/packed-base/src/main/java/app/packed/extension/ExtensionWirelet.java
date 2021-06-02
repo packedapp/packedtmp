@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.extension;
 
 import app.packed.component.Wirelet;
 
@@ -9,7 +9,7 @@ import app.packed.component.Wirelet;
  * Extension wirelets must be defined in the same module as the extension itself. Failure to do so will result in an
  * {@link InternalExtensionException} being thrown at runtime.
  */
-public abstract class ExtensionWirelet<E extends Extension> extends Wirelet {
+public abstract class ExtensionWirelet<E extends Extension> extends Wirelet implements ExtensionMember<E> {
 
     // Invoked by the runtime.. Whenever
 

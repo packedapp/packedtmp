@@ -7,7 +7,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.hooks.OldFieldHook;
 import packed.internal.container.ExtensionModel;
 import packed.internal.util.LookupUtil;

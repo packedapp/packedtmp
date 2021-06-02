@@ -25,8 +25,8 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.component.BeanDriver;
 import app.packed.component.BeanKind;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
@@ -155,7 +155,7 @@ public class ServiceExtension extends Extension {
     // Is used to export @Provide method and fields.
     public <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         requireNonNull(key, "key is null");
-        checkConfigurable();
+        checkIsPreCompletion();
         return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
@@ -201,7 +201,7 @@ public class ServiceExtension extends Extension {
 
         // export all _services_.. Also those that are already exported as something else???
         // I should think not... Det er er en service vel... SelectedAll.keys().export()...
-        checkConfigurable();
+        checkIsPreCompletion();
         services.exports().exportAll( /* captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
 
@@ -266,7 +266,7 @@ public class ServiceExtension extends Extension {
             throw new IllegalArgumentException("Custom implementations of " + ServiceLocator.class.getSimpleName()
                     + " are currently not supported, locator type = " + locator.getClass().getName());
         }
-        checkConfigurable();
+        checkIsPreCompletion();
         services.provideAll(l);
     }
 
@@ -332,7 +332,7 @@ public class ServiceExtension extends Extension {
      */
     public void require(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkConfigurable();
+        checkIsPreCompletion();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE);
         for (Key<?> key : keys) {
             services.dependencies().require(key, false /* , cs */);
@@ -357,7 +357,7 @@ public class ServiceExtension extends Extension {
     // They will be consumed
     public void requireOptionally(Key<?>... keys) {
         requireNonNull(keys, "keys is null");
-        checkConfigurable();
+        checkIsPreCompletion();
         // ConfigSite cs = captureStackFrame(ConfigSiteInjectOperations.INJECTOR_REQUIRE_OPTIONAL);
         for (Key<?> key : keys) {
             services.dependencies().require(key, true /* , cs */);

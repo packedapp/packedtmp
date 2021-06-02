@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
 
 // Okay det ville vaere alt for vildt...

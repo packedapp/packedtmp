@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -33,6 +33,9 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseAssembly;
+import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerMirror;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -95,14 +98,14 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public abstract class Extension {
+public abstract class Extension implements ExtensionMember<Extension> {
 
     /**
      * The context of this extension which most methods delegate to.
      * <p>
      * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle. The field is
      * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
-     * {@link #checkConfigurable()} at any time.
+     * {@link #checkIsPreCompletion()} at any time.
      * <p>
      * This field should never be read directly, but only accessed via {@link #context()}.
      */
@@ -112,37 +115,29 @@ public abstract class Extension {
     /** Create a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
-    /**
-     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
-     * <p>
-     * This method delegate all calls to {@link ExtensionContext#checkIsBuilding()}.
-     * 
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
-     */
-    protected final void checkConfigurable() {
-        context().checkIsBuilding();
-    }
-
     // checkExtendable...
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
      * 
-     * @see #onPreembleComplete()
+     * @see #onPreChildren()
      */
     // Altsaa det er jo primaert taenkt paa at sige at denne extension operation kan ikke blive invokeret
     // af brugeren med mindre XYZ...
     // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
-    protected final void checkExtendable() {
-        context().checkExtendable();
+    protected final void checkIsPreLinkage() {
+        context().checkIsPreLinkage();
     }
 
-    // checkInNoSubContainers
-    protected final void checkUnconnected() {
-        // This method cannot be invoked after ServiceExtension has been installed in any sub containers
-
-        // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
-        // anden setting op fra parent'en
+    /**
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * <p>
+     * This method delegate all calls to {@link ExtensionContext#checkIsPreCompletion()}.
+     * 
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
+     */
+    protected final void checkIsPreCompletion() {
+        context().checkIsPreCompletion();
     }
 
     /**
@@ -171,7 +166,13 @@ public abstract class Extension {
         return c;
     }
 
-    protected final <E> Optional<ExtensionAncestorRelation<E>> findParent(Class<E> parentType) {
+    protected <E extends Extension, X extends Extensor<E>> Doubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
+        throw new UnsupportedOperationException();
+    }
+
+    // findExtension()
+    // findExtensor()
+    protected final <E extends ExtensionMember<?>> Optional<ExtensionConnection<E>> findParent(Class<E> parentType) {
         return context().findParent(parentType);
     }
 
@@ -194,15 +195,10 @@ public abstract class Extension {
      * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     // Kan disable den paa application driver...
-    //
-    protected final boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
-        return context().isExtensionEnabled(extensionType);
-    }
-
-    protected final void isLeafContainer() {
-        // Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
-        // Maaske vi skal tage info'en med der istedet for
-        throw new UnsupportedOperationException();
+    // Er det kombination af isExtensionDisabled og isUsed
+    /// Maaske bare Set<Class<? extends Extension>> disabledExtensions();
+    protected final boolean isExtensionDisabled(Class<? extends Extension> extensionType) {
+        return context().isExtensionDisabled(extensionType);
     }
 
     // Invoked before the first child container
@@ -230,16 +226,18 @@ public abstract class Extension {
     }
 
     /**
-     * Returns a mirror for the extension. This method can be overridden to overridden to provide a specific extension
-     * mirror. For example, {@link ServiceExtension} returns an instance of {@link ServiceExtensionMirror} from this method.
+     * Returns a mirror for the extension.
      * <p>
-     * Mirrors returned by this method should extend {@link ExtensionMirror} in which case Packed will automatically
-     * populate xxxx
+     * This method can be overridden to overridden to provide a custom mirror. For example, {@link ServiceExtension}
+     * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
-     * {@code null} is not a valid value to return from an overridden method. It will result in an
-     * InternalExtensionException being thrown when attempting to create an extension mirror.
+     * If overridding this method {@link #mirrorPopulate(ExtensionMirror)} should be invoked on the custom mirror before
+     * returning it. As this will populate the generic methods on extension mirror.
+     * <p>
+     * The runtime will throw an InternalExtensionException if this method is overridden and null is returned.
      * 
      * @return a mirror for the extension
+     * @see ContainerMirror#extensions()
      */
     protected ExtensionMirror<?> mirror() {
         return mirrorPopulate(new ExtensionMirror<>());
@@ -253,6 +251,8 @@ public abstract class Extension {
      * @param mirror
      *            the mirror to populate
      * @return the specified mirror, but now populated
+     * @throws IllegalStateException
+     *             if the mirror has already been populated
      */
     protected final <M extends ExtensionMirror<?>> M mirrorPopulate(M mirror) {
         mirror.populate((ExtensionSetup) context());
@@ -262,10 +262,12 @@ public abstract class Extension {
     /**
      * Invoked by the runtime when the configuration of the container is completed.
      * <p>
-     * This place is the only place where an extension is allowed to wire new containers, for example, by calling
-     * {@link #runtimeLink(Assembly, Wirelet...)}.
+     * <strong>NOTE:</strong> At this stage the set of extensions used by the container are fixed. It is not possible to
+     * start using extension that are not already used, for example, via calls to {@link #use(Class)}. Or indirectly, for
+     * example, by installing an extensor that uses extensions that have not already been used.
      * <p>
-     * T method must not add new extensions. Be careful with the components accepted from users
+     * What is possible however is allowed to wire new containers, for example, by calling
+     * {@link #runtimeLink(Assembly, Wirelet...)}.
      */
     protected void onComplete() {
         // Time
@@ -276,31 +278,38 @@ public abstract class Extension {
         // ┌──────────────────────┐
         // │Configuration │
         // └──────────────────────┘
-
-        // An extension cannot link a container as long as it (the container?) is extendable.
     }
 
     /**
-     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned), but before the
-     * new extension instance is returned to the end-user.
+     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor completed), but before
+     * the new extension instance is returned to the end-user.
      * <p>
      * Since most methods on this class cannot be invoked from the constructor of an extension instance. This method can be
      * used to perform post instantiation of the extension as needed.
+     * <p>
+     * The next lifecycle method that will be called is {@link #onPreChildren()}, which is called immediately before any
+     * child containers are added
      * 
-     * @see #onPreembleComplete()
+     * @see #onPreChildren()
      * @see #onComplete()
      */
     protected void onNew() {}
 
     // onPreUserContainerWiring???
     /**
-     * Invoked (by the runtime) when. This is the last opportunity to wire any components that requires extensions that have
-     * not already been added. Attempting to wire extensions at a later time will fail with InternalExtensionException
+     * Invoked (by the runtime) when.
+     * <p>
+     * This is the last opportunity to wire any components that requires extensions that have not already been added.
+     * Attempting to wire extensions at a later time will fail with InternalExtensionException
+     * <p>
+     * If you need, for example, to install extensors that depends on a particular dependency being installed (by other) You
+     * should installed via {@link #onComplete()}.
      * 
-     * @see #checkExtendable()
+     * @see #checkIsPreLinkage()
      */
     // onPreembleComplete
-    protected void onPreembleComplete() {
+    // onPreLinkage
+    protected void onPreChildren() {
         // if you need information from users to determind what steps to do here.
         // You should guard setting this information with checkExtendable()
 
@@ -330,10 +339,6 @@ public abstract class Extension {
     protected final void runtimeLink(Assembly<?> assembly, Wirelet... wirelets) {
         context().link(assembly, wirelets);
     }
-//
-//    protected final void lookup(MethodHandles.Lookup lookup) {
-//        ((ExtensionSetup) configuration()).lookup(lookup);
-//    }
 
     // Hvad hvis den selv tilfoejer komponenter med en child container???
     // Problemet er hvis den bruger extensions som den ikke har defineret
@@ -588,6 +593,32 @@ public abstract class Extension {
      */
     public static abstract class Subtension {}
 }
+
+//// Ved ikke praecis hvad vi skal bruge den til...
+//// Er det close/open world check?
+// Er containers... eller er det child extensions
+//protected final void isLeafContainer() {
+// Kan kun kalde den fra den fra onExtensionsFixed eller onComplete
+// Maaske vi skal tage info'en med der istedet for
+// throw new UnsupportedOperationException();
+//}
+
+///// Vi supportere ikke bare ikke lookup objekter paa extensions...
+///// Vil bliver alt for kompliceret
+//
+//protected final void lookup(MethodHandles.Lookup lookup) {
+//  ((ExtensionSetup) configuration()).lookup(lookup);
+//}
+
+// Tror den her er rimlig gamle
+//// checkInNoSubContainers
+//protected final void checkUnconnected() {
+//  // This method cannot be invoked after ServiceExtension has been installed in any sub containers
+//
+//  // Giver den mening hvis vi ikke connecter???? Det vil jeg ikke mene Ideen er jo at man hiver en eller
+//  // anden setting op fra parent'en
+//}
+
 //* <p>
 //* The main reason for prohibiting most configuration from the constructor is. Is to avoid situations.. that users might then link
 //* other components that in turn requires access to the actual extension instance. Which is not possible since it is

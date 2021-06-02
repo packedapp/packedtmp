@@ -29,7 +29,7 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
 import packed.internal.container.ContainerSetup;

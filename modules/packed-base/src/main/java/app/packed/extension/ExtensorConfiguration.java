@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.extension;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
@@ -19,6 +19,15 @@ import app.packed.component.ComponentConfiguration;
 // .ServiceExtension
 
 public final class ExtensorConfiguration extends ComponentConfiguration {
+
+    public <T> ExtensorConfiguration bindInstance(Class<T> key, T instance) {
+        return this;
+    }
+
+    public ExtensorConfiguration bindInstance(Object o) {
+
+        return this;
+    }
 
     /** {@inheritDoc} */
     @Override

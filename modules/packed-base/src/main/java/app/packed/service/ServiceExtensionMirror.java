@@ -10,7 +10,7 @@ import app.packed.base.Key;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ExtensionMirror;
+import app.packed.extension.ExtensionMirror;
 import packed.internal.service.ServiceManagerSetup;
 
 /**

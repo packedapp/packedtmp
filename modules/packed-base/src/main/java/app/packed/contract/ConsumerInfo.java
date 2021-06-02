@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentMirror;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.service.Provide;
 import app.packed.service.ServiceLocator;
 

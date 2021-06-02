@@ -15,6 +15,10 @@ public final class LifetimeSetup {
     @Nullable
     LifetimeSetup parent;
 
+    public LifetimeSetup(@Nullable LifetimeSetup parent) {
+        this.parent = parent;
+    }
+
     /** The application's constant pool. */
     public final LifetimePoolSetup pool = new LifetimePoolSetup();
 

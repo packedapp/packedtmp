@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import app.packed.application.Program;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 
 /**

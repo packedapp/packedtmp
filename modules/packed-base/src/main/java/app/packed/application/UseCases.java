@@ -1,6 +1,7 @@
 package app.packed.application;
 
 import app.packed.application.host.ApplicationHostConfiguration;
+import app.packed.application.host.ApplicationHostExtension;
 import app.packed.base.Completion;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
@@ -44,6 +45,15 @@ public class UseCases {
         ApplicationRuntime runtime();
         // await
         // und so weither
+    }
+
+}
+
+class HostAsExtension extends BaseAssembly {
+
+    @Override
+    protected void build() {
+      use(ApplicationHostExtension.class).delayedInitialization(new BB());
     }
 
 }

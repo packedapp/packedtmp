@@ -23,8 +23,8 @@ import java.lang.invoke.VarHandle;
 
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerAssembly;
 import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.CommonContainerAssembly;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
@@ -48,7 +48,7 @@ import packed.internal.util.LookupUtil;
  * 
  * @param <C>
  *            the underlying component configuration this assembly wraps
- * @see ContainerAssembly
+ * @see CommonContainerAssembly
  * @see BaseAssembly
  */
 public abstract class Assembly<C extends ComponentConfiguration> {
@@ -122,11 +122,7 @@ public abstract class Assembly<C extends ComponentConfiguration> {
         // Why not just test configuration == null????
 
         // Det er vel det samme som at kalde configuration()??
-        component().realm.checkOpen();
-    }
-
-    private ComponentSetup component() {
-        return configuration().component();
+        setup().realm.checkOpen();
     }
 
     /**
@@ -184,7 +180,11 @@ public abstract class Assembly<C extends ComponentConfiguration> {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        component().realm.setLookup(lookup);
+        setup().realm.setLookup(lookup);
     }
 
+    /** {@return the setup of the underlying component.} */
+    private ComponentSetup setup() {
+        return configuration().component();
+    }
 }

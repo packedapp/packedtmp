@@ -8,6 +8,7 @@ module app.packed {
     exports app.packed.contract;
     exports app.packed.container;
     exports app.packed.conversion;
+    exports app.packed.extension;
     exports app.packed.inject;
     exports app.packed.inject.sandbox;
     exports app.packed.hooks;

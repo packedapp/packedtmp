@@ -29,9 +29,9 @@ import app.packed.base.Nullable;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionMirror;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
+import app.packed.extension.InternalExtensionException;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
@@ -166,7 +166,7 @@ public class ContainerSetup extends ComponentSetup {
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
      */
-    public boolean isUsed(Class<? extends Extension> extensionType) {
+    public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
         return extensions.containsKey(extensionType);
     }
@@ -189,10 +189,14 @@ public class ContainerSetup extends ComponentSetup {
         // keep track of extensions that are added in this step..
         // And run ea.preContainerChildren on them...
         // And then repeat until some list/set has not been touched...
+        // Det vi i virkeligheden har brug for er en cursor...
+        // ind i extensions
         for (ExtensionSetup ea : extensions.values()) {
             ea.preContainerChildren();
         }
 
+        // Den fungere ikke 100% den her loesning...
+        // Hvir vi bruger nyte extensions... skal de jo helst koeres paa den rigtige plads...
         while (tmpExtensions != null) {
             ArrayList<ExtensionSetup> te = tmpExtensions;
             tmpExtensions = null;
@@ -233,7 +237,7 @@ public class ContainerSetup extends ComponentSetup {
             if (requestedBy == null) {
                 realm.checkOpen();
             } else {
-                requestedBy.checkIsBuilding();
+                requestedBy.checkIsPreCompletion();
             }
 
             // Create the new extension and adds into the map of extensions
@@ -253,11 +257,13 @@ public class ContainerSetup extends ComponentSetup {
     @SuppressWarnings("unchecked")
     public <T extends Extension> T useExtension(Class<T> extensionClass) {
         realm.newOperation();
-        return (T) useExtension(extensionClass, null).instance();
+        ExtensionSetup extension = useExtension(extensionClass, /* requested by the user, not another extension */ null);
+        return (T) extension.instance(); // extract the extension instance
     }
 
     /** A build-time container mirror. */
     public class BuildTimeContainerMirror extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
+
         private static final ClassValue<Class<? extends Extension>> EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
 
             /** {@inheritDoc} */
@@ -266,7 +272,7 @@ public class ContainerSetup extends ComponentSetup {
                 ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);
                 Type t = EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR_X.extract(implementation);
                 Class<? extends Extension> extensionType = (Class<? extends Extension>) t;
-                
+
                 // Ved ikke om den her er noedvendig??? Vi checker jo om den type extensionen
                 // returnere matcher
                 if (extensionType.getModule() != implementation.getModule()) {
@@ -312,7 +318,7 @@ public class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-            return ContainerSetup.this.isUsed(extensionType);
+            return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 
         @Override

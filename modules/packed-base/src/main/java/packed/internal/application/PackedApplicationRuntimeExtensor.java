@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeExtension;
-import app.packed.container.Extensor;
+import app.packed.extension.ApplicationExtensor;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.RunStateInfo;
 import packed.internal.application.ApplicationSetup.MainThreadOfControl;
@@ -39,7 +39,7 @@ import packed.internal.util.ThrowableUtil;
 /// Error bit (data = 
 // Desired state + Mask
 // Extra data... Startup/Initialization exception
-public final class PackedApplicationRuntime extends Extensor<ApplicationRuntimeExtension> implements ApplicationRuntime {
+public final class PackedApplicationRuntimeExtensor extends ApplicationExtensor<ApplicationRuntimeExtension> implements ApplicationRuntime {
 
     // Sagtens encode det i sync ogsaa
     InstanceState desiredState = InstanceState.UNINITIALIZED;
@@ -62,7 +62,7 @@ public final class PackedApplicationRuntime extends Extensor<ApplicationRuntimeE
     // Staten er selvf gemt i sync
     final Sync sync = new Sync();
 
-    public PackedApplicationRuntime(ApplicationLaunchContext launchContext) {}
+    public PackedApplicationRuntimeExtensor(ApplicationLaunchContext launchContext) {}
 
     // Hmm, maybe not
 //    @Nullable

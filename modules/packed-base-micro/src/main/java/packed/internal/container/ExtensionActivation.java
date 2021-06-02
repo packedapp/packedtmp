@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import app.packed.application.ApplicationImage;
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *

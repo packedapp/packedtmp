@@ -7,8 +7,6 @@ import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.application.InstalledApplicationConfiguration;
 import app.packed.application.Launcher;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.service.ServiceConfiguration;
@@ -29,7 +27,7 @@ import packed.internal.util.NativeImage;
 //I 9/10 af tilfaeldene er de vel ogsaa void...
 
 // Har vi en AbstractApplicationHostConfiguration???
-public class ApplicationHostConfiguration<T> extends ComponentConfiguration {
+public class ApplicationHostConfiguration<T> {
 
     public InstalledApplicationConfiguration<T> install(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
@@ -106,10 +104,10 @@ public class ApplicationHostConfiguration<T> extends ComponentConfiguration {
         throw new UnsupportedOperationException();
     }
 
-    // Det er jo en salgs binder...
-    public static <T> ComponentDriver<ApplicationHostConfiguration<T>> newDriver(ApplicationDriver<T> driver, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+//    // Det er jo en salgs binder...
+//    public static <T> ComponentDriver<ApplicationHostConfiguration<T>> newDriver(ApplicationDriver<T> driver, Wirelet... wirelets) {
+//        throw new UnsupportedOperationException();
+//    }
 
     // Tror vi maa flytten den til ComponentConfiguration...
     public static <T> ApplicationHostConfiguration<T> of(BaseContainerConfiguration cc, ApplicationDriver<T> driver, Wirelet... wirelets) {
@@ -119,8 +117,9 @@ public class ApplicationHostConfiguration<T> extends ComponentConfiguration {
 
         // Maaske kan man mappe componenten til et mirror?
 
-        ComponentDriver<ApplicationHostConfiguration<T>> driv = null;
-        return cc.wire(driv, wirelets);
+       // ComponentDriver<ApplicationHostConfiguration<T>> driv = null;
+        //return cc.wire(driv, wirelets);
+        throw new UnsupportedOperationException(); 
     }
 }
 

@@ -5,7 +5,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 // Jeg ved faktisk ikke hvor useful den er...
 // Vi har hook Provide der formentlig kan daekke de fleste behov for

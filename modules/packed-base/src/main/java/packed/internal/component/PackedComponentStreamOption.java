@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *

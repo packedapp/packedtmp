@@ -10,7 +10,7 @@ import app.packed.application.TaskListMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
 
 /**

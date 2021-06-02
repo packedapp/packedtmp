@@ -14,7 +14,8 @@ import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
+import app.packed.container.ContainerMirror;
+import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
@@ -53,13 +54,13 @@ public final class ApplicationSetup extends ContainerSetup {
      *            the application's driver
      */
     ApplicationSetup(BuildSetup build, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
-        super(build, realm, new LifetimeSetup(), driver, null, wirelets);
+        super(build, realm, new LifetimeSetup(null), driver, null, wirelets);
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.hasRuntime() ? lifetime.pool.reserve(PackedApplicationRuntime.class) : null;
+        this.runtimeAccessor = driver.hasRuntime() ? lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 
     public boolean hasMain() {
@@ -85,8 +86,7 @@ public final class ApplicationSetup extends ContainerSetup {
     }
 
     /** {@return an application adaptor that can be exposed to end-users} */
-    @Override
-    public ApplicationMirror mirror() {
+    public BuildTimeApplicationMirror applicationMirror() {
         return new BuildTimeApplicationMirror();
     }
 
@@ -136,7 +136,7 @@ public final class ApplicationSetup extends ContainerSetup {
     }
 
     /** An application mirror adaptor. */
-    private class BuildTimeApplicationMirror extends ContainerSetup.BuildTimeContainerMirror implements ApplicationMirror {
+    private class BuildTimeApplicationMirror implements ApplicationMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -172,6 +172,11 @@ public final class ApplicationSetup extends ContainerSetup {
         @Override
         public Module module() {
             return ApplicationSetup.this.realm.realmType().getModule();
+        }
+
+        @Override
+        public ContainerMirror container() {
+            return ApplicationSetup.this.container.mirror();
         }
 
     }

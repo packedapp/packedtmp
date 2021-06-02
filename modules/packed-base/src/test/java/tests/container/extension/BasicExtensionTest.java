@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import testutil.util.AbstractApplicationTest;
 
 /** Tests basic functionality of a {@link Extension}. */
@@ -45,7 +45,7 @@ public class BasicExtensionTest extends AbstractApplicationTest {
         CallingMethodsFromTheConstructor() {
             String msg = "This operation cannot be invoked from the constructor of the extension. If you need to perform initialization before the extension is returned to the user, override Extension#onNew()";
             // assertThatIllegalStateException().isThrownBy(() -> buildContext()).withMessage(msg);
-            assertThatIllegalStateException().isThrownBy(() -> checkConfigurable()).withMessage(msg);
+            assertThatIllegalStateException().isThrownBy(() -> checkIsPreCompletion()).withMessage(msg);
             assertThatIllegalStateException().isThrownBy(() -> use(TestExtension1.Sub.class)).withMessage(msg);
         }
     }

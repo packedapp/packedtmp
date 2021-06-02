@@ -3,8 +3,8 @@ package packed.internal.aaa;
 import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import app.packed.inject.InjectionContext;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -34,7 +34,7 @@ public class Eee extends BaseAssembly {
 
         ApplicationMirror m = ApplicationMirror.of(new MyL());
         
-        System.out.println(m.useExtension(ServiceExtensionMirror.class).contract());
+        System.out.println(m.container().useExtension(ServiceExtensionMirror.class).contract());
         
 //        for (ExtensionMirror<?> mm : m.application().extensions()) {
 //            System.out.println("----------- " + mm.getClass());

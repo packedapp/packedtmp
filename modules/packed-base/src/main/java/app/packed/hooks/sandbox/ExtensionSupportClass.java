@@ -1,6 +1,6 @@
 package app.packed.hooks.sandbox;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 //WasExtensionMember
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.extension;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -26,7 +26,8 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension.Subtension;
+import app.packed.container.BaseContainerConfiguration;
+import app.packed.extension.Extension.Subtension;
 import app.packed.inject.Factory;
 
 /**
@@ -48,12 +49,6 @@ import app.packed.inject.Factory;
 public /* sealed */ interface ExtensionContext {
 
     /**
-     * Checks that child containers has been aded
-     */
-    // checkContainerFree, checkNoChildContainers
-    void checkExtendable(); // antonym to isRestricted, isConfined
-
-    /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
      * An extension is no longer configurable after {@link Extension#onComplete()} has been invoked by the runtime.
@@ -61,9 +56,15 @@ public /* sealed */ interface ExtensionContext {
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
-    void checkIsBuilding();
+    void checkIsPreCompletion();
 
-    default <E> Stream<ExtensionAncestorRelation<E>> findAllAncestors(Class<E> ancestorType) {
+    /**
+     * Checks that 
+     * Checks that child containers has been aded
+     */
+    void checkIsPreLinkage();
+
+    default <E extends ExtensionMember<?>> Stream<ExtensionConnection<E>> findAllAncestors(Class<E> ancestorType) {
         throw new UnsupportedOperationException();
     }
 
@@ -74,7 +75,7 @@ public /* sealed */ interface ExtensionContext {
      *            the type of ancestor to find
      * @return
      */
-    <E> ExtensionAncestorRelation<E> findFirstAncestor(Class<E> ancestorType);
+    <E extends ExtensionMember<?>> ExtensionConnection<E> findFirstAncestor(Class<E> ancestorType);
 
     /**
      * Attempts to find a parent of the specified type.
@@ -88,7 +89,22 @@ public /* sealed */ interface ExtensionContext {
      */
     // Ahhh for helvede det virker jo kun med extensions... ikke med extensors...
     // ExtensorContext???
-    <E> Optional<ExtensionAncestorRelation<E>> findParent(Class<E> parentType);
+    <E extends ExtensionMember<?>> Optional<ExtensionConnection<E>> findParent(Class<E> parentType);
+
+    // A new instance. Ligesom install(bean)
+    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets);
+
+    // maybe userInstall
+    // or maybe we just have userWire()
+    // customWire
+    // For hvorfor skal brugen installere en alm component via denne extension???
+    // Vi skal vel altid have en eller anden specific component driver
+    // BaseComponentConfiguration containerInstall(Class<?> factory);
+    ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets);
+
+    // Will install the class in the specified Container
+    // Hvad hvis vi bare vil finde en extension...
+    // Maaske skal vi ikke fejle... Men bare ikke reportere noget...
 
     /**
      * 
@@ -102,22 +118,7 @@ public /* sealed */ interface ExtensionContext {
      */
     ExtensorConfiguration installExtensorInstance(Extensor<?> instance, Wirelet... wirelets);
 
-    // A new instance. Ligesom install(bean)
-    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets);
-
-    // Will install the class in the specified Container
-    // Hvad hvis vi bare vil finde en extension...
-    // Maaske skal vi ikke fejle... Men bare ikke reportere noget...
-
-    // maybe userInstall
-    // or maybe we just have userWire()
-    // customWire
-    // For hvorfor skal brugen installere en alm component via denne extension???
-    // Vi skal vel altid have en eller anden specific component driver
-    // BaseComponentConfiguration containerInstall(Class<?> factory);
-    ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets);
-
-    default boolean isExtensionEnabled(Class<? extends Extension> extensionType) {
+    default boolean isExtensionDisabled(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
 
@@ -129,6 +130,7 @@ public /* sealed */ interface ExtensionContext {
      * @return whether or not the extension is part of an image
      */
     // Problemet her med build target... er at en sub application kan definere et image...
+    // Maaske bare build target...
     boolean isPartOfImage(); // BoundaryTypes
 
     /**
@@ -139,8 +141,8 @@ public /* sealed */ interface ExtensionContext {
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
      * @see Extension#isUsed(Class)
-     * @implNote Packed does not perform detailed tracking on extensions use other extensions. And cannot give a more
-     *           detailed answer about who is using the extension
+     * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
+     *           cannot give a more detailed answer about who is using a particular extension
      */
     boolean isUsed(Class<? extends Extension> extensionType);
 

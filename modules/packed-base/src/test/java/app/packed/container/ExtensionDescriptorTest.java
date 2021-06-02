@@ -23,6 +23,8 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.attribute.Attribute;
 import app.packed.attribute.ExposeAttribute;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionDescriptor;
 
 /** Tests {@link ExtensionDescriptor}. */
 public class ExtensionDescriptorTest {

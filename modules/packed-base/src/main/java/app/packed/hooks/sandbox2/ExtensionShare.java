@@ -15,7 +15,7 @@
  */
 package app.packed.hooks.sandbox2;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *

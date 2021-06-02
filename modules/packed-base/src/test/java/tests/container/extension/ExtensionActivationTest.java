@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import packed.internal.container.Packlet;
 import testutil.util.AbstractApplicationTest;
 

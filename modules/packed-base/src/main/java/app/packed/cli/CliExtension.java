@@ -16,7 +16,7 @@
 package app.packed.cli;
 
 import app.packed.component.Assembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  * A extension that can make it easier to work with command line parameters.

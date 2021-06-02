@@ -3,7 +3,7 @@ package app.packed.hooks;
 import java.util.Optional;
 
 import app.packed.base.MetaAnnotatedElement;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.hooks.v2.ServiceHook;
 
 // What we got so far.

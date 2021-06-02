@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *
@@ -100,7 +100,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void onPreembleComplete() {
+        protected void onPreChildren() {
             // System.out.println(ai + "E-PreChildContainers");
         }
 
@@ -127,7 +127,7 @@ public class Z4 extends BaseAssembly {
         }
 
         @Override
-        protected void onPreembleComplete() {
+        protected void onPreChildren() {
             System.out.println("F-PreChildContainers");
             use(E.Sub.class);
         }

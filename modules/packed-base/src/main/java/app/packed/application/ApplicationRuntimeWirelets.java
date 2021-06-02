@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.component.Wirelet;
-import app.packed.container.ExtensionNotAvailableException;
+import app.packed.extension.ExtensionNotAvailableException;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
 

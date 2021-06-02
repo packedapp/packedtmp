@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.Extension;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.Extension;
+import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 

@@ -8,6 +8,8 @@ import app.packed.application.ApplicationMirror;
 import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 
 /**
  * A mirror of a container (component).
@@ -49,6 +51,6 @@ public interface ContainerMirror extends ComponentMirror {
     }
 
     public static ContainerMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(assembly, wirelets);
+        return ApplicationMirror.of(assembly, wirelets).container();
     }
 }

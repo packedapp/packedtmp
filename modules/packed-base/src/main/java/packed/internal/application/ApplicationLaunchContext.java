@@ -53,7 +53,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
 
     /** If the application is stateful, the applications runtime. */
     @Nullable
-    final PackedApplicationRuntime runtime;
+    final PackedApplicationRuntimeExtensor runtime;
 
     /** Wirelets specified if instantiating an image. */
     @Nullable
@@ -64,7 +64,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
         this.wirelets = wirelets;
         this.name = requireNonNull(application.getName());
         this.launchMode = requireNonNull(application.launchMode);
-        this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntime(this);
+        this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntimeExtensor(this);
     }
 
     /** {@return the name of the application} */

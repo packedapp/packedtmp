@@ -3,7 +3,7 @@ package app.packed.hooks.sandbox;
 import app.packed.application.App;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.service.ServiceExtension;
 
 public class ChildInject extends BaseAssembly {

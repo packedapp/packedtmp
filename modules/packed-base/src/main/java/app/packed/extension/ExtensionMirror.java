@@ -1,9 +1,10 @@
-package app.packed.container;
+package app.packed.extension;
 
 import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
+import app.packed.container.ContainerMirror;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionSetup;

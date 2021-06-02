@@ -10,6 +10,7 @@ import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -37,7 +38,7 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @return an unmodifiable view of the extensions that are currently used
      * 
      * @see #use(Class)
-     * @see ContainerAssembly#extensions()
+     * @see CommonContainerAssembly#extensions()
      * @see ContainerMirror#extensions()
      */
     protected Set<Class<? extends Extension>> extensions() {
@@ -72,7 +73,7 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @param factory
      *            the factory to install
      * @return the configuration of the component
-     * @see ContainerAssembly#install(Factory)
+     * @see CommonContainerAssembly#install(Factory)
      */
     protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
         ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
@@ -83,7 +84,7 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
      * @param instance
      *            the instance to install
      * @return the configuration of the component
-     * @see ContainerAssembly#installInstance(Object)
+     * @see CommonContainerAssembly#installInstance(Object)
      */
     protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
         ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);

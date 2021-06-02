@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionAncestorRelation;
-import app.packed.container.ExtensionContext;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionConnection;
+import app.packed.extension.ExtensionContext;
 
 public class TstExt extends BaseAssembly {
 
@@ -25,7 +25,7 @@ public class TstExt extends BaseAssembly {
         final int count;
 
         MyExt(ExtensionContext c) {
-            Optional<ExtensionAncestorRelation<MyExt>> ea = c.findParent(MyExt.class);
+            Optional<ExtensionConnection<MyExt>> ea = c.findParent(MyExt.class);
             if (ea.isPresent()) {
                 System.out.println("--- Nice ---");
                 System.out.println(ea.get());
@@ -35,7 +35,7 @@ public class TstExt extends BaseAssembly {
                 count = 0;
             }
 
-            System.out.println("SAD" + c.findParent(Object.class).isPresent());
+            System.out.println("SAD" + c.findParent(ExtTestCommon.class).isPresent());
         }
     }
 

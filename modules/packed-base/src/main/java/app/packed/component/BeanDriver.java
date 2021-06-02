@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.container.BaseContainerConfiguration;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 
@@ -18,6 +18,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
     /** {@return the type of bean this is a driver for.} */
     Class<?> beanType();
 
+    /** {@return the kind of bean this driver produces.} */
     BeanKind kind();
 
     /** {@inheritDoc} */
@@ -109,4 +110,13 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
         //// Man kan altid lave en anden extension som bruger den extension jo
         //// Saa det er kun paa container niveau vi kan forbyde extensions
     }
+}
+
+class ZlassComponentDriverBuilder {
+
+    //// For instantiationOnly
+    // reflectOnConstructorOnly();
+
+    // reflectOn(Fields|Methods|Constructors)
+    // look in declaring class
 }

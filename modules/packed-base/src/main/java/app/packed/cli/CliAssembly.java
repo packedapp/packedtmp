@@ -8,6 +8,7 @@ import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 
+// Skal vi returner int???
 public abstract class CliAssembly extends ApplicationAssembly<Void /* void */> {
 
     // Provides a result... men det goer main jo ikke...

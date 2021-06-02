@@ -22,8 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.container.ContainerAssembly;
-import app.packed.container.Extension;
+import app.packed.container.CommonContainerAssembly;
+import app.packed.extension.Extension;
 
 /**
  * An annotation indicating that the runtime must install one or more extensions of annotated type requires
@@ -39,8 +39,8 @@ import app.packed.container.Extension;
  * ComponentType??? Ja det er jo saadan hvad InstanceOf
  * 
  * <p>
- * This annotation cannot be used on subclasses of {@link ContainerAssembly} as we want to avoid situations where some
- * extensions are added via class annotations and others via {@link ContainerAssembly#build()}. Giving the false impression to
+ * This annotation cannot be used on subclasses of {@link CommonContainerAssembly} as we want to avoid situations where some
+ * extensions are added via class annotations and others via {@link CommonContainerAssembly#build()}. Giving the false impression to
  * users that only annotations added via this annotation is used
  */
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE })

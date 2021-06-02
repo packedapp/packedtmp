@@ -15,7 +15,7 @@
  */
 package app.packed.validate;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *

@@ -2,7 +2,7 @@ package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.hooks.sandbox.ExtensionSupportClass;
 import app.packed.hooks.sandbox.ExtensionSupportClass.Scope;
 

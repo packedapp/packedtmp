@@ -12,7 +12,7 @@ import app.packed.base.Nullable;
 import app.packed.component.BeanKind;
 import app.packed.component.BeanMirror;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.application.BuildSetup;
@@ -52,12 +52,14 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolAccessor singletonAccessor;
 
+    public final BeanKind kind;
+
     BeanSetup(BuildSetup build, LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, realm, lifetime, driver, parent, wirelets);
-
+        this.kind = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
-        this.singletonAccessor = driver.binder.kind() ==BeanKind.SINGLETON ? lifetime.pool.reserve(driver.beanType()) : null;
+        this.singletonAccessor = driver.binder.kind() == BeanKind.SINGLETON ? lifetime.pool.reserve(driver.beanType()) : null;
 
         Object source = driver.binding;
         // The source is either a Class, a Factory, or a generic instance
@@ -70,7 +72,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
             this.factory = null;
 
             // non-constants singlestons are added to the constant pool elsewhere
-            lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, source)); 
+            lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, source));
         }
 
         if (factory == null) {
@@ -184,8 +186,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public BeanOldMode mode() {
-            throw new UnsupportedOperationException();
+        public BeanKind kind() {
+            return kind;
         }
     }
 }

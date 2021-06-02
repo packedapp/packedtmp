@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.extension;
 
 import packed.internal.container.PackedExtensionAncestor;
 
@@ -27,8 +27,11 @@ import packed.internal.container.PackedExtensionAncestor;
 
 // ExtensionConection...
 // connectToParent()
-public interface ExtensionAncestorRelation<E> {
+public interface ExtensionConnection<E extends ExtensionMember<?>> {
 
+    default void inherit() {
+    }
+    
     E instance();
 
     boolean isInSameApplication();
@@ -44,7 +47,7 @@ public interface ExtensionAncestorRelation<E> {
 
     void onUninstall(Runnable r);// Ved ikke om det er det rigtige sted...
 
-    static <T> ExtensionAncestorRelation<T> empty() {
+    static <T extends ExtensionMember<?>> ExtensionConnection<T> empty() {
         return PackedExtensionAncestor.missing();
     }
 }

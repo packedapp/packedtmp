@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.hooks.MethodHook;
 
 public class MethodHookBootstrapTest {

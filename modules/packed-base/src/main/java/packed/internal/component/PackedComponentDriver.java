@@ -11,7 +11,7 @@ import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.LookupUtil;

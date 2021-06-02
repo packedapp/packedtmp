@@ -8,7 +8,7 @@ import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;

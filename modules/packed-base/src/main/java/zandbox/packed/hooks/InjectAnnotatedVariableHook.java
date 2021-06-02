@@ -14,7 +14,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.inject.Inject;
 import packed.internal.hooks.var2.Var;
 import packed.internal.util.StackWalkerUtil;

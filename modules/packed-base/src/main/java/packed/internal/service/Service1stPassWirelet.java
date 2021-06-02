@@ -15,7 +15,7 @@
  */
 package packed.internal.service;
 
-import app.packed.container.ExtensionWirelet;
+import app.packed.extension.ExtensionWirelet;
 import app.packed.service.ServiceExtension;
 
 /** A wirelet that is processed in a first pass. */

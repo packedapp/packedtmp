@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.extension;
 
 // Taenker den opfoere sig som enhver anden component...
 // Og det primaert 
@@ -40,7 +40,18 @@ package app.packed.container;
  * <p>
  * 
  */
-public abstract class Extensor<E extends Extension> {
+// Extensors must
+//* Be located in the same module as the extension itself
+// * have a single constructor
+
+// If DI-> Can inject extensors that are visible. And for same extension
+/**
+ *
+ */
+public abstract class Extensor<E extends Extension> implements ExtensionMember<E> {
+
+    /** The default empty constructor. */
+    Extensor() {}
 
     static {
 
@@ -63,12 +74,12 @@ public abstract class Extensor<E extends Extension> {
         throw new UnsupportedOperationException();
     }
 
-    // Maaske har vi ikke et deciseret flag?? Man 
+    // Maaske har vi ikke et deciseret flag?? Man
     /// Kan vi lave det generisk saa vi baade bruger det paa build-time, run-time og i user code?
     static abstract class ExtensionFeatureFlag {
         // taenker man kan faa injected parents.
         // void $connectVia(ddd)
-        
+
         // Der er saadan noget som evaluation time...
         // static - dynamic (
         // https://martinfowler.com/articles/feature-toggles.html

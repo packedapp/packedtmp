@@ -2,7 +2,6 @@ package app.packed.application;
 
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
-import packed.internal.application.BaseMirror;
 
 /**
  * The type of builds
@@ -10,6 +9,8 @@ import packed.internal.application.BaseMirror;
 // Maaske ikke en enum, men en klasse
 // Og saa rename til BuildMode
 // Kunne vaere rart ogsaa at eksponere, isClosedWorld().
+// isClosedWorld() ved du ikke for starten... Med mindre man eksplicit skal definere det...
+// Hvilket jeg faktisk maaske er tilhaenger af...
 public enum BuildTarget {
 
     /**
@@ -30,10 +31,9 @@ public enum BuildTarget {
     INSTANCE, // LAUNCH
 
     /**
-     * Builds a {@link BaseMirror mirror}.
-     * 
-     * @see ApplicationDriver#reflect(Assembly, Wirelet...)
-     * @see BaseMirror#reflect(Assembly)
+     * Builds a mirror of some kind, for example, an {@link ApplicationMirror}.
+     *
+     * @see ApplicationMirror#of(Assembly, Wirelet...)
      */
     MIRROR,
 

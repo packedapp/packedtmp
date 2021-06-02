@@ -24,7 +24,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
 
 /**

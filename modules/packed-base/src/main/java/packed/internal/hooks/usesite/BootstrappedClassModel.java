@@ -28,7 +28,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.hooks.ClassHook;
 import app.packed.hooks.MethodHook;
 import packed.internal.component.bean.BeanSetup;

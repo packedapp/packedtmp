@@ -15,15 +15,16 @@ import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
-import app.packed.container.Extension;
-import app.packed.container.Extension.Subtension;
-import app.packed.container.ExtensionAncestorRelation;
-import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionMirror;
-import app.packed.container.ExtensionWirelet;
-import app.packed.container.Extensor;
-import app.packed.container.ExtensorConfiguration;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.Extension;
+import app.packed.extension.Extension.Subtension;
+import app.packed.extension.ExtensionConnection;
+import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionMember;
+import app.packed.extension.ExtensionMirror;
+import app.packed.extension.ExtensionWirelet;
+import app.packed.extension.Extensor;
+import app.packed.extension.ExtensorConfiguration;
+import app.packed.extension.InternalExtensionException;
 import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
@@ -48,9 +49,9 @@ public final class ExtensionSetup implements ExtensionContext {
     /** A handle for invoking the protected method {@link Extension#onNew()}. */
     private static final MethodHandle MH_EXTENSION_ON_NEW = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class, "onNew", void.class);
 
-    /** A handle for invoking the protected method {@link Extension#onPreembleComplete()}. */
+    /** A handle for invoking the protected method {@link Extension#onPreChildren()}. */
     private static final MethodHandle MH_EXTENSION_ON_PREEMBLE_COMPLETE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Extension.class,
-            "onPreembleComplete", void.class);
+            "onPreChildren", void.class);
 
     /** A handle for setting the private field Extension#context. */
     private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "context",
@@ -66,6 +67,10 @@ public final class ExtensionSetup implements ExtensionContext {
     @Nullable
     private Extension instance;
 
+    /** Whether or not the extension has been configured. */
+    private boolean isNew;
+
+    
     /** Whether or not the extension has been configured. */
     private boolean isConfigured;
 
@@ -100,17 +105,20 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public void checkExtendable() {
-        // Ja og saa alligevel ikke. Hvis vi lige saa stille taeller ned...
-        // Og disable hver extension loebende
-        if (container.containerChildren != null) {
+    public void checkIsPreLinkage() {
+        if (!isNew) {
             throw new IllegalStateException();
         }
+//        // Ja og saa alligevel ikke. Hvis vi lige saa stille taeller ned...
+//        // Og disable hver extension loebende
+//        if (container.containerChildren != null) {
+//            
+//        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void checkIsBuilding() {
+    public void checkIsPreCompletion() {
         if (isConfigured) {
             throw new IllegalStateException("This extension (" + model.name() + ") is no longer configurable");
         }
@@ -118,7 +126,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <T> ExtensionAncestorRelation<T> findFirstAncestor(Class<T> type) {
+    public <T extends ExtensionMember<?>> ExtensionConnection<T> findFirstAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
         ContainerSetup parent = container.containerParent;
         while (parent != null) {
@@ -129,12 +137,12 @@ public final class ExtensionSetup implements ExtensionContext {
             // if (parentOnly) break;
             parent = parent.containerParent;
         }
-        return ExtensionAncestorRelation.empty();
+        return ExtensionConnection.empty();
     }
 
     /** {@inheritDoc} */
     @Override
-    public <T> Optional<ExtensionAncestorRelation<T>> findParent(Class<T> type) {
+    public <T extends ExtensionMember<?>> Optional<ExtensionConnection<T>> findParent(Class<T> type) {
         requireNonNull(type, "type is null");
         ContainerSetup parent = container.containerParent;
         if (parent != null) {
@@ -202,7 +210,7 @@ public final class ExtensionSetup implements ExtensionContext {
     /** {@inheritDoc} */
     @Override
     public boolean isUsed(Class<? extends Extension> extensionClass) {
-        return container.isUsed(extensionClass);
+        return container.isExtensionUsed(extensionClass);
     }
 
     /** {@inheritDoc} */
@@ -300,7 +308,7 @@ public final class ExtensionSetup implements ExtensionContext {
             throw new InternalExtensionException(extensionType.getSimpleName() + " must declare " + format(subModel.extensionType())
                     + " as a dependency in order to use " + subExtensionType.getSimpleName() + "." + subtensionClass.getSimpleName());
         }
-
+        
         // Get the extension instance (create it if needed) that the subtension needs
         Extension instance = container.useExtension(subExtensionType, this).instance;
 

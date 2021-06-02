@@ -37,8 +37,8 @@ import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -348,7 +348,7 @@ public abstract class ComponentSetup {
         /** {@inheritDoc} */
         @Override
         public final ApplicationMirror application() {
-            return application.mirror();
+            return application.applicationMirror();
         }
 
         /** {@inheritDoc} */

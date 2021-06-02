@@ -30,10 +30,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import app.packed.base.Nullable;
-import app.packed.container.Extension;
-import app.packed.container.ExtensionContext;
-import app.packed.container.ExtensionDescriptor;
-import app.packed.container.InternalExtensionException;
+import app.packed.extension.Extension;
+import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionDescriptor;
+import app.packed.extension.InternalExtensionException;
 import packed.internal.attribute.PackedAttributeModel;
 import packed.internal.invoke.Infuser;
 import packed.internal.invoke.OpenClass;

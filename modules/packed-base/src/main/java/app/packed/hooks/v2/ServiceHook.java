@@ -10,7 +10,7 @@ import java.util.Optional;
 
 import app.packed.base.InvalidKeyException;
 import app.packed.base.Key;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  * This hook can be activated in 3 different ways

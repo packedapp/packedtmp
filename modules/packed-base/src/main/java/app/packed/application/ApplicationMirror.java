@@ -10,13 +10,12 @@ import java.util.stream.Stream;
 
 import app.packed.application.host.ApplicationHost;
 import app.packed.application.host.ApplicationHostMirror;
-import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BeanMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 import app.packed.mirror.SetView;
 import app.packed.mirror.TreeWalker;
 import packed.internal.application.PackedApplicationDriver;
@@ -26,8 +25,26 @@ import packed.internal.application.PackedApplicationDriver;
  * <p>
  * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
  */
-public interface ApplicationMirror extends ContainerMirror {
+public interface ApplicationMirror {
+    
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        container().components().forEach(action);
+    }
+    
+    ContainerMirror container();
+    
 
+    /**
+     * Returns the name of the application.
+     * 
+     * @return the name of the application
+     * @see Wirelet#named(String)
+     */
+    default String name() {
+        return container().name();
+    }
+    
+    
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
@@ -153,18 +170,6 @@ public interface ApplicationMirror extends ContainerMirror {
     // Maaske vi skal have et realm mirror????
     Module module();
 
-    /**
-     * Returns the name of the application.
-     * 
-     * @return the name of the application
-     * @see Wirelet#named(String)
-     */
-    @Override
-    String name();
-
-    @Override
-    NamespacePath path();
-
     
     /**
      * <p>
@@ -185,7 +190,7 @@ public interface ApplicationMirror extends ContainerMirror {
     }
 
     public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(BuildTarget.MIRROR, assembly, wirelets).application.mirror();
+        return PackedApplicationDriver.MIRROR_DRIVER.build(BuildTarget.MIRROR, assembly, wirelets).application.applicationMirror();
     }
 
     /**
@@ -250,5 +255,13 @@ public interface ApplicationMirror extends ContainerMirror {
         ApplicationMirror from();
 
         ApplicationMirror to();
+    }
+
+    default void print() {
+        container().print();
+    }
+
+    default Stream<ComponentMirror> components() {
+        return container().components();
     }
 }

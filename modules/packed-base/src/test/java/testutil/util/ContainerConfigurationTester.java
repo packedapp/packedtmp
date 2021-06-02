@@ -26,7 +26,7 @@ import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
-import app.packed.container.Extension;
+import app.packed.extension.Extension;
 
 /**
  *
