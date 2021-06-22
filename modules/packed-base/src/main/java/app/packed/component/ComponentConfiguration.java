@@ -17,6 +17,8 @@ package app.packed.component;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerMirror;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 
@@ -75,7 +77,9 @@ public /* sealed */ abstract class ComponentConfiguration {
      *            optional wirelets
      * @return a model of the component that was linked
      */
-    protected ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    // Maaske ryger den her hen paa ContainerConfiguration istedet for...
+    // Tjah wire fungere jo fint... saa det faar vi jo saadan set ikke noget ud af...
+    protected ContainerMirror link(ContainerAssembly<?>  assembly, Wirelet... wirelets) {
         ComponentSetup component = component();
         return component.link(assembly, component.realm, wirelets);
     }

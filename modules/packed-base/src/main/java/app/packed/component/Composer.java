@@ -20,9 +20,14 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
+import java.util.function.Consumer;
 
+import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.inject.Factory;
+import app.packed.service.ServiceComposer;
+import app.packed.service.ServiceLocator;
+import packed.internal.application.PackedApplicationDriver;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
@@ -169,6 +174,37 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * Invoked by the runtime immediately before {@link ComposerConfigurator#configure(Composer)}.
      */
     protected void onNew() {}
+
+    /**
+     * Create a new application instance by using the specified consumer and configurator.
+     * <p>
+     * This method is is rarely called directly by end-users. But indirectly through methods such as
+     * {@link ServiceLocator#of(Consumer)}.
+     * 
+     * @param <C>
+     *            the type of composer that is exposed to the end-user
+     * @param composer
+     *            the composer
+     * @param configurator
+     *            the configurator specified by the end-user for configuring the composer
+     * @param wirelets
+     *            optional wirelets
+     * @return the new application instance
+     * 
+     * @see Composer
+     * @see ServiceComposer
+     * @see ServiceLocator#of(Consumer)
+     */
+    // A standalone composer...
+
+    // Skal have et andet sted hvor vi laver dem der er en ikke standalone
+    // F.eks. ServiceLocator som extension
+    // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
+    // assemblies.lookup)
+    protected static <A, C extends Composer<?>> A compose(ApplicationDriver<A> driver, C composer, ComposerConfigurator<? super C> configurator,
+            Wirelet... wirelets) {
+        return ((PackedApplicationDriver<A>) driver).compose(composer, configurator, wirelets);
+    }
 }
 
 // Er det ikke noget vi skal definere i vores ArtifactDriver...

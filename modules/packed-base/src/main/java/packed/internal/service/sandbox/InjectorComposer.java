@@ -18,12 +18,13 @@ package packed.internal.service.sandbox;
 import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Composer;
+import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerAssembly;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import app.packed.service.ServiceExtension;
@@ -67,7 +68,7 @@ public final class InjectorComposer extends Composer<BaseContainerConfiguration>
      * @param wirelets
      *            optional import/export wirelets
      */
-    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    public ComponentMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);
     }
 
@@ -190,6 +191,11 @@ public final class InjectorComposer extends Composer<BaseContainerConfiguration>
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
+    
+    static Injector configure(ComposerConfigurator<? super InjectorComposer> configurator, Wirelet... wirelets) {
+        return compose(Injector.driver(), new InjectorComposer(), configurator, wirelets);
+    }
+
 }
 // addStatics(); useStatics()
 // @OnHook

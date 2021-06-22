@@ -18,6 +18,7 @@ package app.packed.service;
 import java.util.Optional;
 
 import app.packed.base.Key;
+import app.packed.base.NamespacePath;
 import app.packed.component.BaseBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -58,7 +59,6 @@ public class ServiceBeanConfiguration<T> extends BaseBeanConfiguration {
         super.provideAsService(key);
         return this;
     }
-
     public ServiceBeanConfiguration<T> asNone() {
         // Ideen er vi f.eks. kan
         // asNone().exportAs(Doo.class);
@@ -71,18 +71,24 @@ public class ServiceBeanConfiguration<T> extends BaseBeanConfiguration {
         return super.exportAsService();
     }
 
-    // The key unless asNone()
-
     // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
         return super.sourceProvideAsKey();
     }
+
+    // The key unless asNone()
 
     /** {@inheritDoc} */
     @Override
     public ServiceBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public NamespacePath path() {
+        return super.path();
     }
 
     public ServiceBeanConfiguration<T> provide() {

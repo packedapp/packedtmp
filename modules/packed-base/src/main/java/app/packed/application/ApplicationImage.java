@@ -48,13 +48,14 @@ import app.packed.state.sandbox.InstanceState;
  * @see Program#newImage(Assembly, Wirelet...)
  */
 
-
 // Det er som default mange gange...
 //// Og saa har vi single shot!!!
 
-public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ {
+/// ApplicationImage<String> i; String numberOfFoos = i.launch();
 
-    default boolean isLaunchable() {
+public /* sealed */ interface ApplicationImage<A> {
+
+    default boolean isAvailable() {
         // An image returns true always
 
         // Optional<A> tryLaunch(Wirelet... wirelets)???
@@ -83,6 +84,20 @@ public /* sealed */ interface ApplicationImage<A> /* extends AttributeHolder */ 
      * @see ApplicationDriver#launchMode()
      */
     InstanceState launchMode();
+
+    // fra launchable...
+    /**
+     * Returns a mirror for the application.
+     * 
+     * @return a mirror for the application
+     * @throws IllegalStateException
+     *             if the image is not {@link #isAvailable() available}.
+     * @throws UnsupportedOperationException
+     *             if mirroring is disabled
+     */
+    default ApplicationMirror mirror() {
+        throw new UnsupportedOperationException();
+    }
 }
 
 interface ZImage<A> {

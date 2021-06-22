@@ -9,12 +9,12 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
+import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.Subtension;
 import app.packed.extension.ExtensionConnection;
@@ -159,12 +159,12 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ExtensorConfiguration installExtensorInstance(Extensor<?> instance, Wirelet... wirelets) {
+    public ExtensorConfiguration installExtensorInstance(Extensor<?> instance) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets) {
+    public ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation) {
         // get RuntimeExtensionModel...
         // Make sure it is the same extension
         // keep a references to them in each extension..
@@ -178,7 +178,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
+    public ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory) {
         throw new UnsupportedOperationException();
     }
 
@@ -215,7 +215,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    public ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
         return container.link(assembly, realm(), wirelets);
     }
 

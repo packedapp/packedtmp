@@ -1,12 +1,11 @@
 package app.packed.container;
 
 import app.packed.component.Assembly;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 
-public abstract class ContainerAssembly extends Assembly<ComponentConfiguration> {
+public abstract class ContainerAssembly<C extends ContainerConfiguration> extends Assembly<C> {
 
-    protected ContainerAssembly(ComponentDriver<? extends ComponentConfiguration> driver) {
+    protected ContainerAssembly(ComponentDriver<? extends C> driver) {
         super(driver);
     }
 }

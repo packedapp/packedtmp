@@ -2,12 +2,16 @@ package app.packed.job;
 
 import java.util.concurrent.Callable;
 
-import app.packed.application.ApplicationAssembly;
 import app.packed.application.ApplicationMirror;
+import app.packed.application.BaseApplicationAssembly;
 import app.packed.application.Launcher;
 import app.packed.service.ServiceConfiguration;
 
-public abstract class JobAssembly<T> extends ApplicationAssembly<Job<T>> {
+public abstract class JobAssembly<T> extends BaseApplicationAssembly<Job<T>> {
+
+    protected JobAssembly() {
+        super(null);
+    }
 
     protected final void simpleComputable(Callable<T> calculation) {}
 

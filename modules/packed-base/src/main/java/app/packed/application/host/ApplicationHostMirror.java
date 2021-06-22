@@ -2,13 +2,19 @@ package app.packed.application.host;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.VersionableApplicationMirror;
-import app.packed.component.ComponentMirror;
+import app.packed.mirror.Mirror;
 import app.packed.mirror.SetView;
 
 /**
  * A mirror of an application host.
  */
-public interface ApplicationHostMirror extends ComponentMirror {
+// ApplicationHostExtensionMirror extends ExtensionMirror {
+//
+//   Set<ApplicationHostMirror> hosts();
+// }
+
+// ApplicationHostMirror 
+public interface ApplicationHostMirror extends Mirror {
 
     /**
      * Dynamic hosts allow new code, static does not..

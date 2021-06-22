@@ -7,6 +7,8 @@ package app.packed.extension;
  */
 public abstract class ContainerExtensor<E extends Extension> extends Extensor<E> {
 
+   
+    
     // extension.autoInstall(...)
 
     // Maaske installere man dem ikke som default

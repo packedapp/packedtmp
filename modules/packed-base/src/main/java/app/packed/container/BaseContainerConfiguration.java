@@ -18,15 +18,10 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.Assembly;
-import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
-import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerDriver;
 
 /**
@@ -44,33 +39,15 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
         return super.extensions();
     }
 
-    @Override
-    protected ContainerMirror mirror() {
-        throw new UnsupportedOperationException();
-    }
-
     /** {@inheritDoc} */
     @Override
-    public BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        return super.install(implementation, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        return super.install(factory, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        return super.installInstance(instance, wirelets);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    public ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
         return super.link(assembly, wirelets);
+    }
+
+    @Override
+    public ContainerMirror mirror() {
+       return super.mirror();
     }
 
     /** {@inheritDoc} */
@@ -84,12 +61,6 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
     @Override
     public NamespacePath path() {
         return super.path();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseBeanConfiguration installStatic(Class<?> implementation) {
-        return super.wire(BeanDriver.ofStatic(implementation));
     }
 
     /** {@inheritDoc} */

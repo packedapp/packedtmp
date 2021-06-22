@@ -15,7 +15,13 @@ import java.util.Set;
  * JMX managed beans...
  */
 
-public abstract class PlatformExtensor<E extends Extension> extends Extensor<E> {
+// Cleanup
+//// shutdown hooks
+//// Cleaner...
+
+// Vi har nok brug for begge dele, eftersom shutdown hooks ikke kan understoette ting der bliver loaded/unloaded
+// dynamisk
+abstract class PlatformExtensor<E extends Extension> extends Extensor<E> {
 
     protected ExtensorMirror mirror() {
         // Det er jo saa lige pludselig et runtime mirror...

@@ -45,6 +45,10 @@ import app.packed.state.sandbox.RunStateInfo;
 // Maybe just Runtime? Saa kan vi bruge den andre steder end fra application...
 
 //RuntimeEnvironment
+// Vil vaere fint at have et 1-ords navn.. istedet for ApplicationRuntime
+// Naa vi naar hen til ApplicationRuntimeExtensionMirror begynder det at blive grimt...
+// Maaske fjerner vi Extension fra mirror...
+// Environtment..
 public interface ApplicationRuntime {
 
     // Optional<Throwable> getFailure();
@@ -54,8 +58,8 @@ public interface ApplicationRuntime {
      * whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately. For example, if
-     * attempting to wait on the {@link InstanceState#RUNNING} state and the component has already been successfully terminated.
-     * This method will return immediately.
+     * attempting to wait on the {@link InstanceState#RUNNING} state and the component has already been successfully
+     * terminated. This method will return immediately.
      *
      * @param state
      *            the state to wait on
@@ -71,8 +75,8 @@ public interface ApplicationRuntime {
      * interrupted, whichever happens first.
      * <p>
      * If the component has already reached or passed the specified state this method returns immediately with. For example,
-     * if attempting to wait on the {@link InstanceState#RUNNING} state and the object has already been stopped. This method will
-     * return immediately with true.
+     * if attempting to wait on the {@link InstanceState#RUNNING} state and the object has already been stopped. This method
+     * will return immediately with true.
      *
      * @param state
      *            the state to wait on
@@ -158,6 +162,12 @@ public interface ApplicationRuntime {
     // Den er cool men sgu ikke super smart for forstaelsen
     static void run(Assembly<?> assembly, Wirelet... wirelets) {
         ApplicationRuntimeImplementation.DRIVER.launch(assembly, wirelets);
+    }
+
+    // altsaa problemet her jo i virkeligheden image...
+    // Vi gider ikke have flere maader at launche et image paa...
+    static <A> A launch(ApplicationDriver<A> driver, Assembly<?> assembly, Wirelet... wirelets) {
+        return driver.launch(assembly, wirelets);
     }
 
     // TODO return Image<Host>?

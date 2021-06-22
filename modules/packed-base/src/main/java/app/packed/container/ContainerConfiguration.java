@@ -5,13 +5,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
-import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
-import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
-import app.packed.inject.Factory;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
@@ -26,11 +21,19 @@ import packed.internal.util.ThrowableUtil;
  */
 public abstract /* non-sealed */ class ContainerConfiguration extends ComponentConfiguration {
 
-    /** A handle that can access ComponentConfiguration#component(). */
+    /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
+    /** {@return the container setup instance that we are wrapping.} */
+    private ContainerSetup container() {
+        try {
+            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
 
     /**
      * Returns an unmodifiable view of the extensions that are currently used.
@@ -45,70 +48,10 @@ public abstract /* non-sealed */ class ContainerConfiguration extends ComponentC
         return container().extensions();
     }
 
-    ContainerSetup container() {
-        try {
-            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
-    /**
-     * Installs a bean that will use the specified {@link Factory} to instantiate the bean instance.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * 
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    protected BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
-        return wire(driver, wirelets);
-    }
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * 
-     * @param factory
-     *            the factory to install
-     * @return the configuration of the component
-     * @see CommonContainerAssembly#install(Factory)
-     */
-    protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
-        return wire(driver, wirelets);
-    }
-
-    /**
-     * @param instance
-     *            the instance to install
-     * @return the configuration of the component
-     * @see CommonContainerAssembly#installInstance(Object)
-     */
-    protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
-        return wire(driver, wirelets);
-    }
-
     /** {@inheritDoc} */
     @Override
     protected ContainerMirror mirror() {
         return container().mirror();
-    }
-
-    /**
-     * Installs a stateless component.
-     * <p>
-     * Extensions might still contain state. So Stateless is better under the assumption that extensions are better tested
-     * the user code.
-     * 
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    protected BaseBeanConfiguration installStatic(Class<?> implementation) {
-        return wire(BeanDriver.ofStatic(implementation));
     }
 
     /**

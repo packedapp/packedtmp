@@ -65,7 +65,7 @@ public class ContainerSetup extends ComponentSetup {
     private ArrayList<ExtensionSetup> tmpExtensions;
 
     /**
-     * Create a new container (component).
+     * Create a new container (component) setup.
      * 
      * @param application
      *            the application this container is a part of
@@ -262,7 +262,7 @@ public class ContainerSetup extends ComponentSetup {
     }
 
     /** A build-time container mirror. */
-    public class BuildTimeContainerMirror extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
+    private final class BuildTimeContainerMirror extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
 
         private static final ClassValue<Class<? extends Extension>> EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
 
@@ -296,6 +296,12 @@ public class ContainerSetup extends ComponentSetup {
             return Set.copyOf(result);
         }
 
+        /** {@inheritDoc} */
+        @Override
+        public Set<Class<? extends Extension>> extensionsTypes() {
+            return ContainerSetup.this.extensions();
+        }
+
         @SuppressWarnings("unchecked")
         @Override
         public final <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType) {
@@ -321,6 +327,7 @@ public class ContainerSetup extends ComponentSetup {
             return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 
+        /** {@inheritDoc} */
         @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";

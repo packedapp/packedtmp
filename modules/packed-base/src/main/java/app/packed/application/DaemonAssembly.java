@@ -6,7 +6,7 @@ import app.packed.component.Wirelet;
 public abstract class DaemonAssembly extends ApplicationAssembly<Daemon> {
 
     protected final void restartOnAnyException() {
-
+        //Must be a fcking extension...
     }
 
     // public static void start(DeamonAssembly assembly) {}

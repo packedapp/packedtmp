@@ -23,6 +23,7 @@ import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
 import app.packed.component.BaseBeanConfiguration;
+import app.packed.component.BeanDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
@@ -58,13 +59,13 @@ public class ContainerConfigurationTester {
     }
 
     public BaseBeanConfiguration stateless(Class<?> implementation) {
-        BaseBeanConfiguration conf = cc.installStatic(implementation);
+        BaseBeanConfiguration conf = cc.wire(BeanDriver.ofStatic(implementation));
         assertThat(conf).isNotNull();
         return conf;
     }
 
     public BaseBeanConfiguration installInstance(Object instance) {
-        BaseBeanConfiguration conf = cc.installInstance(instance);
+        BaseBeanConfiguration conf = cc.wire(BeanDriver.ofSingletonInstance(instance));
         assertThat(conf).isNotNull();
         return conf;
     }

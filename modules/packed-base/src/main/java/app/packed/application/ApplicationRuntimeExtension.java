@@ -14,6 +14,10 @@ import app.packed.state.sandbox.InstanceState;
 
 // Har en extension noget scope??? Fx den her har helt klart extensionScope only...
 // Maaske vi bare checke det i constructeren... Altsaa hvis det er den eneste exception der har problemet.
+
+// Maaske fixer den her ogsaa error handling
+// Vi kan kun haandtere fejl hvis vi har en ApplicationRuntime???
+// Ellers flyder den bare ud.... IDK
 public class ApplicationRuntimeExtension extends Extension {
 
     /** Create a new extension. */

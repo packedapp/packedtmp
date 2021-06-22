@@ -58,7 +58,7 @@ public abstract class MemberScanner {
             // Filter methods whose from java.base module and bridge methods
             // TODO add check for
             if (m.getDeclaringClass().getModule() != JAVA_BASE_MODULE && !m.isBridge()) {
-                types.put(new Helper(m), packages);
+                types.put(helperOf(m), packages);
                 // Should we also ignore methods on base assembly class????
                 onMethod(m);// move this to step 2???
             }
@@ -85,19 +85,19 @@ public abstract class MemberScanner {
                         // but not include static methods on interfaces.
                         onMethod(m);
                     }
-                } else if (!m.isBridge()) { //TODO should we include synthetic methods??
+                } else if (!m.isBridge()) { // TODO should we include synthetic methods??
                     switch (mod & (Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE)) {
                     case Modifier.PUBLIC:
                         continue; // we have already added the method in the first step
                     default: // default access
-                        HashSet<Package> pkg = types.computeIfAbsent(new Helper(m), key -> new HashSet<>());
+                        HashSet<Package> pkg = types.computeIfAbsent(helperOf(m), key -> new HashSet<>());
                         if (pkg != packages && pkg.add(c.getPackage())) {
                             break;
                         } else {
                             continue;
                         }
                     case Modifier.PROTECTED:
-                        if (types.putIfAbsent(new Helper(m), packages) != null) {
+                        if (types.putIfAbsent(helperOf(m), packages) != null) {
                             continue; // method has been overridden by a super type
                         }
                         // otherwise fall-through
@@ -223,22 +223,18 @@ public abstract class MemberScanner {
         return errorMaker.apply(errorMsg);
     }
 
+    // Eclipse fails with these as addition constructors
+    static Helper helperOf(Method method) {
+        return helperOf(method.getName(), method.getParameterTypes());
+    }
+
+    // Eclipse fails with these as addition constructors
+    static Helper helperOf(String name, Class<?>[] parameterTypes) {
+        return new Helper(name.hashCode() ^ Arrays.hashCode(parameterTypes), name, parameterTypes);
+    }
+
     /** Processes all fields and methods on a class. */
     private record Helper(int hash, String name, Class<?>[] parameterTypes) {
-
-        /**
-         * Creates a new entry for the specified method.
-         * 
-         * @param method
-         *            the method
-         */
-        private Helper(Method method) {
-            this(method.getName(), method.getParameterTypes());
-        }
-
-        private Helper(String name, Class<?>[] parameterTypes) {
-            this(name.hashCode() ^ Arrays.hashCode(parameterTypes), name, parameterTypes);
-        }
 
         /** {@inheritDoc} */
         @Override

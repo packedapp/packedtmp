@@ -131,7 +131,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
-        // Extract the component driver from the assembly
+        // Extract the component driver from the field Assembly#driver
         PackedComponentDriver<?> componentDriver = PackedComponentDriver.getDriver(assembly);
 
         // Create the initial realm realm, typically we will have a realm per container
@@ -143,8 +143,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         ComponentConfiguration configuration = componentDriver.toConfiguration(realm.root);
 
         // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        // This will recursively call down through any sub-assemblies that may be linked
-        // doing the process
+        // This will recursively call down through any sub-assemblies that are linked
         try {
             RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
         } catch (Throwable e) {
@@ -157,8 +156,6 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         return realm.build;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
@@ -204,6 +201,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
+    // Kan kun saette launch mode paa application runtime
     /** {@inheritDoc} */
     @Override
     public InstanceState launchMode() {

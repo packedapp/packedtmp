@@ -26,40 +26,21 @@ import packed.internal.application.PackedApplicationDriver;
  * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
  */
 public interface ApplicationMirror {
-    
-    default void forEachComponent(Consumer<? super ComponentMirror> action) {
-        container().components().forEach(action);
-    }
-    
-    ContainerMirror container();
-    
 
-    /**
-     * Returns the name of the application.
-     * 
-     * @return the name of the application
-     * @see Wirelet#named(String)
-     */
-    default String name() {
-        return container().name();
-    }
-    
-    
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
+
+    default Stream<ComponentMirror> components() {
+        return container().components();
+    }
 
     /** {@return the component in the application}. */
     default <T extends ComponentMirror> SetView<T> components(Class<T> componentType) {
         throw new UnsupportedOperationException();
     }
 
-    // Er det kun componenter i den application??? Ja ville jeg mene...
-    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
-    // app.rootContainer.children() <-- does this only include children in the same
-    // application?? or any children...
-
-    // teanker det kun er containere i samme application...
-    // ellers maa man bruge container.resolve("....")
+    /** {@return the root container in the application.} */
+    ContainerMirror container();
 
     /**
      * Returns an immutable set containing any extensions that have been disabled.
@@ -70,15 +51,14 @@ public interface ApplicationMirror {
      */
     Set<Class<? extends Extension>> disabledExtensions();
 
-    default Stream<BeanMirror> selectBeans() {
-        return select(BeanMirror.class);
-    }
-    
-    default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
-        throw new UnsupportedOperationException();
-    }
+    // Er det kun componenter i den application??? Ja ville jeg mene...
+    // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
+    // app.rootContainer.children() <-- does this only include children in the same
+    // application?? or any children...
 
-    
+    // teanker det kun er containere i samme application...
+    // ellers maa man bruge container.resolve("....")
+
     default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
         throw new UnsupportedOperationException();
     }
@@ -110,7 +90,11 @@ public interface ApplicationMirror {
 
     /** {@return all the application hosts defined in this application.} */
     default SetView<ApplicationHostMirror> findAllInstalledHosts(boolean includeChildApplications) {
-        return findAll(ApplicationHostMirror.class, includeChildApplications);
+        throw new UnsupportedOperationException();
+    }
+
+    default void forEachComponent(Consumer<? super ComponentMirror> action) {
+        container().components().forEach(action);
     }
 
     /**
@@ -170,7 +154,30 @@ public interface ApplicationMirror {
     // Maaske vi skal have et realm mirror????
     Module module();
 
-    
+    /**
+     * Returns the name of the application.
+     * <p>
+     * The name of an application is always identical to the name of the root container.
+     * 
+     * @return the name of the application
+     * @see Wirelet#named(String)
+     */
+    default String name() {
+        return container().name();
+    }
+
+    default void print() {
+        container().print();
+    }
+
+    default <T extends ComponentMirror> Stream<T> select(Class<T> componentType) {
+        throw new UnsupportedOperationException();
+    }
+
+    default Stream<BeanMirror> selectBeans() {
+        return select(BeanMirror.class);
+    }
+
     /**
      * <p>
      * A root application always returns empty
@@ -189,8 +196,22 @@ public interface ApplicationMirror {
         // someComponent.walker().filter(c->c.application == SomeApp)...
     }
 
+    // Relations between to different applications
+    // Ret meget som ComponentRelation
+
+    /// Maaske flyt til ApplicationMirror.relation...
+    /// Der er ingen der kommer til at lave dem selv...
+
     public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
         return PackedApplicationDriver.MIRROR_DRIVER.build(BuildTarget.MIRROR, assembly, wirelets).application.applicationMirror();
+    }
+
+    /**
+     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
+     * application driver.}
+     */
+    public static ApplicationDriver<?> defaultMirrorDriver() {
+        return PackedApplicationDriver.MIRROR_DRIVER;
     }
 
     /**
@@ -203,14 +224,8 @@ public interface ApplicationMirror {
      * @return an application mirror
      */
     public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return of(ApplicationDriver.defaultMirrorDriver(), assembly, wirelets);
+        return of(defaultMirrorDriver(), assembly, wirelets);
     }
-
-    // Relations between to different applications
-    // Ret meget som ComponentRelation
-
-    /// Maaske flyt til ApplicationMirror.relation...
-    /// Der er ingen der kommer til at lave dem selv...
 
     // extends Relation???
     interface HostGuestRelation {
@@ -255,13 +270,5 @@ public interface ApplicationMirror {
         ApplicationMirror from();
 
         ApplicationMirror to();
-    }
-
-    default void print() {
-        container().print();
-    }
-
-    default Stream<ComponentMirror> components() {
-        return container().components();
     }
 }

@@ -154,7 +154,7 @@ public interface Injector extends ServiceLocator {
      * @return the new injector
      */
     static Injector configure(ComposerConfigurator<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return driver().compose(new InjectorComposer(), configurator, wirelets);
+        return InjectorComposer.configure(configurator, wirelets);
     }
 
     /**

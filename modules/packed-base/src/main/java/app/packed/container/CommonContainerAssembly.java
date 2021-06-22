@@ -21,8 +21,8 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseBeanConfiguration;
+import app.packed.component.BeanDriver;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -44,7 +44,7 @@ import app.packed.service.ServiceBeanConfiguration;
  * @see BaseAssembly
  */
 // Altsaa har vi brug for at lave container assemblies uden en masse metoder
-public abstract class CommonContainerAssembly extends Assembly<BaseContainerConfiguration> {
+public abstract class CommonContainerAssembly extends ContainerAssembly<BaseContainerConfiguration> {
 
     /** Creates a new assembly using {@link BaseContainerConfiguration#driver()}. */
     protected CommonContainerAssembly() {
@@ -84,11 +84,22 @@ public abstract class CommonContainerAssembly extends Assembly<BaseContainerConf
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
     protected final BaseBeanConfiguration install(Class<?> implementation) {
-        return configuration().install(implementation);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
+        return configuration().wire(driver);
     }
 
+    /**
+     * Installs a singleton bean that will use the specified {@link Factory} to instantiate the bean instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * 
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
     protected final BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        return configuration().install(implementation, wirelets);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
+        return configuration().wire(driver, wirelets);
     }
 
     /**
@@ -101,11 +112,21 @@ public abstract class CommonContainerAssembly extends Assembly<BaseContainerConf
      * @see BaseAssembly#install(Factory)
      */
     protected final BaseBeanConfiguration install(Factory<?> factory) {
-        return configuration().install(factory);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
+        return configuration().wire(driver);
     }
 
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * 
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     * @see CommonContainerAssembly#install(Factory)
+     */
     protected final BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        return configuration().install(factory, wirelets);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
+        return configuration().wire(driver, wirelets);
     }
 
     /**
@@ -121,15 +142,17 @@ public abstract class CommonContainerAssembly extends Assembly<BaseContainerConf
      * @return this configuration
      */
     protected final BaseBeanConfiguration installInstance(Object instance) {
-        return configuration().installInstance(instance);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
+        return configuration().wire(driver);
     }
 
     protected final BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        return configuration().installInstance(instance, wirelets);
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
+        return configuration().wire(driver, wirelets);
     }
 
     /**
-     * Links the specified assembly.
+     * Links the specified container assembly.
      * 
      * @param assembly
      *            the assembly to link
@@ -140,7 +163,7 @@ public abstract class CommonContainerAssembly extends Assembly<BaseContainerConf
      */
     // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
     // Men maaske skulle Component
-    protected final ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+    protected final ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);
     }
 
@@ -173,10 +196,6 @@ public abstract class CommonContainerAssembly extends Assembly<BaseContainerConf
      */
     protected final NamespacePath path() {
         return configuration().path();
-    }
-
-    protected final BaseBeanConfiguration stateless(Class<?> implementation) {
-        return configuration().installStatic(implementation);
     }
 
     /**

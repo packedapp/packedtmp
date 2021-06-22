@@ -136,7 +136,7 @@ public final class ApplicationSetup extends ContainerSetup {
     }
 
     /** An application mirror adaptor. */
-    private class BuildTimeApplicationMirror implements ApplicationMirror {
+    private final class BuildTimeApplicationMirror implements ApplicationMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -178,7 +178,6 @@ public final class ApplicationSetup extends ContainerSetup {
         public ContainerMirror container() {
             return ApplicationSetup.this.container.mirror();
         }
-
     }
 
     public class MainThreadOfControl {

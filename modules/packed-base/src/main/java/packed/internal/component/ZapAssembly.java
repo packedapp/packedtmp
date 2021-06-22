@@ -17,7 +17,7 @@ public class ZapAssembly extends BaseAssembly {
     public static void main(String[] args) {
         App.run(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
 
-        Daemon.driver().mirror(new ZapAssembly());
+        Daemon.mirror(new ZapAssembly());
         
         // Det gode ved mirror er at 
         Daemon.introspect(new ZapAssembly());

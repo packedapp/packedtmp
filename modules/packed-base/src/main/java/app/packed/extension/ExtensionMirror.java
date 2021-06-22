@@ -12,19 +12,21 @@ import packed.internal.container.ExtensionSetup;
 /**
  * A generic mirror for an extension.
  * <p>
- * This class can be overridden to provide a specialized mirror for an extension . For example, {@link ServiceExtension}
- * provides the specialized mirror {@link ServiceExtensionMirror}. Extensions that provide a specialized mirror must
- * override {@link Extension#mirror()} to return an instance of the specialized mirror.
+ * This class can be overridden to provide a specialized mirror for an extension. For example, {@link ServiceExtension}
+ * provides a specialized mirror {@link ServiceExtensionMirror}.
+ * <p>
+ * Extensions that provide a specialized mirror must override {@link Extension#mirror()} to return an instance of the
+ * specialized mirror.
  */
-public class ExtensionMirror<E extends Extension> {
+public class ExtensionMirror<E extends Extension> implements ExtensionMember<E> {
 
     /** The extension all calls on this interface delegates to. */
     @Nullable
     private ExtensionSetup extension;
 
     /**
-     * Create a new extension mirror. Subclasses should have a single package-protected constructor. That are only invoked
-     * via an overridden {@link Extension#mirror()}.
+     * Create a new extension mirror. Subclasses should have a single package-protected constructor. That is only invoked
+     * from an overridden {@link Extension#mirror()}.
      */
     protected ExtensionMirror() {}
 
@@ -33,7 +35,7 @@ public class ExtensionMirror<E extends Extension> {
         return extension().container.mirror();
     }
 
-    /** {@return a static extension descriptor.} */
+    /** {@return an extension descriptor.} */
     public final ExtensionDescriptor descriptor() {
         return ExtensionDescriptor.of(type());
     }
@@ -44,11 +46,18 @@ public class ExtensionMirror<E extends Extension> {
         return other instanceof ExtensionMirror<?> m && extension() == m.extension();
     }
 
+    /**
+     * {@return an extension descriptor.}
+     * 
+     * @throws InternalExtensionException
+     *             if called from the constructor of the mirror, or the extension developer forgot to call
+     *             {@link Extension#mirrorPopulate(ExtensionMirror)}.
+     */
     private ExtensionSetup extension() {
         ExtensionSetup e = extension;
         if (e == null) {
             throw new InternalExtensionException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to populate it");
+                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorPopulate");
         }
         return e;
     }
@@ -63,12 +72,17 @@ public class ExtensionMirror<E extends Extension> {
         throw new UnsupportedOperationException();
     }
 
-    void populate(ExtensionSetup es) {
+    /**
+     * Invoked from {@link Extension#mirrorPopulate(ExtensionMirror)} to set the extension we are mirroring.
+     * 
+     * @param extension
+     *            the extension to mirror
+     */
+    void populate(ExtensionSetup extension) {
         if (this.extension != null) {
             throw new IllegalStateException("The specified mirror has already been populated.");
         }
-        this.extension = es;
-
+        this.extension = extension;
     }
 
     /** {@inheritDoc} */

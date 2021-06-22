@@ -27,7 +27,7 @@ import app.packed.component.Assembly;
 // Altsaa det giver sjaeldent mening at lave den direkte 
 //Is not a system namespace by default..
 //What about shutdown... I don't think it is active...
-interface Job<R> {
+public interface Job<R> {
 
     R get();
     

@@ -18,13 +18,15 @@ import app.packed.application.ApplicationDriver;
  * Indicate An exception that is typically thrown when attempting to perform an operation that requires an application
  * to be runnable, but application was not.
  * 
- * @see ApplicationDriver#hasRuntime()
  */
-
 
 // Eller hvad er det maaske ikke federe at smide en InternalExtensionException
 
 // UnavailableExtensionException
+
+// ==== Alternativt === 
+// ExtensionDisabledException for general use
+// InternalExtensionException for using undeclared dependency
 
 //if disabled, or if application extension used by a non-root container
 public class ExtensionNotAvailableException extends RuntimeException {

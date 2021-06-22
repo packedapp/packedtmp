@@ -1,3 +1,12 @@
 package app.packed.extension;
 
+// Vil sige den er god til at dokumentere hvem der er hvem. Men vi behoever jo egentlig ikke en faelles klasse
+
+// ExtensionWirelet -> Har vi brug for at vide hvilken extension vi skal brokke os over ikke eksistere
+// Extensor -> Har vi brug for at vide hvilke extensors kan finde hinanden
+// ExtensionMirror -> Har vi brug for at vide hvilken extension vi skal spoerge om mirroret...
+
 public /* sealed */ interface ExtensionMember<E extends Extension> {}
+
+// ExtensionMirror vil vi helst have @MemberOf...
+// Mest fordi vi ikke gider at brugerne skal skrive ExtensionMirror<?>... 

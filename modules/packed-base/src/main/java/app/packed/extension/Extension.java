@@ -35,6 +35,7 @@ import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
@@ -101,9 +102,9 @@ import packed.internal.util.ThrowableUtil;
 public abstract class Extension implements ExtensionMember<Extension> {
 
     /**
-     * The context of this extension which most methods delegate to.
+     * The extension context, that most methods delegate to.
      * <p>
-     * This field is initialized in {@link ExtensionSetup#newInstance(ContainerSetup, Class)} via a varhandle. The field is
+     * This field is initialized in {@link ExtensionSetup#newExtension(ContainerSetup, Class)} via a varhandle. The field is
      * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
@@ -112,7 +113,7 @@ public abstract class Extension implements ExtensionMember<Extension> {
     @Nullable
     private ExtensionContext context;
 
-    /** Create a new extension. Subclasses should have a single package-protected constructor. */
+    /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
     // checkExtendable...
@@ -176,16 +177,16 @@ public abstract class Extension implements ExtensionMember<Extension> {
         return context().findParent(parentType);
     }
 
-    protected final ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets) {
-        return context().installExtensor(implementation, wirelets);
+    protected final ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation) {
+        return context().installExtensor(implementation);
     }
 
-    protected final ExtensorConfiguration installExtensor(Extensor<?> instance, Wirelet... wirelets) {
-        return context().installExtensorInstance(instance, wirelets);
+    protected final ExtensorConfiguration installExtensor(Extensor<?> instance) {
+        return context().installExtensorInstance(instance);
     }
 
-    protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets) {
-        return context().installExtensor(factory, wirelets);
+    protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory) {
+        return context().installExtensor(factory);
     }
 
     /**
@@ -231,8 +232,8 @@ public abstract class Extension implements ExtensionMember<Extension> {
      * This method can be overridden to overridden to provide a custom mirror. For example, {@link ServiceExtension}
      * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
-     * If overridding this method {@link #mirrorPopulate(ExtensionMirror)} should be invoked on the custom mirror before
-     * returning it. As this will populate the generic methods on extension mirror.
+     * If overriding this method {@link #mirrorPopulate(ExtensionMirror)} must be invoked with the specialized extension
+     * mirror before returning from the method. As this will populate the generic methods on {@link ExtensionMirror}.
      * <p>
      * The runtime will throw an InternalExtensionException if this method is overridden and null is returned.
      * 
@@ -336,7 +337,7 @@ public abstract class Extension implements ExtensionMember<Extension> {
      * @throws InternalExtensionException
      *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
      */
-    protected final void runtimeLink(Assembly<?> assembly, Wirelet... wirelets) {
+    protected final void runtimeLink(ContainerAssembly<?> assembly, Wirelet... wirelets) {
         context().link(assembly, wirelets);
     }
 

@@ -17,6 +17,7 @@ package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -25,16 +26,16 @@ import app.packed.component.Assembly;
 import app.packed.component.BeanMirror;
 import app.packed.component.BuildException;
 import app.packed.component.ComponentDriver;
-import app.packed.component.Composer;
-import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionNotAvailableException;
+import app.packed.job.JobAssembly;
+import app.packed.job.JobExtension;
 import app.packed.lifecycle.InitializationException;
-import app.packed.service.ServiceComposer;
+import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.validate.Validation;
@@ -65,28 +66,6 @@ import packed.internal.application.PackedApplicationDriver;
  */
 // Environment + Shell + Result
 public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseContainerConfiguration> {
-
-    /**
-     * Create a new application instance by using the specified consumer and configurator.
-     * <p>
-     * This method is is rarely called directly by end-users. But indirectly through methods such as
-     * {@link ServiceLocator#of(Consumer)}.
-     * 
-     * @param <C>
-     *            the type of composer that is exposed to the end-user
-     * @param composer
-     *            the composer
-     * @param configurator
-     *            the configurator specified by the end-user for configuring the composer
-     * @param wirelets
-     *            optional wirelets
-     * @return the new application instance
-     * 
-     * @see Composer
-     * @see ServiceComposer
-     * @see ServiceLocator#of(Consumer)
-     */
-    <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> configurator, Wirelet... wirelets);
 
     /**
      * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.
@@ -120,6 +99,8 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
      * @see App#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */
+    // Maaske er den her paa ApplicationRuntimeExtension.launch()
+    // JobExtension.execute()
     A launch(Assembly<?> assembly, Wirelet... wirelets); // newInstance
 
     /**
@@ -138,10 +119,6 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
     // runTo().. Den der fucking terminated kills me (naah)
     // Terminated -> Runs until the application has terminated
     InstanceState launchMode();
-
-    default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(this, assembly, wirelets);
-    }
 
     /**
      * Create a new application image by using the specified assembly and optional wirelets.
@@ -217,14 +194,6 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
     }
 
     /**
-     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
-     * application driver.}
-     */
-    public static ApplicationDriver<?> defaultMirrorDriver() {
-        return PackedApplicationDriver.MIRROR_DRIVER;
-    }
-
-    /**
      * A builder for an application driver. An instance of this interface is normally acquired via
      * {@link ApplicationDriver#builder()}.
      */
@@ -280,6 +249,23 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
          * @return
          */
         Builder disableExtension(Class<? extends Extension> extensionType);
+
+        default Builder enableExtension(Class<? extends Extension> extensionType) {
+            return this;
+        }
+
+        // prerequisite
+        default <E extends Extension> Builder enableExtension(Class<? extends E> extensionType, Consumer<E> onInit) {
+            return this;
+        }
+
+        default <E extends Extension> Builder enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationBuildInfo, E> onInit) {
+            return this;
+        }
+
+        default <E extends Extension> Builder requireAssembly(Class<? extends Assembly<?>> assembly) {
+            return this;
+        }
         // fx disallow(BytecodeGenExtension.class);
         // fx disallow(ThreadExtension.class);
         // fx disallow(FileExtension.class);
@@ -316,6 +302,11 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
          * @param launchMode
          * @return
          */
+        // Kan jo vaere en wirelet...
+
+        // static ApplicationRuntime.launchMode(ApplicationDriver ad);
+        // -> SelectWirelets(LaunchWirelet.class).last().launchMode();
+        // static Job.resultType()...
         Builder launchMode(InstanceState launchMode);
 
         /**
@@ -379,6 +370,11 @@ interface ApplicationDriverSandbox<A> {
         validate(assembly, wirelets).assertValid();
     }
 
+    // Tog den faktisk ud igen
+    default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+        return ApplicationMirror.of(/*this*/ null, assembly, wirelets);
+    }
+
     default <T> ApplicationDriver<T> bind(Class<T> cl) {
         // Ideen er lidt at man f.eks. fra Job<R> kan binde R...
         // og sig Job.of(String.class, ....);
@@ -398,6 +394,12 @@ interface ApplicationDriverSandbox<A> {
 
     default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
         throw new UnsupportedOperationException();
+    }
+
+    default ApplicationDriverSandbox<A> extractResultTypeFromTypeparameter(int index) {
+        // Ideen er at vi kan sige Job<T> -> Tag T ud af Job og brug den til at determined
+
+        return this;
     }
 
     default A launchThrowing(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
@@ -429,6 +431,21 @@ interface ApplicationDriverSandbox<A> {
 
     default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
 
+    }
+
+    default void fff() {
+        ApplicationDriver.builder().enableExtension(ApplicationRuntimeExtension.class);
+        ApplicationDriver.builder().enableExtension(ServiceExtension.class, e -> e.exportAll());
+
+        ApplicationDriver.builder().enableExtension(JobExtension.class, (b, e) -> {
+            @SuppressWarnings("unchecked")
+            Class<? extends JobAssembly<?>> cl = (Class<? extends JobAssembly<?>>) b.assemblyType();
+            System.out.println(cl);
+            // e.setResultType(<T>.extract);
+            // extract <T> from Jo
+        });
+
+        // ApplicationBuildInfo = Assembly + ApplicationDriver + "Launch Context (img/delayed/instance)"
     }
 //  /**
 //  * Will look for annotations

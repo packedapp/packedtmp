@@ -26,4 +26,12 @@ public class ApplicationHostExtension extends Extension {
     public ApplicationMirror delayedInitialization(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
+    
+    // Ideen er at f.eks. vi har en specifik Session extension?
+    // Evt. Session Application Assembly
+    public class Sub extends Subtension {
+        
+    }
+    
+    // Som default linker man altid trustet ting...
 }

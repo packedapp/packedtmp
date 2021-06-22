@@ -20,13 +20,13 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.ComponentMirror;
 import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension.Subtension;
 import app.packed.inject.Factory;
 
@@ -59,8 +59,7 @@ public /* sealed */ interface ExtensionContext {
     void checkIsPreCompletion();
 
     /**
-     * Checks that 
-     * Checks that child containers has been aded
+     * Checks that Checks that child containers has been aded
      */
     void checkIsPreLinkage();
 
@@ -92,7 +91,7 @@ public /* sealed */ interface ExtensionContext {
     <E extends ExtensionMember<?>> Optional<ExtensionConnection<E>> findParent(Class<E> parentType);
 
     // A new instance. Ligesom install(bean)
-    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation, Wirelet... wirelets);
+    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation);
 
     // maybe userInstall
     // or maybe we just have userWire()
@@ -100,7 +99,7 @@ public /* sealed */ interface ExtensionContext {
     // For hvorfor skal brugen installere en alm component via denne extension???
     // Vi skal vel altid have en eller anden specific component driver
     // BaseComponentConfiguration containerInstall(Class<?> factory);
-    ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory, Wirelet... wirelets);
+    ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory);
 
     // Will install the class in the specified Container
     // Hvad hvis vi bare vil finde en extension...
@@ -116,8 +115,15 @@ public /* sealed */ interface ExtensionContext {
      * @see #installExtensor(Class, Wirelet...)
      * @see #installExtensor(Factory, Wirelet...)
      */
-    ExtensorConfiguration installExtensorInstance(Extensor<?> instance, Wirelet... wirelets);
+    ExtensorConfiguration installExtensorInstance(Extensor<?> instance);
 
+    /**
+     * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
+     * 
+     * @param extensionType
+     *            the type of extension to test
+     * @return true if disabled, otherwise false
+     */
     default boolean isExtensionDisabled(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
@@ -176,7 +182,7 @@ public /* sealed */ interface ExtensionContext {
      *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
      * @see Extension#onComplete()
      */
-    ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets);
+    ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Re

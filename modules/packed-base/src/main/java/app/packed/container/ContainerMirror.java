@@ -18,9 +18,19 @@ import app.packed.extension.ExtensionMirror;
  */
 public interface ContainerMirror extends ComponentMirror {
 
-    /** {@return a set of all extensions that are used by the container.} */
+    /** {@return a set mirrors for all extension that are in use by the container.} */
     Set<ExtensionMirror<?>> extensions();
 
+    /** {@return a set of the extension types that are in use by the container.} */
+    Set<Class<? extends Extension>> extensionsTypes();
+
+    /**
+     * @param <T>
+     *            the type of mirror
+     * @param extensionMirrorType
+     *            the mirror type
+     * @return a mirror of the specified type, or empty if mirror of the requested type exists
+     */
     <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType); // maybe just find
 
     /**

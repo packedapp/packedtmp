@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides a classes and interfaces for writing extensions.
+ * Provides classes and interfaces for creating extensions.
  * <p>
  */
 package app.packed.extension;

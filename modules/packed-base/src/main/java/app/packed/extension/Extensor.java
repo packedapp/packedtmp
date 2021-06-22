@@ -35,6 +35,13 @@ package app.packed.extension;
 // Single constructor...
 // Inject??? Nahhh
 
+
+/// ----- SystemExtenstor -----
+// Vi slipper ikke udenom ref count hvis vi har en SystemExtensor...
+// PGA af classLoading...
+
+// Men maaske en BuildExtensor...
+
 /**
  * Extensors are runtime representations of {@link Extension extensions}.
  * <p>

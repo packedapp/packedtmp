@@ -20,18 +20,18 @@ import app.packed.component.ComponentConfiguration;
 
 public final class ExtensorConfiguration extends ComponentConfiguration {
 
+    // Bind er lokalt inject, provide er container scope
     public <T> ExtensorConfiguration bindInstance(Class<T> key, T instance) {
         return this;
     }
 
     public ExtensorConfiguration bindInstance(Object o) {
-
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensorConfiguration named(String name) {
+    public ExtensorConfiguration named(String name) {
         super.named(name);
         return this;
     }

@@ -160,7 +160,6 @@ public final class Infuser {
         Entry(EntryBuilder b, @Nullable MethodHandle transformer, int... indexes) {
             this(transformer, b.hide, b.optional, indexes);
         }
-
     }
 }
 //public void invokeMethod(String methodName, int index) {

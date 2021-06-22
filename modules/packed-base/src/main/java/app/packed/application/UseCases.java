@@ -28,7 +28,7 @@ public class UseCases {
 
         hc.install(new AA()).provideSingleLauncher();
         hc.installLaunchable(new AA());
-        cc.install(AppLauncher.class);
+        // cc.install(AppLauncher.class);
     }
 
     public void singleInstanceWithGuest(BaseContainerConfiguration cc) {
@@ -36,7 +36,7 @@ public class UseCases {
 
         hc.install(new AA()).provideGuest();
         hc.installLaunchable(new AA());
-        cc.install(AppLauncher.class);
+        // cc.install(AppLauncher.class);
     }
 
     public interface Guest {
@@ -53,7 +53,7 @@ class HostAsExtension extends BaseAssembly {
 
     @Override
     protected void build() {
-      use(ApplicationHostExtension.class).delayedInitialization(new BB());
+        use(ApplicationHostExtension.class).delayedInitialization(new BB());
     }
 
 }

@@ -6,7 +6,7 @@ import app.packed.extension.Extension;
 /**
  * Wirelets that can be specified when wiring a container.
  */
-final class ContainerWirelets {
+public final class ContainerWirelets {
     private ContainerWirelets() {}
 
     /**
@@ -16,11 +16,14 @@ final class ContainerWirelets {
      *            the type of extensions to disable
      * @return the wirelet
      */
-    public Wirelet disableExtension(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+    // Skal vi have en specific ExtensionDisabledException???
+    
+    @SafeVarargs
+    public static Wirelet disableExtension(Class<? extends Extension>... extensionTypes) {
         throw new UnsupportedOperationException();
     }
     // There are some possibilities...
-    
+
     // disableExtension(Predicate<?>, Class<?>... classes)
 
     // disableExtensionForUser
