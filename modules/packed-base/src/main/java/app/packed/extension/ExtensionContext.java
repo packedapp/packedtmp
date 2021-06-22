@@ -91,6 +91,8 @@ public /* sealed */ interface ExtensionContext {
     <E extends ExtensionMember<?>> Optional<ExtensionConnection<E>> findParent(Class<E> parentType);
 
     // A new instance. Ligesom install(bean)
+    
+    // Hvad sker der hvis det er en platform extensor, som allerede er installeret og navngivet???
     ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation);
 
     // maybe userInstall

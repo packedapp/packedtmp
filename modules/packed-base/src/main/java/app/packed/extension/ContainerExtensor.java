@@ -8,6 +8,11 @@ package app.packed.extension;
 public abstract class ContainerExtensor<E extends Extension> extends Extensor<E> {
 
    
+    // IDK
+    static void $onlySearchDirectParents() { 
+        
+    }
+    
     
     // extension.autoInstall(...)
 
