@@ -81,6 +81,7 @@
         <configuration>
           <source>16</source>
           <target>16</target>
+          <compilerArgs>--enable-preview</compilerArgs>
           <compilerArgument>-Xlint:deprecation</compilerArgument>
           <compilerArgument>-Xlint:unchecked</compilerArgument>
         </configuration>
@@ -88,6 +89,10 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.0.0-M5</version>
+        <configuration>
+            <argLine>--enable-preview</argLine>
+        </configuration>
+        
         <!-- Surefire does not pickup static test classes, unless we have these excludes, see https://github.com/junit-team/junit5/issues/1377 
         <configuration>
           <excludes>

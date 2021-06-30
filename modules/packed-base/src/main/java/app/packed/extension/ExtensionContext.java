@@ -63,7 +63,7 @@ public /* sealed */ interface ExtensionContext {
      */
     void checkIsPreLinkage();
 
-    default <E extends ExtensionMember<?>> Stream<ExtensionConnection<E>> findAllAncestors(Class<E> ancestorType) {
+    default <E extends ExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
         throw new UnsupportedOperationException();
     }
 
@@ -74,7 +74,7 @@ public /* sealed */ interface ExtensionContext {
      *            the type of ancestor to find
      * @return
      */
-    <E extends ExtensionMember<?>> ExtensionConnection<E> findFirstAncestor(Class<E> ancestorType);
+    <E extends ExtensionMember<?>> ExtensionBeanConnection<E> findFirstAncestor(Class<E> ancestorType);
 
     /**
      * Attempts to find a parent of the specified type.
@@ -88,12 +88,12 @@ public /* sealed */ interface ExtensionContext {
      */
     // Ahhh for helvede det virker jo kun med extensions... ikke med extensors...
     // ExtensorContext???
-    <E extends ExtensionMember<?>> Optional<ExtensionConnection<E>> findParent(Class<E> parentType);
+    <E extends ExtensionMember<?>> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
     // A new instance. Ligesom install(bean)
-    
+
     // Hvad sker der hvis det er en platform extensor, som allerede er installeret og navngivet???
-    ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation);
+    ExtensionBeanConfiguration installExtensor(Class<? extends ExtensionBean<?>> implementation);
 
     // maybe userInstall
     // or maybe we just have userWire()
@@ -101,7 +101,7 @@ public /* sealed */ interface ExtensionContext {
     // For hvorfor skal brugen installere en alm component via denne extension???
     // Vi skal vel altid have en eller anden specific component driver
     // BaseComponentConfiguration containerInstall(Class<?> factory);
-    ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory);
+    ExtensionBeanConfiguration installExtensor(Factory<? extends ExtensionBean<?>> factory);
 
     // Will install the class in the specified Container
     // Hvad hvis vi bare vil finde en extension...
@@ -117,7 +117,7 @@ public /* sealed */ interface ExtensionContext {
      * @see #installExtensor(Class, Wirelet...)
      * @see #installExtensor(Factory, Wirelet...)
      */
-    ExtensorConfiguration installExtensorInstance(Extensor<?> instance);
+    ExtensionBeanConfiguration installExtensorInstance(ExtensionBean<?> instance);
 
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
@@ -142,7 +142,7 @@ public /* sealed */ interface ExtensionContext {
     boolean isPartOfImage(); // BoundaryTypes
 
     /**
-     * Returns whether or not the specified extension is used by this extension, other extensions or user code in the same
+     * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
      * container as this extension.
      * 
      * @param extensionType

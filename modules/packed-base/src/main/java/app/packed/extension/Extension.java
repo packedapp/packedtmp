@@ -99,7 +99,7 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public abstract class Extension implements ExtensionMember<Extension> {
+public non-sealed abstract class Extension implements ExtensionMember<Extension> {
 
     /**
      * The extension context, that most methods delegate to.
@@ -167,25 +167,25 @@ public abstract class Extension implements ExtensionMember<Extension> {
         return c;
     }
 
-    protected <E extends Extension, X extends Extensor<E>> Doubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
+    protected <E extends Extension, X extends ExtensionBean<E>> ExtensionBeanDoubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
         throw new UnsupportedOperationException();
     }
 
     // findExtension()
     // findExtensor()
-    protected final <E extends ExtensionMember<?>> Optional<ExtensionConnection<E>> findParent(Class<E> parentType) {
+    protected final <E extends ExtensionMember<?>> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
         return context().findParent(parentType);
     }
 
-    protected final ExtensorConfiguration installExtensor(Class<? extends Extensor<?>> implementation) {
+    protected final ExtensionBeanConfiguration installExtensor(Class<? extends ExtensionBean<?>> implementation) {
         return context().installExtensor(implementation);
     }
 
-    protected final ExtensorConfiguration installExtensor(Extensor<?> instance) {
+    protected final ExtensionBeanConfiguration installExtensor(ExtensionBean<?> instance) {
         return context().installExtensorInstance(instance);
     }
 
-    protected final ExtensorConfiguration installExtensor(Factory<? extends Extensor<?>> factory) {
+    protected final ExtensionBeanConfiguration installExtensor(Factory<? extends ExtensionBean<?>> factory) {
         return context().installExtensor(factory);
     }
 
@@ -408,7 +408,7 @@ public abstract class Extension implements ExtensionMember<Extension> {
     }
 
     // An instance of extensorType will automatically be installed whenever the extensor is used
-    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends Extensor<?>> extensorType) {}
+    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBean<?>> extensorType) {}
 
     /**
      * Only parent extensions will be linked

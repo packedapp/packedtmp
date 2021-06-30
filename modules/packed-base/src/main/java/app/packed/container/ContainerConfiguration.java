@@ -19,7 +19,7 @@ import packed.internal.util.ThrowableUtil;
  * but users are free to create other implementations that restrict the functionality of the default container
  * configuration by overridding this class.
  */
-public abstract /* non-sealed */ class ContainerConfiguration extends ComponentConfiguration {
+public abstract non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(

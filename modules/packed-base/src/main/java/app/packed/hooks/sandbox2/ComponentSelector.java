@@ -39,9 +39,7 @@ public final class ComponentSelector {
 
     private ComponentSelector() {}
 
-    public void processIf(BiPredicate<? super ComponentMirror, ? super ComponentMirror> originActualPredicate) {
-
-    }
+    public void processIf(BiPredicate<? super ComponentMirror, ? super ComponentMirror> originActualPredicate) {}
 
     public static ComponentSelector all() {
         return ALL;

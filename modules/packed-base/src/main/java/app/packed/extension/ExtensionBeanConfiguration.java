@@ -4,7 +4,7 @@ import app.packed.base.NamespacePath;
 import app.packed.component.ComponentConfiguration;
 
 /**
- * A configuration object for an {@link Extensor}.
+ * A configuration object for an {@link ExtensionBean}.
  * <p>
  * An instance of this class is returned when installing an Extensor via
  * 
@@ -17,21 +17,23 @@ import app.packed.component.ComponentConfiguration;
 // .ServiceExtension
 // .ServiceExtension
 // .ServiceExtension
-
-public final class ExtensorConfiguration extends ComponentConfiguration {
+public final class ExtensionBeanConfiguration extends ComponentConfiguration {
 
     // Bind er lokalt inject, provide er container scope
-    public <T> ExtensorConfiguration bindInstance(Class<T> key, T instance) {
+    
+    // Altsaa hvorfor kan vi ikke bare gemme det i selve extension'en???
+    // Og saa hive det ud derfra??
+    public <T> ExtensionBeanConfiguration bindInstance(Class<T> key, T instance) {
         return this;
     }
 
-    public ExtensorConfiguration bindInstance(Object o) {
+    public ExtensionBeanConfiguration bindInstance(Object o) {
         return this;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExtensorConfiguration named(String name) {
+    public ExtensionBeanConfiguration named(String name) {
         super.named(name);
         return this;
     }

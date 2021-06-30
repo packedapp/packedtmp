@@ -189,7 +189,8 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
         return disabledExtensions;
     }
 
-    public PackedApplicationDriver<A> withDisabledExtensions(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+    @SuppressWarnings("unchecked")
+    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension>... extensionTypes) {
         // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
         throw new UnsupportedOperationException();
     }

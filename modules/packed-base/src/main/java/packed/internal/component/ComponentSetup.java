@@ -346,7 +346,7 @@ public abstract class ComponentSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    public abstract class BuildTimeComponentMirror implements ComponentMirror {
+    public abstract class AbstractBuildTimeComponentMirror implements ComponentMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -382,7 +382,7 @@ public abstract class ComponentSetup {
         @Override
         public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetup.this.isInSame(scope, ((BuildTimeComponentMirror) other).outer());
+            return ComponentSetup.this.isInSame(scope, ((AbstractBuildTimeComponentMirror) other).outer());
         }
 
         /** {@inheritDoc} */
@@ -397,7 +397,7 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final Optional<Class<? extends Extension>> owningExtension() {
+        public final Optional<Class<? extends Extension>> memberOfExtension() {
             return Optional.ofNullable(realm.extensionType);
         }
 
@@ -418,7 +418,7 @@ public abstract class ComponentSetup {
         @Override
         public final Relation relationTo(ComponentMirror other) {
             requireNonNull(other, "other is null");
-            return ComponentSetupRelation.of(ComponentSetup.this, ((BuildTimeComponentMirror) other).outer());
+            return ComponentSetupRelation.of(ComponentSetup.this, ((AbstractBuildTimeComponentMirror) other).outer());
         }
 
         /** {@inheritDoc} */
@@ -453,7 +453,7 @@ public abstract class ComponentSetup {
         private Stream<ComponentMirror> stream0(ComponentSetup origin, boolean isRoot, PackedComponentStreamOption option) {
             // Also fix in ComponentConfigurationToComponentAdaptor when changing stuff here
             @SuppressWarnings({ "unchecked", "rawtypes" })
-            Collection<BuildTimeComponentMirror> c = (Collection) children();
+            Collection<AbstractBuildTimeComponentMirror> c = (Collection) children();
             if (c != null && !c.isEmpty()) {
                 if (option.processThisDeeper(origin, ComponentSetup.this)) {
                     Stream<ComponentMirror> s = c.stream().flatMap(co -> co.stream0(origin, false, option));

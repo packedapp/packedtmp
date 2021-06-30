@@ -25,6 +25,12 @@ import packed.internal.application.PackedApplicationDriver;
  * <p>
  * An instance of this class is typically obtained by calling {@link #of(Assembly, Wirelet...)} on this class.
  */
+// En application kan
+//// Vaere ejet af bruger
+//// Member of an extension
+//// Controlled by an extension
+
+// Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror {
 
     /** {@return the component in the application}. */

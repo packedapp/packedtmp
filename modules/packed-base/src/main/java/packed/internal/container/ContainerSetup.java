@@ -262,7 +262,7 @@ public class ContainerSetup extends ComponentSetup {
     }
 
     /** A build-time container mirror. */
-    private final class BuildTimeContainerMirror extends ComponentSetup.BuildTimeComponentMirror implements ContainerMirror {
+    private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
         private static final ClassValue<Class<? extends Extension>> EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
 
@@ -288,7 +288,7 @@ public class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final Set<ExtensionMirror<?>> extensions() {
+        public Set<ExtensionMirror<?>> extensions() {
             HashSet<ExtensionMirror<?>> result = new HashSet<>();
             for (ExtensionSetup es : extensions.values()) {
                 result.add(es.mirror());
@@ -304,7 +304,7 @@ public class ContainerSetup extends ComponentSetup {
 
         @SuppressWarnings("unchecked")
         @Override
-        public final <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType) {
+        public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType) {
             requireNonNull(extensionMirrorType, "extensionMirrorType is null");
 
             Class<? extends Extension> cl = EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR.get(extensionMirrorType);
@@ -323,7 +323,7 @@ public class ContainerSetup extends ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+        public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
             return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 
@@ -331,6 +331,11 @@ public class ContainerSetup extends ComponentSetup {
         @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";
+        }
+
+        @Override
+        public Optional<Class<? extends Extension>> managedByExtension() {
+            throw new UnsupportedOperationException();
         }
     }
 }

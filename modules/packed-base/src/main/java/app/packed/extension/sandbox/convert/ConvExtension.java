@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import app.packed.extension.Doubly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanDoubly;
 
 // Maaske er det ikke ContainerExtensor. But InheritableExtensor...
 // "Problemet" er applikation hosts... Vi gider jo ikke have 25 forskellige extensors.
@@ -39,11 +39,12 @@ public class ConvExtension extends Extension {
         converters.put(from, f);
     }
 
+    // Clear all converters
     public void clear() {}
 
     @Override
     protected void onPreChildren() {
-        Doubly<ConvExtension, ConvExtensor> ec = findFirst(ConvExtension.class, ConvExtensor.class);
+        ExtensionBeanDoubly<ConvExtension, ConvExtensor> ec = findFirst(ConvExtension.class, ConvExtensor.class);
 
         if (converters.isEmpty()) {
             converters = ec.extractOrElse(e -> e.converters, e -> e.m, DEFAULTS); // for child extensions
@@ -58,9 +59,9 @@ public class ConvExtension extends Extension {
         // We only install an extensor if we are the root container or we have changes to the converters
         installExtensor(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
     }
-    
+
     public class Sub extends Subtension {
-        
+
         public void add(Class<?> from, Function<?, ?> f) {
             ConvExtension.this.add(from, f);
         }

@@ -1,6 +1,6 @@
 package app.packed.extension;
 
-public interface ExtensorConnection<T> {
+public interface ExtensionBeanSearch<T> {
 
     void installNew();
     

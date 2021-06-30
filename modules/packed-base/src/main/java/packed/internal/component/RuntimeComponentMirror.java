@@ -147,7 +147,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     @Override
-    public Optional<Class<? extends Extension>> owningExtension() {
+    public Optional<Class<? extends Extension>> memberOfExtension() {
         // TODO Auto-generated method stub
         return null;
     }
@@ -293,5 +293,10 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     public Stream<ComponentMirror> components() {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public Optional<Class<? extends Extension>> managedByExtension() {
+        throw new UnsupportedOperationException();
     }
 }

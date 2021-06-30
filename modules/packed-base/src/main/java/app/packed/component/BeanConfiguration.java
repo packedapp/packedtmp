@@ -6,7 +6,7 @@ import app.packed.base.Key;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import packed.internal.component.bean.BeanSetup;
 
-public abstract /* non-sealed */ class BeanConfiguration extends ComponentConfiguration {
+public abstract non-sealed class BeanConfiguration extends ComponentConfiguration {
 
     /** {@return the bean setup.} */
     BeanSetup bean() {

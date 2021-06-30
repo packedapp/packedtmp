@@ -1,5 +1,5 @@
 package app.packed.component;
 
-public abstract class FunctionConfiguration extends ComponentConfiguration {
+public abstract non-sealed class FunctionConfiguration extends ComponentConfiguration {
 
 }

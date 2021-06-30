@@ -25,6 +25,7 @@ import app.packed.base.NamespacePath;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMember;
 import app.packed.mirror.Mirror;
 
 /**
@@ -34,7 +35,7 @@ import app.packed.mirror.Mirror;
 public /* sealed */ interface ComponentMirror extends Mirror {
 
     // ComponentDriverMirror driver(); IDK hvad skal den sige, andet end hvilken extension
-    
+
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
@@ -43,8 +44,7 @@ public /* sealed */ interface ComponentMirror extends Mirror {
 
     Stream<ComponentMirror> components();
 
-    /** {@return the container this component is a part of.} */
-    // Maaske flyt den ud til alle andre componenter end container
+    /** {@return the container this component is a part of. A container is always part of itself.} */
     ContainerMirror container();
 
     /** { @return the distance to the root component, the root component having depth {@code 0}.} */
@@ -58,7 +58,46 @@ public /* sealed */ interface ComponentMirror extends Mirror {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param scope
+     *            the scope to check
+     * @param other
+     *            the other component to check
+     * @return true if this component and the specified component is in the same specified scope, otherwise false
+     */
     boolean isInSame(ComponentScope scope, ComponentMirror other);
+
+    /**
+     * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
+     * drive
+     * <p>
+     * Another thing is extension member, which is slightly different.
+     * 
+     * @return any extension the bean's driver is part of
+     */
+    // Hvem ejer den bean driver, der er blevet brugt til at registrere bean'en...
+    // Det er samtidig ogsaa den extension (if present) som evt. ville kunne instantiere den
+
+    // Altsaa den giver jo ogsaa mening for en funktion. Ikke rigtig for en container dog
+    // Eller en TreeBean (som jeg taenker aldrig kan registreres via en extension)
+    // Saa maaske skal den flyttes ned paa component
+
+    // Tror maaske den skal op paa ComponentMirror...
+    // Ved ikke om vi kan definere end ContainerDriver for en extension???
+    // Det primaere er vel injection
+    // Er det i virkeligheden altid ownership???
+    // Har vi tilfaelde hvor vi har en ikke-standard bean driver.
+    // Hvor det ikke er extension'en der soerger for instantiering
+    Optional<Class<? extends Extension>> managedByExtension();
+
+    /**
+     * Returns any extension the component is a part of. Or empty if the component is wired by an user.
+     * 
+     * {@return empty if the component is installed by the user, otherwise the extension that the component is a member of.}
+     * 
+     * @see ExtensionMember
+     */
+    Optional<Class<? extends Extension>> memberOfExtension();
 
     /**
      * Returns the name of this component.
@@ -69,20 +108,6 @@ public /* sealed */ interface ComponentMirror extends Mirror {
      * @return the name of this component
      */
     String name();
-
-    /** {@return empty if the component is installed by the user, otherwise the extension that owns it} */
-    // Hmm ExtensionRuntime vil helst ikke rigtig returnere optional
-    // owning extension?
-    // installedByExtension, wiringExtension.. (med det kan jo ogsaa vaere driveren...)
-    /// Okay, vi har nogle forskellige extensions her
-
-    // Faktisk er det vel kun runtime extensions
-
-    // Der er 3 muligheder
-    // standard packed driver
-    // Driver fra Extension
-    //
-    Optional<Class<? extends Extension>> owningExtension();
 
     /** {@return the parent component of this component. Or empty if a root component.} */
     Optional<ComponentMirror> parent();

@@ -1,5 +1,15 @@
 package app.packed.extension;
 
+//// 3 maader at installere den paa
+// always      | Whenever the extension is used.. The extension bean is always added
+// on-demand   | Somebody depends on it either directly or indirectly (for example via an extensor)
+// explicit    | Explicitly wired via a method on Extension
+
+
+//// Wirelets giver kun mening explicit... Evt. kan man installere nogen statiske??? nahhh
+//// Wirelets er nok primaert en bruger ting, og det er primaert ogsaa en container ting
+//// Det er nok snare reglen end undtagelsen... at man wire almindelige componenter
+
 // Taenker den opfoere sig som enhver anden component...
 // Og det primaert 
 
@@ -52,13 +62,15 @@ package app.packed.extension;
 // * have a single constructor
 
 // If DI-> Can inject extensors that are visible. And for same extension
+
+// Den her klasse giver ikke rigtig mening, hvis vi har on-demand... Eller always for den sags skyld
 /**
  *
  */
-public abstract class Extensor<E extends Extension> implements ExtensionMember<E> {
+public abstract non-sealed class ExtensionBean<E extends Extension> implements ExtensionMember<E> {
 
     /** The default empty constructor. */
-    Extensor() {}
+    ExtensionBean() {}
 
     static {
 
@@ -75,7 +87,9 @@ public abstract class Extensor<E extends Extension> implements ExtensionMember<E
     // klasse/metode ect
     //// $extensionSupportsEnabling() look for any parent in the tree
     //// Problemet er jo at use() automatisk enabler en extension
-    static void $ignoreHooksIfExtensionisNotUsed(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
+    
+    @SuppressWarnings("unchecked")
+    static void $ignoreHooksIfExtensionisNotUsed(Class<? extends Extension>... extensionTypes) {
         // Vi kan bruge f.eks. @ExposeJFR paa en mode... Men den autoaktivere ikke extension'en
         // De bliver kun brugt
         throw new UnsupportedOperationException();

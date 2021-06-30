@@ -158,7 +158,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     }
 
     /** A build-time bean mirror. */
-    private final class BuildTimeBeanMirror extends ComponentSetup.BuildTimeComponentMirror implements BeanMirror {
+    private final class BuildTimeBeanMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BeanMirror {
 
         /** {@inheritDoc} */
         @Override
@@ -168,7 +168,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public Optional<Class<? extends Extension>> driverExtension() {
+        public Optional<Class<? extends Extension>> managedByExtension() {
             throw new UnsupportedOperationException();
         }
 

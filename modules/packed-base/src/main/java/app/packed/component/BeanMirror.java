@@ -1,9 +1,6 @@
 package app.packed.component;
 
-import java.util.Optional;
 import java.util.Set;
-
-import app.packed.extension.Extension;
 
 /**
  * A mirror of a bean (component).
@@ -13,24 +10,15 @@ public interface BeanMirror extends ComponentMirror {
     /** {@return the type (class) of the bean.} */
     Class<?> beanType();
 
-    /**
-     * Returns any extension the bean's driver is part of. All drivers are either part of an extension. Or is a build in
-     * drive
-     * 
-     * @return any extension the bean's driver is part of
-     */
-    // Tror maaske den skal op paa ComponentMirror...
-    // Ved ikke om vi kan definere end ContainerDriver for en extension???
-    // Det primaere er vel injection
-    Optional<Class<? extends Extension>> driverExtension();
 
     /** {@return all hooks that have been applied on the bean.} */
     Set<?> hooks();
 
     <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
 
-    BeanKind kind();
+    BeanKind kind(); // Maaske har ikke kinds... Men kun BeanInfo... ownership model. Singleton
 
+    // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
 }
 
 // Maaske er den bare fyldt med attributer istedet for et decideres mirror IDK
@@ -39,8 +27,8 @@ public interface BeanMirror extends ComponentMirror {
 interface ZBeanDriverMirror {}
 
 // Den er cool, men ikke super brugbar...
-// I det fleste tilfaede er jeg ligeglad med om det er factory eller class
-// Hellere hvad den skal bruges til
+// I det fleste tilfaede er jeg komplet ligeglad med om det er factory eller class der laver noget
+// Hellere hvad den skal bruges til/lifetime
 enum BeanOldMode {
     CLASS_MANY,
     /** */

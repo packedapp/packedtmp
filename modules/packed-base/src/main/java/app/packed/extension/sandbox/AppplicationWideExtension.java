@@ -1,4 +1,6 @@
-package app.packed.extension;
+package app.packed.extension.sandbox;
+
+import app.packed.extension.Extension;
 
 // Ideen er lidt at man kan saette saadan en faetter op...
 // Hvor der bliver lavet et per applikation...

@@ -1,15 +1,16 @@
 package app.packed.extension;
 
-import app.packed.component.ComponentMirror;
+import app.packed.component.BeanMirror;
+import app.packed.extension.sandbox.ExtensionBeanScope;
 
 /**
- * A mirror of an {@link Extensor} (component).
+ * A mirror of an {@link ExtensionBean} (component).
  */
 // Se nu bliver det svaert fordi en extensor vel ikke noedvendigvis er en component???
 // eller er den...  IDK
 
 // Maaske er extensors ikke components..... IDK
-public interface ExtensorMirror extends ComponentMirror {
+public interface ExtensionBeanMirror extends BeanMirror {
 
     /** {@return the extension that installed the extensor.} */
     ExtensionMirror<?> extension();
@@ -17,7 +18,8 @@ public interface ExtensorMirror extends ComponentMirror {
     /** {@return the type (class) of the extensor.} */
     Class<?> extensorType();
 
-    ExtensorScope scope();
+    @SuppressWarnings("exports")
+    ExtensionBeanScope scope();
 
     /// Hooks
 }

@@ -18,7 +18,9 @@ package app.packed.component;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
+import app.packed.extension.ExtensionBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 
@@ -31,7 +33,7 @@ import packed.internal.component.PackedComponentDriver;
  * 
  * Instead of extending this class directly, you typically want to extend {@link BaseBeanConfiguration} instead.
  */
-public /* sealed */ abstract class ComponentConfiguration {
+public sealed abstract class ComponentConfiguration permits BeanConfiguration, ContainerConfiguration, ExtensionBeanConfiguration, FunctionConfiguration {
 
     /** The component setup we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
     @Nullable

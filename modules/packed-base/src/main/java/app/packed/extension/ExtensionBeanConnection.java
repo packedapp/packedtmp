@@ -27,7 +27,7 @@ import packed.internal.container.PackedExtensionAncestor;
 
 // ExtensionConection...
 // connectToParent()
-public interface ExtensionConnection<E extends ExtensionMember<?>> {
+public interface ExtensionBeanConnection<E extends ExtensionMember<?>> {
 
     default void inherit() {
     }
@@ -47,7 +47,7 @@ public interface ExtensionConnection<E extends ExtensionMember<?>> {
 
     void onUninstall(Runnable r);// Ved ikke om det er det rigtige sted...
 
-    static <T extends ExtensionMember<?>> ExtensionConnection<T> empty() {
+    static <T extends ExtensionMember<?>> ExtensionBeanConnection<T> empty() {
         return PackedExtensionAncestor.missing();
     }
 }

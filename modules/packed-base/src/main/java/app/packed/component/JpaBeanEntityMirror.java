@@ -1,6 +1,6 @@
 package app.packed.component;
 
-import app.packed.extension.ExtensorMirror;
+import app.packed.extension.ExtensionBeanMirror;
 
 // maaske er for (JpaEntity e : useExtension(JpaEntityExtensionMirror).entities())
 interface JpaEntityBeanMirror extends BeanMirror, JpaEntityMirror {
@@ -11,7 +11,7 @@ interface JpaEntityMirror {
     String tableName();
 }
 
-interface JpaRepositoryMirror extends ExtensorMirror { 
+interface JpaRepositoryMirror extends ExtensionBeanMirror { 
     
     // Share denne faetter paa tvaers af alt
     /// HibernateRepo

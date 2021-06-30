@@ -5,7 +5,7 @@ package app.packed.extension;
  * <p>
  * 
  */
-public abstract class ContainerExtensor<E extends Extension> extends Extensor<E> {
+public abstract class ContainerExtensor<E extends Extension> extends ExtensionBean<E> {
 
    
     // IDK

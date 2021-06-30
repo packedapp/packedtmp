@@ -5,7 +5,7 @@ import java.util.Optional;
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConnection;
+import app.packed.extension.ExtensionBeanConnection;
 import app.packed.extension.ExtensionContext;
 
 public class TstExt extends BaseAssembly {
@@ -25,7 +25,7 @@ public class TstExt extends BaseAssembly {
         final int count;
 
         MyExt(ExtensionContext c) {
-            Optional<ExtensionConnection<MyExt>> ea = c.findParent(MyExt.class);
+            Optional<ExtensionBeanConnection<MyExt>> ea = c.findParent(MyExt.class);
             if (ea.isPresent()) {
                 System.out.println("--- Nice ---");
                 System.out.println(ea.get());

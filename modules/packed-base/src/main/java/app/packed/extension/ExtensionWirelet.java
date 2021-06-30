@@ -9,7 +9,7 @@ import app.packed.component.Wirelet;
  * Extension wirelets must be defined in the same module as the extension itself. Failure to do so will result in an
  * {@link InternalExtensionException} being thrown at runtime.
  */
-public abstract class ExtensionWirelet<E extends Extension> extends Wirelet implements ExtensionMember<E> {
+public abstract non-sealed class ExtensionWirelet<E extends Extension> extends Wirelet implements ExtensionMember<E> {
 
     // Invoked by the runtime.. Whenever
 
@@ -39,6 +39,7 @@ public abstract class ExtensionWirelet<E extends Extension> extends Wirelet impl
     }
 }
 
-class ExtensionRuntimeWirelet<E extends Extension, R extends Extensor<E>> extends ExtensionWirelet<E> {
+// A wirelet that can also be specified at runtime...
+class ExtensionRuntimeWirelet<E extends Extension, R extends ExtensionBean<E>> extends ExtensionWirelet<E> {
     protected void onInitialize(E extension) {} // maa det vaere
 }
