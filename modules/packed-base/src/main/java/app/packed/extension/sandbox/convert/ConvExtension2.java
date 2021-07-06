@@ -79,7 +79,7 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
         }
 
         Map<Class<?>, Function<?, ?>> ff = findAncestorOrElse(ConvExtensor.class, ce -> ce.m, ConvExtension.class, e -> e.converters, DEFAULTS);
-
+        System.out.println(ff);
         if (converters.isEmpty()) {
             converters = existing;
             inheritOrInstall(ConvExtensor.class);
