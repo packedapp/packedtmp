@@ -6,7 +6,6 @@ import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -14,6 +13,7 @@ import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
+import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -66,7 +66,7 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
     protected BaseBeanConfiguration install(Class<?> implementation) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
+        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(implementation);
         ComponentSetup component = container();
         return component.wire(driver, component.realm);
     }
@@ -81,7 +81,7 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @return the configuration of the component
      */
     protected BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
+        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(implementation);
         ComponentSetup component = container();
         return component.wire(driver, component.realm, wirelets);
     }
@@ -96,7 +96,7 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @see BaseAssembly#install(Factory)
      */
     protected BaseBeanConfiguration install(Factory<?> factory) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
+        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(factory);
         ComponentSetup component = container();
         return component.wire(driver, component.realm);
     }
@@ -110,7 +110,7 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @see CommonContainerAssembly#install(Factory)
      */
     protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
+        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(factory);
         ComponentSetup component = container();
         return component.wire(driver, component.realm, wirelets);
     }
@@ -128,13 +128,13 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @return this configuration
      */
     protected BaseBeanConfiguration installInstance(Object instance) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
+        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
         ComponentSetup component = container();
         return component.wire(driver, component.realm);
     }
 
     protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
+        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
         ComponentSetup component = container();
         return component.wire(driver, component.realm, wirelets);
     }

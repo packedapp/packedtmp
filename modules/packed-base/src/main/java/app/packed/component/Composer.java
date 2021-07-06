@@ -100,6 +100,10 @@ public abstract class Composer<C extends ComponentConfiguration> {
         configuration().component().realm.checkOpen();
     }
 
+    protected final void wire() {
+        
+    }
+    
     @SuppressWarnings("unchecked")
     protected final C configuration() {
         Object c = configuration;

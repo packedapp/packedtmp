@@ -45,6 +45,22 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         this.constructor = constructor;
     }
 
+    public static BeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
+        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
+    }
+
+    public static BeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
+        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(factory);
+    }
+
+    public static BeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
+        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
+    }
+
+    public static BeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
+        return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
+    }
+
     /** {@inheritDoc} */
     @Override
     public PackedBeanDriver<C> bind(Class<? extends T> implementation) {

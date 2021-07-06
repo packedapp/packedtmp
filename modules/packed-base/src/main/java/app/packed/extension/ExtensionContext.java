@@ -151,11 +151,11 @@ public /* sealed */ interface ExtensionContext {
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
-     * @see Extension#isUsed(Class)
+     * @see Extension#isExtensionUsed(Class)
      * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
      *           cannot give a more detailed answer about who is using a particular extension
      */
-    boolean isUsed(Class<? extends Extension> extensionType);
+    boolean isExtensionUsed(Class<? extends Extension> extensionType);
 
     default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action
@@ -187,6 +187,7 @@ public /* sealed */ interface ExtensionContext {
      *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
      * @see Extension#onComplete()
      */
+    // hvad goer vi med link af bruger assembly vs extension selv...
     ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets);
 
     /**
@@ -230,11 +231,12 @@ public /* sealed */ interface ExtensionContext {
      *             if the specified subtension's extension is not a direct dependency of this extension
      * 
      * @see BaseContainerConfiguration#use(Class)
-     * @see #isUsed(Class)
+     * @see #isExtensionUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
 
     /**
+     * 
      * @param <C>
      *            the type of component configuration that is being returned to the user
      * @param driver

@@ -19,7 +19,6 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.component.ComponentDriver;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -79,7 +78,7 @@ public abstract class BaseAssembly extends CommonContainerAssembly {
      * @param driver
      *            the container driver to use
      */
-    protected BaseAssembly(ComponentDriver<BaseContainerConfiguration> driver) {
+    protected BaseAssembly(ContainerDriver<BaseContainerConfiguration> driver) {
         super(driver);
     }
 

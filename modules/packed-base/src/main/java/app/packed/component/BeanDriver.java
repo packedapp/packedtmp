@@ -6,7 +6,6 @@ import java.util.function.Function;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
-import packed.internal.component.bean.PackedBeanDriverBinder;
 
 /**
  * A driver for creating bean components.
@@ -24,22 +23,6 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
     /** {@inheritDoc} */
     @Override
     BeanDriver<C> with(Wirelet... wirelet);
-
-    static BeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
-        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
-    }
-
-    static BeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
-        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(factory);
-    }
-
-    static BeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
-        return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
-    }
-
-    static BeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
-        return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
-    }
 
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.

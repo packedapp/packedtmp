@@ -21,10 +21,13 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
+import app.packed.application.Application2Assembly;
+import app.packed.application.host.ApplicationAssembly;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.CommonContainerAssembly;
+import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerWirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -52,7 +55,8 @@ import packed.internal.util.LookupUtil;
  * @see CommonContainerAssembly
  * @see BaseAssembly
  */
-public abstract class Assembly<C extends ComponentConfiguration> {
+@SuppressWarnings("rawtypes")
+public abstract sealed class Assembly<C extends ComponentConfiguration> permits ContainerAssembly, Application2Assembly, ApplicationAssembly {
 
     /** A marker object to indicate that an assembly has already been used to build something. */
     private static Object USED = Assembly.class;

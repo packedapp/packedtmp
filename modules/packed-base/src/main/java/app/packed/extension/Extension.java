@@ -214,23 +214,40 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     // If you have configuration that
     // extensionPreambleDone
 
-    /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
-    protected final boolean isPartOfImage() {
-        return context().isPartOfImage();
-    }
-
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
      * 
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
-     * @see ExtensionContext#isUsed(Class)
+     * @see ExtensionContext#isExtensionUsed(Class)
      * @implNote Packed does not perform detailed tracking on what extensions use other extensions. So it cannot answer
      *           questions about what exact extension is using another extension
      */
-    protected final boolean isUsed(Class<? extends Extension> extensionType) {
-        return context().isUsed(extensionType);
+    protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+        return context().isExtensionUsed(extensionType);
+    }
+
+    /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
+    protected final boolean isPartOfImage() {
+        return context().isPartOfImage();
+    }
+
+    /**
+     * <p>
+     * If this assembly links a container this method must be called from {@link #onComplete()}.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @throws InternalExtensionException
+     *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
+     */
+    // self link... There should be no reason why users would link a container via an extension. As the container driver is
+    // already fixed, so the extension can provide no additional functionality
+    protected final void link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
+        context().link(assembly, wirelets);
     }
 
     /**
@@ -287,7 +304,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * example, by installing an extensor that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link #runtimeLink(Assembly, Wirelet...)}.
+     * {@link #link(Assembly, Wirelet...)}.
      */
     protected void onComplete() {
         // Time
@@ -346,21 +363,6 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     }
 
     /**
-     * <p>
-     * If this assembly links a container this method must be called from {@link #onComplete()}.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @throws InternalExtensionException
-     *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
-     */
-    protected final void runtimeLink(ContainerAssembly<?> assembly, Wirelet... wirelets) {
-        context().link(assembly, wirelets);
-    }
-
-    /**
      * Returns a selection of all wirelets of the specified type that have not already been processed.
      * <p>
      * If this extension has runtime wirelet you must remember to check if there are any unprocessed wirelets at runtime. As
@@ -406,7 +408,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         return context().use(subtensionClass);
     }
 
-    // cannot be called
+    // Driver must be "member" of this extension
     protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return context().wire(driver, wirelets);
     }

@@ -21,7 +21,6 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -56,7 +55,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @param driver
      *            the container driver to use
      */
-    protected CommonContainerAssembly(ComponentDriver<? extends BaseContainerConfiguration> driver) {
+    protected CommonContainerAssembly(ContainerDriver<? extends BaseContainerConfiguration> driver) {
         super(driver);
     }
 

@@ -1,11 +1,16 @@
 package app.packed.container;
 
 import app.packed.component.Assembly;
-import app.packed.component.ComponentDriver;
 
-public abstract class ContainerAssembly<C extends ContainerConfiguration> extends Assembly<C> {
+public abstract non-sealed class ContainerAssembly<C extends ContainerConfiguration> extends Assembly<C> {
 
-    protected ContainerAssembly(ComponentDriver<? extends C> driver) {
+    /**
+     * Create a new container assembly using the specified driver.
+     * 
+     * @param driver
+     *            the container driver
+     */
+    protected ContainerAssembly(ContainerDriver<? extends C> driver) {
         super(driver);
     }
 }

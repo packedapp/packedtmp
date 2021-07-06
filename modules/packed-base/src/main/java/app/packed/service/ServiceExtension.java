@@ -25,6 +25,7 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.component.BeanDriver;
 import app.packed.component.BeanType;
+import app.packed.component.ComponentDriver;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.inject.Factory;
@@ -228,7 +229,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         // Create a bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(implementation);
+        ComponentDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(implementation);
 
         return context().wire(driver).provide();
     }
@@ -247,7 +248,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
         // Create a bean driver by binding a factory
         @SuppressWarnings("unchecked")
-        BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(factory);
+        ComponentDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(factory);
 
         return context().wire(driver).provide();
     }
@@ -286,7 +287,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
         // Create the bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bindInstance(instance);
+        ComponentDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bindInstance(instance);
 
         return wire(driver).provide();
     }
@@ -294,7 +295,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // Create a bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        BeanDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(implementation);
+        ComponentDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(implementation);
 
         return wire(driver);
     }
@@ -302,7 +303,7 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         // Create a new bean driver by by binding the factory
         @SuppressWarnings("unchecked")
-        BeanDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(factory);
+        ComponentDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(factory);
 
         return wire(driver);
     }

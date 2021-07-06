@@ -188,7 +188,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public boolean isUsed(Class<? extends Extension> extensionClass) {
+    public boolean isExtensionUsed(Class<? extends Extension> extensionClass) {
         return container.isExtensionUsed(extensionClass);
     }
 
