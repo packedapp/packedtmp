@@ -3,7 +3,7 @@ package app.packed.component;
 /**
  *
  */
-public enum BeanKind {
+public enum BeanType {
 
     /**
      * A static bean.
@@ -23,7 +23,7 @@ public enum BeanKind {
      * A single instance of the bean is created together with the application instance. It is coterminous with the
      * application instance itself.
      */
-    SINGLETON,
+    BASE,
 
     /**
      * A lazy singleton bean.

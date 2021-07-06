@@ -5,8 +5,8 @@ import java.util.Optional;
 import app.packed.application.App;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionBeanConnection;
 import app.packed.extension.ExtensionContext;
+import app.packed.extension.old.ExtensionBeanConnection;
 
 public class TstExt extends BaseAssembly {
 
@@ -53,4 +53,5 @@ public class TstExt extends BaseAssembly {
             link(new Subbb());
         }
     }
+    
 }

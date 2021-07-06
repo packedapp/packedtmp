@@ -24,6 +24,14 @@ interface WireletMirror {
     boolean isUserWirelet();
 }
 
+//Maaske har man et default scope som hedder
+//Application <- hvis applications driver
+//Container <- f.eks. linke container
+class WireletScope {
+
+}
+
+
 // Svaert at argumentere imod at kunne koere denne paa runtime
 
 // foo(ContainerMirror cm) {

@@ -9,22 +9,21 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletSelection;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.Subtension;
-import app.packed.extension.ExtensionBean;
-import app.packed.extension.ExtensionBeanConfiguration;
-import app.packed.extension.ExtensionBeanConnection;
 import app.packed.extension.ExtensionContext;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
-import app.packed.extension.ExtensionWirelet;
 import app.packed.extension.InternalExtensionException;
+import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
@@ -106,7 +105,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ExtensionMember<?>> ExtensionBeanConnection<T> findFirstAncestor(Class<T> type) {
+    public <T extends ExtensionMember<?>> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
         ContainerSetup parent = container.containerParent;
         while (parent != null) {
@@ -138,7 +137,7 @@ public final class ExtensionSetup implements ExtensionContext {
     }
 
     @Override
-    public ExtensionBeanConfiguration installExtensor(Class<? extends ExtensionBean<?>> implementation) {
+    public BaseBeanConfiguration install(Class<?> implementation) {
         // get RuntimeExtensionModel...
         // Make sure it is the same extension
         // keep a references to them in each extension..
@@ -152,13 +151,13 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionBeanConfiguration installExtensor(Factory<? extends ExtensionBean<?>> factory) {
+    public BaseBeanConfiguration install(Factory<?> factory) {
         throw new UnsupportedOperationException();
     }
 
     /** {@inheritDoc} */
     @Override
-    public ExtensionBeanConfiguration installExtensorInstance(ExtensionBean<?> instance) {
+    public BaseBeanConfiguration installInstance(Object instance) {
         throw new UnsupportedOperationException();
     }
 
@@ -246,25 +245,27 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
+    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
         // Check that we are a proper subclass of ExtensionWirelet
-        ClassUtil.checkProperSubclass(ExtensionWirelet.class, wireletClass);
+        ClassUtil.checkProperSubclass(ContainerWirelet.class, wireletClass);
 
         // We only allow selection of wirelets in the same module as the extension itself
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...
         Module m = extensionType.getModule();
         if (m != wireletClass.getModule()) {
-            throw new InternalExtensionException("Must specify a wirelet class that is in the same module (" + m.getName() + ") as '" + model.name()
-                    + ", wireletClass.getModule() = " + wireletClass.getModule());
+            throw new IllegalArgumentException("The specified wirelet class is not in the same module (" + m.getName() + ") as '"
+                    + /* simple extension name */ model.name() + ", wireletClass.getModule() = " + wireletClass.getModule());
         }
 
-        // Extension wirelets are always specified when wiring the container
+        // Find the containers wirelet wrapper and return early if no wirelets have been specified, or all of them have already
+        // been consumed
         WireletWrapper wirelets = container.wirelets;
         if (wirelets == null || wirelets.unconsumed() == 0) {
-            return SelectWirelets.of();
+            return WireletSelection.of();
         }
+
         return new PackedSelectWirelets<>(wirelets, wireletClass);
     }
 
@@ -298,7 +299,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return container.wire(driver, container.realm, wirelets);
     }
 

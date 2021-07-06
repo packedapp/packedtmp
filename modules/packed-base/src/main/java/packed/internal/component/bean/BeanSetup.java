@@ -9,7 +9,7 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.BeanKind;
+import app.packed.component.BeanType;
 import app.packed.component.BeanMirror;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
@@ -26,7 +26,7 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
 import packed.internal.service.build.ServiceSetup;
 
-/** The internal configuration of a bean. */
+/** The build-time configuration of a bean. */
 public final class BeanSetup extends ComponentSetup implements DependencyProducer {
 
     /**
@@ -52,14 +52,14 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolAccessor singletonAccessor;
 
-    public final BeanKind kind;
+    public final BeanType kind;
 
     BeanSetup(BuildSetup build, LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(build, realm, lifetime, driver, parent, wirelets);
         this.kind = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
-        this.singletonAccessor = driver.binder.kind() == BeanKind.SINGLETON ? lifetime.pool.reserve(driver.beanType()) : null;
+        this.singletonAccessor = driver.binder.kind() == BeanType.BASE ? lifetime.pool.reserve(driver.beanType()) : null;
 
         Object source = driver.binding;
         // The source is either a Class, a Factory, or a generic instance
@@ -186,7 +186,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
         /** {@inheritDoc} */
         @Override
-        public BeanKind kind() {
+        public BeanType kind() {
             return kind;
         }
     }

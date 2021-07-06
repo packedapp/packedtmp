@@ -3,8 +3,8 @@ package packed.internal.container;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Nullable;
-import app.packed.extension.ExtensionBeanConnection;
 import app.packed.extension.ExtensionMember;
+import app.packed.extension.old.ExtensionBeanConnection;
 
 public class PackedExtensionAncestor<E extends ExtensionMember<?>> implements ExtensionBeanConnection<E> {
 

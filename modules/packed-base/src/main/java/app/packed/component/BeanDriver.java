@@ -19,7 +19,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
     Class<?> beanType();
 
     /** {@return the kind of bean this driver produces.} */
-    BeanKind kind();
+    BeanType kind();
 
     /** {@inheritDoc} */
     @Override
@@ -82,7 +82,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
 
         Optional<Class<? extends Extension>> extension();
 
-        BeanKind kind();
+        BeanType kind();
 
         Binder<T, C> with(Wirelet... wirelet);
     }
@@ -93,7 +93,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
 
         // Specific super type
 
-        Builder kind(BeanKind kind);
+        Builder kind(BeanType kind);
 
         Builder namePrefix(Function<Class<?>, String> computeIt);
 

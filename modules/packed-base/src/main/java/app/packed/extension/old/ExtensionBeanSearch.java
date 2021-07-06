@@ -1,4 +1,4 @@
-package app.packed.extension;
+package app.packed.extension.old;
 
 public interface ExtensionBeanSearch<T> {
 

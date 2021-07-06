@@ -43,11 +43,12 @@ import packed.internal.util.StringFormatter;
 /**
  * A model of an {@link Extension}. Exposed to end-users as {@link ExtensionDescriptor}.
  * 
- * @apiNote This could be a record, but there are so many fields that it would be difficult to get an overview.
+ * @implNote This could have been a record, but there are so many fields that that we get a better overview as a plain
+ *           class.
  */
 public final class ExtensionModel implements ExtensionDescriptor {
 
-    /** A cache of extension models. */
+    /** A cache of all encountered extension models. */
     private static final ClassValue<ExtensionModel> MODELS = new ClassValue<>() {
 
         /** {@inheritDoc} */
@@ -89,7 +90,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
      * Creates a new extension model from the specified builder.
      * 
      * @param builder
-     *            the builder for this model
+     *            the builder of the model
      */
     private ExtensionModel(Builder builder) {
         this.extensionClass = builder.extensionClass;
@@ -130,7 +131,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
     @Override
     public int compareTo(ExtensionDescriptor descriptor) {
         ExtensionModel m = (ExtensionModel) descriptor;
-        // if (m.getClassLoader()!=this.getClassLoader()) 
+        // if (m.getClassLoader()!=this.getClassLoader())
         // Start comparing by name
 
         // First we compare the depth of each extension
@@ -283,8 +284,9 @@ public final class ExtensionModel implements ExtensionDescriptor {
             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
             builder.provideHidden(ExtensionSetup.class).adaptArgument(0);
             // Den den skal nok vaere lidt andet end hidden. Kunne kunne klare Optional osv
-            //MethodHandle mh = ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
-            //builder.provideHidden(extensionClass).invokeExact(mh, 0);
+            // MethodHandle mh =
+            // ExtensionSetup.MH_INJECT_PARENT.asType(ExtensionSetup.MH_INJECT_PARENT.type().changeReturnType(extensionClass));
+            // builder.provideHidden(extensionClass).invokeExact(mh, 0);
 
             // Find a method handle for the extension's constructor
             this.mhConstructor = builder.findConstructor(Extension.class, m -> new InternalExtensionException(m));

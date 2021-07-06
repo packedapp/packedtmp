@@ -18,6 +18,7 @@ package app.packed.application;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.state.sandbox.InstanceState;
+import packed.internal.application.PackedApplicationDriver.PackedApplicationImage;
 
 /**
  * An application image is a pre-built application that can be instantiated at a later time. By configuring an system
@@ -53,7 +54,8 @@ import app.packed.state.sandbox.InstanceState;
 
 /// ApplicationImage<String> i; String numberOfFoos = i.launch();
 
-public /* sealed */ interface ApplicationImage<A> {
+@SuppressWarnings("rawtypes")
+public sealed interface ApplicationImage<A> permits PackedApplicationImage {
 
     default boolean isAvailable() {
         // An image returns true always

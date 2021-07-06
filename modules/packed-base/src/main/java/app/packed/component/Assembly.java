@@ -25,6 +25,7 @@ import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.CommonContainerAssembly;
+import app.packed.container.ContainerWirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
@@ -186,5 +187,9 @@ public abstract class Assembly<C extends ComponentConfiguration> {
     /** {@return the setup of the underlying component.} */
     private ComponentSetup setup() {
         return configuration().component();
+    }
+    
+    protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        throw new UnsupportedOperationException();
     }
 }

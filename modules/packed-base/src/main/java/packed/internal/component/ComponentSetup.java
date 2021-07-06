@@ -44,6 +44,7 @@ import app.packed.extension.ExtensionContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
@@ -51,7 +52,7 @@ import packed.internal.util.CollectionUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Abstract build-time setup of a component. */
-public abstract class ComponentSetup {
+public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -69,7 +70,7 @@ public abstract class ComponentSetup {
     /** The depth of the component in the tree. */
     protected final int depth;
 
-    /** The lifetime of the component. */
+    /** The lifetime of this component. */
     public final LifetimeSetup lifetime;
 
     /** The name of this component. */
@@ -141,12 +142,12 @@ public abstract class ComponentSetup {
             Wirelet[] ws;
             if (parent == null) {
                 if (driver.wirelet == null) {
-                    ws = CombinedWirelet.flattenAll(wirelets);
+                    ws = CompositeWirelet.flattenAll(wirelets);
                 } else {
-                    ws = CombinedWirelet.flatten2(driver.wirelet, Wirelet.combine(wirelets));
+                    ws = CompositeWirelet.flatten2(driver.wirelet, Wirelet.combine(wirelets));
                 }
             } else {
-                ws = CombinedWirelet.flattenAll(wirelets);
+                ws = CompositeWirelet.flattenAll(wirelets);
             }
 
             this.wirelets = new WireletWrapper(ws);
@@ -361,15 +362,15 @@ public abstract class ComponentSetup {
             return m == null ? List.of() : CollectionUtil.unmodifiableView(m.values(), c -> c.mirror());
         }
 
+        @Override
+        public Stream<ComponentMirror> components() {
+            return stream();
+        }
+
         /** {@inheritDoc} */
         @Override
         public final ContainerMirror container() {
             return container.mirror();
-        }
-
-        @Override
-        public Stream<ComponentMirror> components() {
-            return stream();
         }
 
         /** {@inheritDoc} */
@@ -387,18 +388,18 @@ public abstract class ComponentSetup {
 
         /** {@inheritDoc} */
         @Override
+        public final Optional<Class<? extends Extension>> memberOfExtension() {
+            return Optional.ofNullable(realm.extensionType);
+        }
+
+        /** {@inheritDoc} */
+        @Override
         public final String name() {
             return name;
         }
 
         private ComponentSetup outer() {
             return ComponentSetup.this;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final Optional<Class<? extends Extension>> memberOfExtension() {
-            return Optional.ofNullable(realm.extensionType);
         }
 
         /** {@inheritDoc} */

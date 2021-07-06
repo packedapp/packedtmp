@@ -11,6 +11,8 @@ import app.packed.inject.Inject;
 
 // boostrap class
 
+
+
 @ExtensionService(extension = ConvExtension.class, implementation = ConvManagerImpl.class)
 public interface ConvManager extends Extensor<ConvExtension> {
     <T> T convert(Object from, Class<T> convertTo);

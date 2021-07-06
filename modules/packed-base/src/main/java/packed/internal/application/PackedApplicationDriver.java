@@ -40,7 +40,7 @@ import app.packed.container.BaseContainerConfiguration;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
-import packed.internal.component.CombinedWirelet;
+import packed.internal.component.CompositeWirelet;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
@@ -345,7 +345,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
     }
 
     /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
-    private final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
+    public final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
             implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
@@ -356,7 +356,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Base
             // If launching an image, the user might have specified additional runtime wirelets
             WireletWrapper wrapper = null;
             if (wirelets.length > 0) {
-                wrapper = new WireletWrapper(CombinedWirelet.flattenAll(wirelets));
+                wrapper = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
             }
 
             return ApplicationLaunchContext.launch(driver, application, wrapper);

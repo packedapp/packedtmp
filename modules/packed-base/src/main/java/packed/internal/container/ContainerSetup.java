@@ -32,6 +32,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
+import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
@@ -41,7 +42,8 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ClassUtil;
 
 /** Build-time configuration of a container. */
-public class ContainerSetup extends ComponentSetup {
+// Looks wrong with ApplicationSetup
+public sealed class ContainerSetup extends ComponentSetup permits ApplicationSetup {
 
     /** Child containers, lazy initialized. */
     @Nullable

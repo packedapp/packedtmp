@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.component.BeanDriver;
-import app.packed.component.BeanKind;
+import app.packed.component.BeanType;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;
 import app.packed.inject.Factory;
@@ -77,11 +77,11 @@ public class ServiceExtension extends Extension {
 
     /** A binder for prototype service beans.  */
     @SuppressWarnings("rawtypes")
-    private static final BeanDriver.Binder PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanKind.PROTOTYPE_UNMANAGED);
+    private static final BeanDriver.Binder PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanType.PROTOTYPE_UNMANAGED);
 
     /** A binder for singleton service beans.  */
     @SuppressWarnings("rawtypes")
-    private static final BeanDriver.Binder SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanKind.SINGLETON);
+    private static final BeanDriver.Binder SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanType.BASE);
 
     /** The service manager. */
     private final ServiceManagerSetup services;
@@ -208,7 +208,7 @@ public class ServiceExtension extends Extension {
     /** {@return a mirror for this extension.} */
     @Override
     protected ServiceExtensionMirror mirror() {
-        return mirrorPopulate(new ServiceExtensionMirror(services));
+        return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
     /**
@@ -230,7 +230,7 @@ public class ServiceExtension extends Extension {
         @SuppressWarnings("unchecked")
         BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(implementation);
 
-        return context().userWire(driver).provide();
+        return context().wire(driver).provide();
     }
 
     /**
@@ -249,7 +249,7 @@ public class ServiceExtension extends Extension {
         @SuppressWarnings("unchecked")
         BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(factory);
 
-        return context().userWire(driver).provide();
+        return context().wire(driver).provide();
     }
 
     /**
@@ -288,7 +288,7 @@ public class ServiceExtension extends Extension {
         @SuppressWarnings("unchecked")
         BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bindInstance(instance);
 
-        return userWire(driver).provide();
+        return wire(driver).provide();
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
@@ -296,7 +296,7 @@ public class ServiceExtension extends Extension {
         @SuppressWarnings("unchecked")
         BeanDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(implementation);
 
-        return userWire(driver);
+        return wire(driver);
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
@@ -304,7 +304,7 @@ public class ServiceExtension extends Extension {
         @SuppressWarnings("unchecked")
         BeanDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(factory);
 
-        return userWire(driver);
+        return wire(driver);
     }
 
     // requires bliver automatisk anchoret...

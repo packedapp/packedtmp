@@ -10,7 +10,7 @@ import java.util.function.Function;
 import packed.internal.component.PackedSelectWirelets;
 
 /**
- * A selection of wirelets of a specified type.
+ * A selection of wirelets of a specified type represented by {@code <W>} .
  * <p>
  * If there are multiple wirelets in the selection, they will ordered accordingly to the following rules:
  * <ul>
@@ -22,6 +22,10 @@ import packed.internal.component.PackedSelectWirelets;
  * <p>
  * Skal vi have wildcard? SelectWirelets<? extends SSSfoo> eller supportere vi ogsaa SelectWirelets<SSSfoo>, jeg ville
  * mene vi supportere begge.
+ * 
+ * Maaske selecter vi differently??? ... exact type for SelectWirelet<FooWirelet>, eller alle super klasser for
+ * SelectWirelet<? extends FooWirelet>
+ * 
  * <p>
  * The selecting class must be in the same module as the type of wirelet selected
  * <p>
@@ -43,31 +47,27 @@ import packed.internal.component.PackedSelectWirelets;
  * It is consider an error to invoke more than a single method for a single instance. Unless the peek methods. Where you
  * can do what you want
  * 
- * @implNote the current implementation will iterate through every wirelet specified when wiring the component on every
- *           operation. As we expect the number of wirelets for a single component to be small in practice. This is
- *           unlikely to effect performance.
+ * @param <T>
+ *            the type of wirelets in this selection
+ * 
+ * @implNote We expect the number of wirelets for a single component to be small in practice. So the current
+ *           implementation will iterate through every wirelet specified when wiring the component on every operation on
+ *           this interface. This is unlikely to effect performance.
  */
+
+// selects but does not process the wirelets
+
 // Hvordan fungere method foo(SelectWirelets<InjectWirelet> sw1, SelectWirelets<InjectWirelet> sw2)
 // De skal ikke vaere i sw2... Eller hvad hvis man kalder sw2 foerst???
 // Jo maaske er det bare den der iterere foerst... Ja selvf. Hvis man ikke kalder metoder sker
 // der jo ikke noget alligevel, saa lav en test.
 
-// Maybe just WireletSelection...
+// Was SelectWirelets 
 
 // Problemet med at have en onX on wireletten..
 // Er at vi ikke kan finalize noget i constructeren... fordi den vil tage en constructed Extensor i onExtensor()
 // Vi vil rigtig gerne have wireletten i constructoren paa extensoren...
-public /* sealed */ interface SelectWirelets<W extends Wirelet> {
-
-    /**
-     * Returns the last wirelet in this selection or empty {@code Optional}, if no wirelets are present.
-     * <p>
-     * This is a <a href="package-summary.html#StreamOps">consumable operation</a>.
-     * 
-     * @return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present
-     */
-    // consumeAllReturnLast
-    Optional<W> findLast();
+public /* sealed */ interface WireletSelection<W extends Wirelet> {
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
     /**
@@ -82,37 +82,12 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
      */
     // shortcut for findLast().map(mapper).orElse(orElse)
 
-    /**
-     * 
-     * @param <E>
-     * @param mapper
-     *            the mapper to apply (if non-empty) to the last wirelet before returning the result
-     * @param ifEmpty
-     *            the value to return if the selection is empty
-     * @return stuff
-     */
-    default <E> E findLastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty) {
-        requireNonNull(mapper, "mapper is null");
-        Optional<W> result = findLast();
-        return result.isEmpty() ? ifEmpty : mapper.apply(result.get());
-    }
-
-    /**
-     * Performs the given action for each wirelet in this selection. Removing each wirelet from this selection as well as
-     * any other selection.
-     * 
-     * @param action
-     *            the action to perform
-     * @see #peekEach(Consumer)
-     */
-    void forEach(Consumer<? super W> action); // return boolean = if any elements selected?
-
     default List<W> peekAll() {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Performs the given action for each wirelet in the selection. Unlike {@link #forEach(Consumer)} this method does not
+     * Performs the given action for each wirelet in the selection. Unlike {@link #processForEach(Consumer)} this method does not
      * remove the wirelet from this selection or any other selection.
      * 
      * @param action
@@ -126,8 +101,46 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
     /** {@return the number of unconsumed wirelets in this source, consuming each wirelet in the process} */
     int peekSize();
 
+    /**
+     * 
+     * @param <E>
+     * @param mapper
+     *            the mapper to apply (if non-empty) to the last wirelet before returning the result
+     * @param ifEmpty
+     *            the value to return if the selection is empty
+     * @return stuff
+     */
+    default <E> E processFindLastOrElse(Function<? super W, ? extends E> mapper, E ifEmpty) {
+        requireNonNull(mapper, "mapper is null");
+        Optional<W> result = processReturnLast();
+        return result.isEmpty() ? ifEmpty : mapper.apply(result.get());
+    }
+
+    /**
+     * Performs the given action for each wirelet in this selection. Removing each wirelet from this selection as well as
+     * any other selection.
+     * 
+     * @param action
+     *            the action to perform
+     * @see #peekEach(Consumer)
+     */
+    void processForEach(Consumer<? super W> action); // return boolean = if any elements selected?
+
+    /**
+     * Returns the last wirelet in this selection or empty {@code Optional}, if no wirelets are present.
+     * <p>
+     * This is a <a href="package-summary.html#StreamOps">consumable operation</a>.
+     * 
+     * @return the last wirelet in this selection or empty {@code Optional}, if no wirelets are present
+     */
+    // consumeAllReturnLast
+    // processReturnLast();
+    // processReturnAll();
+    // processForEach();
+    Optional<W> processReturnLast();
+
     /** {@return every wirelet in this source as a list, consuming each wirelet in the process.} */
-    default List<W> toList() {
+    default List<W> processReturnAll() {
         throw new UnsupportedOperationException();
     }
 
@@ -138,9 +151,9 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
      *            the type of wirelets in the selection
      * @return an empty wirelet selection
      */
-    public static <W extends Wirelet> SelectWirelets<W> of() {
+    public static <W extends Wirelet> WireletSelection<W> of() {
         @SuppressWarnings("unchecked")
-        SelectWirelets<W> w = (SelectWirelets<W>) PackedSelectWirelets.EMPTY;
+        WireletSelection<W> w = (WireletSelection<W>) PackedSelectWirelets.EMPTY;
         return w;
     }
 
@@ -158,7 +171,7 @@ public /* sealed */ interface SelectWirelets<W extends Wirelet> {
      * @return the selection
      */
     @SafeVarargs
-    public static <W extends Wirelet> SelectWirelets<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
+    public static <W extends Wirelet> WireletSelection<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
         return PackedSelectWirelets.of(wireletClass, wirelets);
     }
 }

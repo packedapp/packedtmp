@@ -19,13 +19,12 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.extension.ExtensionWirelet;
-import app.packed.service.ServiceExtension;
+import app.packed.container.ContainerWirelet;
 import packed.internal.service.build.ServiceSetup;
 
 /**
  *
  */
-public abstract class Service2ndPassWirelet extends ExtensionWirelet<ServiceExtension> {
+public abstract class Service2ndPassWirelet extends ContainerWirelet {
     protected abstract void process(@Nullable ServiceManagerSetup parent, ServiceManagerSetup child, Map<Key<?>, ServiceSetup> map);
 }

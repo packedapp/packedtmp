@@ -27,8 +27,10 @@ import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
 
-/** A type of wirelet where its logic is directly embedded in the wirelet. */
-public abstract class InternalWirelet extends Wirelet {
+/**
+ * A special wirelet for internal usage where the wirelets logic is embedded directly into the wirelet.
+ */
+public abstract non-sealed class InternalWirelet extends Wirelet {
 
     /**
      * Checks that the specified component is the root component (container) of an application.
@@ -39,7 +41,7 @@ public abstract class InternalWirelet extends Wirelet {
      *             if the specified component is not the root component of an application
      * @return the application of the component (for method chaining)
      */
-    protected ApplicationSetup checkIsApplication(ComponentSetup component) {
+    protected final ApplicationSetup checkIsApplication(ComponentSetup component) {
         ApplicationSetup application = component.application;
         if (application.container != component) {
             throw new IllegalArgumentException("This wirelet can only be specified when wiring an application, wirelet = " + this);

@@ -5,28 +5,41 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
+import app.packed.service.ServiceExtension;
+import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionSetup;
 
 /**
  * A mirror for an extension.
  * <p>
- * This class can be overridden to provide a specialized extension mirror. For example, {@link app.packed.service.ServiceExtension}
- * provides {@link app.packed.service.ServiceExtensionMirror}.
+ * This class can be overridden to provide a specialized mirror for an extension. For example,
+ * {@link app.packed.service.ServiceExtension} provides {@link app.packed.service.ServiceExtensionMirror}.
  * <p>
  * Instances of this mirror are typically obtained in one of the following ways:
  * <ul>
- * <li>Directly Paa et mirror selv</li>
- * <li>via en overskreven {@link Extension#mirror()} metode</li>
- * <li>Or indirectly via invoking methods on other mirrors, for example, {@link ContainerMirror#extensions()} via
- * ContainerMirror.extensions();</li>
+ * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
+ * {@link ContainerMirror#findExtension(Class)}.</li>
+ * <li>via en overskreven {@link Extension#mirror()} metode, for example, {@link ServiceExtension#mirror()}.</li>
+ * <li>By directly looking a specialized mirror up, for example,
+ * {@link ServiceExtensionMirror#of(app.packed.component.Assembly, app.packed.component.Wirelet...)}.</li>
  * </ul>
  * <p>
- * NOTE: Extensions that implement there own specialized mirror <strong>must</strong> override {@link Extension#mirror()} to return an instance of the
- * specialized mirror.
+ * NOTE: Extensions that extends this class:
+ * <ul>
+ * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
+ * <li>Must be located in the same module as the extension itself.</li>
+ * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to Packed.</li>
+ * <li>Must call {@link Extension#mirrorInitialize(ExtensionMirror)} on the mirror instance before returning from
+ * the.</li>
+ * <li>Must support being populated at any point. Including immediately after the extension is created. After
+ * {@link Extension#onNew()} returns.</li>
+ * <li>May provide a shortcut method, similar to ServiceExtension.of
+ * <li>call populate.</li>
+ * </ul>
  */
-public non-sealed class ExtensionMirror<E extends Extension> implements ExtensionMember<E> {
+public class ExtensionMirror<E extends Extension> {
 
-    /** The extension that is being mirrored. Is initially null but populated via {@link #populate(ExtensionSetup)}. */
+    /** The extension that is being mirrored. Is initially null but populated via {@link #initialize(ExtensionSetup)}. */
     @Nullable
     private ExtensionSetup extension;
 
@@ -60,7 +73,7 @@ public non-sealed class ExtensionMirror<E extends Extension> implements Extensio
      * 
      * @throws InternalExtensionException
      *             if called from the constructor of the mirror, or the extension developer forgot to call
-     *             {@link Extension#mirrorPopulate(ExtensionMirror)}.
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)}.
      */
     private ExtensionSetup extension() {
         ExtensionSetup e = extension;
@@ -71,7 +84,7 @@ public non-sealed class ExtensionMirror<E extends Extension> implements Extensio
         return e;
     }
 
-    /** {@return a descriptor of the extension.} */
+    /** {@return a descriptor for the extension.} */
     public final ExtensionDescriptor extensionDescriptor() { // extensionDescriptor() instead of descriptor() because subclasses might want to use descriptor()
         return ExtensionDescriptor.of(extensionType());
     }
@@ -88,14 +101,14 @@ public non-sealed class ExtensionMirror<E extends Extension> implements Extensio
     }
 
     /**
-     * Invoked by {@link Extension#mirrorPopulate(ExtensionMirror)} to set the extension we are mirroring.
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the extension we are mirroring.
      * 
      * @param extension
      *            the extension to mirror
      */
-    final void populate(ExtensionSetup extension) {
+    final void initialize(ExtensionSetup extension) {
         if (this.extension != null) {
-            throw new IllegalStateException("The specified mirror has already been populated.");
+            throw new IllegalStateException("The specified mirror has already been initialized.");
         }
         this.extension = extension;
     }

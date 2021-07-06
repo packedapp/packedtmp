@@ -22,6 +22,8 @@ public final class ContainerWirelets {
     public static Wirelet disableExtension(Class<? extends Extension>... extensionTypes) {
         throw new UnsupportedOperationException();
     }
+    
+    // peekExtensionInstall(ExtensionMirror?)
     // There are some possibilities...
 
     // disableExtension(Predicate<?>, Class<?>... classes)

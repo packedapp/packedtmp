@@ -17,10 +17,10 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
-import packed.internal.component.CombinedWirelet;
+import app.packed.container.ContainerWirelet;
+import packed.internal.component.CompositeWirelet;
+import packed.internal.component.InternalWirelet;
 import packed.internal.component.InternalWirelet.OverrideNameWirelet;
-import packed.internal.component.WireletModel;
-import packed.internal.util.StackWalkerUtil;
 
 /**
  * A wirelet is a small piece of "glue code" that can be specified when a component is wired.
@@ -52,20 +52,25 @@ import packed.internal.util.StackWalkerUtil;
  * 
  * 
  * <p>
- * Wirelets are divided into 3 main types:
+ * Wirelets are divided into 2 main types:
  * 
  * Packed Wirelet: These wirelets are defined by Packed itself can typically needs access to Packed's internal APIs.
  * 
  * Extension Wirelets: Wirelets that are defined by extensions and typically available via public static methods in a
  * XWirelet class.
  * 
+ * There are 2 addition internal wirelet types which cannot be extended by users:
+ * 
  * User Wirelets: Wirelets that are defined by end-users
  * 
  */
-// Hvis vi kraever at alle WireletHandle
+// Hvis vi kraever at alle SelectWirelets
 // kun kan tage final eller/* sealed */wirelets som parameter
-// Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret 
-public abstract /* sealed */ class Wirelet {
+// Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret
+// Og saa ville vi kunne bruge annoteringer...
+// Men det fungere bare ikke godt hvis vi vil lave noget i constructor af en extension bean
+
+public abstract sealed class Wirelet permits ContainerWirelet,BeanWirelet,InternalWirelet,CompositeWirelet {
 
     /**
      * Returns a combined wirelet that behaves, in sequence, as this wirelet followed by the {@code after} wirelet.
@@ -79,7 +84,7 @@ public abstract /* sealed */ class Wirelet {
      */
     public final Wirelet andThen(Wirelet after) {
         requireNonNull(after, "after is null");
-        return CombinedWirelet.of(this, after);
+        return CompositeWirelet.of(this, after);
     }
 
     /**
@@ -95,7 +100,7 @@ public abstract /* sealed */ class Wirelet {
      * @see #of(Wirelet...)
      */
     public final Wirelet andThen(Wirelet... wirelets) {
-        return CombinedWirelet.of(this, combine(wirelets));
+        return CompositeWirelet.of(this, combine(wirelets));
     }
 
     /**
@@ -111,27 +116,7 @@ public abstract /* sealed */ class Wirelet {
      * @see #of(Wirelet...)
      */
     public final Wirelet beforeThis(Wirelet... wirelets) {
-        return CombinedWirelet.of(combine(wirelets), this);
-    }
-
-    /**
-     * A static initializer method that indicates that the wirelet must be specified at build-time.
-     * 
-     * <p>
-     * Wirelets cannot be specified at runtime. This prohibits the wirelet from being specified when using an image.
-     * 
-     * <p>
-     * If this method is called from an inheritable wirelet. All subclasses of the wirelet will retain build-time only
-     * status. Invoking this method on subclasses with a super class that have already invoked it. Will fail with an
-     * exception(or error).
-     * <p>
-     * I think you can only have wirelets injected at build-time if they are build-time only... Nej, vi skal fx
-     * bruge @Provide naar vi linker assemblies...
-     */
-    // Den giver ogsaa meningen for brugere iff de kan faa fat i den fra en assembly
-    // selectWirelets(Ssss.class).
-    protected static final void $buildtimeOnly() {
-        WireletModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).buildtimeOnly();
+        return CompositeWirelet.of(combine(wirelets), this);
     }
 
     /** Attempting to wire a non-container component with this wirelet will fail. */
@@ -164,7 +149,7 @@ public abstract /* sealed */ class Wirelet {
      * @see #beforeThis(Wirelet...)
      */
     public static Wirelet combine(Wirelet... wirelets) {
-        return CombinedWirelet.of(wirelets);
+        return CompositeWirelet.of(wirelets);
     }
 
     /**

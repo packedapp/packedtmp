@@ -1,8 +1,10 @@
-package app.packed.extension;
+package app.packed.extension.old;
 
 import java.util.function.Function;
 
-public interface ExtensionBeanDoubly<E extends Extension, X extends ExtensionBean<E>> {
+import app.packed.extension.Extension;
+
+public interface ExtensionBeanDoubly<E extends Extension, X> {
 
     boolean isMissing();
     boolean isPresent();

@@ -29,14 +29,18 @@ import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
 import app.packed.component.Assembly;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletSelection;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerWirelet;
+import app.packed.extension.old.ExtensionBeanConnection;
+import app.packed.extension.old.ExtensionBeanDoubly;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -82,6 +86,8 @@ import packed.internal.util.ThrowableUtil;
 // Og jeg er allerede i tvivl om hvad checkExtendable
 // checkUnconnected o.s.v. er
 
+// alternativ har vi noget a.la. onFinalize(ExtensionFinalizer finalizer)
+
 // Static initializers
 //// Dependencies
 //// Attributes
@@ -116,6 +122,18 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
 
+    /**
+     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * <p>
+     * This method delegate all calls to {@link ExtensionContext#checkIsPreCompletion()}.
+     * 
+     * @throws IllegalStateException
+     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
+     */
+    protected final void checkIsPreCompletion() {
+        context().checkIsPreCompletion();
+    }
+
     // checkExtendable...
     /**
      * Checks that the new extensions can be added to the container in which this extension is registered.
@@ -130,29 +148,14 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     }
 
     /**
-     * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
+     * Returns this extension's context object. This context object is typically used in situations where the extension
+     * needs to delegate responsibility to classes that cannot invoke the protected methods on this class due to
+     * class-member visibility rules.
      * <p>
-     * This method delegate all calls to {@link ExtensionContext#checkIsPreCompletion()}.
-     * 
-     * @throws IllegalStateException
-     *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
-     */
-    protected final void checkIsPreCompletion() {
-        context().checkIsPreCompletion();
-    }
-
-    /**
-     * Returns an extension context object. This context object can be used in situations where the extension needs to
-     * delegate responsibility to classes that cannot invoke the protected methods on this class due to class-member
-     * visibility rules.
-     * <p>
-     * An instance of {@code ExtensionContext} can also be dependency injected into the constructor of an extension
-     * subclass. This is useful, for example, if you want to setup some external classes in the constructor that needs
-     * access to the context object.
-     * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. As an
-     * alternative, a extension context can be dependency injected into the constructor of the extension. Or
-     * {@link #onNew()} can be overridden to perform any needed post initialization.
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you an
+     * instance of the context object in the constructor. You should instead let the context object be dependency injected
+     * into the constructor by declaring as a parameter. Another alternative is to override {@link #onNew()} to perform post
+     * initialization.
      * 
      * @throws IllegalStateException
      *             if invoked from the constructor of the extension.
@@ -167,7 +170,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         return c;
     }
 
-    protected <E extends Extension, X extends ExtensionBean<E>> ExtensionBeanDoubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
+    protected <E extends Extension, X> ExtensionBeanDoubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
         throw new UnsupportedOperationException();
     }
 
@@ -177,16 +180,20 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         return context().findParent(parentType);
     }
 
-    protected final ExtensionBeanConfiguration installExtensor(Class<? extends ExtensionBean<?>> implementation) {
-        return context().installExtensor(implementation);
+    protected final BaseBeanConfiguration inheritOrInstall(Class<?> implementation) {
+        return context().install(implementation);
     }
 
-    protected final ExtensionBeanConfiguration installExtensor(ExtensionBean<?> instance) {
-        return context().installExtensorInstance(instance);
+    protected final BaseBeanConfiguration install(Class<?> implementation) {
+        return context().install(implementation);
     }
 
-    protected final ExtensionBeanConfiguration installExtensor(Factory<? extends ExtensionBean<?>> factory) {
-        return context().installExtensor(factory);
+    protected final BaseBeanConfiguration install(Factory<?> factory) {
+        return context().install(factory);
+    }
+
+    protected final BaseBeanConfiguration install(Object instance) {
+        return context().installInstance(instance);
     }
 
     /**
@@ -232,31 +239,43 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * This method can be overridden to overridden to provide a custom mirror. For example, {@link ServiceExtension}
      * overrides this method to provide an instance of {@link ServiceExtensionMirror}.
      * <p>
-     * If overriding this method {@link #mirrorPopulate(ExtensionMirror)} must be invoked with the specialized extension
-     * mirror before returning from the method. As this will populate the generic methods on {@link ExtensionMirror}.
+     * If this method is overridden, {@link #mirrorInitialize(ExtensionMirror)} must be called with the new mirror instance
+     * before returning from the method: <pre>
+     * {@code
+     *   class MyExtension extends Extension {
+     *   &#64;Override
+     *   protected MyExtensionMirror mirror() {
+     *       return mirrorInitialize(new MyExtensionMirror(this));
+     *   }
+     * }
+     * }</pre>
      * <p>
-     * The runtime will throw an InternalExtensionException if this method is overridden and null is returned.
+     * Subclasses may choose to make this method public.
+     * <p>
+     * If this method is overridden and null is returned. The runtime will throw a runtime exception.
      * 
      * @return a mirror for the extension
      * @see ContainerMirror#extensions()
      */
     protected ExtensionMirror<?> mirror() {
-        return mirrorPopulate(new ExtensionMirror<>());
+        return mirrorInitialize(new ExtensionMirror<>());
     }
 
     /**
-     * Populates
+     * Initializes the specified extension mirror.
+     * <p>
+     * This method should be called exactly once from {@link #mirror()}.
      * 
      * @param <M>
-     *            the type of mirror
+     *            the type of extension mirror
      * @param mirror
-     *            the mirror to populate
-     * @return the specified mirror, but now populated
+     *            the mirror to initialize
+     * @return the specified mirror, but now initialized
      * @throws IllegalStateException
-     *             if the mirror has already been populated
+     *             if this method has already been called on the specified mirror
      */
-    protected final <M extends ExtensionMirror<?>> M mirrorPopulate(M mirror) {
-        mirror.populate((ExtensionSetup) context());
+    protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
+        mirror.initialize((ExtensionSetup) context());
         return mirror;
     }
 
@@ -282,11 +301,11 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     }
 
     /**
-     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor completed), but before
-     * the new extension instance is returned to the end-user.
+     * Invoked (by the runtime) immediately after the extension has been instantiated (constructor returned successfully),
+     * but before the new extension instance is returned to the end-user.
      * <p>
-     * Since most methods on this class cannot be invoked from the constructor of an extension instance. This method can be
-     * used to perform post instantiation of the extension as needed.
+     * Since most methods on this class cannot be invoked from the constructor of an extension. This method can be used to
+     * perform post instantiation of the extension as needed.
      * <p>
      * The next lifecycle method that will be called is {@link #onPreChildren()}, which is called immediately before any
      * child containers are added
@@ -341,17 +360,27 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         context().link(assembly, wirelets);
     }
 
-    // Hvad hvis den selv tilfoejer komponenter med en child container???
-    // Problemet er hvis den bruger extensions som den ikke har defineret
-    // Det tror jeg maaske bare ikke den kan
-
-    // find/locate
-    protected final <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletClass) {
+    /**
+     * Returns a selection of all wirelets of the specified type that have not already been processed.
+     * <p>
+     * If this extension has runtime wirelet you must remember to check if there are any unprocessed wirelets at runtime. As
+     * this may happen when creating an image
+     * 
+     * @param <T>
+     *            the type of wirelets to select
+     * @param wireletClass
+     *            the type of wirelets to select
+     * @return a selection of all container wirelets of the specified type that have not already been processed
+     * @throws IllegalArgumentException
+     *             if the specified class is not located in the same module as the extension itself. Or if specified wirelet
+     *             class is not a proper subclass of ContainerWirelet.
+     */
+    protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return context().selectWirelets(wireletClass);
     }
 
     /**
-     * Used to lookup other extensions.
+     * Returns an exUsed to lookup other extensions.
      * <p>
      * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
      * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
@@ -364,10 +393,12 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * @param subtensionClass
      *            the type of subtension to return
      * @return the subtension
-     * @throws InternalExtensionException
-     *             If invoked from the constructor of the extension. Or if the underlying container is no longer
-     *             configurable and an extension of the specified type has not already been installed. Or if the extension
-     *             of the specified subtension class has not been registered as a dependency of this extension
+     * @throws IllegalStateException
+     *             If the underlying container is no longer configurable and an extension of the specified type has not
+     *             already been installed.
+     * @throws IllegalArgumentException
+     *             If the extension to which the specified subtension is a member of has not been registered as a dependency
+     *             of this extension
      * @see ExtensionContext#use(Class)
      * @see #$dependsOn(Class...)
      */
@@ -376,8 +407,8 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     }
 
     // cannot be called
-    protected final <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return context().userWire(driver, wirelets);
+    protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+        return context().wire(driver, wirelets);
     }
 
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}

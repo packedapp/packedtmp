@@ -67,7 +67,7 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @throws IllegalStateException
      *             if this configuration is no longer configurable and an extension of the specified type has not already
      *             been installed
-     * @see #extensions()
+     * @see #extensions()s
      */
     protected <T extends Extension> T use(Class<T> extensionType) {
         return container().useExtension(extensionType);

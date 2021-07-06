@@ -22,10 +22,10 @@ import app.packed.component.Wirelet;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.RealmSetup;
 
-/** The configuration of a build. */
+/** A single build. */
 public final class BuildSetup {
 
-    /** The application we are building. */
+    /** The (root) application we are building. */
     public final ApplicationSetup application;
 
     /** What we are building. */

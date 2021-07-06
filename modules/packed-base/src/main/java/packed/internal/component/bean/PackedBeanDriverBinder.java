@@ -11,7 +11,7 @@ import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.BeanConfiguration;
 import app.packed.component.BeanDriver;
 import app.packed.component.BeanDriver.Binder;
-import app.packed.component.BeanKind;
+import app.packed.component.BeanType;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
@@ -24,22 +24,22 @@ import packed.internal.invoke.Infuser;
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implements BeanDriver.Binder<T, C> {
 
-    /** A {@link BeanKind#SINGLETON} bean binder. */
+    /** A {@link BeanType#BASE} bean binder. */
     public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            ServiceBeanConfiguration.class, BeanKind.SINGLETON);
+            ServiceBeanConfiguration.class, BeanType.BASE);
 
-    /** A {@link BeanKind#STATIC} bean binder. */
+    /** A {@link BeanType#STATIC} bean binder. */
     public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            BaseBeanConfiguration.class, BeanKind.STATIC);
+            BaseBeanConfiguration.class, BeanType.STATIC);
 
     final MethodHandle constructor;
 
-    final BeanKind kind;
+    final BeanType kind;
 
     @Nullable
     final Wirelet wirelet;
 
-    public PackedBeanDriverBinder(@Nullable Wirelet wirelet, MethodHandle constructor, BeanKind kind) {
+    public PackedBeanDriverBinder(@Nullable Wirelet wirelet, MethodHandle constructor, BeanType kind) {
         this.wirelet = wirelet;
         this.kind = requireNonNull(kind);
         this.constructor = constructor;
@@ -56,7 +56,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     @Override
     public PackedBeanDriver<C> bind(Factory<? extends T> factory) {
         requireNonNull(factory, "factory is bull");
-        if (kind == BeanKind.STATIC) {
+        if (kind == BeanType.STATIC) {
             throw new UnsupportedOperationException("Cannot bind a factory to a static bean.");
         }
         return new PackedBeanDriver(wirelet, this, factory.rawType(), factory);
@@ -70,7 +70,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
             throw new IllegalArgumentException("Cannot bind a Class instance to this method, was " + instance);
         } else if (Factory.class.isInstance(instance)) {
             throw new IllegalArgumentException("Cannot bind a Factory instance to this method, was " + instance);
-        } else if (kind != BeanKind.SINGLETON) {
+        } else if (kind != BeanType.BASE) {
             throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
         }
         return new PackedBeanDriver(wirelet, this, instance.getClass(), instance);
@@ -83,7 +83,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     }
 
     @Override
-    public BeanKind kind() {
+    public BeanType kind() {
         return kind;
     }
 
@@ -92,7 +92,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         throw new UnsupportedOperationException();
     }
 
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanKind kind) {
+    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanType kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)

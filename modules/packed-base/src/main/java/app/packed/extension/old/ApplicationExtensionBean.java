@@ -1,6 +1,8 @@
-package app.packed.extension;
+package app.packed.extension.old;
 
-public abstract class ApplicationExtensor<E extends Extension> extends ExtensionBean<E> {
+import app.packed.extension.Extension;
+
+public abstract class ApplicationExtensionBean<E extends Extension> /* extends ExtensionBean<E> */ {
     
     static void $initializeOnly() {
         // only available doing container initialization... after which it will magically disapper

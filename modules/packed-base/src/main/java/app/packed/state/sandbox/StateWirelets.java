@@ -17,8 +17,8 @@ package app.packed.state.sandbox;
 
 import app.packed.application.Program;
 import app.packed.component.Assembly;
-import app.packed.component.UserWirelet;
 import app.packed.component.Wirelet;
+import app.packed.container.ContainerWirelet;
 
 /**
  * Wirelets that can be used when wiring containers. For example, via {@link Program#start(Assembly, Wirelet...)}.
@@ -102,7 +102,7 @@ public interface StateWirelets {
         throw new UnsupportedOperationException();
     }
 
-    static class ShutdownHookWirelet extends UserWirelet {}
+    static class ShutdownHookWirelet extends ContainerWirelet {}
 
     /**
      * Sets a maximum time for the container to run. When the deadline podpodf the app is shutdown.

@@ -20,14 +20,17 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
-import app.packed.component.SelectWirelets;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletSelection;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
+import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension.Subtension;
+import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.inject.Factory;
 
 /**
@@ -74,7 +77,7 @@ public /* sealed */ interface ExtensionContext {
      *            the type of ancestor to find
      * @return
      */
-    <E extends ExtensionMember<?>> ExtensionBeanConnection<E> findFirstAncestor(Class<E> ancestorType);
+    <E extends ExtensionMember<?>> ExtensionBeanConnection<E> findAncestor(Class<E> ancestorType);
 
     /**
      * Attempts to find a parent of the specified type.
@@ -93,7 +96,7 @@ public /* sealed */ interface ExtensionContext {
     // A new instance. Ligesom install(bean)
 
     // Hvad sker der hvis det er en platform extensor, som allerede er installeret og navngivet???
-    ExtensionBeanConfiguration installExtensor(Class<? extends ExtensionBean<?>> implementation);
+    BaseBeanConfiguration install(Class<?> implementation);
 
     // maybe userInstall
     // or maybe we just have userWire()
@@ -101,7 +104,7 @@ public /* sealed */ interface ExtensionContext {
     // For hvorfor skal brugen installere en alm component via denne extension???
     // Vi skal vel altid have en eller anden specific component driver
     // BaseComponentConfiguration containerInstall(Class<?> factory);
-    ExtensionBeanConfiguration installExtensor(Factory<? extends ExtensionBean<?>> factory);
+    BaseBeanConfiguration install(Factory<?> factory);
 
     // Will install the class in the specified Container
     // Hvad hvis vi bare vil finde en extension...
@@ -117,7 +120,7 @@ public /* sealed */ interface ExtensionContext {
      * @see #installExtensor(Class, Wirelet...)
      * @see #installExtensor(Factory, Wirelet...)
      */
-    ExtensionBeanConfiguration installExtensorInstance(ExtensionBean<?> instance);
+    BaseBeanConfiguration installInstance(Object instance);
 
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
@@ -187,26 +190,24 @@ public /* sealed */ interface ExtensionContext {
     ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets);
 
     /**
-     * Re
+     * Selects all container wirelets of the specified type.
+     * <p>
+     * The wirelets selected...
+     * 
+     * <p>
+     * This does not include potential runtime wirelets which the user might specify when launching from an image. Maaske
+     * skal vi have en isRuntimeWireletsAllowed (if root and is image)
      * 
      * @param <T>
-     *            the type of wirelet to handle
+     *            the type of wirelets to select
      * @param wireletType
-     *            the type of wirelet to return a handle for
-     * @return a wirelet source
+     *            the type of wirelets to return a selection for
+     * @return a wirelet selection of the specified type
      * @throws IllegalArgumentException
-     *             if the specified wirelet type is not a subclass of {@link ExtensionWirelet} and this extension as the
-     *             type parameter
+     *             if the specified wirelet class is not a proper subclass of {@link ContainerWirelet}. Or if the specified
+     *             class is not located in the same module as the extension itself
      */
-    <T extends ExtensionWirelet<?>> SelectWirelets<T> selectWirelets(Class<T> wireletType);
-
-    default <C extends ComponentConfiguration> C subWire(Class<? extends Extension> subtension, ComponentDriver<C> driver, Wirelet... wirelets) {
-        /// Maaske har vi alligevel brug for SubtensionConfiguration...
-        // Ellers kan vi jo impresonate alle extensions.
-
-        // Hvis vi goer det... syntes jeg vi skal smide den ud i en seperat klasse..
-        throw new UnsupportedOperationException();
-    }
+    <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletType);
 
     /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's
@@ -244,7 +245,7 @@ public /* sealed */ interface ExtensionContext {
      * @throws InternalExtensionException
      *             if the specified driver is not created by the extension itself
      */
-    <C extends ComponentConfiguration> C userWire(ComponentDriver<C> driver, Wirelet... wirelets);
+    <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 }
 ///**
 //* Returns the extension instance.
@@ -302,6 +303,15 @@ public /* sealed */ interface ExtensionContext {
 // return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
 //}
 //
+
+//default <C extends ComponentConfiguration> C subWire(Class<? extends Extension> subtension, ComponentDriver<C> driver, Wirelet... wirelets) {
+//    /// Maaske har vi alligevel brug for SubtensionConfiguration...
+//    // Ellers kan vi jo impresonate alle extensions.
+//
+//    // Hvis vi goer det... syntes jeg vi skal smide den ud i en seperat klasse..
+//    throw new UnsupportedOperationException();
+//}
+
 ///**
 //* @param <T>
 //*            the type of extension to return

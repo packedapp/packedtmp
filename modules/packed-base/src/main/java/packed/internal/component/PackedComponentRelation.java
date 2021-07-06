@@ -37,9 +37,9 @@ record ComponentSetupRelation(ComponentSetup from, ComponentSetup to, int distan
     @Override
     public Iterator<ComponentMirror> iterator() {
         if (distance == 0) {
-            return List.of((ComponentMirror) from).iterator();
+            return List.of(from.mirror()).iterator();
         } else if (distance == 1) {
-            return List.of((ComponentMirror) from, (ComponentMirror) to).iterator();
+            return List.of(from.mirror(), to.mirror()).iterator();
         } else {
             ComponentMirror[] components = new ComponentMirror[distance];
 

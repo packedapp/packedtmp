@@ -29,6 +29,8 @@ import app.packed.extension.ExtensionMember;
 import app.packed.mirror.Mirror;
 
 /**
+ * A mirror of a component.
+ * <p>
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
@@ -44,10 +46,10 @@ public /* sealed */ interface ComponentMirror extends Mirror {
 
     Stream<ComponentMirror> components();
 
-    /** {@return the container this component is a part of. A container is always part of itself.} */
+    /** {@return the container this component is a part of. If the underlying component is a container, returns this.} */
     ContainerMirror container();
 
-    /** { @return the distance to the root component, the root component having depth {@code 0}.} */
+    /** {@return the distance to the root component, the root component having depth {@code 0}.} */
     int depth();
 
     default void forEachComponent(Consumer<? super ComponentMirror> action) {

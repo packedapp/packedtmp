@@ -1,5 +1,6 @@
-package app.packed.extension;
+package app.packed.extension.old;
 
+import app.packed.extension.ExtensionMember;
 import packed.internal.container.PackedExtensionAncestor;
 
 // Extension <same app-parent> Extension
@@ -29,9 +30,8 @@ import packed.internal.container.PackedExtensionAncestor;
 // connectToParent()
 public interface ExtensionBeanConnection<E extends ExtensionMember<?>> {
 
-    default void inherit() {
-    }
-    
+    default void inherit() {}
+
     E instance();
 
     boolean isInSameApplication();

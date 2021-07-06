@@ -1,10 +1,9 @@
-package app.packed.extension;
+package app.packed.extension.old;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.ComponentConfiguration;
 
 /**
- * A configuration object for an {@link ExtensionBean}.
+ * A configuration object for an ExtensionBean.
  * <p>
  * An instance of this class is returned when installing an Extensor via
  * 
@@ -17,10 +16,10 @@ import app.packed.component.ComponentConfiguration;
 // .ServiceExtension
 // .ServiceExtension
 // .ServiceExtension
-public final class ExtensionBeanConfiguration extends ComponentConfiguration {
+public final class ExtensionBeanConfiguration {
 
     // Bind er lokalt inject, provide er container scope
-    
+
     // Altsaa hvorfor kan vi ikke bare gemme det i selve extension'en???
     // Og saa hive det ud derfra??
     public <T> ExtensionBeanConfiguration bindInstance(Class<T> key, T instance) {
@@ -31,17 +30,12 @@ public final class ExtensionBeanConfiguration extends ComponentConfiguration {
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ExtensionBeanConfiguration named(String name) {
-        super.named(name);
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public NamespacePath path() {
-        return super.path();
+        throw new UnsupportedOperationException();
     }
 
     // Nu skal de sgu nok hedde .ServiceExtension alligevel paa runtime

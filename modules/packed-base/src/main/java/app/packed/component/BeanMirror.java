@@ -16,7 +16,7 @@ public interface BeanMirror extends ComponentMirror {
 
     <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
 
-    BeanKind kind(); // Maaske har ikke kinds... Men kun BeanInfo... ownership model. Singleton
+    BeanType kind(); // Maaske har ikke kinds... Men kun BeanInfo... ownership model. Singleton
 
     // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
 }

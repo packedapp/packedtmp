@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-import app.packed.component.SelectWirelets;
+import app.packed.component.WireletSelection;
 import app.packed.component.Wirelet;
 
 // Lige nu bliver den brugt 3 steder fra.
@@ -13,10 +13,10 @@ import app.packed.component.Wirelet;
 // ComponentSetup
 // RuntimeSetup
 
-/** Implementation of {@link SelectWirelets}. */
-public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> implements SelectWirelets<W> {
+/** Implementation of {@link WireletSelection}. */
+public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> implements WireletSelection<W> {
 
-    /** An empty selection used by {@link SelectWirelets#of()}. */
+    /** An empty selection used by {@link WireletSelection#of()}. */
     public static final PackedSelectWirelets<?> EMPTY = new PackedSelectWirelets<>();
 
     /** The wirelet wrapper containing the actual wirelets */
@@ -44,7 +44,7 @@ public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> imple
     /** {@inheritDoc} */
     @SuppressWarnings("unchecked")
     @Override
-    public Optional<W> findLast() {
+    public Optional<W> processReturnLast() {
         W result = null;
         if (wirelets.unconsumed > 0) {
             Wirelet[] ws = wirelets.wirelets;
@@ -62,7 +62,7 @@ public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> imple
 
     /** {@inheritDoc} */
     @Override
-    public void forEach(Consumer<? super W> action) {
+    public void processForEach(Consumer<? super W> action) {
         consumeEach(wirelets, wireletType, action);
     }
 
@@ -123,9 +123,9 @@ public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> imple
         }
     }
 
-    public static <T extends Wirelet> SelectWirelets<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
+    public static <T extends Wirelet> WireletSelection<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
-        WireletWrapper wp = new WireletWrapper(CombinedWirelet.flattenAll(wirelets));
+        WireletWrapper wp = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
         return new PackedSelectWirelets<>(wp, wireletClass);
     }
 }

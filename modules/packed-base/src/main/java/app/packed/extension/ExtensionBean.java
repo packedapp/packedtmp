@@ -1,10 +1,10 @@
 package app.packed.extension;
 
 //// 3 maader at installere den paa
+
 // always      | Whenever the extension is used.. The extension bean is always added
 // on-demand   | Somebody depends on it either directly or indirectly (for example via an extensor)
 // explicit    | Explicitly wired via a method on Extension
-
 
 //// Wirelets giver kun mening explicit... Evt. kan man installere nogen statiske??? nahhh
 //// Wirelets er nok primaert en bruger ting, og det er primaert ogsaa en container ting
@@ -45,7 +45,6 @@ package app.packed.extension;
 // Single constructor...
 // Inject??? Nahhh
 
-
 /// ----- SystemExtenstor -----
 // Vi slipper ikke udenom ref count hvis vi har en SystemExtensor...
 // PGA af classLoading...
@@ -67,10 +66,8 @@ package app.packed.extension;
 /**
  *
  */
+// TreeBean
 public abstract non-sealed class ExtensionBean<E extends Extension> implements ExtensionMember<E> {
-
-    /** The default empty constructor. */
-    ExtensionBean() {}
 
     static {
 
@@ -87,7 +84,7 @@ public abstract non-sealed class ExtensionBean<E extends Extension> implements E
     // klasse/metode ect
     //// $extensionSupportsEnabling() look for any parent in the tree
     //// Problemet er jo at use() automatisk enabler en extension
-    
+
     @SuppressWarnings("unchecked")
     static void $ignoreHooksIfExtensionisNotUsed(Class<? extends Extension>... extensionTypes) {
         // Vi kan bruge f.eks. @ExposeJFR paa en mode... Men den autoaktivere ikke extension'en
