@@ -5,8 +5,14 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
+import app.packed.component.BaseBeanConfiguration;
+import app.packed.component.BeanDriver;
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDriver;
+import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.inject.Factory;
+import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
@@ -46,6 +52,91 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      */
     protected Set<Class<? extends Extension>> extensions() {
         return container().extensions();
+    }
+
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * 
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
+    // add? i virkeligheden wire vi jo class komponenten...
+    // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
+    protected BaseBeanConfiguration install(Class<?> implementation) {
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
+        ComponentSetup component = container();
+        return component.wire(driver, component.realm);
+    }
+
+    /**
+     * Installs a singleton bean that will use the specified {@link Factory} to instantiate the bean instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * 
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     */
+    protected BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
+        ComponentSetup component = container();
+        return component.wire(driver, component.realm, wirelets);
+    }
+
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * 
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     * @see BaseAssembly#install(Factory)
+     */
+    protected BaseBeanConfiguration install(Factory<?> factory) {
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
+        ComponentSetup component = container();
+        return component.wire(driver, component.realm);
+    }
+
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * 
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     * @see CommonContainerAssembly#install(Factory)
+     */
+    protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
+        ComponentSetup component = container();
+        return component.wire(driver, component.realm, wirelets);
+    }
+
+    /**
+     * Install the specified component instance.
+     * <p>
+     * If this install operation is the first install operation of the container. The component will be installed as the
+     * root component of the container. All subsequent install operations on this container will have have component as its
+     * parent. If you wish to have a specific component as a parent, the various install methods on
+     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
+     *
+     * @param instance
+     *            the component instance to install
+     * @return this configuration
+     */
+    protected BaseBeanConfiguration installInstance(Object instance) {
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
+        ComponentSetup component = container();
+        return component.wire(driver, component.realm);
+    }
+
+    protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
+        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
+        ComponentSetup component = container();
+        return component.wire(driver, component.realm, wirelets);
     }
 
     /** {@inheritDoc} */

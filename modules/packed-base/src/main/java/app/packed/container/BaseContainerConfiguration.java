@@ -18,10 +18,10 @@ package app.packed.container;
 import java.util.Set;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
+import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
+import app.packed.inject.Factory;
 import packed.internal.container.PackedContainerDriver;
 
 /**
@@ -39,6 +39,36 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
         return super.extensions();
     }
 
+    @Override
+    public BaseBeanConfiguration install(Class<?> implementation) {
+        return super.install(implementation);
+    }
+
+    @Override
+    public BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
+        return super.install(implementation, wirelets);
+    }
+
+    @Override
+    public BaseBeanConfiguration install(Factory<?> factory) {
+        return super.install(factory);
+    }
+
+    @Override
+    public BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
+        return super.install(factory, wirelets);
+    }
+
+    @Override
+    public BaseBeanConfiguration installInstance(Object instance) {
+        return super.installInstance(instance);
+    }
+
+    @Override
+    public BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
+        return super.installInstance(instance, wirelets);
+    }
+
     /** {@inheritDoc} */
     @Override
     public ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
@@ -47,7 +77,7 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
 
     @Override
     public ContainerMirror mirror() {
-       return super.mirror();
+        return super.mirror();
     }
 
     /** {@inheritDoc} */
@@ -67,12 +97,6 @@ public class BaseContainerConfiguration extends ContainerConfiguration {
     @Override
     public <T extends Extension> T use(Class<T> extensionType) {
         return super.use(extensionType);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return super.wire(driver, wirelets);
     }
 
     /**

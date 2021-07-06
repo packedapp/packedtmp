@@ -21,7 +21,6 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.component.Assembly;
 import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanDriver;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
@@ -84,8 +83,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
     protected final BaseBeanConfiguration install(Class<?> implementation) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
-        return configuration().wire(driver);
+        return configuration().install(implementation);
     }
 
     /**
@@ -98,8 +96,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @return the configuration of the component
      */
     protected final BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(implementation);
-        return configuration().wire(driver, wirelets);
+        return configuration().install(implementation, wirelets);
     }
 
     /**
@@ -112,8 +109,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @see BaseAssembly#install(Factory)
      */
     protected final BaseBeanConfiguration install(Factory<?> factory) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
-        return configuration().wire(driver);
+        return configuration().install(factory);
     }
 
     /**
@@ -125,8 +121,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @see CommonContainerAssembly#install(Factory)
      */
     protected final BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingleton(factory);
-        return configuration().wire(driver, wirelets);
+        return configuration().install(factory, wirelets);
     }
 
     /**
@@ -142,13 +137,11 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @return this configuration
      */
     protected final BaseBeanConfiguration installInstance(Object instance) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
-        return configuration().wire(driver);
+        return configuration().installInstance(instance);
     }
 
     protected final BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = BeanDriver.ofSingletonInstance(instance);
-        return configuration().wire(driver, wirelets);
+        return configuration().installInstance(instance, wirelets);
     }
 
     /**
