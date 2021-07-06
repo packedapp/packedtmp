@@ -3,10 +3,9 @@ package packed.internal.container;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Nullable;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.old.ExtensionBeanConnection;
 
-public class PackedExtensionAncestor<E extends ExtensionMember<?>> implements ExtensionBeanConnection<E> {
+public class PackedExtensionAncestor<E> implements ExtensionBeanConnection<E> {
 
     @Nullable
     final E instance;
@@ -46,11 +45,11 @@ public class PackedExtensionAncestor<E extends ExtensionMember<?>> implements Ex
     }
 
     @SuppressWarnings("unchecked")
-    public static <E extends ExtensionMember<?>> ExtensionBeanConnection<E> sameApplication(Object instance) {
+    public static <E> ExtensionBeanConnection<E> sameApplication(Object instance) {
         return new PackedExtensionAncestor<E>((E) instance);
     }
 
-    public static <E extends ExtensionMember<?>> ExtensionBeanConnection<E> missing() {
+    public static <E> ExtensionBeanConnection<E> missing() {
         return new PackedExtensionAncestor<E>(null);
     }
 }

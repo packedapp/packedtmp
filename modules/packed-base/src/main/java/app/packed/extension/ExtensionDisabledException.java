@@ -29,7 +29,7 @@ import app.packed.application.ApplicationDriver;
 // InternalExtensionException for using undeclared dependency
 
 //if disabled, or if application extension used by a non-root container
-public class ExtensionNotAvailableException extends RuntimeException {
+public class ExtensionDisabledException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -40,7 +40,7 @@ public class ExtensionNotAvailableException extends RuntimeException {
      * @param message
      *            the message
      */
-    public ExtensionNotAvailableException(String message) {
+    public ExtensionDisabledException(String message) {
         super(message);
     }
 
@@ -52,7 +52,7 @@ public class ExtensionNotAvailableException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    public ExtensionNotAvailableException(String message, Throwable cause) {
+    public ExtensionDisabledException(String message, Throwable cause) {
         super(message, cause);
     }
 }

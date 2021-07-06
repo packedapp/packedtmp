@@ -77,8 +77,10 @@ public /* sealed */ interface ExtensionContext {
      *            the type of ancestor to find
      * @return
      */
-    <E extends ExtensionMember<?>> ExtensionBeanConnection<E> findAncestor(Class<E> ancestorType);
+    <E> ExtensionBeanConnection<E> findAncestor(Class<E> ancestorType);
 
+    // Supporter Extension, AutoBean or common interface
+    // all must be in same module
     /**
      * Attempts to find a parent of the specified type.
      * 
@@ -89,9 +91,9 @@ public /* sealed */ interface ExtensionContext {
      * @throws ClassCastException
      *             if a parent was found but it was not of the specified type
      */
-    // Ahhh for helvede det virker jo kun med extensions... ikke med extensors...
-    // ExtensorContext???
-    <E extends ExtensionMember<?>> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
+    // Vi skal vaek fra optional syntes jeg... IDK Giver det mening at have et resultat inde i en optional...
+    // Ja det goer det jo saadan set...
+    <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
     // A new instance. Ligesom install(bean)
 
@@ -134,17 +136,6 @@ public /* sealed */ interface ExtensionContext {
     }
 
     /**
-     * Returns whether or not the extension is part of an {@link ApplicationImage}.
-     * <p>
-     * This can be used to clean up data structures that was only remember that people might still inspect the image
-     * 
-     * @return whether or not the extension is part of an image
-     */
-    // Problemet her med build target... er at en sub application kan definere et image...
-    // Maaske bare build target...
-    boolean isPartOfImage(); // BoundaryTypes
-
-    /**
      * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
      * container as this extension.
      * 
@@ -156,6 +147,17 @@ public /* sealed */ interface ExtensionContext {
      *           cannot give a more detailed answer about who is using a particular extension
      */
     boolean isExtensionUsed(Class<? extends Extension> extensionType);
+
+    /**
+     * Returns whether or not the extension is part of an {@link ApplicationImage}.
+     * <p>
+     * This can be used to clean up data structures that was only remember that people might still inspect the image
+     * 
+     * @return whether or not the extension is part of an image
+     */
+    // Problemet her med build target... er at en sub application kan definere et image...
+    // Maaske bare build target...
+    boolean isPartOfImage(); // BoundaryTypes
 
     default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action

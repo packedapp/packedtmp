@@ -42,6 +42,10 @@ public class ConvExtension extends Extension implements ConvDiscovable {
     // Clear all converters
     public void clear() {}
 
+    protected <E extends Extension, X> ExtensionBeanDoubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
+        throw new UnsupportedOperationException();
+    }
+
     // Hvordan inheriter vi en AutoBean fra en parent container
     // inherit(Class<? extends AutoBean>) <--- er udelukkende taenkt som plads besparende
     @Override

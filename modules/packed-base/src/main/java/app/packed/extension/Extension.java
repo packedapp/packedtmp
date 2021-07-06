@@ -40,7 +40,6 @@ import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.old.ExtensionBeanConnection;
-import app.packed.extension.old.ExtensionBeanDoubly;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -170,13 +169,9 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         return c;
     }
 
-    protected <E extends Extension, X> ExtensionBeanDoubly<E, X> findFirst(Class<E> extensionType, Class<X> extensorType) {
-        throw new UnsupportedOperationException();
-    }
-
     // findExtension()
     // findExtensor()
-    protected final <E extends ExtensionMember<?>> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
+    protected final <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
         return context().findParent(parentType);
     }
 

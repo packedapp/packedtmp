@@ -20,7 +20,6 @@ import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.Subtension;
 import app.packed.extension.ExtensionContext;
-import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
@@ -105,7 +104,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ExtensionMember<?>> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
+    public <T> ExtensionBeanConnection<T> findAncestor(Class<T> type) {
         requireNonNull(type, "type is null");
         ContainerSetup parent = container.containerParent;
         while (parent != null) {
@@ -121,7 +120,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ExtensionMember<?>> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
+    public <T> Optional<ExtensionBeanConnection<T>> findParent(Class<T> type) {
         requireNonNull(type, "type is null");
         ContainerSetup parent = container.containerParent;
         if (parent != null) {
@@ -129,7 +128,9 @@ public final class ExtensionSetup implements ExtensionContext {
             if (extensionContext != null) {
                 Extension instance = extensionContext.instance;
                 if (type.isInstance(instance)) {
-                    return Optional.of(PackedExtensionAncestor.sameApplication(instance));
+                    @SuppressWarnings("unchecked")
+                    ExtensionBeanConnection<T> c = (ExtensionBeanConnection<T>) PackedExtensionAncestor.sameApplication(instance);
+                    return Optional.of(c);
                 }
             }
         }

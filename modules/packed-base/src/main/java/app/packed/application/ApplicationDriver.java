@@ -31,7 +31,7 @@ import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionNotAvailableException;
+import app.packed.extension.ExtensionDisabledException;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
 import app.packed.lifecycle.InitializationException;
@@ -242,7 +242,7 @@ public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseC
 
         /**
          * Disables 1 or more extensions. Attempting to use a disabled extension will result in an
-         * {@link ExtensionNotAvailableException} being thrown
+         * {@link ExtensionDisabledException} being thrown
          * 
          * @param extensionTypes
          *            the types of extension to disable

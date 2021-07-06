@@ -1,6 +1,5 @@
 package app.packed.extension.old;
 
-import app.packed.extension.ExtensionMember;
 import packed.internal.container.PackedExtensionAncestor;
 
 // Extension <same app-parent> Extension
@@ -28,7 +27,12 @@ import packed.internal.container.PackedExtensionAncestor;
 
 // ExtensionConection...
 // connectToParent()
-public interface ExtensionBeanConnection<E extends ExtensionMember<?>> {
+public interface ExtensionBeanConnection<E> {
+
+    default int containerDepth() {
+        // returns minus -1 on missing
+        return 0;
+    }
 
     default void inherit() {}
 
@@ -47,7 +51,7 @@ public interface ExtensionBeanConnection<E extends ExtensionMember<?>> {
 
     void onUninstall(Runnable r);// Ved ikke om det er det rigtige sted...
 
-    static <T extends ExtensionMember<?>> ExtensionBeanConnection<T> empty() {
+    static <T> ExtensionBeanConnection<T> empty() {
         return PackedExtensionAncestor.missing();
     }
 }

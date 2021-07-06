@@ -1,4 +1,4 @@
-package app.packed.extension.sandbox;
+package app.packed.extension.old;
 
 // Altsaa der er ikke noget der kommer til at hedde extension beans
 @Deprecated

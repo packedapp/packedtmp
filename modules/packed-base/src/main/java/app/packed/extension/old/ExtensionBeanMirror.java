@@ -1,4 +1,4 @@
-package app.packed.extension.sandbox;
+package app.packed.extension.old;
 
 import app.packed.component.BeanMirror;
 import app.packed.extension.ExtensionMirror;

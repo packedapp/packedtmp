@@ -1,6 +1,6 @@
 package app.packed.extension.sandbox.convert;
 
-import app.packed.extension.Locatable;
+import app.packed.extension.old.Locatable;
 
 public interface ConvDiscovable extends Locatable {
 

@@ -35,7 +35,7 @@ public class TstExt extends BaseAssembly {
                 count = 0;
             }
 
-            System.out.println("SAD" + c.findParent(ExtTestCommon.class).isPresent());
+            System.out.println("SAD" + c.findParent(MyExt.class).isPresent());
         }
     }
 
