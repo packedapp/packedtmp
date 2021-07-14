@@ -60,7 +60,7 @@ public class FooBar extends BaseAssembly {
     public static void main(String[] args) {
         System.out.println(ServiceContract.of(new Child()));
 
-        System.out.println("Exported keys : " + ServiceExtensionMirror.of(new Child()).exportedKeys());
+        System.out.println("Exported keys : " + ServiceExtensionMirror.use(new Child()).exportedKeys());
 
         Program a = Program.start(new FooBar());
         a.use(Runnable.class).run();

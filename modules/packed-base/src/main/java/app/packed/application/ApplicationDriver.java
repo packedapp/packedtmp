@@ -22,8 +22,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import app.packed.base.TypeToken;
+import app.packed.bean.BeanMirror;
 import app.packed.component.Assembly;
-import app.packed.component.BeanMirror;
 import app.packed.component.BuildException;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;

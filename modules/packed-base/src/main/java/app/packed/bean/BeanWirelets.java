@@ -1,10 +1,11 @@
-package app.packed.component;
+package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
 import app.packed.application.BuildWirelets;
+import app.packed.component.Wirelet;
 
 class BeanWirelets {
 

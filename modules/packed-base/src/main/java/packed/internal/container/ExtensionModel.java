@@ -315,10 +315,10 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * 
          * @param extensions
          *            the extensions
-         * @see Extension#$dependsOn(Class...)
+         * @see Extension#$dependsOnOptionally(Class...)
          */
         @SuppressWarnings("unchecked")
-        public void dependsOn(Class<? extends Extension>... extensions) {
+        public void dependsOn(boolean optionally, Class<? extends Extension>... extensions) {
             requireNonNull(extensions, "extensions is null");
             for (Class<? extends Extension> dependencyType : extensions) {
                 requireNonNull(dependencyType);
@@ -351,7 +351,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
             Class<? extends Extension> dependency = (Class<? extends Extension>) c;
 
             ExtensionModel.of(dependency);
-            dependsOn(dependency);
+            dependsOn(true, dependency);
             return Optional.of(dependency);
         }
     }

@@ -3,21 +3,8 @@ package app.packed.application;
 import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
 
-// Okay det ville vaere alt for vildt...
-// Men ville selvfoelgelig kun installere den i root containeren...
-// Alts
-
-// Kan simpelthen ogsaa vaere at man har reject ApplicationRuntimeExtension
-// som afgoer om man kan bruge det...
-// Ligesom vi har reject(FileExtension, NetExtension, ApplicationRuntimeExtension)
-
-
-// Har en extension noget scope??? Fx den her har helt klart extensionScope only...
-// Maaske vi bare checke det i constructeren... Altsaa hvis det er den eneste exception der har problemet.
-
-// Maaske fixer den her ogsaa error handling
-// Vi kan kun haandtere fejl hvis vi har en ApplicationRuntime???
-// Ellers flyder den bare ud.... IDK
+// Taenker lidt det er en special Application Scope Extension...
+// vi gider da ikke have den i hver container...
 public class ApplicationRuntimeExtension extends Extension {
 
     /** Create a new extension. */
@@ -28,6 +15,26 @@ public class ApplicationRuntimeExtension extends Extension {
 
     }
 }
+
+//Okay det ville vaere alt for vildt...
+//Men ville selvfoelgelig kun installere den i root containeren...
+//Alts
+
+//Kan simpelthen ogsaa vaere at man har reject ApplicationRuntimeExtension
+//som afgoer om man kan bruge det...
+//Ligesom vi har reject(FileExtension, NetExtension, ApplicationRuntimeExtension)
+
+
+//Har en extension noget scope??? Fx den her har helt klart extensionScope only...
+//Maaske vi bare checke det i constructeren... Altsaa hvis det er den eneste exception der har problemet.
+
+//Maaske fixer den her ogsaa error handling
+//Vi kan kun haandtere fejl hvis vi har en ApplicationRuntime???
+//Ellers flyder den bare ud.... IDK
+
+//
+
+
 // Man kan ikke selv installere den selfoelgelig...
 // Den fejler hvis det ikke er en root container i en applikation
 

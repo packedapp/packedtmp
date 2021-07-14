@@ -16,7 +16,7 @@ import app.packed.extension.ExtensionMirror;
  * <p>
  * An instance of this class is typically opb
  */
-public interface ContainerMirror extends ComponentMirror {
+public non-sealed interface ContainerMirror extends ComponentMirror {
 
     /** {@return a set mirrors for all extension that are in use by the container.} */
     Set<ExtensionMirror<?>> extensions();
@@ -48,7 +48,7 @@ public interface ContainerMirror extends ComponentMirror {
      * 
      * @param <T>
      *            the type of mirror
-     * @param mirrorType
+     * @param extensionMirrorType
      *            the type of extension mirror to return
      * @return an extension mirror of the specified type
      * @see BaseContainerConfiguration#use(Class)
@@ -56,8 +56,8 @@ public interface ContainerMirror extends ComponentMirror {
      * @throws NoSuchElementException
      *             if the mirror's extension is not used by the container
      */
-    default <T extends ExtensionMirror<?>> T useExtension(Class<T> mirrorType) {
-        return findExtension(mirrorType).orElseThrow();
+    default <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
+        return findExtension(extensionMirrorType).orElseThrow();
     }
 
     public static ContainerMirror of(Assembly<?> assembly, Wirelet... wirelets) {

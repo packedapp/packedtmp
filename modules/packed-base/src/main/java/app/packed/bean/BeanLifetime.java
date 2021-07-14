@@ -1,13 +1,13 @@
-package app.packed.component;
+package app.packed.bean;
 
-public enum ComponentLifetime {
+public enum BeanLifetime {
     
     /** Lives and dies with the application. */
     APPLICATION,
 
     // Instantiated and deconstructed by an extension and some point
-    EXTENSION_MANAGED,
+    MANAGED,
     
     /** Once instances are initialized, Packed maintains no reference to them  */
-    EXTENSION_UNMANAGED;
+    UNMANAGED;
 }

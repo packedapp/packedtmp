@@ -1,9 +1,9 @@
-package app.packed.component;
+package app.packed.extension;
 
 // Auto injectable by any other bean...
 // Singleton
 // Install-on-Demand
-public abstract class ExtensionBean {
+public abstract class ExtensionBeanNEW {
     // wirelets
 }
 

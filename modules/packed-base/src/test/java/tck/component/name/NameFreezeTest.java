@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.component.BaseBeanConfiguration;
+import app.packed.bean.BaseBeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.service.ServiceBeanConfiguration;

@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.component.BeanMirror;
+import app.packed.bean.BeanMirror;
 import app.packed.component.Wirelet;
 
 public abstract class DaemonAssembly extends ApplicationAssembly<Daemon> {

@@ -1,15 +1,19 @@
-package app.packed.component;
+package app.packed.bean;
 
 import java.util.Set;
+
+import app.packed.component.ComponentMirror;
 
 /**
  * A mirror of a bean (component).
  */
-public interface BeanMirror extends ComponentMirror {
+public non-sealed interface BeanMirror extends ComponentMirror {
 
     /** {@return the type (class) of the bean.} */
     Class<?> beanType();
 
+    /** {@return the lifetime of the bean.} */
+    BeanLifetime lifetime();
 
     /** {@return all hooks that have been applied on the bean.} */
     Set<?> hooks();

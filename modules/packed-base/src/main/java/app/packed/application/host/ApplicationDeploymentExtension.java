@@ -7,7 +7,7 @@ import app.packed.extension.Extension;
 public class ApplicationDeploymentExtension extends Extension {
 
     static {
-        $dependsOn(ApplicationHostExtension.class);
+        $dependsOnOptionally(ApplicationHostExtension.class);
         // $dependsOn(ClassLoaderExtension?.class);
         // $dependsOn(FileExtension.class);
     }

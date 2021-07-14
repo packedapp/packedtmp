@@ -3,6 +3,7 @@ module app.packed {
     exports app.packed.application.host;
     exports app.packed.attribute;
     exports app.packed.base;
+    exports app.packed.bean;
     exports app.packed.cli;
     exports app.packed.component;
     exports app.packed.contract;

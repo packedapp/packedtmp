@@ -1,6 +1,6 @@
 package app.packed.hooks.sandbox2;
 
-import app.packed.component.instance.ComponentInstanceContext;
+import app.packed.bean.instance.ComponentInstanceContext;
 
 // Ideen er vi laver noget a.la. ThreadLocal...
 //bare med com

@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
-import app.packed.component.ExtensionBean;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionBeanNEW;
 
 // Maaske er det ikke ContainerExtensor. But InheritableExtensor...
 // "Problemet" er applikation hosts... Vi gider jo ikke have 25 forskellige extensors.
@@ -55,7 +55,7 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
         throw new UnsupportedOperationException();
     }
 
-    protected <B extends ExtensionBean, E extends Extension, T> T findAncestorOrElse(Class<B> beanType, Function<B, T> f1, Class<E> extensionType,
+    protected <B extends ExtensionBeanNEW, E extends Extension, T> T findAncestorOrElse(Class<B> beanType, Function<B, T> f1, Class<E> extensionType,
             Function<E, T> f2, @Nullable T defaultValue) {
         // Will first look after a bean of the particular type. Then extension, or finally return default value
         throw new UnsupportedOperationException();

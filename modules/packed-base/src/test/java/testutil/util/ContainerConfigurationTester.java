@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
-import app.packed.component.BaseBeanConfiguration;
+import app.packed.bean.BaseBeanConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.BaseContainerConfiguration;

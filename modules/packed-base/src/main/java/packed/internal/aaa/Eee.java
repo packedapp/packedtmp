@@ -63,7 +63,7 @@ public class Eee extends BaseAssembly {
     static class MyExte extends Extension {
 
         static {
-            $dependsOn(ServiceExtension.class);
+            $dependsOnOptionally(ServiceExtension.class);
         }
     }
 

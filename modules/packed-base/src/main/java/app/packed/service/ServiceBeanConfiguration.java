@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import app.packed.base.Key;
 import app.packed.base.NamespacePath;
-import app.packed.component.BaseBeanConfiguration;
+import app.packed.bean.BaseBeanConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 

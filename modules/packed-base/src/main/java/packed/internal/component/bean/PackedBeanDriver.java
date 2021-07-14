@@ -3,9 +3,9 @@ package packed.internal.component.bean;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
-import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanDriver;
-import app.packed.component.BeanType;
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanType;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import packed.internal.application.BuildSetup;

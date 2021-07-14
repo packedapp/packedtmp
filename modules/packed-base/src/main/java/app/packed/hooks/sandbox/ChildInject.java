@@ -54,7 +54,7 @@ public class ChildInject extends BaseAssembly {
         }
 
         static {
-            $dependsOn(ServiceExtension.class);
+            $dependsOnOptionally(ServiceExtension.class);
         }
     }
 }

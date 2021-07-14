@@ -22,11 +22,14 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.base.NamespacePath;
+import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.mirror.Mirror;
+import packed.internal.component.ComponentSetup.AbstractBuildTimeComponentMirror;
+import packed.internal.component.RuntimeComponentMirror;
 
 /**
  * A mirror of a component.
@@ -34,7 +37,8 @@ import app.packed.mirror.Mirror;
  * A component is the basic entity in Packed. Much like everything is a is one of the defining features of Unix, and its
  * derivatives. In packed everything is a component.
  */
-public /* sealed */ interface ComponentMirror extends Mirror {
+// Skal laves til klasse syntes jeg
+public sealed interface ComponentMirror extends Mirror permits ContainerMirror, BeanMirror, FunctionMirror, AbstractBuildTimeComponentMirror, RuntimeComponentMirror {
 
     // ComponentDriverMirror driver(); IDK hvad skal den sige, andet end hvilken extension
 

@@ -1,4 +1,6 @@
-package app.packed.component;
+package app.packed.bean;
+
+import app.packed.component.Wirelet;
 
 // Hvad er scopet her...
 

@@ -1,6 +1,6 @@
 package app.packed.file;
 
-import app.packed.component.instance.CDTest.MyAss;
+import app.packed.bean.instance.CDTest.MyAss;
 
 public class Ffff {
 

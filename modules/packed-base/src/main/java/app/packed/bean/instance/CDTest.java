@@ -1,4 +1,4 @@
-package app.packed.component.instance;
+package app.packed.bean.instance;
 
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerAssembly;

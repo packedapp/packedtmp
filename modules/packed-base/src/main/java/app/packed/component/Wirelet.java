@@ -17,6 +17,8 @@ package app.packed.component;
 
 import static java.util.Objects.requireNonNull;
 
+import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.BeanWirelet;
 import app.packed.container.ContainerWirelet;
 import packed.internal.component.CompositeWirelet;
 import packed.internal.component.InternalWirelet;

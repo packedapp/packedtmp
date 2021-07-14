@@ -347,7 +347,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     }
 
     /** An mirror adaptor for {@link ComponentSetup}. */
-    public abstract class AbstractBuildTimeComponentMirror implements ComponentMirror {
+    public non-sealed abstract class AbstractBuildTimeComponentMirror implements ComponentMirror {
 
         /** {@inheritDoc} */
         @Override

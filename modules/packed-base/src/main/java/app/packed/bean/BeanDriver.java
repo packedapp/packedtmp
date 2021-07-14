@@ -1,8 +1,10 @@
-package app.packed.component;
+package app.packed.bean;
 
 import java.util.Optional;
 import java.util.function.Function;
 
+import app.packed.component.ComponentDriver;
+import app.packed.component.Wirelet;
 import app.packed.container.BaseContainerConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;

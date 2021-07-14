@@ -28,8 +28,8 @@ import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
+import app.packed.bean.BaseBeanConfiguration;
 import app.packed.component.Assembly;
-import app.packed.component.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -193,21 +193,22 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
 
     /**
      * @param extensionType
-     * @return
+     *            the extension type to test
+     * @return {@code true} if the extension is disabled, otherwise {@code false}
      * 
      * @see ApplicationDriver.Builder#disableExtension(Class...)
      */
     // Kan disable den paa application driver...
     // Er det kombination af isExtensionDisabled og isUsed
-    /// Maaske bare Set<Class<? extends Extension>> disabledExtensions();
+    /// Maaske bare Set<Class<? extends Extension>> disabledExtensions(); disabledExtension.contains
+    /// Maaske vi skal have en selvstaedig classe.
+    /// Disabled kan ogsaa vaere hvis vi koere med whitelist
+
+    /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
+    /// Maaske det er vigtigt at have de 2 options.
     protected final boolean isExtensionDisabled(Class<? extends Extension> extensionType) {
         return context().isExtensionDisabled(extensionType);
     }
-
-    // Invoked before the first child container
-    // Invoke always, even if no child containers
-    // If you have configuration that
-    // extensionPreambleDone
 
     /**
      * Returns whether or not the specified extension is currently used by this extension, other extensions or user code.
@@ -262,9 +263,14 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * }
      * }</pre>
      * <p>
+     * 
+     * Must support being populated at any point. Including immediately after the extension is created. After
+     * {@link Extension#onNew()} returns.
+     * 
      * Subclasses may choose to make this method public.
      * <p>
      * If this method is overridden and null is returned. The runtime will throw a runtime exception.
+     * 
      * 
      * @return a mirror for the extension
      * @see ContainerMirror#extensions()
@@ -380,7 +386,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * Returns an exUsed to lookup other extensions.
      * <p>
      * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
-     * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
+     * {@link #$dependsOnOptionally(Class...)} may be specified as arguments to this method.
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
      * can instead declare a dependency on {@link ExtensionContext} and call {@link ExtensionContext#use(Class)}.
@@ -397,7 +403,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      *             If the extension to which the specified subtension is a member of has not been registered as a dependency
      *             of this extension
      * @see ExtensionContext#use(Class)
-     * @see #$dependsOn(Class...)
+     * @see #$dependsOnOptionally(Class...)
      */
     protected final <E extends Subtension> E use(Class<E> subtensionClass) {
         return context().use(subtensionClass);
@@ -446,82 +452,6 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).connectParentOnly();
     }
 
-    /**
-     * Registers one or more dependencies of this extension.
-     * <p>
-     * Every extension that another extension uses directly must be explicitly registered. Even if the extension is only
-     * used occasionally.
-     * 
-     * @param extensions
-     *            dependencies of this extension
-     * @throws InternalExtensionException
-     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-     *             the extension graph. Or if this method was not called directly from an extension class initializer
-     * @see #$dependsOnOptionally(String)
-     * @see #$dependsOnOptionally(String, String, Supplier)
-     */
-    @SafeVarargs
-    protected static void $dependsOn(Class<? extends Extension>... extensions) {
-        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(extensions);
-    }
-
-    /**
-     * Registers an optional dependency of this extension. The extension
-     * <p>
-     * The class loader of the caller (extension) class will be used when attempting to locate the dependency.
-     * 
-     * @param extensionName
-     *            fully qualified name of the extension class
-     * @return the extension class if the extension could be loaded, otherwise empty
-     * @throws InternalExtensionException
-     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
-     *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
-     *             this method was not called directly from an extension class initializer.
-     * @see #$dependsOn(Class...)
-     * @see Class#forName(String, boolean, ClassLoader)
-     */
-    protected static Optional<Class<? extends Extension>> $dependsOnOptionally(String extensionName) {
-        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
-    }
-
-    /**
-     * 
-     * @param <T>
-     *            sd
-     * @param extensionName
-     *            sd
-     * @param bootstrap
-     *            sd
-     * @param alternative
-     *            sd
-     * @return stuff
-     */
-    protected static <T> T $dependsOnOptionally(String extensionName, String bootstrap, Supplier<T> alternative) {
-        Optional<Class<? extends Extension>> dep = ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
-        // The dependency does not exist, return an alternative value
-        if (dep.isEmpty()) {
-            return alternative.get();
-        }
-
-        // The dependency exists, load bootstrap class
-        Class<?> c;
-        String s = dep.get().getName() + "$" + bootstrap;
-        try {
-            c = Class.forName(s, true, dep.get().getClassLoader());
-        } catch (ClassNotFoundException e) {
-            throw new InternalExtensionException("Could not load class " + s, e);
-        }
-
-        // Create and return a single instance of it
-        Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), c);
-        MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
-        try {
-            return (T) mh.invoke();
-        } catch (Throwable t) {
-            throw ThrowableUtil.orUndeclared(t);
-        }
-    }
-
     static void $libraryFor(Module module) {
         // Will fail if the module, class does not have version
         // protected static void $libraryVersion(Module|Class m);
@@ -538,6 +468,90 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
         // Det kan ogsaa bare vaere en dependency paa en extension...
         // Det er faktisk maaske det lettes
         // dependsOn(ClassGenExtension.class);
+    }
+
+    // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
+    @SafeVarargs
+    protected static void $dependsOn(Class<? extends Extension>... extensions) {
+        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
+    }
+
+    /**
+     * Registers one or more dependencies of this extension.
+     * <p>
+     * Every extension that another extension uses directly must be explicitly registered. Even if the extension is only
+     * used occasionally.
+     * 
+     * @param extensions
+     *            dependencies of this extension
+     * @throws InternalExtensionException
+     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
+     *             the extension graph. Or if this method was not called directly from an extension class initializer
+     * @see #$dependsOnOptionally(String)
+     * @see #$dependsOnOptionally(String, String, Supplier)
+     */
+    // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
+    @SafeVarargs
+    protected static void $dependsOnOptionally(Class<? extends Extension>... extensions) {
+        ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(true, extensions);
+    }
+
+    /**
+     * Registers an optional dependency of this extension. The extension
+     * <p>
+     * The class loader of the caller (extension) class will be used when attempting to locate the dependency.
+     * 
+     * @param extensionName
+     *            fully qualified name of the extension class
+     * @return the extension class if the extension could be loaded, otherwise empty
+     * @throws InternalExtensionException
+     *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
+     *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
+     *             this method was not called directly from an extension class initializer.
+     * @see #$dependsOnOptionally(Class...)
+     * @see Class#forName(String, boolean, ClassLoader)
+     */
+    // Is always automatically optionally
+    protected static Optional<Class<? extends Extension>> $dependsOnOptionally(String extensionName) {
+        return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
+    }
+
+    /**
+     * 
+     * @param <T>
+     *            sd
+     * @param extensionName
+     *            sd
+     * @param bootstrapClass
+     *            sd
+     * @param alternative
+     *            sd
+     * @return stuff
+     */
+    protected static <T> T $dependsOnOptionally(String extensionName, String bootstrapClass, Supplier<T> alternative) {
+        Optional<Class<? extends Extension>> dep = ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
+        // The extension does not exist, create an alternative value
+        if (dep.isEmpty()) {
+            return alternative.get();
+        }
+
+        // The dependency exists, load the bootstrap class
+        Class<?> c;
+        String bootstrapClassName = dep.get().getName() + "$" + bootstrapClass;
+        try {
+            c = Class.forName(bootstrapClassName, true, dep.get().getClassLoader());
+        } catch (ClassNotFoundException e) {
+            throw new InternalExtensionException("Could not load class " + bootstrapClassName, e);
+        }
+
+        // Create and return a single instance of the bootstrap class
+        Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), c);
+        MethodHandle mh = builder.findConstructor(c, e -> new InternalExtensionException(e));
+        try {
+            return (T) mh.invoke();
+        } catch (Throwable t) {
+            throw ThrowableUtil.orUndeclared(t);
+        }
     }
 
     /**

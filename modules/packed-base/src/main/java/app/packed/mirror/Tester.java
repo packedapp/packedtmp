@@ -17,7 +17,7 @@ public class Tester extends BaseAssembly {
         }
 
         ContainerMirror.of(new Tester()).useExtension(ServiceExtensionMirror.class).contract();
-        ServiceExtensionMirror.of(new Tester()).contract();
+        ServiceExtensionMirror.use(new Tester()).contract();
         
         
         // SEM.first(Assembly).
@@ -25,7 +25,7 @@ public class Tester extends BaseAssembly {
 
         cm.useExtension(ServiceExtensionMirror.class).contract();
 
-        System.out.println("Exported keys: " + ServiceExtensionMirror.of(new Tester()).exportedKeys());
+        System.out.println("Exported keys: " + ServiceExtensionMirror.use(new Tester()).exportedKeys());
 
         System.out.println(ServiceContract.of(new Tester()));
         // BaseMirror.reflect(new Tester()).initialization().printAll();

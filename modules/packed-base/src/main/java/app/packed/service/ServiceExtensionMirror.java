@@ -65,11 +65,11 @@ public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtensi
     }
 
     public static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).findExtension(ServiceExtensionMirror.class);
+        return ExtensionMirror.find(ServiceExtensionMirror.class, assembly, wirelets);
     }
 
-    public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return ContainerMirror.of(assembly, wirelets).useExtension(ServiceExtensionMirror.class);
+    public static ServiceExtensionMirror use(Assembly<?> assembly, Wirelet... wirelets) {
+        return ExtensionMirror.use(ServiceExtensionMirror.class, assembly, wirelets);
     }
 }
 

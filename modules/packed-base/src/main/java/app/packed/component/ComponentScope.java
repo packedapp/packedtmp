@@ -15,6 +15,8 @@
  */
 package app.packed.component;
 
+import app.packed.base.Qualifier;
+
 /**
  *
  */
@@ -79,6 +81,12 @@ enum ComponentScope2 {
 
 }
 
+@Qualifier
+@interface Scoped {
+    ComponentScope value() default ComponentScope.CONTAINER;
+}
+
+
 // interessant at
 // roden for X
 // Alle i samme X
@@ -102,6 +110,7 @@ class XComp2 {
         return this;
     }
 
+    // Maaske konfigurere man en event bus til det...
     public void ev(@Scoped(ComponentScope.APPLICATION) EventBus eb) {
 
     }

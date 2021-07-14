@@ -9,8 +9,9 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.BeanType;
-import app.packed.component.BeanMirror;
+import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanMirror;
+import app.packed.bean.BeanType;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -188,6 +189,11 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         @Override
         public BeanType kind() {
             return kind;
+        }
+
+        @Override
+        public BeanLifetime lifetime() {
+            throw new UnsupportedOperationException();
         }
     }
 }

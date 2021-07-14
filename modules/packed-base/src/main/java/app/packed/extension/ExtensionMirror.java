@@ -1,40 +1,36 @@
 package app.packed.extension;
 
-import java.util.Set;
+import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentMirror;
+import app.packed.component.Assembly;
+import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A mirror for an extension.
+ * A mirror of an extension that is in use by a {@link #container}.
  * <p>
  * This class can be overridden to provide a specialized mirror for an extension. For example,
  * {@link app.packed.service.ServiceExtension} provides {@link app.packed.service.ServiceExtensionMirror}.
  * <p>
- * Instances of this mirror are typically obtained in one of the following ways:
+ * Extensions mirrors are typically obtained in one of the following ways:
  * <ul>
  * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
  * {@link ContainerMirror#findExtension(Class)}.</li>
- * <li>via en overskreven {@link Extension#mirror()} metode, for example, {@link ServiceExtension#mirror()}.</li>
- * <li>By directly looking a specialized mirror up, for example,
- * {@link ServiceExtensionMirror#of(app.packed.component.Assembly, app.packed.component.Wirelet...)}.</li>
+ * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
+ * <li>By calling a factory method on the mirror itself, for example,
+ * {@link ServiceExtensionMirror#of(Assembly, app.packed.component.Wirelet...)}.</li>
  * </ul>
  * <p>
- * NOTE: Extensions that extends this class:
+ * NOTE: If overriding this class, subclasses:
  * <ul>
  * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
+ * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the runtime.</li>
  * <li>Must be located in the same module as the extension itself.</li>
- * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to Packed.</li>
- * <li>Must call {@link Extension#mirrorInitialize(ExtensionMirror)} on the mirror instance before returning from
- * the.</li>
- * <li>Must support being populated at any point. Including immediately after the extension is created. After
- * {@link Extension#onNew()} returns.</li>
- * <li>May provide a shortcut method, similar to ServiceExtension.of
- * <li>call populate.</li>
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.
  * </ul>
  */
 public class ExtensionMirror<E extends Extension> {
@@ -79,7 +75,7 @@ public class ExtensionMirror<E extends Extension> {
         ExtensionSetup e = extension;
         if (e == null) {
             throw new InternalExtensionException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorPopulate");
+                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
         }
         return e;
     }
@@ -118,13 +114,26 @@ public class ExtensionMirror<E extends Extension> {
     public String toString() {
         return extensionType().getCanonicalName();
     }
-}
 
-class ZandboxEM {
-
-    // installed by extensions???
-    final Set<ComponentMirror> installed() {
-        throw new UnsupportedOperationException();
+    /**
+     * Builds an application, and returns a mirror for an extension in the top container if present.
+     * 
+     * @param <E>
+     *            the type of extension mirror
+     * @param mirrorType
+     *            the type of extension mirror to return
+     * @param assembly
+     *            the assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return
+     */
+    public static <E extends ExtensionMirror<?>> Optional<E> find(Class<E> mirrorType, Assembly<?> assembly, Wirelet... wirelets) {
+        return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
+    // Ved ikke om use er det rigtig ord... Vi bruger jo kun hvis den er tilgaengelig unlike Extension.use
+    public static <E extends ExtensionMirror<?>> E use(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
+        return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
+    }
 }

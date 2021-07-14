@@ -17,6 +17,8 @@ package app.packed.component;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
+import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
@@ -32,7 +34,7 @@ import packed.internal.component.PackedComponentDriver;
  * 
  * Instead of extending this class directly, you typically want to extend {@link BaseBeanConfiguration} instead.
  */
-public sealed abstract class ComponentConfiguration permits BeanConfiguration, ContainerConfiguration, FunctionConfiguration {
+public sealed abstract class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration,FunctionConfiguration {
 
     /** The component setup we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
     @Nullable
@@ -80,11 +82,10 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration, C
      */
     // Maaske ryger den her hen paa ContainerConfiguration istedet for...
     // Tjah wire fungere jo fint... saa det faar vi jo saadan set ikke noget ud af...
-    protected ContainerMirror link(ContainerAssembly<?>  assembly, Wirelet... wirelets) {
+    protected ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
         ComponentSetup component = component();
         return component.link(assembly, component.realm, wirelets);
     }
-
 
     /**
      * Wires a new child component using the specified component driver and optional wirelets.
@@ -102,7 +103,6 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration, C
         return component.wire(driver, component.realm, wirelets);
     }
 
-    
     /** {@return a mirror for the component/} */
     // Er det et problem.. naar den ikke er fuldt wired endnu???
     protected ComponentMirror mirror() {

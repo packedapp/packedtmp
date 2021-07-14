@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.component.BeanDriver;
-import app.packed.component.BeanType;
+import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanType;
 import app.packed.component.ComponentDriver;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionContext;

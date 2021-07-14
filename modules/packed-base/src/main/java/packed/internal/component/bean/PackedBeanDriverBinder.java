@@ -7,11 +7,11 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.BaseBeanConfiguration;
-import app.packed.component.BeanConfiguration;
-import app.packed.component.BeanDriver;
-import app.packed.component.BeanDriver.Binder;
-import app.packed.component.BeanType;
+import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
+import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanType;
+import app.packed.bean.BeanDriver.Binder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;

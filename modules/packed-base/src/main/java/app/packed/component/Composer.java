@@ -37,6 +37,8 @@ import packed.internal.util.LookupUtil;
 // Application Composer.. Nej vi bruger dem ogsaa andet steds fra
 // Syntes bare den skal vaere ligesom Assembly
 // Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
+
+// BeanRepositoryComposer<?>
 public abstract class Composer<C extends ComponentConfiguration> {
 
     /** A marker object to indicate that the assembly has already been used. */
