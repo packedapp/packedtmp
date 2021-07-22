@@ -88,7 +88,7 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
             HashMap<Class<?>, Function<?, ?>> map = new HashMap<>(existing);
             map.putAll(converters);
             converters = Map.copyOf(map); // make immutable copy
-            use(BeanExtension.Sub.class).extInstall(ConvExtensor.class);
+            use(BeanExtension.Sub.class).install(ConvExtensor.class);
         }
     }
 

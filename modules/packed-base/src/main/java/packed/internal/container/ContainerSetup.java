@@ -26,8 +26,8 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;

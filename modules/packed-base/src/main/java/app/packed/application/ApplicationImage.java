@@ -15,8 +15,8 @@
  */
 package app.packed.application;
 
-import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.application.PackedApplicationDriver.PackedApplicationImage;
 

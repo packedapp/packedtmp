@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.component.Assembly;
+import app.packed.container.Assembly;
 
 // Grunden til vi laver den er jo fordi..
 // Vi kan bygge et app image i noget der bliver instantieret med det samme

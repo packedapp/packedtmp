@@ -15,7 +15,7 @@
  */
 package app.packed.job;
 
-import app.packed.component.Assembly;
+import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 
 /**

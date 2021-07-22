@@ -29,13 +29,12 @@ import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
@@ -320,14 +319,12 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         // check realm.open + attribute.write
     }
 
-    public final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, RealmSetup realm, Wirelet... wirelets) {
-        PackedComponentDriver<C> drv = (PackedComponentDriver<C>) requireNonNull(driver, "driver is null");
-
+    public final <C extends ComponentConfiguration> C wire(PackedComponentDriver<C> driver, RealmSetup realm, Wirelet... wirelets) {
         // Wire a new component
-        ComponentSetup component = realm.wire(drv, this, wirelets);
+        ComponentSetup component = realm.wire(driver, this, wirelets);
 
         // Return a component configuration to the user
-        return drv.toConfiguration(component);
+        return driver.toConfiguration(component);
     }
 
     /**

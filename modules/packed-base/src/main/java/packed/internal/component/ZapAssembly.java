@@ -38,7 +38,7 @@ public class ZapAssembly extends BaseAssembly {
             installInstance("adasd");
             installInstance("asdasd");
 
-            install(My.class, BuildWirelets.spyOnWire(c -> System.out.println(":" + c.path())));
+            bean().install(My.class, BuildWirelets.spyOnWire(c -> System.out.println(":" + c.path())));
             install(My.class);
         }
 

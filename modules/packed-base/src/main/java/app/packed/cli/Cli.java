@@ -2,8 +2,8 @@ package app.packed.cli;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
-import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 
 // Maaske er det en application der udelukkende starter andre applicationer...

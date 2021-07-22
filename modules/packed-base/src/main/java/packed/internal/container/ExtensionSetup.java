@@ -10,10 +10,9 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
-import app.packed.container.ContainerAssembly;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension;
@@ -24,6 +23,7 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
+import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedWireletSelection;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
@@ -168,7 +168,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
+    public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return container.link(assembly, realm(), wirelets);
     }
 
@@ -271,7 +271,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return (E) subModel.newInstance(instance, extensionType);
     }
 
-    public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
+    public <C extends ComponentConfiguration> C wire(PackedComponentDriver<C> driver, Wirelet... wirelets) {
         return container.wire(driver, container.realm, wirelets);
     }
 

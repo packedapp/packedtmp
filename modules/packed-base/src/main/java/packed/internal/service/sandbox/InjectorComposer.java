@@ -22,8 +22,8 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.inject.Factory;
@@ -69,7 +69,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      * @param wirelets
      *            optional import/export wirelets
      */
-    public ComponentMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
+    public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return configuration().link(assembly, wirelets);
     }
 

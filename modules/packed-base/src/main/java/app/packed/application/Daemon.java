@@ -2,8 +2,8 @@ package app.packed.application;
 
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.cli.CliWirelets;
-import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 
 // Ideen er lige at vi laver en deamon..
 

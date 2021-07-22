@@ -19,7 +19,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.container.ContainerAssembly;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import packed.internal.component.ComponentSetup;
@@ -82,25 +82,9 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
      */
     // Maaske ryger den her hen paa ContainerConfiguration istedet for...
     // Tjah wire fungere jo fint... saa det faar vi jo saadan set ikke noget ud af...
-    protected ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
+    protected ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         ComponentSetup component = component();
         return component.link(assembly, component.realm, wirelets);
-    }
-
-    /**
-     * Wires a new child component using the specified component driver and optional wirelets.
-     * 
-     * @param <C>
-     *            the type of configuration returned by the specified driver
-     * @param driver
-     *            the driver to use for new the component
-     * @param wirelets
-     *            any wirelets that should be used when creating the component
-     * @return a configuration for the new child component
-     */
-    protected <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        ComponentSetup component = component();
-        return component.wire(driver, component.realm, wirelets);
     }
 
     /** {@return a mirror for the component/} */
@@ -167,7 +151,6 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
     public String toString() {
         return component().toString();
     }
-
 }
 // I don't expect this class to have any $ methods
 // They should most likely be located in the driver instead

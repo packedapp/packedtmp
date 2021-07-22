@@ -3,6 +3,7 @@ package app.packed.container;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBean;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.component.WireletModel;
@@ -13,6 +14,8 @@ import packed.internal.util.StackWalkerUtil;
  * <p>
  * Container wirelets are consumed in a couple of different ways depending on whether or not it is an extension or
  * user-code that defines the wirelet.
+ * <p>
+ * Wirelet scope
  * 
  * Naah kan ogsaa bruges paa drivere... Maa nok hellere snakke om target istedet for
  * <p>
@@ -23,6 +26,11 @@ import packed.internal.util.StackWalkerUtil;
  * 
  * Extension wirelets must be defined in the same module as the extension itself. Failure to do so will result in an
  * {@link InternalExtensionException} being thrown at runtime.
+ * 
+ * 
+ * @see ExtensionConfiguration#selectWirelets(Class)
+ * @see Extension#selectWirelets(Class)
+ * @see Assembly#selectWirelets(Class)
  */
 // The way ContainerWirelets can be received depends on whether or not is an extension or user code
 

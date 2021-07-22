@@ -17,9 +17,9 @@ package app.packed.application;
 
 import app.packed.base.Completion;
 import app.packed.cli.CliWirelets;
-import app.packed.component.Assembly;
 import app.packed.component.BuildException;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 
 /**

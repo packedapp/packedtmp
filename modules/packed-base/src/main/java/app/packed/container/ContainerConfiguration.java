@@ -7,6 +7,7 @@ import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
+import app.packed.component.WireletSelection;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -22,7 +23,6 @@ import packed.internal.util.ThrowableUtil;
  */
 
 // Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
-
 public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
@@ -54,7 +54,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
+    public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return super.link(assembly, wirelets);
     }
 
@@ -72,9 +72,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     }
 
     /**
-     * Returns an extension of the specified type. If this is the first time an extension of the specified type has been
-     * requested. This method will create a new instance of the extension. This instance will then be returned for all
-     * subsequent calls to this method for the specified extension type.
+     * Returns an extension of the specified type.
+     * <p>
+     * If this is the first time an extension of the specified type has been requested. This method will create a new
+     * instance of the extension. This instance will then be returned for all subsequent calls to this method for the
+     * specified extension type.
      * 
      * @param <T>
      *            the type of extension to return
@@ -82,11 +84,16 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if this configuration is no longer configurable and an extension of the specified type has not already
-     *             been installed
+     *             if the underlying container is no longer configurable and an extension of the specified type has not
+     *             already been used
      * @see #extensions()
      */
     public <T extends Extension> T use(Class<T> extensionType) {
         return container().useExtension(extensionType);
     }
+    
+    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        throw new UnsupportedOperationException();
+    }
+
 }

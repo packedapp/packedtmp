@@ -22,7 +22,6 @@ public interface ContainerDriver<C extends ContainerConfiguration> extends Compo
 
     @Override
     ContainerDriver<C> with(Wirelet... wirelets);
-
     
     /**
      * Returns a driver for creating new containers.
@@ -38,6 +37,6 @@ public interface ContainerDriver<C extends ContainerConfiguration> extends Compo
     }
 
     static ContainerDriver<ContainerConfiguration> of(Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
+        return defaultDriver().with(wirelets);
     }
 }

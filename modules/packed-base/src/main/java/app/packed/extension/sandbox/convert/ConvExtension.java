@@ -68,7 +68,7 @@ public class ConvExtension extends Extension implements ConvDiscovable {
             converters = Map.copyOf(map); // make immutable copy
         }
         // We only install an extensor if we are the root container or we have changes to the converters
-        use(BeanExtension.Sub.class).extInstall(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
+        use(BeanExtension.Sub.class).install(ConvExtensor.class); // instantiate a new ConvExtensor (may already have been auto installed)
     }
 
     public class Sub extends Subtension {

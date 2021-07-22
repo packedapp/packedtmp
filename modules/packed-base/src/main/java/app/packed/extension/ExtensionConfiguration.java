@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationImage;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
-import app.packed.container.ContainerAssembly;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension.Subtension;
@@ -160,7 +160,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @see Extension#onComplete()
      */
     // hvad goer vi med link af bruger assembly vs extension selv...
-    ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets);
+    ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Selects all container wirelets of the specified type.

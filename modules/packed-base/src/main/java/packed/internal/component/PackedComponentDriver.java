@@ -7,12 +7,13 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.LookupUtil;
 
@@ -21,7 +22,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     /** A handle that can access Assembly#driver. */
     private static final VarHandle VH_ASSEMBLY_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Assembly.class, "driver",
-            PackedComponentDriver.class);
+            PackedContainerDriver.class);
 
     /** A handle that can access ComponentConfiguration#component. */
     private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),

@@ -3,8 +3,8 @@ package app.packed.extension;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;

@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import app.packed.base.Key;
-import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;

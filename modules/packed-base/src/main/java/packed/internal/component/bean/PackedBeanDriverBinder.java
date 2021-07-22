@@ -4,25 +4,23 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanDriver;
+import app.packed.bean.OldBeanDriver;
+import app.packed.bean.OldBeanDriver.BeanDriver;
 import app.packed.bean.BeanType;
-import app.packed.bean.BeanDriver.Binder;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
-import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 
-/** Implementation of {@link BeanDriver.Binder}. */
+/** Implementation of {@link OldBeanDriver.BeanDriver}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implements BeanDriver.Binder<T, C> {
+public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implements OldBeanDriver.BeanDriver<T, C> {
 
     /** A {@link BeanType#BASE} bean binder. */
     public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
@@ -45,31 +43,29 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         this.constructor = constructor;
     }
 
-    public static BeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
+    public static PackedBeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
     }
 
-    public static BeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
+    public static PackedBeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(factory);
     }
 
-    public static BeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
+    public static PackedBeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
     }
 
-    public static BeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
+    public static PackedBeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
         return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
     }
 
     /** {@inheritDoc} */
-    @Override
     public PackedBeanDriver<C> bind(Class<? extends T> implementation) {
         requireNonNull(implementation, "implementation is bull");
         return new PackedBeanDriver(wirelet, this, implementation, implementation);
     }
 
     /** {@inheritDoc} */
-    @Override
     public PackedBeanDriver<C> bind(Factory<? extends T> factory) {
         requireNonNull(factory, "factory is bull");
         if (kind == BeanType.STATIC) {
@@ -79,7 +75,6 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     }
 
     /** {@inheritDoc} */
-    @Override
     public PackedBeanDriver<C> bindInstance(T instance) {
         requireNonNull(instance, "instance is null");
         if (Class.class.isInstance(instance)) {
@@ -93,18 +88,12 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     }
 
     @Override
-    public Optional<Class<? extends Extension>> extension() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public BeanType kind() {
         return kind;
     }
 
     @Override
-    public Binder<T, C> with(Wirelet... wirelet) {
+    public BeanDriver<T, C> with(Wirelet... wirelet) {
         throw new UnsupportedOperationException();
     }
 

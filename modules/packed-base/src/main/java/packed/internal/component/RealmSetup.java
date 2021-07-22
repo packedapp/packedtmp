@@ -24,11 +24,12 @@ import java.util.ArrayList;
 
 import app.packed.application.BuildTarget;
 import app.packed.base.Nullable;
-import app.packed.component.Assembly;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;
@@ -45,7 +46,7 @@ public final class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_ASSEMBLY_DO_BUILD = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Assembly.class, "doBuild", void.class,
-            ComponentConfiguration.class);
+            ContainerConfiguration.class);
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doCompose", void.class,
@@ -190,6 +191,7 @@ public final class RealmSetup {
     }
 
     public ComponentSetup wire(PackedComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
+        requireNonNull(driver, "driver is null");
         // Prepare to wire the component (make sure the realm is still open)
         wirePrepare();
 

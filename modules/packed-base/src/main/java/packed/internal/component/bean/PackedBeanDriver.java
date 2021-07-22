@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanDriver;
+import app.packed.bean.OldBeanDriver;
 import app.packed.bean.BeanType;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -15,8 +15,8 @@ import packed.internal.component.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ThrowableUtil;
 
-/** Implementation of {@link BeanDriver}. */
-public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedComponentDriver<C> implements BeanDriver<C> {
+/** Implementation of {@link OldBeanDriver}. */
+public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedComponentDriver<C> implements OldBeanDriver<C> {
 
     /** The bean type. */
     private final Class<?> beanType;
@@ -34,14 +34,10 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
         this.binding = requireNonNull(binding);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public Class<?> beanType() {
         return beanType;
     }
 
-    /** {@inheritDoc} */
-    @Override
     public BeanType kind() {
         return binder.kind();
     }

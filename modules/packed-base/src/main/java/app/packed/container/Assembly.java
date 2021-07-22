@@ -13,22 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
+package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
+import java.util.Set;
 
+import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.container.BaseAssembly;
-import app.packed.container.CommonContainerAssembly;
-import app.packed.container.ContainerAssembly;
-import app.packed.container.ContainerWirelet;
+import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentDriver;
+import app.packed.component.WireletSelection;
+import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.RealmSetup;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * An assembly is Packed's main way to configure applications and their parts.
@@ -53,8 +61,7 @@ import packed.internal.util.LookupUtil;
  * @see CommonContainerAssembly
  * @see BaseAssembly
  */
-@SuppressWarnings("rawtypes")
-public abstract sealed class Assembly<C extends ComponentConfiguration> permits ContainerAssembly {
+public abstract class Assembly<C extends ContainerConfiguration> {
 
     /** A marker object to indicate that an assembly has already been used to build something. */
     private static Object USED = Assembly.class;
@@ -69,7 +76,7 @@ public abstract sealed class Assembly<C extends ComponentConfiguration> permits 
      * <p>
      * <ul>
      * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
-     * <li>Then, as a part of the build process, it is initialized with the actual configuration object of the component.
+     * <li>Then, as a part of the build process, it is initialized with the actual container configuration
      * <li>Finally, {@link #USED} is set to indicate that the assembly has been used
      * </ul>
      * <p>
@@ -79,12 +86,12 @@ public abstract sealed class Assembly<C extends ComponentConfiguration> permits 
     private Object configuration;
 
     /**
-     * This assembly's component driver.
+     * This assembly's container driver.
      * <p>
      * This field is read by {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
      */
     @SuppressWarnings("unused")
-    private final PackedComponentDriver<? extends C> driver;
+    private final PackedContainerDriver<? extends C> driver;
 
     /**
      * Creates a new assembly using the specified component driver.
@@ -92,8 +99,8 @@ public abstract sealed class Assembly<C extends ComponentConfiguration> permits 
      * @param driver
      *            the component driver
      */
-    protected Assembly(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
+    protected Assembly(ContainerDriver<? extends C> driver) {
+        this.driver = requireNonNull((PackedContainerDriver<? extends C>) driver, "driver is null");
     }
 
     /**
@@ -125,7 +132,7 @@ public abstract sealed class Assembly<C extends ComponentConfiguration> permits 
         // Why not just test configuration == null????
 
         // Det er vel det samme som at kalde configuration()??
-        setup().realm.checkOpen();
+        realm().checkOpen();
     }
 
     /**
@@ -183,15 +190,93 @@ public abstract sealed class Assembly<C extends ComponentConfiguration> permits 
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        setup().realm.setLookup(lookup);
+        realm().setLookup(lookup);
     }
 
+    /** A handle that can access superclass private ComponentConfiguration#component(). */
+    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
+            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
+            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
+
+    /** {@return the container setup instance that we are wrapping.} */
+    private ContainerSetup container() {
+        try {
+            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(configuration());
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    
+    
     /** {@return the setup of the underlying component.} */
-    private ComponentSetup setup() {
-        return configuration().component();
+    private RealmSetup realm() {
+        return container().realm;
     }
 
     protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        throw new UnsupportedOperationException();
+        return configuration().selectWirelets(wireletClass);
+    }
+    
+
+    /**
+     * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
+     * is case sensitive.
+     * <p>
+     * This method should be called as the first thing when configuring a container.
+     * <p>
+     * If no name is set using this method. A name will be assigned to the container when the container is initialized, in
+     * such a way that it will have a unique name among other sibling container.
+     *
+     * @param name
+     *            the name of the container
+     * @see BaseContainerConfiguration#named(String)
+     * @throws IllegalArgumentException
+     *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
+     *             characters and '_', '-' or '.'
+     * @throws IllegalStateException
+     *             if called from outside {@link #build()}
+     */
+    protected final void named(String name) {
+        configuration().named(name);
+    }
+
+    /**
+     * {@return the path of the container}
+     * 
+     * @see BaseContainerConfiguration#path()
+     */
+    protected final NamespacePath path() {
+        return configuration().path();
+    }
+
+    /**
+     * Returns an instance of the specified extension class.
+     * <p>
+     * If this is first time this method has been called with the specified extension type. This method will instantiate an
+     * extension of the specified type and retain it for future invocation.
+     * 
+     * @param <T>
+     *            the type of extension to return
+     * @param extensionType
+     *            the extension class to return an instance of
+     * @return an instance of the specified extension class
+     * @throws IllegalStateException
+     *             if called from outside {@link #build()}
+     * @see BaseContainerConfiguration#use(Class)
+     */
+    protected final <T extends Extension> T use(Class<T> extensionType) {
+        return configuration().use(extensionType);
+    }
+
+    /**
+     * Returns an unmodifiable view of every extension that is currently used.
+     * 
+     * @return an unmodifiable view of every extension that is currently used
+     * @see BaseContainerConfiguration#extensions()
+     * @see #use(Class)
+     */
+    protected final Set<Class<? extends Extension>> extensions() {
+        return configuration().extensions();
     }
 }

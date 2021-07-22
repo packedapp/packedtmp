@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.component.Assembly;
+import app.packed.container.Assembly;
 
 // Den er ikke mandatory...
 // Men kan maaske 

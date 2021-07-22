@@ -15,7 +15,7 @@
  */
 package app.packed.cli;
 
-import app.packed.component.Assembly;
+import app.packed.container.Assembly;
 import app.packed.extension.Extension;
 
 /**

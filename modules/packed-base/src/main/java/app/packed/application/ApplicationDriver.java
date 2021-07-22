@@ -23,10 +23,10 @@ import java.util.function.Function;
 
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
-import app.packed.component.Assembly;
 import app.packed.component.BuildException;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
+import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.exceptionhandling.PanicException;
