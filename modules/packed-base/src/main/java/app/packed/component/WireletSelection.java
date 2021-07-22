@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import packed.internal.component.PackedSelectWirelets;
+import packed.internal.component.PackedWireletSelection;
 
 /**
  * A selection of wirelets of a specified type represented by {@code <W>} .
@@ -67,7 +67,8 @@ import packed.internal.component.PackedSelectWirelets;
 // Problemet med at have en onX on wireletten..
 // Er at vi ikke kan finalize noget i constructeren... fordi den vil tage en constructed Extensor i onExtensor()
 // Vi vil rigtig gerne have wireletten i constructoren paa extensoren...
-public /* sealed */ interface WireletSelection<W extends Wirelet> {
+@SuppressWarnings("rawtypes")
+public sealed interface WireletSelection<W extends Wirelet> permits PackedWireletSelection {
 
     // l.orElse(w->w.launchMode, defaultLaunchmode);
     /**
@@ -153,7 +154,7 @@ public /* sealed */ interface WireletSelection<W extends Wirelet> {
      */
     public static <W extends Wirelet> WireletSelection<W> of() {
         @SuppressWarnings("unchecked")
-        WireletSelection<W> w = (WireletSelection<W>) PackedSelectWirelets.EMPTY;
+        WireletSelection<W> w = (WireletSelection<W>) PackedWireletSelection.EMPTY;
         return w;
     }
 
@@ -172,7 +173,7 @@ public /* sealed */ interface WireletSelection<W extends Wirelet> {
      */
     @SafeVarargs
     public static <W extends Wirelet> WireletSelection<W> of(Class<? extends W> wireletClass, Wirelet... wirelets) {
-        return PackedSelectWirelets.of(wireletClass, wirelets);
+        return PackedWireletSelection.of(wireletClass, wirelets);
     }
 }
 

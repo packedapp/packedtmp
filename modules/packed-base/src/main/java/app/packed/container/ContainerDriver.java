@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
+import packed.internal.container.PackedContainerDriver;
 
 public interface ContainerDriver<C extends ContainerConfiguration> extends ComponentDriver<C> {
 
@@ -22,11 +23,21 @@ public interface ContainerDriver<C extends ContainerConfiguration> extends Compo
     @Override
     ContainerDriver<C> with(Wirelet... wirelets);
 
+    
+    /**
+     * Returns a driver for creating new containers.
+     * 
+     * @return a driver for creating new containers
+     */
+    public static ContainerDriver<ContainerConfiguration> defaultDriver() {
+        return PackedContainerDriver.DRIVER;
+    }
+    
     static <C extends ContainerConfiguration> ContainerDriver<C> of(Supplier<C> configurationFactory, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
-    static ContainerDriver<BaseContainerConfiguration> of(Wirelet... wirelets) {
+    static ContainerDriver<ContainerConfiguration> of(Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 }

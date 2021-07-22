@@ -1,9 +1,9 @@
 package app.packed.file;
 
-import app.packed.application.ApplicationAssembly;
 import app.packed.application.ApplicationDriver;
+import app.packed.container.BaseAssembly;
 
-abstract class Plugin extends ApplicationAssembly<Void> {
+abstract class Plugin extends BaseAssembly {
 
     /** The plugin container driver. Disables all file system access. */
     private static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().disableExtension(FileExtension.class).buildInstanceless(Void.class)

@@ -4,7 +4,7 @@ import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.InjectionContext;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -42,7 +42,7 @@ public class Eee extends BaseAssembly {
     }
 
     static class DDD extends Extension {
-        DDD(ExtensionContext ec, InjectionContext ic /* , Optional<DDD> parent */) {
+        DDD(ExtensionConfiguration ec, InjectionContext ic /* , Optional<DDD> parent */) {
             System.out.println(ic.keys());
 
         }

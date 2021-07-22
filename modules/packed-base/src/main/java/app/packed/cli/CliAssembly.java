@@ -3,13 +3,13 @@ package app.packed.cli;
 import java.util.function.Consumer;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationAssembly;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;
 
 // Skal vi returner int???
-public abstract class CliAssembly extends ApplicationAssembly<Void /* void */> {
+public abstract class CliAssembly extends BaseAssembly {
 
     // Provides a result... men det goer main jo ikke...
     @SuppressWarnings("unused")

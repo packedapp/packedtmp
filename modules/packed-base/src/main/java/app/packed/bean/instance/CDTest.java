@@ -9,10 +9,6 @@ import app.packed.service.ServiceExtension;
 
 public class CDTest {
 
-    public static void main(String[] args) {
-//        ContainerDriver<BaseContainerConfiguration> cd = ;
-    }
-
     public static abstract class MyAss extends ContainerAssembly<ContainerConfiguration> {
 
         static final ContainerDriver<ContainerConfiguration> D = ContainerDriver.of(() -> new ContainerConfiguration() {},

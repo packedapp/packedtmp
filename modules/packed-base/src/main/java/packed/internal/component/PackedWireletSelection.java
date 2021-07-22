@@ -14,10 +14,10 @@ import app.packed.component.Wirelet;
 // RuntimeSetup
 
 /** Implementation of {@link WireletSelection}. */
-public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> implements WireletSelection<W> {
+public final /* primitive */ class PackedWireletSelection<W extends Wirelet> implements WireletSelection<W> {
 
     /** An empty selection used by {@link WireletSelection#of()}. */
-    public static final PackedSelectWirelets<?> EMPTY = new PackedSelectWirelets<>();
+    public static final PackedWireletSelection<?> EMPTY = new PackedWireletSelection<>();
 
     /** The wirelet wrapper containing the actual wirelets */
     private final WireletWrapper wirelets;
@@ -27,12 +27,12 @@ public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> imple
 
     /** Creates a new empty selection. */
     @SuppressWarnings("unchecked")
-    private PackedSelectWirelets() {
+    private PackedWireletSelection() {
         this.wirelets = WireletWrapper.EMPTY;
         this.wireletType = (Class<? extends W>) Wirelet.class;
     }
 
-    public PackedSelectWirelets(WireletWrapper wirelets, Class<? extends W> wireletType) {
+    public PackedWireletSelection(WireletWrapper wirelets, Class<? extends W> wireletType) {
         this.wirelets = wirelets;
         // We should check all public wirelet types here
         this.wireletType = requireNonNull(wireletType, "wireletType is null");
@@ -126,6 +126,6 @@ public final /* primitive */ class PackedSelectWirelets<W extends Wirelet> imple
     public static <T extends Wirelet> WireletSelection<T> of(Class<? extends T> wireletClass, Wirelet... wirelets) {
         requireNonNull(wireletClass, "wireletClass is null");
         WireletWrapper wp = new WireletWrapper(CompositeWirelet.flattenAll(wirelets));
-        return new PackedSelectWirelets<>(wp, wireletClass);
+        return new PackedWireletSelection<>(wp, wireletClass);
     }
 }

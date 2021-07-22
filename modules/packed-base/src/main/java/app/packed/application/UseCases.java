@@ -4,26 +4,26 @@ import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.application.host.ApplicationHostExtension;
 import app.packed.base.Completion;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.state.sandbox.InstanceState;
 
 public class UseCases {
 
-    public void lazy(BaseContainerConfiguration cc) {
+    public void lazy(ContainerConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
 
-    public void lazy2(BaseContainerConfiguration cc) {
+    public void lazy2(ContainerConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(cc,
                 App.driver().with(ApplicationRuntimeWirelets.launchMode(InstanceState.UNINITIALIZED)));
         hc.install(new AA()/* , WebWirelets.setRoot("foo") */ );
         hc.install(new BB());
     }
 
-    public void singleInstanceAcquiring(BaseContainerConfiguration cc) {
+    public void singleInstanceAcquiring(ContainerConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
 
         hc.install(new AA()).provideSingleLauncher();
@@ -31,7 +31,7 @@ public class UseCases {
         // cc.install(AppLauncher.class);
     }
 
-    public void singleInstanceWithGuest(BaseContainerConfiguration cc) {
+    public void singleInstanceWithGuest(ContainerConfiguration cc) {
         ApplicationHostConfiguration<Completion> hc = ApplicationHostConfiguration.of(null, App.driver().withLaunchMode(InstanceState.UNINITIALIZED));
 
         hc.install(new AA()).provideGuest();

@@ -1,7 +1,5 @@
 package app.packed.file;
 
-import app.packed.bean.instance.CDTest.MyAss;
-
 public class Ffff {
 
     public static void main(String[] args) {
@@ -12,12 +10,5 @@ public class Ffff {
 
     record SDD() {}
 
-    class MAss extends MyAss {
 
-        @Override
-        protected void build() {
-            
-        }
-
-    }
 }

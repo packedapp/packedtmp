@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 
@@ -29,7 +29,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
-    public /* sealed */ interface Binder<T, C extends BeanConfiguration> {
+    /* sealed */ interface Binder<T, C extends BeanConfiguration> {
 
         /**
          * @param implementation
@@ -52,7 +52,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
 
         /**
          * Binds the specified instance and returns a component driver that can be used for
-         * {@link BaseContainerConfiguration#wire(ComponentDriver, Wirelet...)}
+         * {@link ContainerConfiguration#wire(ComponentDriver, Wirelet...)}
          * 
          * @param instance
          *            the instance to bind
@@ -72,7 +72,7 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
         Binder<T, C> with(Wirelet... wirelet);
     }
 
-    public /* sealed */ interface Builder {
+    /* sealed */ interface Builder {
 
         <T, C extends BeanConfiguration> Binder<T, C> build();
 
@@ -94,14 +94,11 @@ public /* sealed */ interface BeanDriver<C extends BeanConfiguration> extends Co
         // Vi kan ikke rejecte extensions paa bean niveau...
         //// Man kan altid lave en anden extension som bruger den extension jo
         //// Saa det er kun paa container niveau vi kan forbyde extensions
+        
+        //// For instantiationOnly
+        // reflectOnConstructorOnly();
+
+        // reflectOn(Fields|Methods|Constructors)
+        // look in declaring class
     }
-}
-
-class ZlassComponentDriverBuilder {
-
-    //// For instantiationOnly
-    // reflectOnConstructorOnly();
-
-    // reflectOn(Fields|Methods|Constructors)
-    // look in declaring class
 }

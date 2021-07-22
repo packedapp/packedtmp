@@ -20,18 +20,14 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
-import app.packed.bean.BaseBeanConfiguration;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
-import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension.Subtension;
 import app.packed.extension.old.ExtensionBeanConnection;
-import app.packed.inject.Factory;
+import packed.internal.container.ExtensionSetup;
 
 /**
  * A context object for an {@link Extension}.
@@ -49,7 +45,7 @@ import app.packed.inject.Factory;
  * <p>
  * <strong>Note:</strong> Instances of this interface should never be exposed to end-users.
  */
-public /* sealed */ interface ExtensionContext {
+public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -97,32 +93,6 @@ public /* sealed */ interface ExtensionContext {
 
     // A new instance. Ligesom install(bean)
 
-    // Hvad sker der hvis det er en platform extensor, som allerede er installeret og navngivet???
-    BaseBeanConfiguration install(Class<?> implementation);
-
-    // maybe userInstall
-    // or maybe we just have userWire()
-    // customWire
-    // For hvorfor skal brugen installere en alm component via denne extension???
-    // Vi skal vel altid have en eller anden specific component driver
-    // BaseComponentConfiguration containerInstall(Class<?> factory);
-    BaseBeanConfiguration install(Factory<?> factory);
-
-    // Will install the class in the specified Container
-    // Hvad hvis vi bare vil finde en extension...
-    // Maaske skal vi ikke fejle... Men bare ikke reportere noget...
-
-    /**
-     * 
-     * Extensors installed via this method shou
-     * 
-     * @param instance
-     *            the extensor instance to install
-     * @return the configuration of the extensor
-     * @see #installExtensor(Class, Wirelet...)
-     * @see #installExtensor(Factory, Wirelet...)
-     */
-    BaseBeanConfiguration installInstance(Object instance);
 
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
@@ -217,7 +187,7 @@ public /* sealed */ interface ExtensionContext {
      * dependencies as specified via....
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionContext} and call {@link ExtensionContext#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionConfiguration} and call {@link ExtensionConfiguration#use(Class)}.
      * <p>
      * This method works similar to {@link BaseContainerConfiguration#use(Class)}.
      * 
@@ -236,20 +206,6 @@ public /* sealed */ interface ExtensionContext {
      * @see #isExtensionUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
-
-    /**
-     * 
-     * @param <C>
-     *            the type of component configuration that is being returned to the user
-     * @param driver
-     *            the component driver created by the extension
-     * @param wirelets
-     *            optional wirelets provided by the user (or the extension itself)
-     * @return a component configuration object that can be returned to the user
-     * @throws InternalExtensionException
-     *             if the specified driver is not created by the extension itself
-     */
-    <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets);
 }
 ///**
 //* Returns the extension instance.
@@ -307,14 +263,6 @@ public /* sealed */ interface ExtensionContext {
 // return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
 //}
 //
-
-//default <C extends ComponentConfiguration> C subWire(Class<? extends Extension> subtension, ComponentDriver<C> driver, Wirelet... wirelets) {
-//    /// Maaske har vi alligevel brug for SubtensionConfiguration...
-//    // Ellers kan vi jo impresonate alle extensions.
-//
-//    // Hvis vi goer det... syntes jeg vi skal smide den ud i en seperat klasse..
-//    throw new UnsupportedOperationException();
-//}
 
 ///**
 //* @param <T>

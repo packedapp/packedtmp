@@ -5,7 +5,6 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.extension.Extension;
@@ -17,6 +16,9 @@ import packed.internal.lifetime.LifetimeSetup;
 
 /** A special component driver that create containers. */
 public class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
+
+    /** A driver for configuring containers. */
+    public static final ContainerDriver<ContainerConfiguration> DRIVER = new PackedContainerDriver<>(null);
 
     public PackedContainerDriver(@Nullable Wirelet wirelet) {
         super(wirelet);
@@ -36,7 +38,7 @@ public class PackedContainerDriver<C extends ContainerConfiguration> extends Pac
     @SuppressWarnings("unchecked")
     @Override
     public C toConfiguration0(ComponentSetup context) {
-        return (C) new BaseContainerConfiguration();
+        return (C) new ContainerConfiguration();
     }
 
     @Override

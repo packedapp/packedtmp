@@ -31,7 +31,7 @@ import packed.internal.container.ExtensionModel;
  * Unlike {@link ExtensionMirror} which contains information about a particular <strong>usage</strong> of an extension.
  * The information provided by this descriptor are static information about the extension itself.
  */
-public /* sealed */ interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> {
+public sealed interface ExtensionDescriptor extends Comparable<ExtensionDescriptor> permits ExtensionModel {
 
     /**
      * In order to xxxx is a total order between all loaded extension forms..

@@ -36,11 +36,10 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.component.Wirelet;
-import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -253,9 +252,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
      * @param wirelets
      *            optional wirelets
      * @return the component that was linked
-     * @see ExtensionContext#link(Assembly, Wirelet...)
+     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
      */
-    public final ContainerMirror link(ContainerAssembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
+    public final ContainerMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly
         PackedContainerDriver<?> driver = (PackedContainerDriver<?>) PackedComponentDriver.getDriver(assembly);
 

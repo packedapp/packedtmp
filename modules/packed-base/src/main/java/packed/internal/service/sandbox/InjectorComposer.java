@@ -23,8 +23,9 @@ import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDriver;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import app.packed.service.ServiceExtension;
@@ -40,12 +41,12 @@ import app.packed.service.ServiceLocator;
  * default.
  */
 // Maaske er den bare abstract og sealed...
-public final class InjectorComposer extends Composer<BaseContainerConfiguration> {
+public final class InjectorComposer extends Composer<ContainerConfiguration> {
 
     private boolean initialized;
 
     public InjectorComposer() {
-        super(BaseContainerConfiguration.driver());
+        super(ContainerDriver.defaultDriver());
     }
 
     /**

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import testutil.util.AbstractApplicationTest;
 
@@ -64,7 +64,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
      */
     @Test
     public void unconfigurable() {
-        AtomicReference<BaseContainerConfiguration> r = new AtomicReference<>();
+        AtomicReference<ContainerConfiguration> r = new AtomicReference<>();
 
         // Test empty
         appOf(e -> r.set(e.configuration()));

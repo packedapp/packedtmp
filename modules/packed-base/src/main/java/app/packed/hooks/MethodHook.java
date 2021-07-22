@@ -68,6 +68,7 @@ import packed.internal.util.StackWalkerUtil;
  */
 // InvokableMethodHook
 // UpdatableFieldHook
+// BeanMethodHook
 @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RUNTIME)
 @Repeatable(MethodHook.All.class)

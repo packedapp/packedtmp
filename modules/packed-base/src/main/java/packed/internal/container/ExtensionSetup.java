@@ -9,7 +9,6 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.bean.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
@@ -19,22 +18,21 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.Subtension;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
-import app.packed.inject.Factory;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
-import packed.internal.component.PackedSelectWirelets;
+import packed.internal.component.PackedWireletSelection;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
 import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The internal configuration of an extension. Exposed to end-users as {@link ExtensionContext}. */
-public final class ExtensionSetup implements ExtensionContext {
+/** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
+public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** The container where the extension is used. */
     public final ContainerSetup container;
@@ -42,7 +40,7 @@ public final class ExtensionSetup implements ExtensionContext {
     /** The extension type. */
     public final Class<? extends Extension> extensionType;
 
-    /** The extension instance, instantiated and set from {@link #newExtension(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated and set via {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -52,10 +50,10 @@ public final class ExtensionSetup implements ExtensionContext {
     /** Whether or not the extension has been configured. */
     private boolean isNew;
 
-    /** The static model of this extension. */
+    /** The static model of the extension. */
     final ExtensionModel model;
 
-    /** The realm this extension belongs to, lazily initialized when wiring the first extensor. */
+    /** The realm this extension belongs to, lazily initialized when-and-if the extension installs any beans itself. */
     // Taenker ogsaa hooks maa tilhoere den...
     @Nullable
     private RealmSetup realm;
@@ -135,31 +133,6 @@ public final class ExtensionSetup implements ExtensionContext {
             }
         }
         return Optional.empty();
-    }
-
-    @Override
-    public BaseBeanConfiguration install(Class<?> implementation) {
-        // get RuntimeExtensionModel...
-        // Make sure it is the same extension
-        // keep a references to them in each extension..
-        // and a total count which are the taken out from the constant pool...
-        // I think we need a RuntimeExtensionMirror... paa container...
-        // Jeg syntes ikke det skal vaere almindelig beans???
-        // Og dog for de kan jo bruge og expose features...
-        // Vaere med i Task liste
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseBeanConfiguration install(Factory<?> factory) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public BaseBeanConfiguration installInstance(Object instance) {
-        throw new UnsupportedOperationException();
     }
 
     /**
@@ -267,7 +240,7 @@ public final class ExtensionSetup implements ExtensionContext {
             return WireletSelection.of();
         }
 
-        return new PackedSelectWirelets<>(wirelets, wireletClass);
+        return new PackedWireletSelection<>(wirelets, wireletClass);
     }
 
     /** {@inheritDoc} */
@@ -298,8 +271,6 @@ public final class ExtensionSetup implements ExtensionContext {
         return (E) subModel.newInstance(instance, extensionType);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
         return container.wire(driver, container.realm, wirelets);
     }
@@ -356,7 +327,7 @@ public final class ExtensionSetup implements ExtensionContext {
 
     /** A handle for setting the private field Extension#context. */
     private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "context",
-            ExtensionContext.class);
+            ExtensionConfiguration.class);
 }
 
 //// Extensions do not support lookup objects...

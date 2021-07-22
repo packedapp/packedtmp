@@ -21,11 +21,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 
-import app.packed.application.Application2Assembly;
-import app.packed.application.host.ApplicationAssembly;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.CommonContainerAssembly;
 import app.packed.container.ContainerAssembly;
 import app.packed.container.ContainerWirelet;
@@ -34,8 +31,11 @@ import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
 /**
- * An assembly is Assemblies are the main way to configure a component based system in Packed.
- * 
+ * An assembly is Packed's main way to configure applications and their parts.
+ * <p>
+ * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
+ * functionality of Packed.
+ * <p>
  * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
@@ -46,9 +46,7 @@ import packed.internal.util.LookupUtil;
  * <p>
  * An assembly can only be used a single time. Trying to use it more than once will fail with
  * {@link IllegalStateException}.
- * <p>
- * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
- * functionality of Packed.
+ * 
  * 
  * @param <C>
  *            the underlying component configuration this assembly wraps
@@ -56,7 +54,7 @@ import packed.internal.util.LookupUtil;
  * @see BaseAssembly
  */
 @SuppressWarnings("rawtypes")
-public abstract sealed class Assembly<C extends ComponentConfiguration> permits ContainerAssembly, Application2Assembly, ApplicationAssembly {
+public abstract sealed class Assembly<C extends ComponentConfiguration> permits ContainerAssembly {
 
     /** A marker object to indicate that an assembly has already been used to build something. */
     private static Object USED = Assembly.class;
@@ -192,7 +190,7 @@ public abstract sealed class Assembly<C extends ComponentConfiguration> permits 
     private ComponentSetup setup() {
         return configuration().component();
     }
-    
+
     protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
     }

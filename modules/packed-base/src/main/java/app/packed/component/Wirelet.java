@@ -67,7 +67,7 @@ import packed.internal.component.InternalWirelet.OverrideNameWirelet;
  * 
  */
 // Hvis vi kraever at alle SelectWirelets
-// kun kan tage final eller/* sealed */wirelets som parameter
+// kun kan tage final eller sealed wirelets som parameter
 // Saa kan vi sikre os at ogsaa runtime wirelets bliver analyseret
 // Og saa ville vi kunne bruge annoteringer...
 // Men det fungere bare ikke godt hvis vi vil lave noget i constructor af en extension bean

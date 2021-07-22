@@ -28,19 +28,15 @@ import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.bean.BaseBeanConfiguration;
 import app.packed.component.Assembly;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
 import app.packed.container.BaseAssembly;
-import app.packed.container.BaseContainerConfiguration;
 import app.packed.container.ContainerAssembly;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.old.ExtensionBeanConnection;
-import app.packed.inject.Factory;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ContainerSetup;
@@ -60,7 +56,7 @@ import packed.internal.util.ThrowableUtil;
  * Extensions form the basis, extensible model
  * <p>
  * constructor visibility is ignored. As long as user has class visibility. They can can use an extension via, for
- * example, {@link BaseAssembly#use(Class)} or {@link BaseContainerConfiguration#use(Class)}.
+ * example, {@link BaseAssembly#use(Class)} or {@link ContainerConfiguration#use(Class)}.
  * 
  * <p>
  * Step1 // package private constructor // open to app.packed.base // exported to other users to use
@@ -70,7 +66,7 @@ import packed.internal.util.ThrowableUtil;
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
- * taking a single parameter of type {@link ExtensionContext}. The constructor should have package private accessibility
+ * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private accessibility
  * to make sure users do not try an manually instantiate it, but instead use
  * {@link BaseContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected
  * that future versions of Packed will supports some debug configuration that relies on extending extensions. And
@@ -116,7 +112,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * This field should never be read directly, but only accessed via {@link #context()}.
      */
     @Nullable
-    private ExtensionContext context;
+    private ExtensionConfiguration context;
 
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
@@ -124,7 +120,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
      * <p>
-     * This method delegate all calls to {@link ExtensionContext#checkIsPreCompletion()}.
+     * This method delegate all calls to {@link ExtensionConfiguration#checkIsPreCompletion()}.
      * 
      * @throws IllegalStateException
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
@@ -160,8 +156,8 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      *             if invoked from the constructor of the extension.
      * @return a context object for this extension
      */
-    protected final ExtensionContext context() {
-        ExtensionContext c = context;
+    protected final ExtensionConfiguration context() {
+        ExtensionConfiguration c = context;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override " + Extension.class.getSimpleName() + "#onNew()");
@@ -173,22 +169,6 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     // findExtensor()
     protected final <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
         return context().findParent(parentType);
-    }
-
-    protected final BaseBeanConfiguration inheritOrInstall(Class<?> implementation) {
-        return context().install(implementation);
-    }
-
-    protected final BaseBeanConfiguration install(Class<?> implementation) {
-        return context().install(implementation);
-    }
-
-    protected final BaseBeanConfiguration install(Factory<?> factory) {
-        return context().install(factory);
-    }
-
-    protected final BaseBeanConfiguration install(Object instance) {
-        return context().installInstance(instance);
     }
 
     /**
@@ -216,7 +196,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * @param extensionType
      *            the extension type to test
      * @return {@code true} if the extension is currently in use, otherwise {@code false}
-     * @see ExtensionContext#isExtensionUsed(Class)
+     * @see ExtensionConfiguration#isExtensionUsed(Class)
      * @implNote Packed does not perform detailed tracking on what extensions use other extensions. So it cannot answer
      *           questions about what exact extension is using another extension
      */
@@ -389,7 +369,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * {@link #$dependsOnOptionally(Class...)} may be specified as arguments to this method.
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionContext} and call {@link ExtensionContext#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionConfiguration} and call {@link ExtensionConfiguration#use(Class)}.
      * 
      * @param <E>
      *            the type of subtension to return
@@ -402,16 +382,11 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * @throws IllegalArgumentException
      *             If the extension to which the specified subtension is a member of has not been registered as a dependency
      *             of this extension
-     * @see ExtensionContext#use(Class)
+     * @see ExtensionConfiguration#use(Class)
      * @see #$dependsOnOptionally(Class...)
      */
     protected final <E extends Subtension> E use(Class<E> subtensionClass) {
         return context().use(subtensionClass);
-    }
-
-    // Driver must be "member" of this extension
-    protected final <C extends ComponentConfiguration> C wire(ComponentDriver<C> driver, Wirelet... wirelets) {
-        return context().wire(driver, wirelets);
     }
 
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
@@ -632,7 +607,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * instances are never cached, instead a fresh one is created every time it is requested.
      * 
      * @see Extension#use(Class)
-     * @see ExtensionContext#use(Class)
+     * @see ExtensionConfiguration#use(Class)
      */
     public static abstract class Subtension {}
 }

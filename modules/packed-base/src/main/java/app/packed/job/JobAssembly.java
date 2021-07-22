@@ -3,11 +3,11 @@ package app.packed.job;
 import java.util.concurrent.Callable;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BaseApplicationAssembly;
 import app.packed.application.Launcher;
+import app.packed.container.BaseAssembly;
 import app.packed.service.ServiceConfiguration;
 
-public abstract class JobAssembly<T> extends BaseApplicationAssembly<Job<T>> {
+public abstract class JobAssembly<T> extends BaseAssembly {
 
     protected JobAssembly() {
         super(null);
@@ -28,7 +28,7 @@ public abstract class JobAssembly<T> extends BaseApplicationAssembly<Job<T>> {
     }
 }
 
-class MyJob extends JobAssembly<String> {
+class MyJobAssembly extends JobAssembly<String> {
 
     @Override
     protected void build() {
@@ -36,8 +36,8 @@ class MyJob extends JobAssembly<String> {
     }
 
     public static void main(String[] args) {
-        start(new MyJob()).get();
+        start(new MyJobAssembly()).get();
         
-        mirrorOf(new MyJob()).print();
+        mirrorOf(new MyJobAssembly()).print();
     }
 }

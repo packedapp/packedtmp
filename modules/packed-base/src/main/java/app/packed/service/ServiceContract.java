@@ -155,7 +155,8 @@ public final class ServiceContract extends Contract {
      * 
      * @return the new builder
      */
-    // transform(), change(), adapt
+    // transform(), change(), adapt, update()
+    // toBuilder()
     public ServiceContract.Builder modify() {
         return new ServiceContract.Builder(this);
     }

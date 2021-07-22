@@ -2,8 +2,9 @@ package app.packed.application;
 
 import app.packed.bean.BeanMirror;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseAssembly;
 
-public abstract class DaemonAssembly extends ApplicationAssembly<Daemon> {
+public abstract class DaemonAssembly extends BaseAssembly {
 
     protected final void restartOnAnyException() {
         //Must be a fcking extension...
@@ -11,6 +12,13 @@ public abstract class DaemonAssembly extends ApplicationAssembly<Daemon> {
 
     // public static void start(DeamonAssembly assembly) {}
 
+    public Daemon daemonStart(String[] args, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+    public Daemon daemonStart(Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+    
     public static void start(DaemonAssembly assembly, Wirelet... wirelets) {}
 
 //    public static void start(DeamonAssembly assembly, String[] args) {}
@@ -40,7 +48,12 @@ class MyDaemonAssembly extends DaemonAssembly {
     }
 
     public static void main(String[] args) {
+        
         start(new MyDaemonAssembly(), args);
+        
+        new MyDaemonAssembly().daemonStart(args);
+        
+        
         mirror(new MyDaemonAssembly()).select(BeanMirror.class).allMatch(m -> m.beanType() == String.class);
 
         System.out.println("Any string beans " + mirror(new MyDaemonAssembly()).selectBeans().anyMatch(m -> m.beanType() == String.class));

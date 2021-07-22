@@ -27,7 +27,7 @@ import app.packed.component.Assembly;
 import app.packed.component.BuildException;
 import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
-import app.packed.container.BaseContainerConfiguration;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
@@ -65,7 +65,8 @@ import packed.internal.application.PackedApplicationDriver;
  * @see ServiceLocator#driver()
  */
 // Environment + Shell + Result
-public /* sealed */ interface ApplicationDriver<A> extends ContainerDriver<BaseContainerConfiguration> {
+@SuppressWarnings("rawtypes")
+public sealed interface ApplicationDriver<A> extends ContainerDriver<ContainerConfiguration> permits PackedApplicationDriver {
 
     /**
      * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.

@@ -238,7 +238,7 @@ public interface ServiceLocator extends ServiceRegistry {
         throw new UnsupportedOperationException();
     }
 
-    /** {@return a service locator with no services} */
+    /** {@return a service locator that provide no services} */
     static ServiceLocator of() {
         return PackedInjector.EMPTY_SERVICE_LOCATOR;
     }

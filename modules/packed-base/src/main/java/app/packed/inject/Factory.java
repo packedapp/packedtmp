@@ -72,6 +72,10 @@ import packed.internal.util.MethodHandleUtil;
  * <pre> {@code Factory<Long> f = new Factory<@SomeQualifier Long>(() -> 1L) {};}</pre>
  * 
  */
+
+// Det er vigtigt at vi binder og ikke injecter. Altsaa goer klar at vi udelukkene binder noget til den ene parameter.
+
+
 // Its friend the abstract class Procedure... like Factory but no return..
 // Then move it to base...
 // Not a Function because it takes annotations...

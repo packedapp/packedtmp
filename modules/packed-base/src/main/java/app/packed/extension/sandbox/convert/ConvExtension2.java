@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import app.packed.base.Nullable;
+import app.packed.bean.BeanExtension;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBeanNEW;
 
@@ -82,12 +83,12 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
         System.out.println(ff);
         if (converters.isEmpty()) {
             converters = existing;
-            inheritOrInstall(ConvExtensor.class);
+            use(BeanExtension.Sub.class).inheritOrInstall(ConvExtensor.class);
         } else {
             HashMap<Class<?>, Function<?, ?>> map = new HashMap<>(existing);
             map.putAll(converters);
             converters = Map.copyOf(map); // make immutable copy
-            install(ConvExtensor.class);
+            use(BeanExtension.Sub.class).extInstall(ConvExtensor.class);
         }
     }
 

@@ -29,7 +29,7 @@ import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.PackedSelectWirelets;
+import packed.internal.component.PackedWireletSelection;
 import packed.internal.component.WireletWrapper;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
@@ -208,7 +208,7 @@ public final class ServiceManagerSetup {
 
                 WireletWrapper wirelets = c.wirelets;
                 if (wirelets != null) {
-                    PackedSelectWirelets.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
+                    PackedWireletSelection.consumeEach(wirelets, Service1stPassWirelet.class, w -> w.process(child));
                 }
 
                 if (child != null && child.exports != null) {
@@ -258,7 +258,7 @@ public final class ServiceManagerSetup {
         WireletWrapper wirelets = container.wirelets;
         if (wirelets != null) {
             // For now we just ignore the wirelets
-            PackedSelectWirelets.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
+            PackedWireletSelection.consumeEach(wirelets, Service2ndPassWirelet.class, w -> w.process(parent, this, map));
         }
 
         // If Processere wirelets...

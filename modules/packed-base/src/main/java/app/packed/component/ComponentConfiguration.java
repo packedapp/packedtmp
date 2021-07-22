@@ -158,7 +158,7 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
      * 
      * @return the path of this configuration.
      */
-    protected NamespacePath path() {
+    public NamespacePath path() {
         return component().path();
     }
 

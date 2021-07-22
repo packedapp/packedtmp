@@ -5,15 +5,10 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
-import app.packed.bean.BaseBeanConfiguration;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
-import app.packed.inject.Factory;
-import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.container.ContainerSetup;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
@@ -25,7 +20,10 @@ import packed.internal.util.ThrowableUtil;
  * but users are free to create other implementations that restrict the functionality of the default container
  * configuration by overridding this class.
  */
-public abstract non-sealed class ContainerConfiguration extends ComponentConfiguration {
+
+// Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
+
+public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
@@ -50,105 +48,33 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @see CommonContainerAssembly#extensions()
      * @see ContainerMirror#extensions()
      */
-    protected Set<Class<? extends Extension>> extensions() {
+    public Set<Class<? extends Extension>> extensions() {
         return container().extensions();
-    }
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * 
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    // add? i virkeligheden wire vi jo class komponenten...
-    // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected BaseBeanConfiguration install(Class<?> implementation) {
-        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(implementation);
-        ComponentSetup component = container();
-        return component.wire(driver, component.realm);
-    }
-
-    /**
-     * Installs a singleton bean that will use the specified {@link Factory} to instantiate the bean instance.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * 
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    protected BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(implementation);
-        ComponentSetup component = container();
-        return component.wire(driver, component.realm, wirelets);
-    }
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * 
-     * @param factory
-     *            the factory to install
-     * @return the configuration of the component
-     * @see BaseAssembly#install(Factory)
-     */
-    protected BaseBeanConfiguration install(Factory<?> factory) {
-        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(factory);
-        ComponentSetup component = container();
-        return component.wire(driver, component.realm);
-    }
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * 
-     * @param factory
-     *            the factory to install
-     * @return the configuration of the component
-     * @see CommonContainerAssembly#install(Factory)
-     */
-    protected BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(factory);
-        ComponentSetup component = container();
-        return component.wire(driver, component.realm, wirelets);
-    }
-
-    /**
-     * Install the specified component instance.
-     * <p>
-     * If this install operation is the first install operation of the container. The component will be installed as the
-     * root component of the container. All subsequent install operations on this container will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
-     *
-     * @param instance
-     *            the component instance to install
-     * @return this configuration
-     */
-    protected BaseBeanConfiguration installInstance(Object instance) {
-        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
-        ComponentSetup component = container();
-        return component.wire(driver, component.realm);
-    }
-
-    protected BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        ComponentDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
-        ComponentSetup component = container();
-        return component.wire(driver, component.realm, wirelets);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected ContainerMirror mirror() {
+    public ContainerMirror link(ContainerAssembly<?> assembly, Wirelet... wirelets) {
+        return super.link(assembly, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerMirror mirror() {
         return container().mirror();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ContainerConfiguration named(String name) {
+        super.named(name);
+        return this;
     }
 
     /**
      * Returns an extension of the specified type. If this is the first time an extension of the specified type has been
-     * requested. This method will create a new instance of the extension. This instance will be returned for all subsequent
-     * calls to this method with the same extension type.
+     * requested. This method will create a new instance of the extension. This instance will then be returned for all
+     * subsequent calls to this method for the specified extension type.
      * 
      * @param <T>
      *            the type of extension to return
@@ -158,9 +84,9 @@ public abstract non-sealed class ContainerConfiguration extends ComponentConfigu
      * @throws IllegalStateException
      *             if this configuration is no longer configurable and an extension of the specified type has not already
      *             been installed
-     * @see #extensions()s
+     * @see #extensions()
      */
-    protected <T extends Extension> T use(Class<T> extensionType) {
+    public <T extends Extension> T use(Class<T> extensionType) {
         return container().useExtension(extensionType);
     }
 }

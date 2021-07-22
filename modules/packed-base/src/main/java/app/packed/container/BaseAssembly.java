@@ -78,7 +78,7 @@ public abstract class BaseAssembly extends CommonContainerAssembly {
      * @param driver
      *            the container driver to use
      */
-    protected BaseAssembly(ContainerDriver<BaseContainerConfiguration> driver) {
+    protected BaseAssembly(ContainerDriver<ContainerConfiguration> driver) {
         super(driver);
     }
 
@@ -140,7 +140,6 @@ public abstract class BaseAssembly extends CommonContainerAssembly {
     protected final <T> ExportedServiceConfiguration<T> export(Key<T> key) {
         return service().export(key);
     }
-
 
     protected final void exportAll() {
         service().exportAll();

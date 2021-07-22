@@ -20,6 +20,7 @@ import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.BeanExtension;
 import app.packed.component.Assembly;
 import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
@@ -42,11 +43,11 @@ import app.packed.service.ServiceBeanConfiguration;
  * @see BaseAssembly
  */
 // Altsaa har vi brug for at lave container assemblies uden en masse metoder
-public abstract class CommonContainerAssembly extends ContainerAssembly<BaseContainerConfiguration> {
+public abstract class CommonContainerAssembly extends ContainerAssembly<ContainerConfiguration> {
 
-    /** Creates a new assembly using {@link BaseContainerConfiguration#driver()}. */
+    /** Creates a new assembly using {@link ContainerDriver#defaultDriver()}. */
     protected CommonContainerAssembly() {
-        super(BaseContainerConfiguration.driver());
+        super(ContainerDriver.defaultDriver());
     }
 
     /**
@@ -55,8 +56,12 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @param driver
      *            the container driver to use
      */
-    protected CommonContainerAssembly(ContainerDriver<? extends BaseContainerConfiguration> driver) {
+    protected CommonContainerAssembly(ContainerDriver<? extends ContainerConfiguration> driver) {
         super(driver);
+    }
+
+    protected final BeanExtension bean() {
+        return use(BeanExtension.class);
     }
 
     /**
@@ -82,7 +87,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
     protected final BaseBeanConfiguration install(Class<?> implementation) {
-        return configuration().install(implementation);
+        return bean().install(implementation);
     }
 
     /**
@@ -95,7 +100,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @return the configuration of the component
      */
     protected final BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
-        return configuration().install(implementation, wirelets);
+        return bean().install(implementation, wirelets);
     }
 
     /**
@@ -108,7 +113,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @see BaseAssembly#install(Factory)
      */
     protected final BaseBeanConfiguration install(Factory<?> factory) {
-        return configuration().install(factory);
+        return bean().install(factory);
     }
 
     /**
@@ -120,7 +125,7 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @see CommonContainerAssembly#install(Factory)
      */
     protected final BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
-        return configuration().install(factory, wirelets);
+        return bean().install(factory, wirelets);
     }
 
     /**
@@ -136,11 +141,11 @@ public abstract class CommonContainerAssembly extends ContainerAssembly<BaseCont
      * @return this configuration
      */
     protected final BaseBeanConfiguration installInstance(Object instance) {
-        return configuration().installInstance(instance);
+        return bean().installInstance(instance);
     }
 
     protected final BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
-        return configuration().installInstance(instance, wirelets);
+        return bean().installInstance(instance, wirelets);
     }
 
     /**

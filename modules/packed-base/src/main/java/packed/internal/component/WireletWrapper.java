@@ -44,7 +44,7 @@ public final class WireletWrapper {
         if (module != wireletClass.getModule()) {
             throw new IllegalArgumentException("The specified wirelet must be in module " + module + ", was " + module.getName());
         }
-        return new PackedSelectWirelets<>(this, wireletClass);
+        return new PackedWireletSelection<>(this, wireletClass);
     }
     
     public int unconsumed() {

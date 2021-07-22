@@ -24,10 +24,10 @@ import java.util.function.Consumer;
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BeanDriver;
+import app.packed.bean.BeanExtension;
 import app.packed.bean.BeanType;
-import app.packed.component.ComponentDriver;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionContext;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
@@ -84,9 +84,10 @@ public class ServiceExtension extends Extension {
     @SuppressWarnings("rawtypes")
     private static final BeanDriver.Binder SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class, BeanType.BASE);
 
+
     /** The service manager. */
     private final ServiceManagerSetup services;
-
+    
     /**
      * Create a new service extension.
      * 
@@ -229,9 +230,9 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provide(Class<T> implementation) {
         // Create a bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ComponentDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(implementation);
+        BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(implementation);
 
-        return context().wire(driver).provide();
+        return use(BeanExtension.Sub.class).wire(driver).provide();
     }
 
     /**
@@ -248,9 +249,9 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provide(Factory<T> factory) {
         // Create a bean driver by binding a factory
         @SuppressWarnings("unchecked")
-        ComponentDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(factory);
+        BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bind(factory);
 
-        return context().wire(driver).provide();
+        return use(BeanExtension.Sub.class).wire(driver).provide();
     }
 
     /**
@@ -287,25 +288,25 @@ public class ServiceExtension extends Extension {
     public <T> ServiceBeanConfiguration<T> provideInstance(T instance) {
         // Create the bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ComponentDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bindInstance(instance);
+        BeanDriver<ServiceBeanConfiguration<T>> driver = SINGLETON_SERVICE_BEAN_BINDER.bindInstance(instance);
 
-        return wire(driver).provide();
+        return use(BeanExtension.Sub.class).wire(driver).provide();
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Class<T> implementation) {
         // Create a bean driver by binding the implementation
         @SuppressWarnings("unchecked")
-        ComponentDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(implementation);
+        BeanDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(implementation);
 
-        return wire(driver);
+        return use(BeanExtension.Sub.class).wire(driver);
     }
 
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         // Create a new bean driver by by binding the factory
         @SuppressWarnings("unchecked")
-        ComponentDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(factory);
+        BeanDriver<ServiceBeanConfiguration<T>> driver = PROTOTYPE_SERVICE_BEAN_BINDER.bind(factory);
 
-        return wire(driver);
+        return use(BeanExtension.Sub.class).wire(driver);
     }
 
     // requires bliver automatisk anchoret...
@@ -386,7 +387,7 @@ public class ServiceExtension extends Extension {
 
     /**
      * A subtension that can be used by other extensions via {@link Extension#use(Class)} or
-     * {@link ExtensionContext#use(Class)}.
+     * {@link ExtensionConfiguration#use(Class)}.
      * <p>
      * This class does not provide any support for exporting services. The end-user is always in full control of exactly
      * what is being exported out from the container.
@@ -418,6 +419,10 @@ public class ServiceExtension extends Extension {
         public void check() {
             System.out.println("Requested by " + requestingExtension);
         }
+    }
+
+    static {
+        $dependsOnOptionally(BeanExtension.class);
     }
 }
 
