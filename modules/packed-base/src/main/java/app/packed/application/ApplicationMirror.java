@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import app.packed.application.host.ApplicationHost;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.bean.BeanMirror;
+import app.packed.build.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.Assembly;

@@ -704,7 +704,11 @@ public abstract class Factory<T> {
         // Map.of(), new MethodMirror(method)));
         throw new UnsupportedOperationException();
     }
-
+    
+    public static <T> Factory<T> ofStaticFactory(Class<?> clazz, TypeToken<T> returnType) {
+        throw new UnsupportedOperationException();
+    }
+    
     /** A special factory created via {@link #withLookup(Lookup)}. */
     // A simple version of Binding... Maybe just only have one
     private static final class BindingFactory<T> extends Factory<T> {

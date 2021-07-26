@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
-import app.packed.application.BuildTarget;
 import app.packed.base.Nullable;
+import app.packed.build.BuildTarget;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;

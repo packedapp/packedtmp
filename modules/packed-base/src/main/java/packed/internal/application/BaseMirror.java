@@ -5,8 +5,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildTarget;
 import app.packed.application.TaskListMirror;
+import app.packed.build.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.container.ContainerMirror;

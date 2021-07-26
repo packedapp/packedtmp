@@ -28,6 +28,7 @@ import java.util.Set;
 import app.packed.base.Nullable;
 import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
+import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
@@ -51,6 +52,8 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
 
     /** The depth of this container in relation to other containers. */
     public final int containerDepth;
+
+    public final AssemblyModel assemblyModel;
 
     /** This container's parent (if non-root). */
     @Nullable
@@ -84,6 +87,8 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
             Wirelet[] wirelets) {
         super(build, realm, lifetime, driver, parent, wirelets);
 
+        this.assemblyModel = AssemblyModel.of(realm.realmType());
+        
         // Various container tree-node management
         if (parent == null) {
             this.containerParent = null;
@@ -127,6 +132,14 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
         }
         assert name != null;
     }
+    
+    public void applyAssemblyHook(AssemblyHook hook) {
+        // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration
+        // der lige pludselig kan have andre rettigheder.
+        // Teoretisk attack mulighed, spawn en ny traad med configurationen.
+        // Hvor vi haaber at ramme den lige praecis som vi har lyst til
+        
+    }
 
     public void closeRealm() {
         // We recursively close all children in the same realm first
@@ -157,7 +170,7 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
     }
 
     /** {@return a unmodifiable view of all extension types that are in use.} */
-    public Set<Class<? extends Extension>> extensions() {
+    public Set<Class<? extends Extension>> extensionsTypes() {
         return Collections.unmodifiableSet(extensions.keySet());
     }
 
@@ -301,7 +314,7 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension>> extensionsTypes() {
-            return ContainerSetup.this.extensions();
+            return ContainerSetup.this.extensionsTypes();
         }
 
         @SuppressWarnings("unchecked")

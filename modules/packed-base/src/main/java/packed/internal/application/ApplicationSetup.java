@@ -9,9 +9,9 @@ import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntimeWirelets;
-import app.packed.application.BuildTarget;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
+import app.packed.build.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerMirror;

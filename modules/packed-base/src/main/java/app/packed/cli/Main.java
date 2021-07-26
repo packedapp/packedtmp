@@ -24,7 +24,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import app.packed.component.BuildException;
+import app.packed.build.BuildException;
 import app.packed.extension.Extension;
 import app.packed.hooks.MethodHook;
 import app.packed.hooks.accessors.RealMethodSidecarBootstrap;

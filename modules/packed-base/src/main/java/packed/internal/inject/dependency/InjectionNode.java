@@ -24,7 +24,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
+import app.packed.build.BuildException;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
 import packed.internal.hooks.usesite.UseSiteMemberHookModel;

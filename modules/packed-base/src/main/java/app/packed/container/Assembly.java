@@ -27,12 +27,10 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentDriver;
 import app.packed.component.WireletSelection;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.RealmSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
@@ -44,7 +42,7 @@ import packed.internal.util.ThrowableUtil;
  * This class is rarely extended directly by end-users. But provides means for power users to extend the basic
  * functionality of Packed.
  * <p>
- * An assembly is a thin wrapper that encapsulates a {@link ComponentDriver} and the configuration of a component
+ * An assembly is a thin wrapper that encapsulates a {@link ContainerDriver} and the configuration of a component
  * provided by the driver. This class is mainly used through one of its subclasses such as {@link BaseAssembly}.
  * <p>
  * Assemblies are composable via linking.
@@ -61,7 +59,13 @@ import packed.internal.util.ThrowableUtil;
  * @see CommonContainerAssembly
  * @see BaseAssembly
  */
+// Or ContainerAssembly... Image vs ApplicationImage
 public abstract class Assembly<C extends ContainerConfiguration> {
+
+    /** A handle that can access superclass private ComponentConfiguration#component(). */
+    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
+            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
+            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
     /** A marker object to indicate that an assembly has already been used to build something. */
     private static Object USED = Assembly.class;
@@ -132,7 +136,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         // Why not just test configuration == null????
 
         // Det er vel det samme som at kalde configuration()??
-        realm().checkOpen();
+        container(configuration()).realm.checkOpen();
     }
 
     /**
@@ -166,12 +170,18 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     private void doBuild(C configuration) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
+
+            ContainerSetup cs = container(configuration);
+            cs.assemblyModel.preBuild(configuration);
             try {
                 build();
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
             }
+
+            // Maybe move to RealmSetup#closeRealm()
+            cs.assemblyModel.postBuild(configuration);
         } else if (existing == USED) {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
@@ -179,6 +189,17 @@ public abstract class Assembly<C extends ContainerConfiguration> {
             // Can be this thread or another thread that is already using the assembly.
             throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
+    }
+
+    /**
+     * Returns an unmodifiable view of every extension that is currently used.
+     * 
+     * @return an unmodifiable view of every extension that is currently used
+     * @see BaseContainerConfiguration#extensionsTypes()
+     * @see #use(Class)
+     */
+    protected final Set<Class<? extends Extension>> extensionsTypes() {
+        return configuration().extensionsTypes();
     }
 
     /**
@@ -190,34 +211,8 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      */
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        realm().setLookup(lookup);
+        container(configuration()).realm.setLookup(lookup);
     }
-
-    /** A handle that can access superclass private ComponentConfiguration#component(). */
-    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
-            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
-
-    /** {@return the container setup instance that we are wrapping.} */
-    private ContainerSetup container() {
-        try {
-            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(configuration());
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-    }
-
-    
-    
-    /** {@return the setup of the underlying component.} */
-    private RealmSetup realm() {
-        return container().realm;
-    }
-
-    protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        return configuration().selectWirelets(wireletClass);
-    }
-    
 
     /**
      * Sets the name of the container. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
@@ -244,10 +239,14 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     /**
      * {@return the path of the container}
      * 
-     * @see BaseContainerConfiguration#path()
+     * @see ContainerConfiguration#path()
      */
     protected final NamespacePath path() {
         return configuration().path();
+    }
+
+    protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        return configuration().selectWirelets(wireletClass);
     }
 
     /**
@@ -269,14 +268,12 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         return configuration().use(extensionType);
     }
 
-    /**
-     * Returns an unmodifiable view of every extension that is currently used.
-     * 
-     * @return an unmodifiable view of every extension that is currently used
-     * @see BaseContainerConfiguration#extensions()
-     * @see #use(Class)
-     */
-    protected final Set<Class<? extends Extension>> extensions() {
-        return configuration().extensions();
+    /** {@return the container setup instance that we are wrapping.} */
+    private static ContainerSetup container(ContainerConfiguration cc) {
+        try {
+            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(cc);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
     }
 }

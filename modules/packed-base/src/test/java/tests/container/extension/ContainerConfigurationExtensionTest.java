@@ -26,7 +26,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import testutil.util.AbstractApplicationTest;
 
-/** Tests {@link BaseContainerConfiguration#extensions()} and {@link BaseContainerConfiguration#use(Class)}. */
+/** Tests {@link BaseContainerConfiguration#extensionsTypes()} and {@link BaseContainerConfiguration#use(Class)}. */
 public class ContainerConfigurationExtensionTest extends AbstractApplicationTest {
 
     /** Tests basic use of {@link BaseContainerConfiguration#use(Class)}. */
@@ -41,7 +41,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
         }));
     }
 
-    /** Tests basic use of {@link BaseContainerConfiguration#extensions()}. */
+    /** Tests basic use of {@link BaseContainerConfiguration#extensionsTypes()}. */
     @Test
     public void extensions() {
         appOf(e -> {
@@ -57,7 +57,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
 
     /**
      * Tests what happens if people try to use any of the extension methods outside of the configure of the defining
-     * assembly. We allow invoking {@link BaseContainerConfiguration#extensions()} and allow
+     * assembly. We allow invoking {@link BaseContainerConfiguration#extensionsTypes()} and allow
      * {@link BaseContainerConfiguration#use(Class)} for extension that have already been installed. Calling
      * {@link BaseContainerConfiguration#use(Class)} with an extension that have not previously been installed will throw an
      * {@link IllegalStateException}.
@@ -68,7 +68,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
 
         // Test empty
         appOf(e -> r.set(e.configuration()));
-        assertThat(r.get().extensions()).isEmpty();
+        assertThat(r.get().extensionsTypes()).isEmpty();
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension1.class));
 
         AtomicReference<TestExtension1> t1 = new AtomicReference<>();
@@ -77,7 +77,7 @@ public class ContainerConfigurationExtensionTest extends AbstractApplicationTest
             t1.set(e.use(TestExtension1.class));
             r.set(e.configuration());
         });
-        assertThat(r.get().extensions()).contains(TestExtension1.class);
+        assertThat(r.get().extensionsTypes()).contains(TestExtension1.class);
         assertThat(r.get().use(TestExtension1.class)).isSameAs(t1.get());
         assertThatIllegalStateException().isThrownBy(() -> r.get().use(TestExtension2.class));
     }

@@ -1,4 +1,4 @@
-package app.packed.application;
+package app.packed.build;
 
 import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
@@ -23,7 +23,7 @@ public enum BuildTarget {
     IMAGE,
 
     /**
-     * An application instance.
+     * Builds and instantiates an application.
      * 
      * @see ApplicationDriver#compose(app.packed.component.Composer, java.util.function.Consumer, Wirelet...)
      * @see ApplicationDriver#launch(Assembly, Wirelet...)

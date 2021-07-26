@@ -30,7 +30,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.ApplicationRuntimeWirelets;
-import app.packed.application.BuildTarget;
+import app.packed.build.BuildTarget;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;

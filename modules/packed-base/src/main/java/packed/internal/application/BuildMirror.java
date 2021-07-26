@@ -16,7 +16,7 @@
 package packed.internal.application;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.BuildTarget;
+import app.packed.build.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 
@@ -57,8 +57,7 @@ import app.packed.component.ComponentMirrorStream;
 // validate().assertOk();
 public interface BuildMirror {
 
-    // Maaske laver vi den til Optional...
-    /** {@return the root component of the build}. */
+    /** {@return the root application of the build}. */
     ApplicationMirror application();
 
     /** {@return the root component of the build}. */

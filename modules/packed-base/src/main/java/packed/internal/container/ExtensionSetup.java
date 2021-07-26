@@ -37,10 +37,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The container where the extension is used. */
     public final ContainerSetup container;
 
-    /** The extension type. */
+    /** The type of extension that is being configured. */
     public final Class<? extends Extension> extensionType;
 
-    /** The extension instance, instantiated and set via {@link #newExtension(ContainerSetup, Class)}. */
+    /** The extension instance, instantiated and set in {@link #newExtension(ContainerSetup, Class)}. */
     @Nullable
     private Extension instance;
 
@@ -53,7 +53,10 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** The static model of the extension. */
     final ExtensionModel model;
 
-    /** The realm this extension belongs to, lazily initialized when-and-if the extension installs any beans itself. */
+    /**
+     * The realm this extension belongs to, lazily initialized if needed, for example, if the extension installs its own
+     * beans.
+     */
     // Taenker ogsaa hooks maa tilhoere den...
     @Nullable
     private RealmSetup realm;

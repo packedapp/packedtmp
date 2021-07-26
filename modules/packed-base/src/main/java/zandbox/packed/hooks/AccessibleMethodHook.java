@@ -124,6 +124,7 @@ public @interface AccessibleMethodHook {
         }
     }
 }
+
 @interface AccessibleMethodHook2 {
 
     /** The {@link Bootstrap} class for this hook. */

@@ -35,7 +35,7 @@ import java.util.Set;
 
 import app.packed.base.ComposedAnnotation;
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
+import app.packed.build.BuildException;
 import app.packed.component.Composer;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;

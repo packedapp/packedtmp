@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
+import app.packed.container.Assembly;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceComposer;
 import app.packed.service.ServiceLocator;
@@ -103,9 +104,9 @@ public abstract class Composer<C extends ComponentConfiguration> {
     }
 
     protected final void wire() {
-        
+
     }
-    
+
     @SuppressWarnings("unchecked")
     protected final C configuration() {
         Object c = configuration;
@@ -174,12 +175,12 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * <p>
      * This method will not be called if {@link ComposerConfigurator#configure(Composer)} throws an exception.
      */
-    protected void onConfigured() {}
+    protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
 
     /**
      * Invoked by the runtime immediately before {@link ComposerConfigurator#configure(Composer)}.
      */
-    protected void onNew() {}
+    protected void onNew() {} //navngivningen skal alines med AssemblyHook
 
     /**
      * Create a new application instance by using the specified consumer and configurator.

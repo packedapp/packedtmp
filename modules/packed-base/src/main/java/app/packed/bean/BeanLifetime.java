@@ -11,3 +11,4 @@ public enum BeanLifetime {
     /** Once instances are initialized, Packed maintains no reference to them  */
     UNMANAGED;
 }
+// Scoped vs unscoped

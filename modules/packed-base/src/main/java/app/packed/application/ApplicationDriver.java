@@ -19,12 +19,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
-import app.packed.component.BuildException;
-import app.packed.component.ComponentDriver;
+import app.packed.build.BuildException;
 import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
@@ -113,7 +111,6 @@ public sealed interface ApplicationDriver<A> extends ContainerDriver<ContainerCo
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
-     * @see #compose(ComponentDriver, Function, Consumer, Wirelet...)
      * @see #newImage(Assembly, Wirelet...)
      * @see ApplicationRuntimeWirelets#launchMode(InstanceState)
      */

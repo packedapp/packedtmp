@@ -8,9 +8,13 @@ import app.packed.extension.Extension;
  */
 // Tjah er ikke sikker paa vi kan bruge den andet end til noget debug...
 // Vi har jo intet functionalitet direkte paa containeren
+
 public final class ContainerWirelets {
     private ContainerWirelets() {}
 
+    // spyOnContainerWire()
+    
+    
     /**
      * Returns a wirelet that will disable the specified extensions. Inherited
      * 

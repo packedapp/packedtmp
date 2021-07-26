@@ -103,72 +103,18 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
         super(driver);
     }
 
-
+    /**
+     * Returns a {@link BeanExtension} instance.
+     * <p>
+     * Calling this method is short for {@code use(BeanExtension.class)}
+     * 
+     * @return a bean extension instance
+     * @see #use(Class)
+     */
     protected final BeanExtension bean() {
         return use(BeanExtension.class);
     }
 
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
-     * 
-     * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
-     */
-    // add? i virkeligheden wire vi jo class komponenten...
-    // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected final BaseBeanConfiguration install(Class<?> implementation) {
-        return bean().install(implementation);
-    }
-
-    /**
-     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
-     * <p>
-     * 
-     * @param factory
-     *            the factory to install
-     * @return the configuration of the component
-     * @see BaseAssembly#install(Factory)
-     */
-    protected final BaseBeanConfiguration install(Factory<?> factory) {
-        return bean().install(factory);
-    }
-
-    /**
-     * Install the specified component instance.
-     * <p>
-     * If this install operation is the first install operation of the container. The component will be installed as the
-     * root component of the container. All subsequent install operations on this container will have have component as its
-     * parent. If you wish to have a specific component as a parent, the various install methods on
-     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
-     *
-     * @param instance
-     *            the component instance to install
-     * @return this configuration
-     */
-    protected final BaseBeanConfiguration installInstance(Object instance) {
-        return bean().installInstance(instance);
-    }
-
-    /**
-     * Links the specified container assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @return a mirror of the component that was linked
-     * @see BaseContainerConfiguration#link(Assembly, Wirelet...)
-     */
-    // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
-    // Men maaske skulle Component
-    protected final ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return configuration().link(assembly, wirelets);
-    }
-    
     /**
      * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
      * use case if having a single
@@ -233,6 +179,51 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
     }
 
     /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
+     * 
+     * @param implementation
+     *            the type of instantiate and use as the component instance
+     * @return the configuration of the component
+     * @see BeanExtension#install(Class, Wirelet...)
+     */
+    // add? i virkeligheden wire vi jo class komponenten...
+    // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
+    protected final BaseBeanConfiguration install(Class<?> implementation) {
+        return bean().install(implementation);
+    }
+    
+    /**
+     * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
+     * <p>
+     * 
+     * @param factory
+     *            the factory to install
+     * @return the configuration of the component
+     * @see BaseAssembly#install(Factory)
+     */
+    protected final BaseBeanConfiguration install(Factory<?> factory) {
+        return bean().install(factory);
+    }
+
+    /**
+     * Install the specified component instance.
+     * <p>
+     * If this install operation is the first install operation of the container. The component will be installed as the
+     * root component of the container. All subsequent install operations on this container will have have component as its
+     * parent. If you wish to have a specific component as a parent, the various install methods on
+     * {@link ServiceBeanConfiguration} can be used to specify a specific parent.
+     *
+     * @param instance
+     *            the component instance to install
+     * @return this configuration
+     */
+    protected final BaseBeanConfiguration installInstance(Object instance) {
+        return bean().installInstance(instance);
+    }
+
+    /**
      * Returns whether or not the specified extension is in use.
      * 
      * @param extensionType
@@ -248,6 +239,22 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
         }
         throw new UnsupportedOperationException();
         // return container.extensions.keySet().contains(extensionClass);
+    }
+
+    /**
+     * Links the specified container assembly.
+     * 
+     * @param assembly
+     *            the assembly to link
+     * @param wirelets
+     *            optional wirelets
+     * @return a mirror of the component that was linked
+     * @see BaseContainerConfiguration#link(Assembly, Wirelet...)
+     */
+    // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
+    // Men maaske skulle Component
+    protected final ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
+        return configuration().link(assembly, wirelets);
     }
 
 //    /**

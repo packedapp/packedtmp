@@ -23,6 +23,7 @@ import packed.internal.util.ThrowableUtil;
  */
 
 // Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
+// Eller man maa gerne kunne overskrive den, men taenker ikke Assembly kan tage andet end ContainerConfiguration...
 public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
@@ -45,11 +46,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      * @return an unmodifiable view of the extensions that are currently used
      * 
      * @see #use(Class)
-     * @see CommonContainerAssembly#extensions()
-     * @see ContainerMirror#extensions()
+     * @see BaseAssembly#extensionsTypes()
+     * @see ContainerMirror#extensionsTypes()
      */
-    public Set<Class<? extends Extension>> extensions() {
-        return container().extensions();
+    public Set<Class<? extends Extension>> extensionsTypes() {
+        return container().extensionsTypes();
     }
 
     /** {@inheritDoc} */
@@ -71,6 +72,10 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return this;
     }
 
+    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Returns an extension of the specified type.
      * <p>
@@ -86,14 +91,10 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      * @throws IllegalStateException
      *             if the underlying container is no longer configurable and an extension of the specified type has not
      *             already been used
-     * @see #extensions()
+     * @see #extensionsTypes()
      */
     public <T extends Extension> T use(Class<T> extensionType) {
         return container().useExtension(extensionType);
-    }
-    
-    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        throw new UnsupportedOperationException();
     }
 
 }

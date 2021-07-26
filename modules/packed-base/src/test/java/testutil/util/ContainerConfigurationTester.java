@@ -48,7 +48,7 @@ public class ContainerConfigurationTester {
     }
 
     public Set<Class<? extends Extension>> extensions() {
-        return cc.extensions();
+        return cc.extensionsTypes();
     }
 
     public ContainerConfigurationTester getNameIs(String expected) {

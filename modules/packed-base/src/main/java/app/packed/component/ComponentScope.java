@@ -47,8 +47,10 @@ public enum ComponentScope {
     /** A scope that indicates any component within the same container. */
     CONTAINER,
 
+    // Der hvor denne her giver mening, er fx naar man siger install(..., spyOnWire(Scope.COMPONENT))
+    // will never be inherited
     /** A scope that indicates the single component. */
-    COMPONENT,
+    COMPONENT, 
 
     /**
      * A system where all components are part of the same build. Being part of the same build means that...
@@ -73,7 +75,7 @@ enum ComponentScope2 {
      * <p>
      * Det her er maaske bare Application med en marker... Altsaa det hedder jo application image nu
      */
-    // Tror ikke den er saa brugbar...
+    // Tror ikke den er saa brugbar... minimum scoped as en application
     IMAGE,
 
     // Den er faktisk recursive paa samme maade som vi kan have et image inde i et image
@@ -85,7 +87,6 @@ enum ComponentScope2 {
 @interface Scoped {
     ComponentScope value() default ComponentScope.CONTAINER;
 }
-
 
 // interessant at
 // roden for X

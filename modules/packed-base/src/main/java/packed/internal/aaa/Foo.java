@@ -40,7 +40,7 @@ public class Foo extends BaseAssembly {
     protected void build() {
         provideInstance("asdasdasd");
         provide(MyComp.class);
-        System.out.println(extensions());
+        System.out.println(extensionsTypes());
     }
 
     public static void main(String[] args) throws InterruptedException {

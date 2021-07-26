@@ -20,7 +20,7 @@ import static java.util.Objects.requireNonNull;
 import java.util.ArrayDeque;
 
 import app.packed.base.Nullable;
-import app.packed.component.BuildException;
+import app.packed.build.BuildException;
 import packed.internal.container.ContainerSetup;
 import packed.internal.lifetime.LifetimePoolSetup;
 import packed.internal.service.ServiceManagerSetup;

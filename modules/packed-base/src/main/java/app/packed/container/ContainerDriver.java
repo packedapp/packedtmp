@@ -8,6 +8,14 @@ import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.container.PackedContainerDriver;
 
+//2 valgmuligheder
+
+// 1. som nu 
+// 2. Lade brugere overskrive den
+
+// Altsaa hvordan er det lige praecis ContainerConfiguration skal faa ekstra information?
+// Vi er vist enige om at vi ikke gider kunne overskrive den, bare for at 
+
 public interface ContainerDriver<C extends ContainerConfiguration> extends ComponentDriver<C> {
 
     /**
@@ -22,21 +30,19 @@ public interface ContainerDriver<C extends ContainerConfiguration> extends Compo
 
     @Override
     ContainerDriver<C> with(Wirelet... wirelets);
-    
-    /**
-     * Returns a driver for creating new containers.
-     * 
-     * @return a driver for creating new containers
-     */
+
+    /** {@return the default driver that is used to configure containers.} */
     public static ContainerDriver<ContainerConfiguration> defaultDriver() {
         return PackedContainerDriver.DRIVER;
     }
-    
+
     static <C extends ContainerConfiguration> ContainerDriver<C> of(Supplier<C> configurationFactory, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-
-    static ContainerDriver<ContainerConfiguration> of(Wirelet... wirelets) {
-        return defaultDriver().with(wirelets);
+    
+    interface Builder {
+        ContainerDriver<ContainerConfiguration> build();
     }
 }
+// manglende funktionalitet. Muligheden for at returnere et specifikt ContainerMirror
+// Tror det kraever en builder. 

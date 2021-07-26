@@ -3,7 +3,9 @@ package app.packed.bean;
 import app.packed.bean.OldBeanDriver.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Wirelet;
+import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionMirror;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.bean.PackedBeanDriver;
@@ -11,12 +13,15 @@ import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.ExtensionSetup;
 
+/**
+ * An extension used for installing beans.
+ */
 public class BeanExtension extends Extension {
 
     /** The service manager. */
-    private final ContainerSetup container;
+    final ContainerSetup container;
 
-    private final ExtensionSetup extension;
+    final ExtensionSetup extension;
 
     /**
      * Create a new bean extension.
@@ -30,16 +35,16 @@ public class BeanExtension extends Extension {
     }
 
     /**
-     * Installs a singleton bean that will use the specified {@link Factory} to instantiate the bean instance.
+     * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
+     * application is initialized.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
      * @param implementation
-     *            the type of instantiate and use as the component instance
-     * @return the configuration of the component
+     *            the type of bean to install
+     * @return the configuration of the bean
+     * @see BaseAssembly#install(Class)
      */
-    // Maaske har vi kun med wirelet her. Men paa Assembly har vi kun uden. Og saa maa man bruge extension'en
-    // hvis man vil angive wirelets
     public BaseBeanConfiguration install(Class<?> implementation, Wirelet... wirelets) {
         PackedBeanDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingleton(implementation);
         return container.wire(driver, container.realm, wirelets);
@@ -50,7 +55,7 @@ public class BeanExtension extends Extension {
      * 
      * @param factory
      *            the factory to install
-     * @return the configuration of the component
+     * @return the configuration of the bean
      * @see CommonContainerAssembly#install(Factory)
      */
     public BaseBeanConfiguration install(Factory<?> factory, Wirelet... wirelets) {
@@ -73,6 +78,12 @@ public class BeanExtension extends Extension {
     public BaseBeanConfiguration installInstance(Object instance, Wirelet... wirelets) {
         PackedBeanDriver<BaseBeanConfiguration> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
         return container.wire(driver, container.realm, wirelets);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    protected ExtensionMirror<?> mirror() {
+        return mirrorInitialize(new BeanExtensionMirror(this));
     }
 
     public final class Sub extends Subtension {
@@ -110,7 +121,8 @@ public class BeanExtension extends Extension {
         }
 
         // installs a child to the specified component.
-        // Parent must have been installed by the same extension
+        // 1. Specifie ComponentConfiguration must be in the same container
+        // 2. Specifie ComponentConfiguration must have been installed by the same extension
         public <T, C extends BeanConfiguration> C wireChild(ComponentConfiguration parent, BeanDriver<T, C> binder, Class<? extends T> implementation,
                 Wirelet... wirelets) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
@@ -122,5 +134,9 @@ public class BeanExtension extends Extension {
             return extension.wire(b.bindInstance(instance), wirelets);
         }
 
+        // Det er lidt for at undgaa BeanDriver<T,C>...
+        public <B extends BeanConfiguration> B populateConfiguration(B beanConfiguration) {
+            return beanConfiguration;
+        }
     }
 }

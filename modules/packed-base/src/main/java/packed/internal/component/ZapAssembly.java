@@ -1,8 +1,8 @@
 package packed.internal.component;
 
 import app.packed.application.App;
-import app.packed.application.BuildWirelets;
 import app.packed.application.Daemon;
+import app.packed.build.BuildWirelets;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 
