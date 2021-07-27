@@ -26,10 +26,7 @@ public interface ContainerDriver<C extends ContainerConfiguration> extends Compo
      * 
      * @return a set of disabled extensions
      */
-    Set<Class<? extends Extension>> disabledExtensions();
-
-    @Override
-    ContainerDriver<C> with(Wirelet... wirelets);
+    Set<Class<? extends Extension>> bannedExtensions();
 
     /** {@return the default driver that is used to configure containers.} */
     public static ContainerDriver<ContainerConfiguration> defaultDriver() {

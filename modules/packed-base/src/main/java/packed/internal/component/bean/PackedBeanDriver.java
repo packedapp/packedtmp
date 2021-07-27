@@ -4,9 +4,8 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Nullable;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.OldBeanDriver;
 import app.packed.bean.BeanType;
-import app.packed.component.ComponentDriver;
+import app.packed.bean.OldBeanDriver;
 import app.packed.component.Wirelet;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
@@ -27,8 +26,8 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
     /** The actual binding. Either a Class, Factory or (generic) instance. */
     final Object binding;
 
-    public PackedBeanDriver(@Nullable Wirelet wirelet, PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
-        super(wirelet);
+    public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
+        super(null);
         this.binder = requireNonNull(binder);
         this.beanType = requireNonNull(beanType);
         this.binding = requireNonNull(binding);
@@ -56,16 +55,5 @@ public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedC
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
-    }
-
-    @Override
-    public PackedBeanDriver<C> with(Wirelet... wirelet) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected ComponentDriver<C> withWirelet(Wirelet w) {
-        throw new UnsupportedOperationException();
     }
 }

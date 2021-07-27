@@ -6,7 +6,6 @@ import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
@@ -15,6 +14,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /**
+ * The configuration of a container.
  * <p>
  * Currently only a single concrete implementation exists.
  * 
@@ -41,9 +41,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     }
 
     /**
-     * Returns an unmodifiable view of the extensions that are currently used.
-     * 
-     * @return an unmodifiable view of the extensions that are currently used
+     * {@return an unmodifiable view of the extensions that are currently used}
      * 
      * @see #use(Class)
      * @see BaseAssembly#extensionsTypes()
@@ -51,12 +49,6 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      */
     public Set<Class<? extends Extension>> extensionsTypes() {
         return container().extensionsTypes();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return super.link(assembly, wirelets);
     }
 
     /** {@inheritDoc} */
@@ -73,15 +65,15 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
     }
 
     public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        throw new UnsupportedOperationException();
+        return container().selectWirelets(wireletClass);
     }
-    
+
     /**
      * Returns an extension of the specified type.
      * <p>
      * If this is the first time an extension of the specified type has been requested. This method will create a new
-     * instance of the extension. This instance will then be returned for all subsequent calls to this method for the
-     * specified extension type.
+     * instance of the extension. This instance will then be returned for all subsequent calls to this method for the same
+     * extension type.
      * 
      * @param <T>
      *            the type of extension to return
@@ -89,12 +81,11 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
      *            the type of extension to return
      * @return an extension of the specified type
      * @throws IllegalStateException
-     *             if the underlying container is no longer configurable and an extension of the specified type has not
-     *             already been used
+     *             if the underlying container is no longer configurable and an extension of the specified type is not
+     *             already in used
      * @see #extensionsTypes()
      */
     public <T extends Extension> T use(Class<T> extensionType) {
         return container().useExtension(extensionType);
     }
-
 }

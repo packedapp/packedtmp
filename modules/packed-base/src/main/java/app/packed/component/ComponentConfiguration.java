@@ -19,9 +19,7 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerMirror;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 
@@ -69,22 +67,6 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
                     + "initialization before the configuration is returned to the user, override " + ComponentConfiguration.class.getSimpleName() + "#onNew()");
         }
         return c;
-    }
-
-    /**
-     * Links the specified assembly with this container as its parent.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @return a model of the component that was linked
-     */
-    // Maaske ryger den her hen paa ContainerConfiguration istedet for...
-    // Tjah wire fungere jo fint... saa det faar vi jo saadan set ikke noget ud af...
-    protected ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        ComponentSetup component = component();
-        return component.link(assembly, component.realm, wirelets);
     }
 
     /** {@return a mirror for the component/} */

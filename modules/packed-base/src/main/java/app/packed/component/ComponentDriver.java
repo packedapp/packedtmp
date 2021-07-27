@@ -39,16 +39,6 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
     /** {@return any extension this driver is a part of.} */
     Optional<Class<? extends Extension>> extension(); //igen Packed, Extension, user, 
 
-    /**
-     * 
-     * @param wirelets
-     *            the wirelets to apply
-     * @return a new driver
-     * @throws IllegalArgumentException
-     *             if a wirelet cannot be applied to the driver. For example, if applying a application wirelet to a bean
-     */
-    ComponentDriver<C> with(Wirelet... wirelets);
-
     // ComponentType componentType();
 }
 

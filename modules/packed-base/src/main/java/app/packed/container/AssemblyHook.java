@@ -20,6 +20,9 @@ import app.packed.build.BuildHook;
 // Strengt tager kan vi have <T extends ContainerConfiguration> og saa fejler man bare med BuildException hvis det ikke passer
 public non-sealed interface AssemblyHook extends BuildHook {
 
+    // is invoked exactly once per hook instance. As the first method.
+    default void onBootstrap(Bootstrap bootstrap) {};
+
     /**
      * Invoked immediately before {@link Assembly#build()}
      * 
@@ -35,6 +38,18 @@ public non-sealed interface AssemblyHook extends BuildHook {
     default void onPostBuild(ContainerConfiguration configuration) {};
 
     default void onCompleted(ContainerConfiguration configuration) {};
+
+//    class Context extends ContainerConfiguration {
+//        // Altsaa ved ikke om det ville give mening...
+//        // Har vi nogle extra metoder?
+//    }
+
+    interface Bootstrap {
+        // Invoked exactly once
+        
+        // altsaa vi kunne jo godt banne extensions, og force enable her... Men i praksis har det jo ingen betydning
+        
+    }
 }
 //// IDK, den er vel kun relevant for at validere deployed applications
 //// Tror hellere man vil installere det via ApplicationDeployerMirror.

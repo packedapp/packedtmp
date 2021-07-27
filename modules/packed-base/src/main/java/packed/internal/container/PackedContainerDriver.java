@@ -3,7 +3,6 @@ package packed.internal.container;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentDriver;
 import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
@@ -25,7 +24,7 @@ public class PackedContainerDriver<C extends ContainerConfiguration> extends Pac
     }
 
     @Override
-    public Set<Class<? extends Extension>> disabledExtensions() {
+    public Set<Class<? extends Extension>> bannedExtensions() {
         throw new UnsupportedOperationException();
     }
 
@@ -39,16 +38,6 @@ public class PackedContainerDriver<C extends ContainerConfiguration> extends Pac
     @Override
     public C toConfiguration0(ComponentSetup context) {
         return (C) new ContainerConfiguration();
-    }
-
-    @Override
-    public ContainerDriver<C> with(Wirelet... wirelet) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected ComponentDriver<C> withWirelet(Wirelet w) {
-        throw new UnsupportedOperationException();
     }
 
 }

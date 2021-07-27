@@ -115,6 +115,11 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
         return use(BeanExtension.class);
     }
 
+    protected final ContainerExtension container() {
+        return use(ContainerExtension.class);
+    }
+    
+    
     /**
      * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
      * use case if having a single
@@ -249,12 +254,12 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @param wirelets
      *            optional wirelets
      * @return a mirror of the component that was linked
-     * @see BaseContainerConfiguration#link(Assembly, Wirelet...)
+     * @see ContainerExtension#link(Assembly, Wirelet...)
      */
     // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
     // Men maaske skulle Component
     protected final ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return configuration().link(assembly, wirelets);
+        return container().link(assembly, wirelets);
     }
 
 //    /**

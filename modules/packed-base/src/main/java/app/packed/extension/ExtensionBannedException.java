@@ -3,13 +3,12 @@ package app.packed.extension;
 import app.packed.application.ApplicationDriver;
 
 /**
- * An exception indicating that a particular extension is not available for use.
- * 
+ * An exception indicating that a particular extension is not allowed to be used.
  * <p>
  * This exception is typically in one of the following situations:
  * <ul>
  * <li><b>Use of a disabled Extension.</b> A particular extension was disabled, for example, as determined by
- * {@link ApplicationDriver#disabledExtensions()}. But an attempt was made to use it anyway.</li>
+ * {@link ApplicationDriver#bannedExtensions()}. But an attempt was made to use it anyway.</li>
  * <li><b>An extension tried to use an undeclared dependency.</b> A extension tried to another extension that it had not
  * explicitly declared as a dependency</li>
  * </ul>
@@ -28,8 +27,11 @@ import app.packed.application.ApplicationDriver;
 // ExtensionDisabledException for general use
 // InternalExtensionException for using undeclared dependency
 
+// was disabled, but this sort of implies the extension otherwise would be enabled
 //if disabled, or if application extension used by a non-root container
-public class ExtensionDisabledException extends RuntimeException {
+
+// altern
+public class ExtensionBannedException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -40,7 +42,7 @@ public class ExtensionDisabledException extends RuntimeException {
      * @param message
      *            the message
      */
-    public ExtensionDisabledException(String message) {
+    public ExtensionBannedException(String message) {
         super(message);
     }
 
@@ -52,7 +54,7 @@ public class ExtensionDisabledException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    public ExtensionDisabledException(String message, Throwable cause) {
+    public ExtensionBannedException(String message, Throwable cause) {
         super(message, cause);
     }
 }

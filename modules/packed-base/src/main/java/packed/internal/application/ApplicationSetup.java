@@ -148,7 +148,7 @@ public final class ApplicationSetup extends ContainerSetup {
         @Override
         public Set<Class<? extends Extension>> disabledExtensions() {
             // TODO add additional dsiabled extensions
-            return ApplicationSetup.this.applicationDriver.disabledExtensions();
+            return ApplicationSetup.this.applicationDriver.bannedExtensions();
         }
 
         /** {@inheritDoc} */

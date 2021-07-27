@@ -5,14 +5,11 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.base.Nullable;
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.OldBeanDriver;
-import app.packed.bean.OldBeanDriver.BeanDriver;
 import app.packed.bean.BeanType;
+import app.packed.bean.OldBeanDriver;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
@@ -34,11 +31,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
 
     final BeanType kind;
 
-    @Nullable
-    final Wirelet wirelet;
-
-    public PackedBeanDriverBinder(@Nullable Wirelet wirelet, MethodHandle constructor, BeanType kind) {
-        this.wirelet = wirelet;
+    public PackedBeanDriverBinder(MethodHandle constructor, BeanType kind) {
         this.kind = requireNonNull(kind);
         this.constructor = constructor;
     }
@@ -62,7 +55,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
     /** {@inheritDoc} */
     public PackedBeanDriver<C> bind(Class<? extends T> implementation) {
         requireNonNull(implementation, "implementation is bull");
-        return new PackedBeanDriver(wirelet, this, implementation, implementation);
+        return new PackedBeanDriver(this, implementation, implementation);
     }
 
     /** {@inheritDoc} */
@@ -71,7 +64,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         if (kind == BeanType.STATIC) {
             throw new UnsupportedOperationException("Cannot bind a factory to a static bean.");
         }
-        return new PackedBeanDriver(wirelet, this, factory.rawType(), factory);
+        return new PackedBeanDriver(this, factory.rawType(), factory);
     }
 
     /** {@inheritDoc} */
@@ -84,17 +77,12 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         } else if (kind != BeanType.BASE) {
             throw new UnsupportedOperationException("Can only bind instances to singleton beans, kind = " + kind);
         }
-        return new PackedBeanDriver(wirelet, this, instance.getClass(), instance);
+        return new PackedBeanDriver(this, instance.getClass(), instance);
     }
 
     @Override
     public BeanType kind() {
         return kind;
-    }
-
-    @Override
-    public BeanDriver<T, C> with(Wirelet... wirelet) {
-        throw new UnsupportedOperationException();
     }
 
     public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanType kind) {
@@ -115,7 +103,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
 
         MethodHandle constructor = builder.findConstructor(ComponentConfiguration.class, e -> new IllegalArgumentException(e));
 
-        return new PackedBeanDriverBinder(null, constructor, kind);
+        return new PackedBeanDriverBinder(constructor, kind);
     }
 }
 //public interface Option {

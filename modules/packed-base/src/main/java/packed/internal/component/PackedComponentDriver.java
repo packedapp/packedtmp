@@ -53,16 +53,6 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     
     public abstract C toConfiguration0(ComponentSetup context);
 
-//    /** {@inheritDoc} */
-//    @Override
-//    public ComponentDriver<C> with(Wirelet... wirelets) {
-//        // Vi kan faktisks godt lave nogle checks allerede her
-//        // Application Wirelets kan f.eks. kun bindes til en ContainerComponentDriver.
-//        Wirelet w = wirelet == null ? Wirelet.combine(wirelets) : wirelet.andThen(wirelets);
-//        return withWirelet(w);
-//    }
-
-    protected abstract ComponentDriver<C> withWirelet(Wirelet w);
 
     /**
      * Extracts the component driver from the specified assembly.

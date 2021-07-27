@@ -15,6 +15,8 @@ import app.packed.extension.ExtensionMirror;
  * <p>
  * An instance of this class is typically opb
  */
+// Tror vi skal have en liste af banned extensions.
+// Maaske baade dem inheriter, og dem vi ikke inheriter
 public non-sealed interface ContainerMirror extends ComponentMirror {
 
     /** {@return a set mirrors for all extension that are in use by the container.} */
@@ -50,10 +52,10 @@ public non-sealed interface ContainerMirror extends ComponentMirror {
      * @param extensionMirrorType
      *            the type of extension mirror to return
      * @return an extension mirror of the specified type
-     * @see BaseContainerConfiguration#use(Class)
+     * @see ContainerConfiguration#use(Class)
      * @see #findExtension(Class)
      * @throws NoSuchElementException
-     *             if the mirror's extension is not used by the container
+     *             if the extension the mirror is a part of is not in use by the container
      */
     default <T extends ExtensionMirror<?>> T useExtension(Class<T> extensionMirrorType) {
         return findExtension(extensionMirrorType).orElseThrow();

@@ -185,7 +185,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Cont
 
     /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> disabledExtensions() {
+    public Set<Class<? extends Extension>> bannedExtensions() {
         return disabledExtensions;
     }
 

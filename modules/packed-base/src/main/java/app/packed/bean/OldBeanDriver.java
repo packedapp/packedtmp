@@ -3,7 +3,6 @@ package app.packed.bean;
 import java.util.function.Function;
 
 import app.packed.component.ComponentDriver;
-import app.packed.component.Wirelet;
 
 /**
  * A driver for creating bean components.
@@ -12,9 +11,6 @@ import app.packed.component.Wirelet;
  */
 public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
 
-    /** {@inheritDoc} */
-    @Override
-    OldBeanDriver<C> with(Wirelet... wirelet);
 
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
@@ -22,8 +18,6 @@ public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration> extends
     /* sealed */ interface BeanDriver<T, C extends BeanConfiguration> {
 
         BeanType kind();
-
-        BeanDriver<T, C> with(Wirelet... wirelet);
     }
 
     /* sealed */ interface Builder {

@@ -29,7 +29,7 @@ import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionDisabledException;
+import app.packed.extension.ExtensionBannedException;
 import app.packed.job.JobAssembly;
 import app.packed.job.JobExtension;
 import app.packed.lifecycle.InitializationException;
@@ -74,7 +74,7 @@ public sealed interface ApplicationDriver<A> extends ContainerDriver<ContainerCo
      * @return whether or not the applications produced by this driver are runnable
      */
     default boolean hasRuntime() {
-        return !disabledExtensions().contains(ApplicationRuntimeExtension.class);
+        return !bannedExtensions().contains(ApplicationRuntimeExtension.class);
     }
 
     /**
@@ -169,7 +169,6 @@ public sealed interface ApplicationDriver<A> extends ContainerDriver<ContainerCo
      *            the wirelets to add
      * @return the augmented application driver
      */
-    @Override
     ApplicationDriver<A> with(Wirelet... wirelets);
 
     /**
@@ -240,7 +239,7 @@ public sealed interface ApplicationDriver<A> extends ContainerDriver<ContainerCo
 
         /**
          * Disables 1 or more extensions. Attempting to use a disabled extension will result in an
-         * {@link ExtensionDisabledException} being thrown
+         * {@link ExtensionBannedException} being thrown
          * 
          * @param extensionTypes
          *            the types of extension to disable

@@ -221,7 +221,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      */
     // self link... There should be no reason why users would link a container via an extension. As the container driver is
     // already fixed, so the extension can provide no additional functionality
-    protected final void link(Assembly<?> assembly, Wirelet... wirelets) {
+    protected final void selfLink(Assembly<?> assembly, Wirelet... wirelets) {
         context().link(assembly, wirelets);
     }
 

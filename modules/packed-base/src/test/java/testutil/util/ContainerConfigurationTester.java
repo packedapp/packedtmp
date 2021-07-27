@@ -27,6 +27,7 @@ import app.packed.bean.BeanExtension;
 import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerExtension;
 import app.packed.extension.Extension;
 
 /**
@@ -71,7 +72,7 @@ public class ContainerConfigurationTester {
     }
 
     public ContainerConfigurationTester link(BaseAssembly child, Wirelet... wirelets) {
-        cc.link(child, wirelets);
+        cc.use(ContainerExtension.class).link(child, wirelets);
         return this;
     }
 
