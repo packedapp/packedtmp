@@ -6,6 +6,6 @@ import app.packed.extension.Extension;
 public class ApplicationDeployedExtension extends Extension {
 
     static {
-        $dependsOn(ApplicationHostExtension.class);
+        $dependsOnAlways(ApplicationHostExtension.class);
     }
 }

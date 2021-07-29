@@ -421,7 +421,7 @@ public class ServiceExtension extends Extension {
     }
 
     static {
-        $dependsOnOptionally(BeanExtension.class);
+        $dependsOn(BeanExtension.class);
     }
 }
 

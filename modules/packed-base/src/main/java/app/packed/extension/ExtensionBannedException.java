@@ -30,7 +30,7 @@ import app.packed.application.ApplicationDriver;
 // was disabled, but this sort of implies the extension otherwise would be enabled
 //if disabled, or if application extension used by a non-root container
 
-// altern
+// extends BuildException?? Skal vi bare smide BuildException?
 public class ExtensionBannedException extends RuntimeException {
 
     /** */

@@ -10,6 +10,6 @@ public class JobExtension extends Extension {
     // parseAssembly()
     
     static {
-        $dependsOn(ApplicationRuntimeExtension.class);
+        $dependsOnAlways(ApplicationRuntimeExtension.class);
     }
 }

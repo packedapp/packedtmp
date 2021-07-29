@@ -1,4 +1,4 @@
-package app.packed.extension;
+package app.packed.metaannotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -6,9 +6,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.ANNOTATION_TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExtensionMember {
-    Class<? extends Extension> value();
+public @interface MetaAnnotation {
+
+    ElementType[] restrictTo() default {};
+}
+
+@interface OtherInject {
+
 }

@@ -15,7 +15,7 @@ public class ApplicationHostExtension extends Extension {
 
     static {
         // skal vi have noget a.la. requires??? som automatisk installere ApplicationRuntimeException
-        $dependsOnOptionally(ApplicationRuntimeExtension.class);
+        $dependsOn(ApplicationRuntimeExtension.class);
         
         
         //MethodHandles.classData(MethodHandles.lookup(), name, type)

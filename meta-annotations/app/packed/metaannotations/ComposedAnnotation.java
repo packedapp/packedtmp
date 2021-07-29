@@ -1,4 +1,4 @@
-package app.packed.base;
+package app.packed.metaannotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

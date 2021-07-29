@@ -27,7 +27,7 @@ import packed.internal.container.ExtensionSetup;
  * <p>
  * NOTE: If overriding this class, subclasses:
  * <ul>
- * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
+ * <li>Must be annotated with {@link OldExtensionMember} to indicate what extension they are a part of.</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the runtime.</li>
  * <li>Must be located in the same module as the extension itself.</li>
  * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.

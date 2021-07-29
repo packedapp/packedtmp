@@ -38,7 +38,6 @@ import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionConfiguration;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
@@ -251,7 +250,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
      * @param wirelets
      *            optional wirelets
      * @return the component that was linked
-     * @see ExtensionConfiguration#link(Assembly, Wirelet...)
      */
     public final ContainerMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
         // Extract the component driver from the assembly

@@ -27,7 +27,7 @@ public abstract class ClassBootstrapProcessor {
      * A common super class that exposes annotation information. We have this in place because we will likely have meta
      * annotation functionality at some point.
      */
-    private static abstract class AbstractAnnotatedElementProcessor {
+    public static abstract class AbstractAnnotatedElementProcessor {
 
         private final AnnotatedElement annotatedElement;
 

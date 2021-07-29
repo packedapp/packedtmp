@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.base.ComposedAnnotation;
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
 import app.packed.component.Composer;
@@ -63,7 +62,7 @@ import packed.internal.util.StackWalkerUtil;
  * 
  * On a meta annotation which can then be applied on one of the above targets.
  * <p>
- * In order to be usable with {@link ComposedAnnotation}, this annotation has ElementType.ANNOTATION_TYPE among its
+ * In order to be usable with  ComposedAnnotation, this annotation has ElementType.ANNOTATION_TYPE among its
  * targets.
  */
 // InvokableMethodHook
@@ -529,7 +528,6 @@ class Zester extends BaseAssembly {
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@ComposedAnnotation
 @MethodHook(matchesAnnotation = Provide.class, extension = Extension.class, bootstrap = Zester.Scan.class)
 @interface ZuperSupport {}
 

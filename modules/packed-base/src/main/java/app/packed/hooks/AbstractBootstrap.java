@@ -2,13 +2,12 @@ package app.packed.hooks;
 
 import java.util.Optional;
 
-import app.packed.base.MetaAnnotatedElement;
 import app.packed.extension.Extension;
 import app.packed.hooks.v2.ServiceHook;
 
 // What we got so far.
 // This all for hooks that relates to some kind of Java language concept
-public abstract class AbstractBootstrap implements MetaAnnotatedElement {
+public abstract class AbstractBootstrap {
 
     /**
      * Replaces this bootstrap with the specified instance at build-time (and run-time).

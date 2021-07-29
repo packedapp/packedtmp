@@ -26,7 +26,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMember;
+import app.packed.extension.OldExtensionMember;
 import app.packed.mirror.Mirror;
 import packed.internal.component.ComponentSetup.AbstractBuildTimeComponentMirror;
 import packed.internal.component.RuntimeComponentMirror;
@@ -101,7 +101,7 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
      * 
      * {@return empty if the component is installed by the user, otherwise the extension that the component is a member of.}
      * 
-     * @see ExtensionMember
+     * @see OldExtensionMember
      */
     Optional<Class<? extends Extension>> memberOfExtension();
 

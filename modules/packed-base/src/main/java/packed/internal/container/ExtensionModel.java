@@ -315,7 +315,7 @@ public final class ExtensionModel implements ExtensionDescriptor {
          * 
          * @param extensions
          *            the extensions
-         * @see Extension#$dependsOnOptionally(Class...)
+         * @see Extension#$dependsOn(Class...)
          */
         @SuppressWarnings("unchecked")
         public void dependsOn(boolean optionally, Class<? extends Extension>... extensions) {

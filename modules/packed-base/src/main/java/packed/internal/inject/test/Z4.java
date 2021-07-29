@@ -113,7 +113,7 @@ public class Z4 extends BaseAssembly {
         F() {}
 
         static {
-            $dependsOnOptionally(E.class);
+            $dependsOn(E.class);
         }
 
         @Override

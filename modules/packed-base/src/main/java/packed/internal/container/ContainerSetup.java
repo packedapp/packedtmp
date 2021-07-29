@@ -30,6 +30,7 @@ import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyHook;
+import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension;
@@ -134,6 +135,15 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
         }
         assert name != null;
     }
+    
+    public void preBuild(ContainerConfiguration configuration) {
+        assemblyModel.preBuild(configuration);
+    }
+
+    public void postBuild(ContainerConfiguration configuration) {
+        assemblyModel.postBuild(configuration);
+    }
+
     
     public void applyAssemblyHook(AssemblyHook hook) {
         // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration

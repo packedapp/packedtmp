@@ -37,6 +37,7 @@ public final class AnnotationUtil {
      *             if a runtime retention policy was not present on the annotation type
      * 
      */
+    //TODO take Function<String, RuntimeException> as parameter
     public static <T extends Annotation> Class<T> validateRuntimeRetentionPolicy(Class<T> annotationType) {
         Retention r = annotationType.getAnnotation(Retention.class);
         if (r == null) {

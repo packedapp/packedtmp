@@ -14,7 +14,7 @@ import packed.internal.component.RealmSetup;
 import packed.internal.lifetime.LifetimeSetup;
 
 /** A special component driver that create containers. */
-public class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
+public non-sealed class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
 
     /** A driver for configuring containers. */
     public static final ContainerDriver<ContainerConfiguration> DRIVER = new PackedContainerDriver<>(null);

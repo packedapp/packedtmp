@@ -40,7 +40,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     static final class Ex1 extends Extension {
         static {
-            $dependsOnOptionally(Ex2.class);
+            $dependsOn(Ex2.class);
         }
 
         @Override
@@ -53,7 +53,7 @@ public class ExtensionDependenciesTest extends AbstractApplicationTest {
 
     static final class Ex2 extends Extension {
         static {
-            $dependsOnOptionally(Ex3.class);
+            $dependsOn(Ex3.class);
         }
 
         @Override

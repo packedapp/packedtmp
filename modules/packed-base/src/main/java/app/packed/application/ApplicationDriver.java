@@ -17,6 +17,7 @@ package app.packed.application;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -25,8 +26,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.build.BuildException;
 import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
-import app.packed.container.ContainerDriver;
 import app.packed.exceptionhandling.PanicException;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBannedException;
@@ -64,8 +63,18 @@ import packed.internal.application.PackedApplicationDriver;
  */
 // Environment + Shell + Result
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationDriver<A> extends ContainerDriver<ContainerConfiguration> permits PackedApplicationDriver {
+public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
+    /**
+     * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
+     * <p>
+     * When hosting an application, we must merge the parents unsupported extensions and the new guests applications drivers
+     * unsupported extensions
+     * 
+     * @return a set of disabled extensions
+     */
+    Set<Class<? extends Extension>> bannedExtensions();
+    
     /**
      * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.
      * <p>

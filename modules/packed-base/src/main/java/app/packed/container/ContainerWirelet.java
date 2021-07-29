@@ -4,7 +4,7 @@ import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionBean;
 import app.packed.extension.ExtensionConfiguration;
-import app.packed.extension.ExtensionMember;
+import app.packed.extension.OldExtensionMember;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.component.WireletModel;
 import packed.internal.util.StackWalkerUtil;
@@ -21,7 +21,7 @@ import packed.internal.util.StackWalkerUtil;
  * <p>
  * Extensions that define their own wirelets must do so by extending this class (or a subclass hereof).
  * <p>
- * Extensions that extends this class should annotate the overridden class with {@link ExtensionMember} to indicate what
+ * Extensions that extends this class should annotate the overridden class with {@link OldExtensionMember} to indicate what
  * extension the wirelet is a member of.
  * 
  * Extension wirelets must be defined in the same module as the extension itself. Failure to do so will result in an

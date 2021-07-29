@@ -1,10 +1,8 @@
 package app.packed.container;
 
 import java.util.Set;
-import java.util.function.Supplier;
 
 import app.packed.component.ComponentDriver;
-import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.container.PackedContainerDriver;
 
@@ -16,7 +14,12 @@ import packed.internal.container.PackedContainerDriver;
 // Altsaa hvordan er det lige praecis ContainerConfiguration skal faa ekstra information?
 // Vi er vist enige om at vi ikke gider kunne overskrive den, bare for at 
 
-public interface ContainerDriver<C extends ContainerConfiguration> extends ComponentDriver<C> {
+//// Altsaa den er brugbart, hvis vi supportere (mest for extensions) at vi kalder
+// ContainerConfiguration newContainer(ContainerDriver<?> driver);
+//  T newContainer(ContainerDriver<T> driver);
+
+@SuppressWarnings("rawtypes")
+public sealed interface ContainerDriver<C extends ContainerConfiguration> extends ComponentDriver<C> permits PackedContainerDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -33,9 +36,9 @@ public interface ContainerDriver<C extends ContainerConfiguration> extends Compo
         return PackedContainerDriver.DRIVER;
     }
 
-    static <C extends ContainerConfiguration> ContainerDriver<C> of(Supplier<C> configurationFactory, Wirelet... wirelets) {
-        throw new UnsupportedOperationException();
-    }
+//    static <C extends ContainerConfiguration> ContainerDriver<C> of(Supplier<C> configurationFactory) {
+//        throw new UnsupportedOperationException();
+//    }
     
     interface Builder {
         ContainerDriver<ContainerConfiguration> build();

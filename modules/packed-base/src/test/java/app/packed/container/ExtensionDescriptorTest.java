@@ -48,7 +48,7 @@ public class ExtensionDescriptorTest {
     static class VariousExtension extends Extension {
 
         static {
-            $dependsOnOptionally(EmptyExtension.class);
+            $dependsOn(EmptyExtension.class);
         }
 
         @ExposeAttribute(declaredBy = ExtensionDescriptorTest.class, name = "description")

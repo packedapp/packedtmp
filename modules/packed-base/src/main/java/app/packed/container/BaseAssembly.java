@@ -118,8 +118,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
     protected final ContainerExtension container() {
         return use(ContainerExtension.class);
     }
-    
-    
+
     /**
      * Exposes an internal service outside of this container, equivalent to calling {@code expose(Key.of(key))}. A typical
      * use case if having a single
@@ -198,7 +197,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
     protected final BaseBeanConfiguration install(Class<?> implementation) {
         return bean().install(implementation);
     }
-    
+
     /**
      * Installs a component that will use the specified {@link Factory} to instantiate the component instance.
      * <p>
@@ -237,39 +236,27 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @throws IllegalArgumentException
      *             if the specified extension type is {@link Extension}
      */
-    protected final boolean isInUse(Class<? extends Extension> extensionType) {
-        requireNonNull(extensionType, "extensionClass is null");
+    protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+        requireNonNull(extensionType, "extensionType is null");
         if (extensionType == Extension.class) {
             throw new IllegalArgumentException("Cannot specify Extension.class");
         }
-        throw new UnsupportedOperationException();
-        // return container.extensions.keySet().contains(extensionClass);
+        return configuration().extensionsTypes().contains(extensionType);
     }
 
     /**
-     * Links the specified container assembly.
+     * Links the specified assembly as part of the same application.
      * 
      * @param assembly
      *            the assembly to link
      * @param wirelets
      *            optional wirelets
-     * @return a mirror of the component that was linked
+     * @return a mirror of the container that was linked
      * @see ContainerExtension#link(Assembly, Wirelet...)
      */
-    // Er lidt ked af at returnere ComponentMirror... Det er ikke verdens undergang...
-    // Men maaske skulle Component
     protected final ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return container().link(assembly, wirelets);
     }
-
-//    /**
-//     * Returns a lifecycle extension instance, installing it if it has not already been installed.
-//     * 
-//     * @return a lifecycle extension instance
-//     */
-//    protected final EntryPointExtension lifecycle() {
-//        return use(EntryPointExtension.class);
-//    }
 
     /**
      * Provides a service by instantiating a single instance of the specified class.

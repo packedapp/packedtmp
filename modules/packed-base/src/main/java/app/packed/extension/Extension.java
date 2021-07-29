@@ -33,6 +33,7 @@ import app.packed.component.WireletSelection;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.old.ExtensionBeanConnection;
@@ -65,8 +66,8 @@ import packed.internal.util.ThrowableUtil;
  * 'app.packed.base'
  * <p>
  * Every extension implementations must provide either an empty (preferable non-public) constructor, or a constructor
- * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private accessibility
- * to make sure users do not try an manually instantiate it, but instead use
+ * taking a single parameter of type {@link ExtensionConfiguration}. The constructor should have package private
+ * accessibility to make sure users do not try an manually instantiate it, but instead use
  * {@link BaseContainerConfiguration#use(Class)}. The extension subclass should not be declared final as it is expected
  * that future versions of Packed will supports some debug configuration that relies on extending extensions. And
  * capturing interactions with the extension.
@@ -99,7 +100,7 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public non-sealed abstract class Extension implements ExtensionMember<Extension> {
+public non-sealed abstract class Extension implements OldExtensionMember<Extension> {
 
     /**
      * The extension context, that most methods delegate to.
@@ -185,8 +186,8 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
 
     /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
     /// Maaske det er vigtigt at have de 2 options.
-    protected final boolean isExtensionDisabled(Class<? extends Extension> extensionType) {
-        return context().isExtensionDisabled(extensionType);
+    protected final boolean isExtensionBanned(Class<? extends Extension> extensionType) {
+        return context().isExtensionBanned(extensionType);
     }
 
     /**
@@ -206,23 +207,6 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
     protected final boolean isPartOfImage() {
         return context().isPartOfImage();
-    }
-
-    /**
-     * <p>
-     * If this assembly links a container this method must be called from {@link #onComplete()}.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @throws InternalExtensionException
-     *             if the assembly links a container and this method was called from outside of {@link #onComplete()}
-     */
-    // self link... There should be no reason why users would link a container via an extension. As the container driver is
-    // already fixed, so the extension can provide no additional functionality
-    protected final void selfLink(Assembly<?> assembly, Wirelet... wirelets) {
-        context().link(assembly, wirelets);
     }
 
     /**
@@ -284,7 +268,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * example, by installing an extensor that uses extensions that have not already been used.
      * <p>
      * What is possible however is allowed to wire new containers, for example, by calling
-     * {@link #link(Assembly, Wirelet...)}.
+     * {@link ContainerExtension.Sub#link(Assembly, Wirelet...)}
      */
     protected void onComplete() {
         // Time
@@ -365,10 +349,11 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * Returns an exUsed to lookup other extensions.
      * <p>
      * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
-     * {@link #$dependsOnOptionally(Class...)} may be specified as arguments to this method.
+     * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionConfiguration} and call {@link ExtensionConfiguration#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionConfiguration} and call
+     * {@link ExtensionConfiguration#use(Class)}.
      * 
      * @param <E>
      *            the type of subtension to return
@@ -382,7 +367,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      *             If the extension to which the specified subtension is a member of has not been registered as a dependency
      *             of this extension
      * @see ExtensionConfiguration#use(Class)
-     * @see #$dependsOnOptionally(Class...)
+     * @see #$dependsOn(Class...)
      */
     protected final <E extends Subtension> E use(Class<E> subtensionClass) {
         return context().use(subtensionClass);
@@ -445,15 +430,21 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
     }
 
     // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
+    /**
+     * Depends on 1 or more extensions always. By always we mean that whenever
+     * 
+     * @param extensions
+     *            the extensions to always depends on
+     */
     @SafeVarargs
-    protected static void $dependsOn(Class<? extends Extension>... extensions) {
+    protected static void $dependsOnAlways(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(false, extensions);
     }
 
     /**
      * Registers one or more dependencies of this extension.
      * <p>
-     * Every extension that another extension uses directly must be explicitly registered. Even if the extension is only
+     * Every extension that another extension directly uses must be explicitly registered. Even if the extension is only
      * used occasionally.
      * 
      * @param extensions
@@ -461,12 +452,12 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      * @throws InternalExtensionException
      *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
      *             the extension graph. Or if this method was not called directly from an extension class initializer
-     * @see #$dependsOnOptionally(String)
-     * @see #$dependsOnOptionally(String, String, Supplier)
+     * @see #$dependsOnIfAvailable(String)
+     * @see #$dependsOnIfAvailable(String, String, Supplier)
      */
     // maybe dependsOn, dependsOnOptionally, dependsOnIfAvailable(always optionally=
     @SafeVarargs
-    protected static void $dependsOnOptionally(Class<? extends Extension>... extensions) {
+    protected static void $dependsOn(Class<? extends Extension>... extensions) {
         ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOn(true, extensions);
     }
 
@@ -482,11 +473,11 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      *             if the dependency could not be registered for some reason. For example, if it would lead to a cycles in
      *             the extension graph. Or if the specified extension name does not represent a valid extension class. Or if
      *             this method was not called directly from an extension class initializer.
-     * @see #$dependsOnOptionally(Class...)
+     * @see #$dependsOn(Class...)
      * @see Class#forName(String, boolean, ClassLoader)
      */
     // Is always automatically optionally
-    protected static Optional<Class<? extends Extension>> $dependsOnOptionally(String extensionName) {
+    protected static Optional<Class<? extends Extension>> $dependsOnIfAvailable(String extensionName) {
         return ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
     }
 
@@ -502,7 +493,7 @@ public non-sealed abstract class Extension implements ExtensionMember<Extension>
      *            sd
      * @return stuff
      */
-    protected static <T> T $dependsOnOptionally(String extensionName, String bootstrapClass, Supplier<T> alternative) {
+    protected static <T> T $dependsOnIfAvailable(String extensionName, String bootstrapClass, Supplier<T> alternative) {
         Optional<Class<? extends Extension>> dep = ExtensionModel.bootstrap(StackWalkerUtil.SW.getCallerClass()).dependsOnOptionally(extensionName);
         // The extension does not exist, create an alternative value
         if (dep.isEmpty()) {

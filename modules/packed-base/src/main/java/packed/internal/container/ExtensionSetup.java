@@ -169,8 +169,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.isExtensionUsed(extensionClass);
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
         return container.link(assembly, realm(), wirelets);
     }

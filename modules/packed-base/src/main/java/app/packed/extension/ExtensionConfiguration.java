@@ -20,10 +20,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
-import app.packed.component.Wirelet;
 import app.packed.component.WireletSelection;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerMirror;
 import app.packed.container.ContainerWirelet;
 import app.packed.extension.Extension.Subtension;
 import app.packed.extension.old.ExtensionBeanConnection;
@@ -41,10 +38,15 @@ import packed.internal.container.ExtensionSetup;
  * implementation, for example, code that is placed in another package.
  * <p>
  * An instance of this interface is normally acquired via {@link Extension#configuration()} or by constructor injecting
- * it into an {@link Extension} subclass.
+ * it into a subclass of {@link Extension}.
  * <p>
  * <strong>Note:</strong> Instances of this interface should never be exposed to end-users.
  */
+// Features
+// * Get/check state
+// * find ancestors
+// * Get subtensions
+// * Get wirelets
 public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /**
@@ -62,7 +64,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     void checkIsPreLinkage();
 
-    default <E extends ExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
+    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
         throw new UnsupportedOperationException();
     }
 
@@ -101,7 +103,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *            the type of extension to test
      * @return true if disabled, otherwise false
      */
-    default boolean isExtensionDisabled(Class<? extends Extension> extensionType) {
+    default boolean isExtensionBanned(Class<? extends Extension> extensionType) {
         throw new UnsupportedOperationException();
     }
 
@@ -127,6 +129,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      */
     // Problemet her med build target... er at en sub application kan definere et image...
     // Maaske bare build target...
+    // Maaske vi bare skal skal have application().
     boolean isPartOfImage(); // BoundaryTypes
 
     default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
@@ -140,27 +143,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
         // Altsaa hvis vi registere en configuration sche
         throw new UnsupportedOperationException();
     }
-
-    /**
-     * Links the specified assembly. This method must be called from {@link Extension#onComplete()}. Other
-     * 
-     * <p>
-     * Creates a new container with this extensions container as its parent by linking the specified assembly. The new
-     * container will have this extension as owner. Thus will be hidden from normal view
-     * <p>
-     * The parent component of the linked assembly will have the container of this extension as its parent.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param wirelets
-     *            optional wirelets
-     * @return a model of the component that was linked
-     * @throws InternalExtensionException
-     *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
-     * @see Extension#onComplete()
-     */
-    // hvad goer vi med link af bruger assembly vs extension selv...
-    ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets);
 
     /**
      * Selects all container wirelets of the specified type.

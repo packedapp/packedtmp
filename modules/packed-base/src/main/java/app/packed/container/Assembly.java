@@ -68,26 +68,26 @@ public abstract class Assembly<C extends ContainerConfiguration> {
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
     /** A marker object to indicate that an assembly has already been used to build something. */
-    private static Object USED = Assembly.class;
+    private static final ContainerConfiguration USED = new ContainerConfiguration();
 
     /** A handle that can access the #configuration field. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", Object.class);
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
-     * The configuration of this assembly.
+     * The configuration of the underlying container.
      * <p>
      * The value of this field goes through 3 states:
      * <p>
      * <ul>
-     * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.
-     * <li>Then, as a part of the build process, it is initialized with the actual container configuration
-     * <li>Finally, {@link #USED} is set to indicate that the assembly has been used
+     * <li>Initially, this field is null, indicating that the assembly is not use or has not yet been used.</li>
+     * <li>Then, as a part of the build process, it is initialized with the actual container configuration.</li>
+     * <li>Finally, {@link #USED} is set to indicate that the assembly has been used.</li>
      * </ul>
      * <p>
-     * This field is updated via a VarHandle.
+     * This field is updated via var handle {@link #VH_CONFIGURATION}.
      */
     @Nullable
-    private Object configuration;
+    private ContainerConfiguration configuration;
 
     /**
      * This assembly's container driver.
@@ -112,7 +112,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * <p>
      * This method will never be invoked more than once on a single assembly instance.
      * <p>
-     * This method should never be invoked directly by the user.
+     * Note: This method should never be invoked directly by the user.
      */
     protected abstract void build();
 
@@ -123,28 +123,29 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * not try to configure the extension after it has been configured.
      * 
      * <p>
-     * This method is a simple wrapper that just invoked {@link BaseContainerConfiguration#checkPreBuild()}.
+     * This method is a simple wrapper that just invoked {@link ContainerConfiguration#checkBuildNotStarted()}.
      * 
      * @throws IllegalStateException
      *             if {@link #build()} has been invoked
-     * @see BaseContainerConfiguration#checkPreBuild()
+     * @see ContainerConfiguration#checkBuildNotStarted()
      */
     // Before build is started?? or do we allow to call these method
-    // checkPreBuild()??
-    // checkConfigurable()
-    protected final void checkPreBuild() {
+    // checkPreBuild()? // checkConfigurable()
+    // Det er ogsaa inde hooks er kaldt
+    //// Ideen er at vi kan kalde metode fra configurations metoder
+    protected final void checkBuildNotStarted() {
         // Why not just test configuration == null????
 
-        // Det er vel det samme som at kalde configuration()??
+        // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
         container(configuration()).realm.checkOpen();
     }
 
     /**
-     * Returns this assembly's configuration object.
+     * Returns this configuration of the container.
      * <p>
      * This method must only be called from within the {@link #build()} method.
      * 
-     * @return this assembly's configuration object
+     * @return thie configuration of the container
      * @throws IllegalStateException
      *             if called from outside of the {@link #build()} method
      */
@@ -168,34 +169,38 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      */
     @SuppressWarnings("unused")
     private void doBuild(C configuration) {
+        // I'm not we need volatile here
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
-
             ContainerSetup cs = container(configuration);
-            cs.assemblyModel.preBuild(configuration);
+
             try {
+                // Run AssemblyHook.onPreBuild if hooks are present
+                cs.preBuild(configuration);
+
+                // Call the build method implemented by the user
                 build();
+
+                // Run AssemblyHook.onPostBuild if hooks are present
+                cs.postBuild(configuration);
             } finally {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
             }
 
-            // Maybe move to RealmSetup#closeRealm()
-            cs.assemblyModel.postBuild(configuration);
         } else if (existing == USED) {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
         } else {
-            // Can be this thread or another thread that is already using the assembly.
+            // Can be this thread (recursively called) or another thread that is already using the assembly.
             throw new IllegalStateException("This assembly is currently being used elsewhere, assembly = " + getClass());
         }
     }
 
     /**
-     * Returns an unmodifiable view of every extension that is currently used.
+     * {@return an unmodifiable view of every extension that is currently used.}
      * 
-     * @return an unmodifiable view of every extension that is currently used
-     * @see BaseContainerConfiguration#extensionsTypes()
+     * @see ContainerConfiguration#extensionsTypes()
      * @see #use(Class)
      */
     protected final Set<Class<? extends Extension>> extensionsTypes() {
@@ -209,6 +214,8 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * @param lookup
      *            the lookup object
      */
+    // Hvorfor er det her ikke paa ContainerConfiguration????
+    // Hvis vi bare declare det final
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
         container(configuration()).realm.setLookup(lookup);
@@ -225,7 +232,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      *
      * @param name
      *            the name of the container
-     * @see BaseContainerConfiguration#named(String)
+     * @see ContainerConfiguration#named(String)
      * @throws IllegalArgumentException
      *             if the specified name is the empty string, or if the name contains other characters then alphanumeric
      *             characters and '_', '-' or '.'
@@ -261,14 +268,14 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      *            the extension class to return an instance of
      * @return an instance of the specified extension class
      * @throws IllegalStateException
-     *             if called from outside {@link #build()}
-     * @see BaseContainerConfiguration#use(Class)
+     *             if called after the container is no longer configurable
+     * @see ContainerConfiguration#use(Class)
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
     }
 
-    /** {@return the container setup instance that we are wrapping.} */
+    /** {@return extracts the container setup from the container configuration.} */
     private static ContainerSetup container(ContainerConfiguration cc) {
         try {
             return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(cc);
