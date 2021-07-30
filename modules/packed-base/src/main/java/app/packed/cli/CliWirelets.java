@@ -3,8 +3,8 @@ package app.packed.cli;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.container.Wirelet;
-import packed.internal.component.ComponentSetup;
-import packed.internal.component.InternalWirelet;
+import packed.internal.container.ContainerSetup;
+import packed.internal.container.InternalWirelet;
 
 public class CliWirelets {
 
@@ -20,7 +20,7 @@ public class CliWirelets {
         }
 
         @Override
-        protected void onBuild(ComponentSetup component) {
+        protected void onBuild(ContainerSetup component) {
             // TODO Auto-generated method stub
             
         }

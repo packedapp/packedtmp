@@ -98,7 +98,7 @@ public final class RealmSetup {
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, BuildTarget buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, this, buildTarget, wirelets);
-        this.root = build.application;
+        this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
     }
@@ -106,7 +106,7 @@ public final class RealmSetup {
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
         this.build = new BuildSetup(applicationDriver, this, BuildTarget.INSTANCE, wirelets);
-        this.root = build.application;
+        this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
     }
@@ -121,7 +121,7 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
-        this.root = driver.newComponent(build, this, build.application.lifetime, linkTo, wirelets);
+        this.root = driver.newComponent(build, this, build.application.container.lifetime, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {
@@ -190,19 +190,7 @@ public final class RealmSetup {
         this.accessor = accessor().withLookup(lookup);
     }
 
-    public ComponentSetup wire(PackedComponentDriver<?> driver, ComponentSetup wireTo, Wirelet[] wirelets) {
-        requireNonNull(driver, "driver is null");
-        // Prepare to wire the component (make sure the realm is still open)
-        wirePrepare();
-
-        // Create the new component
-        ComponentSetup component = driver.newComponent(build, this, build.application.lifetime, wireTo, wirelets);
-
-        wireCommit(component);
-        return component;
-    }
-
-    private void wireCommit(ComponentSetup component) {
+    public void wireCommit(ComponentSetup component) {
         current = component;
         
         // TODO: Move to class I think
@@ -213,7 +201,7 @@ public final class RealmSetup {
         }
     }
 
-    private void wirePrepare() {
+    public void wirePrepare() {
         if (isClosed) {
             throw new IllegalStateException();
         }

@@ -15,17 +15,17 @@ import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.ComponentSetup;
 import packed.internal.invoke.Infuser;
 
-/** Implementation of {@link OldBeanDriver.BeanDriver}. */
+/** Implementation of {@link OldBeanDriver.OtherBeanDriver}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> implements OldBeanDriver.BeanDriver<T, C> {
+public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> implements OldBeanDriver.OtherBeanDriver<T, C> {
 
     /** A {@link BeanType#BASE} bean binder. */
     public static final PackedBeanDriverBinder SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, BeanType.BASE);
 
-    /** A {@link BeanType#STATIC} bean binder. */
-    public static final PackedBeanDriverBinder STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            ApplicationBeanConfiguration.class, BeanType.STATIC);
+//    /** A {@link BeanType#STATIC} bean binder. */
+//    public static final PackedBeanDriverBinder STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
+//            ApplicationBeanConfiguration.class, BeanType.STATIC);
 
     final MethodHandle constructor;
 
@@ -48,9 +48,9 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> imp
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
     }
 
-    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofStatic(Class<?> implementation) {
-        return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
-    }
+//    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofStatic(Class<?> implementation) {
+//        return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
+//    }
 
     /** {@inheritDoc} */
     public PackedBeanDriver<C> bind(Class<? extends T> implementation) {

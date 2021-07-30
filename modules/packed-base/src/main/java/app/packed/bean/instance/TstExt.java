@@ -13,6 +13,7 @@ public class TstExt extends BaseAssembly {
     @Override
     protected void build() {
         use(MyExt.class);
+        installInstance("werwer").inject("xxxx");
         link(new Subbb());
     }
 
@@ -53,5 +54,4 @@ public class TstExt extends BaseAssembly {
             link(new Subbb());
         }
     }
-    
 }

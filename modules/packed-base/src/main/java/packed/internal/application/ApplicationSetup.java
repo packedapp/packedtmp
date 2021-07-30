@@ -11,22 +11,20 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
-import app.packed.build.BuildTarget;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.state.sandbox.InstanceState;
-import packed.internal.component.ComponentSetup;
-import packed.internal.component.InternalWirelet;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
+import packed.internal.container.InternalWirelet;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
 
 /** Build-time configuration of an application. */
-public final class ApplicationSetup extends ContainerSetup {
+public final class ApplicationSetup {
 
     public final PackedApplicationDriver<?> applicationDriver;
 
@@ -47,6 +45,12 @@ public final class ApplicationSetup extends ContainerSetup {
     @Nullable
     final PoolAccessor runtimeAccessor;
 
+    boolean isImage;
+
+    public final ContainerSetup container;
+
+    public final BuildSetup build;
+
     /**
      * Create a new application setup
      * 
@@ -54,13 +58,14 @@ public final class ApplicationSetup extends ContainerSetup {
      *            the application's driver
      */
     ApplicationSetup(BuildSetup build, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
-        super(build, realm, new LifetimeSetup(null), driver, null, wirelets);
+        this.build = build;
+        container = new ContainerSetup(build, this, realm, new LifetimeSetup(null), driver, null, wirelets);
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        this.runtimeAccessor = driver.hasRuntime() ? lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
+        this.runtimeAccessor = driver.hasRuntime() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 
     public boolean hasMain() {
@@ -73,8 +78,7 @@ public final class ApplicationSetup extends ContainerSetup {
 
     /** {@return whether or not the application is part of an image}. */
     public boolean isImage() {
-        // TODO fix for multi-apps, We should probably take a @Nullable ApplicationHostSetup in the constructor
-        return build.target == BuildTarget.IMAGE;
+        return isImage;
     }
 
     public MainThreadOfControl mainThread() {
@@ -122,14 +126,14 @@ public final class ApplicationSetup extends ContainerSetup {
 
         /** {@inheritDoc} */
         @Override
-        protected void onBuild(ComponentSetup component) {
+        protected void onBuild(ContainerSetup component) {
             // TODO we probably need to check that it is launchable
             checkIsApplication(component).launchMode = launchMode; // override any existing launch mode
         }
 
         /** {@inheritDoc} */
         @Override
-        public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext launch) {
+        public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext launch) {
             // TODO we probably need to check that it is launchable
             launch.launchMode = launchMode;
         }
@@ -171,7 +175,7 @@ public final class ApplicationSetup extends ContainerSetup {
         /** {@inheritDoc} */
         @Override
         public Module module() {
-            return ApplicationSetup.this.realm.realmType().getModule();
+            return ApplicationSetup.this.container.realm.realmType().getModule();
         }
 
         @Override

@@ -12,11 +12,9 @@ import app.packed.base.Nullable;
 import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
-import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
-import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.hooks.usesite.BootstrappedClassModel;
@@ -55,8 +53,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public final BeanType kind;
 
-    BeanSetup(BuildSetup build, LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, @Nullable ComponentSetup parent) {
-        super(build, realm, lifetime, driver, parent, new Wirelet[] {});
+    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent) {
+        super(parent.build, parent.application, realm, lifetime, parent);
         this.kind = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
@@ -157,7 +155,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     public Optional<Key<?>> sourceProvideAsKey() {
         return service == null ? Optional.empty() : Optional.of(service.key());
     }
-
 
     /** A build-time bean mirror. */
     private final class BuildTimeBeanMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BeanMirror {

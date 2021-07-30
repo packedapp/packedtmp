@@ -28,10 +28,8 @@ public non-sealed class PackedContainerDriver<C extends ContainerConfiguration> 
         throw new UnsupportedOperationException();
     }
 
-    /** {@inheritDoc} */
-    @Override
     public ContainerSetup newComponent(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        return new ContainerSetup(build, realm, lifetime, this, parent, wirelets);
+        return new ContainerSetup(build, build.application, realm, lifetime, this, parent, wirelets);
     }
 
     @SuppressWarnings("unchecked")

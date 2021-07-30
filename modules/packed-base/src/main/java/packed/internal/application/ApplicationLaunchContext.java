@@ -25,8 +25,8 @@ import app.packed.base.Nullable;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
-import packed.internal.component.InternalWirelet;
-import packed.internal.component.WireletWrapper;
+import packed.internal.container.InternalWirelet;
+import packed.internal.container.WireletWrapper;
 import packed.internal.lifetime.LifetimePool;
 import packed.internal.lifetime.LifetimePoolWriteable;
 import packed.internal.service.ServiceManagerSetup;
@@ -62,7 +62,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
     private ApplicationLaunchContext(ApplicationSetup application, WireletWrapper wirelets) {
         this.application = application;
         this.wirelets = wirelets;
-        this.name = requireNonNull(application.getName());
+        this.name = requireNonNull(application.container.getName());
         this.launchMode = requireNonNull(application.launchMode);
         this.runtime = application.runtimeAccessor == null ? null : new PackedApplicationRuntimeExtensor(this);
     }
@@ -90,7 +90,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
      * @return a service locator for the application
      */
     public ServiceLocator services() {
-        ServiceManagerSetup sm = application.injection.getServiceManager();
+        ServiceManagerSetup sm = application.container.injection.getServiceManager();
         return sm == null ? ServiceLocator.of() : sm.newServiceLocator(application.applicationDriver, pool);
     }
 
@@ -129,7 +129,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
             }
         }
 
-        LifetimePool pool = context.pool = application.lifetime.pool.newPool(context);
+        LifetimePool pool = context.pool = application.container.lifetime.pool.newPool(context);
 
         // Run all initializers
         for (MethodHandle mh : application.initializers) {

@@ -1,6 +1,7 @@
 package app.packed.bean;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentConfiguration;
@@ -14,11 +15,17 @@ public abstract sealed class BeanConfiguration<T>
         return inject(Key.of(key), instance);
     }
 
+    public <E> BeanConfiguration<T> decorate(Key<E> key, Function<E, E> mapper) {
+        /// Mnahhh
+        throw new UnsupportedOperationException();
+    }
+
     // Taenker den overrider
     public <E> BeanConfiguration<T> inject(Key<E> key, E instance) {
         throw new UnsupportedOperationException();
     }
 
+    // Ved ikke hvad den overskriver...
     @SuppressWarnings("unchecked")
     public BeanConfiguration<T> inject(Object instance) {
         return inject((Class) instance.getClass(), instance);

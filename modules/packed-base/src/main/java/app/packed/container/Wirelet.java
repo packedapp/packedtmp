@@ -23,9 +23,9 @@ import app.packed.extension.ExtensionBean;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.InternalExtensionException;
 import app.packed.extension.OldExtensionMember;
-import packed.internal.component.CompositeWirelet;
-import packed.internal.component.InternalWirelet.OverrideNameWirelet;
-import packed.internal.component.WireletModel;
+import packed.internal.container.CompositeWirelet;
+import packed.internal.container.WireletModel;
+import packed.internal.container.InternalWirelet.OverrideNameWirelet;
 import packed.internal.util.StackWalkerUtil;
 
 /**

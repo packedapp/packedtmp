@@ -46,7 +46,7 @@ import packed.internal.util.ClassUtil;
 
 /** Build-time configuration of a container. */
 // Looks wrong with ApplicationSetup
-public sealed class ContainerSetup extends ComponentSetup permits ApplicationSetup {
+public final class ContainerSetup extends ComponentSetup {
 
     /** Child containers, lazy initialized. */
     @Nullable
@@ -72,6 +72,17 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
     private ArrayList<ExtensionSetup> tmpExtensions;
 
     /**
+     * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
+     * ignored.
+     */
+    public boolean nameInitializedWithWirelet;
+
+    /** Wirelets that was specified when creating the component. */
+    // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
+    @Nullable
+    public final WireletWrapper wirelets;
+
+    /**
      * Create a new container (component) setup.
      * 
      * @param application
@@ -85,12 +96,54 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver<?> driver, @Nullable ComponentSetup parent,
+    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
-        super(build, realm, lifetime, driver, parent, wirelets);
+        super(build, application, realm, lifetime, parent);
 
         this.assemblyModel = AssemblyModel.of(realm.realmType());
-        
+
+        // The rest of the constructor is just processing any wirelets that have been specified by
+        // the user or extension when wiring the component. The wirelet's have not been null checked.
+        // and may contained any number of CombinedWirelet instances.
+        requireNonNull(wirelets, "wirelets is null");
+        if (wirelets.length == 0) {
+            this.wirelets = null;
+        } else {
+            // If it is the root
+            Wirelet[] ws;
+            if (parent == null) {
+                if (driver.wirelet == null) {
+                    ws = CompositeWirelet.flattenAll(wirelets);
+                } else {
+                    ws = CompositeWirelet.flatten2(driver.wirelet, Wirelet.combine(wirelets));
+                }
+            } else {
+                ws = CompositeWirelet.flattenAll(wirelets);
+            }
+
+            this.wirelets = new WireletWrapper(ws);
+
+            // May initialize the component's name, onWire, ect
+            // Do we need to consume internal wirelets???
+            // Maybe that is what they are...
+            int unconsumed = 0;
+            for (Wirelet w : ws) {
+                if (w instanceof InternalWirelet bw) {
+                    // Maaske er alle internal wirelets first passe
+                    bw.onBuild(this);
+                } else {
+                    unconsumed++;
+                }
+            }
+            if (unconsumed > 0) {
+                this.wirelets.unconsumed = unconsumed;
+            }
+
+            if (nameInitializedWithWirelet && parent != null) {
+                initializeNameWithPrefix(name);
+                // addChild(child, name);
+            }
+        }
         // Various container tree-node management
         if (parent == null) {
             this.containerParent = null;
@@ -134,7 +187,7 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
         }
         assert name != null;
     }
-    
+
     public void preBuild(ContainerConfiguration configuration) {
         assemblyModel.preBuild(configuration);
     }
@@ -143,13 +196,12 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
         assemblyModel.postBuild(configuration);
     }
 
-    
     public void applyAssemblyHook(AssemblyHook hook) {
         // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration
         // der lige pludselig kan have andre rettigheder.
         // Teoretisk attack mulighed, spawn en ny traad med configurationen.
         // Hvor vi haaber at ramme den lige praecis som vi har lyst til
-        
+
     }
 
     public void closeRealm() {
@@ -202,7 +254,7 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
     public ContainerMirror mirror() {
         return new BuildTimeContainerMirror();
     }
-    
+
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
     }

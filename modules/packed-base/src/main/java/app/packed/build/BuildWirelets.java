@@ -25,7 +25,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import app.packed.container.Wirelet;
-import packed.internal.component.InternalWirelet;
+import packed.internal.container.InternalWirelet;
 
 /**
  * Wirelets that can be specified at when building an application. Attempts to use them with

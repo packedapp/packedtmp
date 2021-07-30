@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.component;
+package packed.internal.container;
 
 import static java.util.Objects.requireNonNull;
 
@@ -26,6 +26,7 @@ import app.packed.container.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
+import packed.internal.component.ComponentSetup;
 
 /**
  * A special wirelet for internal usage where the wirelets logic is embedded directly into the wirelet.
@@ -41,7 +42,7 @@ public abstract class InternalWirelet extends Wirelet {
      *             if the specified component is not the root component of an application
      * @return the application of the component (for method chaining)
      */
-    protected final ApplicationSetup checkIsApplication(ComponentSetup component) {
+    protected final ApplicationSetup checkIsApplication(ContainerSetup component) {
         ApplicationSetup application = component.application;
         if (application.container != component) {
             throw new IllegalArgumentException("This wirelet can only be specified when wiring an application, wirelet = " + this);
@@ -60,9 +61,9 @@ public abstract class InternalWirelet extends Wirelet {
      * @param component
      *            the component that is being wired
      */
-    protected abstract void onBuild(ComponentSetup component);
+    protected abstract void onBuild(ContainerSetup component);
 
-    public void onImageInstantiation(ComponentSetup component, ApplicationLaunchContext context) {
+    public void onImageInstantiation(ContainerSetup component, ApplicationLaunchContext context) {
         throw new IllegalArgumentException(
                 "The wirelet {" + getClass().getSimpleName() + "} must be specified at build-time. It cannot be specified when instantiating an image");
     }
@@ -91,7 +92,7 @@ public abstract class InternalWirelet extends Wirelet {
         /** {@inheritDoc} */
         @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected void onBuild(ComponentSetup component) {
+        protected void onBuild(ContainerSetup component) {
             // Hmm. Vi vil nok snare have en liste nu, hvis vi har mere end 2
             Consumer<? super ComponentMirror> existing = component.onWire;
             if (existing == null) {
@@ -120,13 +121,13 @@ public abstract class InternalWirelet extends Wirelet {
 
         /** {@inheritDoc} */
         @Override
-        protected void onBuild(ComponentSetup c) {
+        protected void onBuild(ContainerSetup c) {
             c.nameInitializedWithWirelet = true;
             c.name = name;
         }
 
         @Override
-        public void onImageInstantiation(ComponentSetup c, ApplicationLaunchContext ic) {
+        public void onImageInstantiation(ContainerSetup c, ApplicationLaunchContext ic) {
             ic.name = name;
         }
     }

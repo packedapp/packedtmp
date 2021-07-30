@@ -29,7 +29,7 @@ import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.usage.BeanType;
-import app.packed.bean.hooks.usage.OldBeanDriver.BeanDriver;
+import app.packed.bean.hooks.usage.OldBeanDriver.OtherBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
@@ -87,12 +87,12 @@ public class ServiceExtension extends Extension {
 
     /** A binder for prototype service beans. */
     @SuppressWarnings("rawtypes")
-    private static final BeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
+    private static final OtherBeanDriver PROTOTYPE_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             BeanType.PROTOTYPE_UNMANAGED);
 
     /** A binder for singleton service beans. */
     @SuppressWarnings("rawtypes")
-    private static final BeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
+    private static final OtherBeanDriver SINGLETON_SERVICE_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(), ServiceBeanConfiguration.class,
             BeanType.BASE);
 
     /** The service manager. */

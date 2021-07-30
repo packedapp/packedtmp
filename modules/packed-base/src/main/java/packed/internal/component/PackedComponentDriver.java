@@ -12,9 +12,7 @@ import app.packed.component.ComponentDriver;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
-import packed.internal.application.BuildSetup;
 import packed.internal.container.PackedContainerDriver;
-import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.LookupUtil;
 
 /** The abstract base class for component drivers. */
@@ -30,7 +28,7 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
 
     /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
-    protected final Wirelet wirelet;
+    public final Wirelet wirelet;
 
     protected PackedComponentDriver(@Nullable Wirelet wirelet) {
         this.wirelet = wirelet;
@@ -41,9 +39,6 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     public Optional<Class<? extends Extension>> extension() {
         throw new UnsupportedOperationException();
     }
-
-    protected abstract ComponentSetup newComponent(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent,
-            Wirelet[] wirelets);
 
     public final C toConfiguration(ComponentSetup cs) {
         C c = toConfiguration0(cs);

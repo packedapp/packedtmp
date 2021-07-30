@@ -1,32 +1,19 @@
-package app.packed.bean.hooks.usage;
+package app.packed.bean;
 
 import java.util.function.Function;
 
-import app.packed.bean.BeanConfiguration;
+public interface BeanDriver {
 
-/**
- * A driver for creating bean components.
- * <p>
- * Except for the static methods on this interface. Bean drivers cannot be created directly. Instead binders are used
- */
-public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration<?>> {
-
-
-    /**
-     * A binder that can be used to bind class, factory or component class instance to create a bean driver.
-     */
-    /* sealed */ interface OtherBeanDriver<T, C extends BeanConfiguration<?>> {
-
-    }
+    
 
     /* sealed */ interface Builder {
 
-        <T, C extends BeanConfiguration<?>> OtherBeanDriver<T, C> build();
+        BeanDriver build();
 
         // Specific super type
 
         // Den kan vi jo se fra Typen af configuration...
-        Builder kind(BeanType kind);
+        Builder kind(BeanKind kind);
 
         Builder namePrefix(Function<Class<?>, String> computeIt);
 

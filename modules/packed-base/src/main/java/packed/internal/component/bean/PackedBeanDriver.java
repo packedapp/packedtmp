@@ -2,20 +2,19 @@ package packed.internal.component.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.base.Nullable;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.hooks.usage.OldBeanDriver;
-import app.packed.container.Wirelet;
-import packed.internal.application.BuildSetup;
+import app.packed.component.ComponentConfiguration;
 import packed.internal.component.ComponentSetup;
-import packed.internal.component.PackedComponentDriver;
-import packed.internal.component.RealmSetup;
-import packed.internal.lifetime.LifetimeSetup;
+import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link OldBeanDriver}. */
-public final class PackedBeanDriver<C extends BeanConfiguration<?>> extends PackedComponentDriver<C> implements OldBeanDriver<C> {
+public final class PackedBeanDriver<C extends BeanConfiguration<?>> implements OldBeanDriver<C> {
 
     /** The bean type. */
     private final Class<?> beanType;
@@ -27,7 +26,6 @@ public final class PackedBeanDriver<C extends BeanConfiguration<?>> extends Pack
     final Object binding;
 
     public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
-        super(null);
         this.binder = requireNonNull(binder);
         this.beanType = requireNonNull(beanType);
         this.binding = requireNonNull(binding);
@@ -41,13 +39,6 @@ public final class PackedBeanDriver<C extends BeanConfiguration<?>> extends Pack
         return binder.kind();
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public ComponentSetup newComponent(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        return new BeanSetup(build, lifetime, realm, this, parent);
-    }
-
-    @Override
     public C toConfiguration0(ComponentSetup context) {
         try {
             // TODO.. vi bruger ikke context'en lige nu. Men
@@ -55,5 +46,16 @@ public final class PackedBeanDriver<C extends BeanConfiguration<?>> extends Pack
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+    
+    /** A handle that can access ComponentConfiguration#component. */
+    private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
+            ComponentConfiguration.class, "component", ComponentSetup.class);
+
+
+    public final C toConfiguration(ComponentSetup cs) {
+        C c = toConfiguration0(cs);
+        VH_COMPONENT_CONFIGURATION_COMPONENT.set(c, cs);
+        return c;
     }
 }

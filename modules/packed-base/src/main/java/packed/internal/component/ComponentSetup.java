@@ -33,7 +33,6 @@ import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
 import app.packed.container.ContainerMirror;
-import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.BuildSetup;
@@ -44,7 +43,7 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
 
 /** Abstract build-time setup of a component. */
-public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
+public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
@@ -66,17 +65,11 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
     public final LifetimeSetup lifetime;
 
     /** The name of this component. */
-    protected String name;
-
-    /**
-     * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
-     * ignored.
-     */
-    boolean nameInitializedWithWirelet;
+    public String name;
 
     /** An action that, if present, must be called whenever the component has been completely wired. */
     @Nullable
-    protected Consumer<? super ComponentMirror> onWire;
+    public Consumer<? super ComponentMirror> onWire;
 
     /** The parent of this component, or null for a root component. */
     @Nullable
@@ -84,11 +77,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
 
     /** The realm this component is a part of. */
     public final RealmSetup realm;
-
-    /** Wirelets that was specified when creating the component. */
-    // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
-    @Nullable
-    public final WireletWrapper wirelets;
 
     /**
      * Create a new component. This constructor is always invoked from one of subclasses of this class
@@ -106,8 +94,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
      * @param wirelets
      *            optional (unprocessed) wirelets specified by the user
      */
-    protected ComponentSetup(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, PackedComponentDriver<?> driver, @Nullable ComponentSetup parent,
-            Wirelet[] wirelets) {
+    protected ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent) {
         this.parent = parent;
         if (parent == null) {
             this.depth = 0;
@@ -120,51 +107,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
 
-        this.application = this instanceof ApplicationSetup application ? application : parent.application;
+        this.application = application;
         this.container = this instanceof ContainerSetup container ? container : parent.container;
 
-        // The rest of the constructor is just processing any wirelets that have been specified by
-        // the user or extension when wiring the component. The wirelet's have not been null checked.
-        // and may contained any number of CombinedWirelet instances.
-        requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
-            this.wirelets = null;
-        } else {
-            // If it is the root
-            Wirelet[] ws;
-            if (parent == null) {
-                if (driver.wirelet == null) {
-                    ws = CompositeWirelet.flattenAll(wirelets);
-                } else {
-                    ws = CompositeWirelet.flatten2(driver.wirelet, Wirelet.combine(wirelets));
-                }
-            } else {
-                ws = CompositeWirelet.flattenAll(wirelets);
-            }
-
-            this.wirelets = new WireletWrapper(ws);
-
-            // May initialize the component's name, onWire, ect
-            // Do we need to consume internal wirelets???
-            // Maybe that is what they are...
-            int unconsumed = 0;
-            for (Wirelet w : ws) {
-                if (w instanceof InternalWirelet bw) {
-                    // Maaske er alle internal wirelets first passe
-                    bw.onBuild(this);
-                } else {
-                    unconsumed++;
-                }
-            }
-            if (unconsumed > 0) {
-                this.wirelets.unconsumed = unconsumed;
-            }
-
-            if (nameInitializedWithWirelet && parent != null) {
-                initializeNameWithPrefix(name);
-                // addChild(child, name);
-            }
-        }
     }
 
     final AttributeMap attributes() {
@@ -235,7 +180,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         };
     }
 
-
     /** {@inheritDoc} */
     public abstract ComponentMirror mirror();
 
@@ -245,7 +189,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         checkIsWiring();
 
         // If a name has been set using a wirelet it cannot be overridden
-        if (nameInitializedWithWirelet) {
+        if (this instanceof ContainerSetup cs && cs.nameInitializedWithWirelet) {
             return;
         } else if (name.equals(this.name)) {
             return;
