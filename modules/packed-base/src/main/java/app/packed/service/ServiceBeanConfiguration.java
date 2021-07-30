@@ -55,10 +55,6 @@ public class ServiceBeanConfiguration<T> extends ApplicationBeanConfiguration<T>
         }
     }
 
-    protected void provideAsService() {
-        bean().sourceProvide();
-    }
-
     protected void provideAsService(Key<?> key) {
         bean().sourceProvideAs(key);
     }
@@ -126,7 +122,7 @@ public class ServiceBeanConfiguration<T> extends ApplicationBeanConfiguration<T>
     }
 
     public ServiceBeanConfiguration<T> provide() {
-        provideAsService();
+        bean().sourceProvide();
         return this;
     }
 }

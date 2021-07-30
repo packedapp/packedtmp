@@ -55,8 +55,8 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
 
     public final BeanType kind;
 
-    BeanSetup(BuildSetup build, LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        super(build, realm, lifetime, driver, parent, wirelets);
+    BeanSetup(BuildSetup build, LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, @Nullable ComponentSetup parent) {
+        super(build, realm, lifetime, driver, parent, new Wirelet[] {});
         this.kind = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
@@ -157,6 +157,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     public Optional<Key<?>> sourceProvideAsKey() {
         return service == null ? Optional.empty() : Optional.of(service.key());
     }
+
 
     /** A build-time bean mirror. */
     private final class BuildTimeBeanMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BeanMirror {

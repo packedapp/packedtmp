@@ -35,10 +35,6 @@ public sealed interface ContainerDriver<C extends ContainerConfiguration> extend
     public static ContainerDriver<ContainerConfiguration> defaultDriver() {
         return PackedContainerDriver.DRIVER;
     }
-
-//    static <C extends ContainerConfiguration> ContainerDriver<C> of(Supplier<C> configurationFactory) {
-//        throw new UnsupportedOperationException();
-//    }
     
     interface Builder {
         ContainerDriver<ContainerConfiguration> build();

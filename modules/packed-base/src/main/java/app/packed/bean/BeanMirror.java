@@ -12,13 +12,13 @@ public non-sealed interface BeanMirror extends ComponentMirror {
     /** {@return the type (class) of the bean.} */
     Class<?> beanType();
 
-    /** {@return the lifetime of the bean.} */
-    BeanKind kind();
-
     /** {@return all hooks that have been applied on the bean.} */
     Set<?> hooks();
 
     <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
+
+    /** {@return the kind of the bean.} */
+    BeanKind kind();
 
     // boolean isInstantiated
     // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet

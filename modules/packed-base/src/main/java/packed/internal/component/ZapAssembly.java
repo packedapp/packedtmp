@@ -5,6 +5,7 @@ import app.packed.application.Daemon;
 import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
+import app.packed.state.sandbox.InstanceState;
 
 public class ZapAssembly extends BaseAssembly {
 
@@ -18,12 +19,12 @@ public class ZapAssembly extends BaseAssembly {
         App.run(new ZapAssembly(), BuildWirelets.spyOnWire(c -> System.out.println(c.path())));
 
         Daemon.mirror(new ZapAssembly());
-        
-        // Det gode ved mirror er at 
+
+        // Det gode ved mirror er at
         Daemon.introspect(new ZapAssembly());
-        Daemon.reflect(new ZapAssembly());
+        //Daemon.reflect(new ZapAssembly());
         Daemon.mirror(new ZapAssembly());
-        
+
         App.driver().print(new ZapAssembly());
     }
 
@@ -34,7 +35,7 @@ public class ZapAssembly extends BaseAssembly {
             installInstance("SDADs");
             install(My.class);
 
-            install(My.class);
+            install(My.class).on(InstanceState.RUNNING, e -> System.out.println(e + "OK"));
             installInstance("adasd");
             installInstance("asdasd");
 

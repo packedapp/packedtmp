@@ -24,19 +24,20 @@ import java.util.concurrent.Callable;
  */
 public non-sealed class ApplicationBeanConfiguration<T> extends BeanConfiguration<T> {
 
+    public <X extends Runnable & Callable<String>> X foo() {
+        return null;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public final BeanKind kind() {
+        return BeanKind.APPLICATION;
+    }
+
     /** {@inheritDoc} */
     @Override
     public ApplicationBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
-    }
-
-    public <X extends Runnable & Callable<String>> X foo() {
-        return null;
-    }
-
-    @Override
-    public final BeanKind kind() {
-        return BeanKind.APPLICATION;
     }
 }

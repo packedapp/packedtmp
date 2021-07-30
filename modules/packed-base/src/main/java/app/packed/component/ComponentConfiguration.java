@@ -73,9 +73,7 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
 
     /** {@return a mirror for the component/} */
     // Er det et problem.. naar den ikke er fuldt wired endnu???
-    protected ComponentMirror mirror() {
-        throw new UnsupportedOperationException();
-    }
+    protected abstract ComponentMirror mirror();
 
     /**
      * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
@@ -105,13 +103,13 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
      */
     protected void onConfigured() {}
 
-    /**
-     * A method that can be overridden
-     * 
-     * <p>
-     * <strong>Note:</strong> This method should never be overridden with a public modifier.
-     */
-    protected void onNew() {}
+//    /**
+//     * A method that can be overridden
+//     * 
+//     * <p>
+//     * <strong>Note:</strong> This method should never be overridden with a public modifier.
+//     */
+//    protected final void onNew() {}
 
     /**
      * Returns the full path of the component.

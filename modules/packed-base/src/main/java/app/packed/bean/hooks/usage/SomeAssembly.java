@@ -21,5 +21,6 @@ class MyHook extends BeanMethodHook {
     @Override
     protected void bootstrap() {
         System.out.println("Method : " + method());
+        
     }
 }

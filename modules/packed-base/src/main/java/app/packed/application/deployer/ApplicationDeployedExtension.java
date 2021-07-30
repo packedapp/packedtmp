@@ -1,11 +1,11 @@
 package app.packed.application.deployer;
 
-import app.packed.application.host.ApplicationHostExtension;
+import app.packed.application.host.ApplicationExtension;
 import app.packed.extension.Extension;
 
 public class ApplicationDeployedExtension extends Extension {
 
     static {
-        $dependsOnAlways(ApplicationHostExtension.class);
+        $dependsOnAlways(ApplicationExtension.class);
     }
 }

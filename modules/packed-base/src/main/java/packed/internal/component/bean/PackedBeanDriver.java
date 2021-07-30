@@ -44,7 +44,7 @@ public final class PackedBeanDriver<C extends BeanConfiguration<?>> extends Pack
     /** {@inheritDoc} */
     @Override
     public ComponentSetup newComponent(BuildSetup build, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent, Wirelet[] wirelets) {
-        return new BeanSetup(build, lifetime, realm, this, parent, wirelets);
+        return new BeanSetup(build, lifetime, realm, this, parent);
     }
 
     @Override

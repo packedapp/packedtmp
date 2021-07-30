@@ -71,11 +71,11 @@ public interface Daemon extends AutoCloseable {
     static ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
         return ApplicationMirror.of(driver(), assembly, wirelets);
     }
-    
-    static ApplicationMirror reflect(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(driver(), assembly, wirelets);
-    }
-    
+//  Nej, kalder det ikke reflect    
+//    static ApplicationMirror reflect(Assembly<?> assembly, Wirelet... wirelets) {
+//        return ApplicationMirror.of(driver(), assembly, wirelets);
+//    }
+
     // When do want to run a daemon???
     // Isn't it main...
     static Daemon run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {

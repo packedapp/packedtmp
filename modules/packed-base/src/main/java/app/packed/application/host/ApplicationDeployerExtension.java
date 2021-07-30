@@ -4,15 +4,15 @@ import app.packed.extension.Extension;
 
 // Is this an extension???? Or a runtime thingy...
 // Tror det at det er, er vi gerne vil have en let maade at depl
-public class ApplicationDeploymentExtension extends Extension {
+public class ApplicationDeployerExtension extends Extension {
 
     static {
-        $dependsOn(ApplicationHostExtension.class);
+        $dependsOnAlways(ApplicationExtension.class);
         // $dependsOn(ClassLoaderExtension?.class);
         // $dependsOn(FileExtension.class);
     }
 
-    ApplicationDeploymentExtension() {}
+    ApplicationDeployerExtension() {}
 
     // Maaske bruger vi FileExtension...
 

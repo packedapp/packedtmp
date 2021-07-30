@@ -9,7 +9,6 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -22,7 +21,6 @@ import app.packed.extension.InternalExtensionException;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.attribute.PackedAttributeModel;
-import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.PackedWireletSelection;
 import packed.internal.component.RealmSetup;
 import packed.internal.component.WireletWrapper;
@@ -269,10 +267,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
         // Create a new subtension instance using the extension instance and this.extensionClass as the requesting extension
         return (E) subModel.newInstance(instance, extensionType);
-    }
-
-    public <C extends ComponentConfiguration> C wire(PackedComponentDriver<C> driver, Wirelet... wirelets) {
-        return container.wire(driver, container.realm, wirelets);
     }
 
     /**

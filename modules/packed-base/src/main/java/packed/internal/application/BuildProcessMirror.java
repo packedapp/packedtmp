@@ -55,7 +55,10 @@ import app.packed.component.ComponentMirrorStream;
 // Tror vi har en generics Validations Klasse istedet for denne...
 // Validation<BaseMirror>
 // validate().assertOk();
-public interface BuildMirror {
+
+// Altsaa taenker vi heller vil wrappe den i noget andet
+// Altsaa BuildMirror er et mirror der mapper alt i et build
+public interface BuildProcessMirror {
 
     /** {@return the root application of the build}. */
     ApplicationMirror application();

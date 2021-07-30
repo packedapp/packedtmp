@@ -4,7 +4,6 @@ import app.packed.bean.hooks.usage.OldBeanDriver.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
-import app.packed.extension.ExtensionMirror;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
 import packed.internal.component.bean.PackedBeanDriver;
@@ -81,7 +80,7 @@ public class BeanExtension extends Extension {
 
     /** {@inheritDoc} */
     @Override
-    protected ExtensionMirror<?> mirror() {
+    protected BeanExtensionMirror mirror() {
         return mirrorInitialize(new BeanExtensionMirror(this));
     }
 
@@ -99,11 +98,11 @@ public class BeanExtension extends Extension {
 
         public final <T> ApplicationBeanConfiguration<T> install(Class<?> implementation) {
             // Alternativt
-            
+
             // ExtensionBeanConfiguration extends ApplicationBeanConfiguration {}
             // .inherit(); naaah
             // Vil gerne vide om vi skal inherite foer vi kalder install
-            
+
             throw new UnsupportedOperationException();
         }
 
@@ -115,28 +114,39 @@ public class BeanExtension extends Extension {
             throw new UnsupportedOperationException();
         }
 
+        public <T, C extends BeanConfiguration<T>> C newWire(Object driver, C configuration, Class<? extends T> implementation) {
+            // configuration, must be unattached
+            throw new UnsupportedOperationException();
+        }
+
         public <T, C extends BeanConfiguration<T>> C wire(BeanDriver<T, C> binder, Class<? extends T> implementation) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-            return extension.wire(b.bind(implementation));
+
+            ContainerSetup container = extension.container;
+            return container.wire(b.bind(implementation), container.realm);
         }
 
         public <T, C extends BeanConfiguration<T>> C wire(BeanDriver<T, C> binder, Factory<? extends T> implementation) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-            return extension.wire(b.bind(implementation));
+            ContainerSetup container = extension.container;
+            return container.wire(b.bind(implementation), container.realm);
         }
 
         // installs a child to the specified component.
         // 1. Specifie ComponentConfiguration must be in the same container
         // 2. Specifie ComponentConfiguration must have been installed by the same extension
-        public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, BeanDriver<T, C> binder, Class<? extends T> implementation
-                ) {
+        public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, BeanDriver<T, C> binder, Class<? extends T> implementation) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-            return extension.wire(b.bind(implementation));
+            ContainerSetup container = extension.container;
+            return container.wire(b.bind(implementation), container.realm);
+
         }
 
         public <T, C extends BeanConfiguration<T>> C wireInstance(BeanDriver<T, C> binder, T instance) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
-            return extension.wire(b.bindInstance(instance));
+            ContainerSetup container = extension.container;
+            return container.wire(b.bindInstance(instance), container.realm);
+
         }
 
         // Det er lidt for at undgaa BeanDriver<T,C>...
