@@ -25,8 +25,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import app.packed.base.Key;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 import app.packed.contract.Contract;
 import app.packed.validate.Validation;
 

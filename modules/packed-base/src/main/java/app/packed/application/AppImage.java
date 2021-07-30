@@ -18,9 +18,9 @@ package app.packed.application;
 import app.packed.base.Completion;
 import app.packed.build.BuildException;
 import app.packed.cli.CliWirelets;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 
 /**
  * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is typically used

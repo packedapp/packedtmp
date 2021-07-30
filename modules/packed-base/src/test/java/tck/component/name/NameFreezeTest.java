@@ -23,8 +23,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.bean.BaseBeanConfiguration;
-import app.packed.component.Wirelet;
 import app.packed.container.ContainerExtension;
+import app.packed.container.Wirelet;
 import app.packed.service.ServiceBeanConfiguration;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;

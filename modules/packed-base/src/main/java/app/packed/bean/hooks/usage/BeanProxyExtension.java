@@ -1,5 +1,6 @@
-package app.packed.bean;
+package app.packed.bean.hooks.usage;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 

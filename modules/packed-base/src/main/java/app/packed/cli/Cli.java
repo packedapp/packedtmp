@@ -2,9 +2,9 @@ package app.packed.cli;
 
 import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 
 // Maaske er det en application der udelukkende starter andre applicationer...
 // Maaske er det ikke en gang en application... Jo, fordi man skal kunne lave

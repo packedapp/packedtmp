@@ -1,11 +1,12 @@
-package app.packed.bean;
+package app.packed.bean.hooks.usage;
 
 import static java.util.Objects.requireNonNull;
 
 import java.util.function.Consumer;
 
+import app.packed.bean.BeanMirror;
 import app.packed.build.BuildWirelets;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 
 class BeanWirelets {
 

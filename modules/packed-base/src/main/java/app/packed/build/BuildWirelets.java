@@ -25,7 +25,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 import packed.internal.component.InternalWirelet;
 
 /**
@@ -41,7 +41,7 @@ public final class BuildWirelets {
     private BuildWirelets() {}
 
     // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
-    static Wirelet delayToRuntime(Function<InstantiationContext, @Nullable Wirelet> wireletSupplier) {
+    static Wirelet delayToRuntime(Function<InstantiationContext, app.packed.container.Wirelet> wireletSupplier) {
         throw new UnsupportedOperationException();
     }
 

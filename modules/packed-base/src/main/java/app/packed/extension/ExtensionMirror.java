@@ -3,9 +3,9 @@ package app.packed.extension;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionSetup;
@@ -22,7 +22,7 @@ import packed.internal.container.ExtensionSetup;
  * {@link ContainerMirror#findExtension(Class)}.</li>
  * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror itself, for example,
- * {@link ServiceExtensionMirror#of(Assembly, app.packed.component.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#of(Assembly, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: If overriding this class, subclasses:

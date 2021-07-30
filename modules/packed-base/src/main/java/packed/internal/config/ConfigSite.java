@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 import app.packed.attribute.Attribute;
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 
 /**
  * A configuration site represents the location where an object was configured/registered. This can, for example, be a

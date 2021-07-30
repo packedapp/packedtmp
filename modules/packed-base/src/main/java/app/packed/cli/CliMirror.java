@@ -1,7 +1,7 @@
 package app.packed.cli;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 
 /**
  *

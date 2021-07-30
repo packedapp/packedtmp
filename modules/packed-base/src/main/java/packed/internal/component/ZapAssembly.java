@@ -3,8 +3,8 @@ package packed.internal.component;
 import app.packed.application.App;
 import app.packed.application.Daemon;
 import app.packed.build.BuildWirelets;
-import app.packed.component.Wirelet;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 
 public class ZapAssembly extends BaseAssembly {
 
@@ -38,7 +38,7 @@ public class ZapAssembly extends BaseAssembly {
             installInstance("adasd");
             installInstance("asdasd");
 
-            bean().install(My.class, BuildWirelets.spyOnWire(c -> System.out.println(":" + c.path())));
+            bean().install(My.class);
             install(My.class);
         }
 

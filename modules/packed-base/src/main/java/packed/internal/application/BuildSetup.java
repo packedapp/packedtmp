@@ -18,7 +18,7 @@ package packed.internal.application;
 import static java.util.Objects.requireNonNull;
 
 import app.packed.build.BuildTarget;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.RealmSetup;
 

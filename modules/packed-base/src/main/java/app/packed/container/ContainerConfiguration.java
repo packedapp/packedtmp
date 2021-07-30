@@ -6,7 +6,6 @@ import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.WireletSelection;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -64,7 +63,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return this;
     }
 
-    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
 

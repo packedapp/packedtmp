@@ -10,11 +10,10 @@ import java.util.Optional;
 
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.Wirelet;
-import app.packed.component.WireletSelection;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerWirelet;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.extension.Extension.Subtension;
 import app.packed.extension.ExtensionConfiguration;
@@ -220,11 +219,11 @@ public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** {@inheritDoc} */
     @Override
-    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         requireNonNull(wireletClass, "wireletClass is null");
 
         // Check that we are a proper subclass of ExtensionWirelet
-        ClassUtil.checkProperSubclass(ContainerWirelet.class, wireletClass);
+        ClassUtil.checkProperSubclass(Wirelet.class, wireletClass);
 
         // We only allow selection of wirelets in the same module as the extension itself
         // Otherwise people could do wirelets(ServiceWirelet.provide(..).getClass())...

@@ -2,7 +2,7 @@ package packed.internal.component;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 
 /**
  * A wirelet that combines multiple wirelets into a single wirelet.

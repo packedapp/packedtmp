@@ -21,7 +21,6 @@ import app.packed.base.Key;
 import app.packed.base.Qualifier;
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;

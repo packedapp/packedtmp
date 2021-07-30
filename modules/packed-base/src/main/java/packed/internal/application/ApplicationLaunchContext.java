@@ -22,7 +22,7 @@ import java.lang.invoke.MethodHandle;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 import app.packed.service.ServiceLocator;
 import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.InternalWirelet;

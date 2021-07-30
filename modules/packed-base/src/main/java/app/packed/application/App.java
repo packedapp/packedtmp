@@ -20,9 +20,9 @@ import java.lang.invoke.MethodType;
 
 import app.packed.base.Completion;
 import app.packed.cli.CliWirelets;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets;
 import packed.internal.application.ApplicationLaunchContext;

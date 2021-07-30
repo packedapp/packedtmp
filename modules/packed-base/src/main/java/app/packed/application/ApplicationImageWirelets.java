@@ -15,7 +15,7 @@
  */
 package app.packed.application;
 
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 
 /**
  * A collection of wirelets that can be specified when building an {@link ApplicationImage image}.

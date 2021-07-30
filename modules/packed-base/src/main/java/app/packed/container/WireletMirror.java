@@ -1,4 +1,4 @@
-package app.packed.component;
+package app.packed.container;
 
 import java.util.Optional;
 

@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
+import app.packed.container.Wirelet;
 import app.packed.extension.ExtensionMirror;
 import packed.internal.service.ServiceManagerSetup;
 

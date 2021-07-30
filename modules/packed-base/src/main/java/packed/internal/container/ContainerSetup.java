@@ -26,13 +26,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
-import app.packed.component.WireletSelection;
 import app.packed.container.Assembly;
 import app.packed.container.AssemblyHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerWirelet;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
@@ -204,7 +203,7 @@ public sealed class ContainerSetup extends ComponentSetup permits ApplicationSet
         return new BuildTimeContainerMirror();
     }
     
-    public <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         throw new UnsupportedOperationException();
     }
 

@@ -27,7 +27,6 @@ import java.util.Set;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.WireletSelection;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
@@ -252,7 +251,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         return configuration().path();
     }
 
-    protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return configuration().selectWirelets(wireletClass);
     }
 

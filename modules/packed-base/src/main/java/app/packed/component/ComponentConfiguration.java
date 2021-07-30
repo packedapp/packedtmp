@@ -20,6 +20,7 @@ import app.packed.base.Nullable;
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerConfiguration;
+import app.packed.container.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 

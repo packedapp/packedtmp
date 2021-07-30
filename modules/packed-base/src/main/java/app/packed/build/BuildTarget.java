@@ -1,7 +1,7 @@
 package app.packed.build;
 
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 
 /**
  * The type of builds

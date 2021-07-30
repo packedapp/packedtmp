@@ -1,6 +1,6 @@
 package app.packed.exceptionhandling;
 
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 
 /**
  * Various wirelets that can be used to precise control how exceptions are handled for a component.

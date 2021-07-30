@@ -20,8 +20,6 @@ public non-sealed interface BeanMirror extends ComponentMirror {
 
     <T /* extends HookMirror */> Set<?> hooks(Class<T> hookType);
 
-    BeanType kind(); // Maaske har ikke kinds... Men kun BeanInfo... ownership model. Singleton
-
     // boolean isInstantiated
     // Class<?> source() Object.class, Factory.Class, Class.class maaske en enum... Maaske noget andet
 }

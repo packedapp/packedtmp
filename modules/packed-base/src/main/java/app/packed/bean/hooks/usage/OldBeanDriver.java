@@ -1,7 +1,8 @@
-package app.packed.bean;
+package app.packed.bean.hooks.usage;
 
 import java.util.function.Function;
 
+import app.packed.bean.BeanConfiguration;
 import app.packed.component.ComponentDriver;
 
 /**
@@ -17,7 +18,6 @@ public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration> extends
      */
     /* sealed */ interface BeanDriver<T, C extends BeanConfiguration> {
 
-        BeanType kind();
     }
 
     /* sealed */ interface Builder {

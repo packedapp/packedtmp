@@ -1,4 +1,6 @@
-package app.packed.bean;
+package app.packed.bean.hooks.usage;
+
+import app.packed.bean.BeanMirror;
 
 // maaske er for (JpaEntity e : useExtension(JpaEntityExtensionMirror).entities())
 interface JpaEntityBeanMirror extends BeanMirror, JpaEntityMirror {

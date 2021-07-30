@@ -2,7 +2,7 @@ package app.packed.cli;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.InternalWirelet;
 

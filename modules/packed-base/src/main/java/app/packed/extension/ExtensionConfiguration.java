@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
-import app.packed.component.WireletSelection;
-import app.packed.container.ContainerWirelet;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.Subtension;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.container.ExtensionSetup;
@@ -159,10 +159,10 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      *            the type of wirelets to return a selection for
      * @return a wirelet selection of the specified type
      * @throws IllegalArgumentException
-     *             if the specified wirelet class is not a proper subclass of {@link ContainerWirelet}. Or if the specified
+     *             if the specified wirelet class is not a proper subclass of {@link Wirelet}. Or if the specified
      *             class is not located in the same module as the extension itself
      */
-    <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletType);
+    <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletType);
 
     /**
      * Returns an subtension instance for the specified subtension class. The specified type must be among the extension's

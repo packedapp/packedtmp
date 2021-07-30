@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceComposer;
 import app.packed.service.ServiceLocator;

@@ -1,4 +1,4 @@
-package app.packed.bean;
+package app.packed.bean.hooks.usage;
 
 /**
  *

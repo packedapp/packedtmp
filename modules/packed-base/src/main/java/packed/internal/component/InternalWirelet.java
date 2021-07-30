@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
-import app.packed.component.Wirelet;
+import app.packed.container.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;
@@ -30,7 +30,7 @@ import packed.internal.application.PackedApplicationDriver;
 /**
  * A special wirelet for internal usage where the wirelets logic is embedded directly into the wirelet.
  */
-public abstract non-sealed class InternalWirelet extends Wirelet {
+public abstract class InternalWirelet extends Wirelet {
 
     /**
      * Checks that the specified component is the root component (container) of an application.

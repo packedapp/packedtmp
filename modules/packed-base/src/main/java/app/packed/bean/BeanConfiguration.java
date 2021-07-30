@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
 import app.packed.base.Key;
 import app.packed.component.ComponentConfiguration;
@@ -54,5 +55,9 @@ public abstract non-sealed class BeanConfiguration extends ComponentConfiguratio
 
     protected Optional<Key<?>> sourceProvideAsKey() {
         return bean().sourceProvideAsKey();
+    }
+
+    public <T extends Runnable & Callable<String>> T foo() {
+        return null;
     }
 }

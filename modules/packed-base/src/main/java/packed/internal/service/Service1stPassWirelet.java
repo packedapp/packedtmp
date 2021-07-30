@@ -15,10 +15,10 @@
  */
 package packed.internal.service;
 
-import app.packed.container.ContainerWirelet;
+import app.packed.container.Wirelet;
 
 /** A wirelet that is processed in a first pass. */
-public abstract class Service1stPassWirelet extends ContainerWirelet {
+public abstract class Service1stPassWirelet extends Wirelet {
     protected abstract void process(ServiceManagerSetup sm);
 }
  

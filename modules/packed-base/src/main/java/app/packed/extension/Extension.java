@@ -28,14 +28,13 @@ import app.packed.application.ApplicationImage;
 import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMaker;
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
-import app.packed.component.WireletSelection;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.ContainerMirror;
-import app.packed.container.ContainerWirelet;
+import app.packed.container.Wirelet;
+import app.packed.container.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
@@ -341,7 +340,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      *             if the specified class is not located in the same module as the extension itself. Or if specified wirelet
      *             class is not a proper subclass of ContainerWirelet.
      */
-    protected final <T extends ContainerWirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return context().selectWirelets(wireletClass);
     }
 

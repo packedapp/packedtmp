@@ -3,9 +3,9 @@ package packed.internal.container;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.component.Wirelet;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 

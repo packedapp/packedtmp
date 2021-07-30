@@ -11,8 +11,8 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanLifetime;
 import app.packed.bean.BeanMirror;
-import app.packed.bean.BeanType;
-import app.packed.component.Wirelet;
+import app.packed.bean.hooks.usage.BeanType;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
@@ -183,12 +183,6 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         @Override
         public <T> Set<?> hooks(Class<T> hookType) {
             throw new UnsupportedOperationException();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public BeanType kind() {
-            return kind;
         }
 
         @Override

@@ -1,6 +1,5 @@
 package app.packed.container;
 
-import app.packed.component.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.container.ContainerSetup;

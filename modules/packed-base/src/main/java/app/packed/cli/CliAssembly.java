@@ -3,9 +3,9 @@ package app.packed.cli;
 import java.util.function.Consumer;
 
 import app.packed.application.App;
-import app.packed.component.Wirelet;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 // Skal vi returner int???

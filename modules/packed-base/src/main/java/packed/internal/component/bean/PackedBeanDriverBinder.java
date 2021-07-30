@@ -7,8 +7,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.bean.BaseBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.bean.BeanType;
-import app.packed.bean.OldBeanDriver;
+import app.packed.bean.hooks.usage.BeanType;
+import app.packed.bean.hooks.usage.OldBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
@@ -80,7 +80,6 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         return new PackedBeanDriver(this, instance.getClass(), instance);
     }
 
-    @Override
     public BeanType kind() {
         return kind;
     }
