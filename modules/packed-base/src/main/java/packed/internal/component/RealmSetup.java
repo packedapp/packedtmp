@@ -90,7 +90,7 @@ public final class RealmSetup {
      */
     public RealmSetup(ExtensionSetup extension) {
         this.realmType = this.extensionType = extension.extensionType;
-        this.build = extension.container.build;
+        this.build = extension.container.application.build;
         this.root = null; // ??????
         // this.current = requireNonNull(extension);
     }
@@ -121,7 +121,7 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
-        this.root = driver.newComponent(build, this, build.application.container.lifetime, linkTo, wirelets);
+        this.root = new ContainerSetup(build.application, this,  build.application.container.lifetime, driver, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {

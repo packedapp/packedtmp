@@ -59,7 +59,7 @@ public final class ApplicationSetup {
      */
     ApplicationSetup(BuildSetup build, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
         this.build = build;
-        container = new ContainerSetup(build, this, realm, new LifetimeSetup(null), driver, null, wirelets);
+        container = new ContainerSetup(this, realm, new LifetimeSetup(null), driver, null, wirelets);
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 

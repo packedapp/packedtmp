@@ -35,7 +35,6 @@ import app.packed.component.ComponentScope;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
@@ -47,9 +46,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
     /** The application this component is a part of. */
     public final ApplicationSetup application;
-
-    /** The build this component is part of. */
-    public final BuildSetup build;
 
     /** Children of this node (lazily initialized) in insertion order. */
     @Nullable
@@ -94,7 +90,7 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
      * @param wirelets
      *            optional (unprocessed) wirelets specified by the user
      */
-    protected ComponentSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent) {
+    protected ComponentSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent) {
         this.parent = parent;
         if (parent == null) {
             this.depth = 0;
@@ -103,13 +99,10 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
             this.onWire = parent.onWire;
         }
 
-        this.build = requireNonNull(build);
         this.realm = requireNonNull(realm);
         this.lifetime = requireNonNull(lifetime);
-
-        this.application = application;
+        this.application = requireNonNull(application);
         this.container = this instanceof ContainerSetup container ? container : parent.container;
-
     }
 
     final AttributeMap attributes() {

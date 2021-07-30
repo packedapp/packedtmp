@@ -36,7 +36,6 @@ import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
-import packed.internal.application.BuildSetup;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.RealmSetup;
 import packed.internal.inject.dependency.ContainerInjectorSetup;
@@ -96,9 +95,9 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(BuildSetup build, ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver<?> driver, @Nullable ComponentSetup parent,
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver<?> driver, @Nullable ComponentSetup parent,
             Wirelet[] wirelets) {
-        super(build, application, realm, lifetime, parent);
+        super(application, realm, lifetime, parent);
 
         this.assemblyModel = AssemblyModel.of(realm.realmType());
 

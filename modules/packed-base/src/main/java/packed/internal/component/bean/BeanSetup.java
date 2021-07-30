@@ -54,7 +54,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     public final BeanType kind;
 
     public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent) {
-        super(parent.build, parent.application, realm, lifetime, parent);
+        super(parent.application, realm, lifetime, parent);
         this.kind = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
