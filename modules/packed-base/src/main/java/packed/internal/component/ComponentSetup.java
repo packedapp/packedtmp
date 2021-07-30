@@ -29,7 +29,6 @@ import app.packed.attribute.Attribute;
 import app.packed.attribute.AttributeMap;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
@@ -278,14 +277,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         requireNonNull(attribute, "attribute is null");
         requireNonNull(value, "value is null");
         // check realm.open + attribute.write
-    }
-
-    public final <C extends ComponentConfiguration> C wire(PackedComponentDriver<C> driver, RealmSetup realm, Wirelet... wirelets) {
-        // Wire a new component
-        ComponentSetup component = realm.wire(driver, this, wirelets);
-
-        // Return a component configuration to the user
-        return driver.toConfiguration(component);
     }
 
     /**

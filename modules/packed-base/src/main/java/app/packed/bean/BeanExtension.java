@@ -3,9 +3,13 @@ package app.packed.bean;
 import app.packed.bean.hooks.usage.OldBeanDriver.BeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;
+import packed.internal.component.ComponentSetup;
+import packed.internal.component.PackedComponentDriver;
+import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.PackedBeanDriver;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.container.ContainerSetup;
@@ -45,7 +49,7 @@ public class BeanExtension extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
         PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(implementation);
-        return container.wire(driver, container.realm);
+        return wire(driver, container, container.realm);
     }
 
     /**
@@ -58,7 +62,7 @@ public class BeanExtension extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
         PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingleton(factory);
-        return container.wire(driver, container.realm);
+        return wire(driver, container, container.realm);
     }
 
     /**
@@ -75,9 +79,19 @@ public class BeanExtension extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
         PackedBeanDriver<ApplicationBeanConfiguration<T>> driver = PackedBeanDriverBinder.ofSingletonInstance(instance);
-        return container.wire(driver, container.realm);
+        return wire(driver, container, container.realm);
     }
 
+    
+
+    static final <C extends ComponentConfiguration> C wire(PackedComponentDriver<C> driver, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
+        // Wire a new component
+        ComponentSetup component = realm.wire(driver, parent, wirelets);
+
+        // Return a component configuration to the user
+        return driver.toConfiguration(component);
+    }
+    
     /** {@inheritDoc} */
     @Override
     protected BeanExtensionMirror mirror() {
@@ -123,13 +137,13 @@ public class BeanExtension extends Extension {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
 
             ContainerSetup container = extension.container;
-            return container.wire(b.bind(implementation), container.realm);
+            return BeanExtension.wire(b.bind(implementation), container, container.realm);
         }
 
         public <T, C extends BeanConfiguration<T>> C wire(BeanDriver<T, C> binder, Factory<? extends T> implementation) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
             ContainerSetup container = extension.container;
-            return container.wire(b.bind(implementation), container.realm);
+            return BeanExtension.wire(b.bind(implementation), container, container.realm);
         }
 
         // installs a child to the specified component.
@@ -138,14 +152,14 @@ public class BeanExtension extends Extension {
         public <T, C extends BeanConfiguration<T>> C wireChild(ComponentConfiguration parent, BeanDriver<T, C> binder, Class<? extends T> implementation) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
             ContainerSetup container = extension.container;
-            return container.wire(b.bind(implementation), container.realm);
+            return BeanExtension.wire(b.bind(implementation), container, container.realm);
 
         }
 
         public <T, C extends BeanConfiguration<T>> C wireInstance(BeanDriver<T, C> binder, T instance) {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
             ContainerSetup container = extension.container;
-            return container.wire(b.bindInstance(instance), container.realm);
+            return BeanExtension.wire(b.bindInstance(instance), container, container.realm);
 
         }
 
