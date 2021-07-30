@@ -9,8 +9,6 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
@@ -166,9 +164,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.isExtensionUsed(extensionClass);
     }
 
-    public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return container.link(assembly, realm(), wirelets);
-    }
 
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     public ExtensionMirror<?> mirror() {
@@ -207,7 +202,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     }
 
     /** {@return the realm of this extension. This method will lazy initialize it.} */
-    private RealmSetup realm() {
+    public RealmSetup realm() {
         RealmSetup r = realm;
         if (r == null) {
             r = realm = new RealmSetup(this);

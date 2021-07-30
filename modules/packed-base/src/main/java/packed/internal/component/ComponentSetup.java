@@ -33,8 +33,6 @@ import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -43,10 +41,8 @@ import packed.internal.application.BuildSetup;
 import packed.internal.attribute.DefaultAttributeMap;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.CollectionUtil;
-import packed.internal.util.ThrowableUtil;
 
 /** Abstract build-time setup of a component. */
 public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
@@ -240,39 +236,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup, BeanSetup {
         };
     }
 
-    /**
-     * Links a new assembly.
-     * 
-     * @param assembly
-     *            the assembly to link
-     * @param realm
-     *            realm
-     * @param wirelets
-     *            optional wirelets
-     * @return the component that was linked
-     */
-    public final ContainerMirror link(Assembly<?> assembly, RealmSetup realm, Wirelet... wirelets) {
-        // Extract the component driver from the assembly
-        PackedContainerDriver<?> driver = (PackedContainerDriver<?>) PackedComponentDriver.getDriver(assembly);
-
-        // Create the new realm that should be used for linking
-        RealmSetup newRealm = realm.link(driver, this, assembly, wirelets);
-
-        // Create the component configuration that is needed by the assembly
-        ContainerConfiguration configuration = driver.toConfiguration(newRealm.root);
-
-        // Invoke Assembly::doBuild which in turn will invoke Assembly::build
-        try {
-            RealmSetup.MH_ASSEMBLY_DO_BUILD.invoke(assembly, configuration);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
-
-        // Close the new realm again after the assembly has been successfully linked
-        newRealm.close();
-
-        return (ContainerMirror) newRealm.root.mirror();
-    }
 
     /** {@inheritDoc} */
     public abstract ComponentMirror mirror();
