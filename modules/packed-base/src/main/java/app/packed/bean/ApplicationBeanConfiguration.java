@@ -15,17 +15,28 @@
  */
 package app.packed.bean;
 
+import java.util.concurrent.Callable;
+
 /**
- * An base component configuration class that can serve as basis for actual component configuration types. 
+ * An application bean that can serve as basis for actual component configuration types.
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public class ApplicationBeanConfiguration<T> extends BeanConfiguration<T> {
+public non-sealed class ApplicationBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
     public ApplicationBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
+    }
+
+    public <X extends Runnable & Callable<String>> X foo() {
+        return null;
+    }
+
+    @Override
+    public final BeanKind kind() {
+        return BeanKind.APPLICATION;
     }
 }

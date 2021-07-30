@@ -9,7 +9,7 @@ import java.util.Set;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.bean.BeanLifetime;
+import app.packed.bean.BeanKind;
 import app.packed.bean.BeanMirror;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.container.Wirelet;
@@ -186,7 +186,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
         }
 
         @Override
-        public BeanLifetime lifetime() {
+        public BeanKind kind() {
             throw new UnsupportedOperationException();
         }
     }

@@ -98,6 +98,12 @@ public class BeanExtension extends Extension {
         }
 
         public final <T> ApplicationBeanConfiguration<T> install(Class<?> implementation) {
+            // Alternativt
+            
+            // ExtensionBeanConfiguration extends ApplicationBeanConfiguration {}
+            // .inherit(); naaah
+            // Vil gerne vide om vi skal inherite foer vi kalder install
+            
             throw new UnsupportedOperationException();
         }
 

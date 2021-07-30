@@ -13,7 +13,7 @@ public non-sealed interface BeanMirror extends ComponentMirror {
     Class<?> beanType();
 
     /** {@return the lifetime of the bean.} */
-    BeanLifetime lifetime();
+    BeanKind kind();
 
     /** {@return all hooks that have been applied on the bean.} */
     Set<?> hooks();

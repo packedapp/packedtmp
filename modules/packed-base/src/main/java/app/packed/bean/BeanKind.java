@@ -1,6 +1,7 @@
 package app.packed.bean;
 
-public enum BeanLifetime {
+// Maybe BeanKind instead
+public enum BeanKind {
 
     /** Lives and dies with the application. */
     APPLICATION,

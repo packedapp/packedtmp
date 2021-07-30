@@ -1,10 +1,9 @@
 package app.packed.bean;
 
-import java.util.concurrent.Callable;
-
 import app.packed.component.ComponentConfiguration;
 
-public abstract non-sealed class BeanConfiguration<T> extends ComponentConfiguration {
+@SuppressWarnings("rawtypes")
+public abstract sealed class BeanConfiguration<T> extends ComponentConfiguration permits ApplicationBeanConfiguration, ManagedBeanConfiguration, UnmanagedBeanConfiguration {
 
     /**
      * This method can be overridden to return a subclass of bean mirror.
@@ -15,8 +14,6 @@ public abstract non-sealed class BeanConfiguration<T> extends ComponentConfigura
     protected BeanMirror mirror() {
         throw new UnsupportedOperationException();
     }
-
-    public <X extends Runnable & Callable<String>> X foo() {
-        return null;
-    }
+    
+    public abstract BeanKind kind();
 }
