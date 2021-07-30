@@ -10,19 +10,19 @@ import app.packed.component.ComponentDriver;
  * <p>
  * Except for the static methods on this interface. Bean drivers cannot be created directly. Instead binders are used
  */
-public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration> extends ComponentDriver<C> {
+public /* sealed */ interface OldBeanDriver<C extends BeanConfiguration<?>> extends ComponentDriver<C> {
 
 
     /**
      * A binder that can be used to bind class, factory or component class instance to create a bean driver.
      */
-    /* sealed */ interface BeanDriver<T, C extends BeanConfiguration> {
+    /* sealed */ interface BeanDriver<T, C extends BeanConfiguration<?>> {
 
     }
 
     /* sealed */ interface Builder {
 
-        <T, C extends BeanConfiguration> BeanDriver<T, C> build();
+        <T, C extends BeanConfiguration<?>> BeanDriver<T, C> build();
 
         // Specific super type
 

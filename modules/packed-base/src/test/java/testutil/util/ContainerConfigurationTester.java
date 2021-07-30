@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 import app.packed.base.NamespacePath;
-import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -59,14 +59,14 @@ public class ContainerConfigurationTester {
         return this;
     }
 
-    public BaseBeanConfiguration stateless(Class<?> implementation) {
-        BaseBeanConfiguration conf = cc.use(BeanExtension.class).install(implementation);
+    public <T> ApplicationBeanConfiguration<T> stateless(Class<T> implementation) {
+        ApplicationBeanConfiguration<T> conf = cc.use(BeanExtension.class).install(implementation);
         assertThat(conf).isNotNull();
         return conf;
     }
 
-    public BaseBeanConfiguration installInstance(Object instance) {
-        BaseBeanConfiguration conf = cc.use(BeanExtension.class).installInstance(instance);
+    public <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
+        ApplicationBeanConfiguration<T> conf = cc.use(BeanExtension.class).installInstance(instance);
         assertThat(conf).isNotNull();
         return conf;
     }

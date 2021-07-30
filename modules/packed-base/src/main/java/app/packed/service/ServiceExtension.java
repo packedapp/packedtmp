@@ -17,26 +17,35 @@ package app.packed.service;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
+import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.hooks.usage.OldBeanDriver.BeanDriver;
+import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.inject.Factory;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.validate.Validator;
+import packed.internal.component.ComponentSetup;
+import packed.internal.component.bean.BeanSetup;
 import packed.internal.component.bean.PackedBeanDriverBinder;
 import packed.internal.container.ExtensionSetup;
 import packed.internal.service.ServiceManagerSetup;
 import packed.internal.service.runtime.AbstractServiceLocator;
 import packed.internal.service.sandbox.InjectorComposer;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * An extension that deals with the service functionality of a container.
@@ -161,7 +170,26 @@ public class ServiceExtension extends Extension {
         checkIsPreCompletion();
         return services.exports().export(key /* , captureStackFrame(ConfigSiteInjectOperations.INJECTOR_EXPORT_SERVICE) */);
     }
+    
+    /** A handle that can access superclass private ComponentConfiguration#component(). */
+    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
+            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
+            MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
 
+    /** {@return the container setup instance that we are wrapping.} */
+    private BeanSetup bean(BeanConfiguration<?> conf) {
+        try {
+            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(conf);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    // Her kan en extension faktisk exporte ting...
+    public <T> ExportedServiceConfiguration<T> export(ApplicationBeanConfiguration<T> bean) {
+        return bean(bean).sourceExport();
+    }
+    
     // Altsaa skal vi hellere have noget services().filter().exportall();
 
     // Alternativ this export all er noget med services()..

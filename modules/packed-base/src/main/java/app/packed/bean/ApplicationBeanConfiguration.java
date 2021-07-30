@@ -15,25 +15,17 @@
  */
 package app.packed.bean;
 
-import app.packed.base.NamespacePath;
-
 /**
  * An base component configuration class that can serve as basis for actual component configuration types. 
  * <p>
  * Component configuration classes do not need to extend this class.
  */
-public class BaseBeanConfiguration extends BeanConfiguration {
+public class ApplicationBeanConfiguration<T> extends BeanConfiguration<T> {
 
     /** {@inheritDoc} */
     @Override
-    public BaseBeanConfiguration named(String name) {
+    public ApplicationBeanConfiguration<T> named(String name) {
         super.named(name);
         return this;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public NamespacePath path() {
-        return super.path();
     }
 }

@@ -15,7 +15,7 @@ import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link OldBeanDriver}. */
-public final class PackedBeanDriver<C extends BeanConfiguration> extends PackedComponentDriver<C> implements OldBeanDriver<C> {
+public final class PackedBeanDriver<C extends BeanConfiguration<?>> extends PackedComponentDriver<C> implements OldBeanDriver<C> {
 
     /** The bean type. */
     private final Class<?> beanType;

@@ -29,11 +29,13 @@ public class ContainerExtension extends Extension {
         return container.link(assembly, container.realm, wirelets);
     }
 
-    // Will maintain the realm of whoever called this method 
+    // Will maintain the realm of whoever called this method
+    //// Ikke sikker på vi tager wirelets her...
     public ContainerConfiguration add(Wirelet... wirelets) {
         return add(ContainerDriver.defaultDriver(), wirelets);
     }
-    
+
+    //// Ikke sikker på vi tager wirelets her...
     public ContainerConfiguration add(ContainerDriver<?> driver, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }

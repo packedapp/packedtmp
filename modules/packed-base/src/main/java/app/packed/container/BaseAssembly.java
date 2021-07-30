@@ -19,7 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import app.packed.base.Key;
 import app.packed.base.Qualifier;
-import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanExtension;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -193,7 +193,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))
-    protected final BaseBeanConfiguration install(Class<?> implementation) {
+    protected final <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
         return bean().install(implementation);
     }
 
@@ -206,7 +206,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @return the configuration of the component
      * @see BaseAssembly#install(Factory)
      */
-    protected final BaseBeanConfiguration install(Factory<?> factory) {
+    protected final <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
         return bean().install(factory);
     }
 
@@ -222,7 +222,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      *            the component instance to install
      * @return this configuration
      */
-    protected final BaseBeanConfiguration installInstance(Object instance) {
+    protected final <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
         return bean().installInstance(instance);
     }
 

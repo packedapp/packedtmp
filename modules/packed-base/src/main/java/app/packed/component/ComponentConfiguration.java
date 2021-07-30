@@ -17,7 +17,7 @@ package app.packed.component;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -31,8 +31,9 @@ import packed.internal.component.PackedComponentDriver;
  * <p>
  * All component configuration classes must extend, directly or indirectly, from this class.
  * 
- * Instead of extending this class directly, you typically want to extend {@link BaseBeanConfiguration} instead.
+ * Instead of extending this class directly, you typically want to extend {@link ApplicationBeanConfiguration} instead.
  */
+@SuppressWarnings("rawtypes")
 public sealed abstract class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration,FunctionConfiguration {
 
     /** The component setup we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
@@ -125,7 +126,8 @@ public sealed abstract class ComponentConfiguration permits BeanConfiguration,Co
      * 
      * @return the path of this configuration.
      */
-    public NamespacePath path() {
+    // IDK skal vi bare noejes med at have den paa mirror'et?
+    public final NamespacePath path() {
         return component().path();
     }
 

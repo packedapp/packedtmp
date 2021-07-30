@@ -5,9 +5,9 @@ import app.packed.bean.BeanMirror;
 import app.packed.build.BuildHook;
 
 public non-sealed interface BeanBuildHook extends BuildHook {
-    void preBuild(BeanConfiguration configuration);
+    void preBuild(BeanConfiguration<?> configuration);
 
-    void posteBuild(BeanConfiguration configuration);
+    void posteBuild(BeanConfiguration<?> configuration);
 
     void verify(BeanMirror container);
 }

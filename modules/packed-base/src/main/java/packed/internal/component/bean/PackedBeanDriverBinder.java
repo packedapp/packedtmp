@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 
-import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
 import app.packed.bean.hooks.usage.BeanType;
 import app.packed.bean.hooks.usage.OldBeanDriver;
@@ -17,15 +17,15 @@ import packed.internal.invoke.Infuser;
 
 /** Implementation of {@link OldBeanDriver.BeanDriver}. */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implements OldBeanDriver.BeanDriver<T, C> {
+public final class PackedBeanDriverBinder<T, C extends BeanConfiguration<?>> implements OldBeanDriver.BeanDriver<T, C> {
 
     /** A {@link BeanType#BASE} bean binder. */
-    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
+    public static final PackedBeanDriverBinder SINGLETON_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
             ServiceBeanConfiguration.class, BeanType.BASE);
 
     /** A {@link BeanType#STATIC} bean binder. */
-    public static final PackedBeanDriverBinder<Object, BaseBeanConfiguration> STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
-            BaseBeanConfiguration.class, BeanType.STATIC);
+    public static final PackedBeanDriverBinder STATIC_BEAN_BINDER = PackedBeanDriverBinder.of(MethodHandles.lookup(),
+            ApplicationBeanConfiguration.class, BeanType.STATIC);
 
     final MethodHandle constructor;
 
@@ -36,19 +36,19 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         this.constructor = constructor;
     }
 
-    public static PackedBeanDriver<BaseBeanConfiguration> ofSingleton(Class<?> implementation) {
+    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofSingleton(Class<T> implementation) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(implementation);
     }
 
-    public static PackedBeanDriver<BaseBeanConfiguration> ofSingleton(Factory<?> factory) {
+    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofSingleton(Factory<?> factory) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bind(factory);
     }
 
-    public static PackedBeanDriver<BaseBeanConfiguration> ofSingletonInstance(Object instance) {
+    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofSingletonInstance(Object instance) {
         return PackedBeanDriverBinder.SINGLETON_BEAN_BINDER.bindInstance(instance);
     }
 
-    public static PackedBeanDriver<BaseBeanConfiguration> ofStatic(Class<?> implementation) {
+    public static <T> PackedBeanDriver<ApplicationBeanConfiguration<T>> ofStatic(Class<?> implementation) {
         return PackedBeanDriverBinder.STATIC_BEAN_BINDER.bind(implementation);
     }
 
@@ -84,7 +84,7 @@ public final class PackedBeanDriverBinder<T, C extends BeanConfiguration> implem
         return kind;
     }
 
-    public static <T, C extends BeanConfiguration> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanType kind) {
+    public static <T, C extends BeanConfiguration<?>> PackedBeanDriverBinder<T, C> of(MethodHandles.Lookup caller, Class<? extends C> driverType, BeanType kind) {
 
         // IDK should we just have a Function<ComponentComposer, T>???
         // Unless we have multiple composer/context objects (which it looks like we wont have)

@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.container.ContainerExtension;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceBeanConfiguration;
@@ -46,7 +46,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     @Test
     public void component_setName_cannotBeCalledAfter_getName() {
         checkThrowsISE(c -> {
-            BaseBeanConfiguration ci = c.installInstance(1);
+            ApplicationBeanConfiguration<?> ci = c.installInstance(1);
 //            ci.getName();
             ci.named("foo");
         }, "Cannot call #setName(String) after the name has been initialized via calls to #getName()");
@@ -56,7 +56,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     @Test
     public void component_setName_cannotBeCalledAfter_install() {
         checkThrowsISE(c -> {
-            BaseBeanConfiguration ci = c.installInstance(1);
+            ApplicationBeanConfiguration<?> ci = c.installInstance(1);
             c.installInstance(1L);
             ci.named("foo");
         }, "Cannot call this method after having installed components or used extensions");
@@ -69,7 +69,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     @Test
     public void component_setName_cannotBeCalledAfter_link() {
         checkThrowsISE(c -> {
-            BaseBeanConfiguration ci = c.installInstance(1);
+            ApplicationBeanConfiguration<?> ci = c.installInstance(1);
             c.link(emptyAssembly());
             ci.named("foo");
         }, "Cannot call this method after #link() has been invoked");
@@ -78,7 +78,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     @Test
     public void component_setName_cannotBeCalledAfter_path() {
         checkThrowsISE(c -> {
-            BaseBeanConfiguration ci = c.installInstance(1);
+            ApplicationBeanConfiguration<?> ci = c.installInstance(1);
             ci.path();
             ci.named("foo");
         }, "Cannot call #setName(String) after name has been initialized via calls to #path()");
@@ -87,7 +87,7 @@ public class NameFreezeTest extends AbstractApplicationTest {
     @Test
     public void component_setName_cannotBeCalledAfter_setName() {
         checkThrowsISE(c -> {
-            BaseBeanConfiguration ci = c.installInstance(1);
+            ApplicationBeanConfiguration<?> ci = c.installInstance(1);
             ci.named("foo");
             ci.named("foo");
         }, "#setName(String) can only be called once");

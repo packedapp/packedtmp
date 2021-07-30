@@ -13,11 +13,11 @@ class BeanProxyExtension extends Extension {
     // Vi skal maaske have en provide(ApplicationBeanConfiguration)
 
     // Installs what looks like an ApplicationBean. But is lazily initialized and started
-    /* Application */BeanConfiguration installLazy(Class<?> clazz) {
+    /* Application */BeanConfiguration<?> installLazy(Class<?> clazz) {
         throw new UnsupportedOperationException();
     }
 
-    /* Application */BeanConfiguration installLazy(Factory<?> clazz) {
+    /* Application */BeanConfiguration<?> installLazy(Factory<?> clazz) {
         throw new UnsupportedOperationException();
     }
 }

@@ -15,13 +15,21 @@
  */
 package app.packed.service;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Optional;
 
 import app.packed.base.Key;
-import app.packed.base.NamespacePath;
-import app.packed.bean.BaseBeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
+import app.packed.bean.BeanConfiguration;
+import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.sandbox.ExportedServiceConfiguration;
+import packed.internal.component.ComponentSetup;
+import packed.internal.component.bean.BeanSetup;
+import packed.internal.util.LookupUtil;
+import packed.internal.util.ThrowableUtil;
 
 /**
  * A bean which provide an instance(s) of the bean type as a service.
@@ -31,8 +39,34 @@ import app.packed.inject.sandbox.ExportedServiceConfiguration;
  */
 //ProvidableComponentConfiguration
 // Serviceable
-public class ServiceBeanConfiguration<T> extends BaseBeanConfiguration {
+public class ServiceBeanConfiguration<T> extends ApplicationBeanConfiguration<T> {
 
+    /** A handle that can access superclass private ComponentConfiguration#component(). */
+    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
+            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
+            MethodType.methodType(BeanSetup.class, BeanConfiguration.class));
+
+    /** {@return the container setup instance that we are wrapping.} */
+    private BeanSetup bean() {
+        try {
+            return (BeanSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact((BeanConfiguration<?>) this);
+        } catch (Throwable e) {
+            throw ThrowableUtil.orUndeclared(e);
+        }
+    }
+
+    protected void provideAsService() {
+        bean().sourceProvide();
+    }
+
+    protected void provideAsService(Key<?> key) {
+        bean().sourceProvideAs(key);
+    }
+
+    protected Optional<Key<?>> sourceProvideAsKey() {
+        return bean().sourceProvideAsKey();
+    }
+    
     /**
      * Makes the main component instance available as a service by binding it to the specified key. If the specified key is
      * null, any existing binding is removed.
@@ -56,24 +90,30 @@ public class ServiceBeanConfiguration<T> extends BaseBeanConfiguration {
      * @see #as(Class)
      */
     public ServiceBeanConfiguration<T> as(Key<? super T> key) {
-        super.provideAsService(key);
+        provideAsService(key);
         return this;
     }
     public ServiceBeanConfiguration<T> asNone() {
         // Ideen er vi f.eks. kan
         // asNone().exportAs(Doo.class);
-        super.provideAsService(null);
+        provideAsService(null);
         return this;
     }
 
+    // Her kan en extension faktisk exporte ting...
+    public ExportedServiceConfiguration<T> exportAsService() {
+        return bean().sourceExport();
+    }
+    
     /** {@inheritDoc} */
     public ExportedServiceConfiguration<T> export() {
-        return super.exportAsService();
+        
+        return exportAsService();
     }
 
     // Overvejer at smide... istedet for optional
     public Optional<Key<?>> key() {
-        return super.sourceProvideAsKey();
+        return sourceProvideAsKey();
     }
 
     // The key unless asNone()
@@ -85,14 +125,8 @@ public class ServiceBeanConfiguration<T> extends BaseBeanConfiguration {
         return this;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public NamespacePath path() {
-        return super.path();
-    }
-
     public ServiceBeanConfiguration<T> provide() {
-        super.provideAsService();
+        provideAsService();
         return this;
     }
 }
