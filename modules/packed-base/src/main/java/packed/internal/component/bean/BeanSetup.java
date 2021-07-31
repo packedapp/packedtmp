@@ -51,20 +51,59 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     @Nullable
     public final PoolAccessor singletonAccessor;
 
-    public final BeanType kind;
+    public final BeanType beanType;
 
-    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent) {
+    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent, Object source) {
         super(parent.application, realm, lifetime, parent);
-        this.kind = driver.kind();
+        this.beanType = driver.kind();
         // Reserve a place in the constant pool if the source is a singleton
         // If instance != null we kan vel pool.permstore()
         this.singletonAccessor = driver.binder.kind() == BeanType.BASE ? lifetime.pool.reserve(driver.beanType()) : null;
 
-        Object source = driver.binding;
         // The source is either a Class, a Factory, or a generic instance
         if (source instanceof Class<?> cl) {
             boolean isStaticClassSource = false; // TODO fix
             this.factory = isStaticClassSource ? null : Factory.of(cl);
+        } else if (source instanceof Factory<?> fac) {
+            this.factory = fac;
+        } else {
+            this.factory = null;
+
+            // non-constants singlestons are added to the constant pool elsewhere
+            lifetime.pool.addConstant(pool -> singletonAccessor.store(pool, source));
+        }
+
+        if (factory == null) {
+            this.injectionNode = null;
+        } else {
+            MethodHandle mh = realm.accessor().toMethodHandle(factory);
+
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            List<DependencyDescriptor> dependencies = (List) factory.variables();
+            this.injectionNode = new InjectionNode(this, dependencies, mh);
+            container.injection.addNode(injectionNode);
+        }
+
+        // Find a hook model for the bean type and wire it
+        this.hookModel = realm.accessor().modelOf(driver.beanType());
+        hookModel.onWire(this);
+
+        // Set the name of the component if it have not already been set using a wirelet
+        if (name == null) {
+            initializeNameWithPrefix(hookModel.simpleName());
+        }
+    }
+
+    public BeanSetup(LifetimeSetup lifetime, RealmSetup realm, PackedBeanDriver<?> driver, ComponentSetup parent, Object source, boolean ignore) {
+        super(parent.application, realm, lifetime, parent);
+        this.beanType = driver.kind();
+        // Reserve a place in the constant pool if the source is a singleton
+        // If instance != null we kan vel pool.permstore()
+        this.singletonAccessor = driver.binder.kind() == BeanType.BASE ? lifetime.pool.reserve(driver.beanType()) : null;
+
+        // The source is either a Class, a Factory, or a generic instance
+        if (source instanceof Class<?> cl) {
+            this.factory = Factory.of(cl);
         } else if (source instanceof Factory<?> fac) {
             this.factory = fac;
         } else {
@@ -157,7 +196,7 @@ public final class BeanSetup extends ComponentSetup implements DependencyProduce
     }
 
     /** A build-time bean mirror. */
-    private final class BuildTimeBeanMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements BeanMirror {
+    private final class BuildTimeBeanMirror extends AbstractBuildTimeComponentMirror implements BeanMirror {
 
         /** {@inheritDoc} */
         @Override

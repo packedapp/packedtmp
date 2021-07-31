@@ -104,7 +104,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
         // Cannot display the attribute values of /sds/we/ [source = wewe.class] until ccc.class has been instantiated
 
         // Vi create a new region is its the root, or if the component is a guest
-        if (parent == null || component.application.hasRuntime()) {
+        if (parent == null || component.application.hasRuntime) {
 //            this.pool = component.pool.newPool(launch);
 //
 //            // Run all initializers

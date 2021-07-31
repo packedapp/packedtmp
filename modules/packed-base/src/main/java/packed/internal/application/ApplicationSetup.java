@@ -20,6 +20,7 @@ import packed.internal.component.RealmSetup;
 import packed.internal.component.bean.BeanSetup;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.InternalWirelet;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.lifetime.LifetimeSetup;
 import packed.internal.lifetime.PoolAccessor;
 
@@ -28,7 +29,14 @@ public final class ApplicationSetup {
 
     public final PackedApplicationDriver<?> applicationDriver;
 
+    public final BuildSetup build;
+
+    /** The root container of the application. */
+    public final ContainerSetup container;
+
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
+
+    boolean isImage;
 
     /**
      * The launch mode of the application. May be updated via usage of
@@ -45,11 +53,7 @@ public final class ApplicationSetup {
     @Nullable
     final PoolAccessor runtimeAccessor;
 
-    boolean isImage;
-
-    public final ContainerSetup container;
-
-    public final BuildSetup build;
+    public final boolean hasRuntime;
 
     /**
      * Create a new application setup
@@ -59,21 +63,23 @@ public final class ApplicationSetup {
      */
     ApplicationSetup(BuildSetup build, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
         this.build = build;
-        container = new ContainerSetup(this, realm, new LifetimeSetup(null), driver, null, wirelets);
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 
+        this.hasRuntime = driver.hasRuntime();
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
+        container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DRIVER, null, wirelets);
         this.runtimeAccessor = driver.hasRuntime() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
+    }
+
+    /** {@return an application adaptor that can be exposed to end-users} */
+    public BuildTimeApplicationMirror applicationMirror() {
+        return new BuildTimeApplicationMirror();
     }
 
     public boolean hasMain() {
         return mainThread != null;
-    }
-
-    public boolean hasRuntime() {
-        return applicationDriver.hasRuntime();
     }
 
     /** {@return whether or not the application is part of an image}. */
@@ -87,11 +93,6 @@ public final class ApplicationSetup {
             m = mainThread = new MainThreadOfControl();
         }
         return m;
-    }
-
-    /** {@return an application adaptor that can be exposed to end-users} */
-    public BuildTimeApplicationMirror applicationMirror() {
-        return new BuildTimeApplicationMirror();
     }
 
     /**
@@ -148,6 +149,11 @@ public final class ApplicationSetup {
             throw new UnsupportedOperationException();
         }
 
+        @Override
+        public ContainerMirror container() {
+            return ApplicationSetup.this.container.mirror();
+        }
+
         /** {@inheritDoc} */
         @Override
         public Set<Class<? extends Extension>> disabledExtensions() {
@@ -158,7 +164,7 @@ public final class ApplicationSetup {
         /** {@inheritDoc} */
         @Override
         public boolean hasRuntime() {
-            return ApplicationSetup.this.applicationDriver.hasRuntime();
+            return ApplicationSetup.this.hasRuntime;
         }
 
         @Override
@@ -176,11 +182,6 @@ public final class ApplicationSetup {
         @Override
         public Module module() {
             return ApplicationSetup.this.container.realm.realmType().getModule();
-        }
-
-        @Override
-        public ContainerMirror container() {
-            return ApplicationSetup.this.container.mirror();
         }
     }
 

@@ -43,9 +43,6 @@ public final class WireletModel {
 
     final boolean buildtimeOnly;
 
-    @Nullable
-    final Class<? extends Wirelet> stackBy;
-
     /**
      * Create a new wirelet model.
      * 
@@ -53,7 +50,6 @@ public final class WireletModel {
      *            the wirelet type
      */
     private WireletModel(Builder b) {
-        this.stackBy = b.stackBy;
         this.buildtimeOnly = b.buildtimeOnly;
     }
 
@@ -86,10 +82,6 @@ public final class WireletModel {
 
         boolean buildtimeOnly;
 
-        /** A set of extension this extension depends on. */
-        @Nullable
-        Class<? extends Wirelet> stackBy;
-
         private final WeakReference<Thread> thread = new WeakReference<>(Thread.currentThread());
 
         final Class<? extends Wirelet> type;
@@ -100,13 +92,6 @@ public final class WireletModel {
 
         public void buildtimeOnly() {
             buildtimeOnly = true;
-        }
-
-        public void stackBy(Class<? extends Wirelet> wireletType) {
-            if (stackBy != null) {
-                throw new ExceptionInInitializerError("This method can only be invoked once for a single wirelet");
-            }
-            stackBy = requireNonNull(wireletType, "wireletType is null");
         }
 
         @Nullable

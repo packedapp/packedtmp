@@ -5,7 +5,7 @@ import java.util.function.Function;
 public interface BeanDriver {
 
     
-
+    
     /* sealed */ interface Builder {
 
         BeanDriver build();

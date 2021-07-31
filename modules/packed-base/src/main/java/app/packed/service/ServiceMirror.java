@@ -8,30 +8,28 @@ import app.packed.inject.InjectionSiteMirror;
 import app.packed.mirror.Mirror;
 
 // extends ComponentFeatureMirror???
-
 /** A mirror of a service. */
 public interface ServiceMirror extends Mirror {
 
     /** {@return the component the service belongs to.} */
     ComponentMirror component();
 
-    Object configSite(); //or ConfigMirror...
+    Object configSite(); // or ConfigMirror...
 
     Set<ServiceMirror> dependencies();
 
     // export()
     int id(); // Ideen var at kunne sammenligne services, der blot var exporteret...
-    
+
     /** {@return the key of the service.} */
     Key<?> key();
-    
-    // Taenker 
+
+    // Taenker
     Set<InjectionSiteMirror> usedBy();
-    
+
     Set<ComponentMirror> usedByComponents();
 }
 // Skal vi have et id???
-
 
 // Noget med injection
 // Noget om den er cached

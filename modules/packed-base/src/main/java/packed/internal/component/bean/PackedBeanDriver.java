@@ -23,7 +23,7 @@ public final class PackedBeanDriver<C extends BeanConfiguration<?>> implements O
     final PackedBeanDriverBinder<?, C> binder;
 
     /** The actual binding. Either a Class, Factory or (generic) instance. */
-    final Object binding;
+    public final Object binding;
 
     public PackedBeanDriver(PackedBeanDriverBinder<?, C> binder, Class<?> beanType, Object binding) {
         this.binder = requireNonNull(binder);

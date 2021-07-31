@@ -6,11 +6,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
-import app.packed.base.Nullable;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.ComponentDriver;
 import app.packed.container.Assembly;
-import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
@@ -25,14 +23,6 @@ public abstract class PackedComponentDriver<C extends ComponentConfiguration> im
     /** A handle that can access ComponentConfiguration#component. */
     private static final VarHandle VH_COMPONENT_CONFIGURATION_COMPONENT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(),
             ComponentConfiguration.class, "component", ComponentSetup.class);
-
-    /** Optional wirelets that will be applied to any component created by this driver. */
-    @Nullable
-    public final Wirelet wirelet;
-
-    protected PackedComponentDriver(@Nullable Wirelet wirelet) {
-        this.wirelet = wirelet;
-    }
 
     /** {@inheritDoc} */
     @Override

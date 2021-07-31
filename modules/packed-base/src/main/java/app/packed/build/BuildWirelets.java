@@ -25,6 +25,7 @@ import app.packed.application.ApplicationImage;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
 import app.packed.container.Wirelet;
+import app.packed.extension.Extension;
 import packed.internal.container.InternalWirelet;
 
 /**
@@ -52,7 +53,12 @@ public final class BuildWirelets {
     static Wirelet delayToRuntime(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
-
+    // Maaske er det en build wirelet???
+    // Taenker
+    @SafeVarargs
+    public static Wirelet disableExtension(Class<? extends Extension>... extensionTypes) {
+        throw new UnsupportedOperationException();
+    }
     /**
      * Returns a 'spying' wirelet that will perform the specified action every time a component has been wired.
      * <p>

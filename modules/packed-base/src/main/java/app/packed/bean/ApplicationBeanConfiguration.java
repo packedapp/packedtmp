@@ -24,6 +24,8 @@ import java.util.concurrent.Callable;
  */
 public non-sealed class ApplicationBeanConfiguration<T> extends BeanConfiguration<T> {
 
+    public ApplicationBeanConfiguration() {}
+
     public <X extends Runnable & Callable<String>> X foo() {
         return null;
     }

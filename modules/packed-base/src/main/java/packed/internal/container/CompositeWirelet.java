@@ -69,7 +69,7 @@ public final class CompositeWirelet extends Wirelet {
         return w instanceof CompositeWirelet wl ? wl.wirelets : new Wirelet[] { w };
     }
 
-    static Wirelet[] flatten2(Wirelet w1, Wirelet w2) {
+    public static Wirelet[] flatten2(Wirelet w1, Wirelet w2) {
         Wirelet[] result;
         if (w1 instanceof CompositeWirelet wl1) {
             Wirelet[] wirelets1 = wl1.wirelets;

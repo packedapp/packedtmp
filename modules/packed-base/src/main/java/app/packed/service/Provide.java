@@ -77,6 +77,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 @Documented
 @OldFieldHook(annotation = Provide.class, allowGet = true, bootstrap = ProvideFieldBootstrap.class)
 @MethodHook(matchesAnnotation = Provide.class, extension = ServiceExtension.class, allowInvoke = true, bootstrap = ProvideMethodBootstrap.class)
+
 // @Provide(Constant) , @Provide(Lazy), @Provide(EVERYTIME) -> Constant early, Lazy (volatile storage) <-- kan jo godt skrive laese volatile i et object array
 // serviceProvide? provideServicee
 public @interface Provide {

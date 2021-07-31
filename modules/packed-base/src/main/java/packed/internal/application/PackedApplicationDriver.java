@@ -30,12 +30,12 @@ import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.ApplicationRuntimeWirelets;
+import app.packed.base.Nullable;
 import app.packed.build.BuildTarget;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
 import app.packed.component.ComposerConfigurator;
 import app.packed.container.Assembly;
-import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceLocator;
@@ -43,7 +43,6 @@ import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.CompositeWirelet;
-import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.WireletWrapper;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
@@ -51,7 +50,7 @@ import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
 /** Implementation of {@link ApplicationDriver}. */
-public final class PackedApplicationDriver<A> extends PackedContainerDriver<ContainerConfiguration> implements ApplicationDriver<A> {
+public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** The driver used for creating mirrors daemon driver. */
     // Hcad skal LaunchMode fx returnere... Det giver jo mening at checke hvis man fx gerne
@@ -71,6 +70,10 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Cont
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
 
+    /** Optional wirelets that will be applied to any component created by this driver. */
+    @Nullable
+    public final Wirelet wirelet;
+
     /**
      * Create a new application driver using the specified builder.
      * 
@@ -78,7 +81,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Cont
      *            the used for construction
      */
     private PackedApplicationDriver(Builder builder) {
-        super(builder.wirelet);
+        this.wirelet = builder.wirelet;
         this.mhConstructor = requireNonNull(builder.mhConstructor);
         this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
         this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
@@ -98,7 +101,7 @@ public final class PackedApplicationDriver<A> extends PackedContainerDriver<Cont
      *            the new wirelet
      */
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet wirelet) {
-        super(wirelet);
+        this.wirelet = existing.wirelet;
         this.mhConstructor = existing.mhConstructor;
         this.launchMode = existing.launchMode;
         this.disabledExtensions = existing.disabledExtensions;

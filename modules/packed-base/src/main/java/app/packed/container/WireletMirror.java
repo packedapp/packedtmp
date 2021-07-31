@@ -2,6 +2,8 @@ package app.packed.container;
 
 import java.util.Optional;
 
+import app.packed.bean.Registrant;
+
 // Tjahhh... Hmmm.. Mhmmmm.... IDK about this....
 
 // Vi kan have nogle metoder paa Wirelet som man kan overskrive
@@ -19,7 +21,9 @@ interface WireletMirror {
     String specifiedVia(); // Launch, Driver, ... Build.. I think Build takes precedense over launch
 
     // Der har vi issuen omkring Packed, Extension or user..
-    Optional<?> extension();
+    // Maaske er der bare ikke mirrors paa wirelets.
+    // Eller maaske er der bare ikke mirrors paa internal wirelets
+    Optional<Registrant> registrant();
 
     boolean isUserWirelet();
 }
@@ -27,9 +31,6 @@ interface WireletMirror {
 //Maaske har man et default scope som hedder
 //Application <- hvis applications driver
 //Container <- f.eks. linke container
-class WireletScope {
-
-}
 
 
 // Svaert at argumentere imod at kunne koere denne paa runtime

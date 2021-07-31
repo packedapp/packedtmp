@@ -92,7 +92,7 @@ public class BeanExtension extends Extension {
         realm.wirePrepare();
 
         // Create the new component
-        BeanSetup component = new BeanSetup(realm.build.application.container.lifetime, realm, driver, parent);
+        BeanSetup component = new BeanSetup(realm.build.application.container.lifetime, realm, driver, parent, driver.binding);
 
         realm.wireCommit(component);
 

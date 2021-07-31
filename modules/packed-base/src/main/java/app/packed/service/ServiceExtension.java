@@ -187,6 +187,7 @@ public class ServiceExtension extends Extension {
 
     // Her kan en extension faktisk exporte ting...
     public <T> ExportedServiceConfiguration<T> export(ApplicationBeanConfiguration<T> bean) {
+        // Taenker det ogsaa er maaden vi kam exportere 
         return bean(bean).sourceExport();
     }
     
@@ -242,6 +243,10 @@ public class ServiceExtension extends Extension {
         return mirrorInitialize(new ServiceExtensionMirror(services));
     }
 
+    public <T> ServiceConfiguration<T> provide(ApplicationBeanConfiguration<T> bean) {
+        throw new UnsupportedOperationException();
+    }
+    
     /**
      * Binds the specified implementation as a new service. The runtime will use {@link Factory#of(Class)} to find a valid
      * constructor or method to instantiate the service instance once the injector is created.
@@ -454,7 +459,7 @@ public class ServiceExtension extends Extension {
 }
 
 class ServiceExtensionBadIdeas {
-    // Syntes anchorAll paa selve extensionen er en daarlig ide...
+    // Syntes anchorAll paa selve extensionen er en daarlig ide... Paa wirelets er det noget andet
 
 //  /**
 //   * 

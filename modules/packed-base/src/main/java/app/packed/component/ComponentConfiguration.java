@@ -34,7 +34,7 @@ import packed.internal.component.PackedComponentDriver;
  * Instead of extending this class directly, you typically want to extend {@link ApplicationBeanConfiguration} instead.
  */
 @SuppressWarnings("rawtypes")
-public sealed abstract class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration,FunctionConfiguration {
+public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration,FunctionConfiguration {
 
     /** The component setup we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
     @Nullable

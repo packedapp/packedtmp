@@ -95,8 +95,8 @@ public final class ContainerSetup extends ComponentSetup {
      * @param wirelets
      *            optional wirelets specified when creating or wiring the container
      */
-    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver<?> driver, @Nullable ComponentSetup parent,
-            Wirelet[] wirelets) {
+    public ContainerSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, PackedContainerDriver<?> driver,
+            @Nullable ComponentSetup parent, Wirelet[] wirelets) {
         super(application, realm, lifetime, parent);
 
         this.assemblyModel = AssemblyModel.of(realm.realmType());
@@ -105,19 +105,20 @@ public final class ContainerSetup extends ComponentSetup {
         // the user or extension when wiring the component. The wirelet's have not been null checked.
         // and may contained any number of CombinedWirelet instances.
         requireNonNull(wirelets, "wirelets is null");
-        if (wirelets.length == 0) {
+        Wirelet prefix = null;
+        if (application.container == null) {
+            prefix = application.applicationDriver.wirelet;
+        }
+
+        if (wirelets.length == 0 && prefix == null) {
             this.wirelets = null;
         } else {
             // If it is the root
             Wirelet[] ws;
-            if (parent == null) {
-                if (driver.wirelet == null) {
-                    ws = CompositeWirelet.flattenAll(wirelets);
-                } else {
-                    ws = CompositeWirelet.flatten2(driver.wirelet, Wirelet.combine(wirelets));
-                }
-            } else {
+            if (prefix == null) {
                 ws = CompositeWirelet.flattenAll(wirelets);
+            } else {
+                ws = CompositeWirelet.flatten2(prefix, Wirelet.combine(wirelets));
             }
 
             this.wirelets = new WireletWrapper(ws);

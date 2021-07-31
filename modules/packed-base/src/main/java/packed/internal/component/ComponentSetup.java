@@ -77,18 +77,14 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
     /**
      * Create a new component. This constructor is always invoked from one of subclasses of this class
      * 
-     * @param build
-     *            the build this component is a part of
+     * @param application
+     *            the application the component is a part of
      * @param realm
      *            the realm this component is part of
      * @param lifetime
      *            the lifetime this component is part of
-     * @param driver
-     *            the component driver for this component
      * @param parent
      *            any parent component this component might have
-     * @param wirelets
-     *            optional (unprocessed) wirelets specified by the user
      */
     protected ComponentSetup(ApplicationSetup application, RealmSetup realm, LifetimeSetup lifetime, @Nullable ComponentSetup parent) {
         this.parent = parent;
