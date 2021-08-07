@@ -32,6 +32,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
+import app.packed.component.ComponentOwner;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
@@ -233,7 +234,14 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         /** {@inheritDoc} */
         @Override
         public final ApplicationMirror application() {
-            return application.applicationMirror();
+            return application.mirror();
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public final ComponentOwner owner() {
+            Class<? extends Extension> extensionType = realm.extensionType;
+            return extensionType == null ? ComponentOwner.user() : ComponentOwner.extension(extensionType);
         }
 
         /** {@inheritDoc} */
@@ -265,12 +273,6 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
         public final boolean isInSame(ComponentScope scope, ComponentMirror other) {
             requireNonNull(other, "other is null");
             return ComponentSetup.this.isInSame(scope, ((AbstractBuildTimeComponentMirror) other).outer());
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public final Optional<Class<? extends Extension>> memberOfExtension() {
-            return Optional.ofNullable(realm.extensionType);
         }
 
         /** {@inheritDoc} */

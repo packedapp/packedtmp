@@ -2,6 +2,8 @@ package app.packed.bean;
 
 public non-sealed class UnmanagedBeanConfiguration<T> extends BeanConfiguration<T> {
 
+    public UnmanagedBeanConfiguration() {}
+    
     /** {@inheritDoc} */
     @Override
     public final BeanKind kind() {

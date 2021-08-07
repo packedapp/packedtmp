@@ -26,7 +26,6 @@ import app.packed.bean.BeanMirror;
 import app.packed.component.ComponentMirrorStream.Option;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
-import app.packed.extension.OldExtensionMember;
 import app.packed.mirror.Mirror;
 import packed.internal.component.ComponentSetup.AbstractBuildTimeComponentMirror;
 import packed.internal.component.RuntimeComponentMirror;
@@ -38,7 +37,8 @@ import packed.internal.component.RuntimeComponentMirror;
  * derivatives. In packed everything is a component.
  */
 // Skal laves til klasse syntes jeg
-public sealed interface ComponentMirror extends Mirror permits ContainerMirror, BeanMirror, FunctionMirror, AbstractBuildTimeComponentMirror, RuntimeComponentMirror {
+public sealed interface ComponentMirror
+        extends Mirror permits ContainerMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
 
     // ComponentDriverMirror driver(); IDK hvad skal den sige, andet end hvilken extension
 
@@ -97,13 +97,11 @@ public sealed interface ComponentMirror extends Mirror permits ContainerMirror, 
     Optional<Class<? extends Extension>> managedByExtension();
 
     /**
-     * Returns any extension the component is a part of. Or empty if the component is wired by an user.
+     * Returns the owner of the component. This is either the user
      * 
-     * {@return empty if the component is installed by the user, otherwise the extension that the component is a member of.}
-     * 
-     * @see OldExtensionMember
+     * @return the owner of the component
      */
-    Optional<Class<? extends Extension>> memberOfExtension();
+    ComponentOwner owner();
 
     /**
      * Returns the name of this component.

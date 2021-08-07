@@ -402,6 +402,16 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
     // An instance of extensorType will automatically be installed whenever the extensor is used
     protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBean<?>> extensorType) {}
 
+    @SafeVarargs
+    protected static void $cycleBreaker(Class<? extends Extension>... extensions) {
+        // A -DependsOn(B)
+        // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
+        
+        // Specified extension must have a dependency on this extension
+        // And must be in same package
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Only parent extensions will be linked
      */

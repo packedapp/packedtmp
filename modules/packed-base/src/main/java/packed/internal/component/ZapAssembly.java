@@ -21,7 +21,7 @@ public class ZapAssembly extends BaseAssembly {
         Daemon.mirror(new ZapAssembly());
 
         // Det gode ved mirror er at
-        Daemon.introspect(new ZapAssembly());
+        //Daemon.introspect(new ZapAssembly());
         //Daemon.reflect(new ZapAssembly());
         Daemon.mirror(new ZapAssembly());
 

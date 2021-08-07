@@ -16,12 +16,11 @@
 package app.packed.build;
 
 /**
- * An exception typically thrown when something goes wrong doing build phase. This exception normally indicates a
- * programmatic error and can usually only be recovered by updates to the underlying code.
+ * An exception that is typically thrown when something goes wrong doing build phase of an application.
+ * <p>
+ * This exception normally indicates a programmatic error and can usually only be recovered by updating the underlying
+ * code.
  */
-// Skal vi have en liste af errors??? 
-// Evt i suppresed exceptions???
-// Skal vi have en lifecycle base extension for denne og InitializationExtception  
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */
@@ -35,8 +34,8 @@ public class BuildException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BuildException(CharSequence message) {
-        super(message.toString());
+    public BuildException(String message) {
+        super(message);
     }
 
     /**
@@ -49,11 +48,14 @@ public class BuildException extends RuntimeException {
      *            the detailed message. The detailed message is saved for later retrieval by the {@link #getMessage()}
      *            method.
      */
-    public BuildException(CharSequence message, Throwable cause) {
-        super(message.toString(), cause);
+    public BuildException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
 //Or in lifecycle???? or base??? Hmmmmmm
 //Hed noget med artifact foer, men hvis vi faar dynamiske componenter...
 // InitializationException
 // ExecutionException (vi har den jo i juc...)
+//Skal vi have en liste af errors??? 
+//Evt i suppresed exceptions???
+//Skal vi have en lifecycle base extension for denne og InitializationExtception  

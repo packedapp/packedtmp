@@ -20,6 +20,7 @@ import app.packed.application.ApplicationDriver;
  */
 
 // Eller hvad er det maaske ikke federe at smide en InternalExtensionException
+// Nej brugeren kan jo ogsaa komme til det
 
 // UnavailableExtensionException
 

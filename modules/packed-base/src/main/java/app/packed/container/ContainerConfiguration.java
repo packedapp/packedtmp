@@ -6,6 +6,7 @@ import java.lang.invoke.MethodType;
 import java.util.Set;
 
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComposerConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -23,7 +24,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
 // Eller man maa gerne kunne overskrive den, men taenker ikke Assembly kan tage andet end ContainerConfiguration...
-public non-sealed class ContainerConfiguration extends ComponentConfiguration {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ComposerConfiguration {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
@@ -31,7 +32,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
     /** {@return the container setup instance that we are wrapping.} */
-    private ContainerSetup container() {
+    ContainerSetup container() {
         try {
             return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(this);
         } catch (Throwable e) {
@@ -63,6 +64,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return this;
     }
 
+    // Why not just configure the assembly???
     public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return container().selectWirelets(wireletClass);
     }

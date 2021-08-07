@@ -175,5 +175,10 @@ public class BeanExtension extends Extension {
         public <B extends BeanConfiguration<?>> B populateConfiguration(B beanConfiguration) {
             return beanConfiguration;
         }
+        
+        public <B extends BeanConfiguration<?>> B fullAccess(B beanConfiguration) {
+            // Enten denne eller ogsaa skal vi require en annotation
+            return beanConfiguration;
+        }
     }
 }

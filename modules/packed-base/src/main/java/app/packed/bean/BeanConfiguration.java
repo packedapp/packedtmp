@@ -7,6 +7,11 @@ import app.packed.base.Key;
 import app.packed.component.ComponentConfiguration;
 import app.packed.state.sandbox.InstanceState;
 
+/**
+ * 
+ * {@code BeanConfiguration} is the superclass of the various bean configuration classes available in Packed.
+ * 
+ */
 @SuppressWarnings("rawtypes")
 public abstract sealed class BeanConfiguration<T>
         extends ComponentConfiguration permits ApplicationBeanConfiguration,ManagedBeanConfiguration,UnmanagedBeanConfiguration {
@@ -25,7 +30,9 @@ public abstract sealed class BeanConfiguration<T>
         throw new UnsupportedOperationException();
     }
 
-    // Ved ikke hvad den overskriver...
+    // Ved ikke praecis hvad den overskriver...
+
+    // Kunne ogsaa vaere bind
     @SuppressWarnings("unchecked")
     public BeanConfiguration<T> inject(Object instance) {
         return inject((Class) instance.getClass(), instance);
@@ -38,9 +45,13 @@ public abstract sealed class BeanConfiguration<T>
      * This method can be overridden to return a subclass of bean mirror.
      * 
      * {@inheritDoc}
+     * 
+     * @throws IllegalStateException
+     *             if the configuration has not been wired yet
      */
     @Override
     protected BeanMirror mirror() {
+        // Jeg taenker det er er
         throw new UnsupportedOperationException();
     }
 
@@ -54,6 +65,8 @@ public abstract sealed class BeanConfiguration<T>
      *             if terminated and bean does not support it
      */
     // Ved ikke om det kan vaere problematisk, hvis instanserne ikke er styret af packed
+    // Det der er farligt her er at vi capture Assemblien. Som capture extensionen
+    // Som capture alt andet
     public BeanConfiguration<T> on(InstanceState state, Consumer<T> action) {
         // Maybe throw UOE instead of IAE
         return this;

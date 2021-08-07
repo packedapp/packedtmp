@@ -31,6 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
+import app.packed.component.ComponentOwner;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationLaunchContext;
@@ -144,12 +145,6 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     @Override
     public int depth() {
         return model.depth;
-    }
-
-    @Override
-    public Optional<Class<? extends Extension>> memberOfExtension() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     public ComponentMirror findComponent(CharSequence path) {
@@ -297,6 +292,11 @@ public final class RuntimeComponentMirror implements ComponentMirror {
 
     @Override
     public Optional<Class<? extends Extension>> managedByExtension() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ComponentOwner owner() {
         throw new UnsupportedOperationException();
     }
 }

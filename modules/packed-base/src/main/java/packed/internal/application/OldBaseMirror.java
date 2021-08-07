@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.TaskListMirror;
-import app.packed.build.BuildTarget;
+import app.packed.build.BuildKind;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.container.ContainerMirror;
@@ -16,7 +16,7 @@ import app.packed.mirror.Mirror;
 /**
  * A model of a (successful) build.
  */
-public interface BaseMirror extends Mirror {
+public interface OldBaseMirror extends Mirror {
 
     /** {@return the root application of the build}. */
     ApplicationMirror application();
@@ -60,7 +60,7 @@ public interface BaseMirror extends Mirror {
     }
 
     /** {@return the build target.} */
-    BuildTarget target();
+    BuildKind target();
 
 }
 

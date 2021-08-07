@@ -11,6 +11,7 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
+import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -34,6 +35,8 @@ public final class ApplicationSetup {
     /** The root container of the application. */
     public final ContainerSetup container;
 
+    public final boolean hasRuntime;
+
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
     boolean isImage;
@@ -53,8 +56,6 @@ public final class ApplicationSetup {
     @Nullable
     final PoolAccessor runtimeAccessor;
 
-    public final boolean hasRuntime;
-
     /**
      * Create a new application setup
      * 
@@ -73,11 +74,6 @@ public final class ApplicationSetup {
         this.runtimeAccessor = driver.hasRuntime() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 
-    /** {@return an application adaptor that can be exposed to end-users} */
-    public BuildTimeApplicationMirror applicationMirror() {
-        return new BuildTimeApplicationMirror();
-    }
-
     public boolean hasMain() {
         return mainThread != null;
     }
@@ -93,6 +89,11 @@ public final class ApplicationSetup {
             m = mainThread = new MainThreadOfControl();
         }
         return m;
+    }
+
+    /** {@return an application adaptor that can be exposed to end-users} */
+    public BuildTimeApplicationMirror mirror() {
+        return new BuildTimeApplicationMirror();
     }
 
     /**
@@ -142,6 +143,12 @@ public final class ApplicationSetup {
 
     /** An application mirror adaptor. */
     private final class BuildTimeApplicationMirror implements ApplicationMirror {
+
+        /** {@inheritDoc} */
+        @Override
+        public BuildMirror build() {
+            return ApplicationSetup.this.build.mirror();
+        }
 
         /** {@inheritDoc} */
         @Override

@@ -9,7 +9,7 @@ import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 
 /** A special component driver that create containers. */
-public non-sealed class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
+public final class PackedContainerDriver<C extends ContainerConfiguration> extends PackedComponentDriver<C> implements ContainerDriver<C> {
 
     /** A driver for configuring containers. */
     public static final PackedContainerDriver<ContainerConfiguration> DRIVER = new PackedContainerDriver<>();

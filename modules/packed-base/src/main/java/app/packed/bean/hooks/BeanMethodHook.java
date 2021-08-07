@@ -19,7 +19,7 @@ import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
  * hooks that each have A single bootstrap Hvad goer vi med abstract klasser her??? Det er maaske ikke kun performance
  * at vi skal cache dem. Ellers kan vi ligesom ikke holder kontrakten om kun at aktivere det en gang...
  */
-public abstract class BeanMethodHook extends AbstractBeanHook {
+public abstract non-sealed class BeanMethodHook extends BeanHook {
 
     /**
      * A bootstrap object using by this class. Should only be read via {@link #context()}. Updated via

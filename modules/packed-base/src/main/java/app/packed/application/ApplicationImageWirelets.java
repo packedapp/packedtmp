@@ -26,6 +26,9 @@ import app.packed.container.Wirelet;
 
 // De virker dog kun paa en artifact rod...
 // Og kun paa build time
+
+
+// Hvis vi ikke har super mange kan vi smide dem paa BuildExtension
 class ApplicationImageWirelets {
     
     // Kun aktuelt for system images, ikke for sub-system images

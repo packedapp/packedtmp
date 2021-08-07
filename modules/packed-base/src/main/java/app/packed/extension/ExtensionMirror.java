@@ -22,20 +22,24 @@ import packed.internal.container.ExtensionSetup;
  * {@link ContainerMirror#findExtension(Class)}.</li>
  * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror itself, for example,
- * {@link ServiceExtensionMirror#of(Assembly, app.packed.container.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Assembly, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: If overriding this class, subclasses:
  * <ul>
- * <li>Must be annotated with {@link OldExtensionMember} to indicate what extension they are a part of.</li>
+ * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
  * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the runtime.</li>
  * <li>Must be located in the same module as the extension itself.</li>
- * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#use(Assembly, Wirelet...)}.
  * </ul>
  */
 public class ExtensionMirror<E extends Extension> {
 
-    /** The extension that is being mirrored. Is initially null but populated via {@link #initialize(ExtensionSetup)}. */
+    /**
+     * The internal configuration of the extension we are mirrored. Is initially null but populated via
+     * {@link #initialize(ExtensionSetup)} which must be called by extension developers via
+     * {@link Extension#mirrorInitialize(ExtensionMirror)}.
+     */
     @Nullable
     private ExtensionSetup extension;
 
@@ -65,7 +69,7 @@ public class ExtensionMirror<E extends Extension> {
     }
 
     /**
-     * {@return the actual extension.}
+     * {@return the internal configuration of the extension.}
      * 
      * @throws InternalExtensionException
      *             if called from the constructor of the mirror, or the extension developer forgot to call
@@ -97,10 +101,10 @@ public class ExtensionMirror<E extends Extension> {
     }
 
     /**
-     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the extension we are mirroring.
+     * Invoked by {@link Extension#mirrorInitialize(ExtensionMirror)} to set the internal configuration of the extension.
      * 
      * @param extension
-     *            the extension to mirror
+     *            the internal configuration of the extension to mirror
      */
     final void initialize(ExtensionSetup extension) {
         if (this.extension != null) {
@@ -116,7 +120,8 @@ public class ExtensionMirror<E extends Extension> {
     }
 
     /**
-     * Builds an application, and returns a mirror for an extension in the top container if present.
+     * Builds an application, and returns a mirror for an extension in the root container if it is present. Otherwise
+     * {@link Optional#empty()}.
      * 
      * @param <E>
      *            the type of extension mirror
@@ -126,13 +131,27 @@ public class ExtensionMirror<E extends Extension> {
      *            the assembly
      * @param wirelets
      *            optional wirelets
-     * @return
+     * @return stuff
+     * @see ContainerMirror#findExtension(Class)
      */
     public static <E extends ExtensionMirror<?>> Optional<E> find(Class<E> mirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
+    /**
+     * @param <E>
+     *            the type of extension mirror
+     * @param mirrorType
+     *            the type of extension mirror to return
+     * @param assembly
+     *            the assembly
+     * @param wirelets
+     *            optional wirelets
+     * @return stuff
+     * @see ContainerMirror#useExtension(Class)
+     */
     // Ved ikke om use er det rigtig ord... Vi bruger jo kun hvis den er tilgaengelig unlike Extension.use
+    // Maaske er of bedre (Eller bare mirror)
     public static <E extends ExtensionMirror<?>> E use(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
     }

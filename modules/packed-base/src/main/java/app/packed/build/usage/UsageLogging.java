@@ -11,7 +11,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.build.ApplyBuildHook;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyHook;
+import app.packed.container.AssemblyBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceContract;
@@ -25,7 +25,7 @@ class UsageLogging {
     @Inherited
     public @interface EnableLogging {}
 
-    record MyProc(Class<? extends Assembly<?>> assemblyType) implements AssemblyHook {
+    record MyProc(Class<? extends Assembly<?>> assemblyType) implements AssemblyBuildHook {
 
         @Override
         public void onPreBuild(ContainerConfiguration configuration) {

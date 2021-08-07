@@ -6,7 +6,7 @@ package app.packed.component;
 // Kan ikke rigtig Builder...
 // ComposerAction (rename to build
 @FunctionalInterface
-public interface ComposerConfigurator<T extends Composer<?>> {
+public interface ComposerAction<T extends Composer<?>> {
 
     /**
      * Configures the given composer.

@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
+import app.packed.component.ComposerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.Subtension;
@@ -47,7 +48,7 @@ import packed.internal.container.ExtensionSetup;
 // * find ancestors
 // * Get subtensions
 // * Get wirelets
-public sealed interface ExtensionConfiguration permits ExtensionSetup {
+public sealed interface ExtensionConfiguration extends ComposerConfiguration permits ExtensionSetup {
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.

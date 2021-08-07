@@ -23,10 +23,10 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
 import app.packed.base.Nullable;
-import app.packed.build.BuildTarget;
+import app.packed.build.BuildKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
-import app.packed.component.ComposerConfigurator;
+import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -50,7 +50,7 @@ public final class RealmSetup {
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
     public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doCompose", void.class,
-            ComponentConfiguration.class, ComposerConfigurator.class);
+            ComponentConfiguration.class, ComposerAction.class);
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;
@@ -95,7 +95,7 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, BuildTarget buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, BuildKind buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
         this.build = new BuildSetup(applicationDriver, this, buildTarget, wirelets);
         this.root = build.application.container;
@@ -103,9 +103,9 @@ public final class RealmSetup {
         wireCommit(root);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerConfigurator<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, this, BuildTarget.INSTANCE, wirelets);
+        this.build = new BuildSetup(applicationDriver, this, BuildKind.INSTANCE, wirelets);
         this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);

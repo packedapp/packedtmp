@@ -1,6 +1,6 @@
 package app.packed.container;
 
-public enum AssemblyState {
+enum AssemblyState {
 
     PRE_BUILD,
     

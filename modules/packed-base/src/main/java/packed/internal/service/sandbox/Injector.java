@@ -22,7 +22,7 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.Program;
-import app.packed.component.ComposerConfigurator;
+import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.service.ServiceLocator;
@@ -153,7 +153,7 @@ public interface Injector extends ServiceLocator {
      *            wirelets
      * @return the new injector
      */
-    static Injector configure(ComposerConfigurator<? super InjectorComposer> configurator, Wirelet... wirelets) {
+    static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return InjectorComposer.configure(configurator, wirelets);
     }
 

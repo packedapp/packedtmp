@@ -5,7 +5,9 @@ import java.util.function.Function;
 public interface BeanDriver {
 
     
-    
+    static Builder builder() {
+        throw new UnsupportedOperationException();
+    }
     /* sealed */ interface Builder {
 
         BeanDriver build();

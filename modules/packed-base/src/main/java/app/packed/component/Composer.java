@@ -127,7 +127,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings({ "unused", "unchecked" })
-    private void doCompose(C configuration, @SuppressWarnings("rawtypes") ComposerConfigurator consumer) {
+    private void doCompose(C configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
@@ -172,14 +172,14 @@ public abstract class Composer<C extends ComponentConfiguration> {
     }
 
     /**
-     * Invoked by the runtime immediately after {@link ComposerConfigurator#configure(Composer)}.
+     * Invoked by the runtime immediately after {@link ComposerAction#configure(Composer)}.
      * <p>
-     * This method will not be called if {@link ComposerConfigurator#configure(Composer)} throws an exception.
+     * This method will not be called if {@link ComposerAction#configure(Composer)} throws an exception.
      */
     protected void onConfigured() {} // onComposed or onBuilt, onPreConfigure/ onPostConfigur
 
     /**
-     * Invoked by the runtime immediately before {@link ComposerConfigurator#configure(Composer)}.
+     * Invoked by the runtime immediately before {@link ComposerAction#configure(Composer)}.
      */
     protected void onNew() {} //navngivningen skal alines med AssemblyHook
 
@@ -209,7 +209,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer<?>> A compose(ApplicationDriver<A> driver, C composer, ComposerConfigurator<? super C> configurator,
+    protected static <A, C extends Composer<?>> A compose(ApplicationDriver<A> driver, C composer, ComposerAction<? super C> configurator,
             Wirelet... wirelets) {
         return ((PackedApplicationDriver<A>) driver).compose(composer, configurator, wirelets);
     }

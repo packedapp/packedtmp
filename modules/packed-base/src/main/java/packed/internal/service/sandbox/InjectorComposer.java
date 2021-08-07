@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import app.packed.base.Qualifier;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Composer;
-import app.packed.component.ComposerConfigurator;
+import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerConfiguration;
@@ -194,7 +194,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
         return extension().providePrototype(factory);
     }
     
-    static Injector configure(ComposerConfigurator<? super InjectorComposer> configurator, Wirelet... wirelets) {
+    static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
         return compose(Injector.driver(), new InjectorComposer(), configurator, wirelets);
     }
 

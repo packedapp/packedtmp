@@ -24,7 +24,7 @@ import packed.internal.util.ClassUtil;
 import packed.internal.util.LookupUtil;
 import packed.internal.util.ThrowableUtil;
 
-/** The internal configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
+/** Build-time configuration of an extension. Exposed to end-users as {@link ExtensionConfiguration}. */
 public final class ExtensionSetup implements ExtensionConfiguration {
 
     /** The container where the extension is used. */

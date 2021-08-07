@@ -11,29 +11,32 @@ import app.packed.base.Key;
 import app.packed.build.ApplyBuildHook;
 import app.packed.build.BuildHook;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyHook;
+import app.packed.container.AssemblyBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ThrowableUtil;
 
+/**
+ * A model of an {@link Assembly}.
+ */
 public final /* primitive */ class AssemblyModel {
-    private final AssemblyHook[] hooks;
+    private final AssemblyBuildHook[] hooks;
 
-    private AssemblyModel(AssemblyHook[] hooks) {
+    private AssemblyModel(AssemblyBuildHook[] hooks) {
         this.hooks = requireNonNull(hooks);
     }
 
-    /** Models of all subtensions. */
+    /** Cached models. */
     private final static ClassValue<AssemblyModel> MODELS = new ClassValue<>() {
 
         @Override
         protected AssemblyModel computeValue(Class<?> type) {
-            ArrayList<AssemblyHook> hooks = new ArrayList<>();
+            ArrayList<AssemblyBuildHook> hooks = new ArrayList<>();
             for (Annotation a : type.getAnnotations()) {
                 if (a instanceof ApplyBuildHook h) {
                     for (Class<? extends BuildHook> b : h.value()) {
-                        if (AssemblyHook.class.isAssignableFrom(b)) {
+                        if (AssemblyBuildHook.class.isAssignableFrom(b)) {
                             Infuser.Builder builder = Infuser.builder(MethodHandles.lookup(), b, Class.class);
                             builder.provide(new Key<Class<? extends Assembly<?>>>() {}).adaptArgument(0);
                             // If it is only ServiceExtension that ends up using it lets just dump it and have a single cast
@@ -45,11 +48,11 @@ public final /* primitive */ class AssemblyModel {
 
                             // Find a method handle for the extension's constructor
 
-                            MethodHandle constructor = builder.findConstructor(AssemblyHook.class, m -> new InternalExtensionException(m));
+                            MethodHandle constructor = builder.findConstructor(AssemblyBuildHook.class, m -> new InternalExtensionException(m));
 
-                            AssemblyHook instance;
+                            AssemblyBuildHook instance;
                             try {
-                                instance = (AssemblyHook) constructor.invokeExact(type);
+                                instance = (AssemblyBuildHook) constructor.invokeExact(type);
                             } catch (Throwable t) {
                                 throw ThrowableUtil.orUndeclared(t);
                             }
@@ -58,18 +61,18 @@ public final /* primitive */ class AssemblyModel {
                     }
                 }
             }
-            return new AssemblyModel(hooks.toArray(s -> new AssemblyHook[s]));
+            return new AssemblyModel(hooks.toArray(s -> new AssemblyBuildHook[s]));
         }
     };
 
     public void preBuild(ContainerConfiguration configuration) {
-        for (AssemblyHook h : hooks) {
+        for (AssemblyBuildHook h : hooks) {
             h.onPreBuild(configuration);
         }
     }
 
     public void postBuild(ContainerConfiguration configuration) {
-        for (AssemblyHook h : hooks) {
+        for (AssemblyBuildHook h : hooks) {
             h.onPostBuild(configuration);;
         }
     }
@@ -80,7 +83,7 @@ public final /* primitive */ class AssemblyModel {
 }
 
 class ContainerBuildHookModel {
-    final AssemblyHook hook;
+    final AssemblyBuildHook hook;
 
     ContainerBuildHookModel(Builder builder) {
         this.hook = null;

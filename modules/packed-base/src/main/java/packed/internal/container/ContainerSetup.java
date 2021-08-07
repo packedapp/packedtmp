@@ -27,7 +27,7 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyHook;
+import app.packed.container.AssemblyBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -196,7 +196,7 @@ public final class ContainerSetup extends ComponentSetup {
         assemblyModel.postBuild(configuration);
     }
 
-    public void applyAssemblyHook(AssemblyHook hook) {
+    public void applyAssemblyHook(AssemblyBuildHook hook) {
         // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration
         // der lige pludselig kan have andre rettigheder.
         // Teoretisk attack mulighed, spawn en ny traad med configurationen.

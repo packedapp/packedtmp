@@ -27,6 +27,7 @@ import app.packed.base.Key;
 import app.packed.base.Nullable;
 import app.packed.hooks.MethodHook;
 import app.packed.inject.Factory;
+import app.packed.inject.Variable;
 import app.packed.inject.sandbox.FactoryType;
 
 /**

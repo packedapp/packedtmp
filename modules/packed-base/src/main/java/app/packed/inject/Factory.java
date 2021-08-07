@@ -206,7 +206,7 @@ public abstract class Factory<T> {
      * @throws NullPointerException
      *             if the specified argument is null and the variable does not represent a reference type
      */
-    // bindRaw???
+    // bindRaw??? (The @Nullable additionArguments does not really work... as @Nullable is applied to the actual array)
     public final Factory<T> bind(int position, @Nullable Object argument, @Nullable Object... additionalArguments) {
         requireNonNull(additionalArguments, "additionalArguments is null");
         List<DependencyDescriptor> dependencies = dependencies();
@@ -445,7 +445,7 @@ public abstract class Factory<T> {
      * @see #key()
      */
 
-    public final Factory<T> withKey(Key<?> key) {
+    final Factory<T> withKey(Key<?> key) {
         // Just make a new KeyedFactory
         // Hvor kun noeglen er aendret....
         // Must be compatible with key in some way

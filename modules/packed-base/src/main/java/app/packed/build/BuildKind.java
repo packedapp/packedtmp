@@ -1,17 +1,19 @@
 package app.packed.build;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationMirror;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 
 /**
- * The type of builds
+ * What kind of build.
  */
 // Maaske ikke en enum, men en klasse
 // Og saa rename til BuildMode
 // Kunne vaere rart ogsaa at eksponere, isClosedWorld().
 // isClosedWorld() ved du ikke for starten... Med mindre man eksplicit skal definere det...
 // Hvilket jeg faktisk maaske er tilhaenger af...
-public enum BuildTarget {
+public enum BuildKind {
 
     /**
      * An application image.
@@ -31,7 +33,7 @@ public enum BuildTarget {
     INSTANCE, // LAUNCH
 
     /**
-     * Builds a mirror of some kind, for example, an {@link ApplicationMirror}.
+     * A mirror of some kind, for example, an {@link ApplicationMirror}.
      *
      * @see ApplicationMirror#of(Assembly, Wirelet...)
      */
@@ -40,3 +42,4 @@ public enum BuildTarget {
     // Jeg tror efterhånden at man specificere det i assemblien...
     MULTI_IMAGE;
 }
+// Was BuildTarget

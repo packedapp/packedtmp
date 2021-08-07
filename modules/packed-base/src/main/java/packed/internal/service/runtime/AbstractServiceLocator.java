@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.component.ComposerConfigurator;
+import app.packed.component.ComposerAction;
 import app.packed.inject.Provider;
 import app.packed.service.Service;
 import app.packed.service.ServiceComposer;
@@ -133,7 +133,7 @@ public abstract class AbstractServiceLocator extends AbstractServiceRegistry imp
     /** {@inheritDoc} */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
-    public final ServiceLocator spawn(ComposerConfigurator<ServiceComposer> transformer) {
+    public final ServiceLocator spawn(ComposerAction<ServiceComposer> transformer) {
         return PackedServiceComposer.transform(transformer, (Collection) asMap().values());
     }
 

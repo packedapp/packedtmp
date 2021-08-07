@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import app.packed.build.ApplyBuildHook;
 import app.packed.build.BuildException;
-import app.packed.container.AssemblyHook;
+import app.packed.container.AssemblyBuildHook;
 import app.packed.container.ContainerConfiguration;
 
 @ApplyBuildHook(RandomProcX.class)
@@ -19,7 +19,7 @@ public @interface MaximumComponentContainer {
     int maxComponents();
 }
 
-record RandomProcX(MaximumComponentContainer pc) implements AssemblyHook {
+record RandomProcX(MaximumComponentContainer pc) implements AssemblyBuildHook {
 
     @Override
     public void onCompleted(ContainerConfiguration configuration) {

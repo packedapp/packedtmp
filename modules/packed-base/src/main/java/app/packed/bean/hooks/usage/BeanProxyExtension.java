@@ -1,6 +1,6 @@
 package app.packed.bean.hooks.usage;
 
-import app.packed.bean.BeanConfiguration;
+import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 
@@ -13,11 +13,11 @@ class BeanProxyExtension extends Extension {
     // Vi skal maaske have en provide(ApplicationBeanConfiguration)
 
     // Installs what looks like an ApplicationBean. But is lazily initialized and started
-    /* Application */BeanConfiguration<?> installLazy(Class<?> clazz) {
+    public <T> ApplicationBeanConfiguration<T> installLazy(Class<T> clazz) {
         throw new UnsupportedOperationException();
     }
 
-    /* Application */BeanConfiguration<?> installLazy(Factory<?> clazz) {
+    public <T> ApplicationBeanConfiguration<T> installLazy(Factory<T> clazz) {
         throw new UnsupportedOperationException();
     }
 }

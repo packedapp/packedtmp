@@ -189,7 +189,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @param implementation
      *            the type of instantiate and use as the component instance
      * @return the configuration of the component
-     * @see BeanExtension#install(Class, Wirelet...)
+     * @see BeanExtension#install(Class)
      */
     // add? i virkeligheden wire vi jo class komponenten...
     // Og taenker, vi har noget a.la. configuration().wire(ClassComponent.Default.bind(implementation))

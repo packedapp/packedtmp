@@ -31,10 +31,10 @@ import app.packed.application.ApplicationRuntime;
 import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.Nullable;
-import app.packed.build.BuildTarget;
+import app.packed.build.BuildKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Composer;
-import app.packed.component.ComposerConfigurator;
+import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -130,7 +130,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      *            the build target
      * @return a build setup
      */
-    public BuildSetup build(BuildTarget buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
+    public BuildSetup build(BuildKind buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
@@ -159,7 +159,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return realm.build;
     }
 
-    public <C extends Composer<?>> A compose(C composer, ComposerConfigurator<? super C> consumer, Wirelet... wirelets) {
+    public <C extends Composer<?>> A compose(C composer, ComposerAction<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
@@ -201,7 +201,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(BuildTarget.INSTANCE, assembly, wirelets);
+        BuildSetup build = build(BuildKind.INSTANCE, assembly, wirelets);
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
@@ -234,7 +234,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** {@inheritDoc} */
     @Override
     public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(BuildTarget.IMAGE, assembly, wirelets);
+        BuildSetup build = build(BuildKind.IMAGE, assembly, wirelets);
         return new PackedApplicationImage<>(this, build.application);
     }
 

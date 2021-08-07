@@ -18,7 +18,9 @@ package app.packed.bean;
 import java.util.concurrent.Callable;
 
 /**
- * An application bean that can serve as basis for actual component configuration types.
+ * The configuration of an application bean.
+ * <p>
+ * that can serve as basis for actual component configuration types.
  * <p>
  * Component configuration classes do not need to extend this class.
  */

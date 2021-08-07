@@ -55,6 +55,19 @@ public interface Daemon extends AutoCloseable {
         throw new UnsupportedOperationException();
     }
 
+//    /**
+//     * Creates a application mirror by building an application of the specified assembly and introspecting it.
+//     * 
+//     * @param assembly
+//     *            the assembly containing the daemon definition
+//     * @param wirelets
+//     *            optional wirelets
+//     * @return an application mirror for the daemon
+//     */
+//    static ApplicationMirror introspect(Assembly<?> assembly, Wirelet... wirelets) {
+//        return ApplicationMirror.of(driver(), assembly, wirelets);
+//    }
+
     /**
      * Creates a application mirror by building an application of the specified assembly and introspecting it.
      * 
@@ -64,10 +77,6 @@ public interface Daemon extends AutoCloseable {
      *            optional wirelets
      * @return an application mirror for the daemon
      */
-    static ApplicationMirror introspect(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(driver(), assembly, wirelets);
-    }
-
     static ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
         return ApplicationMirror.of(driver(), assembly, wirelets);
     }

@@ -2,7 +2,10 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.invoke.MethodHandle;
+
 import app.packed.component.ComponentConfiguration;
+import app.packed.component.ComponentOwner;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -12,6 +15,12 @@ import packed.internal.container.ExtensionSetup;
 
 /**
  * An extension used for installing beans.
+ * Two main types of functionality
+ * 
+ * Controls the lifecycle of bean instances
+ * 
+ * Supports bean member (Constructor, Method, Field) injection.
+ * 
  */
 public class BeanExtension2 extends Extension {
 
@@ -32,19 +41,21 @@ public class BeanExtension2 extends Extension {
     }
 
     /**
-     * Installs a bean that will use the specified {@link Class} to instantiate a single instance of the bean when the
-     * application is initialized.
+     * Installs a new application bean that will instantiate and wrap a single instance of the specified {@link Class} when
+     * the application is initialized.
      * <p>
      * Invoking this method is equivalent to invoking {@code install(Factory.findInjectable(implementation))}.
      * 
+     * @param <T>
+     *            the type of bean
      * @param implementation
-     *            the type of bean to install
+     *            the type of bean that will be installed
      * @return the configuration of the bean
      * @see BaseAssembly#install(Class)
      */
     public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return wire(new ApplicationBeanConfiguration<>(), Registrant.user(), implementation);
+        return wire(new ApplicationBeanConfiguration<>(), ComponentOwner.user(), implementation);
     }
 
     /**
@@ -57,7 +68,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return wire(new ApplicationBeanConfiguration<>(), Registrant.user(), factory);
+        return wire(new ApplicationBeanConfiguration<>(), ComponentOwner.user(), factory);
     }
 
     /**
@@ -74,7 +85,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
         checkInstance(instance);
-        return wire(new ApplicationBeanConfiguration<>(), Registrant.user(), instance);
+        return wire(new ApplicationBeanConfiguration<>(), ComponentOwner.user(), instance);
     }
 
     private static void checkInstance(Object instance) {
@@ -86,32 +97,53 @@ public class BeanExtension2 extends Extension {
         }
     }
 
-    <B extends BeanConfiguration<?>> B wire(B configuration, Registrant agent, Object source) {
+    <B extends BeanConfiguration<?>> B wire(B configuration, ComponentOwner owner, Object source) {
 
         return configuration;
     }
 
     public static class Sub extends Subtension {
         final BeanExtension2 extension;
-        final Registrant agent;
+        final ComponentOwner agent;
 
-        Sub(BeanExtension2 extension, Registrant agent) {
+        Sub(BeanExtension2 extension, ComponentOwner agent) {
             this.extension = extension;
             this.agent = agent;
         }
+
+        // Beans where the owner is itself
 
         public final <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
             requireNonNull(implementation, "implementation is null");
             return extension.wire(new ApplicationBeanConfiguration<>(), agent, implementation);
         }
 
-        public final <T, B extends BeanConfiguration<T>> B register(Registrant agent, BeanDriver driver, B configuration, Class<T> implementation) {
+        public final <T, B extends BeanConfiguration<T>> B register(ComponentOwner agent, BeanDriver driver, B configuration, Class<T> implementation) {
             requireNonNull(implementation, "implementation is null");
-            return extension.wire(configuration, agent, implementation);
+            extension.wire(configuration, agent, implementation);
+            throw new UnsupportedOperationException();
         }
 
-        public final <T, B extends BeanConfiguration<T>> B registerChild(Registrant agent, ComponentConfiguration parent, BeanDriver driver, B configuration,
-                Class<T> implementation) {
+        public final <T, B extends BeanConfiguration<T>> B registerChild(ComponentOwner agent, ComponentConfiguration parent, BeanDriver driver,
+                B configuration, Class<T> implementation) {
+            throw new UnsupportedOperationException();
+        }
+
+        public final MethodHandle accessor(ApplicationBeanConfiguration<?> configuration) {
+            throw new UnsupportedOperationException();
+        }
+
+        // Must have been created by this subtension
+        // (ExtensionContext) -> Object
+        public final MethodHandle newInstance(UnmanagedBeanConfiguration<?> configuration) {
+            return newInstanceBuilder(configuration).build();
+        }
+
+        public final MethodHandleBuilder newInstanceBuilder(UnmanagedBeanConfiguration<?> configuration) {
+            throw new UnsupportedOperationException();
+        }
+
+        public final MethodHandle processor(ManagedBeanConfiguration<?> configuration) {
             throw new UnsupportedOperationException();
         }
     }

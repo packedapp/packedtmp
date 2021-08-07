@@ -6,14 +6,15 @@ import java.lang.reflect.Field;
 
 import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor.AbstractAnnotatedElementProcessor;
 
-public abstract class AbstractBeanHook {
+public sealed abstract class BeanHook permits BeanMethodHook {
 
-    AbstractBeanHook() {}
+    BeanHook() {}
 
     public final AnnotatedElement actualAnnotations() {
         // Syntes maaske ikke det giver at ekspornere andet end meta-annoteringer
         throw new UnsupportedOperationException();
     }
+
     /**
      * Returns an annotated element from the method that is being bootstrapped.
      * 

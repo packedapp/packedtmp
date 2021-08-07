@@ -14,11 +14,11 @@ import app.packed.build.BuildHook;
  * {@link Assembly#lookup(MethodHandles.Lookup)} will be reset before next context or the actual build method
  * 
  */
-
 // Tror kun den kan bruges paa assemblies
-// Paa composeren har vi nogle callbacks
+// Paa composeren har vi nogle callbacks hvor man kan saette ting op
 // Strengt tager kan vi have <T extends ContainerConfiguration> og saa fejler man bare med BuildException hvis det ikke passer
-public non-sealed interface AssemblyHook extends BuildHook {
+
+public non-sealed interface AssemblyBuildHook extends BuildHook {
 
     // is invoked exactly once per hook instance. As the first method.
     default void onBootstrap(Bootstrap bootstrap) {};

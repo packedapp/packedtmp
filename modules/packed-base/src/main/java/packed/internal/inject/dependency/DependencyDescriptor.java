@@ -366,7 +366,7 @@ public final class DependencyDescriptor implements OldVariable {
             Type cl = ((ParameterizedType) getParameterizedType).getActualTypeArguments()[0];
             tl = BasePackageAccess.base().toTypeLiteral(cl);
             if (ClassUtil.isOptional(tl.rawType())) {
-                throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl));
+                throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("have multiple layers of optionals such as " + cl).toString());
             }
         } else if (rawType == OptionalLong.class) {
             optionallaity = Optionality.OPTIONAL_LONG;
@@ -383,7 +383,7 @@ public final class DependencyDescriptor implements OldVariable {
             if (optionallaity != null) {
                 // TODO fix name() to something more readable
                 throw new BuildException(ErrorMessageBuilder.of(parameter).cannot("both be of type " + optionallaity.name() + " and annotated with @Nullable")
-                        .toResolve("remove the @Nullable annotation, or make it a non-optional type"));
+                        .toResolve("remove the @Nullable annotation, or make it a non-optional type").toString());
             }
             optionallaity = Optionality.OPTIONAL_NULLABLE;
         }

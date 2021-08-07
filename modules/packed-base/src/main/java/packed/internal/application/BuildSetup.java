@@ -17,7 +17,9 @@ package packed.internal.application;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.build.BuildTarget;
+import app.packed.application.ApplicationMirror;
+import app.packed.build.BuildKind;
+import app.packed.build.BuildMirror;
 import app.packed.container.Wirelet;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.RealmSetup;
@@ -29,7 +31,7 @@ public final class BuildSetup {
     public final ApplicationSetup application;
 
     /** What we are building. */
-    public final BuildTarget target;
+    public final BuildKind kind;
 
     /** The namespace this build belongs to. */
     public final NamespaceSetup namespace = new NamespaceSetup();
@@ -47,10 +49,13 @@ public final class BuildSetup {
      * @param wirelets
      *            wirelets specified by the user. May be augmented by wirelets from the application or component driver
      */
-    public BuildSetup(PackedApplicationDriver<?> driver, RealmSetup realm, BuildTarget target,
-            Wirelet[] wirelets) {
-        this.target = requireNonNull(target);
+    public BuildSetup(PackedApplicationDriver<?> driver, RealmSetup realm, BuildKind target, Wirelet[] wirelets) {
+        this.kind = requireNonNull(target);
         this.application = new ApplicationSetup(this, realm, driver, wirelets);
+    }
+
+    public BuildMirror mirror() {
+        return new PackedBuildMirror();
     }
 
     public boolean isDone() {
@@ -63,5 +68,19 @@ public final class BuildSetup {
 
     public boolean isSuccess() {
         throw new UnsupportedOperationException();
+    }
+
+    /** Implementation of BuildMirror, exposed via {@link BuildSetup#mirror()}. */
+    private class PackedBuildMirror implements BuildMirror {
+
+        @Override
+        public ApplicationMirror application() {
+            return application.mirror();
+        }
+
+        @Override
+        public BuildKind kind() {
+            return kind;
+        }
     }
 }

@@ -17,23 +17,18 @@ package app.packed.container;
 
 import static java.util.Objects.requireNonNull;
 
-import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
-import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
-import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.container.ContainerSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
-import packed.internal.util.ThrowableUtil;
 
 /**
  * An assembly is Packed's main way to configure applications and their parts.
@@ -58,18 +53,14 @@ import packed.internal.util.ThrowableUtil;
  * @see CommonContainerAssembly
  * @see BaseAssembly
  */
-// Or ContainerAssembly... Image vs ApplicationImage
+// Or ContainerAssembly... ligesom Image vs ApplicationImage
+// Altsaa man bruger den jo naermest aldrig, kun andre
 public abstract class Assembly<C extends ContainerConfiguration> {
 
-    /** A handle that can access superclass private ComponentConfiguration#component(). */
-    private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
-            LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
-            MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
-
-    /** A marker object to indicate that an assembly has already been used to build something. */
+    /** A marker configuration object to indicate that an assembly has already been used to build something. */
     private static final ContainerConfiguration USED = new ContainerConfiguration();
 
-    /** A handle that can access the #configuration field. */
+    /** A var handle that can update the #configuration field in ContainerConfiguration. */
     private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
@@ -107,7 +98,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     }
 
     /**
-     * Invoked by the runtime as part of the build process. Must be implemented with composition logic.
+     * Invoked by the runtime as part of the build process. This is where you should compose the application
      * <p>
      * This method will never be invoked more than once on a single assembly instance.
      * <p>
@@ -136,7 +127,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         // Why not just test configuration == null????
 
         // Tror vi skal expose noget state fra ContainerConfiguration, vi kan checke
-        container(configuration()).realm.checkOpen();
+        configuration().container().realm.checkOpen();
     }
 
     /**
@@ -154,7 +145,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of an assembly");
         } else if (c == USED) {
-            throw new IllegalStateException("This method must be called from within the #build() method of the assembly.");
+            throw new IllegalStateException("This method must be called from within the #build() method of an assembly.");
         }
         return (C) c;
     }
@@ -171,7 +162,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         // I'm not we need volatile here
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
-            ContainerSetup cs = container(configuration);
+            ContainerSetup cs = configuration.container();
 
             try {
                 // Run AssemblyHook.onPreBuild if hooks are present
@@ -186,7 +177,6 @@ public abstract class Assembly<C extends ContainerConfiguration> {
                 // Sets #configuration to a marker object that indicates the assembly has been used
                 VH_CONFIGURATION.setVolatile(this, USED);
             }
-
         } else if (existing == USED) {
             // Assembly has already been used (successfully or unsuccessfully)
             throw new IllegalStateException("This assembly has already been used, assembly = " + getClass());
@@ -197,7 +187,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     }
 
     /**
-     * {@return an unmodifiable view of every extension that is currently used.}
+     * {@return an unmodifiable view of every extension that is currently used in this assembly.}
      * 
      * @see ContainerConfiguration#extensionsTypes()
      * @see #use(Class)
@@ -217,7 +207,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     // Hvis vi bare declare det final
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
-        container(configuration()).realm.setLookup(lookup);
+        configuration().container().realm.setLookup(lookup);
     }
 
     /**
@@ -251,6 +241,15 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         return configuration().path();
     }
 
+    /**
+     * 
+     * @param <T>
+     *            the type of wirelets to select
+     * @param wireletClass
+     *            the type of wirelets to select
+     * @return
+     * @see ContainerConfiguration#selectWirelets(Class)
+     */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
         return configuration().selectWirelets(wireletClass);
     }
@@ -258,8 +257,8 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     /**
      * Returns an instance of the specified extension class.
      * <p>
-     * If this is first time this method has been called with the specified extension type. This method will instantiate an
-     * extension of the specified type and retain it for future invocation.
+     * If this is first time this method is called (with the specified extension type). An instantiate of the specified
+     * extension will be created, and subsequent invocations will return the same instance.
      * 
      * @param <T>
      *            the type of extension to return
@@ -272,14 +271,5 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      */
     protected final <T extends Extension> T use(Class<T> extensionType) {
         return configuration().use(extensionType);
-    }
-
-    /** {@return extracts the container setup from the container configuration.} */
-    private static ContainerSetup container(ContainerConfiguration cc) {
-        try {
-            return (ContainerSetup) MH_COMPONENT_CONFIGURATION_COMPONENT.invokeExact(cc);
-        } catch (Throwable e) {
-            throw ThrowableUtil.orUndeclared(e);
-        }
     }
 }

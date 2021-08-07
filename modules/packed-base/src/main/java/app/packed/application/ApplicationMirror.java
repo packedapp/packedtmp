@@ -11,8 +11,10 @@ import java.util.stream.Stream;
 import app.packed.application.host.ApplicationHost;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildTarget;
+import app.packed.build.BuildKind;
+import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
+import app.packed.component.ComponentOwner;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -34,9 +36,16 @@ import packed.internal.application.PackedApplicationDriver;
 // Fx Session er controlled by WebExtension men er ikke member af den
 public interface ApplicationMirror {
 
+    /** {@return the build the application is a part of.} */
+    BuildMirror build();
+
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
+    default ComponentOwner owner() {
+        return ComponentOwner.user();
+    }
+    
     default Stream<ComponentMirror> components() {
         return container().components();
     }
@@ -210,7 +219,7 @@ public interface ApplicationMirror {
     /// Der er ingen der kommer til at lave dem selv...
 
     public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(BuildTarget.MIRROR, assembly, wirelets).application.applicationMirror();
+        return PackedApplicationDriver.MIRROR_DRIVER.build(BuildKind.MIRROR, assembly, wirelets).application.mirror();
     }
 
     /**
