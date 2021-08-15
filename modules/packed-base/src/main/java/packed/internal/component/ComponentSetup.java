@@ -32,7 +32,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.ComponentOwner;
+import app.packed.component.Operator;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationSetup;
@@ -239,9 +239,9 @@ public abstract sealed class ComponentSetup permits ContainerSetup,BeanSetup {
 
         /** {@inheritDoc} */
         @Override
-        public final ComponentOwner owner() {
+        public final Operator registrant() {
             Class<? extends Extension> extensionType = realm.extensionType;
-            return extensionType == null ? ComponentOwner.user() : ComponentOwner.extension(extensionType);
+            return extensionType == null ? Operator.user() : Operator.extension(extensionType);
         }
 
         /** {@inheritDoc} */

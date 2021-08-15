@@ -9,6 +9,8 @@ import java.lang.invoke.VarHandle;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
@@ -162,7 +164,6 @@ public final class ExtensionSetup implements ExtensionConfiguration {
         return container.isExtensionUsed(extensionClass);
     }
 
-
     /** {@return a mirror for the extension. An extension might specialize by overriding {@code Extension#mirror()}} */
     public ExtensionMirror<?> mirror() {
         ExtensionMirror<?> mirror = null;
@@ -313,8 +314,13 @@ public final class ExtensionSetup implements ExtensionConfiguration {
             "onPreChildren", void.class);
 
     /** A handle for setting the private field Extension#context. */
-    private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "context",
+    private static final VarHandle VH_EXTENSION_CONTEXT = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Extension.class, "configuration",
             ExtensionConfiguration.class);
+
+    @Override
+    public <C extends Composer> void compose(C composer, ComposerAction<? super C> action) {
+        throw new UnsupportedOperationException();
+    }
 }
 
 //// Extensions do not support lookup objects...

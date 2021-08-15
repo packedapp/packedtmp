@@ -20,4 +20,6 @@ class BeanProxyExtension extends Extension {
     public <T> ApplicationBeanConfiguration<T> installLazy(Factory<T> clazz) {
         throw new UnsupportedOperationException();
     }
+    
+    public void interceptAll() {}
 }

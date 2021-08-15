@@ -10,15 +10,15 @@ import app.packed.extension.Extension;
 // Registrant
 // Operator, Contractor
 // ComponentOwner
-public /* primitive */ final class ComponentOwner {
+public /* primitive */ final class Operator {
 
     // Application???? As in the application owns it, whoever that application is.
-    private static final ComponentOwner USER = new ComponentOwner(null);
+    private static final Operator USER = new Operator(null);
 
     @Nullable
     private final Class<? extends Extension> extension;
 
-    private ComponentOwner(Class<? extends Extension> extension) {
+    private Operator(Class<? extends Extension> extension) {
         this.extension = extension;
     }
 
@@ -37,12 +37,12 @@ public /* primitive */ final class ComponentOwner {
         return this == USER;
     }
 
-    public static ComponentOwner extension(Class<? extends Extension> extensionType) {
+    public static Operator extension(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");
-        return new ComponentOwner(extensionType);
+        return new Operator(extensionType);
     }
 
-    public static ComponentOwner user() {
+    public static Operator user() {
         return USER;
     }
 }

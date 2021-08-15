@@ -1,4 +1,4 @@
-package app.packed.component;
+package app.packed.container;
 
 /**
  *
@@ -6,7 +6,7 @@ package app.packed.component;
 // Kan ikke rigtig Builder...
 // ComposerAction (rename to build
 @FunctionalInterface
-public interface ComposerAction<T extends Composer<?>> {
+public interface ComposerAction<T extends Composer> {
 
     /**
      * Configures the given composer.
@@ -14,5 +14,5 @@ public interface ComposerAction<T extends Composer<?>> {
      * @param t
      *            the composer that is to be configured
      */
-    void configure(T t); // build??? Kan ikke se hvorfor den ikke skal hedde det samme som assembly
+    void build(T t); // build??? Kan ikke se hvorfor den ikke skal hedde det samme som assembly
 }

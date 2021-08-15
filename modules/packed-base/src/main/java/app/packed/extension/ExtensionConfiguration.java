@@ -20,7 +20,9 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationImage;
-import app.packed.component.ComposerConfiguration;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
+import app.packed.container.ComposerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.Subtension;
@@ -28,11 +30,11 @@ import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A context object for an {@link Extension}.
+ * A configuration object for an {@link Extension}.
  * <p>
  * Normally all configuration of extensions are done via the protected final methods declared on {@link Extension}.
- * However, for complex extensions where the logic cannot easily fit into a single class. An extension context instance
- * can be passed around in order to invoke the needed methods.
+ * However, for complex extensions where the logic cannot easily fit into a single class. This configuration can be
+ * passed around in order to invoke the needed methods.
  * <p>
  * Since the extension itself defines most methods in this interface via protected final methods. This interface is
  * typically used in order to provide these methods to code that is defined outside of the actual extension
@@ -95,7 +97,6 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
     <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
     // A new instance. Ligesom install(bean)
-
 
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
@@ -160,8 +161,8 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
      *            the type of wirelets to return a selection for
      * @return a wirelet selection of the specified type
      * @throws IllegalArgumentException
-     *             if the specified wirelet class is not a proper subclass of {@link Wirelet}. Or if the specified
-     *             class is not located in the same module as the extension itself
+     *             if the specified wirelet class is not a proper subclass of {@link Wirelet}. Or if the specified class is
+     *             not located in the same module as the extension itself
      */
     <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletType);
 
@@ -170,7 +171,8 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
      * dependencies as specified via....
      * <p>
      * This method is not available from the constructor of an extension. If you need to call it from the constructor, you
-     * can instead declare a dependency on {@link ExtensionConfiguration} and call {@link ExtensionConfiguration#use(Class)}.
+     * can instead declare a dependency on {@link ExtensionConfiguration} and call
+     * {@link ExtensionConfiguration#use(Class)}.
      * <p>
      * This method works similar to {@link BaseContainerConfiguration#use(Class)}.
      * 
@@ -189,6 +191,8 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
      * @see #isExtensionUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
+
+    <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 }
 ///**
 //* Returns the extension instance.

@@ -62,7 +62,7 @@ public final /* primitive */ class PackedWireletSelection<W extends Wirelet> imp
 
     /** {@inheritDoc} */
     @Override
-    public void processForEach(Consumer<? super W> action) {
+    public void processEach(Consumer<? super W> action) {
         consumeEach(wirelets, wireletType, action);
     }
 

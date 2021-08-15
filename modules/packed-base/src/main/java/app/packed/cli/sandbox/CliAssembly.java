@@ -1,4 +1,4 @@
-package app.packed.cli;
+package app.packed.cli.sandbox;
 
 import java.util.function.Consumer;
 
@@ -9,10 +9,7 @@ import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 
 // Skal vi returner int???
-
-// Ideen er det mere er en bootstrapper...
-
-abstract class CliAssembly extends BaseAssembly {
+public abstract class CliAssembly extends BaseAssembly {
 
     // Provides a result... men det goer main jo ikke...
     @SuppressWarnings("unused")

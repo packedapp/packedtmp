@@ -1,4 +1,4 @@
-package app.packed.cli;
+package app.packed.cli.usage;
 
 import java.lang.invoke.MethodType;
 

@@ -13,15 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
-
-import java.lang.invoke.MethodHandles;
+package app.packed.application.entrypoint;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationDriver;
-import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
-import app.packed.service.ServiceLocator;
 
 /**
  *
@@ -30,34 +25,18 @@ public class HelloWorldAssembly extends BaseAssembly {
 
     @Override
     protected void build() {
-        provide(SomeComponent.class).export();
+        install(SomeBean.class);
     }
 
     public static void main(String[] args) {
-        ApplicationDriver<Aaaa> ad = ApplicationDriver.builder().build(MethodHandles.lookup(), Aaaa.class);
-        ad.launch(new HelloWorldAssembly());
-
-        // Job.compute()
-        App.run(new HelloWorldAssembly(), BuildWirelets.spyOnWire(c -> {
-            System.out.println(c.path() + " wired");
-        }));
-        
-        System.out.println("BYE");
-
+        App.driver().print(new HelloWorldAssembly());
+        App.run(new HelloWorldAssembly());
     }
 
-    static class Aaaa {
-
-        Aaaa(ServiceLocator ss) {
-            System.out.println("NICE APP YOU GOT THERE " + ss.size());
-            ss.use(SomeComponent.class).runMe();
-        }
-    }
-
-    public static class SomeComponent {
+    public static class SomeBean {
 
         @Main
-        public void runMe() {
+        public void runMeAndExit() {
             System.out.println("HelloWorld");
         }
     }

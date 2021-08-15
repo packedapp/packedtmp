@@ -21,9 +21,9 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
-import java.lang.invoke.VarHandle;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
@@ -33,9 +33,11 @@ import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.Nullable;
 import app.packed.build.BuildKind;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.Composer;
-import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
+import app.packed.container.ContainerConfiguration;
+import app.packed.container.ContainerDriver;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceLocator;
@@ -43,6 +45,7 @@ import app.packed.state.sandbox.InstanceState;
 import packed.internal.component.PackedComponentDriver;
 import packed.internal.component.RealmSetup;
 import packed.internal.container.CompositeWirelet;
+import packed.internal.container.PackedContainerDriver;
 import packed.internal.container.WireletWrapper;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
@@ -57,10 +60,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     // vil sikre sig af en application goere x...
     public static final PackedApplicationDriver<?> MIRROR_DRIVER = new Builder()
             .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
-
-    /** A handle that can access the component driver stored in Composer#driver. */
-    private static final VarHandle VH_COMPOSER_DRIVER = LookupUtil.lookupVarHandlePrivate(MethodHandles.lookup(), Composer.class, "driver",
-            PackedComponentDriver.class);
 
     final Set<Class<? extends Extension>> disabledExtensions;
 
@@ -159,22 +158,23 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return realm.build;
     }
 
-    public <C extends Composer<?>> A compose(C composer, ComposerAction<? super C> consumer, Wirelet... wirelets) {
+    public <C extends Composer> A compose(ContainerDriver<ContainerConfiguration> containerDriver, Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
         // Extract the component driver from the composer
-        PackedComponentDriver<?> componentDriver = (PackedComponentDriver<?>) VH_COMPOSER_DRIVER.get(composer);
+        PackedContainerDriver<?> componentDriver = (PackedContainerDriver<?>) containerDriver;
 
         // Create a new application realm
         RealmSetup realm = new RealmSetup(this, consumer, wirelets);
 
         // Create the component configuration that is needed by the composer
-        ComponentConfiguration componentConfiguration = componentDriver.toConfiguration(realm.root);
+        ContainerConfiguration componentConfiguration = componentDriver.toConfiguration(realm.root);
 
+        Composer comp = composer.apply(componentConfiguration);
         // Invoke Composer#doCompose which in turn will invoke consumer.accept
         try {
-            RealmSetup.MH_COMPOSER_DO_COMPOSE.invoke(composer, componentConfiguration, consumer);
+            RealmSetup.MH_COMPOSER_DO_COMPOSE.invoke(comp, componentConfiguration, consumer);
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }

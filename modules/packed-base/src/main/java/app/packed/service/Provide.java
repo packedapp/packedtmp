@@ -80,6 +80,7 @@ import app.packed.hooks.accessors.RealMethodSidecarBootstrap;
 
 // @Provide(Constant) , @Provide(Lazy), @Provide(EVERYTIME) -> Constant early, Lazy (volatile storage) <-- kan jo godt skrive laese volatile i et object array
 // serviceProvide? provideServicee
+// ProvideService
 public @interface Provide {
 
     public static final AnnotationMaker<Provide> MAKER = AnnotationMaker.of(MethodHandles.lookup(), Provide.class);
@@ -100,6 +101,7 @@ public @interface Provide {
      * 
      * @return whether or not the provided value is a constant
      */
+    // Rename to prototype
     boolean constant() default false;
 }
 

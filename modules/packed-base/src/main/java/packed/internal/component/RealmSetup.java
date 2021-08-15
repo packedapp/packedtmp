@@ -24,10 +24,9 @@ import java.util.ArrayList;
 
 import app.packed.base.Nullable;
 import app.packed.build.BuildKind;
-import app.packed.component.ComponentConfiguration;
-import app.packed.component.Composer;
-import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -49,8 +48,8 @@ public final class RealmSetup {
             ContainerConfiguration.class);
 
     /** A handle that can invoke {@link Assembly#doBuild()}. Is here because I have no better place to put it. */
-    public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doCompose", void.class,
-            ComponentConfiguration.class, ComposerAction.class);
+    public static final MethodHandle MH_COMPOSER_DO_COMPOSE = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), Composer.class, "doBuild", void.class,
+            ContainerConfiguration.class, ComposerAction.class);
 
     /** The current module accessor, updated via {@link #setLookup(Lookup)} */
     private RealmAccessor accessor;

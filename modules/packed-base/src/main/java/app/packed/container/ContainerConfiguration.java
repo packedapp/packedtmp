@@ -5,8 +5,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
+import app.packed.application.ApplicationInfo;
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComposerConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.container.ContainerSetup;
@@ -31,6 +31,10 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
+    public ApplicationInfo applicationInfo() {
+        throw new UnsupportedOperationException();
+    }
+
     /** {@return the container setup instance that we are wrapping.} */
     ContainerSetup container() {
         try {
@@ -38,6 +42,21 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+
+    /**
+     * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
+     * container as this extension.
+     * 
+     * @param extensionType
+     *            the extension type to test
+     * @return {@code true} if the extension is currently in use, otherwise {@code false}
+     * @see Extension#isExtensionUsed(Class)
+     * @implNote Packed does not perform detailed tracking on which extensions use other extensions. As a consequence it
+     *           cannot give a more detailed answer about who is using a particular extension
+     */
+    public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
+        return container().isExtensionUsed(extensionType);
     }
 
     /**

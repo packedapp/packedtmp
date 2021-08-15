@@ -55,7 +55,7 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
 /// ApplicationImage<String> i; String numberOfFoos = i.launch();
 
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationImage<A> permits PackedApplicationImage {
+public sealed interface ApplicationImage<A> extends ApplicationLauncher<A> permits PackedApplicationImage {
 
     default boolean isAvailable() {
         // An image returns true always
@@ -73,6 +73,7 @@ public sealed interface ApplicationImage<A> permits PackedApplicationImage {
      * @return an application instance
      * @see {@link ApplicationDriver#launch(Assembly, Wirelet...)}
      */
+    @Override
     A launch(Wirelet... wirelets);
 
     /**

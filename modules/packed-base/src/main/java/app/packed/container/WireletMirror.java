@@ -2,7 +2,7 @@ package app.packed.container;
 
 import java.util.Optional;
 
-import app.packed.component.ComponentOwner;
+import app.packed.component.Operator;
 
 // Tjahhh... Hmmm.. Mhmmmm.... IDK about this....
 
@@ -23,7 +23,7 @@ interface WireletMirror {
     // Der har vi issuen omkring Packed, Extension or user..
     // Maaske er der bare ikke mirrors paa wirelets.
     // Eller maaske er der bare ikke mirrors paa internal wirelets
-    Optional<ComponentOwner> registrant();
+    Optional<Operator> registrant();
 
     boolean isUserWirelet();
 }

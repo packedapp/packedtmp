@@ -61,7 +61,7 @@ import packed.internal.application.PackedApplicationDriver;
  * @see App#driver()
  * @see ServiceLocator#driver()
  */
-// Environment + Shell + Result
+// Environment + Application Interface + Result
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
 
@@ -265,7 +265,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             return this;
         }
 
-        default <E extends Extension> Builder enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationBuildInfo, E> onInit) {
+        default <E extends Extension> Builder enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationInfo, E> onInit) {
             return this;
         }
 
@@ -440,7 +440,7 @@ interface ApplicationDriverSandbox<A> {
     }
 
     default void fff() {
-        ApplicationDriver.builder().enableExtension(ApplicationRuntimeExtension.class);
+        //ApplicationDriver.builder().enableExtension(ApplicationRuntimeExtension.class);
         ApplicationDriver.builder().enableExtension(ServiceExtension.class, e -> e.exportAll());
 
         ApplicationDriver.builder().enableExtension(JobExtension.class, (b, e) -> {

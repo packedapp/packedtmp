@@ -582,6 +582,11 @@ class ZExtraFunc {
     // LifecycleExtension-> BreakCycle(X,Y) ->
     <S, U> void cycleBreaker(Class<S> keyProducer, Class<U> key2) {
         // keyProducer will have a Consumer<U> injected in its constructor.
+        // Skal vel snare være Function<S, U>
+        // a.la. u = func.apply(this);
+        
+        // Der skal vaere en snyder
+        
         // In which case it must call it exactly once with a valid instance of U.
         // U will then be field/method inject, initialization und so weither as normally.
         // But to the outside it will not that S depends on U.
@@ -605,6 +610,7 @@ class ZExtraFunc {
 //        throw new UnsupportedOperationException();
 //    }
 
+    // Tror bare vi har den tager tager Keys... Saa kan folk lide lidt mere
     <S, U> void cycleBreaker(Class<S> key1, Class<U> key2, BiConsumer<S, U> consumer) {
 
         // Taenker om vi skal checke at key2 depender on key1...
@@ -655,8 +661,9 @@ class ZExtraFunc {
         throw new UnsupportedOperationException();
     }
 
+    // Er det kun beans vi skal haandtere eller
     <S, U> void cycleBreaker(Key<S> key1, Key<U> key2, BiConsumer<? super S, ? super U> consumer) {
-        //
+        // Den bliver kaldt naar key2 bliver bliver initialiseret
         throw new UnsupportedOperationException();
     }
 

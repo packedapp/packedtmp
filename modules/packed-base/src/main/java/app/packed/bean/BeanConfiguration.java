@@ -38,6 +38,13 @@ public abstract sealed class BeanConfiguration<T>
         return inject((Class) instance.getClass(), instance);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public BeanConfiguration<T> named(String name) {
+        super.named(name);
+        return this;
+    }
+
     /** {@return the kind of bean that is being configured. } */
     public abstract BeanKind kind();
 

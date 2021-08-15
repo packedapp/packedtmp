@@ -38,8 +38,6 @@ public /* sealed */ interface ComponentDriver<C extends ComponentConfiguration> 
 
     /** {@return any extension this driver is a part of.} */
     Optional<Class<? extends Extension>> extension(); //igen Packed, Extension, user, 
-
-    // ComponentType componentType();
 }
 
 // Bliver noedt til at have en type omkring hvad det er vi er ved at tilfoeje...

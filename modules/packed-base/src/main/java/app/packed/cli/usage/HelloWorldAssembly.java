@@ -13,48 +13,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package packed.internal.hooks.variable;
+package app.packed.cli.usage;
+
+import java.lang.invoke.MethodHandles;
 
 import app.packed.application.App;
-import app.packed.application.ApplicationMirror;
+import app.packed.application.ApplicationDriver;
 import app.packed.application.entrypoint.Main;
-import app.packed.bean.BeanExtension;
+import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
-import app.packed.container.ContainerMirror;
+import app.packed.service.ServiceLocator;
 
 /**
  *
  */
 public class HelloWorldAssembly extends BaseAssembly {
 
-    /** {@inheritDoc} */
     @Override
     protected void build() {
-        use(BeanExtension.class).install(HelloWorld.class);
-        provide(HelloWorld.class);
+        provide(SomeComponent.class).export();
     }
 
     public static void main(String[] args) {
-        App.run(new HelloWorldAssembly());
+        ApplicationDriver<Aaaa> ad = ApplicationDriver.builder().build(MethodHandles.lookup(), Aaaa.class);
+        ad.launch(new HelloWorldAssembly());
 
-        ApplicationMirror.of(new HelloWorldAssembly()).components().forEach(c -> System.out.println(c.path()));
+        // Job.compute()
+        App.run(new HelloWorldAssembly(), BuildWirelets.spyOnWire(c -> {
+            System.out.println(c.path() + " wired");
+        }));
+        
+        System.out.println("BYE");
 
-        ApplicationMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
-
-        ContainerMirror.of(new HelloWorldAssembly()).forEachComponent(c -> System.out.println(c.path()));
-
-        System.out.println();
-        App.driver().print(new HelloWorldAssembly());
     }
 
-    public static class HelloWorld {
+    static class Aaaa {
 
-        public HelloWorld() {
-            System.out.println("NEW HELL");
+        Aaaa(ServiceLocator ss) {
+            System.out.println("NICE APP YOU GOT THERE " + ss.size());
+            ss.use(SomeComponent.class).runMe();
         }
+    }
+
+    public static class SomeComponent {
 
         @Main
-        public static void execute() {
+        public void runMe() {
             System.out.println("HelloWorld");
         }
     }

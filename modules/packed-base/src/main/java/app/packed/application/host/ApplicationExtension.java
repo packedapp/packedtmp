@@ -1,7 +1,6 @@
 package app.packed.application.host;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
@@ -15,7 +14,7 @@ public class ApplicationExtension extends Extension {
 
     static {
         // skal vi have noget a.la. requires??? som automatisk installere ApplicationRuntimeException
-        $dependsOn(ApplicationRuntimeExtension.class);
+//        $dependsOn(ApplicationRuntimeExtension.class);
         
         
         //MethodHandles.classData(MethodHandles.lookup(), name, type)

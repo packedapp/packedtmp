@@ -10,7 +10,7 @@ import java.util.function.Function;
 import packed.internal.container.PackedWireletSelection;
 
 /**
- * A selection of wirelets of a specified type represented by {@code <W>} .
+ * An ordered selection of wirelets with a common base type ({@code <W>}).
  * <p>
  * If there are multiple wirelets in the selection, they will ordered accordingly to the following rules:
  * <ul>
@@ -88,8 +88,8 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
     }
 
     /**
-     * Performs the given action for each wirelet in the selection. Unlike {@link #processForEach(Consumer)} this method does not
-     * remove the wirelet from this selection or any other selection.
+     * Performs the given action for each wirelet in the selection. Unlike {@link #processEach(Consumer)} this method
+     * does not remove the wirelet from this selection or any other selection.
      * 
      * @param action
      *            the action to perform
@@ -125,7 +125,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
      *            the action to perform
      * @see #peekEach(Consumer)
      */
-    void processForEach(Consumer<? super W> action); // return boolean = if any elements selected?
+    void processEach(Consumer<? super W> action); // return boolean = if any elements selected?
 
     /**
      * Returns the last wirelet in this selection or empty {@code Optional}, if no wirelets are present.
@@ -141,7 +141,7 @@ public sealed interface WireletSelection<W extends Wirelet> permits PackedWirele
     Optional<W> processReturnLast();
 
     /** {@return every wirelet in this source as a list, consuming each wirelet in the process.} */
-    default List<W> processReturnAll() {
+    default List<W> processAll() {
         throw new UnsupportedOperationException();
     }
 

@@ -13,41 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.component;
-
-import static java.util.Objects.requireNonNull;
+package app.packed.container;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.base.Nullable;
-import app.packed.container.Assembly;
-import app.packed.container.Wirelet;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceComposer;
 import app.packed.service.ServiceLocator;
 import packed.internal.application.PackedApplicationDriver;
-import packed.internal.component.PackedComponentDriver;
 import packed.internal.util.LookupUtil;
 
 /**
  * Composers does not usually have any public constructors.
  */
-// Application Composer.. Nej vi bruger dem ogsaa andet steds fra
-// Syntes bare den skal vaere ligesom Assembly
-// Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
+public abstract class Composer {
 
-// BeanRepositoryComposer<?>
-public abstract class Composer<C extends ComponentConfiguration> {
-
-    /** A marker object to indicate that the assembly has already been used. */
-    private static Object USED = Composer.class;
+    /** A marker configuration object to indicate that an assembly has already been used to build something. */
+    private static final ContainerConfiguration USED = new ContainerConfiguration();
 
     /** A handle that can access #configuration. */
-    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", Object.class);
+    private static final VarHandle VH_CONFIGURATION = LookupUtil.lookupVarHandle(MethodHandles.lookup(), "configuration", ContainerConfiguration.class);
 
     /**
      * The configuration of this assembly.
@@ -63,60 +54,24 @@ public abstract class Composer<C extends ComponentConfiguration> {
      * This field is updated via a VarHandle.
      */
     @Nullable
-    private Object configuration;
-
-    /**
-     * The component driver of this assembly.
-     * <p>
-     * This field is read from {@link PackedComponentDriver#getDriver(Assembly)} via a varhandle.
-     */
-    @SuppressWarnings("unused")
-    private final PackedComponentDriver<? extends C> driver;
-
-    /**
-     * Create a new composer.
-     * 
-     * @param configuration
-     *            the underlying component configuration
-     */
-    protected Composer(C configuration) {
-        this.configuration = configuration;
-        driver = null;
-        // Disabled because of test
-        // requireNonNull(configuration, "configuration is null");
-    }
-
-    /**
-     * Creates a new composer using the specified driver.
-     * 
-     * @param driver
-     *            the component driver used to create the configuration objects this composer wraps
-     */
-    protected Composer(ComponentDriver<? extends C> driver) {
-        this.driver = requireNonNull((PackedComponentDriver<? extends C>) driver, "driver is null");
-    }
+    private ContainerConfiguration configuration;
 
     /**
      * Checks that the underlying component is still configurable.
      * 
      */
     protected final void checkPreBuild() {
-        configuration().component().realm.checkOpen();
+        configuration().container().realm.checkOpen();
     }
 
-    protected final void wire() {
-
-    }
-
-    @SuppressWarnings("unchecked")
-    protected final C configuration() {
-        Object c = configuration;
+    private ContainerConfiguration configuration() {
+        ContainerConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This method cannot be called from the constructor of a composer");
         } else if (c == USED) {
             throw new IllegalStateException("This method must be called while the composer is active.");
         }
-        return (C) c;
+        return c;
     }
 
     /**
@@ -127,14 +82,14 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the configuration to use for the assembling process
      */
     @SuppressWarnings({ "unused", "unchecked" })
-    private void doCompose(C configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
+    private void doBuild(ContainerConfiguration configuration, @SuppressWarnings("rawtypes") ComposerAction consumer) {
         Object existing = VH_CONFIGURATION.compareAndExchange(this, null, configuration);
         if (existing == null) {
             try {
                 onNew();
 
                 // call the actual configurations
-                consumer.configure(this);
+                consumer.build(this);
 
                 onConfigured();
             } finally {
@@ -168,7 +123,7 @@ public abstract class Composer<C extends ComponentConfiguration> {
      *            the lookup object
      */
     public final void lookup(MethodHandles.Lookup lookup) {
-        configuration().component().realm.setLookup(lookup);
+        configuration().container().realm.setLookup(lookup);
     }
 
     /**
@@ -181,7 +136,11 @@ public abstract class Composer<C extends ComponentConfiguration> {
     /**
      * Invoked by the runtime immediately before {@link ComposerAction#configure(Composer)}.
      */
-    protected void onNew() {} //navngivningen skal alines med AssemblyHook
+    protected void onNew() {} // navngivningen skal alines med AssemblyHook
+
+    protected final void wire() {
+
+    }
 
     /**
      * Create a new application instance by using the specified consumer and configurator.
@@ -209,11 +168,16 @@ public abstract class Composer<C extends ComponentConfiguration> {
     // F.eks. ServiceLocator som extension
     // ExtensionConfiguration#compose(new ServiceComposer, configurator <- provided by user - inherit main
     // assemblies.lookup)
-    protected static <A, C extends Composer<?>> A compose(ApplicationDriver<A> driver, C composer, ComposerAction<? super C> configurator,
-            Wirelet... wirelets) {
-        return ((PackedApplicationDriver<A>) driver).compose(composer, configurator, wirelets);
+    protected static <A, C extends Composer> A compose(ApplicationDriver<A> driver, ContainerDriver<ContainerConfiguration> containerDriver,
+            Function<ContainerConfiguration, C> composer, ComposerAction<? super C> configurator, Wirelet... wirelets) {
+        return ((PackedApplicationDriver<A>) driver).compose(containerDriver, composer, configurator, wirelets);
     }
 }
+//Application Composer.. Nej vi bruger dem ogsaa andet steds fra
+//Syntes bare den skal vaere ligesom Assembly
+//Hmm, de her special ServiceComposer cases goer at maaske det er find med configuration
+
+//BeanRepositoryComposer<?>
 
 // Er det ikke noget vi skal definere i vores ArtifactDriver...
 //@SafeVarargs

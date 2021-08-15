@@ -24,7 +24,7 @@ import packed.internal.container.WireletModel;
 import packed.internal.util.StackWalkerUtil;
 
 /**
- * A wirelet is a small piece of "glue code" that can be specified when a component is wired.
+ * A wirelet is a small piece of "glue code" that can be specified when wiring a container.
  * <p>
  * Wirelets are typically used to debug foobar, sdsd.
  * 

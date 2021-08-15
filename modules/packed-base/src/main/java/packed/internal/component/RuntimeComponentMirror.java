@@ -31,7 +31,7 @@ import app.packed.base.Nullable;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.component.ComponentScope;
-import app.packed.component.ComponentOwner;
+import app.packed.component.Operator;
 import app.packed.container.ContainerMirror;
 import app.packed.extension.Extension;
 import packed.internal.application.ApplicationLaunchContext;
@@ -296,7 +296,7 @@ public final class RuntimeComponentMirror implements ComponentMirror {
     }
 
     @Override
-    public ComponentOwner owner() {
+    public Operator registrant() {
         throw new UnsupportedOperationException();
     }
 }

@@ -7,6 +7,7 @@ package app.packed.application;
 // Ideen er at det er naar vi f.eks. har lazy start og @Get -> starter lazy starter en applikation
 // Men den fejler
 // Maaske et lidt daarligt navn... Kiggede lige paa den og umiddelbart sagde den mig ikke noget
+// ApplicationNotRunning
 public class UnavailableApplicationException extends RuntimeException {
 
     /** */

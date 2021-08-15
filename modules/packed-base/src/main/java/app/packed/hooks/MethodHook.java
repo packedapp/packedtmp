@@ -35,9 +35,9 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
-import app.packed.component.Composer;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Composer;
 import app.packed.extension.Extension;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.lifecycle.OnInitialize;

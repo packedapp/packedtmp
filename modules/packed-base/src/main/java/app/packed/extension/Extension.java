@@ -111,7 +111,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      * This field should never be read directly, but only accessed via {@link #context()}.
      */
     @Nullable
-    private ExtensionConfiguration context;
+    private ExtensionConfiguration configuration;
 
     /** Creates a new extension. Subclasses should have a single package-protected constructor. */
     protected Extension() {}
@@ -156,7 +156,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      * @return a context object for this extension
      */
     protected final ExtensionConfiguration context() {
-        ExtensionConfiguration c = context;
+        ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
                     + "initialization before the extension is returned to the user, override " + Extension.class.getSimpleName() + "#onNew()");

@@ -14,7 +14,7 @@ import app.packed.bean.BeanMirror;
 import app.packed.build.BuildKind;
 import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
-import app.packed.component.ComponentOwner;
+import app.packed.component.Operator;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
@@ -42,8 +42,8 @@ public interface ApplicationMirror {
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
-    default ComponentOwner owner() {
-        return ComponentOwner.user();
+    default Operator owner() {
+        return Operator.user();
     }
     
     default Stream<ComponentMirror> components() {

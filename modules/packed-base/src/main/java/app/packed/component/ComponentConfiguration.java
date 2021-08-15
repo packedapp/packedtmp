@@ -79,8 +79,8 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * Sets the name of the component. The name must consists only of alphanumeric characters and '_', '-' or '.'. The name
      * is case sensitive.
      * <p>
-     * If no name is explicitly set for a component. A name will be assigned to the component in such a way that it will
-     * have a unique name among other sibling components.
+     * If no name is explicitly set on a component. A name will be assigned to the component (at build time) in such a way
+     * that it will have a unique name among other sibling components.
      *
      * @param name
      *            the name of the component
@@ -91,7 +91,7 @@ public abstract sealed class ComponentConfiguration permits BeanConfiguration,Co
      * @see ComponentMirror#name()
      * @see Wirelet#named(String)
      */
-    protected ComponentConfiguration named(String name) {
+    public ComponentConfiguration named(String name) {
         component().named(name);
         return this;
     }

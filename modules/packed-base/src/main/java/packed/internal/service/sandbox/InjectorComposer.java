@@ -19,10 +19,10 @@ import java.util.function.Consumer;
 
 import app.packed.base.Qualifier;
 import app.packed.component.ComponentMirror;
-import app.packed.component.Composer;
-import app.packed.component.ComposerAction;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
+import app.packed.container.Composer;
+import app.packed.container.ComposerAction;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerDriver;
 import app.packed.container.ContainerExtension;
@@ -42,12 +42,13 @@ import app.packed.service.ServiceLocator;
  * default.
  */
 // Maaske er den bare abstract og sealed...
-public final class InjectorComposer extends Composer<ContainerConfiguration> {
+public final class InjectorComposer extends Composer {
 
     private boolean initialized;
+    final ContainerConfiguration configuration;
 
-    public InjectorComposer() {
-        super(ContainerDriver.defaultDriver());
+    public InjectorComposer(ContainerConfiguration cc) {
+        this.configuration = cc;
     }
 
     /**
@@ -56,7 +57,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      * @return an instance of the injector extension
      */
     private ServiceExtension extension() {
-        ServiceExtension se = configuration().use(ServiceExtension.class);
+        ServiceExtension se = configuration.use(ServiceExtension.class);
         if (!initialized) {
             se.exportAll();
             initialized = true;
@@ -71,7 +72,7 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
      *            optional import/export wirelets
      */
     public ComponentMirror link(Assembly<?> assembly, Wirelet... wirelets) {
-        return configuration().use(ContainerExtension.class).link(assembly, wirelets);
+        return configuration.use(ContainerExtension.class).link(assembly, wirelets);
     }
 
     /**
@@ -193,9 +194,9 @@ public final class InjectorComposer extends Composer<ContainerConfiguration> {
     public <T> ServiceBeanConfiguration<T> providePrototype(Factory<T> factory) {
         return extension().providePrototype(factory);
     }
-    
+
     static Injector configure(ComposerAction<? super InjectorComposer> configurator, Wirelet... wirelets) {
-        return compose(Injector.driver(), new InjectorComposer(), configurator, wirelets);
+        return compose(Injector.driver(), ContainerDriver.defaultDriver(), InjectorComposer::new, configurator, wirelets);
     }
 
 }

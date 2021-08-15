@@ -33,6 +33,7 @@ import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension;
+import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
 import app.packed.extension.InternalExtensionException;
 import packed.internal.application.ApplicationSetup;
@@ -243,6 +244,9 @@ public final class ContainerSetup extends ComponentSetup {
      * @param extensionType
      *            the extension to test
      * @return true if the specified extension type is used, otherwise false
+     * @see ContainerConfiguration#isExtensionUsed(Class)
+     * @see ExtensionConfiguration#isExtensionUsed(Class)
+     * @see ContainerMirror#isExtensionUsed(Class)
      */
     public boolean isExtensionUsed(Class<? extends Extension> extensionType) {
         requireNonNull(extensionType, "extensionType is null");

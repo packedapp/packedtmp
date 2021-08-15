@@ -6,7 +6,13 @@ import app.packed.container.Assembly;
 // Vi kan bygge et app image i noget der bliver instantieret med det samme
 
 // Tror den er taenkt paa at kunne blive injected (meget lightweight mirror)
-public interface ApplicationBuildInfo {
+public interface ApplicationInfo {
+
+    default void checkHasRunnable() {
+        checkHasRunnable("The required operation requires a runtime");
+    }
+
+    void checkHasRunnable(String message);
 
     /** {@return the type of assembly.} */
     Class<? extends Assembly<?>> assemblyType();

@@ -10,6 +10,7 @@ import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.ThrowableUtil;
 
+// Ja, lad os se om den giver mening...
 public class ContainerExtension extends Extension {
 
     /** The service manager. */
@@ -45,8 +46,7 @@ public class ContainerExtension extends Extension {
     public ContainerConfiguration add(ContainerDriver<?> driver, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
-    
-    
+
     /**
      * Links a new assembly.
      * 
@@ -81,18 +81,20 @@ public class ContainerExtension extends Extension {
         return (ContainerMirror) newRealm.root.mirror();
     }
 
-    public class Sub {
+    public /* primitive */ class Sub {
 
         ContainerSetup container;
 
         Sub(ExtensionSetup setup) {
-
             this.container = setup.container;
 //          public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
 //              return container.link(assembly, realm(), wirelets);
 //          }
         }
 
+        // Tror faktisk godt vi tillader at lave en container paa vegne af brugeren.
+        // Fx lad os si
+        
         /**
          * <p>
          * If this assembly links a container this method must be called from {@link #onComplete()}.
@@ -106,13 +108,12 @@ public class ContainerExtension extends Extension {
          */
         // self link... There should be no reason why users would link a container via an extension. As the container driver is
         // already fixed, so the extension can provide no additional functionality
-        public ContainerMirror selfLink(Assembly<?> assembly, Wirelet... wirelets) {
+        ContainerMirror selfLink(Assembly<?> assembly, Wirelet... wirelets) {
             return ContainerExtension.link(assembly, container, extension.realm(), wirelets);
         }
 
         /**
          * Links the specified assembly. This method must be called from {@link Extension#onComplete()}. Other
-         * 
          * <p>
          * Creates a new container with this extensions container as its parent by linking the specified assembly. The new
          * container will have this extension as owner. Thus will be hidden from normal view
@@ -128,6 +129,9 @@ public class ContainerExtension extends Extension {
          *             if called from outside of {@link Extension#onComplete()} (if wiring a container)
          * @see Extension#onComplete()
          */
+        // Container.Owner = Operator.Extension
+        // I am beginning to think that all components installed from the assembly belongs to the extension
+        // And then extension is not allowed to use other extensions that its dependencies.
         public ContainerMirror link(Assembly<?> assembly, Wirelet... wirelets) {
             throw new UnsupportedOperationException();
         }

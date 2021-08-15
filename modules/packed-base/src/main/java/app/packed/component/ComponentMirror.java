@@ -40,8 +40,6 @@ import packed.internal.component.RuntimeComponentMirror;
 public sealed interface ComponentMirror
         extends Mirror permits ContainerMirror,BeanMirror,FunctionMirror,AbstractBuildTimeComponentMirror,RuntimeComponentMirror {
 
-    // ComponentDriverMirror driver(); IDK hvad skal den sige, andet end hvilken extension
-
     /** {@return the application this component is a part of.} */
     ApplicationMirror application();
 
@@ -94,14 +92,9 @@ public sealed interface ComponentMirror
     // Er det i virkeligheden altid ownership???
     // Har vi tilfaelde hvor vi har en ikke-standard bean driver.
     // Hvor det ikke er extension'en der soerger for instantiering
-    Optional<Class<? extends Extension>> managedByExtension();
 
-    /**
-     * Returns the owner of the component. This is either the user
-     * 
-     * @return the owner of the component
-     */
-    ComponentOwner owner();
+    // RegisteredWith
+    Optional<Class<? extends Extension>> managedByExtension();
 
     /**
      * Returns the name of this component.
@@ -123,6 +116,13 @@ public sealed interface ComponentMirror
         // Super useful...
         throw new UnsupportedOperationException();
     }
+
+    /**
+     * Returns the owner of the component. This is either the user (the owner of the application) or an extension.
+     * 
+     * @return the owner of the component
+     */
+    Operator registrant();
 
     /**
      * Computes the relation from this component to the specified component.

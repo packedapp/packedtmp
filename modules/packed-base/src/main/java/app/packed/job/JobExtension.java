@@ -1,6 +1,5 @@
 package app.packed.job;
 
-import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.extension.Extension;
 
 public class JobExtension extends Extension {
@@ -9,7 +8,7 @@ public class JobExtension extends Extension {
     // Set result type
     // parseAssembly()
     
-    static {
-        $dependsOnAlways(ApplicationRuntimeExtension.class);
-    }
+//    static {
+//        $dependsOnAlways(ApplicationRuntimeExtension.class);
+//    }
 }

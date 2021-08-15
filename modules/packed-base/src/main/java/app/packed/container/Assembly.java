@@ -53,8 +53,6 @@ import packed.internal.util.LookupUtil;
  * @see CommonContainerAssembly
  * @see BaseAssembly
  */
-// Or ContainerAssembly... ligesom Image vs ApplicationImage
-// Altsaa man bruger den jo naermest aldrig, kun andre
 public abstract class Assembly<C extends ContainerConfiguration> {
 
     /** A marker configuration object to indicate that an assembly has already been used to build something. */
@@ -273,3 +271,6 @@ public abstract class Assembly<C extends ContainerConfiguration> {
         return configuration().use(extensionType);
     }
 }
+//Or ContainerAssembly... ligesom Image vs ApplicationImage
+//Men saa skal det vel ogsaa hedde ContainerWirelets....
+//Altsaa man bruger den jo naermest aldrig, kun andre

@@ -28,7 +28,7 @@ import java.util.function.Function;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.component.ComposerAction;
+import app.packed.container.ComposerAction;
 import app.packed.inject.Factory;
 import app.packed.service.Service;
 import app.packed.service.ServiceComposer;
@@ -52,7 +52,6 @@ public final class PackedServiceComposer extends ServiceComposer {
 
     @SuppressWarnings("unchecked")
     private PackedServiceComposer(Map<Key<?>, ? extends InternalService> services) {
-        super(null);
         this.services = (Map<Key<?>, InternalService>) requireNonNull(services);
     }
 
@@ -172,7 +171,7 @@ public final class PackedServiceComposer extends ServiceComposer {
     public static ServiceLocator toServiceLocator(Map<Key<?>, ? extends InternalService> services, ComposerAction<? super ServiceComposer> transformation) {
         requireNonNull(transformation, "transformation is null");
         PackedServiceComposer psm = new PackedServiceComposer(services);
-        transformation.configure(psm);
+        transformation.build(psm);
 
         Map<Key<?>, RuntimeService> runtimeEntries = new LinkedHashMap<>();
         ServiceInstantiationContext con = new ServiceInstantiationContext();

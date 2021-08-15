@@ -5,7 +5,7 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandle;
 
 import app.packed.component.ComponentConfiguration;
-import app.packed.component.ComponentOwner;
+import app.packed.component.Operator;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
@@ -55,7 +55,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> install(Class<T> implementation) {
         requireNonNull(implementation, "implementation is null");
-        return wire(new ApplicationBeanConfiguration<>(), ComponentOwner.user(), implementation);
+        return wire(new ApplicationBeanConfiguration<>(), Operator.user(), implementation);
     }
 
     /**
@@ -68,7 +68,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> install(Factory<T> factory) {
         requireNonNull(factory, "factory is null");
-        return wire(new ApplicationBeanConfiguration<>(), ComponentOwner.user(), factory);
+        return wire(new ApplicationBeanConfiguration<>(), Operator.user(), factory);
     }
 
     /**
@@ -85,7 +85,7 @@ public class BeanExtension2 extends Extension {
      */
     public <T> ApplicationBeanConfiguration<T> installInstance(T instance) {
         checkInstance(instance);
-        return wire(new ApplicationBeanConfiguration<>(), ComponentOwner.user(), instance);
+        return wire(new ApplicationBeanConfiguration<>(), Operator.user(), instance);
     }
 
     private static void checkInstance(Object instance) {
@@ -97,16 +97,16 @@ public class BeanExtension2 extends Extension {
         }
     }
 
-    <B extends BeanConfiguration<?>> B wire(B configuration, ComponentOwner owner, Object source) {
+    <B extends BeanConfiguration<?>> B wire(B configuration, Operator owner, Object source) {
 
         return configuration;
     }
 
     public static class Sub extends Subtension {
         final BeanExtension2 extension;
-        final ComponentOwner agent;
+        final Operator agent;
 
-        Sub(BeanExtension2 extension, ComponentOwner agent) {
+        Sub(BeanExtension2 extension, Operator agent) {
             this.extension = extension;
             this.agent = agent;
         }
@@ -118,13 +118,13 @@ public class BeanExtension2 extends Extension {
             return extension.wire(new ApplicationBeanConfiguration<>(), agent, implementation);
         }
 
-        public final <T, B extends BeanConfiguration<T>> B register(ComponentOwner agent, BeanDriver driver, B configuration, Class<T> implementation) {
+        public final <T, B extends BeanConfiguration<T>> B register(Operator agent, BeanDriver driver, B configuration, Class<T> implementation) {
             requireNonNull(implementation, "implementation is null");
             extension.wire(configuration, agent, implementation);
             throw new UnsupportedOperationException();
         }
 
-        public final <T, B extends BeanConfiguration<T>> B registerChild(ComponentOwner agent, ComponentConfiguration parent, BeanDriver driver,
+        public final <T, B extends BeanConfiguration<T>> B registerChild(Operator agent, ComponentConfiguration parent, BeanDriver driver,
                 B configuration, Class<T> implementation) {
             throw new UnsupportedOperationException();
         }

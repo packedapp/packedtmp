@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.cli;
+package app.packed.cli.usage;
 
 import app.packed.application.Program;
 import app.packed.container.BaseAssembly;

@@ -23,8 +23,6 @@ record RandomProcX(MaximumComponentContainer pc) implements AssemblyBuildHook {
 
     @Override
     public void onCompleted(ContainerConfiguration configuration) {
-        
-        
         if (configuration.mirror().components().count() > pc.maxComponents()) {
             throw new BuildException("Cannot define a container with more than " + pc.maxComponents() + " components in a single container");
         }

@@ -45,6 +45,9 @@ import app.packed.application.ApplicationRuntime;
 // Status vs State..
 // Was RunState
 
+//// ApplicationInstanceState
+//// BeanInstanceState
+
 public enum InstanceState {
 
     /**

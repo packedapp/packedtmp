@@ -1,19 +1,20 @@
 package app.packed.application;
 
 import app.packed.extension.Extension;
-import app.packed.state.sandbox.InstanceState;
 
 // Taenker lidt det er en special Application Scope Extension...
 // vi gider da ikke have den i hver container...
+
+// Tror den doer
 public class ApplicationRuntimeExtension extends Extension {
 
     /** Create a new extension. */
     ApplicationRuntimeExtension() {}
 
-    public void defaultLaunchMode(InstanceState is) {
-        // Kan ogsaa konfigurere alle disse hosts/applications ting her vel????
-
-    }
+    // Taenker det er applikationen der bestemmer det. Altid
+//    public void defaultLaunchMode(InstanceState is) {
+//        // Kan ogsaa konfigurere alle disse hosts/applications ting her vel????
+//    }
 }
 
 //Okay det ville vaere alt for vildt...

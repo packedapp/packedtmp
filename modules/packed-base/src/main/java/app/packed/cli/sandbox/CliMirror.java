@@ -1,4 +1,4 @@
-package app.packed.cli;
+package app.packed.cli.sandbox;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.container.Wirelet;

@@ -102,6 +102,8 @@ public final class ApplicationRuntimeWirelets {
 
     // excludes start?? IDK
     // Altsaa det giver jo mening at faa en total tid taenker jeg
+    // Omvendt tror jeg ikke det giver mening at tage build time med...
+    // 
     /**
      * 
      * @param duration
