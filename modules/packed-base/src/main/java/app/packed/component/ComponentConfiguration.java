@@ -36,7 +36,7 @@ import packed.internal.component.PackedComponentDriver;
 @SuppressWarnings("rawtypes")
 public abstract sealed class ComponentConfiguration permits BeanConfiguration,ContainerConfiguration,FunctionConfiguration {
 
-    /** The component setup we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
+    /** The component we are wrapping. Is initially null until initialize by {@link PackedComponentDriver}. */
     @Nullable
     private ComponentSetup component;
 

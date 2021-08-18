@@ -10,7 +10,9 @@ import app.packed.container.Wirelet;
 
 // Maaske er det en application der udelukkende starter andre applicationer...
 // Maaske er det ikke en gang en application... Jo, fordi man skal kunne lave
-// 
+
+// En central observation er at hvis der er flere entry points skal de alle returnere det samme
+// Det giver fx ikke mening at returnere Daemon fra en og Injector fra en anden
 interface Cli {
 
     Optional<Throwable> failure();

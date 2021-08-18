@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.container.sandbox;
 
 import java.util.Optional;
 
@@ -23,7 +23,7 @@ interface WireletMirror {
     // Der har vi issuen omkring Packed, Extension or user..
     // Maaske er der bare ikke mirrors paa wirelets.
     // Eller maaske er der bare ikke mirrors paa internal wirelets
-    Optional<Operator> registrant();
+    Optional<Operator> registrant(); //operator
 
     boolean isUserWirelet();
 }

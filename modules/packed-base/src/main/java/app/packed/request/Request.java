@@ -23,6 +23,7 @@ import app.packed.attribute.AttributedElement;
  *
  */
 // Structured concurrency all the way.
+// I'm not sure we want this
 public interface Request extends AttributedElement {
 
     // Ideen er vi er recursive...

@@ -1,8 +1,8 @@
 package app.packed.container;
 
+import java.util.Optional;
 import java.util.Set;
 
-import app.packed.component.ComponentDriver;
 import app.packed.extension.Extension;
 import packed.internal.container.PackedContainerDriver;
 
@@ -19,7 +19,7 @@ import packed.internal.container.PackedContainerDriver;
 //  T newContainer(ContainerDriver<T> driver);
 
 @SuppressWarnings("rawtypes")
-public sealed interface ContainerDriver<C extends ContainerConfiguration> extends ComponentDriver<C> permits PackedContainerDriver {
+public sealed interface ContainerDriver<C extends ContainerConfiguration> permits PackedContainerDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -31,6 +31,9 @@ public sealed interface ContainerDriver<C extends ContainerConfiguration> extend
      */
     Set<Class<? extends Extension>> bannedExtensions();
 
+    /** {@return any extension this driver is a part of.} */
+    Optional<Class<? extends Extension>> extension(); //igen Packed, Extension, user, 
+    
     /** {@return the default driver that is used to configure containers.} */
     public static ContainerDriver<ContainerConfiguration> defaultDriver() {
         return PackedContainerDriver.DRIVER;

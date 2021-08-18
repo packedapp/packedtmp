@@ -91,6 +91,8 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      * @param driver
      *            the component driver
      */
+    // Could we allow to override the driver when linking?
+    // I think we need to define the exact usecases
     protected Assembly(ContainerDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedContainerDriver<? extends C>) driver, "driver is null");
     }
@@ -98,7 +100,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     /**
      * Invoked by the runtime as part of the build process. This is where you should compose the application
      * <p>
-     * This method will never be invoked more than once on a single assembly instance.
+     * This method will never be invoked more than once on an assembly instance.
      * <p>
      * Note: This method should never be invoked directly by the user.
      */
@@ -202,6 +204,7 @@ public abstract class Assembly<C extends ContainerConfiguration> {
      *            the lookup object
      */
     // Hvorfor er det her ikke paa ContainerConfiguration????
+    // fx hooks ville gerne bruge den
     // Hvis vi bare declare det final
     protected final void lookup(Lookup lookup) {
         requireNonNull(lookup, "lookup cannot be null, use MethodHandles.publicLookup() to set public access");
@@ -241,14 +244,14 @@ public abstract class Assembly<C extends ContainerConfiguration> {
 
     /**
      * 
-     * @param <T>
+     * @param <W>
      *            the type of wirelets to select
      * @param wireletClass
      *            the type of wirelets to select
      * @return
      * @see ContainerConfiguration#selectWirelets(Class)
      */
-    protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    protected final <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return configuration().selectWirelets(wireletClass);
     }
 

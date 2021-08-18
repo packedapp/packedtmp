@@ -10,7 +10,10 @@ import packed.internal.container.ExtensionSetup;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.ThrowableUtil;
 
-// Ja, lad os se om den giver mening...
+// Ja, lad os se om den giver mening at have en extension for det
+// Og ikke bare smide det direkte paa ContainerConfiguration/Extension
+// Altsaa vi har allerede installeret en Container. Som er den vi linker fra
+//
 public class ContainerExtension extends Extension {
 
     /** The service manager. */

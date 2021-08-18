@@ -5,6 +5,7 @@ import app.packed.inject.sandbox.ServiceAttributes;
 @interface AttributeRef {
 
     /** The class that declares the attribute. */
+    // Owner?
     Class<?> declaredBy();
 
     /**

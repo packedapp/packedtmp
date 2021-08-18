@@ -98,7 +98,7 @@ public abstract class BaseAssembly extends Assembly<ContainerConfiguration> {
      * @param driver
      *            the container driver to use
      */
-    protected BaseAssembly(ContainerDriver<? extends ContainerConfiguration> driver) {
+    protected BaseAssembly(ContainerDriver<?> driver) {
         super(driver);
     }
 

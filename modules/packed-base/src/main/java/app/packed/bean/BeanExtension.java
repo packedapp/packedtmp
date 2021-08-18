@@ -84,8 +84,6 @@ public class BeanExtension extends Extension {
         return wire(driver, container, container.realm);
     }
 
-    
-
     static final <C extends BeanConfiguration<?>> C wire(PackedBeanDriver<C> driver, ComponentSetup parent, RealmSetup realm, Wirelet... wirelets) {
         requireNonNull(driver, "driver is null");
         // Prepare to wire the component (make sure the realm is still open)

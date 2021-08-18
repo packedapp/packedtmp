@@ -27,11 +27,11 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.container.Assembly;
-import app.packed.container.AssemblyBuildHook;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.ContainerMirror;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
+import app.packed.container.sandbox.AssemblyBuildHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;
@@ -341,10 +341,10 @@ public final class ContainerSetup extends ComponentSetup {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Extension> T useExtension(Class<T> extensionClass) {
+    public <E extends Extension> E useExtension(Class<E> extensionClass) {
         realm.newOperation();
         ExtensionSetup extension = useExtension(extensionClass, /* requested by the user, not another extension */ null);
-        return (T) extension.instance(); // extract the extension instance
+        return (E) extension.instance(); // extract the extension instance
     }
 
     /** A build-time container mirror. */

@@ -22,7 +22,7 @@ import app.packed.application.ApplicationDriver;
 // Eller hvad er det maaske ikke federe at smide en InternalExtensionException
 // Nej brugeren kan jo ogsaa komme til det
 
-// UnavailableExtensionException
+// UnavailableExtensionException (Ja lyder lidt bedre)
 
 // ==== Alternativt === 
 // ExtensionDisabledException for general use
@@ -32,7 +32,7 @@ import app.packed.application.ApplicationDriver;
 //if disabled, or if application extension used by a non-root container
 
 // extends BuildException?? Skal vi bare smide BuildException?
-public class ExtensionBannedException extends RuntimeException {
+public class UnavailableExtensionException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -43,7 +43,7 @@ public class ExtensionBannedException extends RuntimeException {
      * @param message
      *            the message
      */
-    public ExtensionBannedException(String message) {
+    public UnavailableExtensionException(String message) {
         super(message);
     }
 
@@ -55,7 +55,7 @@ public class ExtensionBannedException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    public ExtensionBannedException(String message, Throwable cause) {
+    public UnavailableExtensionException(String message, Throwable cause) {
         super(message, cause);
     }
 }

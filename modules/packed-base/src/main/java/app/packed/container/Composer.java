@@ -34,7 +34,7 @@ import packed.internal.util.LookupUtil;
  */
 public abstract class Composer {
 
-    /** A marker configuration object to indicate that an assembly has already been used to build something. */
+    /** A marker configuration object to indicate that a composer has already been used to build something. */
     private static final ContainerConfiguration USED = new ContainerConfiguration();
 
     /** A handle that can access #configuration. */
@@ -75,7 +75,7 @@ public abstract class Composer {
     }
 
     /**
-     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the assembly is not
+     * Invoked by the runtime (via a MethodHandle). This method is mostly machinery that makes sure that the composer is not
      * used more than once.
      * 
      * @param configuration
@@ -137,10 +137,6 @@ public abstract class Composer {
      * Invoked by the runtime immediately before {@link ComposerAction#configure(Composer)}.
      */
     protected void onNew() {} // navngivningen skal alines med AssemblyHook
-
-    protected final void wire() {
-
-    }
 
     /**
      * Create a new application instance by using the specified consumer and configurator.

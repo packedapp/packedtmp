@@ -31,6 +31,7 @@ import app.packed.base.Qualifier;
 import app.packed.component.ComponentMirror;
 import app.packed.container.Composer;
 import app.packed.inject.Factory;
+import packed.internal.service.build.PackedServiceComposer;
 
 /**
  * Service transformers are typically use to to convert one set of services to another set of services.
@@ -76,7 +77,7 @@ import app.packed.inject.Factory;
 // Den configuration vi skal kalde er jo ikke helt ContainerConfiguration
 // F.eks. hvis vi bruger den i forbindelse med filterExports eller wirelets
 // Det er jo mere en slags tilretning, hvor vi gerne vil registrere nogle componenter...
-public abstract class ServiceComposer extends Composer implements ServiceRegistry {
+public abstract sealed class ServiceComposer extends Composer implements ServiceRegistry permits PackedServiceComposer {
 
     /**
      * A version of {@link #decorate(Key, Function)} that takes a {@code class} key. See other method for details.
@@ -308,6 +309,9 @@ public abstract class ServiceComposer extends Composer implements ServiceRegistr
      * @param tag
      */
     // IDK, can add them later
+    // Navnet lyder lidt forkert. Vi tilfoejer et tag, mere
+    // addkey, rekey
+    // keyAdd, keyReplace?
     public void rekeyAllWithTag(String tag) {
         requireNonNull(tag, "tagis null");
         rekeyAll(s -> s.key().withTag(tag));

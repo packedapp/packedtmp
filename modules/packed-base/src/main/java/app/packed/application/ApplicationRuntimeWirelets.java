@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import app.packed.application.ApplicationRuntime.StopOption;
 import app.packed.container.Wirelet;
-import app.packed.extension.ExtensionBannedException;
+import app.packed.extension.UnavailableExtensionException;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
 
@@ -17,7 +17,7 @@ import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
  * {@link AcceptPendingException}. Attempt to use these wirelets
  * <p>
  * Attempting to use any of the wirelets on this class on an application that does not. Attempts to use it with a
- * non-runnable application will fail with {@link ExtensionBannedException}.
+ * non-runnable application will fail with {@link UnavailableExtensionException}.
  * 
  */
 public final class ApplicationRuntimeWirelets {

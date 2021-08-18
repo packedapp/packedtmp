@@ -108,7 +108,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      * _not_ nulled out after the configuration of the extension has completed. This allows for invoking methods such as
      * {@link #checkIsPreCompletion()} at any time.
      * <p>
-     * This field should never be read directly, but only accessed via {@link #context()}.
+     * This field should never be read directly, but only accessed via {@link #configuration()}.
      */
     @Nullable
     private ExtensionConfiguration configuration;
@@ -125,7 +125,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      *             if the extension is no longer configurable. Or if invoked from the constructor of the extension
      */
     protected final void checkIsPreCompletion() {
-        context().checkIsPreCompletion();
+        configuration().checkIsPreCompletion();
     }
 
     // checkExtendable...
@@ -138,7 +138,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
     // af brugeren med mindre XYZ...
     // Det er jo ikke selve extension der ved en fejl kommer til at kalde operationen...
     protected final void checkIsPreLinkage() {
-        context().checkIsPreLinkage();
+        configuration().checkIsPreLinkage();
     }
 
     /**
@@ -155,7 +155,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      *             if invoked from the constructor of the extension.
      * @return a context object for this extension
      */
-    protected final ExtensionConfiguration context() {
+    protected final ExtensionConfiguration configuration() {
         ExtensionConfiguration c = configuration;
         if (c == null) {
             throw new IllegalStateException("This operation cannot be invoked from the constructor of the extension. If you need to perform "
@@ -167,7 +167,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
     // findExtension()
     // findExtensor()
     protected final <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
-        return context().findParent(parentType);
+        return configuration().findParent(parentType);
     }
 
     /**
@@ -186,7 +186,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
     /// Hmm. Hvis nu en extension har en optional use af en extension.. Saa kan vi jo ikke svare paa det her
     /// Maaske det er vigtigt at have de 2 options.
     protected final boolean isExtensionBanned(Class<? extends Extension> extensionType) {
-        return context().isExtensionBanned(extensionType);
+        return configuration().isExtensionBanned(extensionType);
     }
 
     /**
@@ -200,12 +200,12 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      *           questions about what exact extension is using another extension
      */
     protected final boolean isExtensionUsed(Class<? extends Extension> extensionType) {
-        return context().isExtensionUsed(extensionType);
+        return configuration().isExtensionUsed(extensionType);
     }
 
     /** {@return whether or not this extension will be part of an {@link ApplicationImage} */
     protected final boolean isPartOfImage() {
-        return context().isPartOfImage();
+        return configuration().isPartOfImage();
     }
 
     /**
@@ -255,7 +255,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      *             if this method has already been called on the specified mirror
      */
     protected final <M extends ExtensionMirror<?>> M mirrorInitialize(M mirror) {
-        mirror.initialize((ExtensionSetup) context());
+        mirror.initialize((ExtensionSetup) configuration());
         return mirror;
     }
 
@@ -341,7 +341,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      *             class is not a proper subclass of ContainerWirelet.
      */
     protected final <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        return context().selectWirelets(wireletClass);
+        return configuration().selectWirelets(wireletClass);
     }
 
     /**
@@ -369,7 +369,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
      * @see #$dependsOn(Class...)
      */
     protected final <E extends Subtension> E use(Class<E> subtensionClass) {
-        return context().use(subtensionClass);
+        return configuration().use(subtensionClass);
     }
 
     protected static <T extends Extension, A> void $addAttribute(Class<T> thisExtension, Attribute<A> attribute, Function<T, A> mapper) {}
@@ -400,7 +400,7 @@ public non-sealed abstract class Extension implements OldExtensionMember<Extensi
     }
 
     // An instance of extensorType will automatically be installed whenever the extensor is used
-    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBean<?>> extensorType) {}
+    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>> extensorType) {}
 
     @SafeVarargs
     protected static void $cycleBreaker(Class<? extends Extension>... extensions) {

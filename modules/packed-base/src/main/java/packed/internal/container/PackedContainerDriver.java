@@ -1,5 +1,6 @@
 package packed.internal.container;
 
+import java.util.Optional;
 import java.util.Set;
 
 import app.packed.container.ContainerConfiguration;
@@ -23,6 +24,11 @@ public final class PackedContainerDriver<C extends ContainerConfiguration> exten
     @Override
     public C toConfiguration0(ComponentSetup context) {
         return (C) new ContainerConfiguration();
+    }
+
+    @Override
+    public Optional<Class<? extends Extension>> extension() {
+        throw new UnsupportedOperationException();
     }
 
 }

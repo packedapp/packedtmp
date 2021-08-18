@@ -3,9 +3,9 @@ package app.packed.extension.sandbox.convert;
 import java.util.Map;
 import java.util.function.Function;
 
-import app.packed.extension.ExtensionBeanNEW;
+import app.packed.extension.ExtensionBean;
 
-final class ConvExtensor extends ExtensionBeanNEW implements ConvDiscovable {
+final class ConvExtensor extends ExtensionBean implements ConvDiscovable {
 
     final Map<Class<?>, Function<?, ?>> m;
 

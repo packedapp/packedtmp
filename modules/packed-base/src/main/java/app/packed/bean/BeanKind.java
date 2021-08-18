@@ -5,6 +5,10 @@ public enum BeanKind {
 
     /** Lives and dies with the application. */
     APPLICATION,
+    
+    // Instantiated by an extensions that
+    // A single ideally operates within it
+    REQUEST,
 
     // Instantiated and deconstructed by an extension and some point
     MANAGED,

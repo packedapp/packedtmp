@@ -24,7 +24,7 @@ import packed.internal.util.ThrowableUtil;
 
 // Ved sgu ikke om man skal kunne override den...Det tror jeg faktisk ikke...
 // Eller man maa gerne kunne overskrive den, men taenker ikke Assembly kan tage andet end ContainerConfiguration...
-public non-sealed class ContainerConfiguration extends ComponentConfiguration implements ComposerConfiguration {
+public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
     /** A handle that can access superclass private ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
@@ -84,7 +84,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
     }
 
     // Why not just configure the assembly???
-    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+    public <W extends Wirelet> WireletSelection<W> selectWirelets(Class<W> wireletClass) {
         return container().selectWirelets(wireletClass);
     }
 
@@ -95,7 +95,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      * instance of the extension. This instance will then be returned for all subsequent calls to this method for the same
      * extension type.
      * 
-     * @param <T>
+     * @param <E>
      *            the type of extension to return
      * @param extensionType
      *            the type of extension to return
@@ -105,7 +105,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration im
      *             already in used
      * @see #extensionsTypes()
      */
-    public <T extends Extension> T use(Class<T> extensionType) {
+    public <E extends Extension> E use(Class<E> extensionType) {
         return container().useExtension(extensionType);
     }
 }

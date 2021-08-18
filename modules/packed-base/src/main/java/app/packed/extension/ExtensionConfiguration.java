@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 import app.packed.application.ApplicationImage;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
-import app.packed.container.ComposerConfiguration;
 import app.packed.container.Wirelet;
 import app.packed.container.WireletSelection;
 import app.packed.extension.Extension.Subtension;
@@ -50,7 +49,7 @@ import packed.internal.container.ExtensionSetup;
 // * find ancestors
 // * Get subtensions
 // * Get wirelets
-public sealed interface ExtensionConfiguration extends ComposerConfiguration permits ExtensionSetup {
+public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /**
      * Checks that the extension is configurable, throwing {@link IllegalStateException} if it is not.
@@ -67,6 +66,8 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
      */
     void checkIsPreLinkage();
 
+    <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
+
     default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
         throw new UnsupportedOperationException();
     }
@@ -80,8 +81,6 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
      */
     <E> ExtensionBeanConnection<E> findAncestor(Class<E> ancestorType);
 
-    // Supporter Extension, AutoBean or common interface
-    // all must be in same module
     /**
      * Attempts to find a parent of the specified type.
      * 
@@ -96,8 +95,6 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
     // Ja det goer det jo saadan set...
     <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType);
 
-    // A new instance. Ligesom install(bean)
-
     /**
      * Returns whether or not the specified extension type is disabled in the container from where this extension is used.
      * 
@@ -110,8 +107,8 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
     }
 
     /**
-     * Returns whether or not the specified extension is used by this extension, other extensions, or user code in the same
-     * container as this extension.
+     * Returns whether or not the specified extension is used (in the same container) by this extension, other extensions,
+     * or user code.
      * 
      * @param extensionType
      *            the extension type to test
@@ -191,8 +188,6 @@ public sealed interface ExtensionConfiguration extends ComposerConfiguration per
      * @see #isExtensionUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
-
-    <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 }
 ///**
 //* Returns the extension instance.
