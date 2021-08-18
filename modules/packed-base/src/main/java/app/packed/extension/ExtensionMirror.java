@@ -1,5 +1,6 @@
 package app.packed.extension;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
@@ -11,27 +12,29 @@ import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionSetup;
 
 /**
- * A mirror of an extension that is in use by a {@link #container}.
+ * Provides generic information about an extension used by a {@link #container}.
  * <p>
- * This class can be overridden to provide a specialized mirror for an extension. For example,
- * {@link app.packed.service.ServiceExtension} provides {@link app.packed.service.ServiceExtensionMirror}.
+ * This class can be extended by an extension to provide more detailed information about itself. For example,
+ * {@link app.packed.service.ServiceExtension} extends this class via {@link app.packed.service.ServiceExtensionMirror}.
  * <p>
  * Extensions mirrors are typically obtained in one of the following ways:
  * <ul>
  * <li>By calling methods on other mirrors, for example, {@link ContainerMirror#extensions()} or
  * {@link ContainerMirror#findExtension(Class)}.</li>
- * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
- * <li>By calling a factory method on the mirror itself, for example,
+ * <li>By calling {@link Extension#mirror()}, for example, {@link ServiceExtension#mirror()}.</li>
+ * <li>By calling a factory method on the mirror class, for example,
  * {@link ServiceExtensionMirror#use(Assembly, app.packed.container.Wirelet...)}.</li>
  * </ul>
  * <p>
- * NOTE: If overriding this class, subclasses:
+ * NOTE: Subclasses of this class:
  * <ul>
- * <li>Must be annotated with {@link ExtensionMember} to indicate what extension they are a part of.</li>
- * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the runtime.</li>
- * <li>Must be located in the same module as the extension itself.</li>
- * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#use(Assembly, Wirelet...)}.
+ * <li>Must override {@link Extension#mirror()} in order to provide a mirror instance to the framework.</li>
+ * <li>Must be located in the same module as the extension itself (iff the extension is defined in a module).</li>
+ * <li>May provide factory methods, similar to {@link ServiceExtensionMirror#of(Assembly, Wirelet...)}.
  * </ul>
+ * 
+ * @param <E>
+ *            the type of extension this mirror is a part of
  */
 public class ExtensionMirror<E extends Extension> {
 
@@ -46,7 +49,7 @@ public class ExtensionMirror<E extends Extension> {
     /**
      * Create a new extension mirror.
      * <p>
-     * Subclasses should have a single package-protected constructor.
+     * Subclasses should have a single package-protected constructor. Instantiated by overriding {@link Extension#mirror()}.
      */
     protected ExtensionMirror() {}
 
@@ -69,11 +72,11 @@ public class ExtensionMirror<E extends Extension> {
     }
 
     /**
-     * {@return the internal configuration of the extension.}
+     * {@return the internal configuration of the extension this mirror is a part of.}
      * 
      * @throws InternalExtensionException
-     *             if called from the constructor of the mirror, or the extension developer forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)}.
+     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
      */
     private ExtensionSetup extension() {
         ExtensionSetup e = extension;
@@ -84,12 +87,12 @@ public class ExtensionMirror<E extends Extension> {
         return e;
     }
 
-    /** {@return a descriptor for the extension.} */
+    /** {@return a descriptor for the extension this mirror is a part of.} */
     public final ExtensionDescriptor extensionDescriptor() { // extensionDescriptor() instead of descriptor() because subclasses might want to use descriptor()
         return ExtensionDescriptor.of(extensionType());
     }
 
-    /** {@return the type of extension that is mirrored.} */
+    /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension> extensionType() { // extensionType() instead of type() because subclasses might want to use type()
         return extension().extensionType;
     }
@@ -133,12 +136,16 @@ public class ExtensionMirror<E extends Extension> {
      *            optional wirelets
      * @return stuff
      * @see ContainerMirror#findExtension(Class)
+     * @see #of(Class, Assembly, Wirelet...)
      */
     public static <E extends ExtensionMirror<?>> Optional<E> find(Class<E> mirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).findExtension(mirrorType);
     }
 
     /**
+     * Builds an application. Throws {@link NoSuchElementException} if the root container does not use the mirror's
+     * extension type.
+     * 
      * @param <E>
      *            the type of extension mirror
      * @param mirrorType
@@ -149,10 +156,12 @@ public class ExtensionMirror<E extends Extension> {
      *            optional wirelets
      * @return stuff
      * @see ContainerMirror#useExtension(Class)
+     * @see #find(Class, Assembly, Wirelet...)
+     * @throws NoSuchElementException
+     *             if the root container in the mirror application does not use the extension that the specified mirror is a
+     *             part of
      */
-    // Ved ikke om use er det rigtig ord... Vi bruger jo kun hvis den er tilgaengelig unlike Extension.use
-    // Maaske er of bedre (Eller bare mirror)
-    public static <E extends ExtensionMirror<?>> E use(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
+    public static <E extends ExtensionMirror<?>> E of(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
     }
 }

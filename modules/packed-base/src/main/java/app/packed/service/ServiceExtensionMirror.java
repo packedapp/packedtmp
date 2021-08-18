@@ -3,6 +3,7 @@ package app.packed.service;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -64,12 +65,22 @@ public final class ServiceExtensionMirror extends ExtensionMirror<ServiceExtensi
         throw new UnsupportedOperationException();
     }
 
+    // ifPresent(), tryFind
+    // Syntes find maaske er et lidt daarligt navn
     public static Optional<ServiceExtensionMirror> find(Assembly<?> assembly, Wirelet... wirelets) {
         return ExtensionMirror.find(ServiceExtensionMirror.class, assembly, wirelets);
     }
 
-    public static ServiceExtensionMirror use(Assembly<?> assembly, Wirelet... wirelets) {
-        return ExtensionMirror.use(ServiceExtensionMirror.class, assembly, wirelets);
+    /**
+     * @param assembly
+     * @param wirelets
+     * @return
+     * @throws NoSuchElementException
+     *             if an
+     * @see ExtensionMirror#of(Class, Assembly, Wirelet...)
+     */
+    public static ServiceExtensionMirror of(Assembly<?> assembly, Wirelet... wirelets) {
+        return ExtensionMirror.of(ServiceExtensionMirror.class, assembly, wirelets);
     }
 }
 

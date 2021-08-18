@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import app.packed.extension.ExtensionBean;
 
-final class ConvExtensor extends ExtensionBean implements ConvDiscovable {
+final class ConvExtensor extends ExtensionBean<ConvExtension> implements ConvDiscovable {
 
     final Map<Class<?>, Function<?, ?>> m;
 

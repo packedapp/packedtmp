@@ -56,7 +56,7 @@ public class ConvExtension2 extends Extension implements ConvDiscovable {
         throw new UnsupportedOperationException();
     }
 
-    protected <B extends ExtensionBean, E extends Extension, T> T findAncestorOrElse(Class<B> beanType, Function<B, T> f1, Class<E> extensionType,
+    protected <B extends ExtensionBean<E>, E extends Extension, T> T findAncestorOrElse(Class<B> beanType, Function<B, T> f1, Class<E> extensionType,
             Function<E, T> f2, @Nullable T defaultValue) {
         // Will first look after a bean of the particular type. Then extension, or finally return default value
         throw new UnsupportedOperationException();

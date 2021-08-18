@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
+import java.util.function.Function;
 
 /** Various utility methods for working {@link Class classes}. */
 public class ClassUtil {
@@ -19,6 +20,17 @@ public class ClassUtil {
         } else if (!clazz.isAssignableFrom(clazzToCheck)) {
             throw new IllegalArgumentException(
                     "The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
+        }
+        return (Class<T>) clazzToCheck;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <E extends Throwable, T> Class<T> checkProperSubclass(Class<T> clazz, Class<?> clazzToCheck, Function<String, E> f) throws E {
+        requireNonNull(clazzToCheck, "class is null");
+        if (clazzToCheck == clazz) {
+            throw f.apply(clazz.getSimpleName() + ".class is not a valid argument to this method.");
+        } else if (!clazz.isAssignableFrom(clazzToCheck)) {
+            throw f.apply("The specified type '" + StringFormatter.format(clazz) + "' must extend '" + StringFormatter.format(clazzToCheck) + "'");
         }
         return (Class<T>) clazzToCheck;
     }

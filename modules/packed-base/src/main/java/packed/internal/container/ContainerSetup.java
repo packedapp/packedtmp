@@ -356,15 +356,20 @@ public final class ContainerSetup extends ComponentSetup {
             @SuppressWarnings("unchecked")
             protected Class<? extends Extension> computeValue(Class<?> implementation) {
                 ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);
+
                 Type t = EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR_X.extract(implementation);
                 Class<? extends Extension> extensionType = (Class<? extends Extension>) t;
+                ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
+
+                // Den 
+                ClassUtil.checkProperSubclass(Extension.class, extensionType, InternalExtensionException::new); // move into type extractor?
 
                 // Ved ikke om den her er noedvendig??? Vi checker jo om den type extensionen
                 // returnere matcher
                 if (extensionType.getModule() != implementation.getModule()) {
-                    throw new InternalExtensionException("module differ");
+                    throw new InternalExtensionException("The extension mirror " + implementation + " must be a part of the same module ("
+                            + extensionType.getModule() + ") as " + extensionType + ", but was part of '" + implementation.getModule() + "'");
                 }
-                ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
                 return extensionType;
             }
         };

@@ -99,7 +99,7 @@ import packed.internal.util.ThrowableUtil;
 //// onNew
 ////// Problemet er den lazy extension thingy can enable andre extensions 
 // Configurable -> Parent -> 
-public non-sealed abstract class Extension implements OldExtensionMember<Extension> {
+public abstract class Extension {
 
     /**
      * The extension context, that most methods delegate to.
