@@ -48,14 +48,14 @@ import packed.internal.util.ClassUtil;
 // Looks wrong with ApplicationSetup
 public final class ContainerSetup extends ComponentSetup {
 
+    public final AssemblyModel assemblyModel;
+
     /** Child containers, lazy initialized. */
     @Nullable
     public ArrayList<ContainerSetup> containerChildren;
 
     /** The depth of this container in relation to other containers. */
     public final int containerDepth;
-
-    public final AssemblyModel assemblyModel;
 
     /** This container's parent (if non-root). */
     @Nullable
@@ -69,13 +69,13 @@ public final class ContainerSetup extends ComponentSetup {
     /** The injector of this container. */
     public final ContainerInjectorSetup injection = new ContainerInjectorSetup(this);
 
-    private ArrayList<ExtensionSetup> tmpExtensions;
-
     /**
      * Whether or not the name has been initialized via a wirelet, in which case calls to {@link #named(String)} are
      * ignored.
      */
     public boolean nameInitializedWithWirelet;
+
+    private ArrayList<ExtensionSetup> tmpExtensions;
 
     /** Wirelets that was specified when creating the component. */
     // Alternativ er den ikke final.. men bliver nullable ud eftersom der ikke er flere wirelets
@@ -189,14 +189,6 @@ public final class ContainerSetup extends ComponentSetup {
         assert name != null;
     }
 
-    public void preBuild(ContainerConfiguration configuration) {
-        assemblyModel.preBuild(configuration);
-    }
-
-    public void postBuild(ContainerConfiguration configuration) {
-        assemblyModel.postBuild(configuration);
-    }
-
     public void applyAssemblyHook(AssemblyBuildHook hook) {
         // Puha, vi har jo ikke rigtig lyst til at dele en ContainerConfiguration
         // der lige pludselig kan have andre rettigheder.
@@ -259,8 +251,12 @@ public final class ContainerSetup extends ComponentSetup {
         return new BuildTimeContainerMirror();
     }
 
-    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
-        throw new UnsupportedOperationException();
+    public void postBuild(ContainerConfiguration configuration) {
+        assemblyModel.postBuild(configuration);
+    }
+
+    public void preBuild(ContainerConfiguration configuration) {
+        assemblyModel.preBuild(configuration);
     }
 
     private void runPredContainerChildren() {
@@ -290,6 +286,10 @@ public final class ContainerSetup extends ComponentSetup {
                 ea.preContainerChildren();
             }
         }
+    }
+
+    public <T extends Wirelet> WireletSelection<T> selectWirelets(Class<T> wireletClass) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -350,18 +350,22 @@ public final class ContainerSetup extends ComponentSetup {
     /** A build-time container mirror. */
     private final class BuildTimeContainerMirror extends ComponentSetup.AbstractBuildTimeComponentMirror implements ContainerMirror {
 
-        private static final ClassValue<Class<? extends Extension>> EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR = new ClassValue<>() {
+        /** A type variable extractor. */
+        private static final TypeVariableExtractor EXTRACTOR = TypeVariableExtractor.of(ExtensionMirror.class);
 
+        /** Extracts the extension that */
+        private static final ClassValue<Class<? extends Extension>> MIRROR_TO_EXTENSION_EXTRACTOR = new ClassValue<>() {
+     
             /** {@inheritDoc} */
             @SuppressWarnings("unchecked")
             protected Class<? extends Extension> computeValue(Class<?> implementation) {
                 ClassUtil.checkProperSubclass(ExtensionMirror.class, implementation);
 
-                Type t = EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR_X.extract(implementation);
+                Type t = EXTRACTOR.extract(implementation);
                 Class<? extends Extension> extensionType = (Class<? extends Extension>) t;
                 ClassUtil.checkProperSubclass(Extension.class, extensionType); // move into type extractor?
 
-                // Den 
+                // Den
                 ClassUtil.checkProperSubclass(Extension.class, extensionType, InternalExtensionException::new); // move into type extractor?
 
                 // Ved ikke om den her er noedvendig??? Vi checker jo om den type extensionen
@@ -373,9 +377,6 @@ public final class ContainerSetup extends ComponentSetup {
                 return extensionType;
             }
         };
-
-        /** A type variable extractor. */
-        private static final TypeVariableExtractor EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR_X = TypeVariableExtractor.of(ExtensionMirror.class);
 
         /** {@inheritDoc} */
         @Override
@@ -393,17 +394,23 @@ public final class ContainerSetup extends ComponentSetup {
             return ContainerSetup.this.extensionsTypes();
         }
 
+        /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
         public <T extends ExtensionMirror<?>> Optional<T> findExtension(Class<T> extensionMirrorType) {
             requireNonNull(extensionMirrorType, "extensionMirrorType is null");
 
-            Class<? extends Extension> cl = EXTENSION_MIRROR_TYPE_VARIABLE_EXTRACTOR.get(extensionMirrorType);
-            ExtensionSetup es = extensions.get(cl);
-            if (es == null) {
+            // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
+            Class<? extends Extension> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(extensionMirrorType);
+
+            // See if the container uses the extension.
+            ExtensionSetup extension = extensions.get(cl);
+            if (extension == null) {
                 return Optional.empty();
             } else {
-                ExtensionMirror<?> mirror = es.mirror();
+                // Call the extension.mirror to create a new mirror, this method is most likely overridden
+                ExtensionMirror<?> mirror = extension.mirror();
+                // Fail if the type of mirror returned by the extension does not match the specified mirror type
                 if (!extensionMirrorType.isInstance(mirror)) {
                     throw new InternalExtensionException(cl.getSimpleName() + ".mirror() was expected to return an instance of " + extensionMirrorType
                             + ", but returned an instance of " + mirror.getClass());
@@ -418,15 +425,15 @@ public final class ContainerSetup extends ComponentSetup {
             return ContainerSetup.this.isExtensionUsed(extensionType);
         }
 
+        @Override
+        public Optional<Class<? extends Extension>> managedByExtension() {
+            throw new UnsupportedOperationException();
+        }
+
         /** {@inheritDoc} */
         @Override
         public String toString() {
             return "ContainerMirror (" + path() + ")";
-        }
-
-        @Override
-        public Optional<Class<? extends Extension>> managedByExtension() {
-            throw new UnsupportedOperationException();
         }
     }
 }

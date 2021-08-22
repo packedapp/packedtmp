@@ -1,7 +1,6 @@
 package app.packed.application;
 
 import app.packed.application.ApplicationRuntime.StopOption;
-import app.packed.cli.CliWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 
@@ -88,7 +87,7 @@ public interface Daemon extends AutoCloseable {
     // When do want to run a daemon???
     // Isn't it main...
     static Daemon run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return run(assembly, CliWirelets.args(args).andThen(wirelets));
+        return run(assembly, wirelets);
     }
 
     static Daemon run(Assembly<?> assembly, Wirelet... wirelets) {
@@ -97,7 +96,7 @@ public interface Daemon extends AutoCloseable {
 
     // Starts async... Builds/initializes sync
     static Daemon runAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return run(assembly, CliWirelets.args(args).andThen(wirelets));
+        return run(assembly, wirelets);
     }
 
     static Daemon runAsync(Assembly<?> assembly, Wirelet... wirelets) {
@@ -105,7 +104,7 @@ public interface Daemon extends AutoCloseable {
     }
 
     static Daemon start(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return start(assembly, CliWirelets.args(args).andThen(wirelets));
+        return start(assembly, wirelets);
     }
 
     static Daemon start(Assembly<?> assembly, Wirelet... wirelets) {
@@ -113,7 +112,7 @@ public interface Daemon extends AutoCloseable {
     }
 
     static Daemon startAsync(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        return startAsync(assembly, CliWirelets.args(args).andThen(wirelets));
+        return startAsync(assembly, wirelets);
     }
 
     static Daemon startAsync(Assembly<?> assembly, Wirelet... wirelets) {

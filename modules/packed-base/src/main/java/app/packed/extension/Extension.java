@@ -142,14 +142,14 @@ public abstract class Extension {
     }
 
     /**
-     * Returns this extension's context object. This context object is typically used in situations where the extension
-     * needs to delegate responsibility to classes that cannot invoke the protected methods on this class due to
-     * class-member visibility rules.
+     * Returns the configuration object that this extension wraps. The configuration object is typically used standalone in
+     * situations where the extension needs to delegate responsibility to classes that cannot invoke the protected methods
+     * on {@code Extension} due to class-member visibility rules.
      * <p>
-     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you an
-     * instance of the context object in the constructor. You should instead let the context object be dependency injected
-     * into the constructor by declaring as a parameter. Another alternative is to override {@link #onNew()} to perform post
-     * initialization.
+     * This method will fail with {@link IllegalStateException} if invoked from the constructor of the extension. If you
+     * need to use the configuration object in the constructor. You should can declare it as a parameter in the constructor
+     * and the let the runtime dependency inject it into the instance. Another alternative is to override {@link #onNew()}
+     * to perform post initialization.
      * 
      * @throws IllegalStateException
      *             if invoked from the constructor of the extension.
@@ -166,6 +166,7 @@ public abstract class Extension {
 
     // findExtension()
     // findExtensor()
+    // findAncestor
     protected final <E> Optional<ExtensionBeanConnection<E>> findParent(Class<E> parentType) {
         return configuration().findParent(parentType);
     }
@@ -244,7 +245,7 @@ public abstract class Extension {
     /**
      * Initializes the specified extension mirror.
      * <p>
-     * This method should be called exactly once from {@link #mirror()}.
+     * This method should be called exactly once when overriding {@link #mirror()}.
      * 
      * @param <M>
      *            the type of extension mirror
@@ -345,7 +346,7 @@ public abstract class Extension {
     }
 
     /**
-     * Returns an exUsed to lookup other extensions.
+     * Use another extension by acquiring an instance of its subtension.
      * <p>
      * Only subtensions of extensions that have been explicitly registered as dependencies, for example, by calling using
      * {@link #$dependsOn(Class...)} may be specified as arguments to this method.
@@ -406,7 +407,7 @@ public abstract class Extension {
     protected static void $cycleBreaker(Class<? extends Extension>... extensions) {
         // A -DependsOn(B)
         // B -cycleBreaker(A) // Man den scanner den ikke, den markere den bare
-        
+
         // Specified extension must have a dependency on this extension
         // And must be in same package
         throw new UnsupportedOperationException();

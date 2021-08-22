@@ -19,6 +19,7 @@ import zandbox.packed.hooks.AccessibleFieldHook;
 /** A model create from an {@link AccessibleFieldHook} annotation. */
 public final class AccessibleFieldBootstrapModel extends AbstractBootstrapModel {
 
+    // Maaske i virkeligheden bare have et ConcurrentHashMap<Thread, AFH>?
     private static final ThreadLocal<AccessibleFieldHook> ANNOTATION = new ThreadLocal<>();
 
     /** A MethodHandle that can invoke {@link OldFieldHook.Bootstrap#bootstrap}. */

@@ -1,7 +1,8 @@
-package app.packed.file;
+package app.packed.file.usage;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.container.BaseAssembly;
+import app.packed.file.FileExtension;
 
 abstract class Plugin extends BaseAssembly {
 

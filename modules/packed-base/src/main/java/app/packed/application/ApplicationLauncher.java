@@ -1,6 +1,5 @@
 package app.packed.application;
 
-import app.packed.cli.CliWirelets;
 import app.packed.container.Wirelet;
 
 public interface ApplicationLauncher<A> {
@@ -14,9 +13,9 @@ public interface ApplicationLauncher<A> {
         return launch(new Wirelet[] {});
     }
 
-    default A launch(String[] args, Wirelet... wirelets) {
-        return launch(CliWirelets.args(args).andThen(wirelets));
-    }
+//    default A launch(String[] args, Wirelet... wirelets) {
+//        return launch(CliWirelets.args(args).andThen(wirelets));
+//    }
 
     /**
      * Launches an application.

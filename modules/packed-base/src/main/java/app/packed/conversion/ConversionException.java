@@ -15,8 +15,7 @@
  */
 package app.packed.conversion;
 
-/** An exception indicating the failure of an object conversion. */
-
+/** An exception indicating the failure of a conversion. */
 public class ConversionException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

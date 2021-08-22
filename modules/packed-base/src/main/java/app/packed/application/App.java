@@ -19,7 +19,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 import app.packed.base.Completion;
-import app.packed.cli.CliWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
@@ -64,21 +63,21 @@ public final class App {
         return DRIVER;
     }
 
-    /**
-     * Runs the application.
-     * 
-     * @param assembly
-     *            the assembly to use for running
-     * @param args
-     *            program arguments
-     * @param wirelets
-     *            optional wirelets
-     * @throws RuntimeException
-     *             if the application failed to run properly
-     */
-    public static void run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        driver().launch(assembly, CliWirelets.args(args).andThen(wirelets));
-    }
+//    /**
+//     * Runs the application.
+//     * 
+//     * @param assembly
+//     *            the assembly to use for running
+//     * @param args
+//     *            program arguments
+//     * @param wirelets
+//     *            optional wirelets
+//     * @throws RuntimeException
+//     *             if the application failed to run properly
+//     */
+//    public static void run(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
+//        driver().launch(assembly, CliWirelets.args(args).andThen(wirelets));
+//    }
 
     /**
      * This method will create and start an {@link Program application} from the specified source. Blocking until the run
@@ -122,7 +121,7 @@ class MainTester {
             protected void build() {
                 link(null);
             }
-        }, args);
+        });
     }
 
     static MainTester of(Assembly<?> assembly, Wirelet... wirelets) {

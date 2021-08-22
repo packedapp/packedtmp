@@ -6,7 +6,6 @@ import java.util.function.BiFunction;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.Daemon;
 import app.packed.bean.instance.TstExt;
-import app.packed.cli.CliWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 
@@ -24,9 +23,9 @@ interface BuildProcessor<T> {
     T get();
     
     public static void main(String[] args) {
-        BuildProcessor<ApplicationMirror> p = BuildProcessor.of(Daemon::mirror, new TstExt(), CliWirelets.args("qweqwe"));
+        BuildProcessor<ApplicationMirror> p = BuildProcessor.of(Daemon::mirror, new TstExt(), Wirelet.named("qweqwe"));
         
-        BuildProcessor<Daemon> px = BuildProcessor.of(Daemon::run, new TstExt(), CliWirelets.args("qweqwe"));
+        BuildProcessor<Daemon> px = BuildProcessor.of(Daemon::run, new TstExt(), Wirelet.named("qweqwe"));
         
         System.out.println(p);
         System.out.println(px);

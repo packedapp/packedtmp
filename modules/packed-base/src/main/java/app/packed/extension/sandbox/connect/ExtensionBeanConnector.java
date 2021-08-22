@@ -29,6 +29,5 @@ class Usage extends NewExt {
     public void build() {
         ExtensionBeanConnector<MyExt, MyExtBean> b = connect(MyExtBean.class);
         System.out.println(b);
-        
     }
 }

@@ -188,6 +188,18 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @see #isExtensionUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
+
+    /**
+     * Registers an action than
+     * 
+     * @param runnable
+     *            a runnable the will be run even if the assembly fails to build
+     * 
+     */
+    // Stjael wording fra Cleaner
+    default void registerCleaner(Runnable runnable) {
+        throw new UnsupportedOperationException();
+    }
 }
 ///**
 //* Returns the extension instance.

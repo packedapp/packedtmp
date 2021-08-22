@@ -9,6 +9,7 @@ public class HelloWorld extends BaseAssembly {
 
     private static final AppImage MAIN = AppImage.of(new HelloWorld());
 
+    @Override
     protected void build() {
         provide(Foo.class);
         provide(Boo.class);
@@ -17,7 +18,7 @@ public class HelloWorld extends BaseAssembly {
     public static void main(String[] args) {
         MethodType mt = MethodType.genericMethodType(12);
         System.out.println(mt.returnType());
-        MAIN.use(args);
+        MAIN.use();
     }
 
     public static class Foo {

@@ -17,14 +17,13 @@ package app.packed.application;
 
 import app.packed.base.Completion;
 import app.packed.build.BuildException;
-import app.packed.cli.CliWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
 
 /**
- * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is typically used
- * for running GraalVM native image.
+ * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is
+ * typically used for running GraalVM native image.
  * 
  * @see App
  */
@@ -77,7 +76,7 @@ public /* primitive */ final class AppImage {
      *             if the image has already been used
      */
     public void use(String[] args, Wirelet... wirelets) {
-        image.launch(CliWirelets.args(args).andThen(wirelets));
+        image.launch(/* CliWirelets.args(args).andThen( */ wirelets);
     }
 
     public void use(Wirelet... wirelets) {
@@ -102,9 +101,10 @@ public /* primitive */ final class AppImage {
 }
 
 class MyAppMain extends BaseAssembly {
-    
+
     private static final AppImage MAIN = AppImage.of(new MyAppMain());
 
+    @Override
     protected void build() {
         installInstance("HelloWorld");
     }

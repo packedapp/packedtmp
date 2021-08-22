@@ -13,6 +13,7 @@ public final class BeanExtensionMirror extends ExtensionMirror<BeanExtension> {
     // ved ikke om vi skal have en <E> extension() fra ExtensionMirror?
     // Saa vi ikke behoever at gemme extensionen hver gang, men bare kan kalde
     // extension().
+    // Det virker kun hvis vi dropper mirrors'ene paa runtime
     private final BeanExtension extension;
 
     BeanExtensionMirror(BeanExtension extension) {

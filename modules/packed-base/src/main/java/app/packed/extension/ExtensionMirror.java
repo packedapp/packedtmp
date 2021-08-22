@@ -55,7 +55,7 @@ public class ExtensionMirror<E extends Extension> {
 
     /** {@return the container the extension is used in.} */
     public final ContainerMirror container() {
-        return extension().container.mirror();
+        return setup().container.mirror();
     }
 
     /** {@inheritDoc} */
@@ -68,23 +68,7 @@ public class ExtensionMirror<E extends Extension> {
         // If we find a valid use case we can always remove final
 
         // Check other.getType()==getType()????
-        return this == other || other instanceof ExtensionMirror<?> m && extension() == m.extension();
-    }
-
-    /**
-     * {@return the internal configuration of the extension this mirror is a part of.}
-     * 
-     * @throws InternalExtensionException
-     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
-     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
-     */
-    private ExtensionSetup extension() {
-        ExtensionSetup e = extension;
-        if (e == null) {
-            throw new InternalExtensionException(
-                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
-        }
-        return e;
+        return this == other || other instanceof ExtensionMirror<?> m && setup() == m.setup();
     }
 
     /** {@return a descriptor for the extension this mirror is a part of.} */
@@ -94,13 +78,13 @@ public class ExtensionMirror<E extends Extension> {
 
     /** {@return the type of extension this mirror is a part of.} */
     public final Class<? extends Extension> extensionType() { // extensionType() instead of type() because subclasses might want to use type()
-        return extension().extensionType;
+        return setup().extensionType;
     }
 
     /** {@inheritDoc} */
     @Override
     public final int hashCode() {
-        return extension().hashCode();
+        return setup().hashCode();
     }
 
     /**
@@ -114,6 +98,22 @@ public class ExtensionMirror<E extends Extension> {
             throw new IllegalStateException("The specified mirror has already been initialized.");
         }
         this.extension = extension;
+    }
+
+    /**
+     * {@return the mirrored extension's internal configuration.}
+     * 
+     * @throws InternalExtensionException
+     *             if called from the constructor of the mirror, or the implementation of the extension forgot to call
+     *             {@link Extension#mirrorInitialize(ExtensionMirror)} from {@link Extension#mirror()}.
+     */
+    private ExtensionSetup setup() {
+        ExtensionSetup e = extension;
+        if (e == null) {
+            throw new InternalExtensionException(
+                    "Either this method has been called from the constructor of the mirror. Or an extension forgot to invoke Extension#mirrorInitialize.");
+        }
+        return e;
     }
 
     /** {@inheritDoc} */
@@ -158,8 +158,8 @@ public class ExtensionMirror<E extends Extension> {
      * @see ContainerMirror#useExtension(Class)
      * @see #find(Class, Assembly, Wirelet...)
      * @throws NoSuchElementException
-     *             if the root container in the mirror application does not use the extension that the specified mirror is a
-     *             part of
+     *             if the root container in the mirrored application does not use the extension that the specified mirror is
+     *             a part of
      */
     public static <E extends ExtensionMirror<?>> E of(Class<E> extensionMirrorType, Assembly<?> assembly, Wirelet... wirelets) {
         return ContainerMirror.of(assembly, wirelets).useExtension(extensionMirrorType);
