@@ -60,18 +60,9 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 @MethodHook(bootstrap = MySidecar.class, extension = Extension.class)
 // I think this creates a job...
 //
-public @interface Main {
-    // forceSpawnThread???
-
-    // It can be the same thread, but I think it is a different request.
-    // spawnRequest = true;
-}
+public @interface Main {}
 
 class MySidecar extends RealMethodSidecarBootstrap {
-
-    static {
-        $requireRunnableApplication();
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -89,6 +80,7 @@ class MySidecar extends RealMethodSidecarBootstrap {
             mc.methodHandle = mh;
         });
     }
+
     protected void onInit(ApplicationSetup application, Runnable r) {
         // application.setup...
     }

@@ -29,7 +29,6 @@ public class HelloWorldAssembly extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.driver().print(new HelloWorldAssembly());
         App.run(new HelloWorldAssembly());
     }
 

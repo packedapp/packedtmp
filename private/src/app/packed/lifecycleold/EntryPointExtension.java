@@ -1,9 +1,14 @@
-package app.packed.application.entrypoint;
+package app.packed.lifecycleold;
 
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.extension.Extension;
 
 // Taenker vi godt vil have en extension...
+
+// Vi vil gerne droppe den. Hoved grunden er at applikationen godt vil bestemme om entry points'ene.
+// Altsaa vi skal jo ikke goere noget specifikt fra assemblien.
+// Det er jo dem der deployer/mapper applikationen som siger hvad der skal ske. Dvs. 
+// De kan ikke bestemme at der skal installeres en extension
 public class EntryPointExtension extends Extension {
 
     public <T extends Runnable> ApplicationBeanConfiguration<?> mainBeanInstance(T runnable) {

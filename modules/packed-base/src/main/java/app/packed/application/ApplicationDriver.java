@@ -205,6 +205,9 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     interface Builder {
 
+        default Builder noRuntime() {
+            return disableExtension(ApplicationRuntimeExtension.class);    
+        }
         /**
          * Creates a new artifact driver.
          * <p>

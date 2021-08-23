@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.byebye;
 
+import app.packed.application.ApplicationImage;
 import app.packed.container.Wirelet;
 
 /**
@@ -29,6 +30,9 @@ import app.packed.container.Wirelet;
 
 
 // Hvis vi ikke har super mange kan vi smide dem paa BuildExtension
+
+// Image = Deploy, tror ikke image er meget laengere
+
 class ApplicationImageWirelets {
     
     // Kun aktuelt for system images, ikke for sub-system images
