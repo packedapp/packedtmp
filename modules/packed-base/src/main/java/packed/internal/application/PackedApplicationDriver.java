@@ -28,7 +28,6 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationRuntime;
-import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.ApplicationRuntimeWirelets;
 import app.packed.base.Nullable;
 import app.packed.build.BuildKind;
@@ -87,7 +86,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
         this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
 
-        this.hasRuntime = !builder.noRuntime;
+        this.hasRuntime = builder.addRuntime;
         // Cannot disable ApplicationRuntimeExtension and then at the same time set a launch mode
         if (!hasRuntime && builder.launchMode != null) {
             throw new IllegalStateException("This method cannot be called when a launch mode has been set");
@@ -288,7 +287,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private Wirelet wirelet;
 
-        private boolean noRuntime;
+        private boolean addRuntime;
 
         /** {@inheritDoc} */
         @Override
@@ -299,7 +298,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             // builder.provide(Component.class).invokeExact(MH_COMPONENT, 0);
             builder.provide(ServiceLocator.class).invokeExact(MH_SERVICES, 0);
             builder.provide(String.class).invokeExact(MH_NAME, 0);
-            if (!disabledExtensions.contains(ApplicationRuntimeExtension.class)) { // Conditional add ApplicationRuntime
+            if (addRuntime) { // Conditional add ApplicationRuntime
                 builder.provide(ApplicationRuntime.class).invokeExact(MH_RUNTIME, 0);
             }
             mhConstructor = builder.findConstructor(Object.class, s -> new IllegalArgumentException(s));
@@ -354,8 +353,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         }
 
         @Override
-        public Builder noRuntime() {
-            noRuntime = false;
+        public Builder addRuntime() {
+            addRuntime = true;
             return this;
         }
     }

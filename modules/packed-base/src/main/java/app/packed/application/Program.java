@@ -185,7 +185,7 @@ interface Zapp extends Program {
 record ProgramImplementation(String name, ServiceLocator services, ApplicationRuntime runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().launchMode(InstanceState.RUNNING).build(MethodHandles.lookup(), ProgramImplementation.class);
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().addRuntime().launchMode(InstanceState.RUNNING).build(MethodHandles.lookup(), ProgramImplementation.class);
 
     /** {@inheritDoc} */
     @Override

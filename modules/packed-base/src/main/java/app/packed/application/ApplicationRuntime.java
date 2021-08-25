@@ -292,7 +292,7 @@ public interface ApplicationRuntime {
 *
 */
 final class ApplicationRuntimeImplementation {
-    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().build(MethodHandles.lookup(), Void.class);
+    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().addRuntime().build(MethodHandles.lookup(), Void.class);
 }
 
 //10 seconds is from start.. Otherwise people must use an exact deadline
