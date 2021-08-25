@@ -20,7 +20,6 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.ApplicationRuntimeExtension;
 import app.packed.application.Program;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;

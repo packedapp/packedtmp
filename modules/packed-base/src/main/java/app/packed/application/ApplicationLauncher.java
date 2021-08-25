@@ -13,9 +13,9 @@ public interface ApplicationLauncher<A> {
         return launch(new Wirelet[] {});
     }
 
-//    default A launch(String[] args, Wirelet... wirelets) {
-//        return launch(CliWirelets.args(args).andThen(wirelets));
-//    }
+    default A launch(String[] args, Wirelet... wirelets) {
+        return launch(/* CliWirelets.args(args).andThen( */wirelets);
+    }
 
     /**
      * Launches an application.

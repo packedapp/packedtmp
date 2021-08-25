@@ -82,9 +82,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * 
      * @return whether or not the applications produced by this driver are runnable
      */
-    default boolean hasRuntime() {
-        return !bannedExtensions().contains(ApplicationRuntimeExtension.class);
-    }
+    boolean hasRuntime();
 
     /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
@@ -205,9 +203,8 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      */
     interface Builder {
 
-        default Builder noRuntime() {
-            return disableExtension(ApplicationRuntimeExtension.class);    
-        }
+        Builder noRuntime();
+        
         /**
          * Creates a new artifact driver.
          * <p>

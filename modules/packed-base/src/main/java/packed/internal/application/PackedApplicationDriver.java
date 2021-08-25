@@ -73,6 +73,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Nullable
     public final Wirelet wirelet;
 
+    private final boolean hasRuntime;
+
     /**
      * Create a new application driver using the specified builder.
      * 
@@ -85,8 +87,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
         this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
 
+        this.hasRuntime = !builder.noRuntime;
         // Cannot disable ApplicationRuntimeExtension and then at the same time set a launch mode
-        if (disabledExtensions.contains(ApplicationRuntimeExtension.class) && builder.launchMode != null) {
+        if (!hasRuntime && builder.launchMode != null) {
             throw new IllegalStateException("This method cannot be called when a launch mode has been set");
         }
     }
@@ -101,6 +104,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
      */
     private PackedApplicationDriver(PackedApplicationDriver<A> existing, Wirelet wirelet) {
         this.wirelet = existing.wirelet;
+        this.hasRuntime = existing.hasRuntime;
         this.mhConstructor = existing.mhConstructor;
         this.launchMode = existing.launchMode;
         this.disabledExtensions = existing.disabledExtensions;
@@ -158,7 +162,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return realm.build;
     }
 
-    public <C extends Composer> A compose(ContainerDriver<ContainerConfiguration> containerDriver, Function<ContainerConfiguration, C> composer, ComposerAction<? super C> consumer, Wirelet... wirelets) {
+    public <C extends Composer> A compose(ContainerDriver<ContainerConfiguration> containerDriver, Function<ContainerConfiguration, C> composer,
+            ComposerAction<? super C> consumer, Wirelet... wirelets) {
         requireNonNull(consumer, "consumer is null");
         requireNonNull(composer, "composer is null");
 
@@ -283,6 +288,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private Wirelet wirelet;
 
+        private boolean noRuntime;
+
         /** {@inheritDoc} */
         @Override
         public <S> ApplicationDriver<S> build(Lookup caller, Class<? extends S> implementation, Wirelet... wirelets) {
@@ -345,6 +352,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             this.launchMode = launchMode;
             return this;
         }
+
+        @Override
+        public Builder noRuntime() {
+            noRuntime = false;
+            return this;
+        }
     }
 
     /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
@@ -370,6 +383,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         public InstanceState launchMode() {
             return application.launchMode;
         }
+    }
+
+    @Override
+    public boolean hasRuntime() {
+        return hasRuntime;
     }
 }
 // Uhh uhhh species... Job<R> kan vi lave det???
