@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.VarHandle;
 import java.util.Set;
 
+import app.packed.application.ApplicationDescriptor;
 import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.extension.Extension;
@@ -95,6 +96,11 @@ public abstract class Assembly<C extends ContainerConfiguration> {
     // I think we need to define the exact usecases
     protected Assembly(ContainerDriver<? extends C> driver) {
         this.driver = requireNonNull((PackedContainerDriver<? extends C>) driver, "driver is null");
+    }
+
+    /** {@return a descriptor for the application being built.} */
+    protected final ApplicationDescriptor application() {
+        return configuration().application();
     }
 
     /**

@@ -1,6 +1,7 @@
 module app.packed {
     exports app.packed.application;
     exports app.packed.application.host;
+    exports app.packed.application.various;
     exports app.packed.attribute;
     exports app.packed.base;
     exports app.packed.bean;

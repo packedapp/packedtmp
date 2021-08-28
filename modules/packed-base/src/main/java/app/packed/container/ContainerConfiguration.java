@@ -5,7 +5,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Set;
 
-import app.packed.application.ApplicationInfo;
+import app.packed.application.ApplicationDescriptor;
 import app.packed.component.ComponentConfiguration;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
@@ -26,13 +26,14 @@ import packed.internal.util.ThrowableUtil;
 // Eller man maa gerne kunne overskrive den, men taenker ikke Assembly kan tage andet end ContainerConfiguration...
 public non-sealed class ContainerConfiguration extends ComponentConfiguration {
 
-    /** A handle that can access superclass private ComponentConfiguration#component(). */
+    /** A method handle that can access superclass ComponentConfiguration#component(). */
     private static final MethodHandle MH_COMPONENT_CONFIGURATION_COMPONENT = MethodHandles.explicitCastArguments(
             LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ComponentConfiguration.class, "component", ComponentSetup.class),
             MethodType.methodType(ContainerSetup.class, ContainerConfiguration.class));
 
-    public ApplicationInfo applicationInfo() {
-        throw new UnsupportedOperationException();
+    /** {@return a descriptor for the application the container is a part of.} */
+    public ApplicationDescriptor application() {
+        return container().application.descriptor;
     }
 
     /** {@return the container setup instance that we are wrapping.} */
@@ -42,6 +43,17 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         } catch (Throwable e) {
             throw ThrowableUtil.orUndeclared(e);
         }
+    }
+
+    /**
+     * {@return an unmodifiable view of the extensions that are currently used}
+     * 
+     * @see #use(Class)
+     * @see BaseAssembly#extensionsTypes()
+     * @see ContainerMirror#extensionsTypes()
+     */
+    public Set<Class<? extends Extension>> extensionsTypes() {
+        return container().extensionsTypes();
     }
 
     /**
@@ -59,18 +71,7 @@ public non-sealed class ContainerConfiguration extends ComponentConfiguration {
         return container().isExtensionUsed(extensionType);
     }
 
-    /**
-     * {@return an unmodifiable view of the extensions that are currently used}
-     * 
-     * @see #use(Class)
-     * @see BaseAssembly#extensionsTypes()
-     * @see ContainerMirror#extensionsTypes()
-     */
-    public Set<Class<? extends Extension>> extensionsTypes() {
-        return container().extensionsTypes();
-    }
-
-    /** {@inheritDoc} */
+    /** {@return a mirror for the container.} */
     @Override
     public ContainerMirror mirror() {
         return container().mirror();

@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.programs;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -112,7 +115,7 @@ public interface Program extends AutoCloseable {
     /**
      * Creates a new app image from the specified assembly.
      * <p>
-     * The state of the applications returned by {@link ApplicationImage#launch(Wirelet...)} will be
+     * The state of the applications returned by {@link ApplicationImage#use(Wirelet...)} will be
      * {@link InstanceState#RUNNING}. unless GuestWirelet.delayStart
      * 
      * @param assembly
@@ -121,10 +124,10 @@ public interface Program extends AutoCloseable {
      *            optional wirelets
      * @return a new app image
      * @see ApplicationImageWirelets
-     * @see ApplicationDriver#newImage(Assembly, Wirelet...)
+     * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
     static ApplicationImage<Program> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+        return driver().imageOf(assembly, wirelets);
     }
 
     /**
@@ -177,7 +180,7 @@ interface Zapp extends Program {
      * @return the new image
      */
     static ApplicationImage<Program> singleImageOf(Assembly<?> assembly, Wirelet... wirelets) {
-        return Program.driver().newImage(assembly, wirelets/* , ImageWirelet.single() */);
+        return Program.driver().imageOf(assembly, wirelets/* , ImageWirelet.single() */);
     }
 }
 
@@ -185,7 +188,7 @@ interface Zapp extends Program {
 record ProgramImplementation(String name, ServiceLocator services, ApplicationRuntime runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().addRuntime().launchMode(InstanceState.RUNNING).build(MethodHandles.lookup(), ProgramImplementation.class);
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable().launchMode(InstanceState.RUNNING).build(MethodHandles.lookup(), ProgramImplementation.class);
 
     /** {@inheritDoc} */
     @Override

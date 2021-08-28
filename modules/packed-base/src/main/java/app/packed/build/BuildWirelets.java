@@ -30,7 +30,7 @@ import packed.internal.container.InternalWirelet;
 
 /**
  * Wirelets that can be specified at when building an application. Attempts to use them with
- * {@link ApplicationImage#launch(Wirelet...)} will fail with {@link IllegalArgumentException}.
+ * {@link ApplicationImage#use(Wirelet...)} will fail with {@link IllegalArgumentException}.
  */
 // Jeg tror den doer og ryger over paa andre wirelets...
 // Saa vi udelukkende gruppere dem efter type...
@@ -39,6 +39,24 @@ public final class BuildWirelets {
 
     /** Not for you my friend. */
     private BuildWirelets() {}
+
+    public static Wirelet disableRuntimeWirelets() {
+        // En optimering der goer at vi ved der aldrig kommer nogle runtime wirelets
+        // Taenker kun den er brugbar for saadan noget som Session der skal spawne hurtigt
+        // Men altsaa hvad fx med navn
+
+        // driver.named()
+        throw new UnsupportedOperationException();
+    }
+
+    // Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
+    // vi har processeret alle wirelets
+    // Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
+    // eller selvstaendig metode -> Er nok den bedste
+    @Deprecated
+    static Wirelet reusableImage() {
+        throw new UnsupportedOperationException();
+    }
 
     // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
     static Wirelet delayToRuntime(Function<InstantiationContext, app.packed.container.Wirelet> wireletSupplier) {
@@ -53,12 +71,14 @@ public final class BuildWirelets {
     static Wirelet delayToRuntime(Wirelet wirelet) {
         throw new UnsupportedOperationException();
     }
+
     // Maaske er det en build wirelet???
     // Taenker
     @SafeVarargs
     public static Wirelet disableExtension(Class<? extends Extension>... extensionTypes) {
         throw new UnsupportedOperationException();
     }
+
     /**
      * Returns a 'spying' wirelet that will perform the specified action every time a component has been wired.
      * <p>

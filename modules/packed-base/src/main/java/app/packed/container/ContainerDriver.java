@@ -13,6 +13,7 @@ import packed.internal.container.PackedContainerDriver;
 
 // Altsaa hvordan er det lige praecis ContainerConfiguration skal faa ekstra information?
 // Vi er vist enige om at vi ikke gider kunne overskrive den, bare for at 
+// Tror ContainerConfiguration doer, lad os se hvad vi goer med ApplicationDriver
 
 //// Altsaa den er brugbart, hvis vi supportere (mest for extensions) at vi kalder
 // ContainerConfiguration newContainer(ContainerDriver<?> driver);
@@ -32,16 +33,17 @@ public sealed interface ContainerDriver<C extends ContainerConfiguration> permit
     Set<Class<? extends Extension>> bannedExtensions();
 
     /** {@return any extension this driver is a part of.} */
-    Optional<Class<? extends Extension>> extension(); //igen Packed, Extension, user, 
-    
+    Optional<Class<? extends Extension>> extension(); // igen Packed, Extension, user,
+
     /** {@return the default driver that is used to configure containers.} */
     public static ContainerDriver<ContainerConfiguration> defaultDriver() {
         return PackedContainerDriver.DRIVER;
     }
-    
+
     interface Builder {
         ContainerDriver<ContainerConfiguration> build();
     }
 }
+
 // manglende funktionalitet. Muligheden for at returnere et specifikt ContainerMirror
-// Tror det kraever en builder. 
+// Tror det kraever en builder. Hmm usecases??? 

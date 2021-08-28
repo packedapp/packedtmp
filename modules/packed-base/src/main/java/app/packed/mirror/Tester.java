@@ -1,8 +1,8 @@
 package app.packed.mirror;
 
-import app.packed.application.App;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.host.ApplicationHostConfiguration;
+import app.packed.application.programs.SomeApp;
 import app.packed.container.BaseAssembly;
 import app.packed.container.ContainerMirror;
 import app.packed.service.ServiceContract;
@@ -42,7 +42,7 @@ public class Tester extends BaseAssembly {
         provideInstance("asd").export();
 
         // newApplicationHost(Driver);
-        ApplicationHostConfiguration<?> host = ApplicationHostConfiguration.of(configuration(), App.driver());
+        ApplicationHostConfiguration<?> host = ApplicationHostConfiguration.of(configuration(), SomeApp.driver());
 
         host.lazy(new Tester());
         host.lazy(new Tester());

@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.base.Key;
 import app.packed.extension.Extension;
-import app.packed.extension.InternalExtensionException;
 import app.packed.extension.Extension.Subtension;
+import app.packed.extension.InternalExtensionException;
 import packed.internal.invoke.Infuser;
 import packed.internal.util.ClassUtil;
 

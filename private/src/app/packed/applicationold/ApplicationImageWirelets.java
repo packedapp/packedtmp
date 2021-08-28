@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application.byebye;
+package app.packed.applicationold;
 
 import app.packed.application.ApplicationImage;
 import app.packed.container.Wirelet;

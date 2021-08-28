@@ -10,7 +10,7 @@ import app.packed.extension.Extension;
 // Der er saa meget coolere...
 
 // Saa er det bare en almindelige bean... Der haandtere komplicere
-public class ApplicationExtension extends Extension {
+public class ApplicationHostExtension extends Extension {
 
     static {
         // skal vi have noget a.la. requires??? som automatisk installere ApplicationRuntimeException
@@ -20,7 +20,7 @@ public class ApplicationExtension extends Extension {
         //MethodHandles.classData(MethodHandles.lookup(), name, type)
     }
 
-    ApplicationExtension() {}
+    ApplicationHostExtension() {}
 
     public ApplicationMirror delayedInitialization(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();

@@ -20,7 +20,7 @@ import java.lang.invoke.MethodHandles;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
 import app.packed.container.Wirelet;
@@ -134,8 +134,8 @@ public interface Injector extends ServiceLocator {
     // <T> T injectMembers(MethodHandles.Lookup caller, T instance);
     // <T> T injectMembers(T instance, MethodHandles.Lookup lookup);
 
-    static ApplicationImage<Injector> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+    static ApplicationImage<Injector> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().imageOf(assembly, wirelets);
     }
 
     // Is this useful outside of hosts???????

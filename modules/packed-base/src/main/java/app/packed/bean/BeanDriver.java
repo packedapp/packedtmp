@@ -3,7 +3,6 @@ package app.packed.bean;
 import java.util.function.Function;
 
 public interface BeanDriver {
-
     
     static Builder builder() {
         throw new UnsupportedOperationException();

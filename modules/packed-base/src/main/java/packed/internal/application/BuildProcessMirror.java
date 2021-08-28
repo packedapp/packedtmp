@@ -16,7 +16,6 @@
 package packed.internal.application;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.build.BuildKind;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 
@@ -87,7 +86,7 @@ public interface BuildProcessMirror {
     // Instead of lets say the extension?
     // void addError(ErrorMessage message);
 
-    BuildKind target();
+    //ApplicationBuildOutput target();
 
     
     // It can be on error path...

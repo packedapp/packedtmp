@@ -38,7 +38,7 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
  * Trying to build an application with more than a single method annotated with this annotation will fail with
  * {@link BuildException}.
  * <p>
- * If the container fails to start, the method will never be invoked.
+ * If the application fails either at initialization time or startup time the annotated will not be invoked.
  * <p>
  * When the annotated method returns the container will automatically be stopped. If the annotated method fails with an
  * unhandled exception the container will automatically be shutdown with the exception being the cause.
@@ -57,9 +57,13 @@ import packed.internal.hooks.usesite.UseSiteMethodHookModel;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+// Maaske skal de vaere "manuelle" paa en eller anden maade dem der bruger Extension
 @MethodHook(bootstrap = MySidecar.class, extension = Extension.class)
 // I think this creates a job...
-//
+
+// Den skal vaere i app.packed.application fremover
+// Det er entry points for en application
+
 public @interface Main {}
 
 class MySidecar extends RealMethodSidecarBootstrap {

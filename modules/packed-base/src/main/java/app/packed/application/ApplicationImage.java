@@ -15,6 +15,7 @@
  */
 package app.packed.application;
 
+import app.packed.application.programs.Program;
 import app.packed.container.Assembly;
 import app.packed.container.Wirelet;
 import app.packed.state.sandbox.InstanceState;
@@ -43,7 +44,7 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.application.Program} or other applications.
+ * An image can be used to create new instances of {@link app.packed.application.programs.Program} or other applications.
  * Artifact images can not be used as a part of other containers, for example, via
  * 
  * @see Program#newImage(Assembly, Wirelet...)
@@ -55,13 +56,31 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
 /// ApplicationImage<String> i; String numberOfFoos = i.launch();
 
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationImage<A> extends ApplicationLauncher<A> permits PackedApplicationImage {
+public sealed interface ApplicationImage<A> permits PackedApplicationImage {
 
-    default boolean isAvailable() {
+    default boolean isUseable() {
         // An image returns true always
 
         // Optional<A> tryLaunch(Wirelet... wirelets)???
         return true;
+    }
+
+    default ApplicationImage<A> with(Wirelet... wirelets) {
+        // Egentlig er den kun her pga Launcher
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Launches an application.
+     * 
+     * @return the application interface
+     */
+    default A use() {
+        return use(new Wirelet[] {});
+    }
+
+    default A use(String[] args, Wirelet... wirelets) {
+        return use(/* CliWirelets.args(args).andThen( */wirelets);
     }
 
     /**
@@ -73,14 +92,13 @@ public sealed interface ApplicationImage<A> extends ApplicationLauncher<A> permi
      * @return an application instance
      * @see {@link ApplicationDriver#launch(Assembly, Wirelet...)}
      */
-    @Override
-    A launch(Wirelet... wirelets);
+    A use(Wirelet... wirelets);
 
     /**
      * Returns the launch mode of this image. The launch mode is the runmode target
      * <p>
      * The launch mode can be overridden by specifying a launch mode wirelet using
-     * {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
+     * {@link ExecutionWirelets#launchMode(InstanceState)}.
      * 
      * @return the launch mode of the application
      * 
@@ -88,21 +106,22 @@ public sealed interface ApplicationImage<A> extends ApplicationLauncher<A> permi
      */
     InstanceState launchMode();
 
-    // fra launchable...
     /**
-     * Returns a mirror for the application.
+     * Returns a mirror for the application if available.
      * 
+     * @param image
+     *            the image to extract the application mirror from
      * @return a mirror for the application
-     * @throws IllegalStateException
-     *             if the image is not {@link #isAvailable() available}.
      * @throws UnsupportedOperationException
-     *             if mirroring is disabled
+     *             if the specified image was not build with BuildWirelets.retainApplicationMirror()
      */
-    default ApplicationMirror mirror() {
+    static ApplicationMirror extractMirror(ApplicationImage<?> image) {
         throw new UnsupportedOperationException();
     }
 }
 
+// Man maa lave sit eget image saa
+// Og saa i driveren sige at man skal pakke launch 
 interface ZImage<A> {
     // Hmmmmmmm IDK
     // Could do sneaky throws instead

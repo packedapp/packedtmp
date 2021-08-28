@@ -21,7 +21,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.application.ManagedInstance;
+import app.packed.application.various.ManagedInstance;
 import app.packed.lifecycle.OnInitialize;
 import app.packed.lifecycle.OnStart;
 

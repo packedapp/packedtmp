@@ -20,8 +20,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import app.packed.application.ManagedInstance;
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
+import app.packed.application.various.ManagedInstance;
 import app.packed.inject.InjectionContext;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.OnStop;

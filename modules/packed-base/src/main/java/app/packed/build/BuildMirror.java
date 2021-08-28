@@ -10,6 +10,5 @@ public interface BuildMirror {
     /** {@return the root application of the build}. */
     ApplicationMirror application();
 
-    /** {@return the kind of build.} */
-    BuildKind kind();
+    // Ideen er vi har en masse metoder her der kan itererer og alle
 }

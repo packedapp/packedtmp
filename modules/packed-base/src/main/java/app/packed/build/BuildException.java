@@ -18,9 +18,10 @@ package app.packed.build;
 /**
  * An exception that is typically thrown when something goes wrong doing build phase of an application.
  * <p>
- * This exception normally indicates a programmatic error and can usually only be recovered by updating the underlying
+ * This exception normally indicates a programmatic error and can usually only be recovered by updates to the underlying
  * code.
  */
+// Taenker configurations fejl maaske smider ConfigException
 public class BuildException extends RuntimeException {
 
     /** <code>serialVersionUID</code>. */

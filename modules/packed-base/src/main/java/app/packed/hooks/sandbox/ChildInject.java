@@ -1,6 +1,6 @@
 package app.packed.hooks.sandbox;
 
-import app.packed.application.App;
+import app.packed.application.programs.SomeApp;
 import app.packed.base.Nullable;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
@@ -15,7 +15,7 @@ public class ChildInject extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.run(new ChildInject());
+        SomeApp.run(new ChildInject());
     }
 
     static class Fff extends BaseAssembly {

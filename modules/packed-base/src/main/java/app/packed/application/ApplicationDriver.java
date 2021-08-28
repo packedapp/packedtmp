@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import app.packed.application.programs.Program;
+import app.packed.application.programs.SomeApp;
 import app.packed.base.TypeToken;
 import app.packed.bean.BeanMirror;
 import app.packed.build.BuildException;
@@ -58,12 +60,12 @@ import packed.internal.application.PackedApplicationDriver;
  * @param <A>
  *            the type of application interface this driver creates.
  * @see Program#driver()
- * @see App#driver()
+ * @see SomeApp#driver()
  * @see ServiceLocator#driver()
  */
 // Environment + Application Interface + Result
 @SuppressWarnings("rawtypes")
-public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
+public sealed interface ApplicationDriver<A> permits PackedApplicationDriver,ExecutableApplicationDriver {
 
     /**
      * Returns an immutable set containing any extensions that are disabled for containers created by this driver.
@@ -74,7 +76,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @return a set of disabled extensions
      */
     Set<Class<? extends Extension>> bannedExtensions();
-    
+
     /**
      * Returns whether or not applications produced by this driver have an {@link ApplicationRuntime}.
      * <p>
@@ -85,10 +87,25 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
     boolean hasRuntime();
 
     /**
+     * Create a new application image by using the specified assembly and optional wirelets.
+     * 
+     * @param assembly
+     *            the assembly that should be used to build the image
+     * @param wirelets
+     *            optional wirelets
+     * @return the new image
+     * @throws BuildException
+     *             if the image could not be build
+     * @see Program#newImage(Assembly, Wirelet...)
+     * @see ServiceLocator#imageOf(Assembly, Wirelet...)
+     */
+    ApplicationImage<A> imageOf(Assembly<?> assembly, Wirelet... wirelets);
+
+    /**
      * Builds an application using the specified assembly and optional wirelets and returns a new instance of it.
      * <p>
      * This method is typical not called directly by end-users. But indirectly through methods such as
-     * {@link App#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
+     * {@link SomeApp#run(Assembly, Wirelet...)} and {@link Program#start(Assembly, Wirelet...)}.
      * 
      * @param assembly
      *            the main assembly of the application
@@ -102,43 +119,48 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * @throws PanicException
      *             if the application had an executing phase and it fails
      * @see Program#start(Assembly, Wirelet...)
-     * @see App#run(Assembly, Wirelet...)
+     * @see SomeApp#run(Assembly, Wirelet...)
      * @see ServiceLocator#of(Assembly, Wirelet...)
      */
+    A launch(Assembly<?> assembly, Wirelet... wirelets); // newInstance
     // Maaske er den her paa ApplicationRuntimeExtension.launch()
     // JobExtension.execute()
-    A launch(Assembly<?> assembly, Wirelet... wirelets); // newInstance
+//    A initialize(Assembly<?> assembly, Wirelet... wirelets); // newInstance
+//    
+//    
+//    
+//    A start(Assembly<?> assembly, Wirelet... wirelets); // newInstance
+//    A startAsync(Assembly<?> assembly, Wirelet... wirelets); // newInstance
+//
+//    A execute(Assembly<?> assembly, Wirelet... wirelets); // newInstance
 
     /**
      * Returns the launch mode of applications's created by this driver.
      * <p>
-     * The launch mode can be overridden by using {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
+     * The launch mode can be overridden by using {@link ExecutionWirelets#launchMode(InstanceState)}.
      * <p>
      * Drivers for applications without a runtime will always return {@link InstanceState#INITIALIZED}.
      * 
      * @return the default launch mode of application's created by this driver
      * @see #launch(Assembly, Wirelet...)
-     * @see #newImage(Assembly, Wirelet...)
-     * @see ApplicationRuntimeWirelets#launchMode(InstanceState)
+     * @see #imageOf(Assembly, Wirelet...)
+     * @see ExecutionWirelets#launchMode(InstanceState)
      */
     // runTo().. Den der fucking terminated kills me (naah)
     // Terminated -> Runs until the application has terminated
     InstanceState launchMode();
 
-    /**
-     * Create a new application image by using the specified assembly and optional wirelets.
-     * 
-     * @param assembly
-     *            the assembly that should be used to build the image
-     * @param wirelets
-     *            optional wirelets
-     * @return the new image
-     * @throws BuildException
-     *             if the image could not be build
-     * @see Program#newImage(Assembly, Wirelet...)
-     * @see ServiceLocator#newImage(Assembly, Wirelet...)
-     */
-    ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets);
+    // Foer var den som wirelet.
+    // Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
+    // vi har processeret alle wirelets
+
+    // Alternativ paa Driveren -> Fungere daarlig naar vi har child apps
+
+    // eller selvstaendig metode -> Er nok den bedste for nu
+
+    // og saa ServiceLocator.newReusableImage
+
+    ApplicationMirror mirrorOf(Assembly<?> assembly, Wirelet... wirelets);
 
     default void print(Assembly<?> assembly, Wirelet... wirelets) {
         ApplicationMirror b = ApplicationMirror.of(assembly, wirelets);
@@ -151,6 +173,10 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
             System.out.println(sb.toString());
         });
     }
+
+    // Andre image optimizations
+    //// Don't cache beans info
+    ApplicationImage<A> reusableImageOf(Assembly<?> assembly, Wirelet... wirelets);
 
     /** {@return the type (typically an interface) of the application instances created by this driver.} */
     Class<?> type();
@@ -185,7 +211,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      *             if the driver produces non-runnable applications.
      */
     default ApplicationDriver<A> withLaunchMode(InstanceState launchMode) {
-        return with(ApplicationRuntimeWirelets.launchMode(launchMode));
+        return with(ExecutionWirelets.launchMode(launchMode));
     }
 
     /**
@@ -202,10 +228,31 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
      * {@link ApplicationDriver#builder()}.
      */
     interface Builder {
+        Builder executable();
 
-        // Take default launchmode???
-        Builder addRuntime();
+
+        default Builder restartable() {
+            return this;
+        }
         
+        // Take default launchmode???
+        // Eller ogsaa eksistere de metoder kun paa driveren???
+        // initialize(), start(), startAsync(), execute()
+
+
+        /**
+         * @param launchMode
+         * @return
+         */
+        // Kan jo vaere en wirelet...
+
+        // static ApplicationRuntime.launchMode(ApplicationDriver ad);
+        // -> SelectWirelets(LaunchWirelet.class).last().launchMode();
+        // static Job.resultType()...
+        // ????
+        Builder launchMode(InstanceState launchMode);
+
+
         /**
          * Creates a new artifact driver.
          * <p>
@@ -228,22 +275,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         <A> ApplicationDriver<A> build(MethodHandles.Lookup caller, Class<A> artifactType, MethodHandle mh, Wirelet... wirelets);
 
         // cannot be instantiated, typically used if you just want to analyze
-        /**
-         * Creates a new application driver that does not support instantiation of applications. These type of drivers are
-         * typically used if you only need to use {@link ApplicationDriver#build(Assembly, Wirelet...)} but do not need to
-         * create actual application instances.
-         * 
-         * @param <A>
-         *            the application type
-         * @param applicationType
-         *            the type returned by {@link ApplicationDriver#type()}
-         * @return the new driver
-         */
-        default <A> ApplicationDriver<A> buildInstanceless(Class<A> applicationType) {
-            // Cannot be used for instantiating...
-            // Typically used if void
-            throw new UnsupportedOperationException();
-        }
 
         <A> ApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets);
 
@@ -256,27 +287,6 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * @return
          */
         Builder disableExtension(Class<? extends Extension> extensionType);
-
-        default Builder enableExtension(Class<? extends Extension> extensionType) {
-            return this;
-        }
-
-        // prerequisite
-        default <E extends Extension> Builder enableExtension(Class<? extends E> extensionType, Consumer<E> onInit) {
-            return this;
-        }
-
-        default <E extends Extension> Builder enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationInfo, E> onInit) {
-            return this;
-        }
-
-        default <E extends Extension> Builder requireAssembly(Class<? extends Assembly<?>> assembly) {
-            return this;
-        }
-        // fx disallow(BytecodeGenExtension.class);
-        // fx disallow(ThreadExtension.class);
-        // fx disallow(FileExtension.class);
-        // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
 
         // Maaske kan man have et form for accept filter...
 
@@ -305,16 +315,12 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
         // noApplicationRuntime
 //        Builder disableApplicationRuntime(); // or notRunnable() (it was this originally)
 
-        /**
-         * @param launchMode
-         * @return
-         */
-        // Kan jo vaere en wirelet...
+        // Application can only take an assembly of this type...
 
-        // static ApplicationRuntime.launchMode(ApplicationDriver ad);
-        // -> SelectWirelets(LaunchWirelet.class).last().launchMode();
-        // static Job.resultType()...
-        Builder launchMode(InstanceState launchMode);
+        // fx disallow(BytecodeGenExtension.class);
+        // fx disallow(ThreadExtension.class);
+        // fx disallow(FileExtension.class);
+        // fx disallow(NetExtension.class); -> you want to use network.. to bad for you...
 
         /**
          * 
@@ -323,7 +329,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver {
          * 
          * @see ApplicationDriver#type()
          */
-        default Builder type(Class<?> applicationType) {
+        default Builder resultType(Class<?> applicationType) {
             throw new UnsupportedOperationException();
         }
     }
@@ -377,11 +383,6 @@ interface ApplicationDriverSandbox<A> {
         validate(assembly, wirelets).assertValid();
     }
 
-    // Tog den faktisk ud igen
-    default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(/*this*/ null, assembly, wirelets);
-    }
-
     default <T> ApplicationDriver<T> bind(Class<T> cl) {
         // Ideen er lidt at man f.eks. fra Job<R> kan binde R...
         // og sig Job.of(String.class, ....);
@@ -394,6 +395,81 @@ interface ApplicationDriverSandbox<A> {
         throw new UnsupportedOperationException();
     }
 
+    default ApplicationDriverSandbox<A> extractResultTypeFromTypeparameter(int index) {
+        // Ideen er at vi kan sige Job<T> -> Tag T ud af Job og brug den til at determined
+
+        return this;
+    }
+
+    default void fff() {
+        // ApplicationDriver.builder().enableExtension(ApplicationRuntimeExtension.class);
+        ApplicationDriverSandbox.builder().enableExtension(ServiceExtension.class, e -> e.exportAll());
+
+        ApplicationDriverSandbox.builder().enableExtension(JobExtension.class, (b, e) -> {
+            @SuppressWarnings("unchecked")
+            Class<? extends JobAssembly<?>> cl = (Class<? extends JobAssembly<?>>) b.assemblyType();
+            System.out.println(cl);
+            // e.setResultType(<T>.extract);
+            // extract <T> from Jo
+        });
+
+        // ApplicationBuildInfo = Assembly + ApplicationDriver + "Launch Context (img/delayed/instance)"
+    }
+//  /**
+//  * Will look for annotations
+//  * <p>
+//  * If you want to support your own annotations. You can do by registering your hooks
+//  * 
+//  * @return this builder
+//  */
+// // Jeg vil mene vi goer det her automatisk...
+// // Hvad hvis vi returnere forskellige typer???
+// Builder useShellAsSource();
+
+    static Builder2 builder() {
+        throw new UnsupportedOperationException();
+    }
+
+    interface Builder2 extends ApplicationDriver.Builder {
+        /**
+         * Creates a new application driver that does not support instantiation of applications. These type of drivers are
+         * typically used if you only need to use {@link ApplicationDriver#build(Assembly, Wirelet...)} but do not need to
+         * create actual application instances.
+         * 
+         * @param <A>
+         *            the application type
+         * @param applicationType
+         *            the type returned by {@link ApplicationDriver#type()}
+         * @return the new driver
+         */
+        default <A> ApplicationDriver<A> buildInstanceless(Class<A> applicationType) {
+            // Cannot be used for instantiating...
+            // Typically used if void
+            throw new UnsupportedOperationException();
+        }
+
+        @SuppressWarnings("exports")
+        default Builder2 requireAssembly(Class<? extends Assembly<?>> assembly) {
+            return this;
+        }
+
+        @SuppressWarnings("exports")
+        default <E extends Extension> Builder2 enableExtension(Class<? extends E> extensionType, BiConsumer<ApplicationDescriptor, E> onInit) {
+            return this;
+        }
+
+        // prerequisite
+        @SuppressWarnings("exports")
+        default <E extends Extension> Builder2 enableExtension(Class<? extends E> extensionType, Consumer<E> onInit) {
+            return this;
+        }
+
+        @SuppressWarnings("exports")
+        default Builder2 enableExtension(Class<? extends Extension> extensionType) {
+            return this;
+        }
+    }
+
     default TypeToken<? super A> instanceTypeToken() {
         // What if Job<?>
         throw new UnsupportedOperationException();
@@ -401,12 +477,6 @@ interface ApplicationDriverSandbox<A> {
 
     default <T extends Throwable> A launchThrowing(Assembly<?> assembly, Class<T> throwing, Wirelet... wirelets) throws T {
         throw new UnsupportedOperationException();
-    }
-
-    default ApplicationDriverSandbox<A> extractResultTypeFromTypeparameter(int index) {
-        // Ideen er at vi kan sige Job<T> -> Tag T ud af Job og brug den til at determined
-
-        return this;
     }
 
     default A launchThrowing(Assembly<?> assembly, Wirelet... wirelets) throws Throwable {
@@ -436,34 +506,14 @@ interface ApplicationDriverSandbox<A> {
     // Ideen er at man kan smide checked exceptions...
     // Alternativt er man returnere en Completion<R>. hvor man saa kan f.eks. kalde orThrows()..
 
+    // Tog den faktisk ud igen
+    default ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
+        throw new UnsupportedOperationException();
+    }
+
     default void printContracts(Assembly<?> assembly, Wirelet... wirelets) {
 
     }
-
-    default void fff() {
-        //ApplicationDriver.builder().enableExtension(ApplicationRuntimeExtension.class);
-        ApplicationDriver.builder().enableExtension(ServiceExtension.class, e -> e.exportAll());
-
-        ApplicationDriver.builder().enableExtension(JobExtension.class, (b, e) -> {
-            @SuppressWarnings("unchecked")
-            Class<? extends JobAssembly<?>> cl = (Class<? extends JobAssembly<?>>) b.assemblyType();
-            System.out.println(cl);
-            // e.setResultType(<T>.extract);
-            // extract <T> from Jo
-        });
-
-        // ApplicationBuildInfo = Assembly + ApplicationDriver + "Launch Context (img/delayed/instance)"
-    }
-//  /**
-//  * Will look for annotations
-//  * <p>
-//  * If you want to support your own annotations. You can do by registering your hooks
-//  * 
-//  * @return this builder
-//  */
-// // Jeg vil mene vi goer det her automatisk...
-// // Hvad hvis vi returnere forskellige typer???
-// Builder useShellAsSource();
 
     Validation validate(Assembly<?> assembly, Wirelet... wirelets);
 
@@ -507,6 +557,15 @@ interface ApplicationDriverSandbox<A> {
 //        throw new UnsupportedOperationException();
 //    }
 //
+
+//default Builder named(String name) {
+//    // Er vel kun composer der skal bruge den
+//    // Ellers tager vi vel altid fra navnet paa assemblien
+//    // Og ellers tager vi vel bare navnet paa composeren.
+//    // Eller applications interfaced?
+//    throw new UnsupportedOperationException();
+//}
+
 //    interface Builder<T> {
 //
 //

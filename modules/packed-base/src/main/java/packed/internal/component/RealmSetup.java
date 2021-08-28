@@ -22,8 +22,8 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.util.ArrayList;
 
+import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.base.Nullable;
-import app.packed.build.BuildKind;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
@@ -94,9 +94,9 @@ public final class RealmSetup {
         // this.current = requireNonNull(extension);
     }
 
-    public RealmSetup(PackedApplicationDriver<?> applicationDriver, BuildKind buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
+    public RealmSetup(PackedApplicationDriver<?> applicationDriver, ApplicationDescriptorOutput buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
         this.realmType = assembly.getClass();
-        this.build = new BuildSetup(applicationDriver, this, buildTarget, wirelets);
+        this.build = new BuildSetup(applicationDriver, buildTarget, this, wirelets);
         this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
@@ -104,7 +104,7 @@ public final class RealmSetup {
 
     public RealmSetup(PackedApplicationDriver<?> applicationDriver, ComposerAction<? /* extends Composer<?> */> composer, Wirelet[] wirelets) {
         this.realmType = composer.getClass();
-        this.build = new BuildSetup(applicationDriver, this, BuildKind.INSTANCE, wirelets);
+        this.build = new BuildSetup(applicationDriver, ApplicationDescriptorOutput.INSTANCE, this, wirelets);
         this.root = build.application.container;
         this.extensionType = null;
         wireCommit(root);
@@ -120,7 +120,7 @@ public final class RealmSetup {
         this.realmType = assembly.getClass();
         this.build = existing.build;
         this.extensionType = null;
-        this.root = new ContainerSetup(build.application, this,  build.application.container.lifetime, driver, linkTo, wirelets);
+        this.root = new ContainerSetup(build.application, this, build.application.container.lifetime, driver, linkTo, wirelets);
     }
 
     public RealmAccessor accessor() {
@@ -191,7 +191,7 @@ public final class RealmSetup {
 
     public void wireCommit(ComponentSetup component) {
         current = component;
-        
+
         // TODO: Move to class I think
         if (component instanceof ContainerSetup container) {
             if (container.containerParent == null || container.containerParent.realm != this) {

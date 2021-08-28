@@ -33,7 +33,7 @@ import packed.internal.application.ApplicationLaunchContext;
 public abstract class Contract {
 
     /** A daemon driver. */
-    private static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder().addRuntime()
+    private static final ApplicationDriver<Completion> DAEMON = ApplicationDriver.builder().executable()
             .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** {@inheritDoc} */

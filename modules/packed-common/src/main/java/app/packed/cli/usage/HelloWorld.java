@@ -2,12 +2,12 @@ package app.packed.cli.usage;
 
 import java.lang.invoke.MethodType;
 
-import app.packed.application.AppImage;
+import app.packed.application.programs.SomeAppImage;
 import app.packed.container.BaseAssembly;
 
 public class HelloWorld extends BaseAssembly {
 
-    private static final AppImage MAIN = AppImage.of(new HelloWorld());
+    private static final SomeAppImage MAIN = SomeAppImage.of(new HelloWorld());
 
     @Override
     protected void build() {

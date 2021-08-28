@@ -15,7 +15,7 @@
  */
 package app.packed.application.entrypoint;
 
-import app.packed.application.App;
+import app.packed.application.programs.SomeApp;
 import app.packed.container.BaseAssembly;
 
 /**
@@ -26,10 +26,12 @@ public class HelloWorldAssembly extends BaseAssembly {
     @Override
     protected void build() {
         install(SomeBean.class);
+        new Exception().printStackTrace();
     }
 
     public static void main(String[] args) {
-        App.run(new HelloWorldAssembly());
+        SomeApp.driver().mirrorOf(new HelloWorldAssembly());
+//        SomeApp.run(new HelloWorldAssembly());
     }
 
     public static class SomeBean {

@@ -573,8 +573,8 @@ public abstract class Extension {
 //    }
 
     /**
-     * A Subtension is the main way for one extension to use another extension. If you are an end-user you will most likely
-     * never have to deal with these type of classes.
+     * A Subtension is the main way for one extension to use another extension. Unless you are developing new extensions you
+     * will most likely never have to deal with these type of classes.
      * <p>
      * 
      * 

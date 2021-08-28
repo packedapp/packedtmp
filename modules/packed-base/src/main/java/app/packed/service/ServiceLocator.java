@@ -23,7 +23,9 @@ import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationMirror;
 import app.packed.base.Key;
+import app.packed.base.Reflectable;
 import app.packed.base.TypeToken;
 import app.packed.container.Assembly;
 import app.packed.container.ComposerAction;
@@ -156,6 +158,7 @@ public interface ServiceLocator extends ServiceRegistry {
      *            the transmutation action
      * @return the new service locator
      */
+    @Reflectable
     ServiceLocator spawn(ComposerAction<ServiceComposer> transmuter);
 
     /**
@@ -213,6 +216,18 @@ public interface ServiceLocator extends ServiceRegistry {
     }
 
     /**
+     * Returns an application driver that can be used to create standalone service locator instances.
+     * 
+     * @return an application driver
+     * @see #imageOf(Assembly, Wirelet...)
+     * @see #of(Consumer)
+     * @see #of(Assembly, Wirelet...)
+     */
+    static ApplicationDriver<ServiceLocator> driver() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Creates a new service locator image from the specified assembly and optional wirelets.
      * 
      * @param assembly
@@ -222,20 +237,14 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return the new image
      * @see #driver()
      */
-    static ApplicationImage<ServiceLocator> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return driver().newImage(assembly, wirelets);
+    @Reflectable
+    static ApplicationImage<ServiceLocator> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().imageOf(assembly, wirelets);
     }
 
-    /**
-     * Returns an application driver that can be used to create standalone service locator instances.
-     * 
-     * @return an application driver
-     * @see #newImage(Assembly, Wirelet...)
-     * @see #of(Consumer)
-     * @see #of(Assembly, Wirelet...)
-     */
-    static ApplicationDriver<ServiceLocator> driver() {
-        throw new UnsupportedOperationException();
+    @Reflectable
+    static ApplicationMirror mirrorOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().mirrorOf(assembly, wirelets);
     }
 
     /** {@return a service locator that provide no services} */
@@ -253,6 +262,7 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a new service locator
      * @see #driver()
      */
+    @Reflectable
     static ServiceLocator of(Assembly<?> assembly, Wirelet... wirelets) {
         return driver().launch(assembly, wirelets);
     }
@@ -265,17 +275,24 @@ public interface ServiceLocator extends ServiceRegistry {
      * @return a new service locator
      * @see #driver()
      */
+    @Reflectable
     static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
         return PackedServiceComposer.of(action);
     }
+
+    @Reflectable
+    static ApplicationImage<ServiceLocator> reusableImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return driver().reusableImageOf(assembly, wirelets);
+    }
 }
 
-// Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
-// og saa faa den specificeret key.
-
-// Kunne godt taenke mig at finde et godt navn.
-// Naar en noegle er en super noegle???
 interface ServiceLocatorZandbox extends ServiceLocator {
+
+    // Ideen er lidt at vi tager alle keys. Hvor man kan fjerne 0..n qualififiers
+    // og saa faa den specificeret key.
+
+    // Kunne godt taenke mig at finde et godt navn.
+    // Naar en noegle er en super noegle???
 
     // may define any qualifiers
     default <T> ServiceSelection<T> select(Class<T> keyRawKeyType) {
@@ -310,11 +327,3 @@ interface ServiceLocatorZandbox extends ServiceLocator {
         throw new UnsupportedOperationException();
     }
 }
-// toRegistry...
-// or ServiceRegistry.copyOf(); Not a copy.. a view where you cannot access the instance.
-
-//* @throws IllegalStateException
-//*             if a service with the specified key exist, but the service is not ready to be consumed yet. For example,
-//*             if injecting an injector into a constructor of a service and then using the injector to try and access
-//*             other service that have not been properly initialized yet. For example, a service that depends on the
-//*             service being constructed

@@ -28,7 +28,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 
@@ -69,22 +69,22 @@ public class ImageMicro {
 
     @Benchmark
     public Program empty() {
-        return EMPTY.launch();
+        return EMPTY.use();
     }
 
     @Benchmark
     public Program useExtension() {
-        return USE_EXTENSION.launch();
+        return USE_EXTENSION.use();
     }
 
     @Benchmark
     public Program install() {
-        return INSTALL.launch();
+        return INSTALL.use();
     }
 
     @Benchmark
     public Program newExtensionAutoActivate() {
-        return INSTALL_AUTO_ACTIVATE.launch();
+        return INSTALL_AUTO_ACTIVATE.use();
     }
 
     static class MyStuff {

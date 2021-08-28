@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import app.packed.application.ApplicationDescriptor;
 import app.packed.application.ApplicationImage;
 import app.packed.container.Composer;
 import app.packed.container.ComposerAction;
@@ -68,10 +69,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     <C extends Composer> void compose(C composer, ComposerAction<? super C> action);
 
-    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * @param <E>
      *            the type of ancestor to find
@@ -108,7 +105,7 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
     /**
      * Returns whether or not the specified extension is used (in the same container) by this extension, other extensions,
-     * or user code.
+     * or application code.
      * 
      * @param extensionType
      *            the extension type to test
@@ -130,18 +127,6 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
     // Maaske bare build target...
     // Maaske vi bare skal skal have application().
     boolean isPartOfImage(); // BoundaryTypes
-
-    default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
-        // Iff at some point the extension is activated... Run the specific action
-        // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
-
-        // Kunne maaske hellere have en annoteret metode
-
-        // Skal nok ogsaa have en version der checker her og nu.
-        // Maaske der returnere en Optional
-        // Altsaa hvis vi registere en configuration sche
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Selects all container wirelets of the specified type.
@@ -188,100 +173,42 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
      * @see #isExtensionUsed(Class)
      */
     <E extends Subtension> E use(Class<E> subtensionClass);
+}
+
+interface Zandbox {
+
+    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** {@return a descriptor for the application the extension is a part of.} */
+    default ApplicationDescriptor application() {
+        throw new UnsupportedOperationException();
+    }
+
+    default <E extends Subtension> void lazyUse(Class<E> extensionType, Consumer<E> action) {
+        // Iff at some point the extension is activated... Run the specific action
+        // fx .lazyUse(ConfigurationExtension.Sub.class, c->c.registerConfSchema(xxx));
+
+        // Kunne maaske hellere have en annoteret metode
+
+        // Skal nok ogsaa have en version der checker her og nu.
+        // Maaske der returnere en Optional
+        // Altsaa hvis vi registere en configuration sche
+        throw new UnsupportedOperationException();
+    }
 
     /**
-     * Registers an action than
+     * Registers an action than run irregardless of whether or not the build fails by throwing an exception.
      * 
      * @param runnable
      *            a runnable the will be run even if the assembly fails to build
-     * 
      */
+    // Taenker det er en cleanup action der bliver koert til allersidst
+    // af hele buildet eller assemblien???
     // Stjael wording fra Cleaner
-    default void registerCleaner(Runnable runnable) {
+    default void registerBuildCleaner(Runnable runnable /* , boolean onlyRunOnFailure */ ) {
         throw new UnsupportedOperationException();
     }
+
 }
-///**
-//* Returns the extension instance.
-//* 
-//* @return the extension instance
-//* @throws InternalExtensionException
-//*             if trying to call this method from the constructor of the extension
-//*/
-//// Lad os se om den kan bruges fra hooks... eller lignende
-//Extension instance();
-
-//default boolean isConnected() {
-//// isInterConnected?
-//// isJoined (sounds very permanent)
-//throw new UnsupportedOperationException();
-//}
-//
-//boolean isConnectedInSameApplication();
-//
-//boolean isConnectedWithParent();
-
-// Previously used for getting hold of an extension from a mirror..
-// I don't think we need this anymore after mirrors
-
-///**
-//* Typically used, for example, for testing.
-//* 
-//* The specified lookup must have the extension as its {@link Lookup#lookupClass()}. And
-//* {@link Lookup#hasPrivateAccess()} must return true.
-//* 
-//* <p>
-//* Calling this method after a container has been fully initialized will fail with {@link IllegalStateException}. As
-//* containers never retain extensions at runtime. I don't even know if you can call it doing initialization
-//* 
-//* @param caller
-//*            a lookup object for an extension class with {@link Lookup#hasFullPrivilegeAccess() full privilege access}
-//* @param containerComponent
-//*            the component to extract the configuration from.
-//* @return the configuration of the extension if it has been configured, otherwise empty
-//* @throws IllegalStateException
-//*             if calling this method at runtime
-//* @throws IllegalArgumentException
-//*             if the {@link Lookup#lookupClass()} of the specified caller does not extend{@link Extension}. Or if the
-//*             specified lookup object does not have full privileges
-//*/
-//// Maybe take an extension class anyway. Then users to not need to teleport if called from outside of the extension
-//// We should probably check that is has module access?
-//
-//// I don't know the exact extend we need these now. Previously, for example, ServiceContract made use of it
-//// But now I think we will extract the information from component attributes
-//@SuppressWarnings("unused")
-//private static Optional<ExtensionConfiguration> lookupConfiguration(MethodHandles.Lookup caller, Class<? super Extension> extensionClass,
-//     ComponentMirror containerComponent) {
-// requireNonNull(caller, "caller is null");
-// return Optional.ofNullable(ExtensionSetup.extractExtensionSetup(caller, containerComponent));
-//}
-//
-
-///**
-//* @param <T>
-//*            the type of extension to return
-//* @param caller
-//*            a lookup object for the specified extension class with {@link Lookup#hasFullPrivilegeAccess() full
-//*            privilege access}
-//* @param extensionClass
-//*            the extension that we are trying to find
-//* @param containerComponent
-//*            the container component
-//* @return the extension, or empty if no extension of the specified type is registered in the container
-//*/
-//// We current dont use then
-//@SuppressWarnings({ "unchecked", "unused" })
-//// Maaske kan vi goere noget smart fra mirrors...
-//// Bare checke at de er samme module..
-//private static <T extends Extension> Optional<T> lookupExtension(MethodHandles.Lookup caller, Class<T> extensionClass, ComponentMirror containerComponent) {
-// requireNonNull(caller, "caller is null");
-// requireNonNull(extensionClass, "extensionClass is null");
-// if (caller.lookupClass() != extensionClass) {
-//     throw new IllegalArgumentException(
-//             "The specified lookup object must have the specified extensionClass " + extensionClass + " as lookupClass, was " + caller.lookupClass());
-// }
-//
-// ExtensionSetup eb = ExtensionSetup.extractExtensionSetup(caller, containerComponent);
-// return eb == null ? Optional.empty() : Optional.of((T) eb.extensionInstance());
-//}

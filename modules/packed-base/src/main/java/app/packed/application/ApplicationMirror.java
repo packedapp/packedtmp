@@ -10,8 +10,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.host.ApplicationHost;
 import app.packed.application.host.ApplicationHostMirror;
+import app.packed.application.various.TaskListMirror;
+import app.packed.application.various.VersionableApplicationMirror;
 import app.packed.bean.BeanMirror;
-import app.packed.build.BuildKind;
 import app.packed.build.BuildMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.Operator;
@@ -42,9 +43,7 @@ public interface ApplicationMirror {
     /** {@return the component in the application}. */
     ComponentMirror component(CharSequence path);
 
-    default Operator owner() {
-        return Operator.user();
-    }
+    ApplicationDescriptor descriptor();
     
     default Stream<ComponentMirror> components() {
         return container().components();
@@ -67,6 +66,10 @@ public interface ApplicationMirror {
      */
     Set<Class<? extends Extension>> disabledExtensions();
 
+    default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
+        throw new UnsupportedOperationException();
+    }
+
     // Er det kun componenter i den application??? Ja ville jeg mene...
     // Men saa kommer vi ud i spoergsmaalet omkring er components contextualizable...
     // app.rootContainer.children() <-- does this only include children in the same
@@ -74,10 +77,6 @@ public interface ApplicationMirror {
 
     // teanker det kun er containere i samme application...
     // ellers maa man bruge container.resolve("....")
-
-    default <T extends ComponentMirror> SetView<T> findAll(Class<T> componentType, boolean includeChildApplications) {
-        throw new UnsupportedOperationException();
-    }
 
     // Skal vi have baade en der finder alle mirrors og alle extensions.
     /** { @return a set view of all extensions that are in use by the application.} */
@@ -125,7 +124,7 @@ public interface ApplicationMirror {
     /**
      * @return the application host, if this application is hosted. Otherwise empty.
      * 
-     * @see #isGuest()
+     * @see #isRoot()
      */
     Optional<ApplicationHostMirror> host();
 
@@ -134,13 +133,12 @@ public interface ApplicationMirror {
     }
 
     /**
-     * Returns whether or not this application is hosted on top of another application.
+     * {@return whether or not this application is the root application.}
      * 
-     * @return
      * @see #host()
      */
-    default boolean isGuest() {
-        return host().isEmpty();
+    default boolean isRoot() {
+        return !host().isEmpty();
     }
 
     // Wired er parent component<->child component
@@ -182,6 +180,10 @@ public interface ApplicationMirror {
         return container().name();
     }
 
+    default Operator owner() {
+        return Operator.user();
+    }
+
     default void print() {
         container().print();
     }
@@ -190,6 +192,7 @@ public interface ApplicationMirror {
         throw new UnsupportedOperationException();
     }
 
+    // eller container().use(BeanExtensionMirror.class).
     default Stream<BeanMirror> selectBeans() {
         return select(BeanMirror.class);
     }
@@ -217,18 +220,14 @@ public interface ApplicationMirror {
 
     /// Maaske flyt til ApplicationMirror.relation...
     /// Der er ingen der kommer til at lave dem selv...
-
-    public static ApplicationMirror of(ApplicationDriver<?> applicationDriver, Assembly<?> assembly, Wirelet... wirelets) {
-        return PackedApplicationDriver.MIRROR_DRIVER.build(BuildKind.MIRROR, assembly, wirelets).application.mirror();
-    }
-
-    /**
-     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
-     * application driver.}
-     */
-    public static ApplicationDriver<?> defaultMirrorDriver() {
-        return PackedApplicationDriver.MIRROR_DRIVER;
-    }
+//
+//    /**
+//     * {@return the default application driver that is used when creating mirrors without explicitly specifying an
+//     * application driver.}
+//     */
+//    public static ApplicationDriver<?> defaultMirrorDriver() {
+//        return ;
+//    }
 
     /**
      * Create
@@ -240,7 +239,7 @@ public interface ApplicationMirror {
      * @return an application mirror
      */
     public static ApplicationMirror of(Assembly<?> assembly, Wirelet... wirelets) {
-        return of(defaultMirrorDriver(), assembly, wirelets);
+        return PackedApplicationDriver.MIRROR_DRIVER.mirrorOf(assembly, wirelets);
     }
 
     // extends Relation???

@@ -17,7 +17,7 @@ package packed.internal.util;
 
 import java.util.ServiceLoader;
 
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.service.ServiceWirelets;
 

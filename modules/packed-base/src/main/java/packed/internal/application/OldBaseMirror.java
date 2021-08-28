@@ -5,8 +5,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.application.TaskListMirror;
-import app.packed.build.BuildKind;
+import app.packed.application.various.TaskListMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
 import app.packed.container.ContainerMirror;
@@ -58,9 +57,6 @@ public interface OldBaseMirror extends Mirror {
     default String name() {
         return application().name();
     }
-
-    /** {@return the build target.} */
-    BuildKind target();
 
 }
 

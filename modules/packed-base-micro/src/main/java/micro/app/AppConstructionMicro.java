@@ -27,7 +27,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 
 /**
  *
@@ -62,17 +62,17 @@ public class AppConstructionMicro {
 
     @Benchmark
     public Program emptyAppFromImage() {
-        return VariousImages.EMPTY_IMAGE.launch();
+        return VariousImages.EMPTY_IMAGE.use();
     }
 
     @Benchmark
     public Program oneComponentFromImage() {
-        return VariousImages.ONE_COMPONENT_IMAGE.launch();
+        return VariousImages.ONE_COMPONENT_IMAGE.use();
     }
 
     @Benchmark
     public Program fiveComponentsFromImage() {
-        return VariousImages.FIVE_CONTAINER_IMAGE.launch();
+        return VariousImages.FIVE_CONTAINER_IMAGE.use();
     }
 }
 // 18 may 2020

@@ -1,6 +1,6 @@
 package app.packed.lifecycle;
 
-import app.packed.application.App;
+import app.packed.application.programs.SomeApp;
 import app.packed.container.BaseAssembly;
 
 public class Tester extends BaseAssembly {
@@ -11,7 +11,7 @@ public class Tester extends BaseAssembly {
     }
 
     public static void main(String[] args) {
-        App.driver().launch(new Tester());
+        SomeApp.driver().launch(new Tester());
     }
     
     static class MyM extends BaseAssembly {

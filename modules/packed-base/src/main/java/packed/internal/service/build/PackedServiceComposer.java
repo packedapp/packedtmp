@@ -159,6 +159,8 @@ public final class PackedServiceComposer extends ServiceComposer {
         add(factory, true, false, true);
     }
 
+    // No wirelets???? 
+    // Add it to App
     public static ServiceLocator of(ComposerAction<? super ServiceComposer> action) {
         return PackedServiceComposer.toServiceLocator(new HashMap<>(), action);
    

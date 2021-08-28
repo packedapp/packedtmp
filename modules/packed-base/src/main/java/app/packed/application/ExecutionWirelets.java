@@ -20,8 +20,9 @@ import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;
  * non-runnable application will fail with {@link UnavailableExtensionException}.
  * 
  */
-public final class ApplicationRuntimeWirelets {
-    private ApplicationRuntimeWirelets() {}
+// ExecutionWirelets
+public final class ExecutionWirelets {
+    private ExecutionWirelets() {}
 
     // after which the guest will be shutdown normally
     static Wirelet deadline(Instant deadline, StopOption... options) {
@@ -63,6 +64,7 @@ public final class ApplicationRuntimeWirelets {
      * @return the launch mode wirelet
      */
     // Hvad med ServiceLocator, vi skal vel skrive noget om at nogle launch modes ikke er supporteret
+    // Taenker vi kun kan bruge den ved build mode.
     public static Wirelet launchMode(InstanceState launchMode) {
         throw new UnsupportedOperationException();
     }
@@ -104,6 +106,10 @@ public final class ApplicationRuntimeWirelets {
     // Altsaa det giver jo mening at faa en total tid taenker jeg
     // Omvendt tror jeg ikke det giver mening at tage build time med...
     // 
+    
+    // timeToStart() If the application does not start within the X time
+    // Shut it down
+    
     /**
      * 
      * @param duration

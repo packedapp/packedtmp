@@ -17,9 +17,9 @@ package app.packed.cli.usage;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.application.App;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.entrypoint.Main;
+import app.packed.application.programs.SomeApp;
 import app.packed.build.BuildWirelets;
 import app.packed.container.BaseAssembly;
 import app.packed.service.ServiceLocator;
@@ -39,7 +39,7 @@ public class HelloWorldAssembly extends BaseAssembly {
         ad.launch(new HelloWorldAssembly());
 
         // Job.compute()
-        App.run(new HelloWorldAssembly(), BuildWirelets.spyOnWire(c -> {
+        SomeApp.run(new HelloWorldAssembly(), BuildWirelets.spyOnWire(c -> {
             System.out.println(c.path() + " wired");
         }));
         

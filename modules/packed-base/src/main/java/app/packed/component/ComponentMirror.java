@@ -99,8 +99,8 @@ public sealed interface ComponentMirror
     /**
      * Returns the name of this component.
      * <p>
-     * If no name is explicitly set by the user when configuring a component. Packed will automatically assign a name that
-     * is unique among other components with the same parent.
+     * If no name is explicitly set when configuring a component. Packed will automatically assign a name that is unique
+     * among other components with the same parent.
      *
      * @return the name of this component
      */

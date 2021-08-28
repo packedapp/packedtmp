@@ -181,6 +181,9 @@ public interface ServiceRegistry extends Iterable<Service> {
 
 interface ServiceRegistryZandbox {
 
+    // public static ExecutorService unconfigurableExecutorService(ExecutorService executor) {
+    // toRegistry...
+    // or ServiceRegistry.copyOf(); Not a copy.. a view where you cannot access the instance.
     static ServiceRegistry copyOf(ServiceRegistry registrys) {
         // Vi vil gerne expose en immutable tingeling
         throw new UnsupportedOperationException();

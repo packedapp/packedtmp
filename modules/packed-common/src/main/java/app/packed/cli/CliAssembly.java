@@ -2,7 +2,7 @@ package app.packed.cli;
 
 import java.util.function.Consumer;
 
-import app.packed.application.App;
+import app.packed.application.programs.SomeApp;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
 import app.packed.container.Wirelet;
@@ -29,11 +29,11 @@ abstract class CliAssembly extends BaseAssembly {
     }
 
     public static void main(Assembly<?> assembly, String[] args, Wirelet... wirelets) {
-        App.run(assembly, wirelets);
+        SomeApp.run(assembly, wirelets);
     }
 
     public static void main(Assembly<?> assembly, Wirelet... wirelets) {
-        App.run(assembly, wirelets);
+        SomeApp.run(assembly, wirelets);
     }
 
     public static abstract class Op<T> {

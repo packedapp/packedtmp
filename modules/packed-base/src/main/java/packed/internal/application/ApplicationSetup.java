@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Set;
 
+import app.packed.application.ApplicationDescriptor;
+import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.application.ApplicationMirror;
-import app.packed.application.ApplicationRuntimeWirelets;
+import app.packed.application.ExecutionWirelets;
 import app.packed.application.host.ApplicationHostMirror;
 import app.packed.base.Nullable;
 import app.packed.build.BuildMirror;
@@ -28,23 +30,27 @@ import packed.internal.lifetime.PoolAccessor;
 /** Build-time configuration of an application. */
 public final class ApplicationSetup {
 
+    public final ApplicationDescriptor descriptor;
+
+    /** */
     public final PackedApplicationDriver<?> applicationDriver;
 
+    /** The build the application is a part of. */
     public final BuildSetup build;
 
-    /** The root container of the application. */
+    /** What we are building. */
+    public final ApplicationDescriptorOutput buildKind;
+
+    /** The root container of the application. Created in the constructor of this class. */
     public final ContainerSetup container;
 
     public final boolean hasRuntime;
 
     public final ArrayList<MethodHandle> initializers = new ArrayList<>();
 
-    boolean isImage;
-
     /**
-     * The launch mode of the application. May be updated via usage of
-     * {@link ApplicationRuntimeWirelets#launchMode(InstanceState)} at build-time. If used from an image
-     * {@link ApplicationLaunchContext#launchMode} is updated instead.
+     * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(InstanceState)}
+     * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
     InstanceState launchMode;
 
@@ -62,25 +68,24 @@ public final class ApplicationSetup {
      * @param driver
      *            the application's driver
      */
-    ApplicationSetup(BuildSetup build, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
-        this.build = build;
+    ApplicationSetup(BuildSetup build, ApplicationDescriptorOutput buildKind, RealmSetup realm, PackedApplicationDriver<?> driver, Wirelet[] wirelets) {
+        this.build = requireNonNull(build);
+        this.buildKind = buildKind;
         this.applicationDriver = driver;
         this.launchMode = requireNonNull(driver.launchMode());
 
         this.hasRuntime = driver.hasRuntime();
+
+        this.descriptor = new PackedApplicationDescriptor();
+
         // If the application has a runtime (PackedApplicationRuntime) we need to reserve a place for it in the application's
         // constant pool
-        container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DRIVER, null, wirelets);
+        this.container = new ContainerSetup(this, realm, new LifetimeSetup(null), /* fixme */ PackedContainerDriver.DRIVER, null, wirelets);
         this.runtimeAccessor = driver.hasRuntime() ? container.lifetime.pool.reserve(PackedApplicationRuntimeExtensor.class) : null;
     }
 
     public boolean hasMain() {
         return mainThread != null;
-    }
-
-    /** {@return whether or not the application is part of an image}. */
-    public boolean isImage() {
-        return isImage;
     }
 
     public MainThreadOfControl mainThread() {
@@ -91,14 +96,14 @@ public final class ApplicationSetup {
         return m;
     }
 
-    /** {@return an application adaptor that can be exposed to end-users} */
-    public BuildTimeApplicationMirror mirror() {
+    /** {@return a build-time application mirror that can be exposed to end-users} */
+    public ApplicationMirror mirror() {
         return new BuildTimeApplicationMirror();
     }
 
     /**
      * A wirelet that will set the launch mode of the application. Used by
-     * {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}.
+     * {@link ExecutionWirelets#launchMode(InstanceState)}.
      */
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
@@ -189,6 +194,11 @@ public final class ApplicationSetup {
         @Override
         public Module module() {
             return ApplicationSetup.this.container.realm.realmType().getModule();
+        }
+
+        @Override
+        public ApplicationDescriptor descriptor() {
+            return ApplicationSetup.this.descriptor;
         }
     }
 

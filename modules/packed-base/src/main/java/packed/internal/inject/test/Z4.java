@@ -18,7 +18,7 @@ package packed.internal.inject.test;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.extension.Extension;
 

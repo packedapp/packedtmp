@@ -15,7 +15,7 @@
  */
 package packed.internal.inject.test;
 
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.base.Tag;
 import app.packed.container.BaseAssembly;
 import app.packed.inject.Factory;

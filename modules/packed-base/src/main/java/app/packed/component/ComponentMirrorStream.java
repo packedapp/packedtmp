@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.extension.Extension;
 import packed.internal.component.PackedComponentStreamOption;
 

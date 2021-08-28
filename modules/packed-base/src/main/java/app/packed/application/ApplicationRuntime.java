@@ -172,7 +172,7 @@ public interface ApplicationRuntime {
 
     // TODO return Image<Host>?
     static ApplicationImage<?> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationRuntimeImplementation.DRIVER.newImage(assembly, wirelets);
+        return ApplicationRuntimeImplementation.DRIVER.imageOf(assembly, wirelets);
 //
 //        PackedBuildInfo build = PackedBuildInfo.build(assembly, false, true, null, wirelets);
 //        return new ExecutingImage(build);
@@ -292,7 +292,11 @@ public interface ApplicationRuntime {
 *
 */
 final class ApplicationRuntimeImplementation {
-    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().addRuntime().build(MethodHandles.lookup(), Void.class);
+    static final ApplicationDriver<Void> DRIVER = ApplicationDriver.builder().executable().build(MethodHandles.lookup(), Void.class);
+}
+
+enum ApplicationRuntimeState {
+
 }
 
 //10 seconds is from start.. Otherwise people must use an exact deadline

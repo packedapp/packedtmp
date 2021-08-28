@@ -1,4 +1,4 @@
-package app.packed.application;
+package app.packed.application.restart;
 
 class RestartWirelets {
 

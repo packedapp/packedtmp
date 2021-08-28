@@ -2,6 +2,8 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.function.BiConsumer;
+
 import app.packed.bean.hooks.usage.OldBeanDriver.OtherBeanDriver;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.BaseAssembly;
@@ -166,6 +168,13 @@ public class BeanExtension extends Extension {
             PackedBeanDriverBinder<T, C> b = (PackedBeanDriverBinder<T, C>) binder;
             ContainerSetup container = extension.container;
             return BeanExtension.wire(b.bindInstance(instance), container, container.realm);
+
+        }
+
+        public <T, P> void extensionPoint(ApplicationBeanConfiguration<T> myBean, BiConsumer<T, P> consumer, ApplicationBeanConfiguration<P> provider) {
+
+            // framework will call
+            // consumer(T, P) at initialization time
 
         }
 

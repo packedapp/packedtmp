@@ -1,4 +1,6 @@
-package app.packed.application;
+package app.packed.application.various;
+
+import app.packed.application.ApplicationMirror;
 
 public interface VersionableApplicationMirror extends ApplicationMirror {
 

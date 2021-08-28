@@ -1,4 +1,4 @@
-package app.packed.application.byebye;
+package app.packed.applicationold;
 
 import app.packed.application.ApplicationMirror;
 

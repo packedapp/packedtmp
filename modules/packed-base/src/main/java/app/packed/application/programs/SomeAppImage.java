@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.application;
+package app.packed.application.programs;
 
+import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationImage;
 import app.packed.base.Completion;
 import app.packed.build.BuildException;
 import app.packed.container.Assembly;
@@ -25,7 +27,7 @@ import app.packed.container.Wirelet;
  * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is
  * typically used for running GraalVM native image.
  * 
- * @see App
+ * @see SomeApp
  */
 // Optimized for running once
 
@@ -36,7 +38,7 @@ import app.packed.container.Wirelet;
 // IDK
 
 // Typically used for CLI applications
-public /* primitive */ final class AppImage {
+public /* primitive */ final class SomeAppImage {
 
     /** The image we are wrapping. */
     private final ApplicationImage<Completion> image;
@@ -49,8 +51,8 @@ public /* primitive */ final class AppImage {
      * @param wirelets
      *            optional wirelets
      */
-    private AppImage(Assembly<?> assembly, Wirelet... wirelets) {
-        this.image = App.driver().newImage(assembly, wirelets);
+    private SomeAppImage(Assembly<?> assembly, Wirelet... wirelets) {
+        this.image = SomeApp.driver().imageOf(assembly, wirelets);
     }
 
     /**
@@ -76,11 +78,11 @@ public /* primitive */ final class AppImage {
      *             if the image has already been used
      */
     public void use(String[] args, Wirelet... wirelets) {
-        image.launch(/* CliWirelets.args(args).andThen( */ wirelets);
+        image.use(/* CliWirelets.args(args).andThen( */ wirelets);
     }
 
     public void use(Wirelet... wirelets) {
-        image.launch(wirelets);
+        image.use(wirelets);
     }
 
     /**
@@ -93,16 +95,16 @@ public /* primitive */ final class AppImage {
      * @return the new image
      * @throws BuildException
      *             if the image could not be build
-     * @see ApplicationDriver#newImage(Assembly, Wirelet...)
+     * @see ApplicationDriver#imageOf(Assembly, Wirelet...)
      */
-    public static AppImage of(Assembly<?> assembly, Wirelet... wirelets) {
-        return new AppImage(assembly, wirelets);
+    public static SomeAppImage of(Assembly<?> assembly, Wirelet... wirelets) {
+        return new SomeAppImage(assembly, wirelets);
     }
 }
 
 class MyAppMain extends BaseAssembly {
 
-    private static final AppImage MAIN = AppImage.of(new MyAppMain());
+    private static final SomeAppImage MAIN = SomeAppImage.of(new MyAppMain());
 
     @Override
     protected void build() {

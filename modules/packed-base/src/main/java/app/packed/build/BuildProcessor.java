@@ -16,6 +16,7 @@ import app.packed.container.Wirelet;
 interface BuildProcessor<T> {
 
     boolean isFailed();
+    
     boolean isSuccess();
     
     List<?> errors();

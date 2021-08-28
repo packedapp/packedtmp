@@ -1,6 +1,7 @@
-package app.packed.application;
+package app.packed.application.various;
 
 //Or stereotype
+// Or ApplicationKind
 public enum ApplicationFamily {
 
     Doo,
@@ -17,7 +18,7 @@ public enum ApplicationFamily {
     // Has Runtime
     // May be Restartable, Suspendable
     // No result
-    // No entry 
+    // No entry
     // Control: Process - start/stop
     DAEMON;
 }

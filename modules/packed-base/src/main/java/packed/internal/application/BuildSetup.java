@@ -15,10 +15,8 @@
  */
 package packed.internal.application;
 
-import static java.util.Objects.requireNonNull;
-
+import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.application.ApplicationMirror;
-import app.packed.build.BuildKind;
 import app.packed.build.BuildMirror;
 import app.packed.container.Wirelet;
 import packed.internal.component.NamespaceSetup;
@@ -29,9 +27,6 @@ public final class BuildSetup {
 
     /** The (root) application we are building. */
     public final ApplicationSetup application;
-
-    /** What we are building. */
-    public final BuildKind kind;
 
     /** The namespace this build belongs to. */
     public final NamespaceSetup namespace = new NamespaceSetup();
@@ -44,30 +39,17 @@ public final class BuildSetup {
      * @param realm
      *            the realm of the application, has been created form the assembly or composer that describes the
      *            application
-     * @param target
+     * @param kind
      *            the build target
      * @param wirelets
-     *            wirelets specified by the user. May be augmented by wirelets from the application or component driver
+     *            wirelets specified by the user. Prefixed with any wirelets from the application driver
      */
-    public BuildSetup(PackedApplicationDriver<?> driver, RealmSetup realm, BuildKind target, Wirelet[] wirelets) {
-        this.kind = requireNonNull(target);
-        this.application = new ApplicationSetup(this, realm, driver, wirelets);
+    public BuildSetup(PackedApplicationDriver<?> driver, ApplicationDescriptorOutput kind, RealmSetup realm, Wirelet[] wirelets) {
+        this.application = new ApplicationSetup(this, kind, realm, driver, wirelets);
     }
 
     public BuildMirror mirror() {
         return new PackedBuildMirror();
-    }
-
-    public boolean isDone() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isFailed() {
-        throw new UnsupportedOperationException();
-    }
-
-    public boolean isSuccess() {
-        throw new UnsupportedOperationException();
     }
 
     /** Implementation of BuildMirror, exposed via {@link BuildSetup#mirror()}. */
@@ -77,10 +59,17 @@ public final class BuildSetup {
         public ApplicationMirror application() {
             return application.mirror();
         }
-
-        @Override
-        public BuildKind kind() {
-            return kind;
-        }
     }
 }
+//
+//public boolean isDone() {
+//  throw new UnsupportedOperationException();
+//}
+//
+//public boolean isFailed() {
+//  throw new UnsupportedOperationException();
+//}
+//
+//public boolean isSuccess() {
+//  throw new UnsupportedOperationException();
+//}

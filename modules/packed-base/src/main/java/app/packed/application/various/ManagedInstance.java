@@ -1,4 +1,4 @@
-package app.packed.application;
+package app.packed.application.various;
 
 import java.util.Optional;
 import java.util.Set;
@@ -6,7 +6,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import app.packed.application.ApplicationRuntime.StopOption;
-import app.packed.application.ManagedInstance.Mode;
+import app.packed.application.various.ManagedInstance.Mode;
 import app.packed.lifecycle.OnStart;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.OnStop;
@@ -58,6 +58,8 @@ public interface ManagedInstance {
 
     boolean isFailed();
 
+    Set<Mode> modes();
+
     /**
      * Starts and awaits the component if it has not already been started.
      * <p>
@@ -97,6 +99,13 @@ public interface ManagedInstance {
         return stopAsync(null);
     }
 
+    // @OnStop(mode = Mode.Failed) <-- only run if failed
+
+    // @OnStop(mode = Mode.Restarting) <-- only run if failed
+
+    // @OnStop(modeOn = {Mode.Restarting, Mode.Failed}, modeOff = {Mode.Upgrading}) <-- only run if failed and we are
+    // restarting
+
     /**
      * Initiates an orderly asynchronously shutdown of the application. In which currently running tasks will be executed,
      * but no new tasks will be started. Invocation has no additional effect if the application has already been shut down.
@@ -113,15 +122,6 @@ public interface ManagedInstance {
      */
     // Does not take null. use StopAsync
     <T> CompletableFuture<T> stopAsync(T result);
-
-    // @OnStop(mode = Mode.Failed) <-- only run if failed
-
-    // @OnStop(mode = Mode.Restarting) <-- only run if failed
-
-    // @OnStop(modeOn = {Mode.Restarting, Mode.Failed}, modeOff = {Mode.Upgrading}) <-- only run if failed and we are
-    // restarting
-
-    Set<Mode> modes();
     
     enum Mode {
         // IDK
@@ -133,25 +133,25 @@ public interface ManagedInstance {
         //
 
         
-        RESTARTING,
+        PERSISTING,
 
-        UPGRADING, // (FX i dev mode)
+        RESTARTING, // (FX i dev mode)
 
-        PERSISTING, // PAUSING (on stop, RESUMING (on start),
+        UPGRADING, // PAUSING (on stop, RESUMING (on start),
 
 
     }
 }
 
-class FleshWound {
+class ZFleshWound {
 
-    @OnStart(async = true)
-    public void restart(Object restartContext) {
-        //rc.storeX();
-    }
-    
     @OnStop(mode = Mode.RESTARTING)
     public void dd(Object restartContext) {
         //rc.store(ServerSocket, 80); // Altsaa sporgsmaalet om man ikke ville have en AppServerApp, hvor vi deployer en enkelt app
+    }
+    
+    @OnStart(async = true)
+    public void restart(Object restartContext) {
+        //rc.storeX();
     }
 }

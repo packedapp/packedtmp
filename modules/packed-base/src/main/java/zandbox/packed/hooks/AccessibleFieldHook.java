@@ -32,8 +32,8 @@ import app.packed.base.Nullable;
 import app.packed.extension.Extension;
 import app.packed.hooks.InjectableVariableHook;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel;
-import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
 import zandbox.internal.hooks2.bootstrap.AccessibleFieldBootstrapModel.BootstrapContext;
+import zandbox.internal.hooks2.bootstrap.ClassBootstrapProcessor;
 
 /**
  * A hook that allows to read and write the contents of a single field. The hook is triggered by an annotation.

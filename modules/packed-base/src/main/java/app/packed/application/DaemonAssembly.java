@@ -48,7 +48,6 @@ class MyDaemonAssembly extends DaemonAssembly {
     }
 
     public static void main(String[] args) {
-        
         start(new MyDaemonAssembly(), args);
         
         new MyDaemonAssembly().daemonStart(args);
@@ -71,6 +70,6 @@ class XDaemonAssembly extends DaemonAssembly {
     }
 
     public static void main(String[] args) {
-        IMG.launch();
+        IMG.use();
     }
 }

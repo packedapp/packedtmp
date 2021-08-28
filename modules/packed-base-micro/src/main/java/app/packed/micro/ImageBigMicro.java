@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.ApplicationImage;
-import app.packed.application.Program;
+import app.packed.application.programs.Program;
 import app.packed.container.BaseAssembly;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
@@ -136,17 +136,17 @@ public class ImageBigMicro {
 
     @Benchmark
     public Program install31() {
-        return INSTALL31.launch();
+        return INSTALL31.use();
     }
 
     @Benchmark
     public Program install253() {
-        return INSTALL253.launch();
+        return INSTALL253.use();
     }
 
     @Benchmark
     public Program install253NOS() {
-        return INSTALL253_NOS.launch();
+        return INSTALL253_NOS.use();
     }
 }
 // 30 August 2020

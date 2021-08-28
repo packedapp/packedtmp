@@ -3,9 +3,8 @@ package app.packed.application.host;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
-import app.packed.application.ApplicationRuntimeWirelets;
-import app.packed.application.InstalledApplicationConfiguration;
-import app.packed.application.Launcher;
+import app.packed.application.ApplicationImage;
+import app.packed.application.ExecutionWirelets;
 import app.packed.container.Assembly;
 import app.packed.container.ContainerConfiguration;
 import app.packed.container.Wirelet;
@@ -33,7 +32,7 @@ public class ApplicationHostConfiguration<T> {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceConfiguration<Launcher<T>> installLaunchable(Assembly<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> installLaunchable(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -47,7 +46,7 @@ public class ApplicationHostConfiguration<T> {
         throw new UnsupportedOperationException();
     }
 
-    public ServiceConfiguration<Launcher<T>> multiLauncher(Assembly<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> multiLauncher(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -94,7 +93,7 @@ public class ApplicationHostConfiguration<T> {
     }
 
     // A new application that can be launched exactly once... It is a failure to
-    public ServiceConfiguration<Launcher<T>> singleLauncher(Assembly<?> assembly, Wirelet... wirelets) {
+    public ServiceConfiguration<ApplicationImage<T>> singleLauncher(Assembly<?> assembly, Wirelet... wirelets) {
         throw new UnsupportedOperationException();
     }
 
@@ -132,7 +131,7 @@ class OldStuff<T> extends ApplicationHostConfiguration<T> {
     // Men det kan vi ikke naar det bare er en wirelet..
     // onBuild(), onInitialize()
     public void lazy2(Assembly<?> assembly, Wirelet... wirelets) {
-        install(assembly, ApplicationRuntimeWirelets.launchMode(InstanceState.UNINITIALIZED).beforeThis(wirelets));
+        install(assembly, ExecutionWirelets.launchMode(InstanceState.UNINITIALIZED).beforeThis(wirelets));
     }
 }
 

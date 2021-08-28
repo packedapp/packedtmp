@@ -2,7 +2,6 @@ package app.packed.application.host;
 
 import java.util.Set;
 
-import app.packed.application.ApplicationProducer;
 import app.packed.job.Job;
 import app.packed.job.JobAssembly;
 

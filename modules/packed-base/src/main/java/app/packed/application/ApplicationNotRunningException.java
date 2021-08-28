@@ -6,9 +6,7 @@ package app.packed.application;
  */
 // Ideen er at det er naar vi f.eks. har lazy start og @Get -> starter lazy starter en applikation
 // Men den fejler
-// Maaske et lidt daarligt navn... Kiggede lige paa den og umiddelbart sagde den mig ikke noget
-// ApplicationNotRunning
-public class UnavailableApplicationException extends RuntimeException {
+public class ApplicationNotRunningException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;
@@ -19,7 +17,7 @@ public class UnavailableApplicationException extends RuntimeException {
      * @param message
      *            the message
      */
-    public UnavailableApplicationException(String message) {
+    public ApplicationNotRunningException(String message) {
         super(message);
     }
 
@@ -31,7 +29,7 @@ public class UnavailableApplicationException extends RuntimeException {
      * @param cause
      *            the cause
      */
-    public UnavailableApplicationException(String message, Throwable cause) {
+    public ApplicationNotRunningException(String message, Throwable cause) {
         super(message, cause);
     }
 }

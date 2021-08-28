@@ -77,7 +77,7 @@ public interface Daemon extends AutoCloseable {
      * @return an application mirror for the daemon
      */
     static ApplicationMirror mirror(Assembly<?> assembly, Wirelet... wirelets) {
-        return ApplicationMirror.of(driver(), assembly, wirelets);
+        return driver().mirrorOf(assembly, wirelets);
     }
 //  Nej, kalder det ikke reflect    
 //    static ApplicationMirror reflect(Assembly<?> assembly, Wirelet... wirelets) {

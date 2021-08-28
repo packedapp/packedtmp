@@ -155,7 +155,7 @@ public final class ExtensionSetup implements ExtensionConfiguration {
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfImage() {
-        return container.application.isImage();
+        return container.application.buildKind.isImage();
     }
 
     /** {@inheritDoc} */

@@ -25,12 +25,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
+import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntime;
-import app.packed.application.ApplicationRuntimeWirelets;
+import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
-import app.packed.build.BuildKind;
 import app.packed.component.ComponentConfiguration;
 import app.packed.container.Assembly;
 import app.packed.container.Composer;
@@ -62,7 +63,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     final Set<Class<? extends Extension>> disabledExtensions;
 
-    /** The default launch mode, may be overridden via {@link ApplicationRuntimeWirelets#launchMode(InstanceState)}. */
+    private final boolean hasRuntime;
+
+    /** The default launch mode, may be overridden via {@link ExecutionWirelets#launchMode(InstanceState)}. */
     private final InstanceState launchMode;
 
     /** The method handle used for creating new application instances. */
@@ -71,8 +74,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     /** Optional wirelets that will be applied to any component created by this driver. */
     @Nullable
     public final Wirelet wirelet;
-
-    private final boolean hasRuntime;
 
     /**
      * Create a new application driver using the specified builder.
@@ -119,20 +120,24 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return mhConstructor.type().returnType();
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public Set<Class<? extends Extension>> bannedExtensions() {
+        return disabledExtensions;
+    }
+
     /**
-     * Builds an application from the specified assembly and optional wirelets.
-     * <p>
-     * This
+     * Builds an application using the specified assembly and optional wirelets.
      * 
-     * @param assembly
-     *            the root assembly
-     * @param wirelets
-     *            optional wirelets
      * @param buildTarget
      *            the build target
+     * @param assembly
+     *            the assembly of the application
+     * @param wirelets
+     *            optional wirelets
      * @return a build setup
      */
-    public BuildSetup build(BuildKind buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
+    private BuildSetup build(ApplicationDescriptorOutput buildTarget, Assembly<?> assembly, Wirelet[] wirelets) {
         // TODO we need to check that the assembly is not in the process of being built..
         // Both here and linking... We could call it from within build
 
@@ -190,22 +195,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         return ApplicationLaunchContext.launch(this, realm.build.application, null);
     }
 
-    /** {@inheritDoc} */
     @Override
-    public Set<Class<? extends Extension>> bannedExtensions() {
-        return disabledExtensions;
-    }
-
-    @SuppressWarnings("unchecked")
-    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension>... extensionTypes) {
-        // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
-        throw new UnsupportedOperationException();
+    public boolean hasRuntime() {
+        return hasRuntime;
     }
 
     /** {@inheritDoc} */
     @Override
     public A launch(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(BuildKind.INSTANCE, assembly, wirelets);
+        BuildSetup build = build(ApplicationDescriptorOutput.INSTANCE, assembly, wirelets);
         return ApplicationLaunchContext.launch(this, build.application, null);
     }
 
@@ -214,6 +212,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     @Override
     public InstanceState launchMode() {
         return launchMode;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationMirror mirrorOf(Assembly<?> assembly, Wirelet... wirelets) {
+        return build(ApplicationDescriptorOutput.MIRROR, assembly, wirelets).application.mirror();
     }
 
     /**
@@ -237,8 +241,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
     /** {@inheritDoc} */
     @Override
-    public ApplicationImage<A> newImage(Assembly<?> assembly, Wirelet... wirelets) {
-        BuildSetup build = build(BuildKind.IMAGE, assembly, wirelets);
+    public ApplicationImage<A> imageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        BuildSetup build = build(ApplicationDescriptorOutput.IMAGE, assembly, wirelets);
+        return new PackedApplicationImage<>(this, build.application);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public ApplicationImage<A> reusableImageOf(Assembly<?> assembly, Wirelet... wirelets) {
+        BuildSetup build = build(ApplicationDescriptorOutput.REUSABLE_IMAGE, assembly, wirelets);
         return new PackedApplicationImage<>(this, build.application);
     }
 
@@ -263,6 +274,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 //        return new PackedApplicationDriver<>(this, w);
 //    }
 
+    @SuppressWarnings("unchecked")
+    public PackedApplicationDriver<A> withDisabledExtensions(Class<? extends Extension>... extensionTypes) {
+        // Ideen var lidt ikke at lave disse public... Men tvinge folk til bare at bruge extensions...
+        throw new UnsupportedOperationException();
+    }
+
     /** Single implementation of {@link ApplicationDriver.Builder}. */
     public static final class Builder implements ApplicationDriver.Builder {
 
@@ -278,6 +295,8 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private static final MethodHandle MH_SERVICES = LookupUtil.lookupVirtualPrivate(MethodHandles.lookup(), ApplicationLaunchContext.class, "services",
                 ServiceLocator.class);
 
+        private boolean addRuntime;
+
         private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
 
         /** The default launch mode of the application. */
@@ -287,7 +306,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         private Wirelet wirelet;
 
-        private boolean addRuntime;
+        @Override
+        public Builder executable() {
+            addRuntime = true;
+            return this;
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -316,13 +339,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             return new PackedApplicationDriver<>(this);
         }
 
-        /** {@inheritDoc} */
-        @Override
-        public <A> PackedApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
-            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
-            return new PackedApplicationDriver<>(this);
-        }
-
 //        /** {@inheritDoc} */
 //        @Override
 //        public Builder disable(@SuppressWarnings("unchecked") Class<? extends Extension>... extensionTypes) {
@@ -332,6 +348,13 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 //            }
 //            return this;
 //        }
+
+        /** {@inheritDoc} */
+        @Override
+        public <A> PackedApplicationDriver<A> buildOld(MethodHandle mhNewShell, Wirelet... wirelets) {
+            mhConstructor = MethodHandles.empty(MethodType.methodType(Object.class, ApplicationLaunchContext.class));
+            return new PackedApplicationDriver<>(this);
+        }
 
         /** {@inheritDoc} */
         @Override
@@ -351,21 +374,15 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
             this.launchMode = launchMode;
             return this;
         }
-
-        @Override
-        public Builder addRuntime() {
-            addRuntime = true;
-            return this;
-        }
     }
 
-    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#newImage(Assembly, Wirelet...)}. */
+    /** Implementation of {@link ApplicationImage} used by {@link ApplicationDriver#imageOf(Assembly, Wirelet...)}. */
     public final /* primitive */ record PackedApplicationImage<A> (PackedApplicationDriver<A> driver, ApplicationSetup application)
             implements ApplicationImage<A> {
 
         /** {@inheritDoc} */
         @Override
-        public A launch(Wirelet... wirelets) {
+        public A use(Wirelet... wirelets) {
             requireNonNull(wirelets, "wirelets is null");
 
             // If launching an image, the user might have specified additional runtime wirelets
@@ -382,11 +399,6 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         public InstanceState launchMode() {
             return application.launchMode;
         }
-    }
-
-    @Override
-    public boolean hasRuntime() {
-        return hasRuntime;
     }
 }
 // Uhh uhhh species... Job<R> kan vi lave det???
