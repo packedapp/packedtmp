@@ -9,6 +9,7 @@ import java.util.Set;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ExecutionWirelets;
 import app.packed.application.host.ApplicationHostMirror;
@@ -52,7 +53,7 @@ public final class ApplicationSetup {
      * The launch mode of the application. May be updated via usage of {@link ExecutionWirelets#launchMode(InstanceState)}
      * at build-time. If used from an image {@link ApplicationLaunchContext#launchMode} is updated instead.
      */
-    InstanceState launchMode;
+    ApplicationLaunchMode launchMode;
 
     // sync entrypoint
     @Nullable
@@ -108,7 +109,7 @@ public final class ApplicationSetup {
     public static final class ApplicationLaunchModeWirelet extends InternalWirelet {
 
         /** The (validated) name to override with. */
-        private final InstanceState launchMode;
+        private final ApplicationLaunchMode launchMode;
 
         /**
          * Creates a new name wirelet
@@ -116,11 +117,9 @@ public final class ApplicationSetup {
          * @param launchMode
          *            the new launch mode of the application
          */
-        public ApplicationLaunchModeWirelet(InstanceState launchMode) {
+        public ApplicationLaunchModeWirelet(ApplicationLaunchMode launchMode) {
             this.launchMode = requireNonNull(launchMode, "launchMode is null");
-            if (launchMode == InstanceState.UNINITIALIZED) {
-                throw new IllegalArgumentException(InstanceState.UNINITIALIZED + " is not a valid launch mode");
-            }
+           
         }
 
         @Override

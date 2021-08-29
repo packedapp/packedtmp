@@ -28,6 +28,7 @@ import java.util.function.Function;
 import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ExecutionWirelets;
@@ -66,7 +67,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private final boolean hasRuntime;
 
     /** The default launch mode, may be overridden via {@link ExecutionWirelets#launchMode(InstanceState)}. */
-    private final InstanceState launchMode;
+    private final ApplicationLaunchMode launchMode;
 
     /** The method handle used for creating new application instances. */
     private final MethodHandle mhConstructor; // (ApplicationLaunchContext)Object
@@ -84,14 +85,12 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     private PackedApplicationDriver(Builder builder) {
         this.wirelet = builder.wirelet;
         this.mhConstructor = requireNonNull(builder.mhConstructor);
-        this.launchMode = builder.launchMode == null ? InstanceState.INITIALIZED : builder.launchMode;
+        this.launchMode = builder.launchMode;
         this.disabledExtensions = Set.copyOf(builder.disabledExtensions);
 
         this.hasRuntime = builder.addRuntime;
         // Cannot disable ApplicationRuntimeExtension and then at the same time set a launch mode
-        if (!hasRuntime && builder.launchMode != null) {
-            throw new IllegalStateException("This method cannot be called when a launch mode has been set");
-        }
+       
     }
 
     /**
@@ -210,7 +209,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
     // Kan kun saette launch mode paa application runtime
     /** {@inheritDoc} */
     @Override
-    public InstanceState launchMode() {
+    public ApplicationLaunchMode launchMode() {
         return launchMode;
     }
 
@@ -300,17 +299,11 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
         private final HashSet<Class<? extends Extension>> disabledExtensions = new HashSet<>();
 
         /** The default launch mode of the application. */
-        private InstanceState launchMode;
+        private ApplicationLaunchMode launchMode = ApplicationLaunchMode.INITIALIZED;
 
         MethodHandle mhConstructor;
 
         private Wirelet wirelet;
-
-        @Override
-        public Builder executable() {
-            addRuntime = true;
-            return this;
-        }
 
         /** {@inheritDoc} */
         @Override
@@ -366,11 +359,9 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public Builder launchMode(InstanceState launchMode) {
+        public Builder executable(ApplicationLaunchMode launchMode) {
             requireNonNull(launchMode, "launchMode is null");
-            if (launchMode == InstanceState.INITIALIZING) {
-                throw new IllegalArgumentException("'" + InstanceState.INITIALIZING + "' is not a valid launch mode");
-            }
+            addRuntime = true;
             this.launchMode = launchMode;
             return this;
         }
@@ -396,7 +387,7 @@ public final class PackedApplicationDriver<A> implements ApplicationDriver<A> {
 
         /** {@inheritDoc} */
         @Override
-        public InstanceState launchMode() {
+        public ApplicationLaunchMode launchMode() {
             return application.launchMode;
         }
     }

@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 
 import app.packed.application.ApplicationDriver;
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
 import app.packed.container.Assembly;
 import app.packed.container.BaseAssembly;
@@ -53,7 +54,7 @@ public final class SomeApp {
     // PanicException hvad jeg syntes vi skal
 
     /** A daemon driver. */
-    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder().executable().launchMode(InstanceState.RUNNING)
+    private static final ApplicationDriver<Completion> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.RUNNING)
             .buildOld(MethodHandles.empty(MethodType.methodType(Void.class, ApplicationLaunchContext.class)));
 
     /** Not today Satan, not today. */

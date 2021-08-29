@@ -19,6 +19,7 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.application.ExecutionWirelets;
 import app.packed.base.Nullable;
@@ -43,7 +44,7 @@ public final class ApplicationLaunchContext implements LifetimePoolWriteable {
     /**
      * The launch mode of the application. May be overridden via {@link ExecutionWirelets#launchMode(InstanceState)} if image.
      */
-    InstanceState launchMode;
+    ApplicationLaunchMode launchMode;
 
     /** The name of the application. May be overridden via {@link Wirelet#named(String)} if image. */
     public String name;

@@ -44,8 +44,8 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
  * No structural changes... Only whole artifacts
  * 
  * <p>
- * An image can be used to create new instances of {@link app.packed.application.programs.Program} or other applications.
- * Artifact images can not be used as a part of other containers, for example, via
+ * An image can be used to create new instances of {@link app.packed.application.programs.Program} or other
+ * applications. Artifact images can not be used as a part of other containers, for example, via
  * 
  * @see Program#newImage(Assembly, Wirelet...)
  */
@@ -57,18 +57,6 @@ import packed.internal.application.PackedApplicationDriver.PackedApplicationImag
 
 @SuppressWarnings("rawtypes")
 public sealed interface ApplicationImage<A> permits PackedApplicationImage {
-
-    default boolean isUseable() {
-        // An image returns true always
-
-        // Optional<A> tryLaunch(Wirelet... wirelets)???
-        return true;
-    }
-
-    default ApplicationImage<A> with(Wirelet... wirelets) {
-        // Egentlig er den kun her pga Launcher
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Launches an application.
@@ -104,7 +92,22 @@ public sealed interface ApplicationImage<A> permits PackedApplicationImage {
      * 
      * @see ApplicationDriver#launchMode()
      */
-    InstanceState launchMode();
+    ApplicationLaunchMode launchMode();
+}
+
+interface Zimgbox<A> {
+
+    default boolean isUseable() {
+        // An image returns true always
+
+        // Optional<A> tryLaunch(Wirelet... wirelets)???
+        return true;
+    }
+
+    default ApplicationImage<A> with(Wirelet... wirelets) {
+        // Egentlig er den kun her pga Launcher
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns a mirror for the application if available.

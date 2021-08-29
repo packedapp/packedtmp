@@ -125,10 +125,11 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver,Exe
     A launch(Assembly<?> assembly, Wirelet... wirelets); // newInstance
     // Maaske er den her paa ApplicationRuntimeExtension.launch()
     // JobExtension.execute()
+
+    /// Fungere ikke. Fordi saa skal vi jo have
+    /// mirrorInitializing();
+    /// mirrorStarting();
 //    A initialize(Assembly<?> assembly, Wirelet... wirelets); // newInstance
-//    
-//    
-//    
 //    A start(Assembly<?> assembly, Wirelet... wirelets); // newInstance
 //    A startAsync(Assembly<?> assembly, Wirelet... wirelets); // newInstance
 //
@@ -148,7 +149,7 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver,Exe
      */
     // runTo().. Den der fucking terminated kills me (naah)
     // Terminated -> Runs until the application has terminated
-    InstanceState launchMode();
+    ApplicationLaunchMode launchMode();
 
     // Foer var den som wirelet.
     // Men Problemet med en wirelet og ikke en metode er at vi ikke beregne ApplicationBuildKind foerend
@@ -228,30 +229,16 @@ public sealed interface ApplicationDriver<A> permits PackedApplicationDriver,Exe
      * {@link ApplicationDriver#builder()}.
      */
     interface Builder {
-        Builder executable();
 
+        default Builder executable() {
+            return executable(ApplicationLaunchMode.INITIALIZED);
+        }
+
+        Builder executable(ApplicationLaunchMode launchMode);
 
         default Builder restartable() {
             return this;
         }
-        
-        // Take default launchmode???
-        // Eller ogsaa eksistere de metoder kun paa driveren???
-        // initialize(), start(), startAsync(), execute()
-
-
-        /**
-         * @param launchMode
-         * @return
-         */
-        // Kan jo vaere en wirelet...
-
-        // static ApplicationRuntime.launchMode(ApplicationDriver ad);
-        // -> SelectWirelets(LaunchWirelet.class).last().launchMode();
-        // static Job.resultType()...
-        // ????
-        Builder launchMode(InstanceState launchMode);
-
 
         /**
          * Creates a new artifact driver.

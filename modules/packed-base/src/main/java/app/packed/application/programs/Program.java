@@ -21,6 +21,7 @@ import java.util.NoSuchElementException;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
+import app.packed.application.ApplicationLaunchMode;
 import app.packed.application.ApplicationRuntime;
 import app.packed.base.Key;
 import app.packed.container.Assembly;
@@ -102,7 +103,7 @@ public interface Program extends AutoCloseable {
     default <T> T use(Key<T> key) {
         return services().use(key);
     }
-    
+
     /**
      * Returns an {@link ApplicationDriver artifact driver} for {@link Program}.
      * 
@@ -188,12 +189,13 @@ interface Zapp extends Program {
 record ProgramImplementation(String name, ServiceLocator services, ApplicationRuntime runtime) implements Program {
 
     /** An driver for creating App instances. */
-    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable().launchMode(InstanceState.RUNNING).build(MethodHandles.lookup(), ProgramImplementation.class);
+    static final ApplicationDriver<Program> DRIVER = ApplicationDriver.builder().executable(ApplicationLaunchMode.RUNNING).build(MethodHandles.lookup(),
+            ProgramImplementation.class);
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "App[name = " + name() +", state = " + runtime.state() + "] ";
+        return "App[name = " + name() + ", state = " + runtime.state() + "] ";
     }
 }
 
