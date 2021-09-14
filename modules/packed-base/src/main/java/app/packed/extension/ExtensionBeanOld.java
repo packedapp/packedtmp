@@ -67,7 +67,7 @@ package app.packed.extension;
  *
  */
 // TreeBean
-public abstract non-sealed class ExtensionBeanOld<E extends Extension> implements OldExtensionMember<E> {
+public abstract class ExtensionBeanOld {
 
     // Den her gaa paa hooks paa extensor klassen...
     /// Syntes ogsaa vi skal have noget lazy paa Extension... f.eks. installer kun denne extensor hvis JFR Extensionen er i

@@ -17,7 +17,6 @@ package app.packed.extension;
 
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.container.Composer;
@@ -179,9 +178,9 @@ public sealed interface ExtensionConfiguration permits ExtensionSetup {
 
 interface Zandbox {
 
-    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
-        throw new UnsupportedOperationException();
-    }
+//    default <E extends OldExtensionMember<?>> Stream<ExtensionBeanConnection<E>> findAllAncestors(Class<E> ancestorType) {
+//        throw new UnsupportedOperationException();
+//    }
 
     default <E extends ExtensionSupport> void lazyUse(Class<E> extensionType, Consumer<E> action) {
         // Iff at some point the extension is activated... Run the specific action

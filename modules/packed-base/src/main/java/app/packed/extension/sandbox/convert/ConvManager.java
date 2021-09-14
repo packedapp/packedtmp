@@ -2,6 +2,7 @@ package app.packed.extension.sandbox.convert;
 
 import java.util.function.Function;
 
+import app.packed.extension.ExtensionMember;
 import app.packed.extension.sandbox.ExtensionService;
 import app.packed.extension.sandbox.Extensor;
 import app.packed.inject.Inject;
@@ -14,7 +15,8 @@ import app.packed.inject.Inject;
 
 
 @ExtensionService(extension = ConvExtension.class, implementation = ConvManagerImpl.class)
-public interface ConvManager extends Extensor<ConvExtension> {
+@ExtensionMember(ConvExtension.class)
+public interface ConvManager extends Extensor {
     <T> T convert(Object from, Class<T> convertTo);
 
     // Factory<ConvManagerImpl> bootstrapClass(Callsite) {

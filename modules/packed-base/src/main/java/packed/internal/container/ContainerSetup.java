@@ -379,8 +379,8 @@ public final class ContainerSetup extends ComponentSetup {
         @Override
         public Set<ExtensionMirror> extensions() {
             HashSet<ExtensionMirror> result = new HashSet<>();
-            for (ExtensionSetup es : extensions.values()) {
-                result.add(es.mirror());
+            for (ExtensionSetup extension : extensions.values()) {
+                result.add(extension.mirror());
             }
             return Set.copyOf(result);
         }
@@ -394,11 +394,11 @@ public final class ContainerSetup extends ComponentSetup {
         /** {@inheritDoc} */
         @SuppressWarnings("unchecked")
         @Override
-        public <T extends ExtensionMirror> Optional<T> findExtension(Class<T> extensionMirrorType) {
-            requireNonNull(extensionMirrorType, "extensionMirrorType is null");
+        public <T extends ExtensionMirror> Optional<T> findExtension(Class<T> mirrorType) {
+            requireNonNull(mirrorType, "mirrorType is null");
 
             // First find what extension the mirror belongs to by extracting <E> from ExtensionMirror<E extends Extension>
-            Class<? extends Extension> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(extensionMirrorType);
+            Class<? extends Extension> cl = MIRROR_TO_EXTENSION_EXTRACTOR.get(mirrorType);
 
             // See if the container uses the extension.
             ExtensionSetup extension = extensions.get(cl);
@@ -408,8 +408,8 @@ public final class ContainerSetup extends ComponentSetup {
                 // Call the extension.mirror to create a new mirror, this method is most likely overridden
                 ExtensionMirror mirror = extension.mirror();
                 // Fail if the type of mirror returned by the extension does not match the specified mirror type
-                if (!extensionMirrorType.isInstance(mirror)) {
-                    throw new InternalExtensionException(cl.getSimpleName() + ".mirror() was expected to return an instance of " + extensionMirrorType
+                if (!mirrorType.isInstance(mirror)) {
+                    throw new InternalExtensionException(cl.getSimpleName() + ".mirror() was expected to return an instance of " + mirrorType
                             + ", but returned an instance of " + mirror.getClass());
                 }
                 return (Optional<T>) Optional.of(mirror);

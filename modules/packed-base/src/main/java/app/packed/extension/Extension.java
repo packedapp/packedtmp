@@ -393,7 +393,7 @@ public abstract class Extension {
     protected static <T extends Extension, A> void $attributeAddOptional(Class<T> thisExtension, Attribute<A> attribute, Predicate<T> isPresent) {}
 
     // An instance of extensorType will automatically be installed whenever the extensor is used
-    protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>> extensorType) {}
+    //protected static <T extends Extension, A> void $autoInstallExtensor(Class<? extends ExtensionBeanOld<?>> extensorType) {}
 
     /**
      * Only parent extensions will be linked
