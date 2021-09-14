@@ -15,8 +15,8 @@
  */
 package app.packed.job;
 
-import app.packed.container.BaseBundle;
-import app.packed.container.Bundle;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Bundle;
 
 /**
  *

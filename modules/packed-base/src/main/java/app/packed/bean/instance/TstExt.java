@@ -3,7 +3,7 @@ package app.packed.bean.instance;
 import java.util.Optional;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.old.ExtensionBeanConnection;

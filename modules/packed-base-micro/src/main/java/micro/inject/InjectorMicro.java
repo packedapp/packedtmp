@@ -28,7 +28,7 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.sandbox.Injector;
 

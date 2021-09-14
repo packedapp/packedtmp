@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.bundle;
 
 /**
  *

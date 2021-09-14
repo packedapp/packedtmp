@@ -20,8 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 
 /**
  *

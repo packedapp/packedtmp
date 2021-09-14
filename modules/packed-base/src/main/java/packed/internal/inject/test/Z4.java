@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 

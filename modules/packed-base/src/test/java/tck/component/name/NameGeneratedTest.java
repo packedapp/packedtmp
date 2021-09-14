@@ -20,8 +20,8 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Wirelet;
 import testutil.util.AbstractApplicationTest;
 import testutil.util.ContainerConfigurationTester;
 

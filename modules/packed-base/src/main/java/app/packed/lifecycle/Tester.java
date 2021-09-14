@@ -1,7 +1,7 @@
 package app.packed.lifecycle;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 public class Tester extends BaseBundle {
 

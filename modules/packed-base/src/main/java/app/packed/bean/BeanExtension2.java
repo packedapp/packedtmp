@@ -4,9 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.lang.invoke.MethodHandle;
 
+import app.packed.bundle.BaseBundle;
 import app.packed.component.ComponentConfiguration;
 import app.packed.component.Operator;
-import app.packed.container.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;
 import app.packed.inject.Factory;

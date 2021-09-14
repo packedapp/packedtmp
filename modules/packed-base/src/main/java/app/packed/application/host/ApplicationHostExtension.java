@@ -1,8 +1,8 @@
 package app.packed.application.host;
 
 import app.packed.application.ApplicationMirror;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 
 // Eneste problem er at vi skal aktivere den inde vi begynder at linke

@@ -16,7 +16,7 @@
 package app.packed.cli;
 
 import app.packed.application.entrypoint.Main;
-import app.packed.container.Bundle;
+import app.packed.bundle.Bundle;
 import app.packed.extension.Extension;
 
 /**

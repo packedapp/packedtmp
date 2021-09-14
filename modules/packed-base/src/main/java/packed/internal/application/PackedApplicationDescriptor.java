@@ -1,7 +1,7 @@
 package packed.internal.application;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.container.Bundle;
+import app.packed.bundle.Bundle;
 
 public final class PackedApplicationDescriptor implements ApplicationDescriptor {
 

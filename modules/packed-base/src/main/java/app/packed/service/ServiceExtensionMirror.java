@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Key;
-import app.packed.container.Bundle;
-import app.packed.container.BundleMirror;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleMirror;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.ExtensionMirror;
 import packed.internal.service.ServiceManagerSetup;

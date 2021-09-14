@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.bundle;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;

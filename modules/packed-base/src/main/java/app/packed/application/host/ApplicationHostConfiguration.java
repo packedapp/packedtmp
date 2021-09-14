@@ -4,9 +4,9 @@ import java.util.function.Supplier;
 
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
-import app.packed.container.Bundle;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.Wirelet;
 import app.packed.service.ServiceConfiguration;
 import packed.internal.util.NativeImage;
 

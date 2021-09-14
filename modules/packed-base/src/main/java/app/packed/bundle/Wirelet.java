@@ -13,7 +13,7 @@ v * Copyright (c) 2008 Kasper Nielsen.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package app.packed.container;
+package app.packed.bundle;
 
 import static java.util.Objects.requireNonNull;
 

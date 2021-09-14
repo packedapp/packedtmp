@@ -22,9 +22,9 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import app.packed.application.ApplicationImage;
+import app.packed.bundle.Wirelet;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
-import app.packed.container.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.container.InternalWirelet;
 
@@ -59,7 +59,7 @@ public final class BuildWirelets {
     }
 
     // if (ic.isRestarting()-> ServiceWirelets.Provide("Cool") : ServiceWirelets.Provide("FirstRun)
-    static Wirelet delayToRuntime(Function<InstantiationContext, app.packed.container.Wirelet> wireletSupplier) {
+    static Wirelet delayToRuntime(Function<InstantiationContext, app.packed.bundle.Wirelet> wireletSupplier) {
         throw new UnsupportedOperationException();
     }
 

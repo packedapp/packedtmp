@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseBundle;
-import app.packed.container.BundleConfiguration;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BundleConfiguration;
 
 /** Tests {@link Program} (PackedApp). */
 public class AppTest {

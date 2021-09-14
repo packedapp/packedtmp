@@ -1,8 +1,8 @@
 package app.packed.application;
 
 import app.packed.bean.BeanMirror;
-import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Wirelet;
 
 public abstract class DaemonAssembly extends BaseBundle {
 

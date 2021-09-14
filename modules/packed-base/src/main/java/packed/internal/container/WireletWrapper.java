@@ -15,8 +15,8 @@
  */
 package packed.internal.container;
 
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
+import app.packed.bundle.Wirelet;
+import app.packed.bundle.WireletSelection;
 
 /** A holder of wirelets. */
 // Vi har faktisk ogsaa for den her paa runtime...

@@ -19,9 +19,9 @@ import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.base.Completion;
 import app.packed.build.BuildException;
-import app.packed.container.BaseBundle;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 
 /**
  * A specialization of {@link ApplicationImage} that is targeted use from the main method of a Java program. This is

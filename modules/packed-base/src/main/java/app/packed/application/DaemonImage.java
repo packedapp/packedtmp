@@ -1,6 +1,6 @@
 package app.packed.application;
 
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 // Nahhh
 public interface DaemonImage {

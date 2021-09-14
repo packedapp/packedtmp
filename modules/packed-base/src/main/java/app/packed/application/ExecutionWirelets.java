@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import app.packed.application.ApplicationRuntime.StopOption;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.UnavailableExtensionException;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.StateWirelets.ShutdownHookWirelet;

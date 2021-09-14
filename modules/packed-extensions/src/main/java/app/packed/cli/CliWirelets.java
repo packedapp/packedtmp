@@ -2,7 +2,7 @@ package app.packed.cli;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 
 public final class CliWirelets {
     private CliWirelets() {}

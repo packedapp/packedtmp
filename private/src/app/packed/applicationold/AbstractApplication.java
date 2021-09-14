@@ -1,6 +1,6 @@
 package app.packed.applicationold;
 
-import app.packed.container.Bundle;
+import app.packed.bundle.Bundle;
 
 // Den er ikke mandatory...
 // Men kan maaske 

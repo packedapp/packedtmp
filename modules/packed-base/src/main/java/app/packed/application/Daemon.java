@@ -1,8 +1,8 @@
 package app.packed.application;
 
 import app.packed.application.ApplicationRuntime.StopOption;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 
 // Ideen er lige at vi laver en deamon..
 

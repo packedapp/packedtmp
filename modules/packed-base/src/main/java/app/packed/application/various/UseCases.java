@@ -8,8 +8,8 @@ import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.application.host.ApplicationHostExtension;
 import app.packed.application.programs.SomeApp;
 import app.packed.base.Completion;
-import app.packed.container.BaseBundle;
-import app.packed.container.BundleConfiguration;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BundleConfiguration;
 import app.packed.lifecycle.OnStart;
 import app.packed.state.sandbox.InstanceState;
 

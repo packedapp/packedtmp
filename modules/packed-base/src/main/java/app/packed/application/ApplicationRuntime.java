@@ -20,8 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 import app.packed.state.sandbox.RunStateInfo;
 

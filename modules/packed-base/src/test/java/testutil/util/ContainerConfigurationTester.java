@@ -24,10 +24,10 @@ import java.util.function.Consumer;
 import app.packed.base.NamespacePath;
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanExtension;
-import app.packed.container.BaseBundle;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.BundleExtension;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.BundleExtension;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 
 /**

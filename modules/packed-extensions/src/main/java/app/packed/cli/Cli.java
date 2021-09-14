@@ -5,8 +5,8 @@ import java.util.Optional;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.SomeApp;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 
 // Maaske er det en application der udelukkende starter andre applicationer...
 // Maaske er det ikke en gang en application... Jo, fordi man skal kunne lave

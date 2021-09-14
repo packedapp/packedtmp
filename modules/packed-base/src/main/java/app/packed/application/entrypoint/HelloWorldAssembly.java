@@ -16,7 +16,7 @@
 package app.packed.application.entrypoint;
 
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 /**
  *

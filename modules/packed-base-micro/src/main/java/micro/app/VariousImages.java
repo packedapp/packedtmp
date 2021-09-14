@@ -17,7 +17,7 @@ package micro.app;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 /**
  *

@@ -1,7 +1,7 @@
 package app.packed.application;
 
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 import packed.internal.application.PackedApplicationDescriptor;
 
 // Input DAW (Application) Driver Assembly Wirelets

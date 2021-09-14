@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
 import packed.internal.container.Packlet;
 import testutil.util.AbstractApplicationTest;

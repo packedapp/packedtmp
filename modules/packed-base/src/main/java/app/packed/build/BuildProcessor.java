@@ -6,8 +6,8 @@ import java.util.function.BiFunction;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.Daemon;
 import app.packed.bean.instance.TstExt;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 
 // Ideen er lidt at du er pisse genial
 

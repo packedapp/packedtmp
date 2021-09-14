@@ -17,7 +17,7 @@ package packed.internal.inject.test;
 
 import app.packed.application.programs.Program;
 import app.packed.base.Tag;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.inject.Factory;
 import app.packed.inject.Factory2;
 

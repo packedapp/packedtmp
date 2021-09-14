@@ -16,7 +16,7 @@
 package app.packed.applicationold;
 
 import app.packed.application.ApplicationImage;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 
 /**
  * A collection of wirelets that can be specified when building an {@link ApplicationImage image}.

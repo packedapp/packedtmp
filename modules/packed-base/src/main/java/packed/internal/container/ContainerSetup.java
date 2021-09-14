@@ -25,12 +25,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import app.packed.base.Nullable;
-import app.packed.container.Bundle;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.BundleMirror;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
-import app.packed.container.sandbox.AssemblyBuildHook;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.BundleMirror;
+import app.packed.bundle.Wirelet;
+import app.packed.bundle.WireletSelection;
+import app.packed.bundle.sandbox.AssemblyBuildHook;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMember;

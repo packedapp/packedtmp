@@ -1,6 +1,6 @@
 package app.packed.file.usage;
 
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 
 final class FileWirelets {
 

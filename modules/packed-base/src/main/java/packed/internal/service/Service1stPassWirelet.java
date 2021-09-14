@@ -15,7 +15,7 @@
  */
 package packed.internal.service;
 
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 
 /** A wirelet that is processed in a first pass. */
 public abstract class Service1stPassWirelet extends Wirelet {

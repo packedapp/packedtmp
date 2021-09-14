@@ -19,11 +19,11 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 import app.packed.application.ApplicationDescriptor;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.Composer;
-import app.packed.container.ComposerAction;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.Composer;
+import app.packed.bundle.ComposerAction;
+import app.packed.bundle.Wirelet;
+import app.packed.bundle.WireletSelection;
 import app.packed.extension.old.ExtensionBeanConnection;
 import packed.internal.container.ExtensionSetup;
 

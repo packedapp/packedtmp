@@ -5,8 +5,8 @@ import static java.util.Objects.requireNonNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 
+import app.packed.bundle.Bundle;
 import app.packed.component.ComponentConfiguration;
-import app.packed.container.Bundle;
 import packed.internal.container.PackedContainerDriver;
 import packed.internal.util.LookupUtil;
 

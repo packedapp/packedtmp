@@ -3,7 +3,7 @@ package app.packed.bean.hooks.usage;
 import app.packed.bean.hooks.ApplyBeanHook;
 import app.packed.bean.hooks.BeanHookMapper;
 import app.packed.bean.hooks.BeanMethodHook;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.service.Provide;
 
 

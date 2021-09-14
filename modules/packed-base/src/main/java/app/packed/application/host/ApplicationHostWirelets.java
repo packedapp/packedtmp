@@ -1,6 +1,6 @@
 package app.packed.application.host;
 
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 
 // Folk vil nok taenke det er er til selve extensionen???
 class ApplicationHostWirelets {

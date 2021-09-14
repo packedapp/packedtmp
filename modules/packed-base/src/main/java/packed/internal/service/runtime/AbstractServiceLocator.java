@@ -27,7 +27,7 @@ import java.util.function.Predicate;
 
 import app.packed.base.Key;
 import app.packed.base.TypeToken;
-import app.packed.container.ComposerAction;
+import app.packed.bundle.ComposerAction;
 import app.packed.inject.Provider;
 import app.packed.service.Service;
 import app.packed.service.ServiceComposer;

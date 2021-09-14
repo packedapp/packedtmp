@@ -20,9 +20,9 @@ import static java.util.Objects.requireNonNull;
 import java.util.function.Consumer;
 
 import app.packed.base.Nullable;
+import app.packed.bundle.Wirelet;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentScope;
-import app.packed.container.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
 import packed.internal.application.ApplicationSetup;
 import packed.internal.application.PackedApplicationDriver;

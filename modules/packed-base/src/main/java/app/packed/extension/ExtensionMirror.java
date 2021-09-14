@@ -4,9 +4,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import app.packed.base.Nullable;
-import app.packed.container.Bundle;
-import app.packed.container.BundleMirror;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleMirror;
+import app.packed.bundle.Wirelet;
 import app.packed.service.ServiceExtension;
 import app.packed.service.ServiceExtensionMirror;
 import packed.internal.container.ExtensionSetup;
@@ -23,7 +23,7 @@ import packed.internal.container.ExtensionSetup;
  * {@link BundleMirror#findExtension(Class)}.</li>
  * <li>By calling {@link Extension#mirror()}, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror class, for example,
- * {@link ServiceExtensionMirror#use(Bundle, app.packed.container.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Bundle, app.packed.bundle.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: Subclasses of this class:

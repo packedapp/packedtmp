@@ -2,7 +2,7 @@ package app.packed.hooks.sandbox;
 
 import app.packed.application.programs.SomeApp;
 import app.packed.base.Nullable;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.extension.Extension;
 import app.packed.service.ServiceExtension;
 

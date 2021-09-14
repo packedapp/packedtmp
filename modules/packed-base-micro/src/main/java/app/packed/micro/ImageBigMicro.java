@@ -30,7 +30,7 @@ import org.openjdk.jmh.annotations.Warmup;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.programs.Program;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.micro.Letters.A;
 import app.packed.micro.Letters.NeedsA;
 

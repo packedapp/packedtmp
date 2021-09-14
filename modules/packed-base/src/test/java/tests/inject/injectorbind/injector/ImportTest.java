@@ -23,7 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import app.packed.base.Qualifier;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.inject.Factory1;
 import packed.internal.service.sandbox.Injector;
 

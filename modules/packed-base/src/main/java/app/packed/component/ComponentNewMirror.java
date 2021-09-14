@@ -3,9 +3,9 @@ package app.packed.component;
 import app.packed.application.ApplicationMirror;
 import app.packed.base.Nullable;
 import app.packed.bean.BeanNewMirror;
-import app.packed.container.Bundle;
-import app.packed.container.BundleMirror;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleMirror;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionMember;
 import app.packed.extension.InternalExtensionException;
@@ -26,7 +26,7 @@ import packed.internal.container.ExtensionSetup;
  * {@link BundleMirror#findExtension(Class)}.</li>
  * <li>Exposed directly on an extension, for example, {@link ServiceExtension#mirror()}.</li>
  * <li>By calling a factory method on the mirror itself, for example,
- * {@link ServiceExtensionMirror#use(Bundle, app.packed.container.Wirelet...)}.</li>
+ * {@link ServiceExtensionMirror#use(Bundle, app.packed.bundle.Wirelet...)}.</li>
  * </ul>
  * <p>
  * NOTE: If overriding this class, subclasses:

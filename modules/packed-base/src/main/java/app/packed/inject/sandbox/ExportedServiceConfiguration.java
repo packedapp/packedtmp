@@ -16,7 +16,7 @@
 package app.packed.inject.sandbox;
 
 import app.packed.base.Key;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.service.ServiceExtension;
 import packed.internal.service.sandbox.InjectorComposer;
 

@@ -3,8 +3,8 @@ package app.packed.mirror;
 import app.packed.application.ApplicationMirror;
 import app.packed.application.host.ApplicationHostConfiguration;
 import app.packed.application.programs.SomeApp;
-import app.packed.container.BaseBundle;
-import app.packed.container.BundleMirror;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BundleMirror;
 import app.packed.service.ServiceContract;
 import app.packed.service.ServiceExtensionMirror;
 

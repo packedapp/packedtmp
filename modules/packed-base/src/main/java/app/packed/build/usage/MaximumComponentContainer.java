@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 import app.packed.build.ApplyBuildHook;
 import app.packed.build.BuildException;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.sandbox.AssemblyBuildHook;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.sandbox.AssemblyBuildHook;
 
 @ApplyBuildHook(RandomProcX.class)
 @Target({ ElementType.TYPE})

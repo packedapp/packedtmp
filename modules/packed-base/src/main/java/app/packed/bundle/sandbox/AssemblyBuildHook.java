@@ -1,10 +1,10 @@
-package app.packed.container.sandbox;
+package app.packed.bundle.sandbox;
 
 import java.lang.invoke.MethodHandles;
 
 import app.packed.build.BuildHook;
-import app.packed.container.Bundle;
-import app.packed.container.BundleConfiguration;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleConfiguration;
 
 /**
  * An assembly hook is super cool

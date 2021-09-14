@@ -35,9 +35,9 @@ import java.util.Set;
 
 import app.packed.base.Nullable;
 import app.packed.build.BuildException;
-import app.packed.container.BaseBundle;
-import app.packed.container.Bundle;
-import app.packed.container.Composer;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Composer;
 import app.packed.extension.Extension;
 import app.packed.hooks.sandbox.InstanceHandle;
 import app.packed.lifecycle.OnInitialize;

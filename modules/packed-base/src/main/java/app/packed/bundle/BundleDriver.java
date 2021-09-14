@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.bundle;
 
 import java.util.Optional;
 import java.util.Set;

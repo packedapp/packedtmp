@@ -20,7 +20,7 @@ import java.time.DateTimeException;
 import java.time.ZoneId;
 import java.time.zone.ZoneRulesException;
 
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 
 /**
  * A small number of wirelets that can be used together with the {@link TimeExtension}.

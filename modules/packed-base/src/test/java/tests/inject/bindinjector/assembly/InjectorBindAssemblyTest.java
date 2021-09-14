@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Wirelet;
 import app.packed.inject.Factory;
 import packed.internal.service.sandbox.Injector;
 import testutil.assertj.Assertions;

@@ -19,8 +19,8 @@ import app.packed.application.ApplicationMirror;
 import app.packed.application.entrypoint.Main;
 import app.packed.application.programs.SomeApp;
 import app.packed.bean.BeanExtension;
-import app.packed.container.BaseBundle;
-import app.packed.container.BundleMirror;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.BundleMirror;
 
 /**
  *

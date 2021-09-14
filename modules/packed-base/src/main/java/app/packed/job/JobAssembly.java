@@ -4,7 +4,7 @@ import java.util.concurrent.Callable;
 
 import app.packed.application.ApplicationImage;
 import app.packed.application.ApplicationMirror;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.service.ServiceConfiguration;
 
 public abstract class JobAssembly<T> extends BaseBundle {

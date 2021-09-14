@@ -10,10 +10,10 @@ import java.util.Optional;
 
 import app.packed.application.ApplicationDescriptor;
 import app.packed.base.Nullable;
-import app.packed.container.Composer;
-import app.packed.container.ComposerAction;
-import app.packed.container.Wirelet;
-import app.packed.container.WireletSelection;
+import app.packed.bundle.Composer;
+import app.packed.bundle.ComposerAction;
+import app.packed.bundle.Wirelet;
+import app.packed.bundle.WireletSelection;
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionConfiguration;
 import app.packed.extension.ExtensionMirror;

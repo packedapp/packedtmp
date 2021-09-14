@@ -2,8 +2,8 @@ package app.packed.bean;
 
 import static java.util.Objects.requireNonNull;
 
-import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import app.packed.inject.Factory;
 import app.packed.service.ServiceBeanConfiguration;

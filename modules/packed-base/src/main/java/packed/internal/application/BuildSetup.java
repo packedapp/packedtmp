@@ -18,7 +18,7 @@ package packed.internal.application;
 import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.application.ApplicationMirror;
 import app.packed.build.BuildMirror;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 import packed.internal.component.NamespaceSetup;
 import packed.internal.component.RealmSetup;
 

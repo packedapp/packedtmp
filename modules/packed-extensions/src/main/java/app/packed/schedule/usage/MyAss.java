@@ -1,6 +1,6 @@
 package app.packed.schedule.usage;
 
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.schedule.ScheduleExtension;
 
 public class MyAss extends BaseBundle {

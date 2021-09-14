@@ -3,7 +3,7 @@ package app.packed.cli.usage;
 import java.lang.invoke.MethodType;
 
 import app.packed.application.programs.SomeAppImage;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 public class HelloWorld extends BaseBundle {
 

@@ -1,4 +1,4 @@
-package app.packed.container.sandbox;
+package app.packed.bundle.sandbox;
 
 enum AssemblyState {
 

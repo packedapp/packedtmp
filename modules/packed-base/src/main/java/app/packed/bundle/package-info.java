@@ -17,4 +17,4 @@
 /**
  * Provides a simple component based framework. And extensions
  */
-package app.packed.container;
+package app.packed.bundle;

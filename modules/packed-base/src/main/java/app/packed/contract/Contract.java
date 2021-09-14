@@ -22,8 +22,8 @@ import java.util.Set;
 import app.packed.application.ApplicationDriver;
 import app.packed.application.ApplicationLaunchMode;
 import app.packed.base.Completion;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 import packed.internal.application.ApplicationLaunchContext;
 
 /**

@@ -16,7 +16,7 @@
 package packed.internal.inject.test;
 
 import app.packed.application.programs.Program;
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 /**
  *

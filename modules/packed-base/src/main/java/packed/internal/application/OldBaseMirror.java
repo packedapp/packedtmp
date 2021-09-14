@@ -6,9 +6,9 @@ import java.util.stream.Stream;
 
 import app.packed.application.ApplicationMirror;
 import app.packed.application.various.TaskListMirror;
+import app.packed.bundle.BundleMirror;
 import app.packed.component.ComponentMirror;
 import app.packed.component.ComponentMirrorStream;
-import app.packed.container.BundleMirror;
 import app.packed.extension.Extension;
 import app.packed.mirror.Mirror;
 

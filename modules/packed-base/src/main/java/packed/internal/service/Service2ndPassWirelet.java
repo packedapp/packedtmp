@@ -19,7 +19,7 @@ import java.util.Map;
 
 import app.packed.base.Key;
 import app.packed.base.Nullable;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 import packed.internal.service.build.ServiceSetup;
 
 /**

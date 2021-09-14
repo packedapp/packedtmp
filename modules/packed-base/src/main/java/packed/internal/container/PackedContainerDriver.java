@@ -3,8 +3,8 @@ package packed.internal.container;
 import java.util.Optional;
 import java.util.Set;
 
-import app.packed.container.BundleConfiguration;
-import app.packed.container.BundleDriver;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.BundleDriver;
 import app.packed.extension.Extension;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;

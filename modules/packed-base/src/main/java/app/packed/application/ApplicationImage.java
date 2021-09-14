@@ -16,8 +16,8 @@
 package app.packed.application;
 
 import app.packed.application.programs.Program;
-import app.packed.container.Bundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.Wirelet;
 import packed.internal.application.PackedApplicationDriver.PackedApplicationImage;
 
 /**

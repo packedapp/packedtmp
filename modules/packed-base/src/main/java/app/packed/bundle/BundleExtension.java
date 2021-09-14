@@ -1,4 +1,4 @@
-package app.packed.container;
+package app.packed.bundle;
 
 import app.packed.extension.Extension;
 import app.packed.extension.ExtensionSupport;

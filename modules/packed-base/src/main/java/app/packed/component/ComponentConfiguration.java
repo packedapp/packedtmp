@@ -19,8 +19,8 @@ import app.packed.base.NamespacePath;
 import app.packed.base.Nullable;
 import app.packed.bean.ApplicationBeanConfiguration;
 import app.packed.bean.BeanConfiguration;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.Wirelet;
 import packed.internal.component.ComponentSetup;
 import packed.internal.component.PackedComponentDriver;
 

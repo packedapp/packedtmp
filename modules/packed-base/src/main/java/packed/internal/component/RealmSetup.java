@@ -24,11 +24,11 @@ import java.util.ArrayList;
 
 import app.packed.application.ApplicationDescriptor.ApplicationDescriptorOutput;
 import app.packed.base.Nullable;
-import app.packed.container.Bundle;
-import app.packed.container.BundleConfiguration;
-import app.packed.container.Composer;
-import app.packed.container.ComposerAction;
-import app.packed.container.Wirelet;
+import app.packed.bundle.Bundle;
+import app.packed.bundle.BundleConfiguration;
+import app.packed.bundle.Composer;
+import app.packed.bundle.ComposerAction;
+import app.packed.bundle.Wirelet;
 import app.packed.extension.Extension;
 import packed.internal.application.BuildSetup;
 import packed.internal.application.PackedApplicationDriver;

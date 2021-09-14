@@ -17,7 +17,7 @@ package tests.injector;
 
 import java.lang.invoke.MethodHandles;
 
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 import app.packed.service.Service;
 import packed.internal.config.ConfigSite;
 import packed.internal.service.sandbox.Injector;

@@ -18,7 +18,7 @@ package tck.component.name;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import app.packed.container.Wirelet;
+import app.packed.bundle.Wirelet;
 import testutil.util.AbstractApplicationTest;
 
 /**

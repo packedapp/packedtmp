@@ -3,8 +3,8 @@ package packed.internal.component;
 import app.packed.application.Daemon;
 import app.packed.application.programs.SomeApp;
 import app.packed.build.BuildWirelets;
-import app.packed.container.BaseBundle;
-import app.packed.container.Wirelet;
+import app.packed.bundle.BaseBundle;
+import app.packed.bundle.Wirelet;
 import app.packed.state.sandbox.InstanceState;
 
 public class ZapAssembly extends BaseBundle {

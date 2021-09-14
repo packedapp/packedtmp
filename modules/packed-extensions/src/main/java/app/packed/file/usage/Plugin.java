@@ -1,6 +1,6 @@
 package app.packed.file.usage;
 
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 abstract class Plugin extends BaseBundle {
 

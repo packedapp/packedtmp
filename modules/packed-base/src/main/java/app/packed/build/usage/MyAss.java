@@ -1,6 +1,6 @@
 package app.packed.build.usage;
 
-import app.packed.container.BaseBundle;
+import app.packed.bundle.BaseBundle;
 
 @MaximumComponentContainer(maxComponents = 123)
 public class MyAss extends BaseBundle {
